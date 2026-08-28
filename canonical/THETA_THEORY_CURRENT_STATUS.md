@@ -23,23 +23,27 @@ PaperI_CM2_U3:
 
 PaperII_K1_K15:
   pressure_C3: CLOSED_RELATIVE_TO_PAPER_I
-  low_frequency_suspension: CLOSED
+  low_frequency_suspension: CLOSED_WITH_ENTRY_EXIT_OPERATORS
   physical_diffusion_response: CLOSED
   common_operator_realization: CLOSED_BY_SMOOTH_QUADRATIC_ATLAS
   coefficient_and_ellipticity: CLOSED
+  actual_four_branch_positive_diffusion: CLOSED
 
 PaperIII_K2_Theta:
   Doob_selection: CLOSED_WITH_NO_FEEDBACK
   enhanced_WIP: CLOSED_WITH_MODULUS_OR_DIRECT_CHARACTERISTICS
   nonautonomous_homogenization: CLOSED
-  HJB_and_theta_semigroup: CLOSED_RELATIVE_TO_DPP_AND_COMPARISON
+  general_HJB_and_theta: CLOSED_RELATIVE_TO_NAMED_DPP_COMPARISON_PACKET
+  actual_four_branch_monotone_DPP: CLOSED
+  actual_four_branch_HJB_theta: CLOSED
   actual_full_scale_symbolic_model: PASS
   explicit_nonconvex_non_subadditive_branch: CLOSED
 
 PaperIV_K3:
   filtering: CLOSED_WITH_BAYES_GAP_AND_INITIAL_LAYER
-  sequential_games: CLOSED
-  simultaneous_mixed_Isaacs: CLOSED
+  general_sequential_and_mixed_games: CLOSED_RELATIVE_TO_NAMED_DPP_COMPARISON_PACKET
+  actual_four_branch_sequential_limits: CLOSED
+  actual_four_branch_mixed_Isaacs: CLOSED
   pure_saddle: EXTRA_TYPED_CERTIFICATE
   belief_and_path_state_branches: CLOSED
   actual_hidden_symbol_model: PASS
@@ -51,6 +55,8 @@ PaperV_Representations:
   post_calibration_Girsanov: CLOSED
   reverse_use_to_prove_HJB: FORBIDDEN
 
+ActualScopedChainThroughTheta: CLOSED
+ActualScopedChainThroughMixedIsaacs: CLOSED
 InternalDependencyGaps: CLOSED
 UnnamedIntermediateArrows: 0
 HostileProofAuditRounds: 3
@@ -66,8 +72,9 @@ FormalCredit: 0
 2. Positive general theorems are stated on explicit packetized admissible
    classes.
 3. A nonzero open moving-seam system verifies the complete finite-order
-   Paper-I/II packet, and its symbolic/Doob realization verifies the scoped
-   Paper-III/IV chain.
+   Paper-I/II packet.  Its Bernoulli/Doob realization verifies full-scale K2,
+   an actual monotone one-player DPP and theta-HJB, exact bounded filtering,
+   sequential lower/upper schemes, and a relaxed mixed-Isaacs scheme.
 4. Every cross-paper arrow has a named P1--P5 interface; old blanket response
    imports are forbidden.
 5. Stronger system-specific theorems not used by the series are outside the
@@ -109,12 +116,13 @@ Permanent corrections:
 - `papers/theta-program/five-paper-series/THEOREM_INTERFACE_MANIFEST.yaml`
 - `papers/theta-program/five-paper-series/HOSTILE_PROOF_AUDIT.md`
 - five `MANUSCRIPT.md`, five `BLOCKER_CLOSURE.md`, and five `INTERFACE.md`
+- Paper-II renewal note, Paper-III actual DPP/comparison appendix, and
+  Paper-IV actual game-scheme appendix
 - `tools/verify_theta_five_paper_series.py`
 
-The verifier source has been reproduced byte-for-byte locally and passes Python
-byte-code compilation.  A full verifier run against a checked-out branch is
-still required before merge because the private Git tree was not materialized
-inside the execution container.  This limitation is not a mathematical claim
-and grants no external correctness certificate.
+The verifier source is structurally separate from mathematical proof.  A full
+verifier run against a checked-out branch is required before merge.  The
+series has not received external specialist review and grants no external
+correctness certificate.
 
 Historical v83/v164 and old three-paper source bytes remain unchanged.
