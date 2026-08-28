@@ -13,7 +13,7 @@ $(PAPERS):
 	cd $@ && latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex
 
 verify:
-	python3 ../../tools/verify_referee_manuscripts.py
+	python3 ../../tools/verify_referee_revision_v4.py --write-receipt
 
 clean:
 	@for p in $(PAPERS); do \
