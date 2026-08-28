@@ -2,17 +2,22 @@
 
 ## 0. Result and interpretation
 
-This note separates three statements that were previously conflated:
+This note separates four statements that must not be conflated:
 
 1. a **uniform high-frequency BDL theorem** for a compact family of
    finite-horizon dispersing billiard flows;
-2. **parameter derivatives of the resolvent** on a graded family of certified
-   source channels;
-3. a false stronger claim asserting one parameter-independent scalar grazing
-   weight and one ungraded domain for all deformations.
+2. **table-parameter derivatives of the resolvent** on a graded common graph
+   domain;
+3. **twist-parameter derivatives** for exact flow coboundaries by gauge
+   conjugacy;
+4. a false stronger claim asserting one parameter-independent scalar grazing
+   weight and one ungraded domain for every deformation.
 
-The first two statements are proved below.  The third is excluded by the
-consecutive-collision grazing-weight obstruction.
+Statement 1 is an actual family theorem once the strict geometric/BDL witness
+is verified.  Statement 2 is a packet theorem and is never inferred from
+Statement 1 alone.  Statement 3 is actual on the radial family for the twist
+parameter `q`, but does not manufacture table-parameter derivatives.  Statement
+4 is excluded by the consecutive-collision grazing-weight obstruction.
 
 The main export is
 
@@ -33,7 +38,7 @@ periodic planar dispersing billiard tables.  Assume uniformly:
 - scatterer separation at least `d_min>0`;
 - finite horizon `tau_min <= tau <= tau_max`;
 - no corners, cusps, or eclipse bifurcations;
-- a common finite collision-coordinate atlas.
+- a common finite collision/flow-coordinate atlas.
 
 Write `Phi_a^t` for the flow, `X_a` for its generator, and `L_{a,t}` for the
 transfer semigroup.
@@ -47,7 +52,8 @@ anisotropic Banach triple
 \]
 
 on which `X_a` has a spectral gap and a high-frequency resolvent estimate.
-The issue is to choose the spaces and constants uniformly in `a`.
+The family problem is to choose the spaces, strict nonintegrability witnesses,
+and constants uniformly in `a`.
 
 ---
 
@@ -94,8 +100,8 @@ Every compact family for which each table has a strict witness admits a finite
 cover by packet neighbourhoods.  Taking maxima of upper constants and minima
 of positive margins produces one uniform packet over `A`.
 
-This finite-cover step is the exact uniformity mechanism; “compactness” alone
-is not used without the strict local witnesses.
+This finite-cover step is the exact uniformity mechanism; compactness alone is
+not used without strict local witnesses.
 
 ---
 
@@ -181,15 +187,15 @@ outside the declared resonance set,
 \]
 
 The same constants control the weak-space and compact-embedding terms used in
-the inverse Laplace contour.  Thus the high-frequency and low-frequency pieces
-can be joined with one family-uniform contour.
+the inverse Laplace contour.  Thus the high- and low-frequency pieces can be
+joined with one family-uniform contour.
 
 ### Theorem 4.1 (compact moving-family BDL)
 
 A compact finite-horizon dispersing family carrying
 `BDL-FAMILY-WITNESS-v1` has a fixed common operator realization and the uniform
-high-frequency bound (4.1).  In particular, exponential mixing and resonance
-bounds are uniform over the declared compact family.
+high-frequency bound (4.1).  Exponential mixing and resonance bounds are
+uniform over the declared compact family.
 
 #### Proof
 
@@ -199,11 +205,23 @@ cover makes all constants uniform.  The quadratic stabilization transfers the
 estimates to `B_*`; the uniformly bounded maps `J_a,R_a` alter only the common
 constant.
 
+### Actual radial family
+
+Choose the radial parameter interval in
+`SPECULAR_SINAI_RADIAL_U3.md` inside one strict BDL witness neighbourhood of
+the base table.  Proposition 2.2 then verifies the uniform high-frequency
+packet on that genuinely nonconjugate compact radial family.  This is an actual
+uniform-family theorem; it does not yet differentiate in `a`.
+
 ---
 
-## 5. Graded parameter derivatives
+## 5. The additional graph-domain packet for table derivatives
 
-High-frequency uniformity does not by itself differentiate the moving family.
+High-frequency uniformity does not by itself differentiate an unbounded
+moving-domain generator.
+
+### Definition 5.1 (`BDL-PARAMETER-DOMAIN-v1`)
+
 Let
 
 \[
@@ -211,22 +229,27 @@ Let
 \hookrightarrow\mathcal B_*^{(0)}
 \]
 
-be a graded ladder.  Suppose the complete parameter letters
+be a graded ladder.  A family has the parameter-domain packet through order
+`k` if:
+
+```text
+PD1 one parameter-independent dense graph core D^(r) in each ladder level
+PD2 every X_hat_a is closed on the corresponding completed graph domain
+PD3 a -> X_hat_a is C^k from D^(r) with graph norm to B_*^(r-j)
+PD4 complete letters G_a^(j) are the graph derivatives of X_hat_a
+PD5 G_a^(j) R_hat_a(z) has the declared high-frequency symbol bound
+PD6 resolvents preserve the domains needed by every ordered composition
+PD7 difference quotients converge in these graph/operator topologies
+```
+
+In particular,
 
 \[
-G_a^{(j)}=\partial_a^j\widehat X_a,
-\qquad 1\le j\le k,
+G_a^{(j)}=\partial_a^j\widehat X_a:
+\mathcal D^{(r)}\longrightarrow\mathcal B_*^{(r-j)}
 \]
 
-are certified closed maps
-
-\[
-G_a^{(j)}:
-\operatorname{Dom}\widehat X_a\cap\mathcal B_*^{(r)}
-\longrightarrow\mathcal B_*^{(r-j)}
-\]
-
-and satisfy the symbol estimates
+and
 
 \[
 \|G_a^{(j)}\widehat R_a(z)\|_{r\to r-j}
@@ -234,9 +257,9 @@ and satisfy the symbol estimates
 \tag{5.1}
 \]
 
-### Theorem 5.1 (ordered-composition resolvent formula)
+### Theorem 5.2 (ordered-composition resolvent formula)
 
-For `k<=r`,
+If `BDL-PARAMETER-DOMAIN-v1` holds through order `k<=r`, then
 
 \[
 \boxed{
@@ -252,33 +275,37 @@ G_a^{(j_m)}\widehat R_a.
 \tag{5.2}
 \]
 
-Every term maps `B_*^(r)` to `B_*^(r-k)`.  Moreover,
+Every term maps `B_*^(r)` to `B_*^(r-k)`, and
 
 \[
 \|\partial_a^k\widehat R_a(z)\|_{r\to r-k}
-\le C_k'
-(1+|\Im z|)^{(m_k+1)\nu+E_k},
+\le C_k'(1+|\Im z|)^{(k+1)\nu+E_k},
 \tag{5.3}
 \]
 
-where one may take
+where
 
 \[
-E_k=\max_{j_1+\cdots+j_m=k}
-\sum_i\eta_{j_i},
-\qquad m_k=k.
+E_k=\max_{j_1+\cdots+j_m=k}\sum_i\eta_{j_i}.
 \]
 
 #### Proof
 
-Differentiate `(z-X_a)R_a=I`.  The first derivative is
+Use the graph-topology difference quotients from `PD3--PD7` in
 
 \[
-R_a'=R_aX_a'R_a.
+(z-\widehat X_a)\widehat R_a(z)=P_a
 \]
 
-Induction and the noncommutative Leibniz rule give the ordered compositions
-and multinomial coefficients in (5.2).  Apply (4.1) and (5.1) term by term.
+on the invariant range.  The first derivative is
+
+\[
+R_a'=R_aG_a^{(1)}R_a,
+\]
+
+and induction with the noncommutative Leibniz rule gives (5.2).  Domain
+preservation in `PD6` justifies every composition.  Apply (4.1) and (5.1) term
+by term.
 
 For reference,
 
@@ -298,23 +325,22 @@ R_a'''={}&R_aG_a^{(3)}R_a
 
 ---
 
-## 6. Actual radial all-frequency channel
+## 6. Exact-coboundary twist parameter at all frequencies
 
-For the nonconjugate radial family of
-`SPECULAR_SINAI_RADIAL_U3.md`, let `g_a` be a smooth flow observable and take
-the flow coboundary
+For the nonconjugate radial family, let `g_a` be a smooth flow observable and
+set
 
 \[
 F_a=X_ag_a.
 \]
 
-The twisted generator is gauge conjugate:
+For a twist parameter `q`,
 
 \[
 X_{a,q}=M_{e^{-qg_a}}X_aM_{e^{qg_a}},
 \]
 
-so
+so for every fixed `a`,
 
 \[
 \boxed{
@@ -324,16 +350,20 @@ so
 \tag{6.1}
 \]
 
-Combining (4.1) with the smooth multipliers gives uniform high-frequency bounds
-and all mixed `(a,q)` derivatives on this actual nonconjugate specular channel.
-No low-frequency-only reduction is used.
+Combining (4.1) with the smooth multiplier bounds gives a family-uniform
+high-frequency estimate and arbitrary finite **`q`-derivatives** on this actual
+nonconjugate specular channel.
 
-### Corollary 6.1
+### Corollary 6.1 (actual scope)
 
-The radial specular family has an actual all-frequency moving-family BDL
-response for the invariant and exact-coboundary channels.  General deformation
-channels are covered precisely when they submit the graded symbol packet
-(5.1).
+The radial family has:
+
+1. an actual compact-family uniform high-frequency BDL theorem;
+2. an actual all-frequency exact-coboundary twist response in `q`;
+3. table-parameter `a` derivatives only when
+   `BDL-PARAMETER-DOMAIN-v1` is separately verified.
+
+Gauge conjugacy does not turn item 2 into item 3.
 
 ---
 
@@ -352,12 +382,12 @@ bounded on one fixed ungraded graph domain.
 
 ### Theorem 7.1 (maximality)
 
-The valid general high-frequency theorem is
+The valid general high-frequency theory is
 
 ```text
-uniform fibrewise BDL bundle
+uniform fibrewise BDL witness bundle
 + fixed-space stabilization
-+ graded certified parameter letters.
++ BDL-PARAMETER-DOMAIN-v1 for table derivatives.
 ```
 
 The stronger claim
@@ -368,7 +398,8 @@ one parameter-independent scalar grazing weight
 => all moving-family generator derivatives bounded
 ```
 
-is false.  A branch-cocycle or source-specific complete assembly is necessary.
+is false.  A branch-cocycle, a graded graph-domain packet, or a source-specific
+complete assembly is necessary.
 
 ---
 
@@ -376,21 +407,22 @@ is false.  A branch-cocycle or source-specific complete assembly is necessary.
 
 ```yaml
 id: P2-BDL-HF-FAMILY
-inputs:
+uniform_family_inputs:
   - BDL-FAMILY-WITNESS-v1
   - smooth_quadratic_fibre_atlas
-outputs:
+uniform_family_outputs:
   - fixed_common_high_frequency_resolvent
   - uniform_resonance_strip
   - uniform_inverse_Laplace_contour
-parameter_derivatives:
-  input: graded_symbol_packet
+table_parameter_derivatives:
+  input: BDL-PARAMETER-DOMAIN-v1
   formula: ordered_composition_resolvent_identity
-actual_channel:
-  family: nonconjugate_radial_specular_Sinai
-  source: invariant_or_exact_flow_coboundary
-  order: arbitrary_finite
+actual_radial_family:
+  uniform_high_frequency_BDL: true
+  exact_coboundary_q_derivatives: arbitrary_finite
+  a_derivatives: require_BDL_PARAMETER_DOMAIN_v1
 forbidden_upgrade:
+  - q_gauge_response_to_a_table_response
   - universal_single_pointwise_grazing_weight_domain
 ```
 
