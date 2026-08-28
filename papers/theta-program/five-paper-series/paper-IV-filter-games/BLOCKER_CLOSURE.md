@@ -13,6 +13,7 @@
 | Belief collapse assumed when filtering remains macroscopic | Separate belief-state HJB theorem | CLOSED |
 | Genuine path dependence forced into finite-dimensional HJB | Explicit PPDE/path-state branch | CLOSED |
 | No actual filtering/game system | Four-branch hidden-symbol kernel with exact one-step prior forgetting and vanishing one-step slow duration | CLOSED |
+| Actual bounded game lacked monotone schemes and comparison | `TECHNICAL_APPENDIX_GAME_SCHEME.md`: lower/upper and relaxed mixed schemes, consistency, comparison, convergence | CLOSED_ACTUAL_SCOPED |
 | K2 estimates not uniform over controls | Compact control-dependent Bernoulli triangular array | CLOSED |
 
 ## Exports
@@ -28,6 +29,10 @@ P4-PATH
 P4-ACTUAL-4B
 ```
 
+`P4-ACTUAL-4B` includes exact initial-belief collapse, actual lower and upper
+sequential HJB limits, an actual relaxed mixed-Isaacs limit, and the pure-value
+conclusion under the explicit saddle gate.
+
 ## Permanent distinctions
 
 ```text
@@ -40,7 +45,7 @@ belief-state Markov problem != genuinely path-dependent problem
 
 ## Review boundary
 
-The bounded hidden-symbol realization is actual and complete in scope.  The
-weighted theorem remains a theorem over an explicit Lyapunov/moment/initial-
-layer/comparison packet; it is not advertised as verified for every Lorentz
-observable.
+The bounded hidden-symbol realization is actual and complete in scope through
+its game schemes.  The weighted theorem remains a theorem over an explicit
+Lyapunov/moment/initial-layer/comparison packet; it is not advertised as
+verified for every Lorentz observable.
