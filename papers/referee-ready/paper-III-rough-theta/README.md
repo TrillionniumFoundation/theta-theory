@@ -1,6 +1,12 @@
-# Paper III — build and circulation notes
+# Paper III — referee revision v4
 
-Compile with:
+**Controlling source:** `main.tex`  
+**Controlling bibliography:** `references.bib`  
+**Round-four frozen copies:** `main-round4.tex`, `references-round4.bib`
+
+Title: *Exact-Innovation Rough Homogenization and Microscopic Construction of Theta-Semigroups from Nonconjugate Collision Dynamics*.
+
+Build from this directory:
 
 ```bash
 pdflatex main
@@ -9,11 +15,11 @@ pdflatex main
 pdflatex main
 ```
 
-The manuscript restates the frozen spectral/coefficient input it needs from
-Paper II.  It contains the Doob-selection, martingale--rough, nonautonomous
-homogenization, sharp Gaussian rate, dynamic-programming, viscosity-limit, and
-theta-semigroup arguments in one file.
+The paper uses the same nonconjugate moving collision map as Papers I--II.  It
+proves exact predictable innovations, the canonical geometric enhanced
+martingale limit, endogenous state-dependent homogenization, a pointwise
+microscopic entropic DPP, a controlled risk-sensitive HJB limit, and forward
+theta-independence.
 
-The sharp-rate theorem is specifically for full Wasserstein--1 associated with
-the declared fractional-Sobolev step-two rough metric.  It must not be quoted
-without its range `p>6`, `1/3<eta-1/p`, and `eta<1/2`.
+No response derivative is substituted for an invariance principle, and no
+anisotropic pairing is upgraded to point evaluation.
