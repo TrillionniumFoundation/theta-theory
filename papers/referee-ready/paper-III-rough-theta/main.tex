@@ -1,0 +1,663 @@
+\documentclass[11pt,reqno]{amsart}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsfonts,amsthm,mathtools,mathrsfs}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+\usepackage[nameinlink,capitalize]{cleveref}
+\allowdisplaybreaks
+\setlength{\emergencystretch}{2em}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{assumption}[theorem]{Assumption}
+\newtheorem{example}[theorem]{Example}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\A}{\mathcal A}
+\newcommand{\B}{\mathbb B}
+\newcommand{\C}{\mathbb C}
+\newcommand{\D}{\mathrm D}
+\newcommand{\E}{\mathbb E}
+\newcommand{\F}{\mathcal F}
+\newcommand{\N}{\mathbb N}
+\newcommand{\Pp}{\mathbb P}
+\newcommand{\R}{\mathbb R}
+\newcommand{\cE}{\mathcal E}
+\newcommand{\cH}{\mathcal H}
+\newcommand{\cL}{\mathscr L}
+\newcommand{\cP}{\mathscr P}
+\newcommand{\Id}{\mathrm{Id}}
+\newcommand{\Lip}{\operatorname{Lip}}
+\newcommand{\tr}{\operatorname{tr}}
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\dist}{\operatorname{dist}}
+\newcommand{\norm}[1]{\left\lVert #1\right\rVert}
+\newcommand{\abs}[1]{\left\lvert #1\right\rvert}
+\newcommand{\pair}[2]{\left\langle #1,#2\right\rangle}
+
+\title[Doob-selected rough homogenization]{Doob-Selected Rough Homogenization and Nonlinear Theta-Expectations from Deterministic Fast Dynamics}
+\author{Qian Qi}
+\address{Peking University, Beijing 100871, China}
+\email{qiqian@pku.edu.cn}
+\subjclass[2020]{Primary 60F17, 37A50, 49L25; Secondary 37D50, 60L20, 35D40}
+\keywords{deterministic homogenization, rough paths, Doob transform, dynamic programming, viscosity solutions, nonlinear expectation}
+\date{August 28, 2026}
+
+\begin{document}
+
+\begin{abstract}
+We derive nonlinear diffusion semigroups from deterministically generated fast
+noise selected by a frozen Doob transform.  The microscopic selector is built
+from an external state--cotangent--control signal before any Hamilton--Jacobi
+solution is introduced.  A uniform martingale--rough package yields a frozen
+enhanced invariance principle with covariance and area anomaly.  We then prove
+a nonautonomous homogenization theorem by two routes: a block argument with an
+explicit accumulated quantitative error, and a direct predictable-characteristics
+argument for slowly varying martingale arrays.  Qualitative uniform weak
+convergence alone is shown to imply only a cofinal diagonal result.
+
+For a deterministic Gaussian Bernoulli shift we prove the sharp law rate in the
+full Wasserstein distance associated with a step-two fractional-Sobolev rough
+metric.  If $p>6$, $1/3<\eta-1/p$, and $\eta<1/2$, then the canonical lift of
+the polygonal partial-sum process satisfies
+\[
+ W_1^{\eta,p}(\mathbf W_N,\mathbf B)
+ \asymp N^{-(1/2-\eta)}.
+\]
+The upper bound follows from an exact Brownian-grid coupling, including a
+second-level bridge estimate; the lower bound is the expected distance of
+Brownian motion from the mesh-polygonal subspace.
+
+The homogenized characteristics generate monotone dynamic-programming
+operators.  Stability, consistency, and comparison yield an HJB limit and a
+time-consistent nonlinear semigroup, called the theta-expectation.  The
+four-branch moving-seam model of the companion papers gives an actual
+full-scale realization through direct martingale characteristics.  An explicit
+nonconvex Hamiltonian shows that theta-expectations need not be subadditive.
+\end{abstract}
+
+\maketitle
+\tableofcontents
+
+\section{Introduction}
+
+Deterministic homogenization asks when a slow system driven by a rapidly
+iterated chaotic map converges to a stochastic differential equation.  For a
+fixed fast map, martingale approximation and rough-path enhancement now give a
+robust route from weak invariance principles to stochastic limits; see
+\cite{KellyMelbourne2016,KellyMelbourne2017,MelbourneStuart2011}.  The problem
+addressed here is different in two respects.  First, the fast law is selected
+by a parameter-dependent Doob transform.  Second, the parameter varies with
+the slow state and an external cotangent/control signal.  Thus one needs a
+uniform enhanced limit and a careful accumulation of frozen approximation,
+switching, and initial-law errors.
+
+The spectral coefficients used here are constructed in the companion paper
+\cite{QiPressure}.  In particular, pressure response produces smooth physical
+covariance, area, drift, and elliptic coefficient fields on a fixed common
+operator space.  We do not feed an unknown value-function gradient back into
+the microscopic operator.  The cotangent variable is external throughout the
+selection and homogenization stages; only the viscosity consistency argument
+later substitutes a test-function gradient.
+
+Our first main theorem, \cref{thm:nonautonomous}, gives a full nonautonomous
+rough limit under either a quantitative frozen modulus or direct predictable
+characteristics.  The distinction is essential.  A compact-parameter
+qualitative invariance principle permits a diagonal choice of block lengths,
+but it gives no control between the selected lengths and therefore no theorem
+for every microscopic scale.
+
+Our second main theorem, \cref{thm:sharp-rate}, fixes a precise notion of
+``optimal enhanced-WIP rate.''  The state space is the step-two geometric rough
+path space endowed with a fractional-Sobolev metric, and the law distance is
+its full Wasserstein--$1$ distance.  A Gaussian Bernoulli shift gives an exact
+coupling to Brownian mesh interpolation.  Brownian bridges determine the
+unavoidable exponent $1/2-\eta$ at both rough levels.  This benchmark supplies
+an explicit admissible block window for nonautonomous homogenization.
+
+Our third contribution is nonlinear.  The effective characteristics define a
+family of monotone dynamic-programming operators.  The Barles--Souganidis
+method \cite{BarlesSouganidis1991}, formulated in viscosity language
+\cite{CrandallIshiiLions1992}, gives an HJB limit.  Its solution operators form a
+time-consistent nonlinear semigroup.  We call this the theta-expectation to
+emphasize that it need not be convex or sublinear.  A concrete trigonometric
+Hamiltonian violates subadditivity.
+
+The actual four-branch model in \cref{sec:actual} is inherited from the
+moving-seam response papers, but its probabilistic proof is independent of a
+quantitative mixing theorem: under the selected Bernoulli law, the increments
+form a bounded martingale triangular array.  Predictable brackets and second
+levels converge directly, yielding the full-scale limit.
+
+\subsection*{Organization}
+\Cref{sec:doob} constructs the frozen selector.  \Cref{sec:martingale}
+states and derives the martingale--rough packet.  \Cref{sec:frozen} proves the
+frozen enhanced limit.  The sharp Gaussian rate is established in
+\cref{sec:rate}.  \Cref{sec:nonautonomous} treats parameter variation and
+block accumulation.  The actual four-branch model is in \cref{sec:actual}.
+Dynamic programming and theta-expectations occupy
+\cref{sec:dpp,sec:theta}.
+
+\section{Frozen Doob selection and the no-feedback principle}\label{sec:doob}
+
+Let $K$ be a compact state--cotangent--control window, and write
+\[
+ \theta=(x,p,\zeta)\in K.
+\]
+The companion pressure paper gives a fixed Banach space and a positive twisted
+operator $L_\theta$ with simple leading eigenvalue $\lambda_\theta>0$, positive
+right eigenfunction $h_\theta$, and positive left eigenfunctional
+$\ell_\theta$, normalized by $\ell_\theta(h_\theta)=1$.
+
+\begin{definition}[Doob operator]\label{def:doob}
+For bounded $f$, set
+\begin{equation}\label{eq:doob}
+ \mathsf P_\theta f
+ =\lambda_\theta^{-1}h_\theta^{-1}L_\theta(h_\theta f).
+\end{equation}
+Then $\mathsf P_\theta1=1$.  Its invariant probability is
+\[
+ \mu_\theta^D(f)=\ell_\theta(h_\theta f).
+\]
+\end{definition}
+
+\begin{proposition}[Parameter regularity]\label{prop:doob-regularity}
+If the leading eigendata and the multiplier maps are $C^r$ on $K$, bounded away
+from zero in the declared positive cone, then
+$\theta\mapsto\mathsf P_\theta$ and $\theta\mapsto\mu_\theta^D$ are $C^r$ on
+the corresponding operator and dual spaces.
+\end{proposition}
+
+\begin{proof}
+Equation \eqref{eq:doob} is a finite product of the eigendata, multiplication,
+and inversion on a set where $h_\theta$ is uniformly positive.  Differentiate
+by the ordinary product rule.  The invariant law formula is treated similarly.
+\end{proof}
+
+\begin{remark}[Causal order]\label{rem:no-feedback}
+The variable $p$ in this section is an external signal.  Neither
+$L_\theta$ nor $h_\theta$ is defined using an unknown HJB solution.  At the HJB
+stage, a smooth test function supplies $p=D\phi(x)$ locally.  This order removes
+a potential circularity between microscopic selection and macroscopic dynamic
+programming.
+\end{remark}
+
+\section{A uniform martingale--rough packet}\label{sec:martingale}
+
+Let $v_\theta$ be a centered $\R^d$-valued observable:
+$\mu_\theta^D(v_\theta)=0$.
+
+\begin{assumption}[Uniform martingale--rough hypotheses]\label{ass:UM}
+Uniformly over $\theta\in K$:
+\begin{enumerate}[label=\textup{(UM\arabic*)}]
+\item the collision/physical clock and parameter chambers are fixed;
+\item for some $q>4$, $\sup_\theta\norm{v_\theta}_{L^q}<\infty$;
+\item there is a Gordin decomposition
+\begin{equation}\label{eq:gordin}
+ v_\theta=m_\theta+\chi_\theta\circ T_\theta-\chi_\theta,
+\end{equation}
+where $m_\theta$ is a reverse martingale difference;
+\item predictable quadratic variations converge to $\Sigma_\theta$;
+\item the predictable antisymmetric second level converges to
+$\Gamma_\theta$;
+\item the rescaled maximal coboundary in \eqref{eq:gordin} vanishes uniformly;
+\item admissible initial laws are forgotten quantitatively;
+\item $\Sigma_\theta,\Gamma_\theta,m_\theta,\chi_\theta$ have a common
+parameter modulus;
+\item either a frozen enhanced-law modulus $r(N)\to0$ is given, or the actual
+slowly varying array satisfies direct martingale characteristics;
+\item the switching error vanishes and the limiting martingale problem or RDE
+is unique.
+\end{enumerate}
+\end{assumption}
+
+\begin{proposition}[Spectral sufficient conditions]\label{prop:spectral-UM}
+Suppose $\mathsf P_\theta$ has a uniform spectral gap on a Banach algebra
+$\mathcal B$ continuously embedded in $L^q$, and that $v_\theta$, its tensor
+square, and the required antisymmetric area observable belong uniformly to
+$\mathcal B$.  Suppose also that the common-space resolvent has a uniform
+parameter modulus.  Then all parts of \cref{ass:UM} except the quantitative or
+direct alternative in (UM9) and limiting uniqueness in (UM10) follow.
+\end{proposition}
+
+\begin{proof}
+On the centered space define
+\begin{equation}\label{eq:poisson}
+ \chi_\theta=\sum_{n\ge1}\mathsf P_\theta^n v_\theta.
+\end{equation}
+The spectral gap gives convergence in $\mathcal B$, hence in $L^q$.  The usual
+transfer identity shows that
+$m_\theta=v_\theta+\chi_\theta-\chi_\theta\circ T_\theta$ has zero conditional
+mean.  Doob and Burkholder maximal inequalities control the martingale and the
+bounded Poisson endpoint, proving maximal coboundary negligibility.  Apply the
+same Poisson construction to the centered matrix observable
+$m_\theta\otimes m_\theta-\Sigma_\theta$ and to the antisymmetric iterated
+observable to obtain the bracket and area compensator.  Exponential memory loss
+transfers the statements to admissible initial laws.  Finally,
+\[
+ R_\theta-R_{\theta'}
+ =R_\theta(\mathsf P_\theta-\mathsf P_{\theta'})R_{\theta'}
+\]
+gives the common parameter modulus for the Poisson solutions and derived
+coefficients.
+\end{proof}
+
+\section{Frozen enhanced invariance principle}\label{sec:frozen}
+
+Define the polygonal partial-sum process
+\begin{equation}\label{eq:WN}
+ W_N^\theta(t)=N^{-1/2}\sum_{j< Nt}v_\theta\circ T_\theta^j
+\end{equation}
+with linear interpolation, and its canonical step-two lift
+$\mathbf W_N^\theta=(W_N^\theta,\mathbb W_N^\theta)$.
+
+\begin{theorem}[Uniform frozen enhanced WIP]\label{thm:frozen-WIP}
+Under \cref{ass:UM}, the frozen lifts converge, uniformly in $\theta$, to
+\begin{equation}\label{eq:enhanced-limit}
+ \mathbf W_N^\theta\Longrightarrow
+ \bigl(W^\theta,\mathbb W^\theta+t\Gamma_\theta\bigr)
+\end{equation}
+in every declared step-two rough topology below the available moment exponent.
+The Brownian covariance is $\Sigma_\theta$.
+\end{theorem}
+
+\begin{proof}
+Replace $v_\theta$ by $m_\theta$ using \eqref{eq:gordin}.  The first-level
+coboundary is an endpoint difference and vanishes after $N^{-1/2}$ scaling by
+(UM6).  Discrete integration by parts writes the second-level coboundary terms
+as endpoint products plus an ergodic average.  The endpoints vanish and the
+average converges to the deterministic anomaly $\Gamma_\theta$.  The martingale
+functional CLT, together with the bracket hypothesis, gives the first level;
+the martingale rough-path CLT gives the canonical symmetric second level and
+identifies its antisymmetric compensator.  Uniform moments give tightness.
+Initial-law transfer and the modulus in (UM9) make the convergence uniform.
+\end{proof}
+
+\begin{proposition}[Qualitative convergence gives only a diagonal theorem]\label{prop:diagonal}
+Suppose the frozen convergence in \eqref{eq:enhanced-limit} is uniform on $K$
+but no quantitative modulus is available.  Then one can choose a cofinal
+sequence of microscopic scales for which a block homogenization proof closes.
+In general this does not imply convergence along every $\varepsilon\downarrow0$.
+\end{proposition}
+
+\begin{proof}
+Choose integers $M_k\uparrow\infty$ such that the uniform frozen-law error at
+$M_k$ is at most $2^{-k}$.  Then choose $\varepsilon_k\downarrow0$ whose block
+length is $M_k$ and whose physical block duration tends to zero.  This closes a
+diagonal block proof.  Without a bound between $M_k$ and $M_{k+1}$, no estimate
+controls arbitrary intermediate microscopic scales.  A full-scale statement
+therefore requires a usable modulus or direct characteristics.
+\end{proof}
+
+\section{A sharp fractional-Sobolev rough-path rate}\label{sec:rate}
+
+We now give an actual optimal benchmark in a standard full law metric.  Let
+\[
+ \Omega=(\R^d)^{\mathbb Z},
+ \qquad T(\omega)_n=\omega_{n+1},
+\]
+with product Gaussian measure $N(0,\Sigma)^{\otimes\mathbb Z}$, and let
+$\xi(\omega)=\omega_0$.  This is a deterministic measure-preserving Bernoulli
+shift whose coordinate process is i.i.d. Gaussian.
+
+Fix
+\begin{equation}\label{eq:eta-range}
+ p>6,
+ \qquad \frac13<\eta-\frac1p,
+ \qquad \eta<\frac12.
+\end{equation}
+For a first-level path $x$, let $\norm{x}_{W^{\eta,p}}$ be the Slobodetsky
+norm.  For a step-two geometric rough path $\mathbf x=(x,\mathbb x)$ define
+\begin{equation}\label{eq:rough-metric}
+ d_{\eta,p}(\mathbf x,\mathbf y)
+ =\norm{x-y}_{W^{\eta,p}}
+ +\norm{\mathbb x-\mathbb y}_{W^{2\eta,p/2}}^{1/2}.
+\end{equation}
+Let $W_1^{\eta,p}$ be Wasserstein--$1$ for this metric.
+
+Let $P_NB$ denote Brownian polygonal interpolation on the mesh $k/N$.  Under
+the coupling
+\[
+ \xi_k=\sqrt N\bigl(B_{(k+1)/N}-B_{k/N}\bigr),
+\]
+the Gaussian partial-sum path has exactly the law of $P_NB$.
+
+\begin{lemma}[First-level bridge estimate]\label{lem:first-bridge}
+There are constants $0<c\le C<\infty$ such that
+\begin{equation}\label{eq:first-bridge}
+ cN^{-(1/2-\eta)}
+ \le \E\norm{B-P_NB}_{W^{\eta,p}}
+ \le CN^{-(1/2-\eta)}.
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+On each mesh interval of length $h=N^{-1}$, the error is an independent
+Brownian bridge.  Brownian scaling gives local amplitude $h^{1/2}$; the
+fractional derivative of order $\eta$ contributes $h^{-\eta}$.  Summing the
+$p$th powers over $N$ intervals and taking the $p$th root gives
+$h^{1/2-\eta}$.  Cross-interval terms are bounded by the same order using the
+bridge endpoint cancellation.  For the lower bound, retain only pairs of
+points lying in the central halves of the same mesh interval and use the
+nondegenerate bridge variance.
+\end{proof}
+
+\begin{lemma}[Second-level bridge estimate]\label{lem:second-bridge}
+Let $\mathbf B$ and $S_2(P_NB)$ denote the Stratonovich Brownian lift and the
+canonical polygonal lift.  Then
+\begin{equation}\label{eq:second-bridge}
+ \E\norm{\mathbb B-\mathbb{P_NB}}_{W^{2\eta,p/2}}^{1/2}
+ \le CN^{-(1/2-\eta)}.
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Write $B=P_NB+\beta_N$, where $\beta_N$ is the collection of independent
+Brownian bridges.  Chen's identity decomposes the second-level difference on
+$[s,t]$ into the bridge iterated integral, the two cross integrals
+$\int(P_NB-P_NB_s)\otimes d\beta_N$ and
+$\int(\beta_N-\beta_N(s))\otimes d(P_NB)$, and endpoint concatenation terms.
+On one mesh interval, the bridge area has $L^{p/2}$ size $h$ and each cross term
+has size $h$ by Gaussian scaling.  The $W^{2\eta,p/2}$ kernel contributes
+$h^{-2\eta}$; after the square root in \eqref{eq:rough-metric}, the local order
+is $h^{1/2-\eta}$.  For increments crossing mesh boundaries, apply Chen's
+identity once more: complete bridge pieces have zero first-level endpoint, and
+the remaining coarse increments are controlled by discrete Burkholder and
+Gaussian moment bounds.  Summation gives \eqref{eq:second-bridge}.
+\end{proof}
+
+For the lower bound, let $V_N$ be the closed subspace of paths affine on every
+mesh interval and define
+\begin{equation}\label{eq:distance-test}
+ F_N(\mathbf x)=\dist_{W^{\eta,p}}(x,V_N).
+\end{equation}
+This is one-Lipschitz for $d_{\eta,p}$ and vanishes on every polygonal mesh
+path.
+
+\begin{lemma}[Distance from the polygonal subspace]\label{lem:lower-distance}
+There is $c>0$ such that
+\begin{equation}\label{eq:distance-lower}
+ \E F_N(\mathbf B)\ge cN^{-(1/2-\eta)}.
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Restriction to each mesh interval and subtraction of the affine endpoint
+interpolant define the Brownian bridge.  A fractional Poincar\'e inequality on
+$[0,h]$ bounds the distance from affine functions below by the fractional norm
+of the centered bridge on a fixed interior subinterval.  Brownian scaling gives
+$h^{1/2-\eta}$ per interval in the global $W^{\eta,p}$ aggregation.  Independence
+and a lower Khintchine bound prevent cancellation, yielding
+\eqref{eq:distance-lower}.
+\end{proof}
+
+\begin{theorem}[Sharp rough Wasserstein rate]\label{thm:sharp-rate}
+Let $\mathbf W_N$ be the canonical lift of the Gaussian polygonal partial-sum
+path and $\mathbf B$ enhanced Brownian motion with covariance $\Sigma$.  Under
+\eqref{eq:eta-range},
+\begin{equation}\label{eq:sharp-rate}
+ cN^{-(1/2-\eta)}
+ \le W_1^{\eta,p}
+ \bigl(\mathcal L(\mathbf W_N),\mathcal L(\mathbf B)\bigr)
+ \le CN^{-(1/2-\eta)}.
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+The Brownian-grid coupling and
+\cref{lem:first-bridge,lem:second-bridge} give the upper bound.  For the lower
+bound, use the one-Lipschitz test \eqref{eq:distance-test} in Kantorovich
+duality.  Its expectation under $\mathbf W_N$ is zero and under $\mathbf B$ is
+bounded below by \cref{lem:lower-distance}.
+\end{proof}
+
+\begin{remark}
+The word ``sharp'' is tied to the full law metric $W_1^{\eta,p}$.  Endpoint,
+H\"older, variation, and other path metrics may have different exponents.
+\end{remark}
+
+\section{Nonautonomous rough homogenization}\label{sec:nonautonomous}
+
+Let the slow parameter be
+\[
+ \theta_t^\varepsilon
+ =\Theta(X_t^\varepsilon,p_t^\varepsilon,\zeta_t^\varepsilon).
+\]
+Freeze it on blocks of $m_\varepsilon$ fast iterates.  The physical block
+length and number of blocks on $[0,T]$ are
+\[
+ h_\varepsilon=\varepsilon^2m_\varepsilon,
+ \qquad
+ N_\varepsilon\asymp\frac{T}{h_\varepsilon}.
+\]
+
+\begin{assumption}[Accumulated block control]\label{ass:block}
+As $\varepsilon\downarrow0$,
+\begin{equation}\label{eq:block-basic}
+ m_\varepsilon\to\infty,
+ \qquad h_\varepsilon\to0,
+\end{equation}
+and, for the frozen law modulus $r$, 
+\begin{equation}\label{eq:block-rate}
+ N_\varepsilon r(m_\varepsilon)\to0.
+\end{equation}
+The total parameter-freezing, switching, initial-law, and Taylor-remainder
+errors over all blocks also vanish.
+\end{assumption}
+
+\begin{theorem}[Doob-selected nonautonomous homogenization]\label{thm:nonautonomous}
+Assume either \cref{ass:block} or the direct predictable-characteristics
+alternative in (UM9).  Then the slow process converges to the unique solution
+of
+\begin{equation}\label{eq:limit-SDE}
+ dX_t=ar b(X_t,p_t,\zeta_t)\,dt
+ +\sigma(X_t,p_t,\zeta_t)\,dW_t
+ +b_\Gamma(X_t,p_t,\zeta_t)\,dt,
+\end{equation}
+where $\sigma\sigma^T=\Sigma$ and $b_\Gamma$ is the Lie-bracket drift obtained
+by applying the antisymmetric anomaly $\Gamma$ to the slow vector fields.
+\end{theorem}
+
+\begin{proof}
+In the block route, replace each frozen deterministic enhanced driver by its
+Brownian limit.  The sum of the law errors is bounded by
+$N_\varepsilon r(m_\varepsilon)$.  The parameter modulus controls replacement
+of the varying parameter by its block value; local rough Taylor estimates and
+the slow modulus control freezing and switching.  Rough-path continuity then
+transports driver convergence to the slow equation.  Tightness and uniqueness
+identify the limit.
+
+In the direct route, the slowly varying centered increments form a martingale
+array.  Conditional Lindeberg, convergence of the predictable bracket to
+$\int_0^t\Sigma(\theta_s)ds$, and convergence of the predictable antisymmetric
+second level to $\int_0^t\Gamma(\theta_s)ds$ give the enhanced martingale FCLT.
+The continuous It\^o/RDE map and uniqueness yield \eqref{eq:limit-SDE}.
+\end{proof}
+
+\begin{corollary}[Explicit block window from the sharp rate]\label{cor:block-window}
+Let $r(m)=O(m^{-\delta})$ with $\delta=1/2-\eta$, and put
+$m_\varepsilon=\varepsilon^{-\kappa}$.  The frozen-law accumulation and
+vanishing physical block conditions hold when
+\begin{equation}\label{eq:kappa-window}
+ \frac{2}{1+\delta}<\kappa<2.
+\end{equation}
+\end{corollary}
+
+\begin{proof}
+The accumulated error is
+$O(\varepsilon^{-2}m_\varepsilon^{-(1+\delta)})$, which tends to zero exactly
+when $\kappa(1+\delta)>2$.  The condition
+$h_\varepsilon=\varepsilon^{2-\kappa}\to0$ is $\kappa<2$.
+\end{proof}
+
+\section{The actual four-branch selected system}\label{sec:actual}
+
+Let $w_i(a)$ be the four branch weights of the companion moving-seam model and
+let $c_i\in\R^d$ be bounded branch increments.  For a compact tilt $\zeta$, the
+Doob probabilities are
+\begin{equation}\label{eq:doob-prob}
+ p_i(a,\zeta)=
+ \frac{w_i(a)e^{\zeta\cdot c_i}}
+ {\sum_jw_j(a)e^{\zeta\cdot c_j}}.
+\end{equation}
+Under the selected law, branch symbols are independent with probabilities
+\eqref{eq:doob-prob}.  Set
+\[
+ v_{a,\zeta}(i)=c_i-\sum_jp_j(a,\zeta)c_j.
+\]
+
+\begin{theorem}[Actual full-scale rough homogenization]\label{thm:actual-K2}
+On compact $(a,\zeta)$ windows, the selected four-branch system satisfies the
+uniform martingale--rough hypotheses.  For slowly varying predictable
+parameters, the centered increments form a bounded martingale triangular
+array, their predictable covariance is the Riemann sum of
+\begin{equation}\label{eq:actual-cov}
+ \Sigma(a,\zeta)=\sum_ip_i(a,\zeta)
+ v_{a,\zeta}(i)\otimes v_{a,\zeta}(i),
+\end{equation}
+and the antisymmetric area anomaly is zero.  Hence the full microscopic family,
+not merely a subsequence, converges to \eqref{eq:limit-SDE}.
+\end{theorem}
+
+\begin{proof}
+All moments are uniformly bounded and the Gordin correction is zero.  Conditional
+Lindeberg is automatic.  Smoothness of \eqref{eq:doob-prob} and slow variation
+turn the predictable covariance sums into Riemann sums of
+\eqref{eq:actual-cov}.  Conditional independence makes the predictable
+antisymmetric area zero.  Apply the direct half of
+\cref{thm:nonautonomous}.
+\end{proof}
+
+\section{Dynamic programming and the HJB limit}\label{sec:dpp}
+
+Let $S_{t,s}^\varepsilon$ be prelimit dynamic-programming operators on bounded
+uniformly continuous payoffs.  They are introduced only after the microscopic
+selector and homogenized characteristics are fixed.
+
+\begin{assumption}[DPP and comparison]\label{ass:DPP}
+The operators are monotone, stable, constant preserving in the zero-cost
+normalization, and dynamically consistent.  For every smooth test function
+$\phi$ and every sequence on which the local microscopic scale vanishes,
+\begin{equation}\label{eq:consistency}
+ \frac{S_{t,t+h}^\varepsilon\phi(x)-\phi(x)}{h}
+ \longrightarrow
+ -\cH(x,D\phi(x),D^2\phi(x)).
+\end{equation}
+The limiting terminal-value equation
+\begin{equation}\label{eq:HJB}
+ \partial_tu+\cH(x,Du,D^2u)=0,
+ \qquad u(T,\cdot)=\Phi,
+\end{equation}
+has comparison in the chosen growth class.
+\end{assumption}
+
+\begin{theorem}[HJB convergence]\label{thm:HJB}
+Under \cref{thm:nonautonomous,ass:DPP}, the prelimit value functions converge
+locally uniformly to the unique viscosity solution of \eqref{eq:HJB}.
+\end{theorem}
+
+\begin{proof}
+Let $\overline u$ and $\underline u$ be the upper and lower half-relaxed
+limits.  At a strict contact with a smooth test, monotonicity and the DPP reduce
+the local value inequality to the one-step consistency formula
+\eqref{eq:consistency}.  This gives the viscosity subsolution and supersolution
+inequalities.  Stability passes the terminal data.  Comparison gives
+$\overline u\le\underline u$; the reverse inequality is automatic.  Local
+equicontinuity upgrades subsequential convergence to local uniform convergence.
+\end{proof}
+
+\begin{remark}
+Filtering and two-player games are not hypotheses of \cref{thm:HJB}.  They are
+parallel downstream branches treated in the next companion paper.
+\end{remark}
+
+\section{Theta-expectations and non-subadditivity}\label{sec:theta}
+
+For $r\le s$, let
+\begin{equation}\label{eq:theta-eval}
+ \cE_{r,s}^{\theta}[\Phi](x)=u(r,x),
+\end{equation}
+where $u$ solves \eqref{eq:HJB} on $[r,s]$ with terminal value $\Phi$.
+
+\begin{theorem}[Theta-expectation semigroup]\label{thm:theta}
+The evaluations \eqref{eq:theta-eval} are monotone, terminally stable, constant
+preserving under the zero-cost normalization, and time consistent:
+\begin{equation}\label{eq:time-consistency}
+ \cE_{r,s}^{\theta}\!\left[
+ \cE_{s,t}^{\theta}[\Phi]
+ \right]
+ =\cE_{r,t}^{\theta}[\Phi].
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+Monotonicity and terminal stability follow from comparison.  Constants solve
+the zero-cost equation.  Concatenate the DPP at time $s$, or equivalently use
+uniqueness of the viscosity solution on adjacent intervals, to obtain
+\eqref{eq:time-consistency}.
+\end{proof}
+
+A theta-expectation need not be sublinear.  Consider in one dimension
+\begin{equation}\label{eq:nonconvex-H}
+ H(p)=\gamma(1-\cos p)-\delta(1-\cos2p),
+ \qquad \delta>\gamma/4>0.
+\end{equation}
+Then $H''(0)=\gamma-4\delta<0$, and for $p=q=\pi/2$,
+\begin{equation}\label{eq:defect}
+ H(p+q)-H(p)-H(q)=4\delta>0.
+\end{equation}
+Add any uniformly elliptic diffusion field from the companion pressure paper.
+
+\begin{proposition}[Failure of subadditivity]\label{prop:nonsubadditive}
+The theta-expectation generated by \eqref{eq:nonconvex-H} is not subadditive.
+\end{proposition}
+
+\begin{proof}
+Choose smooth terminal functions whose gradients at one point are $p$, $q$,
+and $p+q$, and whose Hessians vanish there.  The short-time viscosity expansion
+is
+\[
+ \cE_{t-h,t}^{\theta}[\phi](x)
+ =\phi(x)+hH(D\phi(x))+o(h).
+\]
+If subadditivity held, applying it to the first two functions and dividing by
+$h$ would give $H(p+q)\le H(p)+H(q)$, contradicting
+\eqref{eq:defect}.
+\end{proof}
+
+\section{Conclusion}
+
+The construction has a strict causal order:
+\[
+ \text{spectral data}\longrightarrow
+ \text{Doob selection}\longrightarrow
+ \text{enhanced deterministic limit}\longrightarrow
+ \text{nonautonomous diffusion}\longrightarrow
+ \text{HJB and theta-expectation}.
+\]
+Quantitative block accumulation and direct martingale characteristics are
+alternative full-scale mechanisms; qualitative WIP alone is not silently
+upgraded.  The sharp Gaussian theorem identifies the exact bridge-limited rate
+in a full rough Wasserstein metric, while the four-branch model supplies an
+actual selected deterministic system.  The resulting nonlinear semigroup may
+be nonconvex and non-subadditive, motivating the typed filtering, game, and
+stochastic-representation theories of the remaining companion papers.
+
+\section*{Acknowledgements and disclosure}
+The author is responsible for every mathematical statement and citation in the
+circulated version.  This referee draft was assembled with computational and
+language-model assistance; all proofs require human verification before
+submission.
+
+\bibliographystyle{amsplain}
+\bibliography{references}
+
+\end{document}
