@@ -75,7 +75,7 @@ REQUIRED_TOP = {
 
 CONVENTION_ANCHORS = {
     "paper_I": ("X4 --G1--> X3", "finite-DQ"),
-    "paper_II": ("sum psi_alpha^2=1", "D^{\\rm phys}(a)=\\frac12\\Sigma(a)"),
+    "paper_II": ("quadratic partition", "D^{\\rm phys}(a)=\\frac12\\Sigma(a)"),
     "paper_III": ("direct triangular-characteristics", "4\\delta>0"),
     "paper_IV": ("vanishing slow initial layer", "mixed Isaacs equality"),
     "paper_V": ("generator orientation", "Z_s=\\sigma(s,X_s)^TDu"),
@@ -158,7 +158,6 @@ def main() -> int:
                 fail(errors, f"reverse/non-upstream import {token}: {producer}->{paper}")
             graph[producer].add(paper)
 
-    # Acyclicity check.
     visiting: set[str] = set()
     visited: set[str] = set()
 
