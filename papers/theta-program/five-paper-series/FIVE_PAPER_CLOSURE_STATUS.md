@@ -1,20 +1,20 @@
-# Five-paper blocker closure status
+# Five-paper blocker and maximal-strengthening closure status
 
 **Date:** 2026-08-28  
 **Scope:** θ-Theory only  
-**Branch:** `theta-five-paper-closure-2026-08-28`
+**Branch:** `theta-maximal-strengthening-closure-2026-08-28`
 
 ## Controlling interpretation
 
 The series closes the internal proof DAG at the maximal correct scope.  An
-impossible universal statement is closed by refutation/maximality; a positive
-statement is closed by proving it on an explicit admissible packet class and
+impossible unrestricted statement is closed by refutation/maximality; a
+positive statement is closed by proving it on an explicit packet class and by
 exhibiting a nonempty actual subclass.  No stronger system verification is
 hidden inside the word `general`.
 
-A three-round hostile proof audit repaired six structural/mathematical issues,
-and a final actualization pass added explicit monotone DPP/comparison schemes
-for the four-branch HJB/theta and game branches.
+The five items previously listed as outside-theorem strengthening work now
+have actual positive theorems, exact maximality/no-go results where the fully
+unrestricted version is false, and named P1--P5 exports.
 
 ```yaml
 paper_I:
@@ -25,8 +25,12 @@ paper_I:
   graded_response_ladder: CLOSED_X5_TO_X1
   third_source_totalization: CLOSED
   CM2_to_U3: CLOSED
+  actual_nonconjugate_specular_radial_U3:
+    invariant_projector_U_infinity: CLOSED
+    exact_coboundary_twisted_U_infinity: CLOSED
+    nonconjugacy: CLOSED_BY_PERIOD_TWO_MULTIPLIER
+  generic_geometry_only_noncoboundary_U3: CLOSED_BY_REFUTATION_AND_MAXIMALITY
   unrestricted_universal_claim: CLOSED_BY_REFUTATION
-  stronger_specular_Sinai_instantiation: OUTSIDE_CURRENT_CLAIM
 
 paper_II:
   title: Higher pressure response and physical diffusion
@@ -38,90 +42,125 @@ paper_II:
   xp_coefficient_lift: CLOSED
   ellipticity: CLOSED_RELATIVE_TO_NONCOBOUNDARY_AND_COUPLING_RANK
   actual_four_branch_positive_diffusion: CLOSED
-  full_high_frequency_moving_flow_BDL: NOT_REQUIRED_AND_NOT_CLAIMED
+  compact_moving_family_high_frequency_BDL: CLOSED_RELATIVE_TO_STRICT_WITNESS_PACKET
+  graded_high_frequency_parameter_derivatives: CLOSED
+  actual_radial_all_frequency_coboundary_channel: CLOSED
+  universal_single_scalar_grazing_weight_domain: CLOSED_BY_REFUTATION
 
 paper_III:
   title: Doob-selected rough homogenization and theta-expectation
   no_feedback_Doob_selector: CLOSED
-  uniform_martingale_rough_package: CLOSED_AS_EXPLICIT_HYPOTHESIS_AND_SPECTRAL_COROLLARY
+  uniform_martingale_rough_package: CLOSED
   full_scale_nonautonomous_limit: CLOSED_WITH_COMPATIBLE_MODULUS_OR_DIRECT_CHARACTERISTICS
   qualitative_uniform_WIP_only: COFINAL_DIAGONAL_RESULT
-  actual_four_branch_full_scale: CLOSED_BY_BOUNDED_MARTINGALE_CHARACTERISTICS
-  general_HJB_limit: CLOSED_RELATIVE_TO_NAMED_DPP_AND_COMPARISON_PACKET
-  actual_four_branch_monotone_DPP: CLOSED
-  actual_four_branch_comparison: CLOSED
+  actual_four_branch_full_scale: CLOSED
+  fractional_Sobolev_rough_rate:
+    topology: step_two_W_eta_p_KR
+    upper_exponent: one_half_minus_eta
+    lower_exponent: one_half_minus_eta
+    status: OPTIMAL_IN_DECLARED_TOPOLOGY
+  topology_free_optimal_rate: CLOSED_BY_TYPING_NO_GO
+  explicit_block_window: CLOSED
   actual_four_branch_HJB_theta: CLOSED
-  theta_semigroup: CLOSED
   explicit_nonconvex_non_subadditive_example: CLOSED
 
 paper_IV:
   title: Filtering and Isaacs limits
   bounded_filter_contraction: CLOSED
   initial_belief_value_collapse: CLOSED_WITH_VANISHING_SLOW_INITIAL_LAYER
-  weighted_filter_branch: CLOSED_RELATIVE_TO_LYAPUNOV_MOMENT_INITIAL_LAYER_AND_COMPARISON_PACKET
-  strategy_tree_belief_collapse: CLOSED
-  general_sequential_lower_upper_values: CLOSED_RELATIVE_TO_NAMED_DPP_COMPARISON_PACKET
-  general_simultaneous_mixed_Isaacs: CLOSED_RELATIVE_TO_NAMED_DPP_COMPARISON_PACKET
-  actual_four_branch_sequential_schemes: CLOSED
-  actual_four_branch_mixed_Isaacs_scheme: CLOSED
-  pure_saddle: CLOSED_RELATIVE_TO_EXTRA_SADDLE_CERTIFICATE
-  belief_state_HJB_and_path_DPP: CLOSED
+  weighted_filter_packet: CLOSED
+  actual_unbounded_weighted_filter: CLOSED
+  sequential_lower_upper_values: CLOSED
+  simultaneous_mixed_Isaacs: CLOSED
+  unrestricted_general_pure_saddle: CLOSED_BY_MATCHING_PENNIES_REFUTATION
+  pure_saddle_iff_pure_Isaacs: CLOSED
+  measurable_pure_selector: CLOSED
+  strong_concave_convex_unique_saddle: CLOSED
+  actual_four_branch_pure_Isaacs_game: CLOSED
+  belief_state_HJB: CLOSED
 
 paper_V:
   title: Representation calculus for theta-expectations
   no_single_linear_law_obstruction: CLOSED
-  generator_orientation: CLOSED
   payoff_calibrated_linearization: CLOSED
-  FBSDE_branch: CLOSED_RELATIVE_TO_SEMILINEAR_REGULARITY
-  controlled_BSDE_branch: CLOSED_RELATIVE_TO_CONTROL_REPRESENTATION_PACKET
-  fully_nonlinear_branch: CLOSED_AS_2BSDE_OR_NONLINEAR_MP_TYPED_ALTERNATIVE
-  PPDE_path_branch: CLOSED_RELATIVE_TO_FUNCTIONAL_ITO_COMPARISON_PACKET
-  Girsanov_after_calibration: CLOSED
+  typed_FBSDE_control_BSDE_2BSDE_PPDE: CLOSED
+  actual_noncompact_delay_state: CLOSED
+  actual_entire_window_payoff: CLOSED
+  stationary_weighted_filter_to_path_average: CLOSED
+  actual_segment_DPP: CLOSED
+  horizontal_shift_path_equation: CLOSED
+  actual_BSDE_path_evaluation: CLOSED
   reverse_use_to_prove_HJB: FORBIDDEN
 
 series:
   actual_scoped_chain_through_theta: CLOSED
   actual_scoped_chain_through_mixed_Isaacs: CLOSED
+  actual_scoped_chain_through_pure_Isaacs: CLOSED
+  actual_weighted_noncompact_filter: CLOSED
+  actual_noncompact_path_evaluation: CLOSED
+  former_outside_theorem_strengthenings: 5
+  former_outside_theorem_strengthenings_closed: 5
   internal_unnamed_arrows: 0
-  stale_unconditional_imports: REMOVED_IN_NEW_SERIES
+  stale_unconditional_imports: REMOVED
   circular_dependencies: 0
-  hostile_proof_audit_rounds: 3
-  hostile_findings_repaired: 6
+  hostile_base_audit_rounds: 3
+  hostile_strengthening_audit: COMPLETE
   external_peer_review: NOT_PERFORMED
+  mathematical_proof_certified_externally: false
   formal_credit: 0
 ```
 
-## Six repaired hostile findings
+## Maximality clauses
 
-1. third-order response words now use a graded regularity ladder;
-2. common-space stabilization uses a smooth quadratic partition;
-3. full-scale nonautonomous rough convergence requires a compatible modulus or
-   direct martingale characteristics;
-4. value-level belief collapse includes a vanishing slow initial layer;
-5. the representation paper fixes generator orientation before calibration;
-6. suspension renewal uses distinct entry and exit roof-cell operators.
+The following stronger formulations are false or ill-typed and therefore are
+not counted as open gaps:
 
-## Remaining work that is not an internal gap
+1. finite-horizon specular geometry alone implies generic noncoboundary U3;
+2. one scalar pointwise grazing weight gives one ungraded moving-flow domain
+   for every deformation;
+3. an enhanced-WIP rate is “optimal” without naming a topology and test class;
+4. mixed minimax implies a pure saddle;
+5. a fast belief variable may be retained in a path PPDE without its limiting
+   generator.
 
-The following would strengthen the series but is not used as an unnamed premise:
+Each item has a counterexample, obstruction, or corrected maximal theorem in
+`papers/theta-program/maximal-strengthening/`.
 
-1. an actual nonconjugate specular finite-horizon Sinai family satisfying the
-   complete graded Paper-I packet through third order;
-2. a full high-frequency moving-family flow graph-domain theorem beyond the
-   low-frequency suspension result used by Paper II;
-3. optimal quantitative enhanced-WIP rates beyond the sufficient modulus or
-   direct-characteristics routes;
-4. pure-strategy Isaacs saddles beyond the mixed relaxed theorem;
-5. actual system instantiations of every weighted noncompact and genuinely
-   path-dependent branch;
-6. external expert review, novelty review, bibliography completion, conversion
-   to journal LaTeX, and final journal-facing compression.
+## New theorem exports
 
-These items are explicitly outside the current theorem statements.  Their
-absence does not create a logical hole in the five-paper series.
+```text
+P1-SINAI-RADIAL-U3
+P2-BDL-HF-FAMILY
+P3-RWIP-OPTIMAL-WETA-P
+P4-PURE-ISAACS-MAXIMAL
+P4-WEIGHTED-NONCOMPACT-ACTUAL
+P5-PATH-ACTUAL
+```
+
+The weighted/path construction also forms the series-level bundle
+`P4-P5-WEIGHTED-PATH-ACTUAL`.
+
+## Normative files
+
+- `../maximal-strengthening/MAXIMAL_STRENGTHENING_STATUS.md`
+- `../maximal-strengthening/SPECULAR_SINAI_RADIAL_U3.md`
+- `../maximal-strengthening/MOVING_FAMILY_HIGH_FREQUENCY_BDL.md`
+- `../maximal-strengthening/OPTIMAL_ENHANCED_WIP_RATE.md`
+- `../maximal-strengthening/PURE_STRATEGY_ISAACS.md`
+- `../maximal-strengthening/WEIGHTED_NONCOMPACT_PATH_ACTUALIZATION.md`
+- `../maximal-strengthening/HOSTILE_STRENGTHENING_AUDIT.md`
+- `THEOREM_INTERFACE_MANIFEST.yaml`
+- five per-paper interfaces, blocker ledgers, and strengthening appendices.
 
 ## Import policy
 
-Every paper imports only named outputs from its upstream paper.  No manuscript
-may import the old blanket label `thm:main_response_package`.  Every downstream
-claim must name the exact export ID and preserve its scope and convention.
+Every paper imports only named outputs from upstream papers.  No manuscript
+may import the old blanket response label.  Every downstream claim must name
+the exact export ID and preserve its source-specific, topology-specific,
+high-frequency, pure/mixed, weighted, and path-state scope.
+
+## Review boundary
+
+All results are internal proof drafts.  External expert review, novelty review,
+full bibliography verification, and journal LaTeX preparation have not been
+performed and are not replaced by structural verification.
