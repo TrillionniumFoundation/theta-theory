@@ -1,0 +1,710 @@
+\documentclass[11pt,reqno]{amsart}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsfonts,amsthm,mathtools,mathrsfs}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+\usepackage[nameinlink,capitalize]{cleveref}
+\allowdisplaybreaks
+\setlength{\emergencystretch}{2em}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{assumption}[theorem]{Assumption}
+\newtheorem{example}[theorem]{Example}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\A}{\mathcal A}
+\newcommand{\B}{\mathcal B}
+\newcommand{\E}{\mathbb E}
+\newcommand{\Pp}{\mathbb P}
+\newcommand{\R}{\mathbb R}
+\newcommand{\cP}{\mathcal P}
+\newcommand{\cS}{\mathcal S}
+\newcommand{\Id}{\mathrm{Id}}
+\newcommand{\Lip}{\operatorname{Lip}}
+\newcommand{\TV}{\mathrm{TV}}
+\newcommand{\tr}{\operatorname{tr}}
+\newcommand{\norm}[1]{\left\lVert #1\right\rVert}
+\newcommand{\abs}[1]{\left\lvert #1\right\rvert}
+\newcommand{\pair}[2]{\left\langle #1,#2\right\rangle}
+
+\title[Filtering and Isaacs limits]{Filtering and Isaacs Limits for Partially Observed Deterministic Multiscale Games}
+\author{Qian Qi}
+\address{Peking University, Beijing 100871, China}
+\email{qiqian@pku.edu.cn}
+\subjclass[2020]{Primary 49L25, 60G35, 60K37; Secondary 35D40, 60H30, 37A50}
+\keywords{nonlinear filtering, deterministic homogenization, stochastic differential games, Isaacs equation, viscosity solution, partial observation}
+\date{August 28, 2026}
+
+\begin{document}
+
+\begin{abstract}
+We combine control-uniform deterministic rough homogenization with nonlinear
+filtering and two-player dynamic programming.  The limiting theory splits into
+four distinct branches.  Prediction contraction followed by a positive Bayes
+update gives filter stability when the observation gap satisfies an explicit
+strict inequality.  Independence of the macroscopic value from the initial
+belief additionally requires a fast initial layer of vanishing slow duration.
+The estimates are uniform along arbitrary strategy trees.  A weighted version
+is developed for noncompact hidden states, with the PDE comparison condition
+kept separate from Lyapunov and filter contraction.
+
+Sequential games retain their order and converge to lower and upper HJB
+limits.  Simultaneous games are convexified by relaxed controls and converge to
+a mixed Isaacs equation.  We prove the exact compact-action criterion for a
+pure value: a continuous game has a pure saddle if and only if its pure lower
+and upper Hamiltonians agree.  Matching pennies rules out any unconditional
+pure-saddle theorem.  For noncompact Euclidean controls, uniform strong
+concavity in the maximizing variable and strong convexity in the minimizing
+variable yield a unique pure saddle by strong monotonicity, with no smallness
+assumption on the cross Hessian.
+
+The four-branch deterministic model of the preceding papers supplies an actual
+partially observed game: hidden-symbol prediction forgets the prior in one
+step, and monotone lower, upper, mixed, and pure schemes converge to their
+viscosity limits.  A deterministic Gaussian product shift gives an actual
+weighted noncompact filter with exact one-step prior forgetting.  These results
+provide the filtering and game inputs for path-dependent and stochastic
+representations.
+\end{abstract}
+
+\maketitle
+\tableofcontents
+
+\section{Introduction}
+
+Partially observed multiscale games combine three limiting operations that
+must not be conflated: elimination or retention of the filter, homogenization
+of the fast dynamics, and passage from discrete dynamic programming to an
+Isaacs equation.  A fourth distinction concerns the order of play.  Sequential
+lower and upper games, simultaneous mixed games, and pure-strategy games have
+different Hamiltonians and require different structural hypotheses.
+
+The preceding companion paper \cite{QiRough} constructs control-uniform
+homogenized local characteristics from Doob-selected deterministic fast
+dynamics.  We take those characteristics as the frozen input and address
+filtering and game limits.  The main filtering estimate is elementary but its
+correct use is subtle.  If prediction contracts at rate $\rho$ and the Bayes
+map expands by at most $C_B$, then $r_*$ prediction steps between observations
+give contraction only when
+\[
+ C_B\rho^{r_*}<1.
+\]
+This proves stability after the first update.  It does not by itself erase the
+initial belief from a reward sampled before sufficient filtering.  We therefore
+introduce an explicit fast initial layer whose slow duration vanishes.
+
+The strategy-tree issue is equally important.  Filter constants must be
+uniform in the controls selected by both players and in every observation
+history.  Under this uniformity, the contraction estimate can be iterated path
+by path before taking suprema and infima.
+
+For noncompact hidden states, total variation is typically too strong or
+unavailable.  We formulate a weighted bounded-Lipschitz/Harris packet.  A
+Lyapunov drift and posterior moment ball make the Bayes normalization finite;
+a strict prediction-versus-Bayes gap gives filter contraction.  The limiting
+weighted HJB comparison theorem remains an independent PDE input.  The actual
+Gaussian hidden model in \cref{sec:weighted-actual} has an even stronger
+property: prediction maps every prior to one fixed Gaussian law in a single
+step.
+
+The game theory is organized by type.  The sequential Hamiltonians are
+\[
+ H^-=\sup_u\inf_vF(u,v),
+ \qquad
+ H^+=\inf_v\sup_uF(u,v).
+\]
+They need not agree.  Relaxed simultaneous controls yield mixed equality by
+Sion's theorem \cite{Sion1958}.  In pure strategies, however, equality is not a
+consequence of mixed minimax.  We prove the precise compact theorem
+\[
+ H^-=H^+\quad\Longleftrightarrow\quad
+ \text{a pure saddle exists}.
+\]
+For Euclidean controls, a strong concave--convex theorem gives a robust actual
+class with unique Lipschitz feedbacks.
+
+Our viscosity arguments use the comparison and stability framework of
+Crandall--Ishii--Lions \cite{CrandallIshiiLions1992} and the monotone-scheme
+principle of Barles--Souganidis \cite{BarlesSouganidis1991}.  Classical
+stochastic game results include Fleming--Souganidis
+\cite{FlemingSouganidis1989} and Buckdahn--Li \cite{BuckdahnLi2008}.  For
+filter stability and observability, see van Handel \cite{vanHandel2009} and the
+monograph of Bain--Crisan \cite{BainCrisan2009}.
+
+\subsection*{Main results}
+The bounded filter theorem is \cref{thm:filter}.  Initial-belief value collapse
+is \cref{thm:initial-collapse}.  The weighted theorem is
+\cref{thm:weighted-filter}.  Sequential and mixed limits are
+\cref{thm:sequential,thm:mixed-limit}.  Pure saddles are classified in
+\cref{thm:pure-iff,thm:strong-saddle}.  The actual four-branch game is
+\cref{thm:actual-game}, and the actual noncompact filter is
+\cref{thm:gaussian-filter}.
+
+\section{Partially observed fast dynamics}\label{sec:setup}
+
+Let $X_t^\varepsilon\in\R^m$ be the slow state and $Z_n^\varepsilon$ the hidden
+fast state.  The maximizing player chooses $u\in U$ and the minimizing player
+chooses $v\in V$.  For frozen $(x,u,v)$, let
+\[
+ P_{x,u,v}(z,dz')
+\]
+be the hidden prediction kernel.  Observations take values in a standard Borel
+space $Y$ and have likelihood $g_y(z;x,u,v)>0$ relative to a reference measure.
+
+A belief $\nu$ is updated by
+\begin{align}
+ \operatorname{Pred}_{x,u,v}(\nu)&=\nu P_{x,u,v},
+ \label{eq:prediction}\
+ \operatorname{Bayes}_{y,x,u,v}(\nu)(dz)
+ &=\frac{g_y(z;x,u,v)\nu(dz)}{\nu(g_y)}.
+ \label{eq:bayes}
+\end{align}
+Controls may depend nonanticipatively on the available observation history.
+All estimates below are required uniformly over the resulting strategy tree.
+
+The companion homogenization paper supplies the following input.
+
+\begin{assumption}[Control-uniform homogenized characteristics]\label{ass:K2}
+For frozen $(x,u,v)$, the deterministic fast driver has drift $b$, covariance
+$\Sigma$, and area correction $\Gamma$, continuous uniformly in controls.  The
+slowly varying deterministic system converges, uniformly over bounded
+Lipschitz feedbacks and admissible strategies, to the corresponding controlled
+martingale problem.  Local dynamic-programming operators are monotone, stable,
+and consistent with these characteristics.
+\end{assumption}
+
+\section{Bounded filtering and the observation gap}\label{sec:bounded-filter}
+
+We use
+\[
+ \norm{\mu-\nu}_{\TV}=\sup_{\abs f\le1}\abs{\mu(f)-\nu(f)}.
+\]
+
+\begin{assumption}[Prediction contraction]\label{ass:pred-contract}
+There is $0\le\rho<1$ such that
+\begin{equation}\label{eq:pred-contract}
+ \norm{\mu P_{x,u,v}-\nu P_{x,u,v}}_{\TV}
+ \le\rho\norm{\mu-\nu}_{\TV}
+\end{equation}
+uniformly in $x,u,v$.
+\end{assumption}
+
+\begin{assumption}[Positive observations]\label{ass:positive-observation}
+There are constants $0<g_-\le g_+<\infty$ such that
+\begin{equation}\label{eq:g-bounds}
+ g_-\le g_y(z;x,u,v)\le g_+
+\end{equation}
+for every admissible variable.
+\end{assumption}
+
+\begin{lemma}[Bayes expansion constant]\label{lem:bayes}
+Under \cref{ass:positive-observation},
+\begin{equation}\label{eq:bayes-lip}
+ \norm{\operatorname{Bayes}_g(\mu)-
+ \operatorname{Bayes}_g(\nu)}_{\TV}
+ \le C_B\norm{\mu-\nu}_{\TV},
+ \qquad C_B=\frac{2g_+}{g_-}.
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+For $\abs f\le1$, add and subtract $\nu(gf)/\mu(g)$:
+\begin{align*}
+ \abs{\frac{\mu(gf)}{\mu(g)}-
+ \frac{\nu(gf)}{\nu(g)}}
+ &\le\frac{\abs{(\mu-\nu)(gf)}}{\mu(g)}
+ +\frac{\abs{\nu(gf)}\abs{(\mu-\nu)(g)}}
+ {\mu(g)\nu(g)}\\
+ &\le\frac{g_+}{g_-}\norm{\mu-\nu}_{\TV}
+ +\frac{g_+}{g_-}\norm{\mu-\nu}_{\TV}.
+\end{align*}
+Take the supremum over $f$.
+\end{proof}
+
+Suppose $r_*$ hidden prediction steps occur between observations.
+
+\begin{theorem}[Uniform filter contraction]\label{thm:filter}
+If
+\begin{equation}\label{eq:filter-gap}
+ q:=C_B\rho^{r_*}<1,
+\end{equation}
+then one complete prediction--observation cycle contracts beliefs by $q$.
+Along any common observation and control path,
+\begin{equation}\label{eq:filter-contract}
+ \norm{\pi_n^\mu-\pi_n^\nu}_{\TV}
+ \le q^n\norm{\mu-\nu}_{\TV}.
+\end{equation}
+The estimate is uniform over all admissible strategy trees.
+\end{theorem}
+
+\begin{proof}
+Iterate \eqref{eq:pred-contract} $r_*$ times and apply
+\cref{lem:bayes}.  The constants do not depend on the selected controls or
+observations, so the pathwise inequality holds on every strategy branch.
+\end{proof}
+
+\section{Slow variation and the initial layer}\label{sec:initial-layer}
+
+Let $\omega_P$ and $\omega_g$ be uniform moduli for the prediction kernel and
+likelihood under slow/control perturbations.
+
+\begin{proposition}[Geometric convolution estimate]\label{prop:convolution}
+For two coupled filters with the same observation symbols and parameter
+mismatch $\delta_k$ at the $k$th update,
+\begin{equation}\label{eq:convolution}
+ \norm{\pi_n-\pi_n'}
+ \le q^n\norm{\pi_0-\pi_0'}
+ +C\sum_{k=0}^{n-1}q^{n-1-k}
+ \bigl(\omega_P(\delta_k)+\omega_g(\delta_k)\bigr).
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+Insert an intermediate update that uses the first belief with the second
+parameter.  The belief difference at fixed parameter contracts by $q$; the
+parameter replacement is controlled by the moduli.  Iteration of the affine
+recursion gives \eqref{eq:convolution}.
+\end{proof}
+
+A contraction after the first observation does not remove rewards earned
+before that observation.
+
+\begin{assumption}[Vanishing slow initial layer]\label{ass:initial}
+Before the first order-one slow reward is sampled, the filter performs
+$\ell_\varepsilon$ complete cycles, where
+\begin{equation}\label{eq:initial-layer}
+ \ell_\varepsilon\to\infty,
+ \qquad
+ \delta_\varepsilon^{\mathrm{init}}\to0.
+\end{equation}
+The second quantity is the corresponding slow physical duration, and the
+running reward accumulated in the layer is at most
+$C\delta_\varepsilon^{\mathrm{init}}$.
+\end{assumption}
+
+\begin{theorem}[Initial-belief collapse for values]\label{thm:initial-collapse}
+Assume \cref{thm:filter,ass:initial}, the slow-variation estimate
+\eqref{eq:convolution}, and uniform Lipschitz dependence of local rewards and
+characteristics on the belief.  Then, uniformly over lower, upper, mixed, and
+pure strategy trees,
+\begin{equation}\label{eq:value-collapse}
+ \abs{V_\varepsilon(t,x,\mu)-V_\varepsilon(t,x,\nu)}
+ \le C_Tq^{\ell_\varepsilon}\norm{\mu-\nu}
+ +C\delta_\varepsilon^{\mathrm{init}}
+ +\operatorname{Err}_\varepsilon,
+\end{equation}
+where $\operatorname{Err}_\varepsilon\to0$ contains accumulated slow
+perturbations and homogenization errors.  Hence the limiting value is
+independent of the initial belief.
+\end{theorem}
+
+\begin{proof}
+Couple the two games along the same controls and observations.  At the first
+macroscopic reward time, \cref{thm:filter} gives the first term.  Rewards
+before that time are confined to the initial layer and give the second term.
+Thereafter, \eqref{eq:convolution} and the Lipschitz assumptions bound the
+geometric sum of belief-dependent differences.  The estimate is pathwise and
+uniform in strategies, so taking suprema and infima preserves it.
+\end{proof}
+
+\begin{remark}
+The finiteness of $\sum q^k$ would give only a finite Lipschitz constant in the
+initial belief.  It does not imply the vanishing statement
+\eqref{eq:value-collapse} without \cref{ass:initial}.
+\end{remark}
+
+\section{Weighted filtering on noncompact state spaces}\label{sec:weighted}
+
+Let $W:E\to[1,\infty)$ be a Lyapunov function.  On a $W$-moment ball, use a
+weighted bounded-Lipschitz distance
+\[
+ d_W(\mu,\nu)=\sup_{f\in\mathcal F_W}\abs{\mu(f)-\nu(f)},
+\]
+where $\abs f\le W$ and the weighted Lipschitz seminorm is at most one.
+
+\begin{assumption}[Weighted filter packet]\label{ass:weighted}
+There are $m_*\ge1$, $M<\infty$, and $0<\rho_W<1$ such that:
+\begin{enumerate}[label=\textup{(\roman*)}]
+\item $P^{m_*}W\le\lambda W+b$ with $\lambda<1$;
+\item the ball $\mathcal K_M=\{\mu:\mu(W)\le M\}$ is invariant under one
+prediction--observation cycle;
+\item prediction over $m_*$ steps contracts $d_W$ by at most $C_P\rho_W^{m_*}$;
+\item Bayes normalization is $C_B(W,M)$-Lipschitz on $\mathcal K_M$;
+\item $C_B(W,M)C_P\rho_W^{m_*}<1$;
+\item the weighted initial-layer analogue of \cref{ass:initial} holds;
+\item the limiting weighted HJB or Isaacs equation has comparison in the
+declared growth class.
+\end{enumerate}
+\end{assumption}
+
+\begin{theorem}[Weighted filter and game limit]\label{thm:weighted-filter}
+Under \cref{ass:weighted}, the contraction, convolution, and initial-belief
+collapse theorems hold in $d_W$ on finite slow horizons.  If the control-uniform
+homogenized characteristics and DPP consistency hold, the values converge to
+the unique weighted viscosity solution.
+\end{theorem}
+
+\begin{proof}
+The invariant moment ball bounds the Bayes denominator away from zero and
+controls weighted numerators.  The strict product of the prediction and Bayes
+constants gives geometric contraction.  The proofs of
+\cref{prop:convolution,thm:initial-collapse} then apply verbatim in $d_W$.
+Tightness and consistency yield weighted viscosity sub- and supersolutions;
+the separately assumed comparison theorem identifies the limit.
+\end{proof}
+
+\begin{remark}
+A Lyapunov coupling proves neither Bayes stability nor the final weighted PDE
+comparison.  These are separate fields of \cref{ass:weighted}.
+\end{remark}
+
+\section{Sequential games}\label{sec:sequential}
+
+Let $F(x,p,X;u,v)$ be the local Hamiltonian built from the homogenized
+characteristics and running payoff.  The maximizing player is $u$ and the
+minimizing player is $v$.  Define
+\begin{align}
+ H^-(x,p,X)&=\sup_{u\in U}\inf_{v\in V}F(x,p,X;u,v),
+ \label{eq:Hminus}\
+ H^+(x,p,X)&=\inf_{v\in V}\sup_{u\in U}F(x,p,X;u,v).
+ \label{eq:Hplus}
+\end{align}
+
+\begin{assumption}[Sequential DPP packet]\label{ass:seq-DPP}
+The prelimit lower and upper games have stable monotone DPPs.  Their one-step
+operators are locally consistent, uniformly in the belief after
+\cref{thm:initial-collapse}, with \eqref{eq:Hminus} and \eqref{eq:Hplus}.
+The two limiting equations have comparison.
+\end{assumption}
+
+\begin{theorem}[Sequential homogenized values]\label{thm:sequential}
+Under \cref{ass:K2,thm:initial-collapse,ass:seq-DPP}, the lower and upper values
+converge locally uniformly to the unique viscosity solutions of
+\begin{align}
+ \partial_tu^-+H^-(x,Du^-,D^2u^-)&=0,
+ \label{eq:lower-HJB}\
+ \partial_tu^++H^+(x,Du^+,D^2u^+)&=0.
+ \label{eq:upper-HJB}
+\end{align}
+No Isaacs equality is needed for either conclusion.
+\end{theorem}
+
+\begin{proof}
+Apply the half-relaxed-limit argument to each monotone DPP separately.  The
+control-uniform local characteristics supply consistency, while
+\cref{thm:initial-collapse} removes the initial-belief discrepancy uniformly
+on strategy trees.  The order of optimization survives in the local test and
+produces \eqref{eq:Hminus} or \eqref{eq:Hplus}.  Comparison gives convergence.
+\end{proof}
+
+\section{Simultaneous relaxed games}\label{sec:mixed}
+
+Assume $U,V$ are compact metric spaces and $F$ is continuous.  For relaxed
+controls $\mu\in\cP(U)$ and $\nu\in\cP(V)$ set
+\begin{equation}\label{eq:mixed-F}
+ \overline F(x,p,X;\mu,\nu)
+ =\int_{U\times V}F(x,p,X;u,v)\,\mu(du)\nu(dv).
+\end{equation}
+
+\begin{theorem}[Mixed Isaacs equality]\label{thm:mixed-equality}
+For every $(x,p,X)$,
+\begin{equation}\label{eq:mixed-equality}
+ \sup_{\mu\in\cP(U)}\inf_{\nu\in\cP(V)}\overline F
+ =\inf_{\nu\in\cP(V)}\sup_{\mu\in\cP(U)}\overline F.
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+The relaxed-control spaces are compact convex in the weak topology, and
+$\overline F$ is continuous and affine in each variable.  Sion's minimax
+theorem applies.
+\end{proof}
+
+\begin{theorem}[Simultaneous mixed limit]\label{thm:mixed-limit}
+Suppose the simultaneous relaxed prelimit game has a stable monotone DPP
+consistent with either side of \eqref{eq:mixed-equality}, and the limiting
+mixed Isaacs equation has comparison.  Under the control-uniform K2 and filter
+hypotheses, the mixed values converge locally uniformly to that unique
+solution.
+\end{theorem}
+
+\begin{proof}
+The proof is the monotone half-relaxed-limit argument.  Compactness of relaxed
+controls gives attainment along approximating subsequences; affine minimax
+identifies the lower and upper local Hamiltonians.  Comparison completes the
+argument.
+\end{proof}
+
+\section{Pure-strategy Isaacs theory}\label{sec:pure}
+
+Mixed equality does not imply a pure saddle.  The exact compact theorem is the
+following.
+
+\begin{theorem}[Pure saddle if and only if pure Isaacs]\label{thm:pure-iff}
+Let $U,V$ be compact and $F:U\times V\to\R$ continuous.  Then a pair
+$(u_*,v_*)$ satisfying
+\begin{equation}\label{eq:saddle}
+ F(u,v_*)\le F(u_*,v_*)\le F(u_*,v)
+ \qquad\forall u\in U,\ v\in V
+\end{equation}
+exists if and only if
+\begin{equation}\label{eq:pure-isaacs}
+ \max_u\min_vF(u,v)=\min_v\max_uF(u,v).
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+A saddle immediately gives equality.  Conversely, let the common value be $c$.
+Choose a maximin optimizer $u_*$ and a minimax optimizer $v_*$; compactness and
+continuity give both.  Then
+\[
+ F(u_*,v)\ge c\quad\forall v,
+ \qquad
+ F(u,v_*)\le c\quad\forall u.
+\]
+At $(u_*,v_*)$ the two inequalities force equality, and together they give
+\eqref{eq:saddle}.
+\end{proof}
+
+\begin{example}[Matching pennies]\label{ex:matching-pennies}
+Let $U=V=\{-1,1\}$ and $F(u,v)=uv$.  Then
+\[
+ \max_u\min_vF=-1,
+ \qquad
+ \min_v\max_uF=1,
+\]
+while the mixed value is zero.  Thus compactness, continuity, a DPP, and mixed
+minimax do not imply a pure saddle.
+\end{example}
+
+Let the state/jet variable be $z$ in a Polish space.  Define the saddle
+correspondence $\cS(z)$ by \eqref{eq:saddle}.
+
+\begin{proposition}[Measurable pure selector]\label{prop:selector}
+If $F(z,u,v)$ is Borel in $z$, continuous in $(u,v)$, and $\cS(z)$ is nonempty
+for every $z$, then $\cS$ admits a Borel measurable selector.
+\end{proposition}
+
+\begin{proof}
+Each value is compact.  Checking the saddle inequalities on countable dense
+subsets of $U$ and $V$ shows that the graph of $\cS$ is Borel.  The
+Kuratowski--Ryll-Nardzewski theorem gives a selector.
+\end{proof}
+
+We next give a noncompact positive class.  Let $U=\R^r$, $V=\R^s$.
+
+\begin{assumption}[Strong concave--convex structure]\label{ass:strong}
+The function $F(z,\cdot,\cdot)$ is $C^2$ and, uniformly in all variables,
+\begin{equation}\label{eq:strong-hessian}
+ D_{uu}^2F\le-\mu I,
+ \qquad
+ D_{vv}^2F\ge\nu I,
+ \qquad \mu,\nu>0.
+\end{equation}
+The first derivatives have at most linear growth and the saddle operator below
+is coercive.
+\end{assumption}
+
+\begin{theorem}[Unique noncompact pure saddle]\label{thm:strong-saddle}
+Under \cref{ass:strong}, each $z$ has a unique pure saddle.  If the coefficients
+are locally Lipschitz in $z$, so is the saddle selector on compact state sets.
+No smallness assumption on $D_{uv}^2F$ is required.
+\end{theorem}
+
+\begin{proof}
+Define
+\[
+ G_z(u,v)=(-D_uF(z,u,v),D_vF(z,u,v)).
+\]
+For $w=(u,v)$ and $w'=(u',v')$, integrate the Jacobian on the segment.  The
+mixed terms cancel because $D_{vu}^2F=(D_{uv}^2F)^T$, and
+\begin{equation}\label{eq:strong-monotone}
+ \pair{G_z(w)-G_z(w')}{w-w'}
+ \ge\mu\abs{u-u'}^2+\nu\abs{v-v'}^2.
+\end{equation}
+Continuity, coercivity, and strong monotonicity give a unique zero of $G_z$.
+Strong concavity and convexity show that this zero satisfies the global saddle
+inequalities.  Applying \eqref{eq:strong-monotone} at two parameter values and
+using the coefficient modulus gives Lipschitz dependence.
+\end{proof}
+
+A useful explicit class is
+\begin{equation}\label{eq:quadratic-game}
+ F(z,u,v)=f(z)+a(z)\cdot u+b(z)\cdot v
+ -\frac\mu2\abs u^2+\frac\nu2\abs v^2+u^TK(z)v.
+\end{equation}
+In the scalar case $K=\gamma$,
+\begin{equation}\label{eq:explicit-saddle}
+ u_*(z)=\frac{\nu a(z)-\gamma b(z)}{\gamma^2+\mu\nu},
+ \qquad
+ v_*(z)=\frac{-\gamma a(z)-\mu b(z)}{\gamma^2+\mu\nu}.
+\end{equation}
+
+\section{Actual four-branch filtering and game limits}\label{sec:actual-four}
+
+Let $I_n\in\{1,2,3,4\}$ be the branch symbol in the deterministic four-branch
+system.  For slow state and controls, choose smooth probabilities
+$p_j(x,u,v)\ge p_*>0$, $\sum_jp_j=1$, generated by compact Doob tilts, and set
+\begin{equation}\label{eq:rank-one-kernel}
+ P_{ij}^{x,u,v}=p_j(x,u,v).
+\end{equation}
+Then every row is the same and
+\begin{equation}\label{eq:one-step-forget}
+ \mu P^{x,u,v}=p(x,u,v)
+\end{equation}
+for every prior $\mu$.
+
+Let the observation likelihood satisfy \eqref{eq:g-bounds}.  Let bounded branch
+increments $c_j(x,u,v)$ be centered under $p(x,u,v)$ and let the running payoff
+be continuous.  For a slow step $h$, define the monotone one-step schemes
+\begin{align}
+ S_h^-\phi(x)
+ &=\sup_u\inf_v\E\left[
+ \phi\bigl(x+h b(x,u,v)+\sqrt h\,c_I(x,u,v)\bigr)
+ +h\ell(x,u,v)\right],
+ \label{eq:scheme-lower}\
+ S_h^+\phi(x)
+ &=\inf_v\sup_u\E\left[
+ \phi\bigl(x+h b(x,u,v)+\sqrt h\,c_I(x,u,v)\bigr)
+ +h\ell(x,u,v)\right].
+ \label{eq:scheme-upper}
+\end{align}
+The mixed scheme replaces controls by product measures, and the pure scheme
+uses \eqref{eq:quadratic-game} when that port is selected.
+
+\begin{theorem}[Actual hidden-symbol game]\label{thm:actual-game}
+The four-branch model has:
+\begin{enumerate}[label=\textup{(\roman*)}]
+\item exact one-step prior forgetting and a vanishing one-fast-step slow initial
+layer;
+\item control-uniform martingale rough homogenization;
+\item monotone stable schemes \eqref{eq:scheme-lower}--\eqref{eq:scheme-upper}
+consistent with the sequential Hamiltonians;
+\item a simultaneous relaxed scheme consistent with the mixed Isaacs
+Hamiltonian;
+\item under the port \eqref{eq:quadratic-game}, a unique pure feedback saddle
+and one pure Isaacs limit.
+\end{enumerate}
+All schemes converge to their unique viscosity solutions whenever the
+corresponding comparison theorem holds.
+\end{theorem}
+
+\begin{proof}
+Equation \eqref{eq:one-step-forget} proves the filter statement, and one fast
+step has vanishing diffusive slow duration.  Conditional branch increments are
+bounded and independent, so the predictable-characteristics theorem of the
+companion paper gives uniform homogenization.  The schemes are monotone and
+constant stable.  Taylor expansion of a smooth test gives the drift, covariance,
+and running payoff, with the optimization order preserved.  The mixed scheme
+uses \cref{thm:mixed-equality}; the pure scheme uses
+\cref{thm:strong-saddle}.  Barles--Souganidis convergence and comparison give
+the final statement.
+\end{proof}
+
+\section{An actual weighted noncompact filter}\label{sec:weighted-actual}
+
+Let
+\[
+ \Omega=\R^{\mathbb Z}\times[0,1]^{\mathbb Z}
+\]
+with product Gaussian--uniform measure and deterministic left shift.  Define
+the hidden state $Y_n$ to be the Gaussian coordinate at time $n$.  Thus the
+transition kernel is
+\begin{equation}\label{eq:gaussian-kernel}
+ P(y,dy')=\gamma(dy'),
+\end{equation}
+independent of $y$, where $\gamma=N(0,1)$.  Let $W(y)=1+y^2$.
+
+The observation $O_n\in\{-1,1\}$ is generated from the independent uniform
+coordinate with likelihood
+\begin{equation}\label{eq:gaussian-likelihood}
+ g_o(y)=\frac{1+o\varepsilon_o\tanh y}{2},
+ \qquad 0<\varepsilon_o<1.
+\end{equation}
+Then
+\[
+ \frac{1-\varepsilon_o}{2}\le g_o(y)
+ \le\frac{1+\varepsilon_o}{2}.
+\]
+
+\begin{theorem}[Gaussian weighted filter with exact forgetting]\label{thm:gaussian-filter}
+For every prior probability $\mu$ with finite $W$ moment, one prediction gives
+$\mu P=\gamma$.  After observing $o$, the posterior is
+\begin{equation}\label{eq:gaussian-posterior}
+ \pi^o(dy)=\frac{g_o(y)\gamma(dy)}{\gamma(g_o)},
+\end{equation}
+independent of the original prior.  The family of posteriors has uniformly
+bounded moments of every polynomial order.  Consequently this deterministic
+noncompact hidden model has exact one-step filter stability, an invariant
+weighted moment ball, and vanishing-initial-layer value collapse.
+\end{theorem}
+
+\begin{proof}
+The first assertion is immediate from \eqref{eq:gaussian-kernel}.  Bayes'
+formula gives \eqref{eq:gaussian-posterior}.  The likelihood and its reciprocal
+are bounded, so every posterior polynomial moment is bounded by a fixed
+multiple of the corresponding Gaussian moment.  Since prediction erases the
+prior exactly, the filter distance is zero after one cycle.  One fast cycle has
+vanishing slow duration under diffusive scaling.
+\end{proof}
+
+\section{Belief-state and path-state limits}\label{sec:belief-path}
+
+If the observation gap is not accelerated enough for
+\cref{thm:initial-collapse}, the current filter remains part of the Markov
+state.  The value is then $V(t,x,\pi)$ and its DPP yields an HJB or Isaacs
+equation on $\R^m\times\cP(E)$.
+
+\begin{theorem}[Belief-state limit]\label{thm:belief}
+Assume tightness of the filter process, control-uniform homogenized
+characteristics, local consistency on a separating smooth test class on the
+belief space, and comparison in the declared topology and growth class.  Then
+the partially observed values converge to the unique belief-state viscosity
+solution.
+\end{theorem}
+
+\begin{proof}
+The filter is a sufficient statistic for the observation history.  Write the
+DPP on $(x,\pi)$, take half-relaxed limits, and test with cylindrical functions
+of finitely many moments of $\pi$.  Consistency gives the sub- and
+supersolution inequalities.  Tightness passes the terminal condition and
+comparison identifies the limit.
+\end{proof}
+
+If admissibility or the payoff depends on history not encoded by the current
+filter, the state is genuinely path dependent.  No finite-dimensional
+projection is made without a proved sufficient statistic.  The companion
+representation paper constructs an actual noncompact path-state game and its
+PPDE/BSDE representations.
+
+\section{Conclusion}
+
+Filtering, sequential play, mixed simultaneous play, and pure play are four
+parallel mathematical branches.  The filter requires a prediction--Bayes rate
+gap and, for value collapse, a vanishing slow initial layer.  Sequential lower
+and upper limits remain distinct unless pure Isaacs equality is proved.  Mixed
+minimax is obtained by relaxed controls but does not imply a pure saddle.  The
+pure theory is closed by an exact compact necessary-and-sufficient theorem and
+a strong concave--convex noncompact class.  The four-branch and Gaussian-shift
+models show that the bounded, weighted, mixed, and pure conclusions are all
+nonempty actual regimes.
+
+\section*{Acknowledgements and disclosure}
+The author is responsible for every mathematical statement and citation in the
+circulated version.  This referee draft was assembled with computational and
+language-model assistance; all proofs require human verification before
+submission.
+
+\bibliographystyle{amsplain}
+\bibliography{references}
+
+\end{document}
