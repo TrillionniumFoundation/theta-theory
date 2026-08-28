@@ -1,53 +1,49 @@
-# Referee guide — Paper III
+# Referee guide — Paper III, revision v4
 
 ## Central claims
 
-The paper constructs a nonautonomous diffusion and an HJB/theta semigroup from
-frozen Doob-selected deterministic dynamics.  It distinguishes a quantitative
-block route from a direct martingale-array route and proves a sharp Gaussian
-benchmark in a full rough Wasserstein metric.
+The paper proves a full-sequence rough homogenization theorem and constructs a
+theta-semigroup from the exact finite collision recursion of the same
+nonconjugate moving system used upstream.
 
 ## Suggested audit order
 
-1. Verify that the Doob selector uses only external frozen data and does not
-   depend on the unknown HJB solution.
-2. Audit the spectral derivation of the Gordin decomposition, bracket, area
-   anomaly, initial-law forgetting, and parameter modulus.
-3. Check the first- and second-level coboundary removal in the enhanced WIP.
-4. Check Proposition 4.2: qualitative uniform convergence yields only a
-   diagonal theorem.
-5. For the sharp-rate theorem, audit separately:
-   - Brownian first-level bridge scaling;
-   - the Chen decomposition and second-level bridge estimate;
-   - closedness of the mesh-polygonal subspace;
-   - the fractional Poincare lower bound;
-   - Kantorovich duality.
-6. Verify the accumulated block condition and the exponent window
-   `2/(1+delta)<kappa<2`.
-7. Audit the predictable-characteristics proof for the slowly varying
-   four-branch Bernoulli model.
-8. Check the monotonicity/consistency/comparison argument for HJB convergence.
-9. Check the short-time proof of non-subadditivity for the explicit nonconvex
-   Hamiltonian.
+1. **Exact innovations:** verify conditional uniformity for a predictable
+   parameter and the Doob-selected width realization.
+2. **Geometric lift:** check the one-half diagonal, symmetric Chen identity,
+   moment tightness, and identification of any antisymmetric compensator.
+3. **Endogenous recursion:** verify adaptedness of `A_k=Theta(X_k)` and
+   convergence of the predictable bracket to the state-dependent integral.
+4. **Full-sequence versus block route:** check that the actual proof uses
+   predictable characteristics and that the block theorem requires the stated
+   accumulated error condition.
+5. **Sharp rate:** check both Brownian-bridge levels and the distance-to-
+   polygonal-subspace lower bound in the declared fractional-Sobolev rough
+   metric.
+6. **Microscopic DPP:** derive the finite branch log-sum-exp operator directly
+   from the deterministic collision innovations.
+7. **Consistency:** verify centering, covariance, logarithmic cumulant, and the
+   uniform third-moment remainder.
+8. **HJB convergence:** check monotonicity, stability, half-relaxed limits,
+   Cole--Hopf comparison, and the terminal sign.
+9. **Controlled branch:** check uniformity in controls and dynamic
+   concatenation.
+10. **Theta-independence:** verify the directional conditional exponential
+    identity and its iteration.
 
-## Imported hypothesis
+## High-risk proof locations
 
-Paper II supplies smooth frozen physical coefficients and a fixed common
-operator realization.  This paper does not use filtering, game values, BSDEs,
-or PPDE representations as inputs.
+- exact conditional independence when the parameter is slow-state dependent;
+- tightness and identification of the step-two martingale lift;
+- full-sequence martingale-problem uniqueness;
+- local uniform consistency of the state-dependent collision recursion;
+- the claimed analytic lower bound in the sharp rough rate.
 
-## Permanent scope boundaries
+## Permanent scope
 
-- A qualitative frozen WIP is not a quantitative full-scale theorem.
-- The sharp exponent is tied to the declared fractional-Sobolev rough
-  Wasserstein metric; it is not metric-free.
-- The actual four-branch nonautonomous proof uses direct predictable
-  characteristics and does not depend on the Gaussian sharp-rate theorem.
-- K3 filtering and games are optional downstream branches, not prerequisites
-  for the one-player HJB/theta result.
+The actual collision theorem is full-sequence and nonautonomous.  The separate
+block theorem explicitly needs a quantitative frozen rate.  The paper does not
+infer pointwise viscosity inequalities from a transfer-operator pairing.
 
-## Specialist points
-
-The second-level bridge estimate and the lower fractional-Poincare estimate are
-particularly suitable for independent rough-path review.  The viscosity section
-should be reviewed independently by a PDE/control specialist.
+A report should distinguish the martingale/rough theorem, the deterministic
+actualization, the HJB scheme, and the theta-independence structure.
