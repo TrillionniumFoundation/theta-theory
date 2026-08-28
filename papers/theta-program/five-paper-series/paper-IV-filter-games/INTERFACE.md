@@ -20,7 +20,9 @@ branches use the control-uniform K2 characteristics.
 - `P4-PURE-GATE`: additional pure-saddle certificate.
 - `P4-BELIEF`: belief-state HJB.
 - `P4-PATH`: path-state DPP and PPDE interface.
-- `P4-ACTUAL-4B`: actual hidden-symbol filtering/game realization.
+- `P4-ACTUAL-4B`: actual hidden-symbol realization through exact filter
+  collapse, lower/upper monotone schemes, relaxed mixed-Isaacs scheme,
+  comparison, and convergence; see `TECHNICAL_APPENDIX_GAME_SCHEME.md`.
 
 ## Non-exports
 
