@@ -18,10 +18,13 @@ unknown HJB solution is not an input to the imported frozen operators.
 - `P3-RWIP`: enhanced WIP with a compatible modulus or direct
   triangular-array characteristics.
 - `P3-NAHOM`: nonautonomous homogenized characteristics.
-- `P3-HJB`: uncontrolled or one-player viscosity limit.
+- `P3-HJB`: uncontrolled or one-player viscosity limit under the named DPP and
+  comparison packet.
 - `P3-THETA`: time-consistent theta-expectation semigroup.
 - `P3-NONCONVEX`: explicit nonconvex/non-subadditive branch.
-- `P3-ACTUAL-4B`: actual full-scale Bernoulli four-branch realization.
+- `P3-ACTUAL-4B`: actual full-scale Bernoulli four-branch realization through
+  its monotone DPP, viscosity comparison, HJB limit, and theta-semigroup; see
+  `TECHNICAL_APPENDIX_DPP_COMPARISON.md`.
 
 ## Non-exports
 
