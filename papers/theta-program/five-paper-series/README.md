@@ -29,8 +29,33 @@ Every paper directory contains:
 - `BLOCKER_CLOSURE.md`: explicit blocker ledger and scope boundary;
 - `INTERFACE.md`: exact named imports, exports, and non-exports.
 
-Paper II also contains `TECHNICAL_NOTE_RENEWAL.md`, the normative entry/exit
-operator formulation of its suspension renewal identity.
+Normative technical files:
+
+- Paper II: `TECHNICAL_NOTE_RENEWAL.md`, with distinct suspension entry and
+  exit operators;
+- Paper III: `TECHNICAL_APPENDIX_DPP_COMPARISON.md`, proving the actual
+  four-branch monotone DPP, consistency, comparison, HJB convergence, and
+  theta-semigroup;
+- Paper IV: `TECHNICAL_APPENDIX_GAME_SCHEME.md`, proving the actual lower/upper
+  sequential schemes and relaxed mixed-Isaacs scheme.
+
+## Actual scoped end-to-end witness
+
+The single scoped witness used throughout the series is deliberately explicit:
+
+```text
+open four-branch / three-moving-seam deterministic family
+  -> graded product-CM2 and U3
+  -> twisted pressure, low-frequency suspension, positive diffusion
+  -> Bernoulli/Doob full-scale martingale characteristics
+  -> actual monotone one-player HJB and theta-expectation
+  -> exact bounded filtering
+  -> actual lower/upper sequential and relaxed mixed-Isaacs limits
+  -> typed downstream representations under their stated regularity windows
+```
+
+This is not advertised as an unrestricted universal moving-scatterer theorem or
+as a nonconjugate specular-Sinai theorem.
 
 ## Control and audit files
 
@@ -38,8 +63,8 @@ operator formulation of its suspension renewal identity.
 - `THEOREM_INTERFACE_MANIFEST.yaml`: machine-readable P1--P5 dependency graph;
 - `HOSTILE_PROOF_AUDIT.md`: three-round hostile audit and repaired findings;
 - `FIVE_PAPER_VERIFICATION_RECEIPT.json`: structural and execution boundary;
-- `../../../tools/verify_theta_five_paper_series.py`: fail-closed structural
-  verifier, relative to the repository root as `tools/...`.
+- repository-root `tools/verify_theta_five_paper_series.py`: fail-closed
+  structural verifier.
 
 Process/provenance language belongs in the ledgers and audit files, not in a
 future submission-facing extraction.
@@ -52,8 +77,6 @@ system class has been silently verified.  In particular:
 
 - unrestricted universal moving-scatterer CM2 remains refuted;
 - the positive CM2/U3 theorem is on an explicit packetized admissible class;
-- the open four-branch moving-seam family is an actual nonzero finite-order
-  witness;
 - a nonconjugate specular-Sinai instantiation is a stronger theorem outside the
   current claim, not an unnamed assumption;
 - full-scale nonautonomous homogenization requires a compatible enhanced-WIP
@@ -63,6 +86,8 @@ system class has been silently verified.  In particular:
   a vanishing slow initial layer is also required;
 - sequential and simultaneous games are permanently distinct;
 - mixed Isaacs equality does not imply a pure saddle;
+- weighted noncompact, fully path-dependent, and branch-specific stochastic
+  representation results retain their explicit theorem packets;
 - FBSDE, controlled BSDE, 2BSDE, nonlinear martingale problem, and PPDE are
   typed branches, not interchangeable conclusions.
 
@@ -84,13 +109,9 @@ Paper V is never used to prove Papers I--IV.
 
 ## Verification and review boundary
 
-The verifier source has been reconstructed byte-for-byte in the execution
-environment and passes Python byte-code compilation.  The complete private Git
-branch was not materialized as a local checkout, so the verifier has not yet
-been run against the full tree; that run is required before merge and is not
-reported as PASS here.
-
-These are internal mathematical proof drafts.  They have not received external
-specialist review, do not certify mathematical correctness, and grant no formal
+The structural verifier is separate from mathematical proof.  A full verifier
+run against a checked-out branch is required before merge.  These are internal
+mathematical proof drafts; they have not received external specialist review,
+do not certify mathematical correctness externally, and grant no formal
 theorem credit.  Historical v83/v164 and old three-paper source bytes are
 unchanged.
