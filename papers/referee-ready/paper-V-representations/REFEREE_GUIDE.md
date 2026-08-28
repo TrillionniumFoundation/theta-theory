@@ -1,58 +1,55 @@
-# Referee guide — Paper V
+# Referee guide — Paper V, revision v4
 
 ## Central claims
 
-The paper proves a typed representation hierarchy for theta-expectations and
-constructs two complete path-dependent actual models.  It also proves that one
-payoff-independent classical Markov law cannot represent a genuinely nonlinear
-semigroup.
+The paper proves an intrinsic tangent-law theory for the theta-semigroup,
+including a converse characterization, and connects it to the finite
+deterministic collision recursions before treating Girsanov, BSDE, PPDE, game,
+and second-order branches.
 
 ## Suggested audit order
 
-1. Verify the single-law linearity obstruction.
-2. Check the generator orientation and the exact residual term in the
-   jet-calibrated linear equation.
-3. Audit the Feynman--Kac exponential signs and the factor
-   `sigma sigma^T=2a`.
-4. Check the relation `Z=sigma^T Du`; reject any direct identification of `Z`
-   with the HJB gradient.
-5. Audit the division between semilinear FBSDE, control/randomized BSDE, game,
-   convex 2BSDE, and nonconvex second-order branches.
-6. In the entropic path model:
-   - verify the deterministic Gaussian-shift prelimit;
-   - check the pure saddle and coefficient `c=1/(2mu)-1/(2nu)`;
-   - check the Cole--Hopf transform;
-   - check the completed-square verification inequalities;
-   - check the quadratic BSDE exponential formula;
-   - check the cylindrical approximation step for the integral-plus-maximum
-     terminal payoff.
-7. In the volatility branch:
-   - verify convergence of controlled predictable quadratic variations;
-   - check stability under concatenation of the law family;
-   - audit PPDE comparison hypotheses;
-   - check aggregation/minimality in the 2BSDE representation.
-8. Verify that every Girsanov use occurs only after a law has been fixed.
+1. **Parabolic IFT:** check the Hölder spaces, composition smoothness, terminal
+   operator isomorphism, and derivative equation.
+2. **Analytic entropic map:** verify the Banach Nemytskii argument and all
+   derivative formulas.
+3. **Tangent cocycle:** multiply the Radon--Nikodym kernels and verify the
+   nonlinear chain rule.
+4. **Static characterization:** derive the measure-valued replicator ODE,
+   prove uniqueness, and integrate the ray derivative.
+5. **Dynamic characterization:** check that the zero-payoff tangent kernels
+   form the base Markov semigroup and that the cocycle yields time consistency.
+6. **Microscopic convergence:** verify weak convergence under bounded
+   exponential tilting and passage of first/second derivatives and finite-time
+   kernels.
+7. **Tangent PDE:** check the terminal sign and the coefficient
+   `b+theta a Du`.
+8. **Girsanov:** derive the stochastic exponential, prove true-martingale
+   status, identify the Radon--Nikodym density and changed Brownian drift, and
+   distinguish the Novikov and bounded-density/BMO routes.
+9. **BSDEs:** verify the quadratic driver and the linear tangent martingale
+   under the tilted law; confirm that no `Z -> p` inversion occurs.
+10. **Path branch:** check the path DPP, functional Itô formula, exponential
+    transform, and path-viscosity comparison.
+11. **Pure path game:** audit completion of squares and the relation
+    `theta=2c/sigma^2`.
+12. **2BSDE branch:** check stability under conditioning/pasting and the
+    minimality condition.
 
-## Imported hypothesis
+## High-risk proof locations
 
-The paper assumes that an upstream DPP and comparison theorem have already
-identified the relevant HJB/Isaacs/path value.  It does not prove any upstream
-spectral or homogenization result.
+- uniqueness of the probability-valued tangent ODE in the characterization;
+- uniformity needed for derivative convergence of microscopic tangent laws;
+- BMO justification of the density process outside a bounded-gradient window;
+- path-viscosity comparison and stability;
+- the precise 2BSDE minimality class.
 
-## Permanent scope boundaries
+## Permanent scope
 
-- A payoff-calibrated diffusion depends on the solved payoff and is not one law
-  for the full nonlinear semigroup.
-- A control or game value is not automatically a classical FBSDE.
-- A generic nonconvex second-order Isaacs equation is not automatically a
-  2BSDE.
-- A PPDE is not reduced to a finite-dimensional PDE without a sufficient
-  statistic.
-- The actual 2BSDE branch is the convex volatility-control model, not the pure
-  drift game.
+The general parabolic derivative theorem is stated in a uniformly parabolic
+classical window.  The entropic actual branch is globally analytic on bounded
+payoffs.  The 2BSDE theorem applies to the stable volatility-control family and
+is not used to represent a nonconvex Isaacs operator.
 
-## Specialist review split
-
-The calibration and Markov BSDE sections should be reviewed by a BSDE expert;
-the actual path game and PPDE by a functional-Itô/PPDE expert; and the
-volatility branch by a second-order BSDE specialist.
+A report should distinguish the new characterization/microscopic tangent
+results from the downstream standard stochastic representation tools.
