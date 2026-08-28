@@ -14,20 +14,20 @@ an open four-branch moving-seam pinball-cylinder family.
 | Fixed `(m,n)` DQ only | Head--tail theorem in `l1(N^2)` | CLOSED |
 | First-order CM2 incorrectly treated as U3 | Third-source atom CM2 norm and directed totalization | CLOSED |
 | Infinite atlas/refinement ambiguity | Vertex and seam moduli plus common-refinement cancellation | CLOSED |
+| Third-order words were not composable after regularity loss | Explicit graded ladder `X4->X3->X2->X1` with level-preserving resolvents | CLOSED |
+| Finite-DQ remainder through third order lacked one derivative | Fourth derivative bound on `X5` | CLOSED |
 | No nonzero actual example | Four-branch, three-moving-seam open family | CLOSED |
-| Higher derivatives in actual example | Explicit formula for `partial_a^k L_a`, `k<=3` | CLOSED |
 | Universal overclaim | Positive packet theorem plus finite-prefix no-go/maximality | CLOSED |
 | Specular Sinai not actually verified | Removed from theorem statement; recorded as a strengthening | CLOSED_BY_SCOPE |
 
-## Mathematical corrections relative to earlier drafts
+## Mathematical corrections
 
 1. `CM2 -> U3` is valid only for the derivative atoms entering the third
-   source, not from a first-source bound alone.
-2. A qualitative source estimate is not enough; finite-DQ convergence must be
-   in the complete two-time summability topology.
+   source, on the spaces required by their compositions.
+2. A qualitative source estimate is not enough; finite-DQ convergence is in
+   the complete two-time summability topology.
 3. Local atlas completeness or hashes do not imply the analytic infinite tail.
-4. The actual example is advertised as pinball-cylinder dynamics, not as
-   specular Sinai dynamics.
+4. The actual example is a pinball-cylinder family, not a specular Sinai family.
 
 ## Exports
 
@@ -39,7 +39,8 @@ P1-RWORDS
 P1-ACTUAL-4B
 ```
 
-No generic moving-family flow-domain theorem or regularity budget is exported.
+No generic moving-family flow-domain theorem or untyped regularity budget is
+exported.
 
 ## Review boundary
 
