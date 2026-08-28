@@ -1,6 +1,12 @@
-# Paper I — build and circulation notes
+# Paper I — referee revision v4
 
-Compile with:
+**Controlling source:** `main.tex`  
+**Controlling bibliography:** `references.bib`  
+**Round-four frozen copies:** `main-round4.tex`, `references-round4.bib`
+
+Title: *Bilateral Response, Symbolic Desingularization, and All-Order Spectral Jets for Nonconjugate Moving Collision Dynamics*.
+
+Build from this directory:
 
 ```bash
 pdflatex main
@@ -9,11 +15,13 @@ pdflatex main
 pdflatex main
 ```
 
-The manuscript is designed to compile with a standard TeX Live installation.
-It is the first paper in the companion series and has no mathematical import
-from the later papers.
+The paper has two positive actual classes:
 
-The author name, address, email, acknowledgements, and disclosure statement
-must be confirmed by the human authors before circulation.  The paper should be
-sent to a referee together with `REFEREE_GUIDE.md` but without the internal
-repository blocker ledgers.
+1. an explicit nonconjugate symplectic Markov collision map with all-order
+   moving-seam response, arbitrary-source susceptibility, and exact
+   predictable innovations;
+2. analytic no-eclipse open dispersing billiards, treated on a fixed symbolic
+   space by symbolic desingularization.
+
+The controlling theorem does not use differentiated invariance, exact
+coboundaries, an assembly reset, or the old S1--S3 certificates.
