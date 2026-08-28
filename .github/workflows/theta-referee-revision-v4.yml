@@ -1,0 +1,55 @@
+name: theta referee revision v4
+
+on:
+  push:
+    branches:
+      - theta-referee-revision-v4-full-positive-2026-08-29
+  workflow_dispatch:
+
+jobs:
+  structural:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile verifier
+        run: python3 -m py_compile tools/verify_referee_revision_v4.py
+      - name: Run fail-closed verifier
+        run: python3 tools/verify_referee_revision_v4.py --write-receipt
+      - name: Upload verification receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: theta-referee-v4-verification
+          path: papers/referee-ready/REVISION_V4_VERIFICATION_RECEIPT.json
+
+  latex:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        paper:
+          - paper-I-bilateral-response
+          - paper-II-pressure-diffusion
+          - paper-III-rough-theta
+          - paper-IV-filtering-games
+          - paper-V-representations
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install TeX
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y latexmk texlive-latex-extra texlive-fonts-recommended texlive-science
+      - name: Compile controlling manuscript
+        working-directory: papers/referee-ready/${{ matrix.paper }}
+        run: latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex
+      - name: Reject unresolved references and fatal warnings
+        working-directory: papers/referee-ready/${{ matrix.paper }}
+        run: |
+          ! grep -E "Undefined control sequence|LaTeX Error|Citation .* undefined|Reference .* undefined|There were undefined references" main.log
+      - name: Upload PDF
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.paper }}-revision-v4
+          path: papers/referee-ready/${{ matrix.paper }}/main.pdf
