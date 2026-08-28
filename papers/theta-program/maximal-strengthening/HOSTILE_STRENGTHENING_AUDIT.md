@@ -91,39 +91,72 @@ of consecutive grazing weights.
 
 ---
 
-## Finding S3 — “optimal WIP rate” was ill-typed
+## Finding S3 — “optimal WIP rate” was over-typed twice
 
-No exponent is optimal simultaneously in endpoint, uniform, Hölder,
-fractional-Sobolev, and rough-path metrics.
+First, no exponent is optimal simultaneously in endpoint, uniform, Hölder,
+fractional-Sobolev, and rough-path metrics.  Second, the quantitative
+Stein--Dirichlet theorem used by the draft does not estimate every Lipschitz
+rough functional; its finite-dimensional step needs regularity of the pulled-
+back second derivative.
 
 ### Repair
 
-`OPTIMAL_ENHANCED_WIP_RATE.md` fixes the step-two fractional-Sobolev rough KR
-metric with `p>4`, `1/p<eta<1/2`.  The upper exponent is
+`OPTIMAL_ENHANCED_WIP_RATE.md` now fixes:
+
+```text
+p>6,
+1/3<eta-1/p,
+eta<1/2,
+```
+
+the step-two fractional-Sobolev rough topology, and the normalized regular
+Stein--Dirichlet test class `Sigma_(eta,p)`.  The law distance is
 
 \[
-\delta=1/2-\eta.
+d_{SD}^{\eta,p}(\mu,\nu)
+=
+\sup_{\|F\|_{\Sigma_{\eta,p}}\le1}
+|\mu(F)-\nu(F)|.
 \]
 
-The lower bound uses a midpoint bridge functional that is zero on every
-affine mesh path.  Brownian midpoint defects have variance proportional to
-`1/N`, so
+The upper rate is exactly the rate proved by the Stein finite-dimensional
+replacement plus Brownian bridge interpolation:
 
 \[
-N^{\eta-1/p}
-\left(\sum_{k=0}^{N-1}|D_{k,N}|^p\right)^{1/p}
-\asymp N^{-(1/2-\eta)}.
+d_{SD}^{\eta,p}
+\le CN^{-(1/2-\eta)}.
 \]
 
-This matches the interpolation upper bound.  The endpoint smooth-test rate is
-separately `N^{-1/2}`.
+A lower test in the **same class** is
+
+\[
+F_N(\mathbf x)
+=c_0N^{-3/2+\eta}
+\sum_k
+\phi(\sqrt N D_{k,N}(\pi_1\mathbf x)),
+\]
+
+where `phi` is smooth, even, bounded, and nonnegative.  The scaled midpoint
+directions have uniform Cameron--Martin norm and disjoint supports, so the
+first three derivative bounds of `F_N` are uniform.  It vanishes on every
+affine mesh walk, while Brownian midpoint defects give
+
+\[
+\mathbb EF_N(\mathbf B_\Sigma)
+=cN^{-(1/2-\eta)}.
+\]
+
+Thus the upper and lower rates match in `d_SD^(eta,p)`.  The full bounded-
+Lipschitz Kantorovich--Rubinstein exact rate is explicitly not claimed.
 
 The accumulated nonautonomous block exponent was rechecked:
 
 \[
 \epsilon^{-2}m_\epsilon^{-(1+\delta)}\to0,
 \qquad
-\epsilon^2m_\epsilon\to0.
+\epsilon^2m_\epsilon\to0,
+\qquad
+\delta=1/2-\eta.
 \]
 
 For `m_epsilon=epsilon^{-kappa}` this is exactly
@@ -214,17 +247,18 @@ so the branch is genuinely path-dependent.
 
 ```yaml
 strengthening_items_audited: 5
-substantive_scope_or_formula_repairs: 5
+substantive_scope_or_formula_repairs: 6
 actual_positive_systems:
   - nonconjugate_radial_specular_invariant_and_coboundary_U_infinity
   - compact_BDL_family_with_actual_radial_all_frequency_channel
-  - four_branch_optimal_fractional_Sobolev_rough_rate
+  - four_branch_optimal_fractional_Sobolev_Stein_Dirichlet_rate
   - four_branch_unique_pure_Isaacs_game
   - deterministic_noncompact_filter_and_delay_path_evaluation
 maximality_or_counterexample_results:
   - generic_geometry_only_noncoboundary_U3_no_go
   - universal_single_grazing_weight_domain_no_go
-  - topology_free_optimal_rate_no_go
+  - topology_or_test_class_free_optimal_rate_no_go
+  - full_Lipschitz_KR_rate_not_supplied_by_Stein_class
   - unrestricted_pure_saddle_no_go
 known_internal_strengthening_gaps_after_audit: 0
 external_peer_review: NOT_PERFORMED
