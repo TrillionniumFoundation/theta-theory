@@ -1,0 +1,40 @@
+name: theta five-paper verifier
+
+on:
+  push:
+    branches: [theta-five-paper-closure-2026-08-28]
+    paths:
+      - 'papers/theta-program/five-paper-series/**'
+      - 'tools/verify_theta_five_paper_series.py'
+      - '.github/workflows/theta-five-paper-verify.yml'
+  pull_request:
+    paths:
+      - 'papers/theta-program/five-paper-series/**'
+      - 'tools/verify_theta_five_paper_series.py'
+      - '.github/workflows/theta-five-paper-verify.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile verifier
+        run: python3 -m py_compile tools/verify_theta_five_paper_series.py
+      - name: Run verifier
+        run: python3 tools/verify_theta_five_paper_series.py | tee theta-five-paper-verification.json
+      - name: Check whitespace
+        run: git diff --check
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: theta-five-paper-verification
+          path: theta-five-paper-verification.json
+          if-no-files-found: error
