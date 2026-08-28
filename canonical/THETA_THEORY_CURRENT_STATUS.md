@@ -29,9 +29,12 @@ PaperII_K1_K15_BDL:
   physical_diffusion_response: CLOSED
   common_operator_realization: CLOSED
   coefficient_and_ellipticity: CLOSED
-  compact_family_high_frequency_BDL: CLOSED_RELATIVE_TO_STRICT_WITNESS_PACKET
-  graded_high_frequency_parameter_derivatives: CLOSED
-  actual_radial_all_frequency_channel: CLOSED
+  compact_family_high_frequency_BDL: CLOSED_RELATIVE_TO_BDL_FAMILY_WITNESS_v1
+  actual_radial_uniform_high_frequency_family: CLOSED
+  table_parameter_high_frequency_derivatives: CLOSED_RELATIVE_TO_BDL_PARAMETER_DOMAIN_v1
+  ordered_resolvent_derivative_formula: CLOSED
+  actual_radial_exact_coboundary_q_response: CLOSED
+  q_gauge_to_a_table_response: FORBIDDEN
   universal_single_scalar_grazing_weight_domain: REFUTED
 
 PaperIII_K2_Theta:
@@ -93,18 +96,20 @@ Closure has three admissible forms:
 3. **maximality/refutation:** a stronger unrestricted statement is false, and
    the counterexample plus strongest valid replacement theorem are proved.
 
-Accordingly, matching pennies closes the unrestricted pure-saddle request by
-refutation and identifies pure Isaacs equality as the exact criterion.  The
-split-surjective moving-face defect closes geometry-only generic specular U3 by
-maximality, while the radial invariant/coboundary channels provide actual
-positive U-infinity.  The grazing-weight-ratio obstruction excludes one
-ungraded universal BDL domain, while the compact witness-bundle theorem supplies
-the full valid high-frequency result.
+Matching pennies closes the unrestricted pure-saddle request by refutation and
+identifies pure Isaacs equality as the exact criterion. The split-surjective
+moving-face defect closes geometry-only generic specular U3 by maximality,
+while the radial invariant/coboundary channels provide actual positive
+U-infinity. The grazing-weight-ratio obstruction excludes one ungraded
+universal BDL domain, while the compact witness-bundle theorem supplies the
+actual uniform high-frequency family theorem. Moving-table derivatives remain
+separately typed by `BDL-PARAMETER-DOMAIN-v1`; exact-coboundary gauge conjugacy
+supplies `q`-derivatives, not `a`-derivatives.
 
 The optimal rough rate is also fail-closed: the exact `N^{-(1/2-eta)}` order is
 proved in the regular Stein--Dirichlet test distance actually controlled by the
 quantitative argument, with a smooth midpoint-bridge lower test in the same
-class.  It is not relabelled as an exact full Lipschitz--KR rate.
+class. It is not relabelled as an exact full Lipschitz--KR rate.
 
 ## Correct strengthened DAG
 
@@ -112,7 +117,9 @@ class.  It is not relabelled as an exact full Lipschitz--KR rate.
 Paper I bilateral CM2/U3
   + actual nonconjugate radial specular invariant/coboundary U-infinity
     -> Paper II pressure/diffusion/common space
-       + compact moving-family high-frequency BDL bundle
+       + actual compact-family uniform high-frequency BDL
+       + graph-domain packet for table-parameter derivatives
+       + exact-coboundary q-response
          -> Paper III Doob-selected rough homogenization
             + topology-and-test-class-optimal four-branch enhanced-WIP rate
               -> HJB / theta-expectation
@@ -129,6 +136,9 @@ Paper I bilateral CM2/U3
   noncoboundary pressure U3 still requires the bilateral third-source packet.
 - Compact-family BDL uniformity requires strict local witnesses before the
   compact finite-cover argument.
+- Uniform high-frequency BDL does not imply moving-table parameter
+  differentiability without a common graph-domain packet; exact-coboundary
+  `q` response does not imply table-parameter `a` response.
 - “Optimal WIP rate” always names both its path topology and its quantitative
   test class; the full Lipschitz--KR exact rate is outside the current export.
 - Mixed minimax never implies a pure saddle without pure Isaacs or an
@@ -149,6 +159,6 @@ Paper I bilateral CM2/U3
 - five per-paper strengthening appendices.
 
 Historical v83/v164 and the earlier five-paper source bytes remain available as
-provenance.  The present branch controls only the latest θ-Theory
-interpretation.  It has not received external specialist review and grants no
+provenance. The present branch controls only the latest θ-Theory
+interpretation. It has not received external specialist review and grants no
 external correctness certificate.
