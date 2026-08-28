@@ -10,9 +10,9 @@ This appendix is normative for `P2-BDL-HF-FAMILY`.  The full proof is
 
 A compact billiard family submits strict uniform geometry, finite flow-box and
 temporal-distance witnesses, compact embeddings, Lasota--Yorke bounds, a
-resonance-free strip, and high-frequency exponent data.  Every strict witness
-is open in the table parameter.  A finite cover of the compact family produces
-one uniform packet.
+resonance-free strip, and high-frequency exponent data. Every strict witness
+is open in the table parameter. A compact finite-cover uniformization then
+produces one uniform packet.
 
 ## H.2 Fixed common realization
 
@@ -23,10 +23,9 @@ A smooth quadratic partition on the finite parameter atlas gives maps
 R_aJ_a=I.
 \]
 
-The flow generators are therefore realized on one fixed direct-sum ambient
-space.
+The flow generators are realized on one fixed direct-sum ambient space.
 
-## H.3 High-frequency estimate
+## H.3 Actual uniform high-frequency estimate
 
 On the reduced range,
 
@@ -35,11 +34,23 @@ On the reduced range,
 \le C(1+|\operatorname{Im}z|)^\nu
 \]
 
-in the declared high-frequency strip.
+in the declared high-frequency strip.  A sufficiently small radial
+nonconjugate specular family is an actual compact example because it stays
+inside one strict BDL witness neighbourhood.
 
-## H.4 Parameter derivatives
+## H.4 Table-parameter derivatives need a second packet
 
-For complete graded generator letters `G_a^(j)`,
+Uniform high-frequency bounds do not differentiate an unbounded moving-domain
+generator.  `BDL-PARAMETER-DOMAIN-v1` separately requires:
+
+- a common dense graph core;
+- closed graph-domain realizations;
+- graph-topology `C^k` dependence;
+- complete graded generator letters;
+- resolvent domain preservation;
+- graph-topology difference-quotient convergence.
+
+Only under this packet,
 
 \[
 \partial_a^kR_a(z)
@@ -51,9 +62,20 @@ R_aG_a^{(j_1)}R_a\cdots G_a^{(j_m)}R_a.
 
 Each term loses exactly the declared number of ladder levels.
 
-## H.5 Actual and maximality boundaries
+## H.5 Exact-coboundary twist parameter
 
-The nonconjugate radial exact-flow-coboundary channel is actual at all
-frequencies by gauge conjugacy.  A single scalar pointwise grazing weight and
-one ungraded domain for all deformation letters are excluded by the unbounded
-ratio of consecutive collision weights near tangency.
+For an exact flow coboundary, gauge conjugacy gives arbitrary finite
+**twist-parameter** derivatives in `q` at every fixed table, uniformly over the
+radial family.  This does not supply moving-table derivatives in `a`.
+
+## H.6 Actual and maximality boundaries
+
+```text
+uniform compact-family BDL        : actual under strict witness packet
+q exact-coboundary derivatives    : actual by gauge conjugacy
+a moving-table derivatives        : require BDL-PARAMETER-DOMAIN-v1
+```
+
+A single scalar pointwise grazing weight and one ungraded domain for all
+deformation letters are excluded by the unbounded ratio of consecutive
+collision weights near tangency.
