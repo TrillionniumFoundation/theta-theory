@@ -89,20 +89,9 @@ We write the terminal PDE as
 \]
 
 in **generator orientation**: where differentiable, `F_X` is positive
-semidefinite.  If an upstream paper uses the viscosity convention
-
-\[
-\partial_tu-\operatorname{tr}(D D^2u)-H=0,
-\]
-
-it must first be rewritten as
-
-\[
-\partial_tu+\operatorname{tr}(A D^2u)+\widetilde H=0
-\]
-
-with `A>=0` before the formulas below are applied.  This prevents a sign error
-in the calibrated diffusion matrix.
+semidefinite.  If an upstream paper uses a convention with a negative diffusion
+term, it is first rewritten in generator orientation before the formulas below
+are applied.
 
 Assume on a representation window that `F` is continuously differentiable in
 `(y,p,X)` and the solution is classical.  Define along the solution
@@ -144,7 +133,7 @@ The same `u` solves
 #### Proof
 
 Substitute (3.5) into (3.6); its left-hand side becomes that of (3.1).
-Calibration is therefore exact and occurs after `u` has been derived.
+Calibration is exact and occurs after `u` has been derived.
 
 ### Assumption 3.3 (diffusion window)
 
@@ -186,21 +175,6 @@ u(t,x)=\mathbb E_{t,x}\Big[&
 \end{aligned}
 }
 \tag{3.9}
-\]
-
-Here the symbol on the left is the solution `u(t,x)`; equivalently, replacing
-the typographical `nu` in the display by `u` gives
-
-\[
-\boxed{
-\begin{aligned}
-uu(t,x):=u(t,x)=\mathbb E_{t,x}\Big[&
- e^{\int_t^T c^u(r,X_r)dr}\phi(X_T)\\
-&+\int_t^T e^{\int_t^s c^u(r,X_r)dr}
- r^u(s,X_s)ds\Big].
-\end{aligned}
-}
-\tag{3.10}
 \]
 
 #### Proof
@@ -473,7 +447,7 @@ The diffusion convention is
 \frac12\sigma\sigma^T:D^2u.
 \]
 
-Paper III writes `A=Sigma/2`, so the corresponding factor is
+Paper III writes `A=Sigma/2`, so
 
 \[
 \sigma\sigma^T=\Sigma.
