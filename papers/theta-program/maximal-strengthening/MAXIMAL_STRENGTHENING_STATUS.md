@@ -38,12 +38,17 @@ moving_family_BDL:
 optimal_enhanced_WIP_rate:
   export: P3-RWIP-OPTIMAL-WETA-P
   topology: step_two_fractional_Sobolev_rough_path_W_eta_p
-  range: one_over_p_less_than_eta_less_than_one_half
+  test_distance: Stein_Dirichlet_Sigma_eta_p
+  range:
+    - p_greater_than_6
+    - one_third_less_than_eta_minus_one_over_p
+    - eta_less_than_one_half
   upper_rate_actual_four_branch: N_power_minus_one_half_plus_eta
-  lower_rate_piecewise_linear_class: SAME_ORDER
-  status: OPTIMAL_EXPONENT_PROVED_IN_DECLARED_TOPOLOGY
+  lower_rate_actual_four_branch: SAME_ORDER_BY_SMOOTH_MIDPOINT_TEST
+  status: OPTIMAL_RATE_PROVED_IN_DECLARED_TOPOLOGY_AND_TEST_CLASS
   endpoint_smooth_metric_rate: N_power_minus_one_half_when_third_cumulant_nonzero
-  universal_topology_free_optimal_rate: REFUTED_AS_ILL_TYPED
+  full_Lipschitz_KR_exact_rate: NOT_CLAIMED
+  universal_topology_or_test_class_free_optimal_rate: REFUTED_AS_ILL_TYPED
 
 pure_strategy_Isaacs:
   export: P4-PURE-ISAACS-MAXIMAL
@@ -104,9 +109,11 @@ closure:
    argument. Parameter derivatives are proved on graded source channels. A
    single scalar pointwise grazing weight for every deformation is excluded by
    the consecutive-collision ratio obstruction.
-3. **Enhanced-WIP rate.** “Optimal” is fixed to a precise rough-path topology.
-   The four-branch Bernoulli realization has matching upper and lower exponent
-   `1/2-eta`; no topology-free universal exponent is claimed.
+3. **Enhanced-WIP rate.** “Optimal” is fixed to both a rough topology and the
+   regular Stein--Dirichlet test class actually controlled by the quantitative
+   theorem. A smooth cylindrical midpoint-bridge test belongs uniformly to
+   this class and gives the matching lower order `1/2-eta`. The full
+   Lipschitz--KR exact rate is not silently claimed.
 4. **Pure Isaacs.** General pure-saddle existence is false. The exact
    compact-action equivalence and strong concave-convex theorem close the
    correct general theory, and an actual four-branch pure game is supplied.
