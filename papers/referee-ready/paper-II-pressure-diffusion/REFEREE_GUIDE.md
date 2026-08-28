@@ -1,47 +1,51 @@
-# Referee guide — Paper II
+# Referee guide — Paper II, revision v4
 
 ## Central claims
 
-The paper converts a third collision-response jet into physical-time pressure,
-suspension-resolvent, and diffusion response.  It also resolves the moving
-Banach-fibre problem and gives a carefully typed high-frequency family theory.
+The paper identifies the physical-time pressure root and diffusion tensor,
+proves the oriented suspension renewal formula, and establishes actual
+full-frequency moving-family resolvent response for both the explicit moving
+collision model and a no-eclipse open-billiard family.
 
 ## Suggested audit order
 
-1. Verify the quadratic-partition construction and `R_a J_a=I` in the
-   fixed-space stabilization theorem.
-2. Check that the extra complement spectrum of the stabilized operator does not
-   intersect the Riesz contour around the leading eigenvalue.
-3. Audit the total-order-three Kato words for the joint `(a,q,s)` twist.
-4. Differentiate the pressure-root identity and check every physical-clock
-   factor in the covariance response formula.
-5. Verify the orientation of the distinct roof-cell exit and entry operators in
-   the renewal formula.
-6. Check uniform cancellation of the pole at `z=0` for centered correlations.
-7. Compare the pressure-Hessian, Green--Kubo, and martingale-bracket
-   calculations, including the factor `D^{phys}=Sigma/2`.
-8. Audit the fixed-point noncoboundary witness in the four-branch example.
-9. In the high-frequency section, keep three statements separate: strict
-   witness uniformization, exact similarity-family differentiation, and
-   nonconjugate radial uniform bounds.
+1. **Common space:** check the quadratic partition, `R_aJ_a=I`, and the extra
+   zero spectral block.
+2. **Pressure calculus:** verify the order typing of differentiated Riesz and
+   reduced-resolvent words imported from Paper I.
+3. **Physical root:** check the sign of `P_s=-bar_tau`, the covariance
+   normalization, and the mixed parameter derivative formula.
+4. **Renewal orientation:** derive the entry and exit roof operators from a
+   trajectory decomposition.
+5. **Green--Kubo:** independently expand the pressure Hessian and partial-sum
+   variance, and verify equality with the Gordin bracket.
+6. **Explicit coefficients:** check the finite branch pressure and uniform
+   spanning/ellipticity argument.
+7. **Diophantine high frequency:** verify quotient contraction, the weighted
+   phase identity, scalar phase separation, the right-strip two-case estimate,
+   and the frequency powers in parameter derivatives.
+8. **Open-billiard high frequency:** verify the concrete temporal-shear
+   calculation for asymmetric disks and the match to the uniform Dolgopyat
+   theorem on the fixed symbolic space.
+9. **Triangular geometry:** check every primitive lattice direction and the
+   quantitative deformation margin.
+10. **Coefficient lift:** check the square-root modulus and global chain rule.
 
-## Imported hypothesis
+## High-risk proof locations
 
-The paper assumes the third-response theorem of Paper I on a declared graded
-scale.  It does not assume a moving-flow theorem.  The low-frequency suspension
-result is derived by renewal from collision data.
+- the scalar phase lower bound under simultaneous Diophantine approximation;
+- the extension from the imaginary axis to the right strip;
+- uniformity of Dolgopyat constants over the moving open-billiard family;
+- frequency loss in repeated parameter-resolvent identities;
+- identification of the coboundary kernel of the covariance.
 
-## Permanent scope boundary
+## Permanent scope
 
-Uniform high-frequency BDL estimates for a compact family do not by themselves
-supply table-parameter derivatives on a common graph domain.  Exact derivatives
-are proved for similarity families.  Generic nonconjugate derivatives require
-complete graded generator letters and symbol estimates.
+The full-frequency theorem is actual for the explicit Diophantine roof family
+and for the open billiard under temporal shear.  It does not claim that
+compactness alone supplies a common high-frequency graph domain for every
+moving recurrent Sinai table.
 
-## Items for specialist verification
-
-- continuity of the chosen anisotropic Banach atlas in concrete billiard
-  families;
-- openness and uniformization of the selected contact/nonintegrability witness;
-- multiplier regularity of the roof-cell maps on the response ladder;
-- bibliography and priority of the common-space construction.
+A report should say separately whether the referee checked the low-frequency
+physical coefficient theorem, the explicit Diophantine theorem, and the
+open-billiard Dolgopyat branch.
