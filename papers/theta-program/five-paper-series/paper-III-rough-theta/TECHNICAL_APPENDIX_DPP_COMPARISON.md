@@ -1,0 +1,204 @@
+# Technical appendix: an actual monotone DPP, comparison, and theta limit
+
+This appendix supplies a complete dynamic-programming realization for the
+four-branch Doob model.  It turns Paper III's general DPP/comparison packet into
+an actual scoped theorem.
+
+## A.1 Controlled four-branch data
+
+Let `Z` be compact.  For `i=1,...,4`, assume
+
+\[
+p_i(x,z)\ge p_*>0,
+\qquad \sum_i p_i(x,z)=1,
+\]
+
+and let `c_i,b_i,l` be bounded uniformly continuous functions, locally
+Lipschitz in `x`, with
+
+\[
+\sum_i p_i(x,z)c_i(x,z)=0.
+\tag{A.1}
+\]
+
+Define
+
+\[
+\bar b(x,z)=\sum_i p_i(x,z)b_i(x,z),
+\]
+
+\[
+A(x,z)=\frac12\sum_i p_i(x,z)c_i(x,z)c_i(x,z)^T.
+\tag{A.2}
+\]
+
+Assume `A(x,z)>=lambda I` and that all data have a common modulus.  The
+probabilities may be the locally constant Doob probabilities of Paper III.
+
+## A.2 Monotone one-step operator
+
+For `h>0`, set
+
+\[
+\begin{aligned}
+(\mathsf S_h\phi)(x)
+=\sup_{z\in Z}\Big\{&h\,\ell(x,z)\\
+&+\sum_{i=1}^4p_i(x,z)
+\phi\bigl(x+\sqrt h\,c_i(x,z)+h b_i(x,z)\bigr)
+\Big\}.
+\end{aligned}
+\tag{A.3}
+\]
+
+For a terminal payoff `g`, define backwards on the grid
+
+\[
+u_h(T,\cdot)=g,
+\qquad
+u_h(t,\cdot)=\mathsf S_hu_h(t+h,\cdot).
+\tag{A.4}
+\]
+
+This is the DPP for the controller who selects `z` and then the deterministic
+four-branch fast state is sampled through its invariant/Doob coding.
+
+### Proposition A.1
+
+`S_h` is monotone, preserves addition of constants, is nonexpansive in the
+sup norm, and satisfies the semigroup/DPP concatenation on the time grid.
+
+#### Proof
+
+Every branch average is a positive probability average.  Supremum preserves
+order and commutes with constant addition.  The sup-norm contraction follows
+by comparing the same control on the two inputs.  Backward recursion gives
+concatenation.
+
+## A.3 Consistency
+
+Let `phi in C_b^3`.  Uniform Taylor expansion and (A.1) give
+
+\[
+\frac{\mathsf S_h\phi(x)-\phi(x)}h
+\longrightarrow
+\sup_{z\in Z}
+\left\{
+\ell(x,z)+\bar b(x,z)\cdot D\phi(x)
++A(x,z):D^2\phi(x)
+\right\}
+\tag{A.5}
+\]
+
+locally uniformly.
+
+### Proof
+
+For each branch,
+
+\[
+\begin{aligned}
+\phi(x+\sqrt h c_i+h b_i)
+=\phi(x)&+\sqrt h c_i\cdot D\phi
++h b_i\cdot D\phi\\
+&+\frac h2 c_ic_i^T:D^2\phi+O(h^{3/2}),
+\end{aligned}
+\]
+
+uniformly on compact sets.  The order-`sqrt h` term cancels by (A.1).  Average,
+add the running reward, divide by `h`, and take the supremum.  Compactness of
+`Z` makes the convergence uniform.
+
+## A.4 Comparison theorem
+
+Define
+
+\[
+F(x,p,X)
+=\sup_{z\in Z}
+\{\ell(x,z)+\bar b(x,z)\cdot p+A(x,z):X\}.
+\tag{A.6}
+\]
+
+### Theorem A.2
+
+For bounded uniformly continuous terminal data, the equation
+
+\[
+\partial_tu+F(x,Du,D^2u)=0,
+\qquad u(T)=g,
+\tag{A.7}
+\]
+
+has at most one bounded uniformly continuous viscosity solution.
+
+#### Proof
+
+Let `u` be a subsolution and `v` a supersolution.  Suppose the positive maximum
+of `u-v` is nonzero.  Double variables with
+
+\[
+\frac{|x-y|^2}{2\varepsilon}
++\frac{|t-s|^2}{2\varepsilon}
++\eta(T-t)^{-1}+\eta(T-s)^{-1}.
+\]
+
+The maximum stays before the terminal time.  The parabolic theorem of sums
+gives jets with common first derivative up to `o(1)` and matrices `X,Y`
+satisfying the standard block inequality.  Write
+
+\[
+A(x,z)=\frac12\sigma(x,z)\sigma(x,z)^T
+\]
+
+with a uniformly Lipschitz square root; this follows from uniform ellipticity
+and the common coefficient modulus on the compact window.  The block matrix
+inequality yields
+
+\[
+A(x,z):X-A(y,z):Y
+\le C\frac{|x-y|^2}{\varepsilon}+o(1)
+\]
+
+uniformly in `z`.  The drift and reward differences are bounded by the same
+modulus.  Subtracting the viscosity inequalities, taking the same nearly
+optimal `z`, and sending `epsilon`, then `eta`, to zero gives a contradiction.
+Thus `u<=v`.  Interchanging them gives uniqueness.
+
+The same proof works under the standard Crandall--Ishii structure modulus if a
+Lipschitz square root is replaced by that hypothesis.
+
+## A.5 Convergence
+
+### Theorem A.3
+
+The grid values (A.4), extended piecewise constantly or linearly in time,
+converge locally uniformly to the unique solution of (A.7).
+
+#### Proof
+
+Stability follows from Proposition A.1 and bounded rewards.  Take upper and
+lower half-relaxed limits.  At a strict smooth contact point, use a maximizing
+sequence in the scheme and the consistency limit (A.5) to obtain the viscosity
+subsolution inequality; the supersolution argument is analogous.  The terminal
+condition follows from stability and the vanishing time step.  Theorem A.2
+identifies the limits.  Standard compactness of the uniformly continuous data
+upgrades to local uniform convergence.
+
+## A.6 Actual theta-expectation
+
+Define
+
+\[
+\mathcal E_{s,t}^{\rm 4B}[g](x)=u(s,x),
+\]
+
+where `u` solves (A.7) on `[s,t]`.  Proposition A.1 and uniqueness imply
+monotonicity, constant preservation, nonexpansiveness, and time consistency.
+Thus the four-branch Doob model gives an actual scoped theta-expectation, not
+merely a conditional HJB interface.
+
+If `Z` is a singleton, this is the linear diffusion semigroup generated by the
+physical covariance.  Nonlinear control sets give a nonlinear theta-semigroup.
+Paper III's separate finite-response port supplies the explicit nonconvex,
+non-subadditive branch; the present appendix supplies the complete monotone DPP
+and comparison mechanism.
