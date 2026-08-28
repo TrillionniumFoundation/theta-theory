@@ -1,0 +1,437 @@
+\documentclass[11pt,reqno]{amsart}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue]{hyperref}
+\usepackage[nameinlink,capitalize]{cleveref}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{assumption}[theorem]{Assumption}
+\newcommand{\E}{\mathbb E}
+\newcommand{\Pp}{\mathbb P}
+\newcommand{\Qp}{\mathbb Q}
+\newcommand{\R}{\mathbb R}
+\newcommand{\T}{\mathbb T}
+\newcommand{\cE}{\mathcal E}
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+\newcommand{\abs}[1]{\left\lvert#1\right\rvert}
+\title{Technical Appendix to Paper V:\ Tangent-Probability ODEs, Microscopic Tilts, and True Girsanov Densities}
+\author{Qian Qi}
+\date{August 29, 2026}
+\begin{document}
+\maketitle
+
+\section{The probability-valued replicator equation}
+
+Let $Q_0$ be a probability measure on a measurable space, let
+$\phi\in L^\infty(Q_0)$, and fix $\vartheta\ne0$.  Consider the weak equation
+\begin{equation}\label{eq:replicator}
+ {d\over dt}Q_t(f)
+ =\vartheta\left(Q_t(\phi f)-Q_t(\phi)Q_t(f)\right),
+ \qquad Q_{t=0}=Q_0,
+\end{equation}
+for every bounded measurable $f$.
+
+\begin{lemma}[Existence by exponential tilting]\label{lem:tilt-solution}
+The family
+\begin{equation}\label{eq:explicit-tilt}
+ Q_t(f)={Q_0(e^{\vartheta t\phi}f)
+ \over Q_0(e^{\vartheta t\phi})}
+\end{equation}
+solves \eqref{eq:replicator} and remains a probability measure.
+\end{lemma}
+
+\begin{proof}
+Differentiate numerator and denominator.  The quotient rule gives exactly the
+covariance on the right side of \eqref{eq:replicator}.  Positivity and
+normalization are immediate.
+\end{proof}
+
+\begin{lemma}[Uniqueness in total variation]\label{lem:replicator-unique}
+Equation \eqref{eq:replicator} has at most one weakly differentiable
+probability solution on every bounded time interval.
+\end{lemma}
+
+\begin{proof}
+Let $Q_t$ and $\widetilde Q_t$ be two solutions and put
+$d_t=\norm{Q_t-\widetilde Q_t}_{\TV}$.  For $\abs f\le1$,
+\begin{align*}
+ {d\over dt}(Q_t-\widetilde Q_t)(f)
+ =&\vartheta(Q_t-\widetilde Q_t)(\phi f)\\
+ &-\vartheta Q_t(\phi)(Q_t-\widetilde Q_t)(f)\\
+ &-\vartheta(Q_t-\widetilde Q_t)(\phi)\widetilde Q_t(f).
+\end{align*}
+Each term is bounded by
+$\abs\vartheta\norm\phi_\infty d_t$, up to a universal factor three.  Taking
+the supremum and integrating in time gives
+$d_t\le3\abs\vartheta\norm\phi_\infty\int_0^td_sds$.  Gronwall implies
+$d_t=0$.
+\end{proof}
+
+\section{Static tangent characterization}
+
+Let $\mathfrak E:L^\infty\to\R$ be twice Fr\'echet differentiable, monotone,
+cash additive, and normalized by $\mathfrak E(0)=0$.  Suppose
+\begin{align}
+ D\mathfrak E(\psi)f&=Q_\psi(f),\label{eq:first-tangent}\\
+ D^2\mathfrak E(\psi)(f,g)
+ &=\vartheta\operatorname{Cov}_{Q_\psi}(f,g)
+ \label{eq:curvature}
+\end{align}
+for probability measures $Q_\psi$.
+
+\begin{theorem}[Full characterization]\label{thm:full-characterization}
+For every bounded $\phi$,
+\begin{align}
+ Q_\phi(f)&={Q_0(e^{\vartheta\phi}f)
+  \over Q_0(e^{\vartheta\phi})},\label{eq:Q-characterized}\\
+ \mathfrak E(\phi)&={1\over\vartheta}
+ \log Q_0(e^{\vartheta\phi}).\label{eq:E-characterized}
+\end{align}
+The constant $\vartheta$ is uniquely determined whenever the second derivative
+is nonzero for some pair of directions.
+\end{theorem}
+
+\begin{proof}
+Along the ray $t\phi$, the chain rule and \eqref{eq:curvature} imply that
+$Q_{t\phi}$ solves \eqref{eq:replicator}.  By
+\cref{lem:tilt-solution,lem:replicator-unique}, it is the exponential tilt,
+proving \eqref{eq:Q-characterized}.  Next,
+\[
+ {d\over dt}\mathfrak E(t\phi)=Q_{t\phi}(\phi)
+ ={d\over dt}{1\over\vartheta}
+ \log Q_0(e^{\vartheta t\phi}).
+\]
+Integrate from zero to one and use normalization.  If the same nonzero
+covariance bilinear form were represented with two constants, they would be
+equal.
+\end{proof}
+
+Cash additivity is consistent with the formula because exponential tilting is
+unchanged by adding a constant to the payoff while the logarithmic functional
+adds that constant.
+
+\section{Dynamic tangent kernels}
+
+Let $\mathfrak E_{s,t}$ be a time-consistent family and suppose the zero-payoff
+tangent kernels $P_{s,t}$ form a Markov semigroup.  By the static theorem,
+\[
+ \mathfrak E_{s,t}[\phi](x)
+ ={1\over\vartheta}\log P_{s,t}e^{\vartheta\phi}(x).
+\]
+Define
+\[
+ K_{s,t}^{\phi}(x,dy)=
+ {e^{\vartheta\phi(y)}P_{s,t}(x,dy)
+  \over P_{s,t}e^{\vartheta\phi}(x)}.
+\]
+
+\begin{proposition}[Dynamic cocycle equivalence]\label{prop:cocycle-equivalence}
+The following are equivalent:
+\begin{enumerate}
+\item the nonlinear maps satisfy time consistency;
+\item the tangent kernels satisfy
+\[
+ K_{r,t}^{\phi}
+ =K_{r,s}^{\mathfrak E_{s,t}[\phi]}K_{s,t}^{\phi};
+\]
+\item the first derivatives satisfy the nonlinear chain rule.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+Substitute the logarithmic representation and the Markov identity
+$P_{r,t}=P_{r,s}P_{s,t}$.  The exponential of the intermediate nonlinear value
+is exactly $P_{s,t}e^{\vartheta\phi}$.  The intermediate normalization cancels
+when the two tangent kernels are composed.  The derivative statement is the
+Banach chain rule, and conversely the kernel identity integrated against
+bounded terminal directions identifies the derivative of the two sides of the
+time-consistency formula; equality at zero payoff fixes the integration
+constant.
+\end{proof}
+
+\section{Weak convergence under bounded exponential tilting}
+
+Let $S$ be a Polish path space and suppose $P_n\Rightarrow P$.  Let
+$\Phi:S\to\R$ be bounded continuous and set
+\[
+ {dQ_n\over dP_n}={e^{\vartheta\Phi}\over P_ne^{\vartheta\Phi}},
+ \qquad
+ {dQ\over dP}={e^{\vartheta\Phi}\over Pe^{\vartheta\Phi}}.
+\]
+
+\begin{lemma}[Tilted weak convergence]\label{lem:tilted-convergence}
+One has $Q_n\Rightarrow Q$.  Moreover, for bounded continuous
+$f_1,\ldots,f_k$,
+\begin{align*}
+ Q_n(f_j)&\to Q(f_j),\\
+ \operatorname{Cov}_{Q_n}(f_i,f_j)&\to
+ \operatorname{Cov}_Q(f_i,f_j).
+\end{align*}
+\end{lemma}
+
+\begin{proof}
+For bounded continuous $G$,
+\[
+ Q_n(G)={P_n(Ge^{\vartheta\Phi})\over P_ne^{\vartheta\Phi}}.
+\]
+Both numerator and denominator converge by weak convergence, and the
+denominators are uniformly bounded below by
+$e^{-\abs\vartheta\norm\Phi_\infty}$.  Apply this with $G=f_j$ and
+$G=f_if_j$.
+\end{proof}
+
+\begin{proposition}[Finite-time kernel convergence]\label{prop:kernel-convergence}
+Suppose path laws of the microscopic collision recursion converge jointly from
+every initial point in a compact set, uniformly for bounded continuous cylinder
+functionals.  Then the exponentially tilted path laws, first derivative
+operators, second derivative operators, and tangent kernels on every finite
+time partition converge locally uniformly in the initial point.
+\end{proposition}
+
+\begin{proof}
+The uniform version of \cref{lem:tilted-convergence} follows because the
+exponential weights are uniformly bounded and the untilted cylinder
+expectations converge locally uniformly.  Conditional tangent kernels are
+ratios of such cylinder expectations.  Iterating the exact microscopic tower
+identity gives joint convergence on a finite partition.
+\end{proof}
+
+\section{The density process and its stochastic logarithm}
+
+Let
+\[
+ dX_s=b(s,X_s)ds+\sigma(s,X_s)dW_s,
+ \qquad a=\sigma\sigma^T,
+\]
+and let
+\[
+ u(t,x)={1\over\vartheta}\log\E_{t,x}e^{\vartheta\phi(X_T)}
+\]
+for bounded terminal payoff $\phi$.  Put
+\[
+ M_s={e^{\vartheta u(s,X_s)}\over e^{\vartheta u(t,x)}}.
+\]
+
+\begin{lemma}[Bounded true density martingale]\label{lem:bounded-density}
+For $t\le s\le T$,
+\[
+ M_s={\E[e^{\vartheta\phi(X_T)}\mid\F_s]
+ \over\E e^{\vartheta\phi(X_T)}}.
+\]
+Hence $M$ is a positive uniformly integrable martingale and
+\[
+ e^{-2\abs\vartheta\norm\phi_\infty}
+ \le M_s\le
+ e^{2\abs\vartheta\norm\phi_\infty}.
+\]
+\end{lemma}
+
+\begin{proof}
+The Markov property identifies the conditional expectation with
+$e^{\vartheta u(s,X_s)}$.  The bounds follow from the bounds on the terminal
+exponential and its expectation.
+\end{proof}
+
+Assume first that $u$ is classical and put
+$Z_s=\sigma(s,X_s)^TDu(s,X_s)$.
+
+\begin{lemma}[Stochastic logarithm]\label{lem:stochastic-log}
+The density satisfies
+\[
+ dM_s=M_s\vartheta Z_s\,dW_s,
+ \qquad
+ M_s=\mathcal E\left(\int_t^s\vartheta Z_r\,dW_r\right).
+\]
+\end{lemma}
+
+\begin{proof}
+The exponential transform $v=e^{\vartheta u}$ solves the linear backward
+Kolmogorov equation.  It\^o's formula applied to $v(s,X_s)$ eliminates the
+drift and leaves $Dv\sigma=\vartheta vDu^T\sigma$.
+\end{proof}
+
+\section{Novikov and BMO routes}
+
+\begin{proposition}[Two true-martingale criteria]\label{prop:two-routes}
+The Girsanov change of measure is valid by either of the following routes.
+
+\begin{enumerate}
+\item If $Z$ is bounded, then
+\[
+ \E\exp\left({\vartheta^2\over2}\int_t^T\abs{Z_s}^2ds\right)<\infty,
+\]
+so Novikov holds.
+\item For bounded terminal payoff, \cref{lem:bounded-density} already proves
+that the stochastic exponential is a uniformly integrable martingale.  Its
+stochastic logarithm is BMO; more precisely, for every stopping time $\tau$,
+\[
+ \E_\tau\int_\tau^T\vartheta^2\abs{Z_s}^2ds
+ \le C(\abs\vartheta\norm\phi_\infty).
+\]
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+The first statement is immediate.  For the second, apply It\^o's formula to
+$\log M_s$ between a stopping time $\tau$ and $T$:
+\[
+ \log M_T-\log M_\tau
+ =\int_\tau^T\vartheta Z_s\,dW_s
+ -{1\over2}\int_\tau^T\vartheta^2\abs{Z_s}^2ds.
+\]
+Take conditional expectation.  The logarithm is uniformly bounded by
+\cref{lem:bounded-density}; rearranging gives the BMO bound.  A bounded positive
+density martingale defines the probability change directly.
+\end{proof}
+
+\begin{theorem}[True Girsanov law]\label{thm:true-Girsanov}
+Define $d\Qp^\phi=M_Td\Pp$.  Then
+\[
+ W_s^{\Qp}=W_s-\int_t^s\vartheta Z_rdr
+\]
+is Brownian under $\Qp^\phi$, and
+\[
+ dX_s=(b+\vartheta aDu)(s,X_s)ds+\sigma(s,X_s)dW_s^{\Qp}.
+\]
+The transition kernel of this diffusion is the terminal tangent kernel.
+\end{theorem}
+
+\begin{proof}
+The density is a true stochastic exponential by
+\cref{prop:two-routes}.  Girsanov's theorem gives the changed Brownian motion
+and drift.  For every bounded terminal direction $\eta$,
+\[
+ \E^{\Qp^\phi}_{t,x}\eta(X_T)
+ ={\E_{t,x}[e^{\vartheta\phi(X_T)}\eta(X_T)]
+  \over\E_{t,x}e^{\vartheta\phi(X_T)}},
+\]
+which is the first derivative of the theta-semigroup.  Hence the transition
+law is its tangent law.
+\end{proof}
+
+\section{Tangent PDE and BSDE consistency}
+
+The entropic PDE is
+\[
+ -u_t-b\cdot Du-{1\over2}a:D^2u
+ -{\vartheta\over2}\abs{\sigma^TDu}^2=0.
+\]
+For terminal direction $\eta$, its derivative $v$ solves
+\[
+ -v_t-(b+\vartheta aDu)\cdot Dv-{1\over2}a:D^2v=0,
+ \qquad v(T)=\eta.
+\]
+
+\begin{proposition}[Three equivalent tangent representations]\label{prop:three-tangents}
+The following objects agree:
+\begin{enumerate}
+\item the Fr\'echet derivative of the terminal solution map;
+\item the solution of the tangent PDE;
+\item the martingale
+\[
+ v(s,X_s)=\E^{\Qp^\phi}[\eta(X_T)\mid\F_s]
+\]
+under the Girsanov tangent law.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+The parabolic implicit-function theorem identifies the first two.  The changed
+state drift in \cref{thm:true-Girsanov} is the drift of the tangent PDE, so
+Feynman--Kac identifies the third.
+\end{proof}
+
+The original solution satisfies the quadratic BSDE
+\[
+ Y_s=\phi(X_T)+\int_s^T{\vartheta\over2}\abs{Z_r}^2dr
+ -\int_s^TZ_r\,dW_r,
+\]
+while the tangent solution satisfies a zero-driver linear BSDE under
+$\Qp^\phi$.  No nonlinear inversion of $Z=\sigma^TDu$ is involved.
+
+\section{Path-space exponential transform}
+
+For a bounded path payoff $\Phi$ define
+\[
+ U(t,\omega)={1\over\vartheta}\log
+ \E_{t,\omega}e^{\vartheta\Phi(X)}.
+\]
+
+\begin{lemma}[Path tower identity]\label{lem:path-tower}
+For $r\le s\le t$,
+\[
+ U(r,\omega)=
+ {1\over\vartheta}\log
+ \E_{r,\omega}
+ \exp\left(\vartheta U(s,X_{[0,s]})\right).
+\]
+The path tangent law satisfies the analogous kernel cocycle.
+\end{lemma}
+
+\begin{proof}
+Condition the terminal exponential on $\F_s$ and use the tower property.  The
+kernel cocycle follows by the same normalization cancellation as in the Markov
+case.
+\end{proof}
+
+In the smooth functional It\^o window, the path exponential transform converts
+\[
+ -\partial_tU-b\cdot\partial_\omega U
+ -{1\over2}a:\partial_{\omega\omega}^2U
+ -{\vartheta\over2}\abs{\sigma^T\partial_\omega U}^2=0
+\]
+into the linear path Kolmogorov equation.  This proves comparison in the
+bounded class by pulling two candidates through the monotone exponential map.
+
+\section{Stable volatility families}
+
+Let $\mathcal P$ be the laws generated by progressively measurable
+volatilities in a compact interval.  Stability under conditioning means that
+every regular conditional continuation law remains in the continuation class;
+stability under pasting means that measurable selections of continuation laws
+can be concatenated after a stopping time.
+
+\begin{proposition}[DPP before 2BSDE]\label{prop:DPP-2BSDE}
+Under conditioning and pasting stability, the value
+\[
+ Y_t=\esssup_{P'\in\mathcal P(t,P)}
+ E^{P'}[\Phi\mid\F_t]
+\]
+is time consistent.  Its nonlinear Doob--Meyer decomposition under every
+$P\in\mathcal P$ produces
+\[
+ Y_t=\Phi-\int_t^TZ_s\,dB_s+K_T^P-K_t^P,
+\]
+where the family $K^P$ satisfies the minimality condition
+\[
+ K_t^P=\essinf_{P'\in\mathcal P(t,P)}E^{P'}[K_T^{P'}\mid\F_t].
+\]
+\end{proposition}
+
+\begin{proof}
+Conditioning stability gives the upper DPP inequality.  Pasting an
+$\varepsilon$-optimal measurable continuation selection gives the lower
+inequality.  Under each fixed $P$, the value is a supermartingale and has a
+Doob--Meyer decomposition.  Dynamic consistency and the essential-supremum
+representation give the minimality relation; conversely, minimality identifies
+the decomposition with the nonlinear value.
+\end{proof}
+
+\section{Conclusion}
+
+The covariance curvature of the tangent probabilities determines the
+logarithmic moment functional through a uniquely solvable probability-valued
+ODE.  Bounded exponential tilting is stable under the microscopic collision
+limit.  The continuum density is a true martingale by a bounded-density/BMO
+argument, with Novikov available in the bounded-gradient window.  The path and
+second-order branches are based on their DPPs before their stochastic
+decompositions are invoked.
+
+\bibliographystyle{plain}
+\bibliography{references}
+\end{document}
