@@ -1,0 +1,709 @@
+\documentclass[11pt,reqno]{amsart}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsfonts,amsthm,mathtools,mathrsfs}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+\usepackage[nameinlink,capitalize]{cleveref}
+\allowdisplaybreaks
+\setlength{\emergencystretch}{2em}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{assumption}[theorem]{Assumption}
+\newtheorem{example}[theorem]{Example}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\A}{\mathcal A}
+\newcommand{\B}{\mathbb B}
+\newcommand{\C}{\mathbb C}
+\newcommand{\E}{\mathbb E}
+\newcommand{\F}{\mathbb F}
+\newcommand{\Pp}{\mathbb P}
+\newcommand{\Qp}{\mathbb Q}
+\newcommand{\R}{\mathbb R}
+\newcommand{\cE}{\mathcal E}
+\newcommand{\cP}{\mathcal P}
+\newcommand{\cS}{\mathcal S}
+\newcommand{\Id}{\mathrm{Id}}
+\newcommand{\esssup}{\operatorname*{ess\,sup}}
+\newcommand{\tr}{\operatorname{tr}}
+\newcommand{\norm}[1]{\left\lVert #1\right\rVert}
+\newcommand{\abs}[1]{\left\lvert #1\right\rvert}
+\newcommand{\pair}[2]{\left\langle #1,#2\right\rangle}
+
+\title[Representations of theta-expectations]{Representation Theory for Theta-Expectations: BSDEs, PPDEs, and Pathwise Games}
+\author{Qian Qi}
+\address{Peking University, Beijing 100871, China}
+\email{qiqian@pku.edu.cn}
+\subjclass[2020]{Primary 60H10, 60H30, 35D40; Secondary 49L25, 60G44, 60H05}
+\keywords{nonlinear expectation, backward stochastic differential equation, path-dependent PDE, second-order BSDE, stochastic game, functional It\^o calculus}
+\date{August 28, 2026}
+
+\begin{document}
+
+\begin{abstract}
+We develop a representation theory for nonlinear theta-expectations after their
+HJB, Isaacs, belief-state, or path-dependent dynamic programming equations have
+been derived.  A single payoff-independent classical Markov law is shown to
+represent the full semigroup only in the linear case.  For a sufficiently
+regular individual payoff, the solution jet instead determines an exact
+payoff-calibrated linear parabolic equation and Feynman--Kac formula.  We then
+separate the available stochastic representations by equation type: Markov
+semilinear equations yield FBSDEs; control equations yield controlled or
+randomized BSDEs; game equations retain their lower, upper, mixed, or pure
+strategy structure; convex second-order equations admit a nondominated 2BSDE
+branch; nonconvex second-order Isaacs equations remain game or nonlinear
+martingale problems; genuine path states lead to PPDEs and path-dependent
+BSDEs or 2BSDEs.
+
+Two complete actual path models are constructed from deterministic Gaussian
+shifts.  In the first, a noncompact pure drift game with a genuinely
+path-dependent terminal payoff has an entropic value.  Functional It\^o
+calculus and completion of squares identify the pure saddle, the semilinear
+PPDE, and a quadratic BSDE.  In the second, the controller selects volatility;
+the deterministic prelimit converges to a nondominated family of continuous
+martingale laws, the value solves a path-dependent $G$-heat equation, and the
+minimal 2BSDE represents the same nonlinear evaluation.  Girsanov formulas are
+used only after a law or calibrated diffusion has been fixed and never as an
+upstream derivation of the theta-semigroup.
+\end{abstract}
+
+\maketitle
+\tableofcontents
+
+\section{Introduction}
+
+The preceding papers derive nonlinear semigroups from deterministic fast
+systems by a sequence of spectral response, rough homogenization, filtering,
+and dynamic programming limits.  Once the HJB or Isaacs equation is known, one
+may ask for a stochastic representation.  This question is delicate because
+several non-equivalent notions are often called a probabilistic
+representation.
+
+A classical Feynman--Kac formula uses one linear Markov law.  A control problem
+uses a family of laws indexed by controls.  A zero-sum game uses two
+nonanticipative strategy classes.  A semilinear BSDE uses one forward law but a
+nonlinear backward driver.  A second-order BSDE uses a nondominated family of
+volatility laws.  A path-dependent PDE lives on a canonical path space and
+requires horizontal and vertical derivatives or an appropriate viscosity
+framework.  These objects cannot be interchanged without structural
+hypotheses.
+
+Our first result is an obstruction: if one payoff-independent classical Markov
+kernel represents every terminal payoff, then the semigroup is linear.  This
+excludes a universal single-law representation of a genuinely nonlinear
+theta-expectation.
+
+Our second result is positive and payoff dependent.  If a solution is smooth
+and the nonlinear generator is differentiable in its jet variables, its own
+jet calibrates an exact linear operator with a residual source.  This gives a
+Feynman--Kac formula for that payoff without reversing the logical dependency:
+the calibrated coefficients are defined only after the nonlinear solution is
+known.
+
+The remaining theory is typed by the PDE.  Pardoux--Peng BSDEs
+\cite{PardouxPeng1990} represent Markov semilinear equations; the general
+financial/control framework is developed in El Karoui--Peng--Quenez
+\cite{ElKarouiPengQuenez1997}.  Fully nonlinear path-dependent equations and
+second-order BSDEs are treated in
+\cite{SonerTouziZhang2012,EkrenTouziZhang2014I,EkrenTouziZhang2014II}, while
+functional It\^o calculus is developed by Cont--Fourni\'e
+\cite{ContFournie2013}.  We preserve the game types established in the
+companion filtering/Isaacs paper \cite{QiGames}.
+
+The actual entropic path game in \cref{sec:entropic} goes beyond a formal
+pointwise Hamiltonian optimization.  Completion of squares inside functional
+It\^o's formula proves both saddle inequalities.  Bounded uniformly continuous
+path payoffs are obtained by cylindrical approximation and stability.  The
+volatility-control model in \cref{sec:2bsde-actual} gives a separate actual
+fully nonlinear branch and a nondominated 2BSDE.
+
+\subsection*{Organization}
+\Cref{sec:input} records the upstream dependency guardrail.
+\Cref{sec:nogo} proves the single-law obstruction.
+\Cref{sec:calibration} develops exact jet calibration.
+\Cref{sec:markov-bsde,sec:control-game,sec:second-order} give the typed Markov
+representations.  \Cref{sec:path} formulates PPDEs and path evaluations.  The
+actual entropic and volatility-control models are in
+\cref{sec:entropic,sec:2bsde-actual}.  The final section treats Girsanov
+transformations and summarizes the hierarchy.
+
+\section{Upstream input and dependency guardrail}\label{sec:input}
+
+The input to this paper is one of the following objects, already derived by a
+DPP and a comparison theorem:
+\begin{enumerate}[label=\textup{(\roman*)}]
+\item a Markov HJB/theta semigroup;
+\item sequential lower and upper Isaacs semigroups;
+\item a simultaneous mixed or verified pure Isaacs semigroup;
+\item a belief-state HJB semigroup;
+\item a path-dependent value functional on a canonical path space.
+\end{enumerate}
+No CM2, spectral response, enhanced WIP, homogenization, filter stability, DPP,
+or viscosity comparison is proved by a representation theorem below.
+
+We use terminal-value generator orientation:
+\begin{equation}\label{eq:orientation}
+ \partial_tu+F(t,x,u,Du,D^2u)=0,
+ \qquad u(T,\cdot)=\Phi.
+\end{equation}
+Where differentiable, $F_X$ is positive semidefinite.  The diffusion convention
+is
+\[
+ \frac12\sigma\sigma^T:D^2u.
+\]
+
+\section{The single-law obstruction}\label{sec:nogo}
+
+Let $\cE_{s,t}$ be a nonlinear evaluation on bounded continuous terminal
+payoffs.
+
+\begin{theorem}[No payoff-independent linear law]\label{thm:single-law}
+Suppose that for every bounded continuous $\Phi$ there is one and the same
+Markov transition kernel $P_{s,t}(x,dy)$, independent of $\Phi$, such that
+\begin{equation}\label{eq:single-law}
+ \cE_{s,t}[\Phi](x)=\int\Phi(y)P_{s,t}(x,dy).
+\end{equation}
+Then $\cE_{s,t}$ is linear in $\Phi$.  In particular, a semigroup with a
+genuinely nonlinear Hamiltonian or nonlinear Hessian dependence cannot satisfy
+\eqref{eq:single-law}.
+\end{theorem}
+
+\begin{proof}
+The right side of \eqref{eq:single-law} preserves arbitrary finite linear
+combinations.  Hence every transition operator is linear.  On a common core,
+the infinitesimal generator is also linear, which is incompatible with a
+genuinely nonlinear $F$.
+\end{proof}
+
+\begin{remark}
+The theorem does not exclude a payoff-calibrated law, a control-indexed family,
+a game, a BSDE, or a nondominated family.  It excludes only one classical law
+that is both payoff independent and valid for the whole nonlinear semigroup.
+\end{remark}
+
+\section{Exact jet calibration}\label{sec:calibration}
+
+Assume $F$ in \eqref{eq:orientation} is $C^1$ in $(y,p,X)$ on a representation
+window and $u$ is classical there.  Define along the solution
+\begin{align}
+ a^u(t,x)&=F_X(t,x,u,Du,D^2u),
+ \label{eq:au}\
+ b^u(t,x)&=F_p(t,x,u,Du,D^2u),
+ \label{eq:bu}\
+ c^u(t,x)&=F_y(t,x,u,Du,D^2u),
+ \label{eq:cu}\
+ r^u(t,x)&=F(t,x,u,Du,D^2u)
+ -a^u:D^2u-b^u\cdot Du-c^uu.
+ \label{eq:ru}
+\end{align}
+
+\begin{theorem}[Exact calibrated linear equation]\label{thm:calibration}
+The same function $u$ solves
+\begin{equation}\label{eq:calibrated-PDE}
+ \partial_tu+a^u:D^2u+b^u\cdot Du+c^uu+r^u=0.
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+Substitute \eqref{eq:ru} into \eqref{eq:calibrated-PDE}; the left side becomes
+that of \eqref{eq:orientation}.
+\end{proof}
+
+Assume $a^u\ge\lambda I$ and choose $\sigma^u$ with
+\begin{equation}\label{eq:sigma-calibrated}
+ \sigma^u(\sigma^u)^T=2a^u.
+\end{equation}
+Let
+\begin{equation}\label{eq:calibrated-SDE}
+ dX_s=b^u(s,X_s)ds+\sigma^u(s,X_s)dW_s
+\end{equation}
+be well posed.
+
+\begin{theorem}[Payoff-calibrated Feynman--Kac formula]\label{thm:FK}
+If the exponential and source terms are integrable, then
+\begin{equation}\label{eq:FK}
+\begin{aligned}
+ u(t,x)=\E_{t,x}\Big[&e^{\int_t^Tc^u(r,X_r)dr}\Phi(X_T)\\
+ &+\int_t^Te^{\int_t^sc^u(r,X_r)dr}r^u(s,X_s)ds\Big].
+\end{aligned}
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+Apply It\^o's formula to
+$e^{\int_t^sc^u(r,X_r)dr}u(s,X_s)$.  Equation
+\eqref{eq:calibrated-PDE} leaves drift
+$-e^{\int_t^sc^u}r^u ds$.  Integrate, take expectations, and rearrange.
+\end{proof}
+
+\begin{remark}[Direction of dependence]
+The coefficients $a^u,b^u,c^u,r^u$ depend on the already constructed
+solution.  Formula \eqref{eq:FK} represents that payoff.  It cannot be used as
+an independent derivation of the upstream nonlinear semigroup.
+\end{remark}
+
+\section{Markov semilinear FBSDEs}\label{sec:markov-bsde}
+
+Consider
+\begin{equation}\label{eq:semilinear-PDE}
+ \partial_tu+\frac12\tr(\sigma\sigma^TD^2u)+b\cdot Du
+ +f(t,x,u,\sigma^TDu)=0,
+ \qquad u(T)=\Phi.
+\end{equation}
+Let
+\begin{equation}\label{eq:forward}
+ dX_s=b(s,X_s)ds+\sigma(s,X_s)dW_s
+\end{equation}
+and
+\begin{equation}\label{eq:BSDE}
+ Y_s=\Phi(X_T)+\int_s^Tf(r,X_r,Y_r,Z_r)dr-
+ \int_s^TZ_r\,dW_r.
+\end{equation}
+
+\begin{theorem}[Markov FBSDE representation]\label{thm:FBSDE}
+Under the standard Lipschitz, growth, and forward well-posedness hypotheses,
+\eqref{eq:BSDE} has a unique solution and
+\begin{equation}\label{eq:YZ}
+ Y_s=u(s,X_s),
+ \qquad
+ Z_s=\sigma(s,X_s)^TDu(s,X_s)
+\end{equation}
+whenever $u$ is classical.  The identity extends in the usual viscosity/BSDE
+sense under the standard stability assumptions.
+\end{theorem}
+
+\begin{proof}
+Apply It\^o's formula to $u(s,X_s)$ and use
+\eqref{eq:semilinear-PDE}.  The martingale coefficient is
+$\sigma^TDu$.  BSDE uniqueness identifies the pair.
+\end{proof}
+
+\begin{remark}
+The HJB gradient $p=Du$ and the BSDE integrand $Z$ are not the same variable.
+Their dimensions and probabilistic meanings differ; the relation is
+\eqref{eq:YZ}.
+\end{remark}
+
+\section{Controlled equations and games}\label{sec:control-game}
+
+For a control equation
+\begin{equation}\label{eq:control-HJB}
+ \partial_tu+\sup_{\alpha\in A}\left\{
+ \frac12a^\alpha:D^2u+b^\alpha\cdot Du
+ +f^\alpha(t,x,u)\right\}=0,
+\end{equation}
+the representation is the value over admissible controlled diffusions.  If a
+measurable optimal feedback exists, verification gives a feedback-selected
+BSDE; without one, the control family or a randomized/constrained BSDE remains
+part of the representation.
+
+\begin{theorem}[Controlled representation]\label{thm:control}
+Assume compactness or relaxed compactness, measurable selection, tightness,
+DPP, and comparison for \eqref{eq:control-HJB}.  Then its viscosity solution is
+the controlled diffusion value.  A classical fixed-law BSDE represents the
+value only after an optimal feedback has been selected and verified.
+\end{theorem}
+
+\begin{proof}
+The DPP and comparison identify the controlled value with the viscosity
+solution.  For a smooth solution, It\^o's formula gives the Hamiltonian
+inequality for every control and equality along an optimizer.  Approximation
+and stability extend the verification identity.
+\end{proof}
+
+For a two-player equation, one retains the corresponding game type.
+
+\begin{theorem}[Typed game representation]\label{thm:game-type}
+Sequential lower and upper Isaacs equations are represented by their respective
+nonanticipative games.  A simultaneous relaxed equation is represented by the
+mixed game.  A pure feedback representation is valid only when a pure saddle
+has been proved, for example by the pure-Isaacs or strong concave--convex
+theorems of the companion game paper.
+\end{theorem}
+
+\begin{proof}
+Each statement is the verification/DPP theorem for the corresponding strategy
+space.  The optimization order appears in the local Hamiltonian and cannot be
+changed by a stochastic representation.  Mixed minimax convexifies the action
+sets but does not create pure selectors.
+\end{proof}
+
+\section{Fully nonlinear second-order equations}\label{sec:second-order}
+
+A convex volatility-uncertainty equation has the form
+\begin{equation}\label{eq:convex-second}
+ \partial_tu+\sup_{a\in\A(t,x)}
+ \left\{\frac12a:D^2u+f(t,x,u,Du,a)\right\}=0.
+\end{equation}
+Under stability of the nondominated class, aggregation, comparison, and the
+minimality condition, it admits a second-order BSDE representation
+\cite{SonerTouziZhang2012}.
+
+By contrast, a nonconvex Hessian dependence such as
+\[
+ \sup_u\inf_v\left\{\tfrac12a^{u,v}:D^2u+\cdots\right\}
+\]
+is a game unless an independent nonconvex second-order representation theorem
+is proved.
+
+\begin{theorem}[Second-order typing rule]\label{thm:second-order-rule}
+A theta-equation enters the 2BSDE branch only when its Hessian generator is the
+support function of a stable volatility family, or when an equivalent
+second-order representation has been proved.  A generic nonconvex Isaacs
+equation remains a game or nonlinear martingale problem.
+\end{theorem}
+
+\begin{proof}
+A 2BSDE value is a supremum, or more generally a time-consistent nonlinear
+expectation, over a specified nondominated volatility family.  Its local
+Hessian generator is therefore the corresponding support function.  Without
+such a representation, the defining dynamic programming structure is the
+original sup--inf game, which cannot be replaced by a convex volatility family
+without changing the PDE.
+\end{proof}
+
+\section{Path-dependent equations}\label{sec:path}
+
+Let $\Omega=C([0,T];\R^d)$ with canonical process $B$ and concatenation
+$\omega\otimes_t\omega'$.  A nonanticipative functional is written
+$U(t,\omega)$.  For sufficiently smooth functionals, $\partial_t^HU$ denotes
+the horizontal derivative, while $\partial_\omega U$ and
+$\partial_{\omega\omega}^2U$ are vertical derivatives.
+
+A semilinear PPDE is
+\begin{equation}\label{eq:semilinear-PPDE}
+ \partial_t^HU+rac12\tr(\sigma\sigma^T
+ \partial_{\omega\omega}^2U)
+ +b\cdot\partial_\omega U
+ +f(t,\omega,U,\sigma^T\partial_\omega U)=0.
+\end{equation}
+Functional It\^o calculus gives a path-dependent BSDE representation for smooth
+solutions, and viscosity stability extends the result under the comparison
+framework of \cite{EkrenTouziZhang2014I,EkrenTouziZhang2014II}.
+
+\begin{definition}[Path evaluation]
+For a terminal path functional $\Phi$, define
+\begin{equation}\label{eq:path-evaluation}
+ \cE_{s,t}[\Phi](\omega_{[0,s]})=U(s,\omega_{[0,s]}).
+\end{equation}
+The path-space DPP gives time consistency under concatenation.
+\end{definition}
+
+A convex fully nonlinear PPDE may use a path-dependent 2BSDE.  A nonconvex game
+PPDE remains a path game.  No finite-dimensional reduction is imposed without
+a proved sufficient statistic.
+
+\section{An actual entropic pure path game}\label{sec:entropic}
+
+We now construct a complete path-dependent branch from deterministic fast
+noise.  Let
+\[
+ \Omega_0=(\R)^{\mathbb Z}
+\]
+with Gaussian product measure and left shift.  Let $\xi_k$ be the coordinate at
+integer time $k$.  For slow step $h=\varepsilon^2$, define
+\begin{equation}\label{eq:prelimit-drift-game}
+ X_{k+1}^\varepsilon=X_k^\varepsilon
+ +\varepsilon\xi_{k+1}
+ +\varepsilon^2(u_k+v_k).
+\end{equation}
+Under bounded-energy progressively measurable controls, polygonal interpolation
+converges to
+\begin{equation}\label{eq:drift-game-SDE}
+ dX_t=(u_t+v_t)dt+dW_t.
+\end{equation}
+
+The maximizing player chooses $u\in\R$ and the minimizing player chooses
+$v\in\R$.  Let
+\begin{equation}\label{eq:running-game}
+ \ell(u,v)=-\frac\mu2u^2+\frac\nu2v^2,
+ \qquad \mu,\nu>0.
+\end{equation}
+For a path-gradient $p$, the Hamiltonian is
+\begin{equation}\label{eq:path-Hamiltonian}
+ \sup_u\inf_v\left\{p(u+v)-\frac\mu2u^2+\frac\nu2v^2\right\}
+ =c p^2,
+ \qquad
+ c=\frac1{2\mu}-\frac1{2\nu},
+\end{equation}
+with unique saddle
+\begin{equation}\label{eq:path-saddle}
+ u^*(p)=\frac p\mu,
+ \qquad
+ v^*(p)=-\frac p\nu.
+\end{equation}
+
+Choose a bounded uniformly continuous terminal functional that depends on the
+entire final window, for example
+\begin{equation}\label{eq:path-payoff}
+ \Phi(\omega)=\tanh\left(
+ \int_{T-\delta}^T\omega_sds+
+ \max_{T-\delta\le s\le T}\omega_s
+ \right).
+\end{equation}
+It is not a function of $\omega_T$ alone.
+
+Assume first $c\ne0$ and put $\theta=2c$.  Define
+\begin{equation}\label{eq:entropic-value}
+ U(t,\omega)=\frac1\theta\log\E\left[
+ \exp\left(\theta\Phi\bigl(
+ \omega\otimes_t(\omega_t+W_\cdot-W_t)
+ \bigr)\right)\right].
+\end{equation}
+For $c=0$, use the linear conditional expectation.
+
+\begin{theorem}[Entropic path PPDE and DPP]\label{thm:entropic-PPDE}
+The functional \eqref{eq:entropic-value} is bounded, uniformly continuous, and
+time consistent.  It is the unique bounded viscosity solution of
+\begin{equation}\label{eq:entropic-PPDE}
+ \partial_t^HU+rac12\partial_{\omega\omega}^2U
+ +c\abs{\partial_\omega U}^2=0,
+ \qquad U(T,\cdot)=\Phi.
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+The tower property of conditional expectation gives the path-space DPP.
+For a smooth cylindrical terminal functional, set $V=e^{\theta U}$.  Functional
+It\^o calculus shows that $V$ solves the linear path heat equation; the identity
+$\theta=2c$ cancels the quadratic gradient term.  Hence $U$ solves
+\eqref{eq:entropic-PPDE}.  Approximate \eqref{eq:path-payoff} uniformly by
+bounded smooth cylindrical functionals.  Stability of the entropic formula and
+of viscosity solutions gives existence for $\Phi$.  Comparison follows by the
+same exponential transform and comparison for the linear path heat equation.
+\end{proof}
+
+The formal Hamiltonian saddle must still be verified at the game level.
+
+\begin{theorem}[Pure path-game verification]\label{thm:path-game}
+Let $J_{t,\omega}(u,v)$ be the payoff consisting of terminal value
+\eqref{eq:path-payoff} plus the integral of \eqref{eq:running-game} along
+\eqref{eq:drift-game-SDE}.  Then the feedbacks
+\begin{equation}\label{eq:feedback-path}
+ u_s^*=\frac{\partial_\omega U(s,X)}{\mu},
+ \qquad
+ v_s^*=-\frac{\partial_\omega U(s,X)}{\nu}
+\end{equation}
+form a pure saddle in the verification class, and
+\begin{equation}\label{eq:saddle-ineq}
+ J_{t,\omega}(u,v^*)\le U(t,\omega)\le
+ J_{t,\omega}(u^*,v)
+\end{equation}
+for every admissible $u,v$.  Approximation extends the value identity to the
+bounded path payoff \eqref{eq:path-payoff}.
+\end{theorem}
+
+\begin{proof}
+For a smooth cylindrical approximation, apply functional It\^o's formula to
+$U(s,X)$ under arbitrary controls.  With $p=\partial_\omega U$, subtract the
+PPDE drift and complete squares:
+\begin{align}\label{eq:complete-squares}
+ &-cp^2+p(u+v)-\frac\mu2u^2+\frac\nu2v^2\\
+ &\qquad=-\frac\mu2\left(u-\frac p\mu\right)^2
+ +\frac\nu2\left(v+\frac p\nu\right)^2.
+\end{align}
+Set $v=v^*$ to obtain a nonpositive residual and the left inequality in
+\eqref{eq:saddle-ineq}; set $u=u^*$ to obtain a nonnegative residual and the
+right inequality.  At both feedbacks the residual is zero.  Uniform
+cylindrical approximation, boundedness of $\Phi$, and stability of the
+controlled laws pass the saddle identity to \eqref{eq:path-payoff}.
+\end{proof}
+
+\begin{theorem}[Quadratic BSDE representation]\label{thm:quadratic-BSDE}
+The entropic value is represented by
+\begin{equation}\label{eq:quadratic-BSDE}
+ Y_t=\Phi(X)+\int_t^Tc\abs{Z_s}^2ds-
+ \int_t^TZ_s\,dW_s,
+\end{equation}
+with
+\begin{equation}\label{eq:entropic-BSDE-formula}
+ Y_t=\frac1{2c}\log\E_t[e^{2c\Phi(X)}]
+\end{equation}
+when $c\ne0$.  For smooth data,
+$Z_t=\partial_\omega U(t,X)$.
+\end{theorem}
+
+\begin{proof}
+The process $e^{2cY_t}$ is a martingale: It\^o's formula cancels the drift in
+\eqref{eq:quadratic-BSDE}.  Its terminal value is $e^{2c\Phi}$, giving
+\eqref{eq:entropic-BSDE-formula}.  Conversely the martingale representation
+theorem and logarithmic It\^o formula produce \eqref{eq:quadratic-BSDE}.
+Functional It\^o calculus identifies $Z$ for smooth $U$.
+\end{proof}
+
+\section{An actual volatility-control PPDE and 2BSDE}\label{sec:2bsde-actual}
+
+Use another deterministic Gaussian shift and let the controller choose
+$\alpha_k\in[\underline\sigma,\overline\sigma]$ predictably.  Define
+\begin{equation}\label{eq:prelimit-vol}
+ X_{k+1}^\varepsilon=X_k^\varepsilon+
+ \varepsilon\alpha_k\xi_{k+1}.
+\end{equation}
+The limit laws are those of
+\begin{equation}\label{eq:vol-SDE}
+ X_t=x+\int_0^t\alpha_s\,dW_s,
+ \qquad
+ \underline\sigma\le\alpha_s\le\overline\sigma.
+\end{equation}
+Let $\cP_H$ denote the resulting stable nondominated family of continuous
+martingale laws on canonical space.
+
+For a bounded uniformly continuous path payoff $\Phi$, define
+\begin{equation}\label{eq:G-value}
+ U(t,\omega)=\sup_{\Pp\in\cP_H(t,\omega)}
+ \E^{\Pp}[\Phi(\omega\otimes_tB)].
+\end{equation}
+
+\begin{theorem}[Actual path-dependent volatility value]\label{thm:G-PPDE}
+The deterministic prelimit values associated with \eqref{eq:prelimit-vol}
+converge to \eqref{eq:G-value}.  The value is the unique bounded viscosity
+solution of
+\begin{equation}\label{eq:G-PPDE}
+ \partial_t^HU+G(\partial_{\omega\omega}^2U)=0,
+ \qquad
+ G(\gamma)=\frac12\sup_{a\in
+ [\underline\sigma^2,\overline\sigma^2]}a\gamma,
+\end{equation}
+with terminal condition $\Phi$.
+\end{theorem}
+
+\begin{proof}
+Conditional Gaussian increments make \eqref{eq:prelimit-vol} a controlled
+martingale array.  Predictable quadratic variations converge to
+$\int\alpha_s^2ds$, and tightness plus the martingale problem identifies every
+subsequential law in $\cP_H$.  Conversely, piecewise constant predictable
+volatilities are approximated by prelimit controls, giving the lower bound for
+values.  The DPP follows from concatenation of volatility controls.  Monotone
+consistency yields \eqref{eq:G-PPDE}; path-dependent comparison identifies the
+limit.
+\end{proof}
+
+\begin{theorem}[Minimal 2BSDE representation]\label{thm:2BSDE}
+There exist processes $(Y,Z)$ and, for every $\Pp\in\cP_H$, an increasing
+process $K^\Pp$ such that
+\begin{equation}\label{eq:2BSDE}
+ Y_t=\Phi-
+ \int_t^TZ_s\,dB_s+K_T^\Pp-K_t^\Pp,
+ \qquad \Pp\text{-a.s.},
+\end{equation}
+and the family $K^\Pp$ satisfies the standard minimality condition.  Moreover,
+for every $\Pp\in\cP_H$,
+\begin{equation}\label{eq:esssup-rep}
+ Y_t=\esssup_{\Pp'\in\cP_H(t+,\Pp)}
+ \E^{\Pp'}[\Phi\mid\mathcal F_t],
+ \qquad \Pp\text{-a.s.}
+\end{equation}
+Thus $Y_t=U(t,B)$ and \eqref{eq:2BSDE} represents the actual path-dependent
+volatility evaluation.
+\end{theorem}
+
+\begin{proof}
+The family \eqref{eq:G-value} is time consistent and stable under
+concatenation.  The nonlinear Doob--Meyer decomposition under each
+$\Pp\in\cP_H$, together with aggregation of the universal martingale part,
+gives \eqref{eq:2BSDE}.  The minimality condition is equivalent to the dynamic
+essential-supremum formula \eqref{eq:esssup-rep}.  Conversely,
+\eqref{eq:esssup-rep} implies the DPP and identifies the PPDE value.  This is
+the standard second-order BSDE representation applied to the explicit stable
+volatility family generated by \eqref{eq:prelimit-vol}.
+\end{proof}
+
+\begin{remark}
+This branch is convex in the Hessian variable.  It does not represent an
+arbitrary nonconvex Isaacs PPDE.
+\end{remark}
+
+\section{Girsanov transformations after calibration}\label{sec:girsanov}
+
+Let a calibrated or feedback-selected diffusion be fixed, and let $\vartheta$
+be progressively measurable with
+\begin{equation}\label{eq:Novikov}
+ \E\exp\left(\frac12\int_t^T\abs{\vartheta_s}^2ds\right)<\infty.
+\end{equation}
+Define
+\begin{equation}\label{eq:density}
+ \mathcal Z_T=
+ \exp\left(\int_t^T\vartheta_s\,dW_s
+ -\frac12\int_t^T\abs{\vartheta_s}^2ds\right).
+\end{equation}
+Under $d\Qp=\mathcal Z_Td\Pp$,
+$W_s^\Qp=W_s-\int_t^s\vartheta_rdr$ is Brownian and the drift changes from
+$b$ to $b+\sigma\vartheta$.
+
+\begin{theorem}[Post-calibration Girsanov rule]\label{thm:girsanov}
+Every formula obtained from \eqref{eq:density} represents the already selected
+or calibrated payoff.  It neither proves the upstream nonlinear HJB/Isaacs
+limit nor produces one payoff-independent law for the full theta-semigroup.
+\end{theorem}
+
+\begin{proof}
+Girsanov's theorem changes measure for a fixed semimartingale law.  The density
+contains the already chosen $\vartheta$ and $\sigma$.  The single-law
+obstruction \cref{thm:single-law} prevents promoting this transformed law to a
+universal representation of a genuinely nonlinear semigroup.
+\end{proof}
+
+\section{The representation hierarchy}\label{sec:hierarchy}
+
+\begin{theorem}[Typed representation theorem]\label{thm:hierarchy}
+Let a theta, HJB, Isaacs, belief-state, or path semigroup have been derived by
+an upstream DPP and comparison theorem.
+\begin{enumerate}[label=\textup{(\roman*)}]
+\item every sufficiently smooth individual payoff admits the exact calibrated
+linearization and Feynman--Kac formula of \cref{thm:calibration,thm:FK};
+\item a Markov semilinear equation admits the FBSDE representation of
+\cref{thm:FBSDE};
+\item a control HJB admits a controlled, relaxed, or randomized representation,
+with a fixed feedback BSDE only after verification;
+\item a game equation retains its sequential, mixed, or pure type;
+\item a convex volatility-uncertainty equation may use a 2BSDE, while a generic
+nonconvex second-order Isaacs equation remains a game or nonlinear martingale
+problem;
+\item a genuine path-state equation admits a PPDE and, according to its type, a
+path-dependent BSDE or 2BSDE;
+\item Girsanov transformations apply only after a law has been fixed and the
+exponential integrability condition holds.
+\end{enumerate}
+None of these conclusions is an upstream proof of homogenization or the DPP.
+\end{theorem}
+
+\begin{proof}
+Items (i)--(vii) are respectively
+\cref{thm:calibration,thm:FK,thm:FBSDE,thm:control,thm:game-type,
+thm:second-order-rule,thm:entropic-PPDE,thm:2BSDE,thm:girsanov}.  The dependency
+statement follows from the definitions: every calibrated coefficient,
+feedback, game value, or nondominated law family is constructed only after the
+upstream equation and admissible strategy class have been fixed.
+\end{proof}
+
+\section{Conclusion}
+
+A nonlinear theta-expectation has no universal classical law, but it has a
+rich, precisely typed representation theory.  Jet calibration gives an exact
+payoff-dependent linear law.  Semilinear equations give FBSDEs, control
+problems give controlled families, games retain their strategy type, and
+convex volatility uncertainty gives a 2BSDE.  The deterministic Gaussian
+models show that the path-dependent pure-game, entropic PPDE, quadratic BSDE,
+volatility PPDE, and nondominated 2BSDE branches are actual rather than formal.
+The causal separation from the deterministic microscopic derivation is
+maintained throughout.
+
+\section*{Acknowledgements and disclosure}
+The author is responsible for every mathematical statement and citation in the
+circulated version.  This referee draft was assembled with computational and
+language-model assistance; all proofs require human verification before
+submission.
+
+\bibliographystyle{amsplain}
+\bibliography{references}
+
+\end{document}
