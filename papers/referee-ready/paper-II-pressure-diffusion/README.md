@@ -1,6 +1,12 @@
-# Paper II — build and circulation notes
+# Paper II — referee revision v4
 
-Compile with:
+**Controlling source:** `main.tex`  
+**Controlling bibliography:** `references.bib`  
+**Round-four frozen copies:** `main-round4.tex`, `references-round4.bib`
+
+Title: *Pressure, Physical Diffusion, and Uniform Full-Frequency Suspension Response for Moving Collision Systems*.
+
+Build from this directory:
 
 ```bash
 pdflatex main
@@ -9,11 +15,14 @@ pdflatex main
 pdflatex main
 ```
 
-This paper is mathematically downstream of Paper I only through the explicitly
-restated third-order collision-response hypothesis.  The proof of every new
-statement—common-space stabilization, pressure root, renewal formula,
-covariance identities, coefficient lift, ellipticity, and the high-frequency
-family theorems—is included in `main.tex`.
+The paper proves the common-space stabilization, physical pressure root,
+symmetrized Green--Kubo identity, oriented renewal theorem, and two actual
+full-frequency moving-family results:
 
-The human authors must verify author metadata, acknowledgements, bibliography,
-and every imported hypothesis before circulation.
+1. an explicit Diophantine branch-roof theorem for the nonconjugate moving
+   collision map;
+2. a temporal-shear/Dolgopyat theorem for analytic no-eclipse moving open
+   billiards.
+
+It also proves the exact triangular Lorentz finite-horizon interval
+`sqrt(3)/4 < r < 1/2`.
