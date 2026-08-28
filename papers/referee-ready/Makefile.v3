@@ -1,0 +1,34 @@
+LATEXMK ?= latexmk
+FLAGS := -pdf -interaction=nonstopmode -halt-on-error -file-line-error
+
+PAPER_I := paper-I-bilateral-response/main-submission.tex
+PAPER_II := paper-II-pressure-diffusion/main-final.tex
+PAPER_III := paper-III-rough-theta/main-final.tex
+PAPER_IV := paper-IV-filtering-games/main-final.tex
+PAPER_V := paper-V-representations/main-final.tex
+PAPERS := $(PAPER_I) $(PAPER_II) $(PAPER_III) $(PAPER_IV) $(PAPER_V)
+
+.PHONY: all paper-I paper-II paper-III paper-IV paper-V clean
+
+all: paper-I paper-II paper-III paper-IV paper-V
+
+paper-I:
+	cd $(dir $(PAPER_I)) && $(LATEXMK) $(FLAGS) $(notdir $(PAPER_I))
+
+paper-II:
+	cd $(dir $(PAPER_II)) && $(LATEXMK) $(FLAGS) $(notdir $(PAPER_II))
+
+paper-III:
+	cd $(dir $(PAPER_III)) && $(LATEXMK) $(FLAGS) $(notdir $(PAPER_III))
+
+paper-IV:
+	cd $(dir $(PAPER_IV)) && $(LATEXMK) $(FLAGS) $(notdir $(PAPER_IV))
+
+paper-V:
+	cd $(dir $(PAPER_V)) && $(LATEXMK) $(FLAGS) $(notdir $(PAPER_V))
+
+clean:
+	@for f in $(PAPERS); do \
+		d=$$(dirname $$f); b=$$(basename $$f .tex); \
+		(cd $$d && $(LATEXMK) -C $$b.tex); \
+	done
