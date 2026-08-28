@@ -10,21 +10,21 @@ canonically calibrates a linear parabolic operator along its own jet.  This
 yields a payoff-dependent diffusion/Feynman--Kac formula without reversing the
 upstream dependency.
 
-We then separate the available stochastic representations by PDE type.
-Semilinear Markov equations yield classical FBSDEs; controlled HJB equations
-yield control or randomized-BSDE representations; convex fully nonlinear
-second-order equations may yield 2BSDEs; nonconvex Isaacs equations retain a
-game or nonlinear martingale-problem representation; genuinely path-dependent
-problems yield PPDEs and path-dependent BSDE/2BSDE branches.  Girsanov formulas
-are applied only after calibration and only under the corresponding
-integrability condition.  The gradient variable `p` and the BSDE integrand `Z`
-are related by `Z=sigma^T Du` and are never identified directly.
+We separate the available stochastic representations by PDE type.  Semilinear
+Markov equations yield classical FBSDEs; controlled HJB equations yield control
+or randomized-BSDE representations; convex fully nonlinear second-order
+equations may yield 2BSDEs; nonconvex Isaacs equations retain a game or
+nonlinear martingale-problem representation; genuinely path-dependent problems
+yield PPDEs and path-dependent BSDE/2BSDE branches.  Girsanov formulas are
+applied only after calibration and only under the corresponding integrability
+condition.  The gradient variable `p` and the BSDE integrand `Z` are related by
+`Z=sigma^T Du` and are never identified directly.
 
 ---
 
 ## 1. Upstream input and dependency guardrail
 
-The input is one of the following already established objects:
+The input is one of:
 
 1. a Markov HJB/theta semigroup from Paper III;
 2. a sequential or simultaneous Isaacs semigroup from Paper IV;
@@ -59,36 +59,53 @@ same Markov transition law `P_{s,t}(x,dy)`, independent of `phi`, such that
 \]
 
 Then `mathcal E_{s,t}` is linear in `phi`.  In particular, if the infinitesimal
-generator contains a nonlinear Hamiltonian or a nonlinear Hessian dependence,
+generator contains a nonlinear Hamiltonian or nonlinear Hessian dependence,
 (2.1) is impossible.
 
 #### Proof
 
-The right-hand side of (2.1) preserves arbitrary linear combinations.  Hence
-the semigroup is linear.  Its generator, on a common core, is therefore linear.
-A nonlinear HJB/Isaacs generator contradicts this conclusion.
+The right-hand side preserves arbitrary linear combinations.  Hence the
+semigroup and its generator on a common core are linear, contradicting a
+genuinely nonlinear HJB/Isaacs generator.
 
 ### Corollary 2.2
 
-A payoff-calibrated diffusion law, a control-selected law, or a family of laws
-may represent a nonlinear theta-expectation.  None of these is a single
-payoff-independent classical martingale problem for the whole semigroup.
+A payoff-calibrated law, a control-selected law, or a family of laws may
+represent a nonlinear theta-expectation.  None is a single payoff-independent
+classical martingale problem for the whole semigroup.
 
 ---
 
 ## 3. Jet-calibrated linearization
 
-Consider a terminal-value PDE
+### Convention 3.1 (generator orientation)
+
+We write the terminal PDE as
 
 \[
-\partial_tu
-+F(t,x,u,Du,D^2u)=0,
-\qquad u(T,x)=\phi(x).
+\partial_tu+F(t,x,u,Du,D^2u)=0,
+\qquad u(T,x)=\phi(x),
 \tag{3.1}
 \]
 
+in **generator orientation**: where differentiable, `F_X` is positive
+semidefinite.  If an upstream paper uses the viscosity convention
+
+\[
+\partial_tu-\operatorname{tr}(D D^2u)-H=0,
+\]
+
+it must first be rewritten as
+
+\[
+\partial_tu+\operatorname{tr}(A D^2u)+\widetilde H=0
+\]
+
+with `A>=0` before the formulas below are applied.  This prevents a sign error
+in the calibrated diffusion matrix.
+
 Assume on a representation window that `F` is continuously differentiable in
-`(y,p,X)` and that the solution is classical.  Define along the solution
+`(y,p,X)` and the solution is classical.  Define along the solution
 
 \[
 a^u=F_X(t,x,u,Du,D^2u),
@@ -105,7 +122,7 @@ c^u=F_y(t,x,u,Du,D^2u),
 \tag{3.4}
 \]
 
-and the calibrated residual
+and
 
 \[
 r^u
@@ -114,9 +131,9 @@ r^u
 \tag{3.5}
 \]
 
-### Theorem 3.1 (exact calibrated linear PDE)
+### Theorem 3.2 (exact calibrated linear PDE)
 
-The same function `u` solves
+The same `u` solves
 
 \[
 \partial_tu
@@ -126,14 +143,10 @@ The same function `u` solves
 
 #### Proof
 
-Substitute (3.5) into the left-hand side of (3.6).  It becomes exactly the
-left-hand side of (3.1).
+Substitute (3.5) into (3.6); its left-hand side becomes that of (3.1).
+Calibration is therefore exact and occurs after `u` has been derived.
 
-The theorem is algebraic but decisive: calibration is performed after `u` has
-been derived, and all calibrated coefficients are payoff dependent through
-`u`.
-
-### Assumption 3.2 (diffusion window)
+### Assumption 3.3 (diffusion window)
 
 Assume
 
@@ -148,7 +161,7 @@ and choose `sigma^u` such that
 \tag{3.7}
 \]
 
-Assume the calibrated SDE
+Assume
 
 \[
 dX_s=b^u(s,X_s)ds+\sigma^u(s,X_s)dW_s
@@ -157,9 +170,9 @@ dX_s=b^u(s,X_s)ds+\sigma^u(s,X_s)dW_s
 
 is well posed and the exponential factors below are integrable.
 
-### Theorem 3.3 (calibrated Feynman--Kac representation)
+### Theorem 3.4 (calibrated Feynman--Kac representation)
 
-Under Assumption 3.2,
+Under Assumption 3.3,
 
 \[
 \boxed{
@@ -175,6 +188,21 @@ u(t,x)=\mathbb E_{t,x}\Big[&
 \tag{3.9}
 \]
 
+Here the symbol on the left is the solution `u(t,x)`; equivalently, replacing
+the typographical `nu` in the display by `u` gives
+
+\[
+\boxed{
+\begin{aligned}
+uu(t,x):=u(t,x)=\mathbb E_{t,x}\Big[&
+ e^{\int_t^T c^u(r,X_r)dr}\phi(X_T)\\
+&+\int_t^T e^{\int_t^s c^u(r,X_r)dr}
+ r^u(s,X_s)ds\Big].
+\end{aligned}
+}
+\tag{3.10}
+\]
+
 #### Proof
 
 Apply Itô's formula to
@@ -186,17 +214,16 @@ e^{\int_t^s c^u(r,X_r)dr}u(s,X_s).
 Equation (3.6) leaves drift `-e^{int c}r^u ds`.  Integrate to `T`, take
 expectations, and rearrange.
 
-### Remark 3.4
+### Remark 3.5
 
-If `a^u` is only semidefinite, one may use a well-posed degenerate martingale
-problem or a vanishing elliptic regularization.  The resulting law remains
-payoff calibrated.
+If `a^u` is only semidefinite, use a well-posed degenerate martingale problem or
+a vanishing elliptic regularization.  The law remains payoff calibrated.
 
 ---
 
 ## 4. The Markov semilinear FBSDE branch
 
-Suppose (3.1) has the form
+Suppose
 
 \[
 \partial_tu
@@ -206,14 +233,14 @@ Suppose (3.1) has the form
 \tag{4.1}
 \]
 
-Let the forward diffusion satisfy
+Let
 
 \[
-dX_s=b(s,X_s)ds+\sigma(s,X_s)dW_s.
+dX_s=b(s,X_s)ds+\sigma(s,X_s)dW_s
 \tag{4.2}
 \]
 
-The backward equation is
+and
 
 \[
 Y_s=\phi(X_T)
@@ -224,7 +251,7 @@ Y_s=\phi(X_T)
 
 ### Theorem 4.1 (decoupled FBSDE representation)
 
-Under the standard Lipschitz, growth, and well-posedness conditions,
+Under the declared Lipschitz, growth, and well-posedness conditions,
 
 \[
 Y_s=u(s,X_s),
@@ -236,12 +263,12 @@ Z_s=\sigma(s,X_s)^TDu(s,X_s).
 #### Proof
 
 Apply Itô's formula to `u(s,X_s)` and use (4.1).  The martingale coefficient is
-`σ^T Du`; uniqueness of the BSDE identifies `(Y,Z)`.
+`σ^T Du`; uniqueness identifies `(Y,Z)`.
 
 ### Convention 4.2
 
-The HJB gradient `p=Du` and the BSDE integrand `Z` have different dimensions
-and meanings.  Their relation is (4.4), not `Z=p`.
+The HJB gradient `p=Du` and BSDE integrand `Z` have different dimensions and
+meanings.  Their relation is (4.4), not `Z=p`.
 
 ---
 
@@ -264,17 +291,13 @@ Under compactness, measurable selection, tightness, and comparison, `u` equals
 the value over admissible controlled diffusions.  If an optimal feedback
 `alpha^u(t,x)` exists, substituting it gives a payoff-dependent classical BSDE.
 Without such a feedback, the correct representation is a control family,
-relaxed control, or a randomized/constrained BSDE, not one fixed classical
-FBSDE.
+relaxed control, or randomized/constrained BSDE, not one fixed FBSDE.
 
 #### Proof
 
-The DPP gives the viscosity solution of (5.1).  Conversely, verification for
-smooth `u` follows from Itô's formula and the Hamiltonian inequality; equality
-holds along an optimizing selector.  Approximation extends the result to the
-viscosity setting under the assumed stability theorem.
-
-The same rule applies to the one-player theta-HJB of Paper III.
+The DPP gives the viscosity solution.  For smooth `u`, Itô's formula and the
+Hamiltonian inequality yield verification; equality holds along an optimizer.
+Approximation extends the result under the assumed stability theorem.
 
 ---
 
@@ -296,13 +319,11 @@ represented by the mixed game.  A pure feedback FBSDE representation is
 available only after the Paper-IV pure-saddle gate has been verified.
 
 A mixed Isaacs equality does not turn the game into a payoff-independent single
-law; the optimizing mixed strategies remain part of the representation.
+law; optimizing mixed strategies remain part of the representation.
 
 ---
 
 ## 7. Fully nonlinear second-order branches
-
-Suppose `F` is nonlinear in `X`.
 
 ### Branch 7A (convex volatility uncertainty)
 
@@ -326,7 +347,7 @@ nonlinear-expectation representation.
 
 If the Hessian dependence is a nonconvex sup--inf game, a standard convex
 2BSDE theorem does not apply.  The correct representation remains a stochastic
-game, a nonlinear martingale problem, or a specifically proved nonconvex
+game, nonlinear martingale problem, or a specifically proved nonconvex
 second-order theory.
 
 ### Theorem 7.1 (typed second-order rule)
@@ -340,14 +361,14 @@ claimed.
 
 ## 8. Path-dependent equations and evaluations
 
-Let `Omega` be a path space and let
+Let
 
 \[
 U(t,\omega_{[0,t]})
 \]
 
-be the value from the Paper-IV path-state DPP.  If the path cannot be reduced
-to a finite-dimensional sufficient statistic, its equation is a PPDE with
+be the Paper-IV path-state value.  If the path cannot be reduced to a
+finite-dimensional sufficient statistic, its equation is a PPDE with
 horizontal and vertical derivatives.
 
 ### Branch 8A (semilinear PPDE)
@@ -368,13 +389,13 @@ corresponding regularity or viscosity framework.
 
 ### Branch 8B (fully nonlinear PPDE)
 
-A convex second-order path equation may admit a path-dependent 2BSDE
-representation.  A nonconvex game PPDE remains a path-dependent game unless a
-stronger representation theorem is proved.
+A convex second-order path equation may admit a path-dependent 2BSDE.  A
+nonconvex game PPDE remains a path-dependent game unless a stronger theorem is
+proved.
 
 ### Definition 8.1 (nonlinear path evaluation)
 
-For a terminal path payoff `Phi`, define
+For terminal path payoff `Phi`, define
 
 \[
 \mathcal E_{s,t}[\Phi](\omega_{[0,s]})
@@ -382,14 +403,13 @@ For a terminal path payoff `Phi`, define
 \tag{8.2}
 \]
 
-The DPP gives time consistency under path concatenation.
+The DPP gives time consistency under concatenation.
 
 ---
 
 ## 9. Girsanov after calibration
 
-Consider the calibrated diffusion (3.8).  Let `vartheta_s` be progressively
-measurable and assume
+Let `vartheta_s` be progressively measurable and assume
 
 \[
 \mathbb E\exp\left(
@@ -417,7 +437,7 @@ Under `dQ=Z_T dP`,
 W_s^Q=W_s-\int_t^s\vartheta_rdr
 \]
 
-is Brownian and the drift becomes
+is Brownian and the drift in (3.8) becomes
 
 \[
 b^u+\sigma^u\vartheta.
@@ -426,21 +446,15 @@ b^u+\sigma^u\vartheta.
 
 ### Theorem 9.1 (calibrated Girsanov formula)
 
-Every Girsanov identity obtained from (9.2)--(9.3) represents the already
-calibrated payoff `u`.  It does not supply an upstream proof of the nonlinear
-HJB or identify one law for all payoffs.
-
-#### Proof
-
-The measure change is the classical exponential-martingale argument applied to
-the SDE whose coefficients were defined in Section 3.  Since those coefficients
-depend on `u`, the law is downstream and payoff dependent.
+Every identity obtained from (9.2)--(9.3) represents the already calibrated
+payoff `u`.  It does not prove the nonlinear HJB or identify one law for all
+payoffs.
 
 ---
 
-## 10. Orientation and sign ledger
+## 10. Orientation and factor ledger
 
-The series uses terminal-value orientation
+The terminal-value orientation is
 
 \[
 \partial_tu+F=0,
@@ -459,34 +473,25 @@ The diffusion convention is
 \frac12\sigma\sigma^T:D^2u.
 \]
 
-If Paper III writes its diffusion coefficient as
+Paper III writes `A=Sigma/2`, so the corresponding factor is
 
 \[
-A=\frac12\Sigma,
+\sigma\sigma^T=\Sigma.
 \]
 
-then `sigma sigma^T=Sigma`; no second factor `1/2` is inserted.
+No additional factor `1/2` is inserted.
 
 ---
 
 ## 11. Applications to the θ-series
 
-### 11.1 Paper-III nonconvex theta-expectation
-
-The nonlinear Hamiltonian fails the single-law test in Theorem 2.1.  For a
-smooth payoff, Theorem 3.3 yields a calibrated diffusion with a source term.
-If the equation is semilinear on a local window, Theorem 4.1 yields an FBSDE.
-
-### 11.2 Paper-IV mixed Isaacs value
-
-The value is represented by the mixed relaxed game.  A classical feedback
-FBSDE is obtained only when a pure or measurable mixed saddle is fixed.
-
-### 11.3 Paper-IV belief/path branch
-
-A finite-dimensional belief state gives a Markov representation on the
-simplex.  Genuine history dependence enters Section 8 and produces the path
-evaluation (8.2).
+1. The Paper-III nonconvex theta-expectation fails the single-law test.  A
+   smooth payoff admits the calibrated formula of Section 3, and a semilinear
+   local window admits Section 4.
+2. The Paper-IV mixed Isaacs value is represented by its mixed game.  A
+   classical feedback BSDE requires a verified saddle.
+3. A finite-dimensional belief gives a Markov representation on the simplex;
+   genuine history dependence enters the PPDE branch.
 
 ---
 
@@ -500,15 +505,14 @@ Given the theta/Isaacs/path semigroup derived in Papers III--IV:
    and Feynman--Kac formula of Section 3;
 2. a Markov semilinear equation admits the FBSDE representation of Section 4;
 3. a control HJB admits the control/randomized representation of Section 5;
-4. a game equation retains the sequential or simultaneous game type of Paper
-   IV;
+4. a game equation retains the sequential or simultaneous type of Paper IV;
 5. a convex volatility-uncertainty equation may use the 2BSDE branch, while a
    nonconvex second-order equation remains in the game/nonlinear-MP branch;
 6. a genuine path-state problem admits the PPDE/path-evaluation branch;
-7. Girsanov transformations are valid only after one of the preceding laws has
-   been fixed and the exponential integrability condition holds.
+7. Girsanov transformations are valid only after one preceding law has been
+   fixed and exponential integrability holds.
 
-No conclusion in this theorem is used to prove an upstream HJB limit.
+No conclusion here is used to prove an upstream HJB limit.
 
 ---
 
