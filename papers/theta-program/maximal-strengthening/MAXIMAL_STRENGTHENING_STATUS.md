@@ -10,9 +10,10 @@
 
 The five items formerly classified as strengthening work are closed in the
 maximal mathematically correct sense: each item is resolved by an actual
-system theorem, an exact impossibility/maximality theorem, or both. A false
-unrestricted version is not counted as an open lemma after it has been
-refuted and replaced by the strongest valid theorem.
+system theorem, an explicit packet theorem, an exact impossibility/maximality
+theorem, or a combination of these. A false unrestricted version is not
+counted as an open lemma after it has been refuted and replaced by the
+strongest valid theorem.
 
 ```yaml
 specular_Sinai_U3:
@@ -27,13 +28,16 @@ specular_Sinai_U3:
 
 moving_family_BDL:
   export: P2-BDL-HF-FAMILY
-  compact_family_uniform_high_frequency_resolvent: PROVED_RELATIVE_TO_EXPLICIT_UNIFORM_BDL_WITNESS
+  compact_family_uniform_high_frequency_resolvent: PROVED_RELATIVE_TO_BDL_FAMILY_WITNESS_v1
+  actual_nonconjugate_radial_uniform_high_frequency_family: PROVED_IN_ONE_STRICT_WITNESS_NEIGHBOURHOOD
   witness_openness_and_finite_cover_uniformization: PROVED
   fixed_common_operator_bundle: PROVED_BY_QUADRATIC_ATLAS_STABILIZATION
-  parameter_resolvent_derivative_formula_through_order_three: PROVED_ON_GRADED_SOURCE_CHANNELS
-  actual_radial_coboundary_all_frequency_channel: PROVED_BY_GAUGE_CONJUGACY
+  table_parameter_derivatives: PROVED_RELATIVE_TO_BDL_PARAMETER_DOMAIN_v1
+  ordered_resolvent_derivative_formula_through_order_three: PROVED
+  actual_radial_exact_coboundary_q_derivatives: PROVED_BY_GAUGE_CONJUGACY
+  q_gauge_response_to_a_table_response: FORBIDDEN
   universal_single_pointwise_weight_domain: REFUTED_BY_GRAZING_WEIGHT_RATIO
-  maximal_scope: uniform_fibrewise_BDL_plus_certified_graded_parameter_channels
+  maximal_scope: uniform_BDL_family_plus_separate_common_graph_domain_packet_for_a_derivatives
 
 optimal_enhanced_WIP_rate:
   export: P3-RWIP-OPTIMAL-WETA-P
@@ -88,6 +92,7 @@ closure:
   former_strengthening_blockers: 5
   former_strengthening_blockers_closed: 5
   closed_by_actual_theorem: 5
+  closed_by_packet_theorem: 5
   closed_by_maximality_or_refutation: 4
   unnamed_arrows: 0
   circular_dependencies: 0
@@ -105,10 +110,13 @@ closure:
    without an explicit bilateral/current packet; that failure is a maximality
    theorem, not an unnamed gap.
 2. **Moving-family BDL.** Full high-frequency BDL bounds are uniformized over
-   compact billiard families by a robust witness packet and finite-cover
-   argument. Parameter derivatives are proved on graded source channels. A
-   single scalar pointwise grazing weight for every deformation is excluded by
-   the consecutive-collision ratio obstruction.
+   compact billiard families by a strict witness packet and finite-cover
+   argument. A small nonconjugate radial family is an actual uniform example.
+   Table-parameter derivatives require the separate common graph-domain packet
+   `BDL-PARAMETER-DOMAIN-v1`; exact-coboundary gauge conjugacy gives twist
+   derivatives in `q`, not moving-table derivatives in `a`. A single scalar
+   pointwise grazing weight for every deformation is excluded by the
+   consecutive-collision ratio obstruction.
 3. **Enhanced-WIP rate.** “Optimal” is fixed to both a rough topology and the
    regular Stein--Dirichlet test class actually controlled by the quantitative
    theorem. A smooth cylindrical midpoint-bridge test belongs uniformly to
