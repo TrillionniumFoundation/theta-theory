@@ -39,9 +39,12 @@ PaperIII_K2_Theta:
   enhanced_WIP: CLOSED
   nonautonomous_homogenization: CLOSED
   optimal_rate_topology: STEP_TWO_FRACTIONAL_SOBOLEV_W_ETA_P
+  optimal_rate_test_distance: STEIN_DIRICHLET_SIGMA_ETA_P
+  optimal_rate_safe_range: P_GT_6_AND_ONE_THIRD_LT_ETA_MINUS_ONE_OVER_P_AND_ETA_LT_ONE_HALF
   optimal_rate_upper: N_POWER_MINUS_ONE_HALF_PLUS_ETA
   optimal_rate_lower: N_POWER_MINUS_ONE_HALF_PLUS_ETA
-  topology_free_optimal_rate: NOT_A_WELL_TYPED_CLAIM
+  full_Lipschitz_KR_exact_rate: NOT_CLAIMED
+  topology_or_test_class_free_optimal_rate: NOT_A_WELL_TYPED_CLAIM
   actual_four_branch_HJB_theta: CLOSED
   nonconvex_non_subadditive_branch: CLOSED
 
@@ -98,6 +101,11 @@ positive U-infinity.  The grazing-weight-ratio obstruction excludes one
 ungraded universal BDL domain, while the compact witness-bundle theorem supplies
 the full valid high-frequency result.
 
+The optimal rough rate is also fail-closed: the exact `N^{-(1/2-eta)}` order is
+proved in the regular Stein--Dirichlet test distance actually controlled by the
+quantitative argument, with a smooth midpoint-bridge lower test in the same
+class.  It is not relabelled as an exact full Lipschitz--KR rate.
+
 ## Correct strengthened DAG
 
 ```text
@@ -106,7 +114,7 @@ Paper I bilateral CM2/U3
     -> Paper II pressure/diffusion/common space
        + compact moving-family high-frequency BDL bundle
          -> Paper III Doob-selected rough homogenization
-            + topology-optimal four-branch enhanced-WIP rate
+            + topology-and-test-class-optimal four-branch enhanced-WIP rate
               -> HJB / theta-expectation
                 -> Paper IV filtering and games
                    + actual weighted noncompact filter
@@ -121,7 +129,8 @@ Paper I bilateral CM2/U3
   noncoboundary pressure U3 still requires the bilateral third-source packet.
 - Compact-family BDL uniformity requires strict local witnesses before the
   compact finite-cover argument.
-- “Optimal WIP rate” always names its path topology and test metric.
+- “Optimal WIP rate” always names both its path topology and its quantitative
+  test class; the full Lipschitz--KR exact rate is outside the current export.
 - Mixed minimax never implies a pure saddle without pure Isaacs or an
   equivalent structural certificate.
 - The fast weighted filter is averaged before the delay-path limit; the segment
