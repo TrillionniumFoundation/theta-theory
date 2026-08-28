@@ -11,9 +11,10 @@
 | Block errors were not accumulated | Explicit condition `N_epsilon eta(m_epsilon)->0` and total freezing/switching bounds | CLOSED |
 | Unsupported universal rough Berry--Esseen rate in the actual model | Replaced by direct bounded martingale triangular-array characteristics | CLOSED_BY_CORRECTION |
 | Area anomaly omitted | Included in enhanced limit and bracket drift `b_Gamma` | CLOSED |
-| HJB imported without local consistency/comparison | Explicit DPP package, half-relaxed proof, and comparison gate | CLOSED |
+| General HJB theorem lacked a named consistency/comparison packet | Explicit DPP package and comparison theorem interface | CLOSED_RELATIVE_TO_PACKET |
+| Actual four-branch model lacked a DPP and comparison proof | `TECHNICAL_APPENDIX_DPP_COMPARISON.md`: monotone scheme, consistency, comparison, and convergence | CLOSED_ACTUAL_SCOPED |
 | K3 incorrectly required for every HJB | Uncontrolled/one-player HJB derived directly from K2 | CLOSED |
-| No actual full-scale model | Bernoulli coding of the four-branch Doob family with direct predictable brackets | CLOSED |
+| No actual full-scale model | Bernoulli coding plus direct predictable brackets and actual monotone DPP | CLOSED |
 | Nonconvexity only formal | Explicit `delta>gamma/4`, `p=q=pi/2`, defect `4 delta` | CLOSED |
 
 ## Exports
@@ -28,20 +29,25 @@ P3-NONCONVEX
 P3-ACTUAL-4B
 ```
 
+`P3-ACTUAL-4B` includes the actual one-player monotone DPP, comparison theorem,
+HJB limit, and time-consistent theta-semigroup proved in the technical
+appendix.
+
 ## Important correction
 
 A compact-parameter qualitative enhanced WIP does not automatically provide a
-full `epsilon->0` nonautonomous theorem.  The manuscript now distinguishes:
+full `epsilon->0` nonautonomous theorem.  The manuscript distinguishes:
 
 ```text
 compatible quantitative modulus or direct characteristics -> full scale
 qualitative uniform WIP only                              -> cofinal diagonal
 ```
 
-The actual four-branch model uses the second full-scale route: bounded
-martingale triangular-array characteristics, not an asserted optimal rate.
+The actual four-branch model uses bounded martingale triangular-array
+characteristics, not an asserted optimal rate.
 
 ## Review boundary
 
-The Bernoulli branch model is an actual scoped realization.  Extension to a
-nonconjugate specular Sinai family requires its own UM packet and is not claimed.
+The Bernoulli branch model is an actual scoped realization through HJB/theta.
+Extension to a nonconjugate specular Sinai family requires its own UM and DPP
+packets and is not claimed.
