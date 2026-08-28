@@ -6,7 +6,10 @@ Starting from the product-CM2 and U3 interface of Paper I, we derive the
 physical-time spectral objects needed by homogenization.  We first stabilize a
 finite Banach bundle inside one fixed direct-sum space; this removes the common
 operator-space ambiguity that otherwise makes cross-parameter Kato calculus
-ill-typed.  We then study the jointly twisted collision operator
+ill-typed.  The construction uses a smooth quadratic partition
+`sum_alpha psi_alpha^2=1`, avoiding the false assumption that the square root of
+an arbitrary smooth partition remains smooth.  We then study the jointly
+twisted collision operator
 
 \[
 L_{a,q,s}h=L_a(e^{q\cdot\kappa_a-s\tau_a}h).
@@ -34,13 +37,13 @@ Let `A` be a compact parameter set.  We import the following outputs from
 Paper I:
 
 ```text
-P1-CM2      absolute double-time product summability
+P1-CM2      graded absolute double-time product summability
 P1-FDQ      finite-DQ convergence in l1(N^2)
 P1-U3       continuous first three operator/source derivatives
-P1-RWORDS   continuous third-order reduced-resolvent words
+P1-RWORDS   continuous well-typed third-order reduced-resolvent words
 ```
 
-The import applies on declared strong/source/test scales and includes a simple
+The import applies on a declared regularity ladder and includes a simple
 isolated eigenvalue at one.  No unnamed moving-flow theorem is imported.
 
 ---
@@ -51,7 +54,7 @@ A family of fibre spaces `B_a` may be locally trivial without living in one
 fixed operator space.  We give a finite-atlas stabilization that is sufficient
 for Kato calculus.
 
-### Assumption 2.1 (finite Banach atlas)
+### Assumption 2.1 (finite Banach atlas and quadratic partition)
 
 There are finitely many open parameter charts `U_alpha`, Banach spaces
 `B_alpha`, and bounded isomorphisms
@@ -62,8 +65,17 @@ G_{\alpha,a}:B_a\longrightarrow B_\alpha,
 \]
 
 whose transition maps and inverses are uniformly bounded and `C^3` on compact
-subcharts.  Let `chi_alpha` be a smooth partition of unity subordinate to the
-atlas.
+subcharts.  There are smooth real functions `psi_alpha`, supported in
+`U_alpha`, such that
+
+\[
+\sum_{\alpha=1}^N\psi_\alpha(a)^2=1.
+\tag{2.1}
+\]
+
+Such a quadratic partition is obtained by choosing a finite smooth subordinate
+family with no common zero and normalizing by the square root of the sum of its
+squares; that denominator is strictly positive and smooth.
 
 ### Theorem 2.2 (finite-atlas stabilization)
 
@@ -77,23 +89,23 @@ and define
 
 \[
 J_ah=
-\bigl(\sqrt{\chi_\alpha(a)}G_{\alpha,a}h\bigr)_\alpha,
-\tag{2.1}
+\bigl(\psi_\alpha(a)G_{\alpha,a}h\bigr)_\alpha,
+\tag{2.2}
 \]
 
 \[
 R_a(v_\alpha)_\alpha
 =
 \sum_{\alpha=1}^N
-\sqrt{\chi_\alpha(a)}G_{\alpha,a}^{-1}v_\alpha.
-\tag{2.2}
+\psi_\alpha(a)G_{\alpha,a}^{-1}v_\alpha.
+\tag{2.3}
 \]
 
 Then
 
 \[
 R_aJ_a=I_{B_a}.
-\tag{2.3}
+\tag{2.4}
 \]
 
 Consequently `E_a=J_aB_a` is a uniformly complemented subspace of `B_*`,
@@ -107,7 +119,7 @@ realization
 
 \[
 \widehat L_a:=J_aL_aR_a\in\mathcal L(B_*).
-\tag{2.4}
+\tag{2.5}
 \]
 
 The maps `a -> J_a,R_a,P_a,widehat L_a` have the same parameter regularity as
@@ -120,21 +132,23 @@ For `h in B_a`,
 \[
 R_aJ_ah
 =
-\sum_\alpha\chi_\alpha(a)
+\sum_\alpha\psi_\alpha(a)^2
 G_{\alpha,a}^{-1}G_{\alpha,a}h
-=h.
+=h
 \]
 
-Thus `P_a^2=J_aR_aJ_aR_a=P_a`, and its range is `E_a`.  Uniform bounds follow
-from finiteness of the atlas and the transition bounds.  Differentiation of
-(2.1)--(2.4) is a finite product rule.  This gives a fixed ambient operator
-space without identifying different fibres by an unjustified canonical
-subtraction.
+by (2.1).  Thus `P_a^2=J_aR_aJ_aR_a=P_a`, and its range is `E_a`.  Uniform
+bounds follow from finiteness of the atlas and the transition bounds.
+Differentiation of (2.2)--(2.5) is a finite product rule.  This gives a fixed
+ambient operator space without identifying different fibres by an unjustified
+canonical subtraction.
 
 ### Remark 2.3
 
 A fixed-image trivialization is the special case `E_a=E_*`.  The stabilization
-above also covers genuinely moving images.
+above also covers genuinely moving images.  The additional zero spectrum of
+the stabilized operator on the complement of `E_a` is separated from the
+leading eigenvalue near one and does not affect its Riesz contour.
 
 ---
 
@@ -153,7 +167,7 @@ be a displacement observable and
 \]
 
 a roof function.  Assume they and all multipliers needed through total order
-three act boundedly on the Paper-I scales.  Define
+three act boundedly on the Paper-I ladder.  Define
 
 \[
 L_{a,q,s}h
@@ -193,12 +207,14 @@ most three is a finite sum of:
 
 1. a direct derivative of the twisted operator;
 2. a contour/Riesz projection term;
-3. reduced-resolvent words made from the first three source operators.
+3. reduced-resolvent words made from the first three source operators on the
+   Paper-I regularity ladder.
 
 #### Proof
 
-Paper I gives continuous derivatives of the stabilized operator through order
-three, including the moving-singularity currents.  The Riesz projection is
+Paper I gives continuous graded derivatives of the stabilized operator through
+order three, including the moving-singularity currents.  The Riesz projection
+is
 
 \[
 \Pi_{a,q,s}
@@ -213,10 +229,10 @@ Differentiate the resolvent identity
 D(z-L)^{-1}=(z-L)^{-1}(DL)(z-L)^{-1}.
 \]
 
-At orders two and three this produces exactly the finite words controlled by
-`P1-RWORDS`.  Uniform contour separation permits differentiation under the
-integral.  A normalized left/right eigenpair then gives the eigenvalue and its
-logarithm.
+At orders two and three this produces exactly the finite, well-typed words
+controlled by `P1-RWORDS`.  Uniform contour separation permits differentiation
+under the integral.  A normalized left/right eigenpair then gives the
+eigenvalue and its logarithm.
 
 ---
 
