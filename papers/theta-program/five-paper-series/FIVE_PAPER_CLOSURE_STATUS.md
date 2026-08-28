@@ -12,18 +12,9 @@ statement is closed by proving it on an explicit admissible packet class and
 exhibiting a nonempty actual subclass.  No stronger system verification is
 hidden inside the word `general`.
 
-A three-round hostile proof audit has repaired six issues that would otherwise
-have left only a formal closure:
-
-1. third-order response words now use an explicit graded regularity ladder;
-2. common-space stabilization uses a smooth quadratic partition rather than
-   square roots of an arbitrary partition;
-3. full-scale nonautonomous rough convergence is separated from qualitative
-   uniform WIP and the actual model uses direct martingale characteristics;
-4. belief-value collapse includes a vanishing slow initial layer;
-5. the representation paper fixes generator orientation before converting a
-   Hessian derivative into a diffusion matrix;
-6. suspension renewal uses distinct entry and exit roof-cell operators.
+A three-round hostile proof audit repaired six structural/mathematical issues,
+and a final actualization pass added explicit monotone DPP/comparison schemes
+for the four-branch HJB/theta and game branches.
 
 ```yaml
 paper_I:
@@ -46,6 +37,7 @@ paper_II:
   common_operator_space: CLOSED_BY_SMOOTH_QUADRATIC_ATLAS_STABILIZATION
   xp_coefficient_lift: CLOSED
   ellipticity: CLOSED_RELATIVE_TO_NONCOBOUNDARY_AND_COUPLING_RANK
+  actual_four_branch_positive_diffusion: CLOSED
   full_high_frequency_moving_flow_BDL: NOT_REQUIRED_AND_NOT_CLAIMED
 
 paper_III:
@@ -55,7 +47,10 @@ paper_III:
   full_scale_nonautonomous_limit: CLOSED_WITH_COMPATIBLE_MODULUS_OR_DIRECT_CHARACTERISTICS
   qualitative_uniform_WIP_only: COFINAL_DIAGONAL_RESULT
   actual_four_branch_full_scale: CLOSED_BY_BOUNDED_MARTINGALE_CHARACTERISTICS
-  HJB_limit: CLOSED_RELATIVE_TO_DPP_AND_COMPARISON
+  general_HJB_limit: CLOSED_RELATIVE_TO_NAMED_DPP_AND_COMPARISON_PACKET
+  actual_four_branch_monotone_DPP: CLOSED
+  actual_four_branch_comparison: CLOSED
+  actual_four_branch_HJB_theta: CLOSED
   theta_semigroup: CLOSED
   explicit_nonconvex_non_subadditive_example: CLOSED
 
@@ -65,8 +60,10 @@ paper_IV:
   initial_belief_value_collapse: CLOSED_WITH_VANISHING_SLOW_INITIAL_LAYER
   weighted_filter_branch: CLOSED_RELATIVE_TO_LYAPUNOV_MOMENT_INITIAL_LAYER_AND_COMPARISON_PACKET
   strategy_tree_belief_collapse: CLOSED
-  sequential_lower_upper_values: CLOSED
-  simultaneous_mixed_Isaacs: CLOSED
+  general_sequential_lower_upper_values: CLOSED_RELATIVE_TO_NAMED_DPP_COMPARISON_PACKET
+  general_simultaneous_mixed_Isaacs: CLOSED_RELATIVE_TO_NAMED_DPP_COMPARISON_PACKET
+  actual_four_branch_sequential_schemes: CLOSED
+  actual_four_branch_mixed_Isaacs_scheme: CLOSED
   pure_saddle: CLOSED_RELATIVE_TO_EXTRA_SADDLE_CERTIFICATE
   belief_state_HJB_and_path_DPP: CLOSED
 
@@ -83,6 +80,8 @@ paper_V:
   reverse_use_to_prove_HJB: FORBIDDEN
 
 series:
+  actual_scoped_chain_through_theta: CLOSED
+  actual_scoped_chain_through_mixed_Isaacs: CLOSED
   internal_unnamed_arrows: 0
   stale_unconditional_imports: REMOVED_IN_NEW_SERIES
   circular_dependencies: 0
@@ -91,6 +90,16 @@ series:
   external_peer_review: NOT_PERFORMED
   formal_credit: 0
 ```
+
+## Six repaired hostile findings
+
+1. third-order response words now use a graded regularity ladder;
+2. common-space stabilization uses a smooth quadratic partition;
+3. full-scale nonautonomous rough convergence requires a compatible modulus or
+   direct martingale characteristics;
+4. value-level belief collapse includes a vanishing slow initial layer;
+5. the representation paper fixes generator orientation before calibration;
+6. suspension renewal uses distinct entry and exit roof-cell operators.
 
 ## Remaining work that is not an internal gap
 
@@ -103,11 +112,13 @@ The following would strengthen the series but is not used as an unnamed premise:
 3. optimal quantitative enhanced-WIP rates beyond the sufficient modulus or
    direct-characteristics routes;
 4. pure-strategy Isaacs saddles beyond the mixed relaxed theorem;
-5. external expert review, novelty review, bibliography completion, conversion
+5. actual system instantiations of every weighted noncompact and genuinely
+   path-dependent branch;
+6. external expert review, novelty review, bibliography completion, conversion
    to journal LaTeX, and final journal-facing compression.
 
 These items are explicitly outside the current theorem statements.  Their
-absence therefore does not create a logical hole in the five-paper series.
+absence does not create a logical hole in the five-paper series.
 
 ## Import policy
 
