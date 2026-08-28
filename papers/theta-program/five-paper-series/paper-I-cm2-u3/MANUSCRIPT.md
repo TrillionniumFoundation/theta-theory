@@ -15,13 +15,18 @@ a continuous third derivative of the reduced spectral data, denoted U3.
 
 The abstract result is nonempty.  We prove it for an open four-branch
 pinball-cylinder family with three moving physical seams.  Its source is a
-nonzero saltus current for every parameter, its first three operator
-derivatives lose only finitely many derivatives, and its centered transfer
-operator contracts uniformly on a fixed-cut Sobolev--BV scale.  Consequently
-the family has uniform product-CM2, full finite-DQ convergence, and actual U3.
-The theorem does not claim an unrestricted universal result for all moving
-scatterers; such a claim is excluded by the rate-gap and totalization
-obstructions recorded below.
+nonzero saltus current for every parameter.  A graded fixed-cut scale satisfies
+
+```text
+X5 -> X4 -> X3 -> X2 -> X1=BV,
+```
+
+operator differentiation loses exactly the displayed number of levels, and
+the centered transfer operator contracts uniformly on every level.  This
+makes all third-order Kato words well typed, gives a fourth-order remainder for
+finite-DQ, and proves uniform product-CM2 and actual U3.  The theorem does not
+claim an unrestricted universal result for all moving scatterers; such a claim
+is excluded by the rate-gap and totalization obstructions recorded below.
 
 ---
 
@@ -309,7 +314,8 @@ Assume:
 
 1. each finite map `a -> G_{3,d}(a)` is continuous in a complete graded source
    space `X`;
-2. all third-source atoms satisfy Theorem 2.2 or Corollary 2.3;
+2. all third-source atoms satisfy Theorem 2.2 or Corollary 2.3 on the correct
+   level of a finite regularity ladder;
 3. there is a summable envelope
    \[
    \sup_a\|\eta_{a,\omega}\|_{\rm CM2}\le b_\omega,
@@ -321,7 +327,8 @@ Assume:
 5. the seam/refinement defect is bounded by
    `omega_seam(P)->0`;
 6. on every common refinement, equal UIDs with opposite orientations cancel
-   exactly and no distinct occurrence is re-keyed.
+   exactly and no distinct occurrence is re-keyed;
+7. each reduced resolvent preserves its declared ladder level.
 
 Then, for `d1,d2` refining `d`,
 
@@ -335,18 +342,19 @@ Then, for `d1,d2` refining `d`,
 \]
 
 Hence `G_{3,d}` converges uniformly in `a` to a unique continuous third source
-`G_3`.  If the reduced resolvent `R_a` is uniformly bounded on the graded
-source spaces, then the third-order words
+`G_3`.  The third-order words
 
 \[
-R_aG_3R_a,
-\quad R_aG_2R_aG_1R_a,
-\quad R_aG_1R_aG_2R_a,
-\quad R_aG_1R_aG_1R_aG_1R_a
+R_1G_3R_4,
+\quad R_1G_2R_3G_1R_4,
+\quad R_1G_1R_2G_2R_4,
+\quad R_1G_1R_2G_1R_3G_1R_4
 \tag{4.5}
 \]
 
-exist and depend continuously on `a`.  We call this conclusion U3.
+are well defined when `G_k:X_r->X_{r-k}` and `R_r:X_r->X_r`; indices merely
+record the ladder level.  These words depend continuously on `a`.  We call the
+conclusion U3.
 
 #### Proof
 
@@ -354,15 +362,14 @@ Pass to a common refinement.  All common atoms cancel by UID and orientation.
 The remaining atoms are outside the old cutoff or lie in the cap/refinement
 error.  The first group is bounded by the tail of (4.3), and the other two by
 the declared moduli.  This gives (4.4).  Completeness gives `G_3`; uniform
-convergence gives parameter continuity.  Boundedness of the reduced
-resolvents and finite multiplication then gives convergence of every word in
-(4.5).
+convergence gives parameter continuity.  Ladder preservation and the graded
+source bounds make every product in (4.5) composable and bounded.
 
 ### Remark 4.2
 
 First-order CM2 alone does not imply U3.  The CM2 estimate must hold for the
-actual derivative atoms entering `G_3`, and the totalization and cap defects
-must be controlled.  This is the precise content of the arrow `CM2 -> U3`.
+actual derivative atoms entering `G_3`, on the graded spaces required by their
+composition, and the totalization and cap defects must be controlled.
 
 ---
 
@@ -429,9 +436,9 @@ The Perron operator with respect to Lebesgue probability is
 Lebesgue probability is invariant for every `a`; therefore `Pi h=int h` is
 independent of the parameter.
 
-### 5.2 Fixed-cut spaces
+### 5.2 Fixed-cut graded spaces
 
-For `r>=1`, let
+For every integer `r>=1`, let
 
 \[
 X_r=\{h:h|_{(0,1)}\in W^{r,1}(0,1)\}
@@ -447,9 +454,8 @@ with norm
 \]
 
 where circular variation includes the jump at the fixed coordinate cut.
-Set `Y=X_1`.
-
-A weighted-partition variation calculation gives, for centered functions,
+Set `X_1=Y=BV_cut`.  A weighted-partition variation calculation gives, on the
+centered subspace,
 
 \[
 \|Q_a^nh\|_{X_r}
@@ -458,9 +464,10 @@ A weighted-partition variation calculation gives, for centered functions,
 \tag{5.5}
 \]
 
-for `r=1,2,3,4`.  The constant and rate are uniform in `a`.
+uniformly in `a`, for every finite `r` used below.  Thus the reduced resolvent
+preserves every ladder level.
 
-### 5.3 The first three operator derivatives
+### 5.3 Operator derivatives and the loss ladder
 
 Put
 
@@ -477,7 +484,7 @@ r_i(y)=A_{i-1}+v_i y,
 \]
 
 both `w_i` and `psi_i` are affine in `a`.  Repeated differentiation of (5.3)
-gives, for `k=1,2,3`,
+gives, for every `k>=1`,
 
 \[
 \boxed{
@@ -494,32 +501,44 @@ gives, for `k=1,2,3`,
 
 The formula follows by induction because `partial_a w_i=v_i`,
 `partial_a psi_i=r_i`, and all higher derivatives of `w_i,psi_i` vanish.
-The fixed-cut variation inequality and boundedness of `r_i` imply
+For integers `r>=1` and `k>=1`, fixed-cut variation and boundedness of `r_i`
+give the graded estimate
 
 \[
-\|\partial_a^kL_ah\|_Y
-\le C_k\|h\|_{X_{k+1}},
-\qquad k=1,2,3,
+\boxed{
+\|\partial_a^kL_ah\|_{X_r}
+\le C_{r,k}\|h\|_{X_{r+k}}.
+}
 \tag{5.7}
 \]
 
-uniformly on `I`.  Conservation of mass gives
+Conservation of mass gives
 
 \[
 \Pi\partial_a^kL_a=0.
 \tag{5.8}
 \]
 
-Combining (5.5)--(5.8) with Corollary 2.3 yields
+Combining (5.5)--(5.8) yields, on every ladder step,
 
 \[
 |\langle Q_a^n(\partial_a^kL_a)Q_a^mg,f\rangle|
-\le4C_k\rho^{m+n}
-\|g\|_{X_{k+1}}\|f\|_\infty.
+\le4C_{r,k}\rho^{m+n}
+\|g\|_{X_{r+k}}\|f\|_{X_r^*}.
 \tag{5.9}
 \]
 
-Thus the complete double sum is finite for `k=1,2,3`.
+For U3 use the finite ladder
+
+```text
+X4 --G1--> X3 --G1--> X2 --G1--> X1,
+X4 --G2--> X2 --G1--> X1,
+X4 --G1--> X3 --G2--> X1,
+X4 --G3--> X1.
+```
+
+For finite-DQ remainders through third order, use one additional input level
+`X5` and the `k=4` estimate.
 
 ### 5.4 Nonzero moving singularity
 
@@ -539,24 +558,26 @@ for every `a in I`; the theorem is not an exact-conjugacy zero-source example.
 The open family (5.1)--(5.3) satisfies:
 
 1. a nonzero physical moving-seam source for every parameter;
-2. uniform product-CM2 for the first three operator derivatives;
-3. finite-DQ convergence in the corresponding double-time `l1` topology;
+2. uniform graded product-CM2 for operator derivatives through order four;
+3. finite-DQ convergence in the corresponding double-time `l1` topology
+   through order three;
 4. a finite, parameter-stable occurrence atlas;
 5. actual U3 and continuous third-order reduced-resolvent words.
 
 #### Proof
 
-Items 1 and 2 were proved above.  Taylor's formula with integral remainder and
-the same `X_4 -> Y` bounds gives a common summable envelope for finite
-quotients, so Proposition 3.2 proves item 3.  The four physical branches and
-three seams give item 4.  Since the source atlas is finite, the totalization
-errors in Theorem 4.1 vanish; (5.9) gives item 5.
+Items 1 and 2 were proved above.  Taylor's formula with fourth-order integral
+remainder, (5.7), and the common product envelope give item 3 by Proposition
+3.2.  The four physical branches and three seams give item 4.  The source atlas
+is finite, so the totalization errors in Theorem 4.1 vanish.  The displayed
+ladder after (5.9) makes all third-order words composable, proving item 5.
 
 ### Scope statement
 
 The model is a deterministic billiard with moving physical seams and nonzero
 saltus current.  It is not a specular dispersing Sinai billiard.  The abstract
-theorems apply to a specular family only after its bilateral packet is proved.
+theorems apply to a specular family only after its bilateral graded packet is
+proved.
 
 ---
 
@@ -585,20 +606,17 @@ A general moving-singularity theorem must contain an actual product-tail or an
 equivalent bilateral recovery/rate packet.  This hypothesis cannot be deleted
 and replaced by local geometry alone.
 
-This is the maximality sense used in this paper.  Stronger no-go results for
-particular billiard classes may be added without changing the positive theorem.
-
 ---
 
 ## 7. Exported interface
 
-Paper II may import only the following named outputs:
+Paper II may import only:
 
 ```text
-P1-CM2        product-tail double summability
+P1-CM2        graded product-tail double summability
 P1-FDQ        finite-DQ convergence in l1(N^2)
 P1-U3         continuous first three operator/source derivatives
-P1-RWORDS     continuous third-order reduced-resolvent words
+P1-RWORDS     continuous, well-typed third-order reduced-resolvent words
 P1-ACTUAL-4B  actual open four-branch moving-seam witness
 ```
 
@@ -608,10 +626,11 @@ It may not import an unnamed full moving-flow response package.
 
 ## 8. Conclusion
 
-The response problem with moving singularities is controlled by two logically
-separate mechanisms: bilateral time decay and source totalization.  The strict
-crossed-rate inequality solves the first, and the CM2 atom Cauchy theorem solves
-the second.  Together they yield U3.  The four-branch pinball family shows that
+The response problem with moving singularities is controlled by three
+logically separate mechanisms: bilateral time decay, source totalization, and
+a graded regularity ladder.  The strict crossed-rate inequality solves the
+first, the CM2 atom Cauchy theorem solves the second, and the ladder makes the
+third-order Kato words composable.  The four-branch pinball family shows that
 the theorem is nonempty and genuinely nonzero.  The theorem's explicit packet
 is also its correct maximal boundary: removing it would revive a false
 unrestricted universal claim.
