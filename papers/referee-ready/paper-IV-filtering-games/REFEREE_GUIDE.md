@@ -1,51 +1,47 @@
-# Referee guide — Paper IV
+# Referee guide — Paper IV, revision v4
 
 ## Central claims
 
-The paper proves strategy-tree-uniform filter stability and separates the
-sequential, mixed simultaneous, and pure Isaacs limits.  It supplies actual
-bounded and weighted noncompact deterministic models.
+The paper proves a noncompact filter contraction and a positive pure-strategy
+Isaacs mechanism, then combines them with the exact moving-collision
+innovations in one deterministic partially observed model.
 
 ## Suggested audit order
 
-1. Check the Bayes expansion constant `2 g_+/g_-` under the paper's total
-   variation convention.
-2. Verify the observation-gap product `C_B rho^{r_*}<1` and the pathwise
-   strategy-tree iteration.
-3. Audit the geometric convolution estimate under slow/control perturbations.
-4. Check that the initial-layer theorem, not merely a finite geometric sum,
-   removes dependence on the initial belief.
-5. In the weighted branch, audit separately the Lyapunov moment ball,
-   prediction contraction, Bayes regularity, and PDE comparison fields.
-6. Verify that sequential order is retained in the two consistency limits.
-7. Check the relaxed mixed minimax theorem and that no pure conclusion is
-   inferred from it.
-8. Audit the proof that compact pure Isaacs equality is equivalent to a pure
-   saddle.
-9. Check measurable selection of the saddle correspondence.
-10. For the noncompact theorem, verify strong monotonicity and cancellation of
-    all mixed Hessian terms.
-11. Audit the actual four-branch monotone schemes and the one-step
-    prior-forgetting identity.
-12. Audit the Gaussian weighted filter's exact transition and posterior moment
-    estimates.
+1. **Bayes expansion:** check the total-variation convention and constant.
+2. **Refresh--AR kernel:** verify the common-component contraction and the
+   exact quadratic Lyapunov identity.
+3. **Posterior moment ball:** check the two independent strict gates and the
+   affine moment recursion.
+4. **Initial layer:** verify why geometric sensitivity alone is insufficient
+   and how the prior-dependent reward disappears.
+5. **Curvature compensation:** audit the saddle operator, exact mixed-Hessian
+   cancellation, normal-cone variational inclusion, coercivity, and strong
+   monotonicity.
+6. **Pure selector:** check global saddle inequalities and the Lipschitz
+   parameter estimate.
+7. **Quadratic energy game:** verify the saddle, Hamiltonian, and nonconvex sign.
+8. **Lower/upper schemes:** audit coercive localization, Taylor consistency,
+   equality of the two limiting Hamiltonians, and comparison.
+9. **Continuous-time verification:** check both Itô inequalities and the
+   viscosity approximation/selector stability step.
+10. **End-to-end product model:** verify that the filter, collision innovations,
+    controls, and slow recursion are defined on one deterministic product
+    system.
 
-## Imported hypothesis
+## High-risk proof locations
 
-Paper III supplies control-uniform homogenized characteristics.  No stochastic
-representation theorem is used to prove a game or filtering limit.
+- uniform posterior contraction under control-dependent perturbations;
+- maximal-monotone existence on noncompact constrained controls;
+- uniform curvature domination on the doubled-variable jet range;
+- passage from smooth feedback verification to bounded viscosity data;
+- strategy-tree uniformity of the filter error convolution.
 
-## Permanent scope boundaries
+## Permanent scope
 
-- Filter contraction is not the same as initial-belief value collapse.
-- Lyapunov control is not the same as weighted HJB comparison.
-- Sequential lower and upper values need not coincide.
-- Mixed Isaacs equality is not a pure saddle theorem.
-- A belief-state problem is not projected to a finite-dimensional or path-free
-  equation without a sufficient-statistic proof.
+Pure Isaacs structure follows from curvature compensation, not from mixed
+minimax.  Lower and upper discrete values need not coincide at each mesh; the
+paper proves that they converge to one pure-strategy continuum value.
 
-## Specialist review split
-
-A filtering specialist should focus on Sections 2--5 and 11.  A stochastic
-control/game specialist should focus on Sections 6--10.  A viscosity specialist
-should independently audit all comparison-dependent convergence statements.
+A report should separately assess the filter theorem, the curvature theorem,
+the scheme convergence, and the full deterministic actualization.
