@@ -55,11 +55,15 @@ paper_III:
   qualitative_uniform_WIP_only: COFINAL_DIAGONAL_RESULT
   actual_four_branch_full_scale: CLOSED
   fractional_Sobolev_rough_rate:
-    topology: step_two_W_eta_p_KR
+    topology: step_two_W_eta_p
+    test_distance: Stein_Dirichlet_Sigma_eta_p
+    safe_range: p_greater_than_6_and_one_third_less_than_eta_minus_one_over_p_and_eta_less_than_one_half
     upper_exponent: one_half_minus_eta
     lower_exponent: one_half_minus_eta
-    status: OPTIMAL_IN_DECLARED_TOPOLOGY
-  topology_free_optimal_rate: CLOSED_BY_TYPING_NO_GO
+    lower_test: smooth_midpoint_bridge_cylindrical_functional
+    status: OPTIMAL_IN_DECLARED_TOPOLOGY_AND_TEST_CLASS
+  full_Lipschitz_KR_exact_rate: NOT_CLAIMED
+  topology_or_test_class_free_optimal_rate: CLOSED_BY_TYPING_NO_GO
   explicit_block_window: CLOSED
   actual_four_branch_HJB_theta: CLOSED
   explicit_nonconvex_non_subadditive_example: CLOSED
@@ -112,13 +116,15 @@ series:
 
 ## Maximality clauses
 
-The following stronger formulations are false or ill-typed and therefore are
-not counted as open gaps:
+The following stronger formulations are false, ill-typed, or not supplied by
+the cited proof and therefore are not counted as open gaps:
 
 1. finite-horizon specular geometry alone implies generic noncoboundary U3;
 2. one scalar pointwise grazing weight gives one ungraded moving-flow domain
    for every deformation;
-3. an enhanced-WIP rate is “optimal” without naming a topology and test class;
+3. an enhanced-WIP rate is “optimal” without naming both a topology and a test
+   class, or a Stein--Dirichlet estimate is silently upgraded to the full
+   Lipschitz--KR distance;
 4. mixed minimax implies a pure saddle;
 5. a fast belief variable may be retained in a path PPDE without its limiting
    generator.
@@ -156,7 +162,7 @@ The weighted/path construction also forms the series-level bundle
 
 Every paper imports only named outputs from upstream papers.  No manuscript
 may import the old blanket response label.  Every downstream claim must name
-the exact export ID and preserve its source-specific, topology-specific,
+the exact export ID and preserve its source-specific, topology/test-specific,
 high-frequency, pure/mixed, weighted, and path-state scope.
 
 ## Review boundary
