@@ -2,8 +2,9 @@
 """Fail-closed structural verifier for the θ-Theory five-paper series.
 
 This script verifies repository structure, named imports/exports, acyclicity,
-forbidden blanket labels, convention anchors, and file hashes.  It does not
-verify the truth of mathematical proofs or grant theorem credit.
+forbidden blanket labels, convention anchors, actual scoped technical
+appendices, review boundaries, and file hashes.  It does not verify the truth of
+mathematical proofs or grant theorem credit.
 """
 
 from __future__ import annotations
@@ -71,6 +72,14 @@ REQUIRED_TOP = {
     "README.md",
     "FIVE_PAPER_CLOSURE_STATUS.md",
     "THEOREM_INTERFACE_MANIFEST.yaml",
+    "HOSTILE_PROOF_AUDIT.md",
+    "FIVE_PAPER_VERIFICATION_RECEIPT.json",
+}
+
+EXTRA_REQUIRED = {
+    "paper_II": {"TECHNICAL_NOTE_RENEWAL.md"},
+    "paper_III": {"TECHNICAL_APPENDIX_DPP_COMPARISON.md"},
+    "paper_IV": {"TECHNICAL_APPENDIX_GAME_SCHEME.md"},
 }
 
 CONVENTION_ANCHORS = {
@@ -79,6 +88,18 @@ CONVENTION_ANCHORS = {
     "paper_III": ("direct triangular-characteristics", "4\\delta>0"),
     "paper_IV": ("vanishing slow initial layer", "mixed Isaacs equality"),
     "paper_V": ("generator orientation", "Z_s=\\sigma(s,X_s)^TDu"),
+}
+
+TECHNICAL_ANCHORS = {
+    ("paper_II", "TECHNICAL_NOTE_RENEWAL.md"): (
+        "distinct entry and exit", "\\mathcal O_{a,z}F"
+    ),
+    ("paper_III", "TECHNICAL_APPENDIX_DPP_COMPARISON.md"): (
+        "Theorem A.3", "actual theta-expectation"
+    ),
+    ("paper_IV", "TECHNICAL_APPENDIX_GAME_SCHEME.md"): (
+        "Theorem B.2", "mixed-Isaacs"
+    ),
 }
 
 
@@ -119,12 +140,14 @@ def main() -> int:
         directory = BASE / dirname
         required = {
             "MANUSCRIPT.md", "BLOCKER_CLOSURE.md", "INTERFACE.md"
-        }
+        } | EXTRA_REQUIRED.get(paper, set())
+
         for filename in sorted(required):
             path = directory / filename
             if not path.is_file():
                 fail(errors, f"missing {dirname}/{filename}")
                 continue
+
             text = path.read_text(encoding="utf-8")
             hashes[str(path.relative_to(ROOT))] = sha256(path)
 
@@ -144,6 +167,10 @@ def main() -> int:
                 for token in IMPORTS[paper]:
                     if text.count(f"`{token}`") != 1:
                         fail(errors, f"import {token} missing or duplicated in {dirname}")
+            else:
+                for anchor in TECHNICAL_ANCHORS.get((paper, filename), ()):
+                    if anchor not in text:
+                        fail(errors, f"missing technical anchor {anchor!r} in {dirname}/{filename}")
 
             for label in FORBIDDEN_LABELS:
                 if label in text:
@@ -179,17 +206,22 @@ def main() -> int:
     status_path = BASE / "FIVE_PAPER_CLOSURE_STATUS.md"
     if status_path.is_file():
         status_text = status_path.read_text(encoding="utf-8")
-        if "external_peer_review: NOT_PERFORMED" not in status_text:
-            fail(errors, "external-review boundary missing from status")
-        if "formal_credit: 0" not in status_text:
-            fail(errors, "formal-credit boundary missing from status")
+        for required_status in (
+            "actual_scoped_chain_through_theta: CLOSED",
+            "actual_scoped_chain_through_mixed_Isaacs: CLOSED",
+            "external_peer_review: NOT_PERFORMED",
+            "formal_credit: 0",
+        ):
+            if required_status not in status_text:
+                fail(errors, f"status boundary missing: {required_status}")
 
     result = {
-        "schema": "THETA_FIVE_PAPER_VERIFY_V1",
+        "schema": "THETA_FIVE_PAPER_VERIFY_V2",
         "status": "PASS" if not errors else "FAIL",
         "paper_count": len(PAPERS),
         "named_export_count": sum(map(len, EXPORTS.values())),
         "named_import_count": sum(map(len, IMPORTS.values())),
+        "actual_technical_file_count": sum(map(len, EXTRA_REQUIRED.values())),
         "errors": errors,
         "sha256": dict(sorted(hashes.items())),
         "mathematical_proof_verified": False,
