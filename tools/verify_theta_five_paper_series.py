@@ -114,7 +114,7 @@ MAX_REQUIRED = {
     "SPECULAR_SINAI_RADIAL_U3.md": (
         "SINAI-RADIAL-ASSEMBLED-U-INFINITY-1",
         "P1-SINAI-RADIAL-U3",
-        "changing period-two multiplier",
+        "period-two monodromy",
     ),
     "MOVING_FAMILY_HIGH_FREQUENCY_BDL.md": (
         "BDL-FAMILY-WITNESS-v1",
@@ -123,8 +123,8 @@ MAX_REQUIRED = {
     ),
     "OPTIMAL_ENHANCED_WIP_RATE.md": (
         "P3-RWIP-OPTIMAL-WETA-P",
-        "N^{-(1/2-\\eta)}",
-        "matching lower bound",
+        "Stein--Dirichlet test class",
+        "midpoint bridge defects",
     ),
     "PURE_STRATEGY_ISAACS.md": (
         "P4-PURE-ISAACS-MAXIMAL",
@@ -169,7 +169,7 @@ TECHNICAL_ANCHORS = {
         "Theorem A.3", "actual theta-expectation",
     ),
     ("paper_III", "TECHNICAL_APPENDIX_OPTIMAL_RATE.md"): (
-        "P3-RWIP-OPTIMAL-WETA-P", "midpoint Brownian-bridge defect",
+        "P3-RWIP-OPTIMAL-WETA-P", "Stein--Dirichlet", "smooth cylindrical midpoint-defect",
     ),
     ("paper_IV", "TECHNICAL_APPENDIX_GAME_SCHEME.md"): (
         "Theorem B.2", "mixed-Isaacs",
