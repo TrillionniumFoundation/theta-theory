@@ -8,11 +8,48 @@
 | Physical-time normalization was implicit | Pressure root `P(a,q,Lambda_a(q))=0` and mean-roof division | CLOSED |
 | Diffusion response needs a third mixed derivative | Formula for `P_{a q_i q_j}` supplied by U3 | CLOSED |
 | Collision response not transferred to the flow | Roof-cell renewal decomposition and centered pole cancellation | CLOSED |
-| Full moving-flow BDL theorem treated as necessary | Replaced by the low-frequency suspension theorem actually used downstream | CLOSED_BY_SHARP_SCOPE |
+| Full high-frequency moving-family BDL missing | Strict local BDL witness packet, openness, compact finite-cover uniformization, fixed quadratic atlas, and uniform high-frequency resolvent | CLOSED_RELATIVE_TO_EXPLICIT_WITNESS |
+| Moving-family high-frequency parameter derivatives untyped | Ordered-composition resolvent formula on certified graded generator-letter channels | CLOSED |
+| One scalar grazing weight expected to control every deformation | Unbounded consecutive-collision weight-ratio counterexample | CLOSED_BY_REFUTATION_AND_MAXIMALITY |
+| No actual all-frequency moving specular channel | Nonconjugate radial exact-flow-coboundary gauge conjugacy | CLOSED_ACTUAL_SOURCE_SPECIFIC |
 | Green--Kubo, pressure, and martingale conventions could disagree | Equality theorem and factor `D=Sigma/2` fixed | CLOSED |
 | Positive semidefinite tensor not upgraded to ellipticity | Coboundary-kernel criterion plus compact non-coboundary margin | CLOSED |
 | `(x,p)` coefficient composition was ill-typed | Stabilized common space and corrected Hölder--Nemytskii lift | CLOSED |
 | No actual positive example | Four-branch family with `kappa=cos(2 pi y)` and fixed-point witness | CLOSED |
+
+## High-frequency theorem
+
+The normative proof is
+
+```text
+../../maximal-strengthening/MOVING_FAMILY_HIGH_FREQUENCY_BDL.md
+```
+
+A family submits `BDL-FAMILY-WITNESS-v1`, consisting of uniform geometry,
+flow boxes, temporal-distance/nonintegrability witnesses with strict positive
+margins, compact embeddings, and a high-frequency strip.  Strict witnesses are
+open in the table parameter, so a finite cover of a compact family produces
+one uniform packet.  After quadratic-atlas stabilization,
+
+\[
+\sup_{a\in A}\|(z-\widehat X_a)^{-1}P_a\|
+\le C(1+|\operatorname{Im}z|)^\nu
+\]
+
+on the declared strip.
+
+If complete parameter letters `G_a^(j)` satisfy the graded symbol packet, then
+
+\[
+\partial_a^kR_a(z)
+=
+\sum_{j_1+\cdots+j_m=k}
+\frac{k!}{j_1!\cdots j_m!}
+R_aG_a^{(j_1)}R_a\cdots G_a^{(j_m)}R_a.
+\]
+
+The theorem does not claim that all deformation letters are bounded after one
+pointwise scalar conjugation.  That stronger statement is false near grazing.
 
 ## Permanent convention ledger
 
@@ -21,9 +58,6 @@ collision covariance = P_qq
 physical covariance  = P_qq / mean_roof
 physical diffusion   = physical covariance / 2
 ```
-
-The slow/cotangent selector is external at this layer.  Substituting `p=Du` is
-a Paper-III operation.
 
 ## Exports
 
@@ -35,9 +69,10 @@ P2-PHYS
 P2-COEFF
 P2-ELL
 P2-ACTUAL-4B
+P2-BDL-HF-FAMILY
 ```
 
 ## Review boundary
 
-The common-space and renewal proofs are internal drafts.  No external
-spectral-dynamics review has yet been performed.
+The common-space, renewal, and high-frequency family proofs are internal
+drafts.  No external spectral-dynamics review has yet been performed.
