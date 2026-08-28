@@ -6,15 +6,15 @@
 
 ## Controlling interpretation
 
-The series closes the internal proof DAG at the maximal correct scope.  An
+The series closes the internal proof DAG at the maximal correct scope. An
 impossible unrestricted statement is closed by refutation/maximality; a
 positive statement is closed by proving it on an explicit packet class and by
-exhibiting a nonempty actual subclass.  No stronger system verification is
+exhibiting a nonempty actual subclass. No stronger system verification is
 hidden inside the word `general`.
 
 The five items previously listed as outside-theorem strengthening work now
-have actual positive theorems, exact maximality/no-go results where the fully
-unrestricted version is false, and named P1--P5 exports.
+have actual positive theorems, exact packet theorems, maximality/no-go results
+where the fully unrestricted version is false, and named P1--P5 exports.
 
 ```yaml
 paper_I:
@@ -42,9 +42,12 @@ paper_II:
   xp_coefficient_lift: CLOSED
   ellipticity: CLOSED_RELATIVE_TO_NONCOBOUNDARY_AND_COUPLING_RANK
   actual_four_branch_positive_diffusion: CLOSED
-  compact_moving_family_high_frequency_BDL: CLOSED_RELATIVE_TO_STRICT_WITNESS_PACKET
-  graded_high_frequency_parameter_derivatives: CLOSED
-  actual_radial_all_frequency_coboundary_channel: CLOSED
+  compact_moving_family_high_frequency_BDL: CLOSED_RELATIVE_TO_BDL_FAMILY_WITNESS_v1
+  actual_radial_uniform_high_frequency_family: CLOSED
+  table_parameter_high_frequency_derivatives: CLOSED_RELATIVE_TO_BDL_PARAMETER_DOMAIN_v1
+  ordered_resolvent_derivative_formula: CLOSED
+  actual_radial_exact_coboundary_q_response: CLOSED
+  q_gauge_to_a_table_response: FORBIDDEN
   universal_single_scalar_grazing_weight_domain: CLOSED_BY_REFUTATION
 
 paper_III:
@@ -107,6 +110,7 @@ series:
   internal_unnamed_arrows: 0
   stale_unconditional_imports: REMOVED
   circular_dependencies: 0
+  q_to_a_parameter_confusions: 0
   hostile_base_audit_rounds: 3
   hostile_strengthening_audit: COMPLETE
   external_peer_review: NOT_PERFORMED
@@ -122,11 +126,14 @@ the cited proof and therefore are not counted as open gaps:
 1. finite-horizon specular geometry alone implies generic noncoboundary U3;
 2. one scalar pointwise grazing weight gives one ungraded moving-flow domain
    for every deformation;
-3. an enhanced-WIP rate is “optimal” without naming both a topology and a test
+3. compact-family high-frequency resolvent bounds automatically imply
+   moving-table parameter derivatives without a common graph-domain packet, or
+   exact-coboundary twist derivatives in `q` imply table derivatives in `a`;
+4. an enhanced-WIP rate is “optimal” without naming both a topology and a test
    class, or a Stein--Dirichlet estimate is silently upgraded to the full
    Lipschitz--KR distance;
-4. mixed minimax implies a pure saddle;
-5. a fast belief variable may be retained in a path PPDE without its limiting
+5. mixed minimax implies a pure saddle;
+6. a fast belief variable may be retained in a path PPDE without its limiting
    generator.
 
 Each item has a counterexample, obstruction, or corrected maximal theorem in
@@ -160,13 +167,14 @@ The weighted/path construction also forms the series-level bundle
 
 ## Import policy
 
-Every paper imports only named outputs from upstream papers.  No manuscript
-may import the old blanket response label.  Every downstream claim must name
-the exact export ID and preserve its source-specific, topology/test-specific,
-high-frequency, pure/mixed, weighted, and path-state scope.
+Every paper imports only named outputs from upstream papers. No manuscript may
+import the old blanket response label. Every downstream claim must name the
+exact export ID and preserve its source-specific, topology/test-specific,
+high-frequency uniform/table-parameter/twist-parameter, pure/mixed, weighted,
+and path-state scope.
 
 ## Review boundary
 
-All results are internal proof drafts.  External expert review, novelty review,
+All results are internal proof drafts. External expert review, novelty review,
 full bibliography verification, and journal LaTeX preparation have not been
 performed and are not replaced by structural verification.
