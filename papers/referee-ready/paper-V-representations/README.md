@@ -1,6 +1,12 @@
-# Paper V — build and circulation notes
+# Paper V — referee revision v4
 
-Compile with:
+**Controlling source:** `main.tex`  
+**Controlling bibliography:** `references.bib`  
+**Round-four frozen copies:** `main-round4.tex`, `references-round4.bib`
+
+Title: *Tangent-Law Characterization and Stochastic Representations of Theta-Semigroups*.
+
+Build from this directory:
 
 ```bash
 pdflatex main
@@ -9,15 +15,12 @@ pdflatex main
 pdflatex main
 ```
 
-This manuscript starts after an HJB, Isaacs, belief-state, or path-dependent
-DPP limit has been derived.  It must not be cited in reverse as a proof of
-homogenization, filtering, the DPP, or viscosity comparison.
+The paper proves terminal-map Fréchet differentiability, an intrinsic
+characterization of entropic theta functionals by probability tangents and
+covariance curvature, convergence of microscopic deterministic tangent laws,
+a genuine Girsanov theorem with Radon--Nikodym density, quadratic and tangent
+BSDEs, a path PPDE branch, a pure energy path game, and a stable-volatility
+2BSDE branch.
 
-The two actual path models are independent examples:
-
-- a pure drift game with an entropic PPDE and quadratic BSDE;
-- a volatility-control problem with a path-dependent fully nonlinear equation
-  and nondominated 2BSDE.
-
-The author metadata, bibliography, and all branch-specific standard hypotheses
-must be checked by the human authors before circulation.
+No terminal derivative is assumed, no degenerate derivative limit is inferred
+from local uniform convergence, and no nonlinear `Z -> p` inversion is used.
