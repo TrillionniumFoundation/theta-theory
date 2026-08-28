@@ -3,7 +3,7 @@
 
 The verifier checks file presence, named theorem producers/imports, optional
 upstream edges, acyclicity, convention anchors, maximal-strengthening scope
-anchors, review boundaries, and SHA-256 hashes.  It does not certify the truth
+anchors, review boundaries, and SHA-256 hashes. It does not certify the truth
 of mathematical proofs or grant theorem credit.
 """
 
@@ -114,12 +114,14 @@ MAX_REQUIRED = {
     "SPECULAR_SINAI_RADIAL_U3.md": (
         "SINAI-RADIAL-ASSEMBLED-U-INFINITY-1",
         "P1-SINAI-RADIAL-U3",
-        "period-two monodromy",
+        "period-two orbit",
     ),
     "MOVING_FAMILY_HIGH_FREQUENCY_BDL.md": (
         "BDL-FAMILY-WITNESS-v1",
+        "BDL-PARAMETER-DOMAIN-v1",
         "P2-BDL-HF-FAMILY",
         "ordered-composition resolvent formula",
+        "Gauge conjugacy does not turn item 2 into item 3",
     ),
     "OPTIMAL_ENHANCED_WIP_RATE.md": (
         "P3-RWIP-OPTIMAL-WETA-P",
@@ -140,10 +142,12 @@ MAX_REQUIRED = {
     "maximal_strengthening_packet_v1.yaml": (
         "THETA_MAXIMAL_STRENGTHENING_PACKET_V2",
         "remaining_internal_mathematical_gaps: 0",
+        "q_to_a_parameter_confusions: 0",
     ),
     "HOSTILE_STRENGTHENING_AUDIT.md": (
         "known_internal_strengthening_gaps_after_audit: 0",
         "external_peer_review: NOT_PERFORMED",
+        "q_gauge_to_a_table_response_no_go_by_typing",
     ),
 }
 
@@ -164,12 +168,14 @@ TECHNICAL_ANCHORS = {
     ),
     ("paper_II", "TECHNICAL_APPENDIX_HIGH_FREQUENCY_FAMILY.md"): (
         "P2-BDL-HF-FAMILY", "compact finite-cover uniformization",
+        "BDL-PARAMETER-DOMAIN-v1", "q exact-coboundary derivatives",
     ),
     ("paper_III", "TECHNICAL_APPENDIX_DPP_COMPARISON.md"): (
         "Theorem A.3", "actual theta-expectation",
     ),
     ("paper_III", "TECHNICAL_APPENDIX_OPTIMAL_RATE.md"): (
-        "P3-RWIP-OPTIMAL-WETA-P", "Stein--Dirichlet", "smooth cylindrical midpoint-defect",
+        "P3-RWIP-OPTIMAL-WETA-P", "Stein--Dirichlet",
+        "smooth cylindrical midpoint-defect",
     ),
     ("paper_IV", "TECHNICAL_APPENDIX_GAME_SCHEME.md"): (
         "Theorem B.2", "mixed-Isaacs",
@@ -302,6 +308,7 @@ def main() -> int:
         "actual_scoped_chain_through_mixed_Isaacs: CLOSED",
         "actual_scoped_chain_through_pure_Isaacs: CLOSED",
         "former_outside_theorem_strengthenings_closed: 5",
+        "q_to_a_parameter_confusions: 0",
         "external_peer_review: NOT_PERFORMED",
         "formal_credit: 0",
     ):
@@ -309,7 +316,7 @@ def main() -> int:
             fail(errors, f"status boundary missing: {required_status}")
 
     result = {
-        "schema": "THETA_FIVE_PAPER_VERIFY_V3",
+        "schema": "THETA_FIVE_PAPER_VERIFY_V4",
         "status": "PASS" if not errors else "FAIL",
         "paper_count": len(PAPERS),
         "named_export_count": sum(map(len, EXPORTS.values())),
