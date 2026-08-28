@@ -12,8 +12,8 @@ statement is closed by proving it on an explicit admissible packet class and
 exhibiting a nonempty actual subclass.  No stronger system verification is
 hidden inside the word `general`.
 
-A second hostile proof audit has been applied.  It repaired four issues that
-would otherwise have left only a formal closure:
+A three-round hostile proof audit has repaired six issues that would otherwise
+have left only a formal closure:
 
 1. third-order response words now use an explicit graded regularity ladder;
 2. common-space stabilization uses a smooth quadratic partition rather than
@@ -21,8 +21,9 @@ would otherwise have left only a formal closure:
 3. full-scale nonautonomous rough convergence is separated from qualitative
    uniform WIP and the actual model uses direct martingale characteristics;
 4. belief-value collapse includes a vanishing slow initial layer;
-5. the representation paper fixes the generator orientation before converting
-   a Hessian derivative into a diffusion matrix.
+5. the representation paper fixes generator orientation before converting a
+   Hessian derivative into a diffusion matrix;
+6. suspension renewal uses distinct entry and exit roof-cell operators.
 
 ```yaml
 paper_I:
@@ -39,7 +40,7 @@ paper_I:
 paper_II:
   title: Higher pressure response and physical diffusion
   twisted_pressure_C3: CLOSED_RELATIVE_TO_PAPER_I_PACKET
-  low_frequency_suspension_resolvent: CLOSED
+  low_frequency_suspension_resolvent: CLOSED_WITH_ENTRY_EXIT_OPERATORS
   physical_time_root: CLOSED
   diffusion_response: CLOSED
   common_operator_space: CLOSED_BY_SMOOTH_QUADRATIC_ATLAS_STABILIZATION
@@ -85,7 +86,8 @@ series:
   internal_unnamed_arrows: 0
   stale_unconditional_imports: REMOVED_IN_NEW_SERIES
   circular_dependencies: 0
-  hostile_proof_audit_rounds: 2
+  hostile_proof_audit_rounds: 3
+  hostile_findings_repaired: 6
   external_peer_review: NOT_PERFORMED
   formal_credit: 0
 ```
