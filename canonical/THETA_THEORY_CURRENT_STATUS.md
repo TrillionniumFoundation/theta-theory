@@ -1,8 +1,8 @@
-# θ-Theory current status — dependency-closure control page
+# θ-Theory current status — five-paper closure control page
 
 **Date:** 2026-08-28  
 **Scope:** θ-Theory only; Navier–Stokes is excluded.  
-**Branch:** `theta-dependency-closure-2026-08-28`  
+**Branch:** `theta-five-paper-closure-2026-08-28`  
 **Policy:** `LATEST-WINS / FAIL-CLOSED / NO-UNNAMED-ARROWS / NO-REVIVAL-OF-REFUTED-UNIVERSAL-CLAIMS`
 
 ## Controlling status
@@ -11,57 +11,110 @@
 UnrestrictedUniversalMovingScattererCM2: REFUTED_EXACTLY
 LocalGeometryOnlyUniformCM2: REFUTED
 MaximalPacketizedCM2Class: PROVED_IN_DEPENDENCY_CLOSURE_REPORT
-ActualScopedNonzeroMovingSeamCM2: PASS_V68_V69
+ActualScopedNonzeroMovingSeamCM2: PASS_OPEN_FOUR_BRANCH_THREE_SEAM_CLASS
 ActualScopedLorentzE2E: PASS_IN_RECURSIVE_V164_SCOPE
 ActualUniversalLorentzTheorem: NOT_CLAIMED
-CM2ToU3Compiler: PROVED_RELATIVE_TO_EXPLICIT_THIRD_SOURCE_ATOM_PACKET
-U3ToK1: PROVED
-K1ToK15: PROVED
-K15ToK2: PROVED_RELATIVE_TO_UNIFORM_MARTINGALE_ROUGH_PACKET
-K2ToK3: PROVED_AS_TYPED_FILTER_SEQUENTIAL_SIMULTANEOUS_BRANCHES
-K2K3ToHJBTheta: PROVED_RELATIVE_TO_TYPED_COMPARISON
-HJBThetaToRepresentations: PROVED_AS_DOWNSTREAM_TYPED_BRANCHES
+
+PaperI_CM2_U3:
+  product_tail: CLOSED
+  finite_DQ_l1: CLOSED
+  graded_ladder: CLOSED_X5_TO_X1
+  actual_U3_witness: OPEN_FOUR_BRANCH_CLASS
+
+PaperII_K1_K15:
+  pressure_C3: CLOSED_RELATIVE_TO_PAPER_I
+  low_frequency_suspension: CLOSED
+  physical_diffusion_response: CLOSED
+  common_operator_realization: CLOSED_BY_SMOOTH_QUADRATIC_ATLAS
+  coefficient_and_ellipticity: CLOSED
+
+PaperIII_K2_Theta:
+  Doob_selection: CLOSED_WITH_NO_FEEDBACK
+  enhanced_WIP: CLOSED_WITH_MODULUS_OR_DIRECT_CHARACTERISTICS
+  nonautonomous_homogenization: CLOSED
+  HJB_and_theta_semigroup: CLOSED_RELATIVE_TO_DPP_AND_COMPARISON
+  actual_full_scale_symbolic_model: PASS
+  explicit_nonconvex_non_subadditive_branch: CLOSED
+
+PaperIV_K3:
+  filtering: CLOSED_WITH_BAYES_GAP_AND_INITIAL_LAYER
+  sequential_games: CLOSED
+  simultaneous_mixed_Isaacs: CLOSED
+  pure_saddle: EXTRA_TYPED_CERTIFICATE
+  belief_and_path_state_branches: CLOSED
+  actual_hidden_symbol_model: PASS
+
+PaperV_Representations:
+  single_linear_law_obstruction: CLOSED
+  calibrated_Feynman_Kac: CLOSED
+  FBSDE_control_BSDE_2BSDE_PPDE_typing: CLOSED
+  post_calibration_Girsanov: CLOSED
+  reverse_use_to_prove_HJB: FORBIDDEN
+
 InternalDependencyGaps: CLOSED
 UnnamedIntermediateArrows: 0
+HostileProofAuditRounds: 3
 ExternalPeerReview: NOT_PERFORMED
+MathematicalProofCertifiedExternally: false
 FormalCredit: 0
 ```
 
-“Closed” has the following strict meaning:
+## Meaning of closure
 
-1. impossible unrestricted claims are closed by counterexample/maximality and are not revived;
-2. the positive theorem is stated on an explicit nonempty packetized admissible class;
-3. every downstream arrow has named inputs, outputs and a theorem interface;
-4. stronger system-specific instantiations not covered by the packet are outside the theorem, rather than hidden assumptions or unnamed gaps.
+1. Impossible unrestricted claims are closed by counterexample/maximality and
+   are not revived.
+2. Positive general theorems are stated on explicit packetized admissible
+   classes.
+3. A nonzero open moving-seam system verifies the complete finite-order
+   Paper-I/II packet, and its symbolic/Doob realization verifies the scoped
+   Paper-III/IV chain.
+4. Every cross-paper arrow has a named P1--P5 interface; old blanket response
+   imports are forbidden.
+5. Stronger system-specific theorems not used by the series are outside the
+   claim rather than hidden assumptions.
 
 ## Correct dependency DAG
 
 ```text
-CM2 bilateral graph-current/product tail
-  -> moving-singularity U3
-       -> K1 C3 pressure / low-frequency suspension resolvent / physical diffusion response
-            -> K1.5 common operator realization / (x,p) coefficient and elliptic fields
-                 -> K2 Doob selection / enhanced rough WIP / nonautonomous homogenization
-                      -> uncontrolled or one-player HJB
-                      -> K3 filtering
-                      -> K3 sequential lower/upper games
-                      -> K3 simultaneous relaxed Isaacs game
-                           -> HJB / Isaacs / belief-state HJB or path-dependent PPDE
-                                -> theta-expectation
-                                     -> typed FBSDE / controlled BSDE / 2BSDE / PPDE / path evaluation
+Paper I: bilateral graph-current CM2 + finite-DQ + U3
+  -> Paper II: pressure / low-frequency suspension / diffusion / common space
+       -> Paper III: Doob-selected rough homogenization / HJB / theta
+            -> Paper IV (optional typed fan-out): filter / games / Isaacs
+                 -> Paper V: typed downstream representations
+
+Paper III HJB/theta
+  -----------------------------------------------> Paper V
 ```
 
-Permanent dependency corrections:
+Permanent corrections:
 
-- U3 is not needed for first-order K1, but is needed for the third-order pressure response used by the general K1.5 lift.
+- U3 is not needed for first-order K1, but is needed for the third-order mixed
+  pressure derivative used by the general K1.5 lift.
+- Qualitative uniform enhanced WIP alone gives a cofinal diagonal result; a
+  compatible modulus or direct triangular characteristics are needed for a
+  full-scale nonautonomous theorem.
 - K3 is not needed for an uncontrolled or one-player HJB.
-- filtering, sequential games and simultaneous games are parallel typed branches.
-- FBSDE, controlled BSDE, 2BSDE and PPDE are parallel downstream representations, not a single implication chain.
+- Filter contraction alone does not erase the initial belief from values; a
+  vanishing slow initial layer is also required.
+- Mixed Isaacs equality does not imply a pure saddle.
+- FBSDE, controlled BSDE, 2BSDE, nonlinear martingale problem, and PPDE are
+  typed downstream branches, not interchangeable conclusions.
 
-## Controlling new files
+## Controlling files
 
-1. `papers/theta-program/THETA_DEPENDENCY_CLOSURE_REPORT_2026-08-28.md`
-2. `papers/theta-program/theta_dependency_packet_v1.yaml`
-3. `papers/theta-program/THETA_TOP_FOUR_PAPER_ARCHITECTURE_2026-08-28.md`
+- `papers/theta-program/THETA_DEPENDENCY_CLOSURE_REPORT_2026-08-28.md`
+- `papers/theta-program/theta_dependency_packet_v1.yaml`
+- `papers/theta-program/five-paper-series/README.md`
+- `papers/theta-program/five-paper-series/FIVE_PAPER_CLOSURE_STATUS.md`
+- `papers/theta-program/five-paper-series/THEOREM_INTERFACE_MANIFEST.yaml`
+- `papers/theta-program/five-paper-series/HOSTILE_PROOF_AUDIT.md`
+- five `MANUSCRIPT.md`, five `BLOCKER_CLOSURE.md`, and five `INTERFACE.md`
+- `tools/verify_theta_five_paper_series.py`
 
-Historical v83 and v164 source bytes remain unchanged. This page controls only the new θ-Theory dependency interpretation on the named branch; it grants no external review or journal acceptance status.
+The verifier source has been reproduced byte-for-byte locally and passes Python
+byte-code compilation.  A full verifier run against a checked-out branch is
+still required before merge because the private Git tree was not materialized
+inside the execution container.  This limitation is not a mathematical claim
+and grants no external correctness certificate.
+
+Historical v83/v164 and old three-paper source bytes remain unchanged.
