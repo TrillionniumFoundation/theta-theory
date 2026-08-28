@@ -1,0 +1,172 @@
+# CM2 Gate 4/5 round-28 Q2 homogeneity/recut assault
+
+Verdict: **all 114,006 frozen strict Q2-inner atoms now have physical
+two-step central-homogeneity child IDs, deterministic chart-free
+canonical-recut branch-rule IDs and numerical candidate-local universal
+branch-rule F5/F6 slots.
+The strict time-two single-chart subledger has 108,726 atoms; 5,280 whole
+boxes do not strictly exclude a representation seam, so the full Q2 F4 chart
+ledger, F7, F14--F18, numerical strong q2 and CM2 remain NOT CERTIFIED.**
+
+## 1. Scope and replay
+
+This is an append-only leaf.  It does not modify the round-27 leaf, any Gate
+aggregate or a recursive root.  Starting from the frozen 2,868 Q1 parents, the
+producer reruns the complete depth-at-most-16 recursion with 384-bit Arb.  It
+reconstructs exactly 416,994 terminal boxes:
+
+```text
+SURVIVE_THROUGH_2_INNER       114006
+UNRESOLVED_TIME2_OUTER        302988
+RETURN_AT_2_INNER                  0   (finite depth only)
+```
+
+The terminal ID digest is the frozen round-26 value.  The exact coordinate
+base masses are
+
+```text
+Q2 inner       5257799/5120000000
+unresolved     106721/204800000
+Q1 total       123841/80000000.
+```
+
+The zero admitted R2 count is never interpreted as physical R2 emptiness.
+
+## 2. Two physical owners and two homogeneity children
+
+The 24 source-core first-owner claims are freshly replayed.  Each Q2 atom then
+gets a fresh complete translated-candidate second-owner audit.  All 114,006
+selected atoms have one strict second owner.
+
+Let
+
+```text
+k0 = 6121,
+c0 = 1/(2*k0^2) = 1/74933282.
+```
+
+For every Q2 box, interval arithmetic proves at both collision targets
+
+```text
+cos(phi) > c0.
+```
+
+Thus every box is wholly contained in the enlarged physical central child
+`H_0(k0=6121)` at both steps.  No high-strip rank or representative-point
+classification is used.  The leaf freezes:
+
+```text
+time-one physical homogeneity IDs      114006
+time-two physical homogeneity IDs      114006
+combined two-step child IDs             114006
+whole-box homogeneity failures               0.
+```
+
+## 3. Chart-seam audit
+
+The first target normal chart is strict on every Q2 box.  At time two, the
+whole-box audit gives
+
+```text
+strict single target chart             108726
+normal-chart seam not strictly excluded  5280.
+```
+
+The frozen physical incidence theorem explicitly types normal-chart seams as
+representation boundaries rather than physical singularity cuts.  Therefore
+the homogeneity and unstable-Jacobian payload below is built in chart-free
+physical Birkhoff coordinates on all 114,006 atoms.  This does **not** fill the
+Gate-5 chart field: the maximum legal time-two F4 single-chart subledger is
+only 108,726, and no chart is guessed for the other 5,280 boxes.
+
+## 4. Canonical recut branch-rule IDs
+
+At fixed parameter, the intersection of a canonical monotone unstable graph
+with one owned adaptive source rectangle is empty or one interval.  Strict
+owner and H0 containment make its image a connected physical branch.  Before
+each collision the leaf applies one deterministic adapted-arclength recut:
+
+```text
+cell length <= 1e-90;
+half-open cells, with the last endpoint closed;
+instance key = (branch component ID, parent canonical-W ID, natural index j).
+```
+
+There are two immutable branch-level recut-rule IDs per Q2 atom, hence
+228,012 rule IDs.  These are **not** actual curve-instance IDs.  Actual
+curve-instance IDs require the displayed parent-canonical-`W` ID and natural
+index `j`; none are materialized in this leaf:
+
+```text
+canonical recut branch-rule IDs             228012
+actual canonical curve-instance IDs              0.
+```
+
+Artificial recut endpoints are not free.  Their characteristic-Z cost is the
+first missing F7 interface and is left open.
+
+## 5. Numerical F5 and F6
+
+The literal round-27 missing field was named
+`canonical_recut_component_ids`.  Because this leaf supplies branch rules,
+not actual curve-instance components, that literal field remains unfilled and
+the literal conditional-template join remains `NOT_CERTIFIED`.
+
+Independently, the frozen universal one-step theorem quantifies every actual
+homogeneous physical child on every canonical adapted standard curve.  The
+deterministic branch rule therefore gives, on each materialized two-step Q2
+branch and for every actual curve instance generated from any parent `W`,
+
+```text
+F5: ||(D T^2|Eu)^-1||_*
+    < (144000/180337)^2
+    = 20736000000/32521433569,
+
+F6: osc(log J^u T^2)
+    < 2*(3/200000)
+    = 3/100000
+```
+
+on each two-step canonical-recut instance.  The new registry contains exactly
+114,006 universal branch-rule F5 slots and 114,006 universal branch-rule F6
+slots.  These counts are counts of two-dimensional Q2 branch rules, not counts
+of actual standard-curve instances.  No global unstable-Jacobian value is
+assigned to an unsplit atom; each slot universally bounds every actual recut
+instance generated by its immutable branch rule.
+
+## 6. Strong typing
+
+Each new row rejoins the round-27 restriction, mass and invariant-area
+Jacobian IDs.  The following remain distinct:
+
+- rational adaptive coordinate-base mass;
+- exact symbolic collision-area/SRB mass;
+- fixed-fibre invariant-area Jacobian `1`;
+- adaptive `(t,p)` coordinate Jacobian;
+- one-dimensional adapted unstable Jacobian used by F5/F6.
+
+In particular, area preservation is not used to prove F5 or F6.  Numerical
+`C_fw`, `C_rev` and strong `q2` counts remain zero.
+
+## 7. Exact frontier
+
+The first unfillable field on the full 114,006-atom chart ledger is F4,
+`homogeneous_suffix_chart`, because of the 5,280 seam-frontier boxes.  On the
+108,726 strict-single-chart subledger the next missing field is F7, because no
+characteristic-Z charge has been installed for physical word boundaries and
+canonical artificial recuts.
+
+F14--F18 remain empty.  This leaf proves neither survivor-conditioned
+recovery nor a strong-q weighted excursion/cemetery tail, and it yields no
+induced strong Lasota--Yorke coefficient.  Gate 4, Gate 5 and CM2 therefore
+remain open, with the strict global verdict `NO-GO_FOR_CLAIM`.
+
+## 8. Verification
+
+The fail-closed verifier checks frozen dependency hashes, exact schemas,
+owner/homogeneity/chart/recut-rule counts, the zero actual-instance count,
+rational F5/F6 composition, typed
+nonpromotion boundaries and 90 hostile mutations.  Its `--replay` mode reruns
+the complete 384-bit Arb adaptive geometry and reconstructs the full result.
+Live mode exits `2` by design because the claimed CM2 conclusion remains
+unavailable.

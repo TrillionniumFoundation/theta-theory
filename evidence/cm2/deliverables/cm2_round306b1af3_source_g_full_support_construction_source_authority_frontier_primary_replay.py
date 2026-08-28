@@ -1,0 +1,1026 @@
+#!/usr/bin/env python3
+"""Read-only AF3 construction-source authority-frontier primary replay.
+
+This program freezes source-code provenance and selected table authorities.  It
+does not construct normalized supports, does not execute an upstream producer,
+and grants no formal B1A, transition, pair-routing, maximality, fibre, D02, or
+CM2 credit.  Python dependencies are discovered solely by static AST parsing.
+"""
+
+from __future__ import annotations
+
+import argparse
+import ast
+from collections import deque
+import hashlib
+import json
+import os
+from pathlib import Path, PurePath
+import re
+import stat
+import sys
+from typing import Any, Final
+
+
+HERE: Final = Path(__file__).resolve().parent
+SCHEMA: Final = (
+    "cm2.round306b1af3.source-g-full-support-construction-source-"
+    "authority-frontier.replay-result.v1"
+)
+EXPECTED_CLOSURE_FILE_COUNT: Final = 143
+EXPECTED_CLOSURE_TOTAL_BYTES: Final = 3_201_364_049
+EXPECTED_INVENTORY_ROWS_SHA256: Final = (
+    "40d971a646e59ffbc6854913c1c9dbc831253ba80d00451f79524fd371c8097a"
+)
+HEX64: Final = re.compile(r"^[0-9a-f]{64}$")
+
+
+# Exact audited roots.  Round292's 77,364-byte candidate builder is
+# intentionally outside the legacy exact-PINS inventory domain.
+ROOT_PINS: Final = (
+    ("cm2_round174_source_g_unique_first_dynamic_occurrence_materialization.py", 81094, "3d329525dda6697a3a5d2a8227c94bd9c309ea7ebcc4cdd0c7fbe573c267a218"),
+    ("cm2_round179_source_g_residual_tube_arrangement.py", 63683, "8c568c58d82708a7ab549f126c1fcedfccff563d1d00e3c1f7e6545b4b0d29ab"),
+    ("cm2_round182_source_g_clipped_graph_and_pair_arrangement.py", 67870, "8638f2722e68bd5c6e0eb5932dc76780728998f21a47b1d8c02c28449e984d56"),
+    ("cm2_round204_source_g_wall_return_signature_local_replacement.py", 112111, "7e4b81846155c1edad0807362c7086a290702da7ce6680d7c449b7193635da77"),
+    ("cm2_round208_source_g_outgoing_direct_signature_materialization.py", 38692, "c9fe0cdfb4631c31702473d705b04fa89fb8d51e4c71c9b2b652dc98e4641913"),
+    ("cm2_round211_source_g_outgoing_half_open_owner_materialization.py", 20461, "9e8874672150d7585316524a7724070f4543e231de5481d1c1dfbd00ddc65a02"),
+    ("cm2_round220_source_g_round179_resolved_child_boundary_atlas.py", 59606, "ae5c4fc259050bafeef335b88a3504ba3de49c64154f128ec26a461ebefdd3f4"),
+    ("cm2_round234_source_g_wall_endpoint_order_depth6_materialization.py", 13464, "4bc6867e660cfe1ec936f03fd5543a12a8d69d3dab480366e4a9c3fbd3768d89"),
+    ("cm2_round235_source_g_single_endpoint_graph_word_key_partition.py", 13043, "8e5f807dfc43632d59cc9c994fd58907080a52bedc7789f8bb507b002ce8641a"),
+    ("cm2_round236_source_g_wall_residual_closure_and_root_key_partition.py", 13336, "6eb2641df1b64676f145c922dc074d935813e15ce62fe1bee64309da0e509514"),
+    ("cm2_round242_source_g_outgoing_graph_existence_stratum_materialization.py", 29286, "227cb00be470f33f87ee6b69612b319f8fedda51b6aa51a1ebe69ea59042de24"),
+    ("cm2_round245_source_g_retained_graph_mixed_sheet_quotient.py", 33299, "797ad3a9436740a9832c819b64cc42f3a282dc7634754cf7c2361ffb19703b1e"),
+    ("cm2_round246_source_g_whole_signature_retained_quotient.py", 21923, "9bfa9b7cc78e510ccebba6a9184366ad4481645b0ce89d1516aa86f222981dd0"),
+    ("cm2_round247_source_g_crossing_and_source_seam_retained_quotient.py", 25252, "36de859af799a02be1db22406c339a376ee752f12a563e6fbc242ef1b9340405"),
+    ("cm2_round248_source_g_wall_finite_key_retained_quotient.py", 49279, "ac2ee77032b0f051583d891a35a4baa6bafddc0d109cc20e0a3f1f51f883e991"),
+    ("cm2_round264_source_g_lower_dimensional_endpoint_correction_and_glue_closure.py", 72674, "72eb667b7f98fc6ed10f8617b8f8a289c4cc127b494b8777fa4cb1d99dace34c"),
+    ("cm2_round266_source_g_expanded_curved_face_closure.py", 63672, "22c2fa3555a69681f724088ad01d080e5f8925ae974f5e69307d72badd08a999"),
+    ("cm2_round269_source_g_closed_collar_direct_signature_materialization.py", 11738, "e83da8687df53770f8294aedeb2f318468dcc8d2f466f3c3971c937c320d91e5"),
+    ("cm2_round270_source_g_outgoing_g_factor_signature_materialization.py", 13077, "0ed0df9e4873e93b03ba11e8ad8ce6274d3b9de01875363c1a1818fdbc8867df"),
+    ("cm2_round271_source_g_wall_and_outgoing_tail_signature_materialization.py", 16839, "ec3c3d27a766b565ce5769ff7ea2b1d42887b0f29d6bb7c5d17877eb7b62e822"),
+    ("cm2_round272_source_g_boundary_dual_factor_wall_closure.py", 15667, "ea2af5da7162216cce64e058515b2160bb2a96b03dbbb8c7454819d33b5ebeda"),
+    ("cm2_round275_source_g_complete_reverse_rechart_materialization.py", 11442, "4534a7000ddbc52933361f0d323ffc450e979ffc2b7ee891d3a0e770a216482f"),
+    ("cm2_round279_source_g_collar_atom_and_face_edge_freeze.py", 18526, "03a0c55a95d3f9bd2fcd3bf39060c9f3e2cb6799d321210375e1e793972bbda1"),
+    ("cm2_round287_source_g_rechart_terminal_occurrence_disposition_probe.py", 45732, "b39849e3aee21688ccf3eb5443984e9e0e8d7a88ed2d61e059ed3485d84c780d"),
+    ("cm2_round288_source_g_canonical_atom_occurrence_identity_gate_audit.py", 54067, "f4821f38182bc2a14672be56edccaf8fa1c3a4b103f42fd472cdd2e42a089c6a"),
+    ("cm2_round289_source_g_outgoing_seam_tail_child_materialization.py", 35853, "e96cac6b48e333b19a44f50e50536c87b81b744b3b16bb0e28ae209cb965fffc"),
+    ("cm2_round290_source_g_isolated_atom_inner_support_closure.py", 47847, "b528acc2d71fd71a141d4067e6dd1f172d49a23a6c44ef19dc991a57da753418"),
+    ("cm2_round291_source_g_complete_lower_stratum_local_disposition_freeze.py", 61764, "1f485f0add666eecb83e73b5cd498b490d0f8895726717bccb4c8727600838c7"),
+    ("cm2_round292_source_g_r287_registry_overlap_exhaustion_probe.py", 48343, "69078405b39dff3e924630ffbc9fbe35c14e4114e1e33c946b9ab44fe26e8c4c"),
+    ("cm2_round293_source_g_r289_r291_witness_binding_canonical_closure.py", 9992, "988282e3ef57c10f882c9796056d7ca68109ee5d294feb2512b554908251ef00"),
+    ("cm2_round294_source_g_occurrence_registry_atomic_promotion.py", 22823, "6e0ab06cf6ab7dfb7868b2fe7a4699a914e6a3b0f8b18e4181d138bc2d887a9b"),
+    ("cm2_round294b_source_g_registry_builder_admission_closure.py", 20783, "ed8346b550c461cea28a4a01393c4c5d1be802f9e6145537a0ae7fe5c2e13192"),
+    ("cm2_round295a_source_g_r291_positive_t_retained_continuation_closure.py", 55309, "d147b6299a5e37b0e2ec104af64920e9b61f8a00491eb616b6a0e0eed66d6d08"),
+    ("cm2_round306b0_source_g_r306a_universe_support_source_freeze.py", 61939, "48f38e2b90aa2c1b934ba657f8c6e66a8cb97fa89f9439a0b11ed5fbb3d20d83"),
+    ("cm2_round306b1r0_source_g_r288_predicate_source_inventory_and_union_freeze.py", 73458, "3538e17fd523384d31a2fbf46505ff4ee5bf7ba8f41db14534e55edaa04eabca"),
+    ("cm2_round306b1g0_source_g_graph_source_inventory_and_join_freeze.py", 90721, "97f1d0736a616071dbb0dba3bf533e3fae96091fc6b165395436216bb69c9321"),
+)
+
+
+GOVERNANCE_SEALS: Final = (
+    ("B0_MANIFEST", "cm2_round306b0_source_g_r306a_universe_support_source_freeze_manifest.sha256", 1760, "9846b36d28bb1507b273de3e613a5ecd5ac6515258042bf8b91b89e0c156b269"),
+    ("B0_RESULT", "cm2_round306b0_source_g_r306a_universe_support_source_freeze_result.json", 9450, "badc000c6fadd8807b26a7c3511edc51796c962f150b438956e4c549fd0d5735"),
+    ("B0_VERIFICATION", "cm2_round306b0_source_g_r306a_universe_support_source_freeze_verification.json", 7003, "f8acc3150d4663d92976a44ab1c3b35c7264f4c4d14808f9133f1184d3f4b590"),
+    ("B1R0_MANIFEST", "cm2_round306b1r0_source_g_r288_predicate_source_inventory_and_union_freeze_manifest.sha256", 1571, "f23f4639629e920596e1ecadbb1cd7708f93308dc5780a0f82c196edc0f46aec"),
+    ("B1R0_RESULT", "cm2_round306b1r0_source_g_r288_predicate_source_inventory_and_union_freeze_result.json", 3019, "ca66501d42894dce364ff905045ae69f67cf52c9142ba8f7b45973f857966f04"),
+    ("B1R0_VERIFICATION", "cm2_round306b1r0_source_g_r288_predicate_source_inventory_and_union_freeze_verification.json", 11531, "2242732077165e085f6f2e50f2d061a532a3b43d9e9bc0efc17afac3d45df040"),
+    ("B1G0_MANIFEST", "cm2_round306b1g0_source_g_graph_source_inventory_and_join_freeze_manifest.sha256", 1959, "6f79385d0eed9c13bcc1501c8a189e947f1194d28e198290e6a4b2b2a376a9b8"),
+    ("B1G0_RESULT", "cm2_round306b1g0_source_g_graph_source_inventory_and_join_freeze_result.json", 5006, "3f494ebc9f046bfe9f42aef16edeadaece099d7ba7547b11f07484e3f6d81b9e"),
+    ("B1G0_VERIFICATION", "cm2_round306b1g0_source_g_graph_source_inventory_and_join_freeze_verification.json", 11575, "65b7a01fd82535f357dbb44b8c68a68c86afcbb75b1c1c9b9159b71f9815139a"),
+    ("AF0_CONTRACT", "cm2_round306b1af0_source_g_formal_full_feature_cover_schema_contract.py", 46865, "d2edaf5247e90ad1e9344261e18b29612ed37b8d928bd1f715c5a6fab3a70e04"),
+    ("AF1_CONTRACT", "cm2_round306b1af1_source_g_formal_full_feature_cover_pre_schema_admission_contract.py", 30391, "93d35ed11c98b3721f8ec24ec8c440278e5e947b8f5e63a7dbdc4b1d66380e39"),
+    ("AF2_CONTRACT", "cm2_round306b1af2_source_g_primitive_support_source_partition_freeze_contract.py", 52538, "a91578a8bef1c4a72f940f7ebc71aea4c0ebc1ddac08ddbb3889a2da6cdd00f5"),
+    ("AF2_PRIMARY_REPLAY", "cm2_round306b1af2_source_g_primitive_support_source_partition_primary_replay.py", 20783, "b7fcae488bd1e9e301f7191e65ade22f87c393a083a1335147ccf1bc92cddb27"),
+    ("AF2_PRIMARY_RESULT", "cm2_round306b1af2_source_g_primitive_support_source_partition_primary_result.json", 2540, "7238c245e79124e5bf3aa14c463fcc639efcde7431b03ac3a1cd035a4d1f7ebb"),
+    ("AF2_INDEPENDENT_REPLAY", "cm2_round306b1af2_source_g_primitive_support_source_partition_independent_replay.py", 23694, "38551c822f9aa74989b54749a3e05e8fe9bdce205fb12efb12eaa7382e6ccab4"),
+    ("AF2_INDEPENDENT_RESULT", "cm2_round306b1af2_source_g_primitive_support_source_partition_independent_result.json", 2540, "7238c245e79124e5bf3aa14c463fcc639efcde7431b03ac3a1cd035a4d1f7ebb"),
+    ("OLD_C0_CONTRACT", "cm2_round306b2c0_source_g_feature_transition_pair_routing_contract.py", 53212, "6a4fbbc3c614b7adaf275d0870a0205360827ed9fe89b8e26748e966a04f4d69"),
+)
+
+
+AUTHORITY_FILES: Final = {
+    "B0": ("cm2_round306b0_source_g_r306a_universe_support_source_freeze_member_support_source_index.json.gz", 162499140, "c9a8649c8473bb6a170187e7f803e95748d2ff2198b1b846d97383dd5f0581af"),
+    "R174": ("cm2_round174_source_g_unique_first_dynamic_occurrence_materialization_rows.json", 113656620, "9edeea2e1033b0dd70dee11a53b0f6aeb21fe74030aeefb60b081a7c420cff54"),
+    "R179": ("cm2_round179_source_g_residual_tube_arrangement_rows.json", 131273924, "f20b42c1fed781779b537b4d45bf44233eae1ed3ee620b95177a80f0eb2b5e42"),
+    "R204": ("cm2_round204_source_g_wall_return_signature_local_replacement_certificate.json", 7157575, "e7e1c49bebcb8c01f0fb4b33af66e4f2a8de560f121cae65f4971b2fec3e1818"),
+    "R208": ("cm2_round208_source_g_outgoing_direct_signature_materialization_certificate.json", 193161618, "4d01fb9cee639ec59786c078f7a20b3bbcd5c18ea674fabbfce64e250e765938"),
+    "R211": ("cm2_round211_source_g_outgoing_half_open_owner_materialization_certificate.json", 140690802, "bb03a39a74a237b9f4449214c698795856fce4d6be2195c4f9d7774cd1d4183f"),
+    "R266": ("cm2_round266_source_g_expanded_curved_face_closure_certificate.json", 934776249, "2d30be104dc522ebb1664129894acf851180b9e5f51dd8471c33137447b599bf"),
+    "R294": ("cm2_round294_source_g_occurrence_registry_atomic_promotion_registry_ledger.json.gz", 262951902, "c6b26f13e90072db99fa98f99fc62c77135ff1cbdb23bbbd5bac3e9f64a834bb"),
+}
+
+
+EXPANDED_AUTHORITY_FILE_PINS_JSON: Final = "[[\"cm2_round174_source_g_unique_first_dynamic_occurrence_materialization_rows.json\",113656620,\"9edeea2e1033b0dd70dee11a53b0f6aeb21fe74030aeefb60b081a7c420cff54\"],[\"cm2_round179_source_g_residual_tube_arrangement_rows.json\",131273924,\"f20b42c1fed781779b537b4d45bf44233eae1ed3ee620b95177a80f0eb2b5e42\"],[\"cm2_round182_source_g_clipped_graph_and_pair_arrangement_rows.json\",158815476,\"ae6e0c38df325e98b01a1d75acfbd8a85a71fda6a118db11d7dff6decf3f847c\"],[\"cm2_round204_source_g_wall_return_signature_local_replacement_certificate.json\",7157575,\"e7e1c49bebcb8c01f0fb4b33af66e4f2a8de560f121cae65f4971b2fec3e1818\"],[\"cm2_round208_source_g_outgoing_direct_signature_materialization_certificate.json\",193161618,\"4d01fb9cee639ec59786c078f7a20b3bbcd5c18ea674fabbfce64e250e765938\"],[\"cm2_round211_source_g_outgoing_half_open_owner_materialization_certificate.json\",140690802,\"bb03a39a74a237b9f4449214c698795856fce4d6be2195c4f9d7774cd1d4183f\"],[\"cm2_round220_source_g_round179_resolved_child_boundary_atlas_certificate.json\",294422681,\"569a7849b53805ff4deca0eff9a6938a897942d3d682dfef27c27559135ce974\"],[\"cm2_round232_source_g_depth6_whole_origin_promotion_certificate.json\",3596500,\"a33d14fd7fd0ca0bb8e64efefd97be0839a5a8107b759f2219c14580ef3aa8c0\"],[\"cm2_round234_source_g_wall_endpoint_order_depth6_materialization_certificate.json\",50766450,\"6098032cf429855e816190e9345fa531f70e460eca60d75766e7108fc32c6fac\"],[\"cm2_round235_source_g_single_endpoint_graph_word_key_partition_certificate.json\",67765471,\"e340fa1a071d85a36b54d10a45ae2fdb9d70b8c90f4c21f054c6fc9505e5e787\"],[\"cm2_round236_source_g_wall_residual_closure_and_root_key_partition_certificate.json\",2061199,\"b5b9ec358b4837a02218756a034440d8fbc2aa706ca421bedb28aaf785de0217\"],[\"cm2_round237_source_g_crossing_time_whole_origin_promotion_certificate.json\",346302,\"5fa46f8c6d8074770ebbf8cbdb2f0590dbdf5710254d05c6a0a3aca0953359f3\"],[\"cm2_round238_source_g_source_chart_seam_whole_origin_promotion_certificate.json\",399196,\"8200ba9c35ba32c938eb66beb7a4040908db9b81fc449881a55b09e67b517446\"],[\"cm2_round242_source_g_outgoing_graph_existence_stratum_materialization_certificate.json\",13734655,\"8d32c381e21c03aad6a531b7e5a527d295783b7e3e38baa1e6bcba20c40db22e\"],[\"cm2_round244_source_g_cross_parent_same_chart_bulk_quotient_rebuild_certificate.json\",95999515,\"5b08d568cccd302ac2dd62e7e9b6573ce83e015181ead168812159c9f882712f\"],[\"cm2_round245_source_g_retained_graph_mixed_sheet_quotient_certificate.json\",20683081,\"c76662f7cb068127f3612a3655ae720662eead9b9210b5757d771693149883c1\"],[\"cm2_round246_source_g_whole_signature_retained_quotient_certificate.json\",18283721,\"a448359c0a9b4495e54afe6e2d860c20fb222684bae46ee108574782a5a33bc9\"],[\"cm2_round247_source_g_crossing_and_source_seam_retained_quotient_certificate.json\",13400149,\"72188f5d99a220f44698f3023dd606633b364adbd02d5e20e5d4fa0ff6e1b2c7\"],[\"cm2_round248_source_g_wall_finite_key_retained_quotient_certificate.json\",205148977,\"fa48bdfb0056072f80c5809f57362c225f0beb40e1cc4c145f3f072335cdb311\"],[\"cm2_round264_source_g_lower_dimensional_endpoint_correction_and_glue_closure_certificate.json\",406539851,\"ac9e9451e12621fd236fea39bc686e13b41ade62e5255de9c9cd98230763236f\"],[\"cm2_round266_source_g_expanded_curved_face_closure_certificate.json\",934776249,\"2d30be104dc522ebb1664129894acf851180b9e5f51dd8471c33137447b599bf\"],[\"cm2_round269_source_g_closed_collar_direct_signature_materialization_certificate.json\",319672585,\"472df3ac65c490b79924beaabb382435f5b74ea8ac6c13d71b1d0ab54ffe01d3\"],[\"cm2_round270_source_g_outgoing_g_factor_signature_materialization_certificate.json\",56705100,\"72a47e53ff601660cb63fe8062403e41a54450fa4a432638faf18a2c76b3efea\"],[\"cm2_round271_source_g_wall_and_outgoing_tail_signature_materialization_certificate.json\",112741715,\"c2a6b66c6fc6ac0b353b36254339a90b91f18c52246c324307ee49569bd7b747\"],[\"cm2_round272_source_g_boundary_dual_factor_wall_closure_certificate.json\",1250159,\"16050c7087deb546d39b2c7922274ccae7cec24a799ecafd9a8304ae1186d8f2\"],[\"cm2_round275_source_g_complete_reverse_rechart_materialization_certificate.json\",35517526,\"e18935169614fc8b62ead3be7f60b383396ea1d2c52e8151457241f49e770386\"],[\"cm2_round279_source_g_collar_atom_and_face_edge_freeze_atoms.json.gz\",112858007,\"283a10799e0c7d1156695c30cdb2533488602ca646a18804f93211c0a3132dbe\"],[\"cm2_round279_source_g_collar_atom_and_face_edge_freeze_edges.json.gz\",92749868,\"bc1b976c0609c3271690e3d52c9bae85571f1a7661f404d7bc2e65bb707a2695\"],[\"cm2_round287_source_g_rechart_terminal_occurrence_disposition_probe_ledger.json.gz\",7529109,\"29838e3e6b33f03bf623bbce8b87e6ba5c3306e66beb0b6634496503fb9a4f9a\"],[\"cm2_round288_source_g_canonical_atom_occurrence_identity_gate_audit_atom_dispositions.json.gz\",134114861,\"6b0a8aa1cd38019322a61f5aaefc936006d10769cd21a5c8df374576f9ac570a\"],[\"cm2_round288_source_g_canonical_atom_occurrence_identity_gate_audit_existing_overlap_relations.json.gz\",7237078,\"d76d27c436735511dc34056d9237a2772decd30129e3019b74c5a02a118ab24e\"],[\"cm2_round290_source_g_isolated_atom_inner_support_closure_inner_support_ledger.json.gz\",9576526,\"9c2a596f3b981d24baa039e02c72e5270889d145dc146963532f3dedebc94025\"],[\"cm2_round292_source_g_r287_registry_overlap_exhaustion_probe_ledger.json.gz\",5544437,\"8863126e88ffd30438938d0a8bdb577f5928ae81f3f17f4b506829d59103a8ab\"],[\"cm2_round294_source_g_occurrence_registry_atomic_promotion_registry_ledger.json.gz\",262951902,\"c6b26f13e90072db99fa98f99fc62c77135ff1cbdb23bbbd5bac3e9f64a834bb\"],[\"cm2_round294_source_g_occurrence_registry_atomic_promotion_representation_binding_ledger.json.gz\",26672326,\"f9fcc986771b1c3551420516cd9f2c5dde662f87d044666d9306404f30bb6833\"],[\"cm2_round306b0_source_g_r306a_universe_support_source_freeze_member_support_source_index.json.gz\",162499140,\"c9a8649c8473bb6a170187e7f803e95748d2ff2198b1b846d97383dd5f0581af\"],[\"cm2_round306b1g0_source_g_graph_source_inventory_and_join_freeze_b0_member_backbinding.json.gz\",32731854,\"79382a6d8c3d086aeb29eff9fcb8653f2a73d85d79aab27e71e72cc8b1165a0b\"],[\"cm2_round306b1g0_source_g_graph_source_inventory_and_join_freeze_gap.json.gz\",23240985,\"2ba1903e2ce6d44ee623d0ccaacce973f7327e1e36ba8f97d0ab3865f1ec9809\"],[\"cm2_round306b1g0_source_g_graph_source_inventory_and_join_freeze_graph_sheet_join.json.gz\",13922080,\"041328aa135a1a67cbbdc8c5d84fe2c1a9bef2231a6cb33668ab05ecd6b227e3\"],[\"cm2_round306b1g0_source_g_graph_source_inventory_and_join_freeze_graph_side_join.json.gz\",25932945,\"d79af13182f99cdb2df6d39731e762b0d145baf79772b99be5069669c5b80ee1\"],[\"cm2_round306b1g0_source_g_graph_source_inventory_and_join_freeze_graph_source_inventory.json.gz\",11720893,\"5ac33be2b7639e1d30ae14abd5a7cf4cc6d1cc65fb0730e98616434f08921cb0\"],[\"cm2_round306b1g0_source_g_graph_source_inventory_and_join_freeze_r264_correction_disposition.json.gz\",140958,\"834b687845a156328873888e405793f52a12df9d6286ae07d8a572c6163a361a\"],[\"cm2_round306b1r0_source_g_r288_predicate_source_inventory_and_union_freeze_gap.json.gz\",108363350,\"c6b1de08fc62e39d5c5cfc2d98ba5b558d467e1592cc101c19ebdbc9fab66c56\"],[\"cm2_round306b1r0_source_g_r288_predicate_source_inventory_and_union_freeze_member_union.json.gz\",123019951,\"4b3633782e4514f598cb9cce19930ba31616f7d42aab002df4f77f9b4601ddf7\"],[\"cm2_round306b1r0_source_g_r288_predicate_source_inventory_and_union_freeze_predicate_source_cell.json.gz\",105989322,\"19d13d93fc02296f673ca18cc2edbd96174985f7be8fb0e03694582b188b0f96\"]]"
+EXPANDED_AUTHORITY_FILE_PINS: Final = tuple(
+    tuple(row) for row in json.loads(EXPANDED_AUTHORITY_FILE_PINS_JSON)
+)
+EXPECTED_AUTHORITY_FILE_COUNT: Final = 45
+EXPECTED_AUTHORITY_FILE_BYTES: Final = 4_665_362_689
+EXPECTED_AUTHORITY_FILE_CATALOG_SHA256: Final = (
+    "13993a345ec98b14d84faf6db8d29c1f5e23dbfbc1ae47e44798adea931caa0a"
+)
+
+
+def _table(label: str, file_key: str, path: str, selector: str | None,
+           id_field: str, count: int, ids: str, hashes: str | None,
+           rows: str, ledger: str | None = None) -> dict[str, Any]:
+    filename, size, sha256 = AUTHORITY_FILES[file_key]
+    return {
+        "label": label, "filename": filename, "size": size, "sha256": sha256,
+        "path": path, "selector": selector, "id_field": id_field,
+        "count": count, "ids_sha256": ids, "hashes_sha256": hashes,
+        "rows_sha256": rows, "ledger_sha256": ledger,
+    }
+
+
+PRESERVED_A1_A2_TABLE_AUTHORITIES: Final = (
+    _table("B0_MEMBER_SUPPORT_SOURCE_IDENTITY", "B0", ".member_support_source_rows", None, "Round306B0_member_support_source_row_id", 564492, "87b4d34c40c3c1caf053ccb9b4c6c6c32cf6a33ac184f6181864105b500b6d3a", "382e7a7ae0e857b812635e0d4bb10571d1aa459a27acd178d81b12f9c68d6285", "c7dfb5534fddeb22fffb81bf539fe44d837aced46577aa5f490a0ae14aba77f5", "58ad4ebe98be5023f31870a0d0d3e0d135d153553393aa56a67f4ef1760f68a3"),
+    _table("R294_OCCURRENCE_REGISTRY_IDENTITY", "R294", ".rows", None, "Round294_occurrence_registry_row_id", 431208, "bbaca3ecbb804a87fd509aac2b8bd9f505d0c008e7bddbeb1a2ecb2a966f5509", "ea98de3dab7e6f308f5a07d04bc29ca0d9dcd265a5323d8ecdb728cc501eed56", "33936ecd04cbce9f9a308b0da10381bd854b45028db53db5d3cbb9aa8b264044"),
+    _table("R266_PRESERVED_EXPANDED_IDENTITY", "R266", ".result.formal_post_Round266_expanded_occurrence_frontier_ledger.rows", None, "post_Round266_expanded_occurrence_frontier_row_id", 126468, "db01addd10a5112d56109695684d64994b927ce009e71b5e39dc95de2846acce", "08fa74d62a0673cb02339bae0df05007e7f4cb9d452d69feef79a958ceaa5ad9", "441cde017675dc279a55d52f47c24c31721309ad1cb03e1ea831e6984569f351"),
+    _table("PRESERVED_R174_RESOLVED_3D", "R174", ".result.resolved_3d_occurrence_rows", None, "row_id (packed column 0)", 72500, "3748e6a910c2d009d984d5402ad8310f81ac0c4b33b618ce3a420924e4ede496", None, "bbd6c0742f16314f4d865e5ba7d3f693939d77764fca11978bb984a5fdb181d5"),
+    _table("PRESERVED_R179_RESOLVED_3D_CHILD", "R179", ".result.resolved_3d_child_rows", None, "row_id (packed column 0)", 17192, "51294c66bb9e48c95c97dab1547380f288d3eaaa902b1ee71ec6d2f224b05a5d", None, "3b62a6e259b99484a6a398bc1b1e961dcaae2b4c1dc3671375134aff893b8936"),
+    _table("PRESERVED_R204_OPEN_3D_REGION", "R204", ".result.formal_local_open_3D_region_ledger.rows", None, "region_row_id", 736, "814edddc1d7ccb6bcd83cd7a6784fe16e1e85a1f8f3948bc26e591fa63095b60", "3be5e63b0ba9e11e77ac8c828c7d8212e9edb74735e475024bcafcdcdbf0a85a", "8a1141a6890fc5165adf4e6accf4130750107ec1336bb8177150c08825785d08"),
+    _table("PRESERVED_R208_OPEN_3D_SIGNATURE_REGION", "R208", ".result.formal_local_open_3D_signature_ledger.rows", None, "region_row_id", 36040, "85c6ae741dcee053d8fa4a37eceb2c97b1ad5859b7636194086a03947969b1d0", "df3eccd71d413522e516177bf65f9369ffc7c0fc1f3ebfcec1aecc5165095297", "59dd5ee4159b093709f9d484302aba0133e0af52f16adac646b44c83ace8237f"),
+    _table("A1_R204_TARGET_REGULAR_GRAPH_SHEET", "R204", ".result.formal_2D_sheet_lineage.target_sheet_rows", None, "sheet_row_id", 224, "2efad6307c5601e2ddb040fe36df17b5525461fc22598874ab8feaab54f4dc43", "ce9c795e707e5aad2c8adb81bdff107153bbc07e648440750948fde2a13571f3", "bece147e2a055cefec795808eedfb488ca2febbf072160cff887c12421d24d07"),
+    _table("A1_R208_DIRECT_LEAF_SIGNATURE_BASE", "R208", ".result.formal_direct_leaf_signature_base_ledger.rows", None, "leaf_row_id", 18324, "cd36d56f3e4b408a9470e55656a7b2a6979b705041500549698efa6b8330316a", "5ee61b8ecdf998d7a92783d43ca36e934b27b574b2f2538104e67e36f9666b62", "db6d4b0ddab0ea74774fe62d0dc1c9ef474336c7bb310ca26b0ad2f593e0a36d"),
+    _table("A1_R208_LEAF_GEOMETRY", "R208", ".result.formal_leaf_geometry_ledger.rows", None, "leaf_row_id", 18324, "cd36d56f3e4b408a9470e55656a7b2a6979b705041500549698efa6b8330316a", "1bd19072c4093b5175dc7d4fbb6838159aaed775c870aeb2ddbb1b90e19d1bd3", "da21fae5a5a5734690f152526958d30e1baf2f0aa64077a89febf4bbdbcf55a0"),
+    _table("A1_R208_FINAL_FACTOR_FACE", "R208", ".result.formal_final_factor_face_ledger.rows", None, "face_row_id", 18412, "a04fa242a668f5cd7d389701c149b1347ca15b4c3a2f2efddd31ed136745dbec", "7c63ea6f4786e5b9702d7ef5054dffbae4a6287615c4f3aace0331930aa666c8", "1530fd15aff865fd7d6c3b0c2425b5429e886e780d63af5e52136495f8e84fbd"),
+    _table("A1_R208_R211_FACTOR_SHEET_OWNER", "R211", ".result.formal_2D_sheet_owner_ledger.rows", None, "sheet_row_id", 17716, "bb25748d3c7bc46043f9588983788ecc3cb4a38faa8d40c6ea13383c262570aa", "97e1b400d0df06228239f5bda23051cdae8b0b0caa1be0fdb64d8b4bc5527c7e", "ed26068a92d4ed74f54cd724680da5bc9cafa811d553415380999ae69ea7fdeb"),
+    _table("A2_R204_TARGET_GRAPH_CURVE_INCIDENCE", "R204", ".result.formal_1D_boundary_and_intersection_lineage.rows", "exact_source_target_intersection == true (stored order)", "edge_row_id", 504, "b1eb2b37951706889aec96208218605e8cf28bdc836e314a64b066a487072baa", "734e76aad1d6e6e3c71a94d52e3760f308d5254229d7fbaa45ade55ea8e3cc71", "220aeb46880c96144592ce6f1789b20275c0e497916a60d5dbfb0f260283890a"),
+    _table("A2_R204_TARGET_GRAPH_POINT_INCIDENCE", "R204", ".result.formal_0D_endpoint_and_corner_lineage.rows", "exact_source_target_intersection_endpoint == true (stored order)", "point_row_id", 280, "7fc15d641a88eca6f347e8e6108dbae21fedbf043a72031e0e64fe433ac746cc", "d4e18500ac0a0fa8733ac7347e69c27bf9e83cc965dd5142da9bad03c0077272", "c3b6b05c84bbeaa1f4787024803cfa46b5d9d93fc6b320df127e1967d9582127"),
+    _table("A2_R208_R211_CURVE_INCIDENCE_OWNER", "R211", ".result.formal_1D_curve_incidence_owner_ledger.rows", None, "curve_row_id", 20456, "a9d68f724a257ae768657dff51767207277a9fff6eebd345d539434789b88270", "3d93dd7860c1025bb68acf3568a0b4b66e3106189776aae4bafa12d3902a8522", "c604ff7fee7d12c7bb39f5f670848f673e1afa0a44b9fad75d829f264e8fbb71"),
+    _table("A2_R208_R211_ENDPOINT_INCIDENCE_OWNER", "R211", ".result.formal_0D_endpoint_incidence_owner_ledger.rows", None, "endpoint_row_id", 40912, "dd9b72a5e03904dcf649a54e5828aa1e3fa41aa6f453b88a32f7b2abd3005e39", "e5466d386b45ea8ab473a8483b5a90a244592491cdb9ecbcdf01b7a40c87d712", "de9c48038c7da03671941bd713b9f393a4a5a5b89a0dc53f76bd418a8cd13ed8"),
+)
+
+
+FULL_TABLE_AUTHORITIES_JSON: Final = "[{\"admitted_for_construction\":true,\"authority\":\"R182.collar_leaf_rows\",\"authority_role\":\"ANALYTIC_LINEAGE\",\"auxiliary_commitments\":{\"native_attachment_result_sha256\":\"9f0f64d93bd0ac2a9dd41965cbfd95531f07582da5eb4c52f14c44da3d0db269\"},\"filename\":\"cm2_round182_source_g_clipped_graph_and_pair_arrangement_rows.json\",\"forbidden_as\":[\"PHYSICAL_SUPPORT_OR_GLUE_WITHOUT_EQUIVALENCE_CERTIFICATE\",\"NORMALIZED_FULL_SUPPORT\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".result.collar_leaf_rows[]\",\"ledger_sha256\":null,\"row_count\":202840,\"row_hashes_sha256\":null,\"row_id_field\":\"row_id (packed column 0)\",\"row_ids_sha256\":null,\"row_schema_contract\":{},\"rows_sha256\":\"ced6d2764a7e1f5d404c1d56249e428f0754e53e7dded620e5904f9eb80b694c\",\"source_exact_size\":158815476,\"source_sha256\":\"ae6e0c38df325e98b01a1d75acfbd8a85a71fda6a118db11d7dff6decf3f847c\"},{\"admitted_for_construction\":true,\"authority\":\"R220.coordinate_corner_rows\",\"authority_role\":\"ANALYTIC_LINEAGE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round220_source_g_round179_resolved_child_boundary_atlas_certificate.json\",\"forbidden_as\":[\"PHYSICAL_SUPPORT_OR_GLUE_WITHOUT_EQUIVALENCE_CERTIFICATE\",\"NORMALIZED_FULL_SUPPORT\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".result.coordinate_boundary_atlas.tables.coordinate_corner_rows.rows[]\",\"ledger_sha256\":null,\"row_count\":137536,\"row_hashes_sha256\":null,\"row_id_field\":\"corner_id (packed column 0)\",\"row_ids_sha256\":\"032a80a350c671341ed4a231f92319fe6af3ccd48297f401170e789d6d0a9868\",\"row_schema_contract\":{},\"rows_sha256\":\"226fb12c2c3f6ac1a59e4e6a2d9f32a2b257d33f6edcb229f81954e4506e8efd\",\"source_exact_size\":294422681,\"source_sha256\":\"569a7849b53805ff4deca0eff9a6938a897942d3d682dfef27c27559135ce974\"},{\"admitted_for_construction\":true,\"authority\":\"R220.coordinate_edge_rows\",\"authority_role\":\"ANALYTIC_LINEAGE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round220_source_g_round179_resolved_child_boundary_atlas_certificate.json\",\"forbidden_as\":[\"PHYSICAL_SUPPORT_OR_GLUE_WITHOUT_EQUIVALENCE_CERTIFICATE\",\"NORMALIZED_FULL_SUPPORT\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".result.coordinate_boundary_atlas.tables.coordinate_edge_rows.rows[]\",\"ledger_sha256\":null,\"row_count\":206304,\"row_hashes_sha256\":null,\"row_id_field\":\"edge_id (packed column 0)\",\"row_ids_sha256\":\"7511a3ecb63328b0389bdc9eab0dd7fa2560f476c50d8b78c18d3410848c0408\",\"row_schema_contract\":{},\"rows_sha256\":\"cfb3b2a341695b8b0a7d741931ca1494787dc3cfdec53031c59b23cb12c53977\",\"source_exact_size\":294422681,\"source_sha256\":\"569a7849b53805ff4deca0eff9a6938a897942d3d682dfef27c27559135ce974\"},{\"admitted_for_construction\":true,\"authority\":\"R220.coordinate_face_rows\",\"authority_role\":\"ANALYTIC_LINEAGE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round220_source_g_round179_resolved_child_boundary_atlas_certificate.json\",\"forbidden_as\":[\"PHYSICAL_SUPPORT_OR_GLUE_WITHOUT_EQUIVALENCE_CERTIFICATE\",\"NORMALIZED_FULL_SUPPORT\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".result.coordinate_boundary_atlas.tables.coordinate_face_rows.rows[]\",\"ledger_sha256\":null,\"row_count\":103152,\"row_hashes_sha256\":null,\"row_id_field\":\"face_id (packed column 0)\",\"row_ids_sha256\":\"b6ac692bb13db5519a83c21d433159f124748cc32f1a85d550e8fd8a0f64a402\",\"row_schema_contract\":{},\"rows_sha256\":\"9eb5d5eb90757d2a724302c1682929eacc6638bcd197aaac80fddd3f59207b34\",\"source_exact_size\":294422681,\"source_sha256\":\"569a7849b53805ff4deca0eff9a6938a897942d3d682dfef27c27559135ce974\"},{\"admitted_for_construction\":true,\"authority\":\"R220.formal_coordinate_adjacency_rows\",\"authority_role\":\"ANALYTIC_LINEAGE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round220_source_g_round179_resolved_child_boundary_atlas_certificate.json\",\"forbidden_as\":[\"PHYSICAL_SUPPORT_OR_GLUE_WITHOUT_EQUIVALENCE_CERTIFICATE\",\"NORMALIZED_FULL_SUPPORT\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".result.coordinate_boundary_atlas.tables.formal_coordinate_adjacency_rows.rows[]\",\"ledger_sha256\":null,\"row_count\":10384,\"row_hashes_sha256\":null,\"row_id_field\":\"coordinate_adjacency_id (packed column 0)\",\"row_ids_sha256\":\"ab8fbea5baaac034b905d4ad2760519f87da25378cd8c2782015e8081ebd68cf\",\"row_schema_contract\":{},\"rows_sha256\":\"dca8ddbb66b73ef615f1b1cd2c4b7ee453737ff18ed44e03e2ac222d5005d88f\",\"source_exact_size\":294422681,\"source_sha256\":\"569a7849b53805ff4deca0eff9a6938a897942d3d682dfef27c27559135ce974\"},{\"admitted_for_construction\":true,\"authority\":\"R220.one_step_split_interface_rows\",\"authority_role\":\"ANALYTIC_LINEAGE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round220_source_g_round179_resolved_child_boundary_atlas_certificate.json\",\"forbidden_as\":[\"PHYSICAL_SUPPORT_OR_GLUE_WITHOUT_EQUIVALENCE_CERTIFICATE\",\"NORMALIZED_FULL_SUPPORT\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".result.coordinate_boundary_atlas.tables.one_step_split_interface_rows.rows[]\",\"ledger_sha256\":null,\"row_count\":13076,\"row_hashes_sha256\":null,\"row_id_field\":\"split_interface_id (packed column 0)\",\"row_ids_sha256\":\"6c907805c3980146287fd765fafa4f279c4ecedf19b314947b2e975b458c3297\",\"row_schema_contract\":{},\"rows_sha256\":\"221b5568223c452c9c590157afd592dfdc0f244e1322c275d55263b747d18f57\",\"source_exact_size\":294422681,\"source_sha256\":\"569a7849b53805ff4deca0eff9a6938a897942d3d682dfef27c27559135ce974\"},{\"admitted_for_construction\":false,\"authority\":\"R220.rejected_exact_coordinate_coincidence_rows\",\"authority_role\":\"PROOF_EVIDENCE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round220_source_g_round179_resolved_child_boundary_atlas_certificate.json\",\"forbidden_as\":[\"CONSTRUCTION_ROW_SOURCE\",\"NORMALIZED_FULL_SUPPORT\",\"MAXIMALITY_OR_CM2_CREDIT\"],\"json_path\":\".result.coordinate_boundary_atlas.tables.rejected_exact_coordinate_coincidence_rows.rows[]\",\"ledger_sha256\":null,\"row_count\":9830,\"row_hashes_sha256\":null,\"row_id_field\":\"candidate_id (packed column 0)\",\"row_ids_sha256\":\"289f8995be84c457d8e55cb7d17313c4fa57dd65019d4cd85784018c8f03921a\",\"row_schema_contract\":{},\"rows_sha256\":\"e61aae78e76404959074465e299a256e24c778d195d2902a452db8fed2d21092\",\"source_exact_size\":294422681,\"source_sha256\":\"569a7849b53805ff4deca0eff9a6938a897942d3d682dfef27c27559135ce974\"},{\"admitted_for_construction\":true,\"authority\":\"R220.resolved_child_rows\",\"authority_role\":\"ANALYTIC_LINEAGE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round220_source_g_round179_resolved_child_boundary_atlas_certificate.json\",\"forbidden_as\":[\"PHYSICAL_SUPPORT_OR_GLUE_WITHOUT_EQUIVALENCE_CERTIFICATE\",\"NORMALIZED_FULL_SUPPORT\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".result.coordinate_boundary_atlas.tables.resolved_child_rows.rows[]\",\"ledger_sha256\":null,\"row_count\":17192,\"row_hashes_sha256\":null,\"row_id_field\":\"atlas_child_id (packed column 0)\",\"row_ids_sha256\":\"a966de2c22eabfcfe695ae3d66ee88b1908047e916f3345ea65c80be1b42edb1\",\"row_schema_contract\":{},\"rows_sha256\":\"30d27f8d112331412a8db92e12acc69b2184b881a7ff1a256148ab335aa30ed2\",\"source_exact_size\":294422681,\"source_sha256\":\"569a7849b53805ff4deca0eff9a6938a897942d3d682dfef27c27559135ce974\"},{\"admitted_for_construction\":true,\"authority\":\"R232.whole_origin_promotion_rows\",\"authority_role\":\"CONSTRUCTION_LINEAGE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round232_source_g_depth6_whole_origin_promotion_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"PHYSICAL_INCIDENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".result.whole_origin_promotion_rows[]\",\"ledger_sha256\":null,\"row_count\":2220,\"row_hashes_sha256\":null,\"row_id_field\":\"whole_origin_promotion_row_id\",\"row_ids_sha256\":null,\"row_schema_contract\":{},\"rows_sha256\":\"65ff4166409729d6678e40b7435c137096bab158d8f41ce47c1588c0329f74ca\",\"source_exact_size\":3596500,\"source_sha256\":\"a33d14fd7fd0ca0bb8e64efefd97be0839a5a8107b759f2219c14580ef3aa8c0\"},{\"admitted_for_construction\":true,\"authority\":\"R234.root_summary_rows\",\"authority_role\":\"CONSTRUCTION_LINEAGE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round234_source_g_wall_endpoint_order_depth6_materialization_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"PHYSICAL_INCIDENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".result.root_summary_rows[]\",\"ledger_sha256\":null,\"row_count\":2640,\"row_hashes_sha256\":null,\"row_id_field\":\"root_summary_id\",\"row_ids_sha256\":null,\"row_schema_contract\":{},\"rows_sha256\":\"9a1887e1b7caf00cf5c6d247f71fc8af5c06e7dc1025d5a9f06cc4c287019361\",\"source_exact_size\":50766450,\"source_sha256\":\"6098032cf429855e816190e9345fa531f70e460eca60d75766e7108fc32c6fac\"},{\"admitted_for_construction\":true,\"authority\":\"R234.resolved_descendant_rows\",\"authority_role\":\"CONSTRUCTION_LINEAGE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round234_source_g_wall_endpoint_order_depth6_materialization_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"PHYSICAL_INCIDENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".result.resolved_descendant_rows[]\",\"ledger_sha256\":null,\"row_count\":12200,\"row_hashes_sha256\":null,\"row_id_field\":\"materialized_row_id\",\"row_ids_sha256\":null,\"row_schema_contract\":{},\"rows_sha256\":\"04700e272242cd97ae7851ffcd7cdb255afdb0921d3e681373a4fc8b1edcd3a0\",\"source_exact_size\":50766450,\"source_sha256\":\"6098032cf429855e816190e9345fa531f70e460eca60d75766e7108fc32c6fac\"},{\"admitted_for_construction\":true,\"authority\":\"R234.depth6_frontier_rows\",\"authority_role\":\"CONSTRUCTION_LINEAGE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round234_source_g_wall_endpoint_order_depth6_materialization_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"PHYSICAL_INCIDENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".result.depth6_frontier_rows[]\",\"ledger_sha256\":null,\"row_count\":38376,\"row_hashes_sha256\":null,\"row_id_field\":\"frontier_row_id\",\"row_ids_sha256\":null,\"row_schema_contract\":{},\"rows_sha256\":\"a1b3bf193ad10045f52244c3e40c52f78e0aeacffa3ba52c262bc8912fc9b5a6\",\"source_exact_size\":50766450,\"source_sha256\":\"6098032cf429855e816190e9345fa531f70e460eca60d75766e7108fc32c6fac\"},{\"admitted_for_construction\":true,\"authority\":\"R237.whole_origin_promotion_rows\",\"authority_role\":\"CONSTRUCTION_LINEAGE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round237_source_g_crossing_time_whole_origin_promotion_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"PHYSICAL_INCIDENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".result.whole_origin_promotion_rows[]\",\"ledger_sha256\":null,\"row_count\":240,\"row_hashes_sha256\":null,\"row_id_field\":\"whole_origin_promotion_row_id\",\"row_ids_sha256\":null,\"row_schema_contract\":{},\"rows_sha256\":\"fcec0a5790b05960acc1cdf9aa3f2cc9838264ee7583a70a445da1e0dba792f4\",\"source_exact_size\":346302,\"source_sha256\":\"5fa46f8c6d8074770ebbf8cbdb2f0590dbdf5710254d05c6a0a3aca0953359f3\"},{\"admitted_for_construction\":true,\"authority\":\"R238.whole_origin_promotion_rows\",\"authority_role\":\"CONSTRUCTION_LINEAGE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round238_source_g_source_chart_seam_whole_origin_promotion_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"PHYSICAL_INCIDENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".result.whole_origin_promotion_rows[]\",\"ledger_sha256\":null,\"row_count\":264,\"row_hashes_sha256\":null,\"row_id_field\":\"whole_origin_promotion_row_id\",\"row_ids_sha256\":null,\"row_schema_contract\":{},\"rows_sha256\":\"e2e69aafa1444ba504b006a53ff44fe51c81dba52aa8edd3a2fff746c6fdec30\",\"source_exact_size\":399196,\"source_sha256\":\"8200ba9c35ba32c938eb66beb7a4040908db9b81fc449881a55b09e67b517446\"},{\"admitted_for_construction\":false,\"authority\":\"R244.formal_Round244_known_connectivity_block_carry_ledger\",\"authority_role\":\"PROOF_EVIDENCE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round244_source_g_cross_parent_same_chart_bulk_quotient_rebuild_certificate.json\",\"forbidden_as\":[\"CONSTRUCTION_ROW_SOURCE\",\"NORMALIZED_FULL_SUPPORT\",\"MAXIMALITY_OR_CM2_CREDIT\"],\"json_path\":\".result.formal_Round244_known_connectivity_block_carry_ledger.rows[]\",\"ledger_sha256\":null,\"row_count\":7388,\"row_hashes_sha256\":\"5f7469b8952e782838b4636b2c6e2d25f37b2d128efe7fdca357e2c92fdb398f\",\"row_id_field\":\"block_carry_row_id\",\"row_ids_sha256\":\"ccd7d9d5be04889105e43fe00a71511d10e249bf2cd8a1e1c38560e3b1cb79d2\",\"row_schema_contract\":{},\"rows_sha256\":\"748d83634271e0e45df55c840291a85d67fe1c4b4f5aacca2d8976197977ace4\",\"source_exact_size\":95999515,\"source_sha256\":\"5b08d568cccd302ac2dd62e7e9b6573ce83e015181ead168812159c9f882712f\"},{\"admitted_for_construction\":false,\"authority\":\"R244.formal_cross_parent_same_chart_bulk_edge_ledger\",\"authority_role\":\"PROOF_EVIDENCE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round244_source_g_cross_parent_same_chart_bulk_quotient_rebuild_certificate.json\",\"forbidden_as\":[\"CONSTRUCTION_ROW_SOURCE\",\"NORMALIZED_FULL_SUPPORT\",\"MAXIMALITY_OR_CM2_CREDIT\"],\"json_path\":\".result.formal_cross_parent_same_chart_bulk_edge_ledger.rows[]\",\"ledger_sha256\":null,\"row_count\":328,\"row_hashes_sha256\":\"936e5f039960d168d5a4f4866335ad4b6f4cd27752e4f562a434ea3042b5ed47\",\"row_id_field\":\"cross_parent_bulk_edge_row_id\",\"row_ids_sha256\":\"327dbfdf6c9b221173d23dfcb237114a07a53f9da9133f9a158f6fbc81fb1641\",\"row_schema_contract\":{},\"rows_sha256\":\"17c1f65799070a1549ca4158eeb133d4ff39d924e361c1076780580144593ac8\",\"source_exact_size\":95999515,\"source_sha256\":\"5b08d568cccd302ac2dd62e7e9b6573ce83e015181ead168812159c9f882712f\"},{\"admitted_for_construction\":false,\"authority\":\"R244.formal_different_parent_candidate_reconciliation_ledger\",\"authority_role\":\"PROOF_EVIDENCE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round244_source_g_cross_parent_same_chart_bulk_quotient_rebuild_certificate.json\",\"forbidden_as\":[\"CONSTRUCTION_ROW_SOURCE\",\"NORMALIZED_FULL_SUPPORT\",\"MAXIMALITY_OR_CM2_CREDIT\"],\"json_path\":\".result.formal_different_parent_candidate_reconciliation_ledger.rows[]\",\"ledger_sha256\":null,\"row_count\":9830,\"row_hashes_sha256\":\"fc3cf7ec9af53b7cf9a191fea8f15d634858ff5293de5723e2478eeab2d98e0d\",\"row_id_field\":\"candidate_reconciliation_row_id\",\"row_ids_sha256\":\"c22aac287a6ad9da8c2842ed9c8e9b5ee1bddc97a1ce0bf0de298e239e4aee19\",\"row_schema_contract\":{},\"rows_sha256\":\"a8642fbdff97dda0f321829af22442b8a6e1e952390c12761e760b2f634c08dc\",\"source_exact_size\":95999515,\"source_sha256\":\"5b08d568cccd302ac2dd62e7e9b6573ce83e015181ead168812159c9f882712f\"},{\"admitted_for_construction\":false,\"authority\":\"R244.formal_occurrence_known_block_incidence_delta_ledger\",\"authority_role\":\"PROOF_EVIDENCE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round244_source_g_cross_parent_same_chart_bulk_quotient_rebuild_certificate.json\",\"forbidden_as\":[\"CONSTRUCTION_ROW_SOURCE\",\"NORMALIZED_FULL_SUPPORT\",\"MAXIMALITY_OR_CM2_CREDIT\"],\"json_path\":\".result.formal_occurrence_known_block_incidence_delta_ledger.rows[]\",\"ledger_sha256\":null,\"row_count\":20,\"row_hashes_sha256\":\"1969564950552cf1d832bb3e02cdd3b014d943f456fa191938b4bcb2648ff700\",\"row_id_field\":\"incidence_delta_row_id\",\"row_ids_sha256\":\"23c5165548a2916f1aefa5dd0a8cc0fb895a3a3796ebf24c554af3b29bbd06e9\",\"row_schema_contract\":{},\"rows_sha256\":\"a877293b6ce57915ddb3a0e6092cded34eb597f4e4e81d1c2c583889d880f397\",\"source_exact_size\":95999515,\"source_sha256\":\"5b08d568cccd302ac2dd62e7e9b6573ce83e015181ead168812159c9f882712f\"},{\"admitted_for_construction\":false,\"authority\":\"R244.formal_post_Round244_key_frontier_ledger\",\"authority_role\":\"PROOF_EVIDENCE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round244_source_g_cross_parent_same_chart_bulk_quotient_rebuild_certificate.json\",\"forbidden_as\":[\"CONSTRUCTION_ROW_SOURCE\",\"NORMALIZED_FULL_SUPPORT\",\"MAXIMALITY_OR_CM2_CREDIT\"],\"json_path\":\".result.formal_post_Round244_key_frontier_ledger.rows[]\",\"ledger_sha256\":null,\"row_count\":116,\"row_hashes_sha256\":\"1c4c8ade9c8f0c3393e2be83ca5252c90bc3d6c7e58f6f347ddbbec698918230\",\"row_id_field\":\"key_frontier_row_id\",\"row_ids_sha256\":\"8734c757768db678eea09be5c05cbcdb5c688b4bfd8d19240d6171007bfb5b9f\",\"row_schema_contract\":{},\"rows_sha256\":\"4200e1b4d58013403610f1d002bf75934d35e8830df7fa142bd44411ff444cec\",\"source_exact_size\":95999515,\"source_sha256\":\"5b08d568cccd302ac2dd62e7e9b6573ce83e015181ead168812159c9f882712f\"},{\"admitted_for_construction\":false,\"authority\":\"R244.formal_post_Round244_occurrence_known_block_frontier_ledger\",\"authority_role\":\"PROOF_EVIDENCE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round244_source_g_cross_parent_same_chart_bulk_quotient_rebuild_certificate.json\",\"forbidden_as\":[\"CONSTRUCTION_ROW_SOURCE\",\"NORMALIZED_FULL_SUPPORT\",\"MAXIMALITY_OR_CM2_CREDIT\"],\"json_path\":\".result.formal_post_Round244_occurrence_known_block_frontier_ledger.rows[]\",\"ledger_sha256\":null,\"row_count\":53968,\"row_hashes_sha256\":\"a69039a0ba44a832664ff4ad29193c282fcfc5ae240baa115b10ac69986f2edb\",\"row_id_field\":\"post_frontier_row_id\",\"row_ids_sha256\":\"1df792189eac227bb8cd61b111f408a67650da1a28b875f95257deee10b4e547\",\"row_schema_contract\":{},\"rows_sha256\":\"3deef6442de789fe29b8866e08fb1056ed2f4c2c68c986a297c2f25faf7b1211\",\"source_exact_size\":95999515,\"source_sha256\":\"5b08d568cccd302ac2dd62e7e9b6573ce83e015181ead168812159c9f882712f\"},{\"admitted_for_construction\":false,\"authority\":\"R244.formal_resolved_bulk_component_ledger\",\"authority_role\":\"PROOF_EVIDENCE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round244_source_g_cross_parent_same_chart_bulk_quotient_rebuild_certificate.json\",\"forbidden_as\":[\"CONSTRUCTION_ROW_SOURCE\",\"NORMALIZED_FULL_SUPPORT\",\"MAXIMALITY_OR_CM2_CREDIT\"],\"json_path\":\".result.formal_resolved_bulk_component_ledger.rows[]\",\"ledger_sha256\":null,\"row_count\":8148,\"row_hashes_sha256\":\"52fb16c30fa7c30b8e844a2777b44ecc6721c2ea5d424b07690e2e0b86ce2c78\",\"row_id_field\":\"resolved_bulk_component_row_id\",\"row_ids_sha256\":\"d19bcbd02bb583fd242485eb037fbbf28db3e23a587a3729d1a4b6fd56bb8e23\",\"row_schema_contract\":{},\"rows_sha256\":\"7a65957c962885f9e67d3aff19349744360211f2923e99fdf7313996d28116a1\",\"source_exact_size\":95999515,\"source_sha256\":\"5b08d568cccd302ac2dd62e7e9b6573ce83e015181ead168812159c9f882712f\"},{\"admitted_for_construction\":true,\"authority\":\"R235.single_endpoint_graph_partition_rows\",\"authority_role\":\"CONSTRUCTION_LINEAGE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round235_source_g_single_endpoint_graph_word_key_partition_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"PHYSICAL_INCIDENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".result.single_endpoint_graph_partition_rows[]\",\"ledger_sha256\":null,\"row_count\":38328,\"row_hashes_sha256\":null,\"row_id_field\":\"endpoint_graph_partition_row_id\",\"row_ids_sha256\":null,\"row_schema_contract\":{},\"rows_sha256\":\"e9a3794540170bf013160fb713acfbb1a65d42afedfb7b972cbfdad290549731\",\"source_exact_size\":67765471,\"source_sha256\":\"e340fa1a071d85a36b54d10a45ae2fdb9d70b8c90f4c21f054c6fc9505e5e787\"},{\"admitted_for_construction\":true,\"authority\":\"R236.double_endpoint_partition_rows\",\"authority_role\":\"CONSTRUCTION_LINEAGE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round236_source_g_wall_residual_closure_and_root_key_partition_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"PHYSICAL_INCIDENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".result.double_endpoint_partition_rows[]\",\"ledger_sha256\":null,\"row_count\":16,\"row_hashes_sha256\":null,\"row_id_field\":\"double_endpoint_partition_row_id\",\"row_ids_sha256\":null,\"row_schema_contract\":{},\"rows_sha256\":\"68f41212de0da7f3468a321a682978daa052cb65a611d756a901ca095bcc0bf6\",\"source_exact_size\":2061199,\"source_sha256\":\"b5b9ec358b4837a02218756a034440d8fbc2aa706ca421bedb28aaf785de0217\"},{\"admitted_for_construction\":false,\"authority\":\"R236.crossing_dependency_discharge_rows\",\"authority_role\":\"PROOF_EVIDENCE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round236_source_g_wall_residual_closure_and_root_key_partition_certificate.json\",\"forbidden_as\":[\"CONSTRUCTION_ROW_SOURCE\",\"NORMALIZED_FULL_SUPPORT\",\"MAXIMALITY_OR_CM2_CREDIT\"],\"json_path\":\".result.crossing_dependency_discharge_rows[]\",\"ledger_sha256\":null,\"row_count\":32,\"row_hashes_sha256\":null,\"row_id_field\":\"crossing_dependency_discharge_row_id\",\"row_ids_sha256\":null,\"row_schema_contract\":{},\"rows_sha256\":\"26a8e54cb98f181d79d868ba446dd5cce32e3f9ab00104b4a05616623740e71d\",\"source_exact_size\":2061199,\"source_sha256\":\"b5b9ec358b4837a02218756a034440d8fbc2aa706ca421bedb28aaf785de0217\"},{\"admitted_for_construction\":true,\"authority\":\"R242.formal_positive_2D_transition_sheet_patch_ledger\",\"authority_role\":\"CONSTRUCTION_LINEAGE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round242_source_g_outgoing_graph_existence_stratum_materialization_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"PHYSICAL_INCIDENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".result.formal_positive_2D_transition_sheet_patch_ledger.rows[]\",\"ledger_sha256\":null,\"row_count\":264,\"row_hashes_sha256\":\"6ed321a2f28be8b51b83b48cb3bff50f4ab67a3020170b8f63d5bac934ab9407\",\"row_id_field\":\"transition_sheet_patch_row_id\",\"row_ids_sha256\":\"0f03acdd1fa621e64a89a79181c83af802a6a3ff338290132acbf0641155baa8\",\"row_schema_contract\":{},\"rows_sha256\":\"aaf7a94af40427dd8e1b805f2aa5c8c0532e7dc5b2420c803e165d39ba5c0a0f\",\"source_exact_size\":13734655,\"source_sha256\":\"8d32c381e21c03aad6a531b7e5a527d295783b7e3e38baa1e6bcba20c40db22e\"},{\"admitted_for_construction\":true,\"authority\":\"R245.formal_retained_stratum_node_ledger\",\"authority_role\":\"CONSTRUCTION_LINEAGE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round245_source_g_retained_graph_mixed_sheet_quotient_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"PHYSICAL_INCIDENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".result.formal_retained_stratum_node_ledger.rows[]\",\"ledger_sha256\":null,\"row_count\":3664,\"row_hashes_sha256\":\"86bad0d45642388bcac65633d47088b93184d77abdb2be68096cb139e192110c\",\"row_id_field\":\"retained_stratum_node_id\",\"row_ids_sha256\":\"ef81a9a7d264961541edfb9ba9e8e4c37ddbf7dea01efa3eb72d500a82b44ed5\",\"row_schema_contract\":{},\"rows_sha256\":\"38583b1aa3f37e37dc03c2b59b2a31c18346462d3d918e001040d6651b11401b\",\"source_exact_size\":20683081,\"source_sha256\":\"c76662f7cb068127f3612a3655ae720662eead9b9210b5757d771693149883c1\"},{\"admitted_for_construction\":true,\"authority\":\"R246.formal_new_whole_signature_retained_stratum_node_ledger\",\"authority_role\":\"CONSTRUCTION_LINEAGE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round246_source_g_whole_signature_retained_quotient_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"PHYSICAL_INCIDENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".result.formal_new_whole_signature_retained_stratum_node_ledger.rows[]\",\"ledger_sha256\":null,\"row_count\":2220,\"row_hashes_sha256\":\"f43d31209c552f275144ede960e49bd1ee4044cb40ee3050340e23d6d38bc671\",\"row_id_field\":\"retained_stratum_node_id\",\"row_ids_sha256\":\"488711dda41780ef47dbe34834ab8e3a41995a471260d7743b562c0190b6c86f\",\"row_schema_contract\":{},\"rows_sha256\":\"476a4fe0955fd1672ba5ba1177e65f479bf10a2bfdb62d6443f3d702c1649414\",\"source_exact_size\":18283721,\"source_sha256\":\"a448359c0a9b4495e54afe6e2d860c20fb222684bae46ee108574782a5a33bc9\"},{\"admitted_for_construction\":true,\"authority\":\"R247.formal_new_crossing_and_source_seam_retained_stratum_node_ledger\",\"authority_role\":\"CONSTRUCTION_LINEAGE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round247_source_g_crossing_and_source_seam_retained_quotient_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"PHYSICAL_INCIDENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".result.formal_new_crossing_and_source_seam_retained_stratum_node_ledger.rows[]\",\"ledger_sha256\":null,\"row_count\":504,\"row_hashes_sha256\":\"23e3495f9f481cc3f1d037741b27403d7bc4c0be8afe118201ba52a6fc4ce9a7\",\"row_id_field\":\"retained_stratum_node_id\",\"row_ids_sha256\":\"8896ff95e8e1c4dd5eb7f53ce3dcf9f39abbcd883c2641846b69129fc7040143\",\"row_schema_contract\":{},\"rows_sha256\":\"737b59a2a4a9e67664b9e0a080034083190b67c614849bac9b87b5b4ecaf9629\",\"source_exact_size\":13400149,\"source_sha256\":\"72188f5d99a220f44698f3023dd606633b364adbd02d5e20e5d4fa0ff6e1b2c7\"},{\"admitted_for_construction\":true,\"authority\":\"R248.formal_wall_positive_volume_bulk_ledger\",\"authority_role\":\"CONSTRUCTION_LINEAGE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round248_source_g_wall_finite_key_retained_quotient_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"PHYSICAL_INCIDENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".result.formal_wall_positive_volume_bulk_ledger.rows[]\",\"ledger_sha256\":null,\"row_count\":88936,\"row_hashes_sha256\":\"e46f242e15bcba4111e14aac3c1dc5d82a5350e9e1514f2b9f90cdbc853e525d\",\"row_id_field\":\"wall_bulk_node_id\",\"row_ids_sha256\":\"6106c39894a7947293934b0b061bcae04e1a2902976b63ccd1756d7790cb6154\",\"row_schema_contract\":{},\"rows_sha256\":\"aff5ea1401a6919529d1d54fe54bb9b8d378456fa48f88a75043505b5ee7b8b0\",\"source_exact_size\":205148977,\"source_sha256\":\"fa48bdfb0056072f80c5809f57362c225f0beb40e1cc4c145f3f072335cdb311\"},{\"admitted_for_construction\":true,\"authority\":\"R248.formal_wall_half_open_sheet_owner_ledger\",\"authority_role\":\"CONSTRUCTION_LINEAGE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round248_source_g_wall_finite_key_retained_quotient_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"PHYSICAL_INCIDENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".result.formal_wall_half_open_sheet_owner_ledger.rows[]\",\"ledger_sha256\":null,\"row_count\":38360,\"row_hashes_sha256\":\"be2e8b880f3a0c8fb833a7ba8dce0bd86d5526b400569377f0fcb66692a8c7e0\",\"row_id_field\":\"wall_sheet_node_id\",\"row_ids_sha256\":\"fbb15ef7122367925c72f9d0e396141d3f04a271b78064af41e1f68d9d06cd61\",\"row_schema_contract\":{},\"rows_sha256\":\"e61754dc51732c4c82876d1c2e83fa040747d23253addd64350728169f5ae44b\",\"source_exact_size\":205148977,\"source_sha256\":\"fa48bdfb0056072f80c5809f57362c225f0beb40e1cc4c145f3f072335cdb311\"},{\"admitted_for_construction\":true,\"authority\":\"R264.formal_endpoint_empty_branch_correction_disposition_ledger\",\"authority_role\":\"IDENTITY_BINDING\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round264_source_g_lower_dimensional_endpoint_correction_and_glue_closure_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT\",\"SUPPORT_GEOMETRY\",\"PHYSICAL_INCIDENCE_OR_EQUIVALENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".result.formal_endpoint_empty_branch_correction_disposition_ledger.rows[]\",\"ledger_sha256\":null,\"row_count\":400,\"row_hashes_sha256\":\"3d3e744252a300176a464f1de9e8369d580d6732e50eae292bd0d51176028e3a\",\"row_id_field\":\"endpoint_empty_branch_disposition_row_id\",\"row_ids_sha256\":\"9b6b78f9feb488bf6e35ed3821e40066e8a665d007145601330ed22f97d89c09\",\"row_schema_contract\":{},\"rows_sha256\":\"fdf499ca22f287866a24685a7671f8cfe950015be72c3da03db2331db7e38285\",\"source_exact_size\":406539851,\"source_sha256\":\"ac9e9451e12621fd236fea39bc686e13b41ade62e5255de9c9cd98230763236f\"},{\"admitted_for_construction\":true,\"authority\":\"R266.formal_post_Round266_valid_virtual_node_frontier_ledger\",\"authority_role\":\"IDENTITY_BINDING\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round266_source_g_expanded_curved_face_closure_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT\",\"SUPPORT_GEOMETRY\",\"PHYSICAL_INCIDENCE_OR_EQUIVALENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".result.formal_post_Round266_valid_virtual_node_frontier_ledger.rows[]\",\"ledger_sha256\":null,\"row_count\":133284,\"row_hashes_sha256\":\"9c31ba929e13eeaea29a9f6abe7cf324222eacb25d123a9b12252b386c12a32e\",\"row_id_field\":\"post_Round266_valid_virtual_node_frontier_row_id\",\"row_ids_sha256\":\"2d42533f48f864f01e6bd4a46470e7266c1a2cec590380483cfb7cbfb84634f2\",\"row_schema_contract\":{},\"rows_sha256\":\"8c394c1d1b2b42025c25a00ef24ecba748981ed93c75b9aba20ddf15ff8597d5\",\"source_exact_size\":934776249,\"source_sha256\":\"2d30be104dc522ebb1664129894acf851180b9e5f51dd8471c33137447b599bf\"},{\"admitted_for_construction\":true,\"authority\":\"R266.formal_post_Round266_component_member_frontier_ledger\",\"authority_role\":\"IDENTITY_BINDING\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round266_source_g_expanded_curved_face_closure_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT\",\"SUPPORT_GEOMETRY\",\"PHYSICAL_INCIDENCE_OR_EQUIVALENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".result.formal_post_Round266_component_member_frontier_ledger.rows[]\",\"ledger_sha256\":null,\"row_count\":259752,\"row_hashes_sha256\":\"1f28c84d14cf3fabb38d0f2d1fdf862ce8f6a4559552d68fd9c0a5bd0a3ed3ee\",\"row_id_field\":\"post_Round266_component_member_frontier_row_id\",\"row_ids_sha256\":\"f064d177c25985b38c899c651923b83ba47ee36b465902cca85a4c21e0c33ca6\",\"row_schema_contract\":{},\"rows_sha256\":\"28398acde446047ff4a210b2fa0831d2c44e3758f7e9239b5ec63cecc386b257\",\"source_exact_size\":934776249,\"source_sha256\":\"2d30be104dc522ebb1664129894acf851180b9e5f51dd8471c33137447b599bf\"},{\"admitted_for_construction\":true,\"authority\":\"B1G0.graph_source_inventory_rows\",\"authority_role\":\"IDENTITY_BINDING\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round306b1g0_source_g_graph_source_inventory_and_join_freeze_graph_source_inventory.json.gz\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT\",\"SUPPORT_GEOMETRY\",\"PHYSICAL_INCIDENCE_OR_EQUIVALENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".graph_source_inventory_rows[]\",\"ledger_sha256\":\"a684dad14281e44c9dc02a0f825af661ef152f86a436c827fc0b113d25b4d6a0\",\"row_count\":38624,\"row_hashes_sha256\":\"7fde3bb652a469eb3b04fe31a80c365d010d914700348954c5d917ac1162dace\",\"row_id_field\":\"Round306B1G0_graph_source_inventory_row_id\",\"row_ids_sha256\":\"982ee86845f92368cee72b74c52e401eecfb6dd225a4b198910b89ce34a8a7dc\",\"row_schema_contract\":{},\"rows_sha256\":\"beda6faaf7d3be25075d8f2a7f292cba97f591d6255758b6b16efc141339673f\",\"source_exact_size\":11720893,\"source_sha256\":\"5ac33be2b7639e1d30ae14abd5a7cf4cc6d1cc65fb0730e98616434f08921cb0\"},{\"admitted_for_construction\":true,\"authority\":\"B1G0.graph_sheet_join_rows\",\"authority_role\":\"IDENTITY_BINDING\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round306b1g0_source_g_graph_source_inventory_and_join_freeze_graph_sheet_join.json.gz\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT\",\"SUPPORT_GEOMETRY\",\"PHYSICAL_INCIDENCE_OR_EQUIVALENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".graph_sheet_join_rows[]\",\"ledger_sha256\":\"3686f3b90a77195dbecd08750707a32f98e07f9fdff5f59d57f09c1178a48fda\",\"row_count\":38624,\"row_hashes_sha256\":\"a3c606a9ba302ced5593d941529946729da5d160a32384ca37060b20011a01f5\",\"row_id_field\":\"Round306B1G0_graph_sheet_join_row_id\",\"row_ids_sha256\":\"b36ca314b15b8b8297dfeda9cb4fe37360ff20339e7603a6388ac172cfb87300\",\"row_schema_contract\":{},\"rows_sha256\":\"9238a05af9a97002488576d3648ce06ee750858f156638c314ba2e0a24fe3e1f\",\"source_exact_size\":13922080,\"source_sha256\":\"041328aa135a1a67cbbdc8c5d84fe2c1a9bef2231a6cb33668ab05ecd6b227e3\"},{\"admitted_for_construction\":true,\"authority\":\"B1G0.graph_side_join_rows\",\"authority_role\":\"IDENTITY_BINDING\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round306b1g0_source_g_graph_source_inventory_and_join_freeze_graph_side_join.json.gz\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT\",\"SUPPORT_GEOMETRY\",\"PHYSICAL_INCIDENCE_OR_EQUIVALENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".graph_side_join_rows[]\",\"ledger_sha256\":\"108bdcbe1c124de15d8f48f82a3cdb7aa545f6f61294be34e3e5b07979d6670e\",\"row_count\":76848,\"row_hashes_sha256\":\"2090d073d45f0097df68a60b36085786de0db51d76219b562734465bbf6daff6\",\"row_id_field\":\"Round306B1G0_graph_side_join_row_id\",\"row_ids_sha256\":\"9e2a2c015372aa22e5f2cfa1f11ae268496831b3118da5bd5087fc6d7f403f53\",\"row_schema_contract\":{},\"rows_sha256\":\"43ee8ffd2b77231c43c0af10198bbcc1f1def12f2e6bfd28f82c66ea26a207b2\",\"source_exact_size\":25932945,\"source_sha256\":\"d79af13182f99cdb2df6d39731e762b0d145baf79772b99be5069669c5b80ee1\"},{\"admitted_for_construction\":true,\"authority\":\"B1G0.r264_correction_disposition_rows\",\"authority_role\":\"IDENTITY_BINDING\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round306b1g0_source_g_graph_source_inventory_and_join_freeze_r264_correction_disposition.json.gz\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT\",\"SUPPORT_GEOMETRY\",\"PHYSICAL_INCIDENCE_OR_EQUIVALENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".r264_correction_disposition_rows[]\",\"ledger_sha256\":\"a4af6f87737028981be9dccae9c2c28236408aa1f112f507418b6e4516eeb671\",\"row_count\":400,\"row_hashes_sha256\":\"f172394acdc909f6bc58f59fd1f361c4a4c5b00d06b2a8e8369b7638a6e6c592\",\"row_id_field\":\"Round306B1G0_R264_correction_disposition_row_id\",\"row_ids_sha256\":\"b3dec2b9ef34fd5ebc3701201593ca90146f6d6150e5b593284a2a974a1d8caf\",\"row_schema_contract\":{},\"rows_sha256\":\"a3df5bc8c8a86ea6958daefa7ec9b99013a04152378e5bcb18991ec4860cac67\",\"source_exact_size\":140958,\"source_sha256\":\"834b687845a156328873888e405793f52a12df9d6286ae07d8a572c6163a361a\"},{\"admitted_for_construction\":true,\"authority\":\"B1G0.b0_member_backbinding_rows\",\"authority_role\":\"IDENTITY_BINDING\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round306b1g0_source_g_graph_source_inventory_and_join_freeze_b0_member_backbinding.json.gz\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT\",\"SUPPORT_GEOMETRY\",\"PHYSICAL_INCIDENCE_OR_EQUIVALENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".b0_member_backbinding_rows[]\",\"ledger_sha256\":\"65493ba72be6047b7c1c4ea64045460ad8160ab05440d02204393d3697a4d541\",\"row_count\":115456,\"row_hashes_sha256\":\"88026547b175b4ee968f738fe1276163d364b4482d164dbc2e84377039088eae\",\"row_id_field\":\"Round306B1G0_B0_member_backbinding_row_id\",\"row_ids_sha256\":\"ff6c659209636eec5235a375e8f8ba1cd5bf69c39df6630e6dfaeb95b0945d72\",\"row_schema_contract\":{},\"rows_sha256\":\"35189ef67c69078e44bbd440be37ef870935a8fd67817501ae995cceae383ea6\",\"source_exact_size\":32731854,\"source_sha256\":\"79382a6d8c3d086aeb29eff9fcb8653f2a73d85d79aab27e71e72cc8b1165a0b\"},{\"admitted_for_construction\":false,\"authority\":\"B1G0.gap_rows\",\"authority_role\":\"PROOF_EVIDENCE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round306b1g0_source_g_graph_source_inventory_and_join_freeze_gap.json.gz\",\"forbidden_as\":[\"CONSTRUCTION_ROW_SOURCE\",\"NORMALIZED_FULL_SUPPORT\",\"MAXIMALITY_OR_CM2_CREDIT\"],\"json_path\":\".gap_rows[]\",\"ledger_sha256\":\"5324319ce7b3f90f67b3e12af6848f851008fd52c7cbd7c8d433cd0652c52f9e\",\"row_count\":154096,\"row_hashes_sha256\":\"ca9e836b8ca114ba2843a9196748128b6194adb3bd801bb9a28dfff44d28af35\",\"row_id_field\":\"Round306B1G0_gap_row_id\",\"row_ids_sha256\":\"f1c3bf0bb9991f1298a3bc8ce90d55871122ef81b679f32fca21b81087ee1421\",\"row_schema_contract\":{},\"rows_sha256\":\"d47d29e9eccc04374851cf12a3bc08fbe62837673fe8beb5dd1c9382337ad27b\",\"source_exact_size\":23240985,\"source_sha256\":\"2ba1903e2ce6d44ee623d0ccaacce973f7327e1e36ba8f97d0ab3865f1ec9809\"},{\"admitted_for_construction\":true,\"authority\":\"B0.member_support_source_rows\",\"authority_role\":\"IDENTITY_BINDING\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round306b0_source_g_r306a_universe_support_source_freeze_member_support_source_index.json.gz\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT\",\"SUPPORT_GEOMETRY\",\"PHYSICAL_INCIDENCE_OR_EQUIVALENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".member_support_source_rows[]\",\"ledger_sha256\":\"58ad4ebe98be5023f31870a0d0d3e0d135d153553393aa56a67f4ef1760f68a3\",\"row_count\":564492,\"row_hashes_sha256\":\"382e7a7ae0e857b812635e0d4bb10571d1aa459a27acd178d81b12f9c68d6285\",\"row_id_field\":\"Round306B0_member_support_source_row_id\",\"row_ids_sha256\":\"87b4d34c40c3c1caf053ccb9b4c6c6c32cf6a33ac184f6181864105b500b6d3a\",\"row_schema_contract\":{},\"rows_sha256\":\"c7dfb5534fddeb22fffb81bf539fe44d837aced46577aa5f490a0ae14aba77f5\",\"source_exact_size\":162499140,\"source_sha256\":\"c9a8649c8473bb6a170187e7f803e95748d2ff2198b1b846d97383dd5f0581af\"},{\"admitted_for_construction\":true,\"authority\":\"R294.occurrence_registry_rows\",\"authority_role\":\"IDENTITY_BINDING\",\"auxiliary_commitments\":{\"occurrence_ids_sha256\":\"169869b5755eda22f1527e7393a5bef0a77a842eefbdf45ab34d315b0dad1936\"},\"filename\":\"cm2_round294_source_g_occurrence_registry_atomic_promotion_registry_ledger.json.gz\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT\",\"SUPPORT_GEOMETRY\",\"PHYSICAL_INCIDENCE_OR_EQUIVALENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".rows[]\",\"ledger_sha256\":null,\"row_count\":431208,\"row_hashes_sha256\":\"ea98de3dab7e6f308f5a07d04bc29ca0d9dcd265a5323d8ecdb728cc501eed56\",\"row_id_field\":\"Round294_occurrence_registry_row_id\",\"row_ids_sha256\":\"bbaca3ecbb804a87fd509aac2b8bd9f505d0c008e7bddbeb1a2ecb2a966f5509\",\"row_schema_contract\":{},\"rows_sha256\":\"33936ecd04cbce9f9a308b0da10381bd854b45028db53db5d3cbb9aa8b264044\",\"source_exact_size\":262951902,\"source_sha256\":\"c6b26f13e90072db99fa98f99fc62c77135ff1cbdb23bbbd5bac3e9f64a834bb\"},{\"admitted_for_construction\":true,\"authority\":\"R294.representation_binding_rows\",\"authority_role\":\"IDENTITY_BINDING\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round294_source_g_occurrence_registry_atomic_promotion_representation_binding_ledger.json.gz\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT\",\"SUPPORT_GEOMETRY\",\"PHYSICAL_INCIDENCE_OR_EQUIVALENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".rows[]\",\"ledger_sha256\":null,\"row_count\":46288,\"row_hashes_sha256\":\"538ddd3aaa79da6ff5dd0738523bcc7bb6c6c192051ada1f96131053fd8190b3\",\"row_id_field\":\"Round294_occurrence_representation_binding_row_id\",\"row_ids_sha256\":\"1a03d7c6d95d6144d4b271e46eb6b83ab4c577f7eb5b9f94d34de692247e50ff\",\"row_schema_contract\":{},\"rows_sha256\":\"ece198bf5e8b95448b09f60061677feafca3416525ba80f3b88a51e766414be7\",\"source_exact_size\":26672326,\"source_sha256\":\"f9fcc986771b1c3551420516cd9f2c5dde662f87d044666d9306404f30bb6833\"},{\"admitted_for_construction\":true,\"authority\":\"R266.formal_post_Round266_expanded_occurrence_frontier_ledger\",\"authority_role\":\"IDENTITY_BINDING\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round266_source_g_expanded_curved_face_closure_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT\",\"SUPPORT_GEOMETRY\",\"PHYSICAL_INCIDENCE_OR_EQUIVALENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".result.formal_post_Round266_expanded_occurrence_frontier_ledger.rows[]\",\"ledger_sha256\":null,\"row_count\":126468,\"row_hashes_sha256\":\"08fa74d62a0673cb02339bae0df05007e7f4cb9d452d69feef79a958ceaa5ad9\",\"row_id_field\":\"post_Round266_expanded_occurrence_frontier_row_id\",\"row_ids_sha256\":\"db01addd10a5112d56109695684d64994b927ce009e71b5e39dc95de2846acce\",\"row_schema_contract\":{},\"rows_sha256\":\"441cde017675dc279a55d52f47c24c31721309ad1cb03e1ea831e6984569f351\",\"source_exact_size\":934776249,\"source_sha256\":\"2d30be104dc522ebb1664129894acf851180b9e5f51dd8471c33137447b599bf\"},{\"admitted_for_construction\":true,\"authority\":\"R174.resolved_3d_occurrence_rows\",\"authority_role\":\"SUPPORT_ROW_SOURCE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round174_source_g_unique_first_dynamic_occurrence_materialization_rows.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".result.resolved_3d_occurrence_rows[]\",\"ledger_sha256\":null,\"row_count\":72500,\"row_hashes_sha256\":null,\"row_id_field\":\"packed column 0 row_id\",\"row_ids_sha256\":\"3748e6a910c2d009d984d5402ad8310f81ac0c4b33b618ce3a420924e4ede496\",\"row_schema_contract\":{},\"rows_sha256\":\"bbd6c0742f16314f4d865e5ba7d3f693939d77764fca11978bb984a5fdb181d5\",\"source_exact_size\":113656620,\"source_sha256\":\"9edeea2e1033b0dd70dee11a53b0f6aeb21fe74030aeefb60b081a7c420cff54\"},{\"admitted_for_construction\":true,\"authority\":\"R179.resolved_3d_child_rows\",\"authority_role\":\"SUPPORT_ROW_SOURCE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round179_source_g_residual_tube_arrangement_rows.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".result.resolved_3d_child_rows[]\",\"ledger_sha256\":null,\"row_count\":17192,\"row_hashes_sha256\":null,\"row_id_field\":\"packed column 0 row_id\",\"row_ids_sha256\":\"51294c66bb9e48c95c97dab1547380f288d3eaaa902b1ee71ec6d2f224b05a5d\",\"row_schema_contract\":{},\"rows_sha256\":\"3b62a6e259b99484a6a398bc1b1e961dcaae2b4c1dc3671375134aff893b8936\",\"source_exact_size\":131273924,\"source_sha256\":\"f20b42c1fed781779b537b4d45bf44233eae1ed3ee620b95177a80f0eb2b5e42\"},{\"admitted_for_construction\":true,\"authority\":\"R204.formal_local_open_3D_region_ledger\",\"authority_role\":\"SUPPORT_ROW_SOURCE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round204_source_g_wall_return_signature_local_replacement_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".result.formal_local_open_3D_region_ledger.rows[]\",\"ledger_sha256\":null,\"row_count\":736,\"row_hashes_sha256\":\"3be5e63b0ba9e11e77ac8c828c7d8212e9edb74735e475024bcafcdcdbf0a85a\",\"row_id_field\":\"region_row_id\",\"row_ids_sha256\":\"814edddc1d7ccb6bcd83cd7a6784fe16e1e85a1f8f3948bc26e591fa63095b60\",\"row_schema_contract\":{},\"rows_sha256\":\"8a1141a6890fc5165adf4e6accf4130750107ec1336bb8177150c08825785d08\",\"source_exact_size\":7157575,\"source_sha256\":\"e7e1c49bebcb8c01f0fb4b33af66e4f2a8de560f121cae65f4971b2fec3e1818\"},{\"admitted_for_construction\":true,\"authority\":\"R208.formal_local_open_3D_signature_ledger\",\"authority_role\":\"SUPPORT_ROW_SOURCE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round208_source_g_outgoing_direct_signature_materialization_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".result.formal_local_open_3D_signature_ledger.rows[]\",\"ledger_sha256\":null,\"row_count\":36040,\"row_hashes_sha256\":\"df3eccd71d413522e516177bf65f9369ffc7c0fc1f3ebfcec1aecc5165095297\",\"row_id_field\":\"region_row_id\",\"row_ids_sha256\":\"85c6ae741dcee053d8fa4a37eceb2c97b1ad5859b7636194086a03947969b1d0\",\"row_schema_contract\":{},\"rows_sha256\":\"59dd5ee4159b093709f9d484302aba0133e0af52f16adac646b44c83ace8237f\",\"source_exact_size\":193161618,\"source_sha256\":\"4d01fb9cee639ec59786c078f7a20b3bbcd5c18ea674fabbfce64e250e765938\"},{\"admitted_for_construction\":true,\"authority\":\"R204.formal_2D_sheet_lineage.target_sheet_rows\",\"authority_role\":\"ANALYTIC_LINEAGE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round204_source_g_wall_return_signature_local_replacement_certificate.json\",\"forbidden_as\":[\"PHYSICAL_SUPPORT_OR_GLUE_WITHOUT_EQUIVALENCE_CERTIFICATE\",\"NORMALIZED_FULL_SUPPORT\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".result.formal_2D_sheet_lineage.target_sheet_rows[]\",\"ledger_sha256\":null,\"row_count\":224,\"row_hashes_sha256\":\"ce9c795e707e5aad2c8adb81bdff107153bbc07e648440750948fde2a13571f3\",\"row_id_field\":\"sheet_row_id\",\"row_ids_sha256\":\"2efad6307c5601e2ddb040fe36df17b5525461fc22598874ab8feaab54f4dc43\",\"row_schema_contract\":{},\"rows_sha256\":\"bece147e2a055cefec795808eedfb488ca2febbf072160cff887c12421d24d07\",\"source_exact_size\":7157575,\"source_sha256\":\"e7e1c49bebcb8c01f0fb4b33af66e4f2a8de560f121cae65f4971b2fec3e1818\"},{\"admitted_for_construction\":true,\"authority\":\"R208.formal_direct_leaf_signature_base_ledger\",\"authority_role\":\"ANALYTIC_LINEAGE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round208_source_g_outgoing_direct_signature_materialization_certificate.json\",\"forbidden_as\":[\"PHYSICAL_SUPPORT_OR_GLUE_WITHOUT_EQUIVALENCE_CERTIFICATE\",\"NORMALIZED_FULL_SUPPORT\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".result.formal_direct_leaf_signature_base_ledger.rows[]\",\"ledger_sha256\":null,\"row_count\":18324,\"row_hashes_sha256\":\"5ee61b8ecdf998d7a92783d43ca36e934b27b574b2f2538104e67e36f9666b62\",\"row_id_field\":\"leaf_row_id\",\"row_ids_sha256\":\"cd36d56f3e4b408a9470e55656a7b2a6979b705041500549698efa6b8330316a\",\"row_schema_contract\":{},\"rows_sha256\":\"db6d4b0ddab0ea74774fe62d0dc1c9ef474336c7bb310ca26b0ad2f593e0a36d\",\"source_exact_size\":193161618,\"source_sha256\":\"4d01fb9cee639ec59786c078f7a20b3bbcd5c18ea674fabbfce64e250e765938\"},{\"admitted_for_construction\":true,\"authority\":\"R208.formal_leaf_geometry_ledger\",\"authority_role\":\"ANALYTIC_LINEAGE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round208_source_g_outgoing_direct_signature_materialization_certificate.json\",\"forbidden_as\":[\"PHYSICAL_SUPPORT_OR_GLUE_WITHOUT_EQUIVALENCE_CERTIFICATE\",\"NORMALIZED_FULL_SUPPORT\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".result.formal_leaf_geometry_ledger.rows[]\",\"ledger_sha256\":null,\"row_count\":18324,\"row_hashes_sha256\":\"1bd19072c4093b5175dc7d4fbb6838159aaed775c870aeb2ddbb1b90e19d1bd3\",\"row_id_field\":\"leaf_row_id\",\"row_ids_sha256\":\"cd36d56f3e4b408a9470e55656a7b2a6979b705041500549698efa6b8330316a\",\"row_schema_contract\":{},\"rows_sha256\":\"da21fae5a5a5734690f152526958d30e1baf2f0aa64077a89febf4bbdbcf55a0\",\"source_exact_size\":193161618,\"source_sha256\":\"4d01fb9cee639ec59786c078f7a20b3bbcd5c18ea674fabbfce64e250e765938\"},{\"admitted_for_construction\":true,\"authority\":\"R208.formal_final_factor_face_ledger\",\"authority_role\":\"ANALYTIC_LINEAGE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round208_source_g_outgoing_direct_signature_materialization_certificate.json\",\"forbidden_as\":[\"PHYSICAL_SUPPORT_OR_GLUE_WITHOUT_EQUIVALENCE_CERTIFICATE\",\"NORMALIZED_FULL_SUPPORT\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".result.formal_final_factor_face_ledger.rows[]\",\"ledger_sha256\":null,\"row_count\":18412,\"row_hashes_sha256\":\"7c63ea6f4786e5b9702d7ef5054dffbae4a6287615c4f3aace0331930aa666c8\",\"row_id_field\":\"face_row_id\",\"row_ids_sha256\":\"a04fa242a668f5cd7d389701c149b1347ca15b4c3a2f2efddd31ed136745dbec\",\"row_schema_contract\":{},\"rows_sha256\":\"1530fd15aff865fd7d6c3b0c2425b5429e886e780d63af5e52136495f8e84fbd\",\"source_exact_size\":193161618,\"source_sha256\":\"4d01fb9cee639ec59786c078f7a20b3bbcd5c18ea674fabbfce64e250e765938\"},{\"admitted_for_construction\":true,\"authority\":\"R211.formal_2D_sheet_owner_ledger\",\"authority_role\":\"ANALYTIC_LINEAGE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round211_source_g_outgoing_half_open_owner_materialization_certificate.json\",\"forbidden_as\":[\"PHYSICAL_SUPPORT_OR_GLUE_WITHOUT_EQUIVALENCE_CERTIFICATE\",\"NORMALIZED_FULL_SUPPORT\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".result.formal_2D_sheet_owner_ledger.rows[]\",\"ledger_sha256\":null,\"row_count\":17716,\"row_hashes_sha256\":\"97e1b400d0df06228239f5bda23051cdae8b0b0caa1be0fdb64d8b4bc5527c7e\",\"row_id_field\":\"sheet_row_id\",\"row_ids_sha256\":\"bb25748d3c7bc46043f9588983788ecc3cb4a38faa8d40c6ea13383c262570aa\",\"row_schema_contract\":{},\"rows_sha256\":\"ed26068a92d4ed74f54cd724680da5bc9cafa811d553415380999ae69ea7fdeb\",\"source_exact_size\":140690802,\"source_sha256\":\"bb03a39a74a237b9f4449214c698795856fce4d6be2195c4f9d7774cd1d4183f\"},{\"admitted_for_construction\":true,\"authority\":\"R204.filtered_target_graph_curve_incidence_rows\",\"authority_role\":\"ANALYTIC_LINEAGE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round204_source_g_wall_return_signature_local_replacement_certificate.json\",\"forbidden_as\":[\"PHYSICAL_SUPPORT_OR_GLUE_WITHOUT_EQUIVALENCE_CERTIFICATE\",\"NORMALIZED_FULL_SUPPORT\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".result.formal_1D_boundary_and_intersection_lineage.rows[] | select(.exact_source_target_intersection == true)\",\"ledger_sha256\":null,\"row_count\":504,\"row_hashes_sha256\":\"734e76aad1d6e6e3c71a94d52e3760f308d5254229d7fbaa45ade55ea8e3cc71\",\"row_id_field\":\"edge_row_id\",\"row_ids_sha256\":\"b1eb2b37951706889aec96208218605e8cf28bdc836e314a64b066a487072baa\",\"row_schema_contract\":{},\"rows_sha256\":\"220aeb46880c96144592ce6f1789b20275c0e497916a60d5dbfb0f260283890a\",\"source_exact_size\":7157575,\"source_sha256\":\"e7e1c49bebcb8c01f0fb4b33af66e4f2a8de560f121cae65f4971b2fec3e1818\"},{\"admitted_for_construction\":true,\"authority\":\"R204.filtered_target_graph_point_incidence_rows\",\"authority_role\":\"ANALYTIC_LINEAGE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round204_source_g_wall_return_signature_local_replacement_certificate.json\",\"forbidden_as\":[\"PHYSICAL_SUPPORT_OR_GLUE_WITHOUT_EQUIVALENCE_CERTIFICATE\",\"NORMALIZED_FULL_SUPPORT\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".result.formal_0D_endpoint_and_corner_lineage.rows[] | select(.exact_source_target_intersection_endpoint == true)\",\"ledger_sha256\":null,\"row_count\":280,\"row_hashes_sha256\":\"d4e18500ac0a0fa8733ac7347e69c27bf9e83cc965dd5142da9bad03c0077272\",\"row_id_field\":\"point_row_id\",\"row_ids_sha256\":\"7fc15d641a88eca6f347e8e6108dbae21fedbf043a72031e0e64fe433ac746cc\",\"row_schema_contract\":{},\"rows_sha256\":\"c3b6b05c84bbeaa1f4787024803cfa46b5d9d93fc6b320df127e1967d9582127\",\"source_exact_size\":7157575,\"source_sha256\":\"e7e1c49bebcb8c01f0fb4b33af66e4f2a8de560f121cae65f4971b2fec3e1818\"},{\"admitted_for_construction\":true,\"authority\":\"R211.formal_1D_curve_incidence_owner_ledger\",\"authority_role\":\"ANALYTIC_LINEAGE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round211_source_g_outgoing_half_open_owner_materialization_certificate.json\",\"forbidden_as\":[\"PHYSICAL_SUPPORT_OR_GLUE_WITHOUT_EQUIVALENCE_CERTIFICATE\",\"NORMALIZED_FULL_SUPPORT\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".result.formal_1D_curve_incidence_owner_ledger.rows[]\",\"ledger_sha256\":null,\"row_count\":20456,\"row_hashes_sha256\":\"3d93dd7860c1025bb68acf3568a0b4b66e3106189776aae4bafa12d3902a8522\",\"row_id_field\":\"curve_row_id\",\"row_ids_sha256\":\"a9d68f724a257ae768657dff51767207277a9fff6eebd345d539434789b88270\",\"row_schema_contract\":{},\"rows_sha256\":\"c604ff7fee7d12c7bb39f5f670848f673e1afa0a44b9fad75d829f264e8fbb71\",\"source_exact_size\":140690802,\"source_sha256\":\"bb03a39a74a237b9f4449214c698795856fce4d6be2195c4f9d7774cd1d4183f\"},{\"admitted_for_construction\":true,\"authority\":\"R211.formal_0D_endpoint_incidence_owner_ledger\",\"authority_role\":\"ANALYTIC_LINEAGE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round211_source_g_outgoing_half_open_owner_materialization_certificate.json\",\"forbidden_as\":[\"PHYSICAL_SUPPORT_OR_GLUE_WITHOUT_EQUIVALENCE_CERTIFICATE\",\"NORMALIZED_FULL_SUPPORT\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".result.formal_0D_endpoint_incidence_owner_ledger.rows[]\",\"ledger_sha256\":null,\"row_count\":40912,\"row_hashes_sha256\":\"e5466d386b45ea8ab473a8483b5a90a244592491cdb9ecbcdf01b7a40c87d712\",\"row_id_field\":\"endpoint_row_id\",\"row_ids_sha256\":\"dd9b72a5e03904dcf649a54e5828aa1e3fa41aa6f453b88a32f7b2abd3005e39\",\"row_schema_contract\":{},\"rows_sha256\":\"de9c48038c7da03671941bd713b9f393a4a5a5b89a0dc53f76bd418a8cd13ed8\",\"source_exact_size\":140690802,\"source_sha256\":\"bb03a39a74a237b9f4449214c698795856fce4d6be2195c4f9d7774cd1d4183f\"},{\"admitted_for_construction\":true,\"authority\":\"R269.formal_direct_side_signature_ledger\",\"authority_role\":\"SUPPORT_ROW_SOURCE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round269_source_g_closed_collar_direct_signature_materialization_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".result.formal_direct_side_signature_ledger.rows[]\",\"ledger_sha256\":null,\"row_count\":187128,\"row_hashes_sha256\":\"bad6026508e3bcc0ef23e84638b4c4be76903bbabe5f1d041a759bac50f4c416\",\"row_id_field\":\"signed_region_row_id\",\"row_ids_sha256\":\"30d17682e40900b86780ba0c001c95fd81ec85a00df4d02d0281e1dc14291ec4\",\"row_schema_contract\":{},\"rows_sha256\":\"992392cc52465cd5ea427e7776fc16fd889048553950b5338042581c14d98755\",\"source_exact_size\":319672585,\"source_sha256\":\"472df3ac65c490b79924beaabb382435f5b74ea8ac6c13d71b1d0ab54ffe01d3\"},{\"admitted_for_construction\":true,\"authority\":\"R269.formal_failclosed_leaf_ledger\",\"authority_role\":\"SUPPORT_ROW_SOURCE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round269_source_g_closed_collar_direct_signature_materialization_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".result.formal_failclosed_leaf_ledger.rows[]\",\"ledger_sha256\":null,\"row_count\":70420,\"row_hashes_sha256\":\"467b5b1076dadcc264b9d2f60aeaf5290e1c9dec9a1e0119d706342ddff3b275\",\"row_id_field\":\"failclosed_leaf_row_id\",\"row_ids_sha256\":\"ebcc6fd540a72ea862ab0cdc4c6544f1a0920263d534d0c1554b54552bcfc5e9\",\"row_schema_contract\":{},\"rows_sha256\":\"e76ea912adb01d0f82a7fc7779d4504577b40acca7ba1fba09ec94565120e109\",\"source_exact_size\":319672585,\"source_sha256\":\"472df3ac65c490b79924beaabb382435f5b74ea8ac6c13d71b1d0ab54ffe01d3\"},{\"admitted_for_construction\":true,\"authority\":\"R270.formal_direct_side_signature_ledger\",\"authority_role\":\"SUPPORT_ROW_SOURCE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round270_source_g_outgoing_g_factor_signature_materialization_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".result.formal_direct_side_signature_ledger.rows[]\",\"ledger_sha256\":null,\"row_count\":37712,\"row_hashes_sha256\":\"04baca4f94ee7a95ba441e95974240d4de323e08713e183e9a543408792f1e84\",\"row_id_field\":\"signed_region_row_id\",\"row_ids_sha256\":\"da02199cd0fd960d6b9b635414c6261f92634a6e96373322ccb4805ffceb265a\",\"row_schema_contract\":{},\"rows_sha256\":\"6f23d7d545ff8c3add454fe01da64d095f237222228c1dd382ca9b19420d746e\",\"source_exact_size\":56705100,\"source_sha256\":\"72a47e53ff601660cb63fe8062403e41a54450fa4a432638faf18a2c76b3efea\"},{\"admitted_for_construction\":true,\"authority\":\"R270.formal_failclosed_leaf_ledger\",\"authority_role\":\"SUPPORT_ROW_SOURCE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round270_source_g_outgoing_g_factor_signature_materialization_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".result.formal_failclosed_leaf_ledger.rows[]\",\"ledger_sha256\":null,\"row_count\":8,\"row_hashes_sha256\":\"2766aff887de89b4389408585d01fbb7adbb6f9b24fbb3eeb6cef25f4daa291f\",\"row_id_field\":\"failclosed_leaf_row_id\",\"row_ids_sha256\":\"4ec77e44a85ed2e42f4560225f0c96363243921a6f2eae9ce63bbc3d373a2a03\",\"row_schema_contract\":{},\"rows_sha256\":\"e4e3807c3fb2c53b18a02ec5edfd5891283d38e48d0b57bdabcf70a373435361\",\"source_exact_size\":56705100,\"source_sha256\":\"72a47e53ff601660cb63fe8062403e41a54450fa4a432638faf18a2c76b3efea\"},{\"admitted_for_construction\":true,\"authority\":\"R271.formal_side_signature_ledger\",\"authority_role\":\"SUPPORT_ROW_SOURCE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round271_source_g_wall_and_outgoing_tail_signature_materialization_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".result.formal_side_signature_ledger.rows[]\",\"ledger_sha256\":null,\"row_count\":70420,\"row_hashes_sha256\":\"f8601678041dd7f79bc276b926ca565995e87d79075b5dd4210af18787ab6da0\",\"row_id_field\":\"signed_region_row_id\",\"row_ids_sha256\":\"b71b0d65e1b0511829856e2c5dc42b002a7fc1ad8b7afe4230bcf29b8c338901\",\"row_schema_contract\":{},\"rows_sha256\":\"cec8a0318385127d8ee5d7968c016f8f6b7ee103596fbce5258cc3b25c4930b8\",\"source_exact_size\":112741715,\"source_sha256\":\"c2a6b66c6fc6ac0b353b36254339a90b91f18c52246c324307ee49569bd7b747\"},{\"admitted_for_construction\":true,\"authority\":\"R271.formal_failclosed_leaf_ledger\",\"authority_role\":\"SUPPORT_ROW_SOURCE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round271_source_g_wall_and_outgoing_tail_signature_materialization_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".result.formal_failclosed_leaf_ledger.rows[]\",\"ledger_sha256\":null,\"row_count\":496,\"row_hashes_sha256\":\"59b2500b739714c2799bdae507559c490cbf1a15693c9a3d3340ca31ae76a74e\",\"row_id_field\":\"failclosed_leaf_row_id\",\"row_ids_sha256\":\"327e884fb879227d171895bc7b87759aad2f6aa70102874850ceb536596510ef\",\"row_schema_contract\":{},\"rows_sha256\":\"4820153f78f785914c33b3738885f136b987cf8c2d3b01b509692454d32d6491\",\"source_exact_size\":112741715,\"source_sha256\":\"c2a6b66c6fc6ac0b353b36254339a90b91f18c52246c324307ee49569bd7b747\"},{\"admitted_for_construction\":true,\"authority\":\"R272.formal_side_signature_ledger\",\"authority_role\":\"SUPPORT_ROW_SOURCE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round272_source_g_boundary_dual_factor_wall_closure_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".result.formal_side_signature_ledger.rows[]\",\"ledger_sha256\":null,\"row_count\":720,\"row_hashes_sha256\":\"4c41486591353204f59929f6f8288bbcfca09f7a1f767831ac376b0d878b4069\",\"row_id_field\":\"signed_region_row_id\",\"row_ids_sha256\":\"9fc1d777079646ddedab5f5a308bf08bccb5ec8088de2b1f5d168bf5cb8a3247\",\"row_schema_contract\":{},\"rows_sha256\":\"f23f389e39a9715f67fa827026072db638aee34c6f1e539b5ec36bf225e075da\",\"source_exact_size\":1250159,\"source_sha256\":\"16050c7087deb546d39b2c7922274ccae7cec24a799ecafd9a8304ae1186d8f2\"},{\"admitted_for_construction\":true,\"authority\":\"R279.canonical_atom_rows\",\"authority_role\":\"IDENTITY_BINDING\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round279_source_g_collar_atom_and_face_edge_freeze_atoms.json.gz\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT\",\"SUPPORT_GEOMETRY\",\"PHYSICAL_INCIDENCE_OR_EQUIVALENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".rows[]\",\"ledger_sha256\":null,\"row_count\":332016,\"row_hashes_sha256\":\"52aed35a8b1b423da27c7b6f05bc6f6721398c606ebe7ec3239770ada9f8887f\",\"row_id_field\":\"canonical_atom_id\",\"row_ids_sha256\":\"a685a017d5ae1a4d735a84142b3a2f2c3ed1b3cd2be3c41ad3dca3297f0acbe3\",\"row_schema_contract\":{},\"rows_sha256\":\"d2680baed100e4e1a236aa929999c7d93be5eeddabb2cc0660fca5e756882105\",\"source_exact_size\":112858007,\"source_sha256\":\"283a10799e0c7d1156695c30cdb2533488602ca646a18804f93211c0a3132dbe\"},{\"admitted_for_construction\":false,\"authority\":\"R279.formal_face_edge_witness_rows\",\"authority_role\":\"PROOF_EVIDENCE\",\"auxiliary_commitments\":{\"candidate_indices_sha256\":\"855b6fa614c281074513344934fa3cc3c044495f3dd752589c21d1f977bd7cfb\"},\"filename\":\"cm2_round279_source_g_collar_atom_and_face_edge_freeze_edges.json.gz\",\"forbidden_as\":[\"CONSTRUCTION_ROW_SOURCE\",\"NORMALIZED_FULL_SUPPORT\",\"MAXIMALITY_OR_CM2_CREDIT\"],\"json_path\":\".rows[]\",\"ledger_sha256\":null,\"row_count\":330724,\"row_hashes_sha256\":\"29efd6ba3b9b1a04580cf2a2593496bd5c1ddabffdb0eab9eaea9f0ac2762b78\",\"row_id_field\":\"formal_face_edge_witness_row_id\",\"row_ids_sha256\":\"5ef215767717f96cab2f4efb29851f41f2efbe8f5aec1c63e4ddef486abe8e92\",\"row_schema_contract\":{},\"rows_sha256\":\"bfcb9979545b6abb2e85d54e0200f4394b6e967dbb888e3bcda7ee726cdc6bf7\",\"source_exact_size\":92749868,\"source_sha256\":\"bc1b976c0609c3271690e3d52c9bae85571f1a7661f404d7bc2e65bb707a2695\"},{\"admitted_for_construction\":true,\"authority\":\"R288.atom_disposition_rows\",\"authority_role\":\"IDENTITY_BINDING\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round288_source_g_canonical_atom_occurrence_identity_gate_audit_atom_dispositions.json.gz\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT\",\"SUPPORT_GEOMETRY\",\"PHYSICAL_INCIDENCE_OR_EQUIVALENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".rows[]\",\"ledger_sha256\":null,\"row_count\":332016,\"row_hashes_sha256\":\"30a167baab36fab7e3e37fd0014c35b9fd94b5491494d21c83dc39080e191f50\",\"row_id_field\":\"Round288_atom_disposition_row_id\",\"row_ids_sha256\":\"09a0039e5d9e82413c949823697c794fc65095c1f71d2e6c2f576df0699ec13b\",\"row_schema_contract\":{},\"rows_sha256\":\"8007b0c96e44c76bea6038fed8430134f9f424c7a81508f843d72d473f768849\",\"source_exact_size\":134114861,\"source_sha256\":\"6b0a8aa1cd38019322a61f5aaefc936006d10769cd21a5c8df374576f9ac570a\"},{\"admitted_for_construction\":true,\"authority\":\"R288.existing_overlap_relation_rows\",\"authority_role\":\"IDENTITY_BINDING\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round288_source_g_canonical_atom_occurrence_identity_gate_audit_existing_overlap_relations.json.gz\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT\",\"SUPPORT_GEOMETRY\",\"PHYSICAL_INCIDENCE_OR_EQUIVALENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".rows[]\",\"ledger_sha256\":null,\"row_count\":36680,\"row_hashes_sha256\":\"4ef685a10bbcea11132eff991224dff8a89c137759d1707330faa3aaa5fd2f59\",\"row_id_field\":\"Round288_existing_overlap_relation_row_id\",\"row_ids_sha256\":\"ee2af535c82a4c79042c0e0c55797fb35db22a74d618ee79b2ed4e2c4a25bca6\",\"row_schema_contract\":{},\"rows_sha256\":\"8a93bc24e836f2aca8cf59869217851be8dbedb8c930b325549ded7e8098cb7e\",\"source_exact_size\":7237078,\"source_sha256\":\"d76d27c436735511dc34056d9237a2772decd30129e3019b74c5a02a118ab24e\"},{\"admitted_for_construction\":false,\"authority\":\"R290.inner_support_rows\",\"authority_role\":\"DIAGNOSTIC_ONLY\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round290_source_g_isolated_atom_inner_support_closure_inner_support_ledger.json.gz\",\"forbidden_as\":[\"CONSTRUCTION_ROW_SOURCE\",\"NORMALIZED_FULL_SUPPORT\",\"OUTER_SUPPORT_EQUIVALENCE_CERTIFICATE\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".rows[]\",\"ledger_sha256\":null,\"row_count\":21160,\"row_hashes_sha256\":\"925b4c51ea0c6ee2142a4b4fdf4c20cedb351fb24044c953fa5faf3652cefc81\",\"row_id_field\":\"Round290_inner_support_row_id\",\"row_ids_sha256\":\"90364fbc92c8ec21100eba1d7ba5cb8ceeb616506f138dfdc21315e63709edb1\",\"row_schema_contract\":{\"forbidden_as_normalized_full_support\":true,\"forbidden_as_outer_support_equivalence_certificate\":true,\"role\":\"DIAGNOSTIC_ONLY_INNER_WITNESS\"},\"rows_sha256\":\"3ab9344c1fa492d87eee4937d11659872ea848c6ff9bf02419c10ae77a0636cd\",\"source_exact_size\":9576526,\"source_sha256\":\"9c2a596f3b981d24baa039e02c72e5270889d145dc146963532f3dedebc94025\"},{\"admitted_for_construction\":true,\"authority\":\"B1R0.predicate_source_cell_rows\",\"authority_role\":\"SUPPORT_ROW_SOURCE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round306b1r0_source_g_r288_predicate_source_inventory_and_union_freeze_predicate_source_cell.json.gz\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".predicate_source_cell_rows[]\",\"ledger_sha256\":\"f473914afa7d9dab1598a3259be8a4ec2b08ab7992d7a7039cff8bde5f19512b\",\"row_count\":295340,\"row_hashes_sha256\":\"33ce0c07cf6eeeb7e8d3d10129dad7652aec94e3d30d18d807499380b35f279d\",\"row_id_field\":\"Round306B1R0_predicate_source_cell_row_id\",\"row_ids_sha256\":\"b3fb242c0c130122b0e2e7e0c1e38f866f214e332aea93dc6ce03e705201fe9a\",\"row_schema_contract\":{},\"rows_sha256\":\"b89220807eef10bc8412be19c5037ea75fa3c6fdf4321c27938afec0c68c9246\",\"source_exact_size\":105989322,\"source_sha256\":\"19d13d93fc02296f673ca18cc2edbd96174985f7be8fb0e03694582b188b0f96\"},{\"admitted_for_construction\":true,\"authority\":\"B1R0.member_union_rows\",\"authority_role\":\"IDENTITY_BINDING\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round306b1r0_source_g_r288_predicate_source_inventory_and_union_freeze_member_union.json.gz\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT\",\"SUPPORT_GEOMETRY\",\"PHYSICAL_INCIDENCE_OR_EQUIVALENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".member_union_rows[]\",\"ledger_sha256\":\"28c6e7944f440f9fee06f9ade150de2566a3aaa85b40c49d63e3721ec4a4c4c5\",\"row_count\":295336,\"row_hashes_sha256\":\"d106b9e68817aa9504ec176be9c679f2e4fd29948c3614f7c109030a893f289f\",\"row_id_field\":\"Round306B1R0_member_union_row_id\",\"row_ids_sha256\":\"6c136186cd30608304293cc91185615ba6bec6418cb2c43a48ac833055c69bfe\",\"row_schema_contract\":{},\"rows_sha256\":\"6665fc8e72824fba7dbd1d1b7462ae419bb31c25149037da3183d74569b62a3d\",\"source_exact_size\":123019951,\"source_sha256\":\"4b3633782e4514f598cb9cce19930ba31616f7d42aab002df4f77f9b4601ddf7\"},{\"admitted_for_construction\":false,\"authority\":\"B1R0.gap_rows\",\"authority_role\":\"PROOF_EVIDENCE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round306b1r0_source_g_r288_predicate_source_inventory_and_union_freeze_gap.json.gz\",\"forbidden_as\":[\"CONSTRUCTION_ROW_SOURCE\",\"NORMALIZED_FULL_SUPPORT\",\"MAXIMALITY_OR_CM2_CREDIT\"],\"json_path\":\".gap_rows[]\",\"ledger_sha256\":\"6a61506040c6f48236d8f35ee393f3a1d08dc36dbbcfd5a6d58b9290ef1e8904\",\"row_count\":590676,\"row_hashes_sha256\":\"713e8415b88299f6db95446574f160b864f99a93ef8b12b14c8176cd12904df7\",\"row_id_field\":\"Round306B1R0_gap_row_id\",\"row_ids_sha256\":\"98aca1023d164e131c4755b0f35c777f3a984c8ffac6b58aaf1640bddb2dfdba\",\"row_schema_contract\":{},\"rows_sha256\":\"c6bc641ea84b5a25ed851b0d13cef3b8694fcf4224b59868e641a3339496cf3d\",\"source_exact_size\":108363350,\"source_sha256\":\"c6b1de08fc62e39d5c5cfc2d98ba5b558d467e1592cc101c19ebdbc9fab66c56\"},{\"admitted_for_construction\":true,\"authority\":\"R275.strict_region_ledger\",\"authority_role\":\"ANALYTIC_LINEAGE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round275_source_g_complete_reverse_rechart_materialization_certificate.json\",\"forbidden_as\":[\"PHYSICAL_SUPPORT_OR_GLUE_WITHOUT_EQUIVALENCE_CERTIFICATE\",\"NORMALIZED_FULL_SUPPORT\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".result.strict_region_ledger.rows[]\",\"ledger_sha256\":null,\"row_count\":5288,\"row_hashes_sha256\":\"dcd6f565597f2ca5f60f767362a1907cfee6fc8b43affdb9bdae1c424fd5cbe5\",\"row_id_field\":\"reverse_rechart_region_row_id\",\"row_ids_sha256\":\"f4700e1b6e69ec15b6a7a13189d0b57c9eaa205b6791d944748ee1bd71d1d3bd\",\"row_schema_contract\":{},\"rows_sha256\":\"f1fc71b904d3dd060173c48480c09f2c7960dee2ad51db935d4d80966e0b38b6\",\"source_exact_size\":35517526,\"source_sha256\":\"e18935169614fc8b62ead3be7f60b383396ea1d2c52e8151457241f49e770386\"},{\"admitted_for_construction\":true,\"authority\":\"R275.arrangement_region_ledger\",\"authority_role\":\"ANALYTIC_LINEAGE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round275_source_g_complete_reverse_rechart_materialization_certificate.json\",\"forbidden_as\":[\"PHYSICAL_SUPPORT_OR_GLUE_WITHOUT_EQUIVALENCE_CERTIFICATE\",\"NORMALIZED_FULL_SUPPORT\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".result.arrangement_region_ledger.rows[]\",\"ledger_sha256\":null,\"row_count\":8500,\"row_hashes_sha256\":\"936960229d026545d07fd5a5db1586499cb2812852b89af04e149410be004da9\",\"row_id_field\":\"reverse_rechart_region_row_id\",\"row_ids_sha256\":\"6826e35ff8d9e2bd7c75196dc602082817b4bebe5f0751334fa4a4bd2726060f\",\"row_schema_contract\":{},\"rows_sha256\":\"6ef756cfb1d5b1f5226643142e77ba897b5dcac326edb301c5d2d01963470ba5\",\"source_exact_size\":35517526,\"source_sha256\":\"e18935169614fc8b62ead3be7f60b383396ea1d2c52e8151457241f49e770386\"},{\"admitted_for_construction\":true,\"authority\":\"R275.guard_closure_ledger\",\"authority_role\":\"ANALYTIC_LINEAGE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round275_source_g_complete_reverse_rechart_materialization_certificate.json\",\"forbidden_as\":[\"PHYSICAL_SUPPORT_OR_GLUE_WITHOUT_EQUIVALENCE_CERTIFICATE\",\"NORMALIZED_FULL_SUPPORT\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".result.guard_closure_ledger.rows[]\",\"ledger_sha256\":null,\"row_count\":880,\"row_hashes_sha256\":\"6c52c6225fee422e5c01bc6b87dc65ff6eb292818d8ec1dbc612ce0f754983c1\",\"row_id_field\":\"reverse_rechart_guard_closure_row_id\",\"row_ids_sha256\":\"49722a30fb6c78931b7d5b7ee19cb74e0f8a77ec1f67f3c41533dd417d92d06c\",\"row_schema_contract\":{},\"rows_sha256\":\"fcf3671715938cf106e27a04a7677dbb12821dd64fb7c9b8ce615b42670d7dc8\",\"source_exact_size\":35517526,\"source_sha256\":\"e18935169614fc8b62ead3be7f60b383396ea1d2c52e8151457241f49e770386\"},{\"admitted_for_construction\":false,\"authority\":\"R287.region_rows\",\"authority_role\":\"OUTER_ENVELOPE_ONLY\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round287_source_g_rechart_terminal_occurrence_disposition_probe_ledger.json.gz\",\"forbidden_as\":[\"INNER_SUPPORT\",\"NORMALIZED_FULL_SUPPORT\",\"EXISTENCE_OR_EQUIVALENCE_THEOREM\"],\"json_path\":\".region_rows[]\",\"ledger_sha256\":null,\"row_count\":13788,\"row_hashes_sha256\":null,\"row_id_field\":\"Round287_region_disposition_row_id\",\"row_ids_sha256\":null,\"row_schema_contract\":{},\"rows_sha256\":\"7d07e90c481b1c511ccce1d56df67f95140aa8d9b5cf5ea30b1d962ace5d8765\",\"source_exact_size\":7529109,\"source_sha256\":\"29838e3e6b33f03bf623bbce8b87e6ba5c3306e66beb0b6634496503fb9a4f9a\"},{\"admitted_for_construction\":false,\"authority\":\"R287.refinement_cell_rows\",\"authority_role\":\"OUTER_ENVELOPE_ONLY\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round287_source_g_rechart_terminal_occurrence_disposition_probe_ledger.json.gz\",\"forbidden_as\":[\"INNER_SUPPORT\",\"NORMALIZED_FULL_SUPPORT\",\"EXISTENCE_OR_EQUIVALENCE_THEOREM\"],\"json_path\":\".refinement_cell_rows[]\",\"ledger_sha256\":null,\"row_count\":7616,\"row_hashes_sha256\":null,\"row_id_field\":\"Round287_refinement_cell_disposition_row_id\",\"row_ids_sha256\":null,\"row_schema_contract\":{},\"rows_sha256\":\"951e8d912a4bf9494c928fbbdc99663485c019cee79580df98f838e0157555c9\",\"source_exact_size\":7529109,\"source_sha256\":\"29838e3e6b33f03bf623bbce8b87e6ba5c3306e66beb0b6634496503fb9a4f9a\"},{\"admitted_for_construction\":false,\"authority\":\"R287.valid_internal_physical_face_rows\",\"authority_role\":\"OUTER_ENVELOPE_ONLY\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round287_source_g_rechart_terminal_occurrence_disposition_probe_ledger.json.gz\",\"forbidden_as\":[\"INNER_SUPPORT\",\"NORMALIZED_FULL_SUPPORT\",\"EXISTENCE_OR_EQUIVALENCE_THEOREM\"],\"json_path\":\".valid_internal_physical_face_rows[]\",\"ledger_sha256\":null,\"row_count\":648,\"row_hashes_sha256\":null,\"row_id_field\":\"Round287_internal_physical_face_row_id\",\"row_ids_sha256\":null,\"row_schema_contract\":{},\"rows_sha256\":\"9a05d9a41aa0877a5066d2477e376706a7a5e296b71e7f2209e9825c25fca2b3\",\"source_exact_size\":7529109,\"source_sha256\":\"29838e3e6b33f03bf623bbce8b87e6ba5c3306e66beb0b6634496503fb9a4f9a\"},{\"admitted_for_construction\":false,\"authority\":\"R287.potential_new_support_union_rows\",\"authority_role\":\"OUTER_ENVELOPE_ONLY\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round287_source_g_rechart_terminal_occurrence_disposition_probe_ledger.json.gz\",\"forbidden_as\":[\"INNER_SUPPORT\",\"NORMALIZED_FULL_SUPPORT\",\"EXISTENCE_OR_EQUIVALENCE_THEOREM\"],\"json_path\":\".potential_new_support_union_rows[]\",\"ledger_sha256\":null,\"row_count\":10020,\"row_hashes_sha256\":null,\"row_id_field\":\"Round287_potential_new_support_union_id\",\"row_ids_sha256\":null,\"row_schema_contract\":{},\"rows_sha256\":\"2185915efd9a8d52ab13a5edea05e0d4e711f1d5cfce1e3f43a7a183a9326800\",\"source_exact_size\":7529109,\"source_sha256\":\"29838e3e6b33f03bf623bbce8b87e6ba5c3306e66beb0b6634496503fb9a4f9a\"},{\"admitted_for_construction\":false,\"authority\":\"R287.mutually_exclusive_outer_overlap_pair_rows\",\"authority_role\":\"OUTER_ENVELOPE_ONLY\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round287_source_g_rechart_terminal_occurrence_disposition_probe_ledger.json.gz\",\"forbidden_as\":[\"INNER_SUPPORT\",\"NORMALIZED_FULL_SUPPORT\",\"EXISTENCE_OR_EQUIVALENCE_THEOREM\"],\"json_path\":\".mutually_exclusive_outer_overlap_pair_rows[]\",\"ledger_sha256\":null,\"row_count\":3488,\"row_hashes_sha256\":null,\"row_id_field\":\"Round287_mutually_exclusive_outer_overlap_pair_row_id\",\"row_ids_sha256\":null,\"row_schema_contract\":{},\"rows_sha256\":\"5477ecd5518ba0bb7f89f6ee3e1fcb55d82f4ee8f895d4f03136b8ccb71b3848\",\"source_exact_size\":7529109,\"source_sha256\":\"29838e3e6b33f03bf623bbce8b87e6ba5c3306e66beb0b6634496503fb9a4f9a\"},{\"admitted_for_construction\":false,\"authority\":\"R292.complete_heterogeneous_probe_rows\",\"authority_role\":\"OUTER_ENVELOPE_ONLY\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round292_source_g_r287_registry_overlap_exhaustion_probe_ledger.json.gz\",\"forbidden_as\":[\"INNER_SUPPORT\",\"NORMALIZED_FULL_SUPPORT\",\"EXISTENCE_OR_EQUIVALENCE_THEOREM\"],\"json_path\":\".rows[]\",\"ledger_sha256\":null,\"row_count\":22820,\"row_hashes_sha256\":null,\"row_id_field\":\"NO_UNIFORM_ROW_ID__SEE_ROW_SCHEMA_CONTRACT\",\"row_ids_sha256\":null,\"row_schema_contract\":{\"row_shapes\":[{\"row_count\":1564,\"row_id_field\":\"Round292_registry_overlap_row_id\",\"selector\":\"has(Round292_registry_overlap_row_id)\",\"shape\":\"REGISTRY_OVERLAP\"},{\"row_count\":11852,\"row_id_field\":\"Round292_R287_existing_overlap_refinement_cell_id\",\"selector\":\"has(Round292_R287_existing_overlap_refinement_cell_id)\",\"shape\":\"EXACT_REFINEMENT_CELL\"},{\"row_count\":9404,\"row_id_field\":\"Round292_refined_new_support_component_id\",\"selector\":\"has(member_refinement_cell_ids)\",\"shape\":\"REFINED_NEW_SUPPORT_COMPONENT\"}],\"uniform_row_id_field\":null,\"whole_table_stored_order_commitment_only\":true},\"rows_sha256\":\"556bd0ed95709fe43ff7837522d8729582ce0e7c9679879a57365f864f6ba055\",\"source_exact_size\":5544437,\"source_sha256\":\"8863126e88ffd30438938d0a8bdb577f5928ae81f3f17f4b506829d59103a8ab\"},{\"admitted_for_construction\":true,\"authority\":\"R292.exact_refinement_cell_rows\",\"authority_role\":\"CONSTRUCTION_LINEAGE\",\"auxiliary_commitments\":{},\"filename\":\"cm2_round292_source_g_r287_registry_overlap_exhaustion_probe_ledger.json.gz\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"PHYSICAL_INCIDENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".rows[] | select(has(\\\"Round292_R287_existing_overlap_refinement_cell_id\\\"))\",\"ledger_sha256\":null,\"row_count\":11852,\"row_hashes_sha256\":\"abae741fe7aef5d6aa4ede7ac188d66a6edb6052ffb2b3a4e7d3b89ffd572f0c\",\"row_id_field\":\"Round292_R287_existing_overlap_refinement_cell_id\",\"row_ids_sha256\":\"331a400d3ee35f70fd1ffd52137cdb80d601886f05b4fe6c1e45d9d653d73068\",\"row_schema_contract\":{},\"rows_sha256\":\"77c674fa6c5a72ef085b0f36568d17fb10a10d4721fa5734d3b35ab0fe4eacf0\",\"source_exact_size\":5544437,\"source_sha256\":\"8863126e88ffd30438938d0a8bdb577f5928ae81f3f17f4b506829d59103a8ab\"},{\"admitted_for_construction\":true,\"authority\":\"R292.refined_new_support_component_rows\",\"authority_role\":\"CONSTRUCTION_LINEAGE\",\"auxiliary_commitments\":{\"component_map_sha256\":\"1128b9b7e23be09390db715d06b73e0f71828aa396792c29c2b587b483046378\"},\"filename\":\"cm2_round292_source_g_r287_registry_overlap_exhaustion_probe_ledger.json.gz\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"PHYSICAL_INCIDENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"],\"json_path\":\".rows[] | select(has(\\\"member_refinement_cell_ids\\\"))\",\"ledger_sha256\":null,\"row_count\":9404,\"row_hashes_sha256\":\"597d18bff0717f82bd2cc6def5884b5b7055f87366b52c5c1c36dade2dbcb709\",\"row_id_field\":\"Round292_refined_new_support_component_id\",\"row_ids_sha256\":\"e5ff9eb634175c893c6422a961e1a32c0a7dfa290c967cd6846e641ce963d33f\",\"row_schema_contract\":{},\"rows_sha256\":\"696d484a174f1e5a53a874c4bd5109f00824a8c9a4f090c225e7ab17a7005fc2\",\"source_exact_size\":5544437,\"source_sha256\":\"8863126e88ffd30438938d0a8bdb577f5928ae81f3f17f4b506829d59103a8ab\"}]"
+TABLE_AUTHORITIES: Final = tuple(json.loads(FULL_TABLE_AUTHORITIES_JSON))
+EXPECTED_TABLE_AUTHORITIES_SHA256: Final = (
+    "a49a38afbea65b5a8e837bc4932328447ad0ee553f18596cdff5ea788a879678"
+)
+AUTHORITY_ROLE_CATALOG_JSON: Final = "{\"authority_files\":[{\"admitted_for_construction\":true,\"authority_roles\":[\"SUPPORT_ROW_SOURCE\"],\"filename\":\"cm2_round174_source_g_unique_first_dynamic_occurrence_materialization_rows.json\",\"forbidden_as\":[\"FORMAL_B1A_OR_CM2_CREDIT\",\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\"]},{\"admitted_for_construction\":true,\"authority_roles\":[\"SUPPORT_ROW_SOURCE\"],\"filename\":\"cm2_round179_source_g_residual_tube_arrangement_rows.json\",\"forbidden_as\":[\"FORMAL_B1A_OR_CM2_CREDIT\",\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\"]},{\"admitted_for_construction\":true,\"authority_roles\":[\"ANALYTIC_LINEAGE\"],\"filename\":\"cm2_round182_source_g_clipped_graph_and_pair_arrangement_rows.json\",\"forbidden_as\":[\"FORMAL_B1A_OR_CM2_CREDIT\",\"NORMALIZED_FULL_SUPPORT\",\"PHYSICAL_SUPPORT_OR_GLUE_WITHOUT_EQUIVALENCE_CERTIFICATE\"]},{\"admitted_for_construction\":true,\"authority_roles\":[\"SUPPORT_ROW_SOURCE\",\"ANALYTIC_LINEAGE\"],\"filename\":\"cm2_round204_source_g_wall_return_signature_local_replacement_certificate.json\",\"forbidden_as\":[\"FORMAL_B1A_OR_CM2_CREDIT\",\"NORMALIZED_FULL_SUPPORT\",\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"PHYSICAL_SUPPORT_OR_GLUE_WITHOUT_EQUIVALENCE_CERTIFICATE\"]},{\"admitted_for_construction\":true,\"authority_roles\":[\"SUPPORT_ROW_SOURCE\",\"ANALYTIC_LINEAGE\"],\"filename\":\"cm2_round208_source_g_outgoing_direct_signature_materialization_certificate.json\",\"forbidden_as\":[\"FORMAL_B1A_OR_CM2_CREDIT\",\"NORMALIZED_FULL_SUPPORT\",\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"PHYSICAL_SUPPORT_OR_GLUE_WITHOUT_EQUIVALENCE_CERTIFICATE\"]},{\"admitted_for_construction\":true,\"authority_roles\":[\"ANALYTIC_LINEAGE\"],\"filename\":\"cm2_round211_source_g_outgoing_half_open_owner_materialization_certificate.json\",\"forbidden_as\":[\"FORMAL_B1A_OR_CM2_CREDIT\",\"NORMALIZED_FULL_SUPPORT\",\"PHYSICAL_SUPPORT_OR_GLUE_WITHOUT_EQUIVALENCE_CERTIFICATE\"]},{\"admitted_for_construction\":true,\"authority_roles\":[\"ANALYTIC_LINEAGE\",\"PROOF_EVIDENCE\"],\"filename\":\"cm2_round220_source_g_round179_resolved_child_boundary_atlas_certificate.json\",\"forbidden_as\":[\"CONSTRUCTION_ROW_SOURCE\",\"FORMAL_B1A_OR_CM2_CREDIT\",\"MAXIMALITY_OR_CM2_CREDIT\",\"NORMALIZED_FULL_SUPPORT\",\"PHYSICAL_SUPPORT_OR_GLUE_WITHOUT_EQUIVALENCE_CERTIFICATE\"]},{\"admitted_for_construction\":true,\"authority_roles\":[\"CONSTRUCTION_LINEAGE\"],\"filename\":\"cm2_round232_source_g_depth6_whole_origin_promotion_certificate.json\",\"forbidden_as\":[\"FORMAL_B1A_OR_CM2_CREDIT\",\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"PHYSICAL_INCIDENCE_THEOREM\"]},{\"admitted_for_construction\":true,\"authority_roles\":[\"CONSTRUCTION_LINEAGE\"],\"filename\":\"cm2_round234_source_g_wall_endpoint_order_depth6_materialization_certificate.json\",\"forbidden_as\":[\"FORMAL_B1A_OR_CM2_CREDIT\",\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"PHYSICAL_INCIDENCE_THEOREM\"]},{\"admitted_for_construction\":true,\"authority_roles\":[\"CONSTRUCTION_LINEAGE\"],\"filename\":\"cm2_round235_source_g_single_endpoint_graph_word_key_partition_certificate.json\",\"forbidden_as\":[\"FORMAL_B1A_OR_CM2_CREDIT\",\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"PHYSICAL_INCIDENCE_THEOREM\"]},{\"admitted_for_construction\":true,\"authority_roles\":[\"CONSTRUCTION_LINEAGE\",\"PROOF_EVIDENCE\"],\"filename\":\"cm2_round236_source_g_wall_residual_closure_and_root_key_partition_certificate.json\",\"forbidden_as\":[\"CONSTRUCTION_ROW_SOURCE\",\"FORMAL_B1A_OR_CM2_CREDIT\",\"MAXIMALITY_OR_CM2_CREDIT\",\"NORMALIZED_FULL_SUPPORT\",\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"PHYSICAL_INCIDENCE_THEOREM\"]},{\"admitted_for_construction\":true,\"authority_roles\":[\"CONSTRUCTION_LINEAGE\"],\"filename\":\"cm2_round237_source_g_crossing_time_whole_origin_promotion_certificate.json\",\"forbidden_as\":[\"FORMAL_B1A_OR_CM2_CREDIT\",\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"PHYSICAL_INCIDENCE_THEOREM\"]},{\"admitted_for_construction\":true,\"authority_roles\":[\"CONSTRUCTION_LINEAGE\"],\"filename\":\"cm2_round238_source_g_source_chart_seam_whole_origin_promotion_certificate.json\",\"forbidden_as\":[\"FORMAL_B1A_OR_CM2_CREDIT\",\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"PHYSICAL_INCIDENCE_THEOREM\"]},{\"admitted_for_construction\":true,\"authority_roles\":[\"CONSTRUCTION_LINEAGE\"],\"filename\":\"cm2_round242_source_g_outgoing_graph_existence_stratum_materialization_certificate.json\",\"forbidden_as\":[\"FORMAL_B1A_OR_CM2_CREDIT\",\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"PHYSICAL_INCIDENCE_THEOREM\"]},{\"admitted_for_construction\":false,\"authority_roles\":[\"PROOF_EVIDENCE\"],\"filename\":\"cm2_round244_source_g_cross_parent_same_chart_bulk_quotient_rebuild_certificate.json\",\"forbidden_as\":[\"CONSTRUCTION_ROW_SOURCE\",\"MAXIMALITY_OR_CM2_CREDIT\",\"NORMALIZED_FULL_SUPPORT\"]},{\"admitted_for_construction\":true,\"authority_roles\":[\"CONSTRUCTION_LINEAGE\"],\"filename\":\"cm2_round245_source_g_retained_graph_mixed_sheet_quotient_certificate.json\",\"forbidden_as\":[\"FORMAL_B1A_OR_CM2_CREDIT\",\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"PHYSICAL_INCIDENCE_THEOREM\"]},{\"admitted_for_construction\":true,\"authority_roles\":[\"CONSTRUCTION_LINEAGE\"],\"filename\":\"cm2_round246_source_g_whole_signature_retained_quotient_certificate.json\",\"forbidden_as\":[\"FORMAL_B1A_OR_CM2_CREDIT\",\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"PHYSICAL_INCIDENCE_THEOREM\"]},{\"admitted_for_construction\":true,\"authority_roles\":[\"CONSTRUCTION_LINEAGE\"],\"filename\":\"cm2_round247_source_g_crossing_and_source_seam_retained_quotient_certificate.json\",\"forbidden_as\":[\"FORMAL_B1A_OR_CM2_CREDIT\",\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"PHYSICAL_INCIDENCE_THEOREM\"]},{\"admitted_for_construction\":true,\"authority_roles\":[\"CONSTRUCTION_LINEAGE\"],\"filename\":\"cm2_round248_source_g_wall_finite_key_retained_quotient_certificate.json\",\"forbidden_as\":[\"FORMAL_B1A_OR_CM2_CREDIT\",\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"PHYSICAL_INCIDENCE_THEOREM\"]},{\"admitted_for_construction\":true,\"authority_roles\":[\"IDENTITY_BINDING\"],\"filename\":\"cm2_round264_source_g_lower_dimensional_endpoint_correction_and_glue_closure_certificate.json\",\"forbidden_as\":[\"FORMAL_B1A_OR_CM2_CREDIT\",\"NORMALIZED_FULL_SUPPORT\",\"PHYSICAL_INCIDENCE_OR_EQUIVALENCE_THEOREM\",\"SUPPORT_GEOMETRY\"]},{\"admitted_for_construction\":true,\"authority_roles\":[\"IDENTITY_BINDING\"],\"filename\":\"cm2_round266_source_g_expanded_curved_face_closure_certificate.json\",\"forbidden_as\":[\"FORMAL_B1A_OR_CM2_CREDIT\",\"NORMALIZED_FULL_SUPPORT\",\"PHYSICAL_INCIDENCE_OR_EQUIVALENCE_THEOREM\",\"SUPPORT_GEOMETRY\"]},{\"admitted_for_construction\":true,\"authority_roles\":[\"SUPPORT_ROW_SOURCE\"],\"filename\":\"cm2_round269_source_g_closed_collar_direct_signature_materialization_certificate.json\",\"forbidden_as\":[\"FORMAL_B1A_OR_CM2_CREDIT\",\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\"]},{\"admitted_for_construction\":true,\"authority_roles\":[\"SUPPORT_ROW_SOURCE\"],\"filename\":\"cm2_round270_source_g_outgoing_g_factor_signature_materialization_certificate.json\",\"forbidden_as\":[\"FORMAL_B1A_OR_CM2_CREDIT\",\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\"]},{\"admitted_for_construction\":true,\"authority_roles\":[\"SUPPORT_ROW_SOURCE\"],\"filename\":\"cm2_round271_source_g_wall_and_outgoing_tail_signature_materialization_certificate.json\",\"forbidden_as\":[\"FORMAL_B1A_OR_CM2_CREDIT\",\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\"]},{\"admitted_for_construction\":true,\"authority_roles\":[\"SUPPORT_ROW_SOURCE\"],\"filename\":\"cm2_round272_source_g_boundary_dual_factor_wall_closure_certificate.json\",\"forbidden_as\":[\"FORMAL_B1A_OR_CM2_CREDIT\",\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\"]},{\"admitted_for_construction\":true,\"authority_roles\":[\"ANALYTIC_LINEAGE\"],\"filename\":\"cm2_round275_source_g_complete_reverse_rechart_materialization_certificate.json\",\"forbidden_as\":[\"FORMAL_B1A_OR_CM2_CREDIT\",\"NORMALIZED_FULL_SUPPORT\",\"PHYSICAL_SUPPORT_OR_GLUE_WITHOUT_EQUIVALENCE_CERTIFICATE\"]},{\"admitted_for_construction\":true,\"authority_roles\":[\"IDENTITY_BINDING\"],\"filename\":\"cm2_round279_source_g_collar_atom_and_face_edge_freeze_atoms.json.gz\",\"forbidden_as\":[\"FORMAL_B1A_OR_CM2_CREDIT\",\"NORMALIZED_FULL_SUPPORT\",\"PHYSICAL_INCIDENCE_OR_EQUIVALENCE_THEOREM\",\"SUPPORT_GEOMETRY\"]},{\"admitted_for_construction\":false,\"authority_roles\":[\"PROOF_EVIDENCE\"],\"filename\":\"cm2_round279_source_g_collar_atom_and_face_edge_freeze_edges.json.gz\",\"forbidden_as\":[\"CONSTRUCTION_ROW_SOURCE\",\"MAXIMALITY_OR_CM2_CREDIT\",\"NORMALIZED_FULL_SUPPORT\"]},{\"admitted_for_construction\":false,\"authority_roles\":[\"OUTER_ENVELOPE_ONLY\"],\"filename\":\"cm2_round287_source_g_rechart_terminal_occurrence_disposition_probe_ledger.json.gz\",\"forbidden_as\":[\"EXISTENCE_OR_EQUIVALENCE_THEOREM\",\"INNER_SUPPORT\",\"NORMALIZED_FULL_SUPPORT\"]},{\"admitted_for_construction\":true,\"authority_roles\":[\"IDENTITY_BINDING\"],\"filename\":\"cm2_round288_source_g_canonical_atom_occurrence_identity_gate_audit_atom_dispositions.json.gz\",\"forbidden_as\":[\"FORMAL_B1A_OR_CM2_CREDIT\",\"NORMALIZED_FULL_SUPPORT\",\"PHYSICAL_INCIDENCE_OR_EQUIVALENCE_THEOREM\",\"SUPPORT_GEOMETRY\"]},{\"admitted_for_construction\":true,\"authority_roles\":[\"IDENTITY_BINDING\"],\"filename\":\"cm2_round288_source_g_canonical_atom_occurrence_identity_gate_audit_existing_overlap_relations.json.gz\",\"forbidden_as\":[\"FORMAL_B1A_OR_CM2_CREDIT\",\"NORMALIZED_FULL_SUPPORT\",\"PHYSICAL_INCIDENCE_OR_EQUIVALENCE_THEOREM\",\"SUPPORT_GEOMETRY\"]},{\"admitted_for_construction\":false,\"authority_roles\":[\"DIAGNOSTIC_ONLY\"],\"filename\":\"cm2_round290_source_g_isolated_atom_inner_support_closure_inner_support_ledger.json.gz\",\"forbidden_as\":[\"CONSTRUCTION_ROW_SOURCE\",\"FORMAL_B1A_OR_CM2_CREDIT\",\"NORMALIZED_FULL_SUPPORT\",\"OUTER_SUPPORT_EQUIVALENCE_CERTIFICATE\"]},{\"admitted_for_construction\":true,\"authority_roles\":[\"CONSTRUCTION_LINEAGE\",\"OUTER_ENVELOPE_ONLY\"],\"filename\":\"cm2_round292_source_g_r287_registry_overlap_exhaustion_probe_ledger.json.gz\",\"forbidden_as\":[\"EXISTENCE_OR_EQUIVALENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\",\"INNER_SUPPORT\",\"NORMALIZED_FULL_SUPPORT\",\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"PHYSICAL_INCIDENCE_THEOREM\"]},{\"admitted_for_construction\":true,\"authority_roles\":[\"IDENTITY_BINDING\"],\"filename\":\"cm2_round294_source_g_occurrence_registry_atomic_promotion_registry_ledger.json.gz\",\"forbidden_as\":[\"FORMAL_B1A_OR_CM2_CREDIT\",\"NORMALIZED_FULL_SUPPORT\",\"PHYSICAL_INCIDENCE_OR_EQUIVALENCE_THEOREM\",\"SUPPORT_GEOMETRY\"]},{\"admitted_for_construction\":true,\"authority_roles\":[\"IDENTITY_BINDING\"],\"filename\":\"cm2_round294_source_g_occurrence_registry_atomic_promotion_representation_binding_ledger.json.gz\",\"forbidden_as\":[\"FORMAL_B1A_OR_CM2_CREDIT\",\"NORMALIZED_FULL_SUPPORT\",\"PHYSICAL_INCIDENCE_OR_EQUIVALENCE_THEOREM\",\"SUPPORT_GEOMETRY\"]},{\"admitted_for_construction\":true,\"authority_roles\":[\"IDENTITY_BINDING\"],\"filename\":\"cm2_round306b0_source_g_r306a_universe_support_source_freeze_member_support_source_index.json.gz\",\"forbidden_as\":[\"FORMAL_B1A_OR_CM2_CREDIT\",\"NORMALIZED_FULL_SUPPORT\",\"PHYSICAL_INCIDENCE_OR_EQUIVALENCE_THEOREM\",\"SUPPORT_GEOMETRY\"]},{\"admitted_for_construction\":true,\"authority_roles\":[\"IDENTITY_BINDING\"],\"filename\":\"cm2_round306b1g0_source_g_graph_source_inventory_and_join_freeze_b0_member_backbinding.json.gz\",\"forbidden_as\":[\"FORMAL_B1A_OR_CM2_CREDIT\",\"NORMALIZED_FULL_SUPPORT\",\"PHYSICAL_INCIDENCE_OR_EQUIVALENCE_THEOREM\",\"SUPPORT_GEOMETRY\"]},{\"admitted_for_construction\":false,\"authority_roles\":[\"PROOF_EVIDENCE\"],\"filename\":\"cm2_round306b1g0_source_g_graph_source_inventory_and_join_freeze_gap.json.gz\",\"forbidden_as\":[\"CONSTRUCTION_ROW_SOURCE\",\"MAXIMALITY_OR_CM2_CREDIT\",\"NORMALIZED_FULL_SUPPORT\"]},{\"admitted_for_construction\":true,\"authority_roles\":[\"IDENTITY_BINDING\"],\"filename\":\"cm2_round306b1g0_source_g_graph_source_inventory_and_join_freeze_graph_sheet_join.json.gz\",\"forbidden_as\":[\"FORMAL_B1A_OR_CM2_CREDIT\",\"NORMALIZED_FULL_SUPPORT\",\"PHYSICAL_INCIDENCE_OR_EQUIVALENCE_THEOREM\",\"SUPPORT_GEOMETRY\"]},{\"admitted_for_construction\":true,\"authority_roles\":[\"IDENTITY_BINDING\"],\"filename\":\"cm2_round306b1g0_source_g_graph_source_inventory_and_join_freeze_graph_side_join.json.gz\",\"forbidden_as\":[\"FORMAL_B1A_OR_CM2_CREDIT\",\"NORMALIZED_FULL_SUPPORT\",\"PHYSICAL_INCIDENCE_OR_EQUIVALENCE_THEOREM\",\"SUPPORT_GEOMETRY\"]},{\"admitted_for_construction\":true,\"authority_roles\":[\"IDENTITY_BINDING\"],\"filename\":\"cm2_round306b1g0_source_g_graph_source_inventory_and_join_freeze_graph_source_inventory.json.gz\",\"forbidden_as\":[\"FORMAL_B1A_OR_CM2_CREDIT\",\"NORMALIZED_FULL_SUPPORT\",\"PHYSICAL_INCIDENCE_OR_EQUIVALENCE_THEOREM\",\"SUPPORT_GEOMETRY\"]},{\"admitted_for_construction\":true,\"authority_roles\":[\"IDENTITY_BINDING\"],\"filename\":\"cm2_round306b1g0_source_g_graph_source_inventory_and_join_freeze_r264_correction_disposition.json.gz\",\"forbidden_as\":[\"FORMAL_B1A_OR_CM2_CREDIT\",\"NORMALIZED_FULL_SUPPORT\",\"PHYSICAL_INCIDENCE_OR_EQUIVALENCE_THEOREM\",\"SUPPORT_GEOMETRY\"]},{\"admitted_for_construction\":false,\"authority_roles\":[\"PROOF_EVIDENCE\"],\"filename\":\"cm2_round306b1r0_source_g_r288_predicate_source_inventory_and_union_freeze_gap.json.gz\",\"forbidden_as\":[\"CONSTRUCTION_ROW_SOURCE\",\"MAXIMALITY_OR_CM2_CREDIT\",\"NORMALIZED_FULL_SUPPORT\"]},{\"admitted_for_construction\":true,\"authority_roles\":[\"IDENTITY_BINDING\"],\"filename\":\"cm2_round306b1r0_source_g_r288_predicate_source_inventory_and_union_freeze_member_union.json.gz\",\"forbidden_as\":[\"FORMAL_B1A_OR_CM2_CREDIT\",\"NORMALIZED_FULL_SUPPORT\",\"PHYSICAL_INCIDENCE_OR_EQUIVALENCE_THEOREM\",\"SUPPORT_GEOMETRY\"]},{\"admitted_for_construction\":true,\"authority_roles\":[\"SUPPORT_ROW_SOURCE\"],\"filename\":\"cm2_round306b1r0_source_g_r288_predicate_source_inventory_and_union_freeze_predicate_source_cell.json.gz\",\"forbidden_as\":[\"FORMAL_B1A_OR_CM2_CREDIT\",\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\"]}],\"role_policies\":[{\"admitted_for_construction\":true,\"authority_role\":\"IDENTITY_BINDING\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT\",\"SUPPORT_GEOMETRY\",\"PHYSICAL_INCIDENCE_OR_EQUIVALENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority_role\":\"SUPPORT_ROW_SOURCE\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority_role\":\"ANALYTIC_LINEAGE\",\"forbidden_as\":[\"PHYSICAL_SUPPORT_OR_GLUE_WITHOUT_EQUIVALENCE_CERTIFICATE\",\"NORMALIZED_FULL_SUPPORT\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority_role\":\"CONSTRUCTION_LINEAGE\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"PHYSICAL_INCIDENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":false,\"authority_role\":\"PROOF_EVIDENCE\",\"forbidden_as\":[\"CONSTRUCTION_ROW_SOURCE\",\"NORMALIZED_FULL_SUPPORT\",\"MAXIMALITY_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":false,\"authority_role\":\"OUTER_ENVELOPE_ONLY\",\"forbidden_as\":[\"INNER_SUPPORT\",\"NORMALIZED_FULL_SUPPORT\",\"EXISTENCE_OR_EQUIVALENCE_THEOREM\"]},{\"admitted_for_construction\":false,\"authority_role\":\"DIAGNOSTIC_ONLY\",\"forbidden_as\":[\"CONSTRUCTION_ROW_SOURCE\",\"NORMALIZED_FULL_SUPPORT\",\"OUTER_SUPPORT_EQUIVALENCE_CERTIFICATE\",\"FORMAL_B1A_OR_CM2_CREDIT\"]}],\"table_authorities\":[{\"admitted_for_construction\":true,\"authority\":\"R182.collar_leaf_rows\",\"authority_role\":\"ANALYTIC_LINEAGE\",\"filename\":\"cm2_round182_source_g_clipped_graph_and_pair_arrangement_rows.json\",\"forbidden_as\":[\"PHYSICAL_SUPPORT_OR_GLUE_WITHOUT_EQUIVALENCE_CERTIFICATE\",\"NORMALIZED_FULL_SUPPORT\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R220.coordinate_corner_rows\",\"authority_role\":\"ANALYTIC_LINEAGE\",\"filename\":\"cm2_round220_source_g_round179_resolved_child_boundary_atlas_certificate.json\",\"forbidden_as\":[\"PHYSICAL_SUPPORT_OR_GLUE_WITHOUT_EQUIVALENCE_CERTIFICATE\",\"NORMALIZED_FULL_SUPPORT\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R220.coordinate_edge_rows\",\"authority_role\":\"ANALYTIC_LINEAGE\",\"filename\":\"cm2_round220_source_g_round179_resolved_child_boundary_atlas_certificate.json\",\"forbidden_as\":[\"PHYSICAL_SUPPORT_OR_GLUE_WITHOUT_EQUIVALENCE_CERTIFICATE\",\"NORMALIZED_FULL_SUPPORT\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R220.coordinate_face_rows\",\"authority_role\":\"ANALYTIC_LINEAGE\",\"filename\":\"cm2_round220_source_g_round179_resolved_child_boundary_atlas_certificate.json\",\"forbidden_as\":[\"PHYSICAL_SUPPORT_OR_GLUE_WITHOUT_EQUIVALENCE_CERTIFICATE\",\"NORMALIZED_FULL_SUPPORT\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R220.formal_coordinate_adjacency_rows\",\"authority_role\":\"ANALYTIC_LINEAGE\",\"filename\":\"cm2_round220_source_g_round179_resolved_child_boundary_atlas_certificate.json\",\"forbidden_as\":[\"PHYSICAL_SUPPORT_OR_GLUE_WITHOUT_EQUIVALENCE_CERTIFICATE\",\"NORMALIZED_FULL_SUPPORT\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R220.one_step_split_interface_rows\",\"authority_role\":\"ANALYTIC_LINEAGE\",\"filename\":\"cm2_round220_source_g_round179_resolved_child_boundary_atlas_certificate.json\",\"forbidden_as\":[\"PHYSICAL_SUPPORT_OR_GLUE_WITHOUT_EQUIVALENCE_CERTIFICATE\",\"NORMALIZED_FULL_SUPPORT\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":false,\"authority\":\"R220.rejected_exact_coordinate_coincidence_rows\",\"authority_role\":\"PROOF_EVIDENCE\",\"filename\":\"cm2_round220_source_g_round179_resolved_child_boundary_atlas_certificate.json\",\"forbidden_as\":[\"CONSTRUCTION_ROW_SOURCE\",\"NORMALIZED_FULL_SUPPORT\",\"MAXIMALITY_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R220.resolved_child_rows\",\"authority_role\":\"ANALYTIC_LINEAGE\",\"filename\":\"cm2_round220_source_g_round179_resolved_child_boundary_atlas_certificate.json\",\"forbidden_as\":[\"PHYSICAL_SUPPORT_OR_GLUE_WITHOUT_EQUIVALENCE_CERTIFICATE\",\"NORMALIZED_FULL_SUPPORT\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R232.whole_origin_promotion_rows\",\"authority_role\":\"CONSTRUCTION_LINEAGE\",\"filename\":\"cm2_round232_source_g_depth6_whole_origin_promotion_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"PHYSICAL_INCIDENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R234.root_summary_rows\",\"authority_role\":\"CONSTRUCTION_LINEAGE\",\"filename\":\"cm2_round234_source_g_wall_endpoint_order_depth6_materialization_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"PHYSICAL_INCIDENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R234.resolved_descendant_rows\",\"authority_role\":\"CONSTRUCTION_LINEAGE\",\"filename\":\"cm2_round234_source_g_wall_endpoint_order_depth6_materialization_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"PHYSICAL_INCIDENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R234.depth6_frontier_rows\",\"authority_role\":\"CONSTRUCTION_LINEAGE\",\"filename\":\"cm2_round234_source_g_wall_endpoint_order_depth6_materialization_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"PHYSICAL_INCIDENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R237.whole_origin_promotion_rows\",\"authority_role\":\"CONSTRUCTION_LINEAGE\",\"filename\":\"cm2_round237_source_g_crossing_time_whole_origin_promotion_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"PHYSICAL_INCIDENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R238.whole_origin_promotion_rows\",\"authority_role\":\"CONSTRUCTION_LINEAGE\",\"filename\":\"cm2_round238_source_g_source_chart_seam_whole_origin_promotion_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"PHYSICAL_INCIDENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":false,\"authority\":\"R244.formal_Round244_known_connectivity_block_carry_ledger\",\"authority_role\":\"PROOF_EVIDENCE\",\"filename\":\"cm2_round244_source_g_cross_parent_same_chart_bulk_quotient_rebuild_certificate.json\",\"forbidden_as\":[\"CONSTRUCTION_ROW_SOURCE\",\"NORMALIZED_FULL_SUPPORT\",\"MAXIMALITY_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":false,\"authority\":\"R244.formal_cross_parent_same_chart_bulk_edge_ledger\",\"authority_role\":\"PROOF_EVIDENCE\",\"filename\":\"cm2_round244_source_g_cross_parent_same_chart_bulk_quotient_rebuild_certificate.json\",\"forbidden_as\":[\"CONSTRUCTION_ROW_SOURCE\",\"NORMALIZED_FULL_SUPPORT\",\"MAXIMALITY_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":false,\"authority\":\"R244.formal_different_parent_candidate_reconciliation_ledger\",\"authority_role\":\"PROOF_EVIDENCE\",\"filename\":\"cm2_round244_source_g_cross_parent_same_chart_bulk_quotient_rebuild_certificate.json\",\"forbidden_as\":[\"CONSTRUCTION_ROW_SOURCE\",\"NORMALIZED_FULL_SUPPORT\",\"MAXIMALITY_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":false,\"authority\":\"R244.formal_occurrence_known_block_incidence_delta_ledger\",\"authority_role\":\"PROOF_EVIDENCE\",\"filename\":\"cm2_round244_source_g_cross_parent_same_chart_bulk_quotient_rebuild_certificate.json\",\"forbidden_as\":[\"CONSTRUCTION_ROW_SOURCE\",\"NORMALIZED_FULL_SUPPORT\",\"MAXIMALITY_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":false,\"authority\":\"R244.formal_post_Round244_key_frontier_ledger\",\"authority_role\":\"PROOF_EVIDENCE\",\"filename\":\"cm2_round244_source_g_cross_parent_same_chart_bulk_quotient_rebuild_certificate.json\",\"forbidden_as\":[\"CONSTRUCTION_ROW_SOURCE\",\"NORMALIZED_FULL_SUPPORT\",\"MAXIMALITY_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":false,\"authority\":\"R244.formal_post_Round244_occurrence_known_block_frontier_ledger\",\"authority_role\":\"PROOF_EVIDENCE\",\"filename\":\"cm2_round244_source_g_cross_parent_same_chart_bulk_quotient_rebuild_certificate.json\",\"forbidden_as\":[\"CONSTRUCTION_ROW_SOURCE\",\"NORMALIZED_FULL_SUPPORT\",\"MAXIMALITY_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":false,\"authority\":\"R244.formal_resolved_bulk_component_ledger\",\"authority_role\":\"PROOF_EVIDENCE\",\"filename\":\"cm2_round244_source_g_cross_parent_same_chart_bulk_quotient_rebuild_certificate.json\",\"forbidden_as\":[\"CONSTRUCTION_ROW_SOURCE\",\"NORMALIZED_FULL_SUPPORT\",\"MAXIMALITY_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R235.single_endpoint_graph_partition_rows\",\"authority_role\":\"CONSTRUCTION_LINEAGE\",\"filename\":\"cm2_round235_source_g_single_endpoint_graph_word_key_partition_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"PHYSICAL_INCIDENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R236.double_endpoint_partition_rows\",\"authority_role\":\"CONSTRUCTION_LINEAGE\",\"filename\":\"cm2_round236_source_g_wall_residual_closure_and_root_key_partition_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"PHYSICAL_INCIDENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":false,\"authority\":\"R236.crossing_dependency_discharge_rows\",\"authority_role\":\"PROOF_EVIDENCE\",\"filename\":\"cm2_round236_source_g_wall_residual_closure_and_root_key_partition_certificate.json\",\"forbidden_as\":[\"CONSTRUCTION_ROW_SOURCE\",\"NORMALIZED_FULL_SUPPORT\",\"MAXIMALITY_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R242.formal_positive_2D_transition_sheet_patch_ledger\",\"authority_role\":\"CONSTRUCTION_LINEAGE\",\"filename\":\"cm2_round242_source_g_outgoing_graph_existence_stratum_materialization_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"PHYSICAL_INCIDENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R245.formal_retained_stratum_node_ledger\",\"authority_role\":\"CONSTRUCTION_LINEAGE\",\"filename\":\"cm2_round245_source_g_retained_graph_mixed_sheet_quotient_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"PHYSICAL_INCIDENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R246.formal_new_whole_signature_retained_stratum_node_ledger\",\"authority_role\":\"CONSTRUCTION_LINEAGE\",\"filename\":\"cm2_round246_source_g_whole_signature_retained_quotient_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"PHYSICAL_INCIDENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R247.formal_new_crossing_and_source_seam_retained_stratum_node_ledger\",\"authority_role\":\"CONSTRUCTION_LINEAGE\",\"filename\":\"cm2_round247_source_g_crossing_and_source_seam_retained_quotient_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"PHYSICAL_INCIDENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R248.formal_wall_positive_volume_bulk_ledger\",\"authority_role\":\"CONSTRUCTION_LINEAGE\",\"filename\":\"cm2_round248_source_g_wall_finite_key_retained_quotient_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"PHYSICAL_INCIDENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R248.formal_wall_half_open_sheet_owner_ledger\",\"authority_role\":\"CONSTRUCTION_LINEAGE\",\"filename\":\"cm2_round248_source_g_wall_finite_key_retained_quotient_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"PHYSICAL_INCIDENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R264.formal_endpoint_empty_branch_correction_disposition_ledger\",\"authority_role\":\"IDENTITY_BINDING\",\"filename\":\"cm2_round264_source_g_lower_dimensional_endpoint_correction_and_glue_closure_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT\",\"SUPPORT_GEOMETRY\",\"PHYSICAL_INCIDENCE_OR_EQUIVALENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R266.formal_post_Round266_valid_virtual_node_frontier_ledger\",\"authority_role\":\"IDENTITY_BINDING\",\"filename\":\"cm2_round266_source_g_expanded_curved_face_closure_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT\",\"SUPPORT_GEOMETRY\",\"PHYSICAL_INCIDENCE_OR_EQUIVALENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R266.formal_post_Round266_component_member_frontier_ledger\",\"authority_role\":\"IDENTITY_BINDING\",\"filename\":\"cm2_round266_source_g_expanded_curved_face_closure_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT\",\"SUPPORT_GEOMETRY\",\"PHYSICAL_INCIDENCE_OR_EQUIVALENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"B1G0.graph_source_inventory_rows\",\"authority_role\":\"IDENTITY_BINDING\",\"filename\":\"cm2_round306b1g0_source_g_graph_source_inventory_and_join_freeze_graph_source_inventory.json.gz\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT\",\"SUPPORT_GEOMETRY\",\"PHYSICAL_INCIDENCE_OR_EQUIVALENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"B1G0.graph_sheet_join_rows\",\"authority_role\":\"IDENTITY_BINDING\",\"filename\":\"cm2_round306b1g0_source_g_graph_source_inventory_and_join_freeze_graph_sheet_join.json.gz\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT\",\"SUPPORT_GEOMETRY\",\"PHYSICAL_INCIDENCE_OR_EQUIVALENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"B1G0.graph_side_join_rows\",\"authority_role\":\"IDENTITY_BINDING\",\"filename\":\"cm2_round306b1g0_source_g_graph_source_inventory_and_join_freeze_graph_side_join.json.gz\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT\",\"SUPPORT_GEOMETRY\",\"PHYSICAL_INCIDENCE_OR_EQUIVALENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"B1G0.r264_correction_disposition_rows\",\"authority_role\":\"IDENTITY_BINDING\",\"filename\":\"cm2_round306b1g0_source_g_graph_source_inventory_and_join_freeze_r264_correction_disposition.json.gz\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT\",\"SUPPORT_GEOMETRY\",\"PHYSICAL_INCIDENCE_OR_EQUIVALENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"B1G0.b0_member_backbinding_rows\",\"authority_role\":\"IDENTITY_BINDING\",\"filename\":\"cm2_round306b1g0_source_g_graph_source_inventory_and_join_freeze_b0_member_backbinding.json.gz\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT\",\"SUPPORT_GEOMETRY\",\"PHYSICAL_INCIDENCE_OR_EQUIVALENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":false,\"authority\":\"B1G0.gap_rows\",\"authority_role\":\"PROOF_EVIDENCE\",\"filename\":\"cm2_round306b1g0_source_g_graph_source_inventory_and_join_freeze_gap.json.gz\",\"forbidden_as\":[\"CONSTRUCTION_ROW_SOURCE\",\"NORMALIZED_FULL_SUPPORT\",\"MAXIMALITY_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"B0.member_support_source_rows\",\"authority_role\":\"IDENTITY_BINDING\",\"filename\":\"cm2_round306b0_source_g_r306a_universe_support_source_freeze_member_support_source_index.json.gz\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT\",\"SUPPORT_GEOMETRY\",\"PHYSICAL_INCIDENCE_OR_EQUIVALENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R294.occurrence_registry_rows\",\"authority_role\":\"IDENTITY_BINDING\",\"filename\":\"cm2_round294_source_g_occurrence_registry_atomic_promotion_registry_ledger.json.gz\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT\",\"SUPPORT_GEOMETRY\",\"PHYSICAL_INCIDENCE_OR_EQUIVALENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R294.representation_binding_rows\",\"authority_role\":\"IDENTITY_BINDING\",\"filename\":\"cm2_round294_source_g_occurrence_registry_atomic_promotion_representation_binding_ledger.json.gz\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT\",\"SUPPORT_GEOMETRY\",\"PHYSICAL_INCIDENCE_OR_EQUIVALENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R266.formal_post_Round266_expanded_occurrence_frontier_ledger\",\"authority_role\":\"IDENTITY_BINDING\",\"filename\":\"cm2_round266_source_g_expanded_curved_face_closure_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT\",\"SUPPORT_GEOMETRY\",\"PHYSICAL_INCIDENCE_OR_EQUIVALENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R174.resolved_3d_occurrence_rows\",\"authority_role\":\"SUPPORT_ROW_SOURCE\",\"filename\":\"cm2_round174_source_g_unique_first_dynamic_occurrence_materialization_rows.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R179.resolved_3d_child_rows\",\"authority_role\":\"SUPPORT_ROW_SOURCE\",\"filename\":\"cm2_round179_source_g_residual_tube_arrangement_rows.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R204.formal_local_open_3D_region_ledger\",\"authority_role\":\"SUPPORT_ROW_SOURCE\",\"filename\":\"cm2_round204_source_g_wall_return_signature_local_replacement_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R208.formal_local_open_3D_signature_ledger\",\"authority_role\":\"SUPPORT_ROW_SOURCE\",\"filename\":\"cm2_round208_source_g_outgoing_direct_signature_materialization_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R204.formal_2D_sheet_lineage.target_sheet_rows\",\"authority_role\":\"ANALYTIC_LINEAGE\",\"filename\":\"cm2_round204_source_g_wall_return_signature_local_replacement_certificate.json\",\"forbidden_as\":[\"PHYSICAL_SUPPORT_OR_GLUE_WITHOUT_EQUIVALENCE_CERTIFICATE\",\"NORMALIZED_FULL_SUPPORT\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R208.formal_direct_leaf_signature_base_ledger\",\"authority_role\":\"ANALYTIC_LINEAGE\",\"filename\":\"cm2_round208_source_g_outgoing_direct_signature_materialization_certificate.json\",\"forbidden_as\":[\"PHYSICAL_SUPPORT_OR_GLUE_WITHOUT_EQUIVALENCE_CERTIFICATE\",\"NORMALIZED_FULL_SUPPORT\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R208.formal_leaf_geometry_ledger\",\"authority_role\":\"ANALYTIC_LINEAGE\",\"filename\":\"cm2_round208_source_g_outgoing_direct_signature_materialization_certificate.json\",\"forbidden_as\":[\"PHYSICAL_SUPPORT_OR_GLUE_WITHOUT_EQUIVALENCE_CERTIFICATE\",\"NORMALIZED_FULL_SUPPORT\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R208.formal_final_factor_face_ledger\",\"authority_role\":\"ANALYTIC_LINEAGE\",\"filename\":\"cm2_round208_source_g_outgoing_direct_signature_materialization_certificate.json\",\"forbidden_as\":[\"PHYSICAL_SUPPORT_OR_GLUE_WITHOUT_EQUIVALENCE_CERTIFICATE\",\"NORMALIZED_FULL_SUPPORT\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R211.formal_2D_sheet_owner_ledger\",\"authority_role\":\"ANALYTIC_LINEAGE\",\"filename\":\"cm2_round211_source_g_outgoing_half_open_owner_materialization_certificate.json\",\"forbidden_as\":[\"PHYSICAL_SUPPORT_OR_GLUE_WITHOUT_EQUIVALENCE_CERTIFICATE\",\"NORMALIZED_FULL_SUPPORT\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R204.filtered_target_graph_curve_incidence_rows\",\"authority_role\":\"ANALYTIC_LINEAGE\",\"filename\":\"cm2_round204_source_g_wall_return_signature_local_replacement_certificate.json\",\"forbidden_as\":[\"PHYSICAL_SUPPORT_OR_GLUE_WITHOUT_EQUIVALENCE_CERTIFICATE\",\"NORMALIZED_FULL_SUPPORT\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R204.filtered_target_graph_point_incidence_rows\",\"authority_role\":\"ANALYTIC_LINEAGE\",\"filename\":\"cm2_round204_source_g_wall_return_signature_local_replacement_certificate.json\",\"forbidden_as\":[\"PHYSICAL_SUPPORT_OR_GLUE_WITHOUT_EQUIVALENCE_CERTIFICATE\",\"NORMALIZED_FULL_SUPPORT\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R211.formal_1D_curve_incidence_owner_ledger\",\"authority_role\":\"ANALYTIC_LINEAGE\",\"filename\":\"cm2_round211_source_g_outgoing_half_open_owner_materialization_certificate.json\",\"forbidden_as\":[\"PHYSICAL_SUPPORT_OR_GLUE_WITHOUT_EQUIVALENCE_CERTIFICATE\",\"NORMALIZED_FULL_SUPPORT\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R211.formal_0D_endpoint_incidence_owner_ledger\",\"authority_role\":\"ANALYTIC_LINEAGE\",\"filename\":\"cm2_round211_source_g_outgoing_half_open_owner_materialization_certificate.json\",\"forbidden_as\":[\"PHYSICAL_SUPPORT_OR_GLUE_WITHOUT_EQUIVALENCE_CERTIFICATE\",\"NORMALIZED_FULL_SUPPORT\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R269.formal_direct_side_signature_ledger\",\"authority_role\":\"SUPPORT_ROW_SOURCE\",\"filename\":\"cm2_round269_source_g_closed_collar_direct_signature_materialization_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R269.formal_failclosed_leaf_ledger\",\"authority_role\":\"SUPPORT_ROW_SOURCE\",\"filename\":\"cm2_round269_source_g_closed_collar_direct_signature_materialization_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R270.formal_direct_side_signature_ledger\",\"authority_role\":\"SUPPORT_ROW_SOURCE\",\"filename\":\"cm2_round270_source_g_outgoing_g_factor_signature_materialization_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R270.formal_failclosed_leaf_ledger\",\"authority_role\":\"SUPPORT_ROW_SOURCE\",\"filename\":\"cm2_round270_source_g_outgoing_g_factor_signature_materialization_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R271.formal_side_signature_ledger\",\"authority_role\":\"SUPPORT_ROW_SOURCE\",\"filename\":\"cm2_round271_source_g_wall_and_outgoing_tail_signature_materialization_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R271.formal_failclosed_leaf_ledger\",\"authority_role\":\"SUPPORT_ROW_SOURCE\",\"filename\":\"cm2_round271_source_g_wall_and_outgoing_tail_signature_materialization_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R272.formal_side_signature_ledger\",\"authority_role\":\"SUPPORT_ROW_SOURCE\",\"filename\":\"cm2_round272_source_g_boundary_dual_factor_wall_closure_certificate.json\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R279.canonical_atom_rows\",\"authority_role\":\"IDENTITY_BINDING\",\"filename\":\"cm2_round279_source_g_collar_atom_and_face_edge_freeze_atoms.json.gz\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT\",\"SUPPORT_GEOMETRY\",\"PHYSICAL_INCIDENCE_OR_EQUIVALENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":false,\"authority\":\"R279.formal_face_edge_witness_rows\",\"authority_role\":\"PROOF_EVIDENCE\",\"filename\":\"cm2_round279_source_g_collar_atom_and_face_edge_freeze_edges.json.gz\",\"forbidden_as\":[\"CONSTRUCTION_ROW_SOURCE\",\"NORMALIZED_FULL_SUPPORT\",\"MAXIMALITY_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R288.atom_disposition_rows\",\"authority_role\":\"IDENTITY_BINDING\",\"filename\":\"cm2_round288_source_g_canonical_atom_occurrence_identity_gate_audit_atom_dispositions.json.gz\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT\",\"SUPPORT_GEOMETRY\",\"PHYSICAL_INCIDENCE_OR_EQUIVALENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R288.existing_overlap_relation_rows\",\"authority_role\":\"IDENTITY_BINDING\",\"filename\":\"cm2_round288_source_g_canonical_atom_occurrence_identity_gate_audit_existing_overlap_relations.json.gz\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT\",\"SUPPORT_GEOMETRY\",\"PHYSICAL_INCIDENCE_OR_EQUIVALENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":false,\"authority\":\"R290.inner_support_rows\",\"authority_role\":\"DIAGNOSTIC_ONLY\",\"filename\":\"cm2_round290_source_g_isolated_atom_inner_support_closure_inner_support_ledger.json.gz\",\"forbidden_as\":[\"CONSTRUCTION_ROW_SOURCE\",\"NORMALIZED_FULL_SUPPORT\",\"OUTER_SUPPORT_EQUIVALENCE_CERTIFICATE\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"B1R0.predicate_source_cell_rows\",\"authority_role\":\"SUPPORT_ROW_SOURCE\",\"filename\":\"cm2_round306b1r0_source_g_r288_predicate_source_inventory_and_union_freeze_predicate_source_cell.json.gz\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"B1R0.member_union_rows\",\"authority_role\":\"IDENTITY_BINDING\",\"filename\":\"cm2_round306b1r0_source_g_r288_predicate_source_inventory_and_union_freeze_member_union.json.gz\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT\",\"SUPPORT_GEOMETRY\",\"PHYSICAL_INCIDENCE_OR_EQUIVALENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":false,\"authority\":\"B1R0.gap_rows\",\"authority_role\":\"PROOF_EVIDENCE\",\"filename\":\"cm2_round306b1r0_source_g_r288_predicate_source_inventory_and_union_freeze_gap.json.gz\",\"forbidden_as\":[\"CONSTRUCTION_ROW_SOURCE\",\"NORMALIZED_FULL_SUPPORT\",\"MAXIMALITY_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R275.strict_region_ledger\",\"authority_role\":\"ANALYTIC_LINEAGE\",\"filename\":\"cm2_round275_source_g_complete_reverse_rechart_materialization_certificate.json\",\"forbidden_as\":[\"PHYSICAL_SUPPORT_OR_GLUE_WITHOUT_EQUIVALENCE_CERTIFICATE\",\"NORMALIZED_FULL_SUPPORT\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R275.arrangement_region_ledger\",\"authority_role\":\"ANALYTIC_LINEAGE\",\"filename\":\"cm2_round275_source_g_complete_reverse_rechart_materialization_certificate.json\",\"forbidden_as\":[\"PHYSICAL_SUPPORT_OR_GLUE_WITHOUT_EQUIVALENCE_CERTIFICATE\",\"NORMALIZED_FULL_SUPPORT\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R275.guard_closure_ledger\",\"authority_role\":\"ANALYTIC_LINEAGE\",\"filename\":\"cm2_round275_source_g_complete_reverse_rechart_materialization_certificate.json\",\"forbidden_as\":[\"PHYSICAL_SUPPORT_OR_GLUE_WITHOUT_EQUIVALENCE_CERTIFICATE\",\"NORMALIZED_FULL_SUPPORT\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":false,\"authority\":\"R287.region_rows\",\"authority_role\":\"OUTER_ENVELOPE_ONLY\",\"filename\":\"cm2_round287_source_g_rechart_terminal_occurrence_disposition_probe_ledger.json.gz\",\"forbidden_as\":[\"INNER_SUPPORT\",\"NORMALIZED_FULL_SUPPORT\",\"EXISTENCE_OR_EQUIVALENCE_THEOREM\"]},{\"admitted_for_construction\":false,\"authority\":\"R287.refinement_cell_rows\",\"authority_role\":\"OUTER_ENVELOPE_ONLY\",\"filename\":\"cm2_round287_source_g_rechart_terminal_occurrence_disposition_probe_ledger.json.gz\",\"forbidden_as\":[\"INNER_SUPPORT\",\"NORMALIZED_FULL_SUPPORT\",\"EXISTENCE_OR_EQUIVALENCE_THEOREM\"]},{\"admitted_for_construction\":false,\"authority\":\"R287.valid_internal_physical_face_rows\",\"authority_role\":\"OUTER_ENVELOPE_ONLY\",\"filename\":\"cm2_round287_source_g_rechart_terminal_occurrence_disposition_probe_ledger.json.gz\",\"forbidden_as\":[\"INNER_SUPPORT\",\"NORMALIZED_FULL_SUPPORT\",\"EXISTENCE_OR_EQUIVALENCE_THEOREM\"]},{\"admitted_for_construction\":false,\"authority\":\"R287.potential_new_support_union_rows\",\"authority_role\":\"OUTER_ENVELOPE_ONLY\",\"filename\":\"cm2_round287_source_g_rechart_terminal_occurrence_disposition_probe_ledger.json.gz\",\"forbidden_as\":[\"INNER_SUPPORT\",\"NORMALIZED_FULL_SUPPORT\",\"EXISTENCE_OR_EQUIVALENCE_THEOREM\"]},{\"admitted_for_construction\":false,\"authority\":\"R287.mutually_exclusive_outer_overlap_pair_rows\",\"authority_role\":\"OUTER_ENVELOPE_ONLY\",\"filename\":\"cm2_round287_source_g_rechart_terminal_occurrence_disposition_probe_ledger.json.gz\",\"forbidden_as\":[\"INNER_SUPPORT\",\"NORMALIZED_FULL_SUPPORT\",\"EXISTENCE_OR_EQUIVALENCE_THEOREM\"]},{\"admitted_for_construction\":false,\"authority\":\"R292.complete_heterogeneous_probe_rows\",\"authority_role\":\"OUTER_ENVELOPE_ONLY\",\"filename\":\"cm2_round292_source_g_r287_registry_overlap_exhaustion_probe_ledger.json.gz\",\"forbidden_as\":[\"INNER_SUPPORT\",\"NORMALIZED_FULL_SUPPORT\",\"EXISTENCE_OR_EQUIVALENCE_THEOREM\"]},{\"admitted_for_construction\":true,\"authority\":\"R292.exact_refinement_cell_rows\",\"authority_role\":\"CONSTRUCTION_LINEAGE\",\"filename\":\"cm2_round292_source_g_r287_registry_overlap_exhaustion_probe_ledger.json.gz\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"PHYSICAL_INCIDENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"]},{\"admitted_for_construction\":true,\"authority\":\"R292.refined_new_support_component_rows\",\"authority_role\":\"CONSTRUCTION_LINEAGE\",\"filename\":\"cm2_round292_source_g_r287_registry_overlap_exhaustion_probe_ledger.json.gz\",\"forbidden_as\":[\"NORMALIZED_FULL_SUPPORT_WITHOUT_TYPED_AST_AND_EQUIVALENCE_CERTIFICATE\",\"PHYSICAL_INCIDENCE_THEOREM\",\"FORMAL_B1A_OR_CM2_CREDIT\"]}]}"
+AUTHORITY_ROLE_CATALOG: Final = json.loads(AUTHORITY_ROLE_CATALOG_JSON)
+EXPECTED_AUTHORITY_ROLE_CATALOG_SHA256: Final = (
+    "807e5502f5329577fc6f3c823bf835879c637f4b083fd417ff69e27cc3190117"
+)
+
+
+SIX_PARTITION_CENSUS: Final = {
+    "member_count": 564492,
+    "partition_count": 6,
+    "mutually_exclusive": True,
+    "exhaustive": True,
+    "partitions": [
+        {"family": "preserved", "member_count": 126468},
+        {"family": "R2", "member_count": 295336, "source_cell_count": 295340},
+        {"family": "R292", "member_count": 9404},
+        {"family": "G2a", "member_count": 38624},
+        {"family": "G2b", "member_count": 76832, "source_reference_count": 76848},
+        {"family": "non_graph_bulk", "member_count": 17828},
+    ],
+}
+
+FIELD_SCOPED_PRECEDENCE: Final = (
+    {"field_scope": "B0_member_identity_and_primary_source", "precedence": ["B0_MEMBER_SUPPORT_SOURCE_IDENTITY"]},
+    {"field_scope": "occurrence_registry_identity", "precedence": ["R294_OCCURRENCE_REGISTRY_IDENTITY", "B0_MEMBER_SUPPORT_SOURCE_IDENTITY"]},
+    {"field_scope": "preserved_source_geometry", "precedence": ["PRESERVED_R174_RESOLVED_3D", "PRESERVED_R179_RESOLVED_3D_CHILD", "PRESERVED_R204_OPEN_3D_REGION", "PRESERVED_R208_OPEN_3D_SIGNATURE_REGION", "R266_PRESERVED_EXPANDED_IDENTITY", "R294_OCCURRENCE_REGISTRY_IDENTITY"]},
+    {"field_scope": "A1_root_and_sheet_definition", "precedence": ["A1_R204_TARGET_REGULAR_GRAPH_SHEET", "A1_R208_R211_FACTOR_SHEET_OWNER", "A1_R208_DIRECT_LEAF_SIGNATURE_BASE", "A1_R208_LEAF_GEOMETRY", "A1_R208_FINAL_FACTOR_FACE"]},
+    {"field_scope": "A2_physical_incidence_and_equivalence", "precedence": ["A2_R204_TARGET_GRAPH_CURVE_INCIDENCE", "A2_R204_TARGET_GRAPH_POINT_INCIDENCE", "A2_R208_R211_CURVE_INCIDENCE_OWNER", "A2_R208_R211_ENDPOINT_INCIDENCE_OWNER"]},
+    {"field_scope": "normalized_full_support_AST", "precedence": [], "status": "UNFROZEN"},
+)
+
+FORBIDDEN_AS_SUPPORT_EXCLUSIONS: Final = (
+    "AF2_PRIMITIVE_SOURCE_FAMILY_LABEL",
+    "THEOREM_OBLIGATION_CENSUS",
+    "OUTER_ENVELOPE",
+    "INNER_WITNESS",
+    "CARRIER_BOX",
+    "SOURCE_HANDLE_WITHOUT_TYPED_SUPPORT_AST",
+    "PREDICATE_CELL_WITHOUT_EQUIVALENCE_AND_FINITE_UNION_PROOF",
+    "REPRESENTATION_WITHOUT_PULLBACK_CERTIFICATE",
+    "OLD_C0_INERT_TRANSITION_PAIR_ROUTING_CONTRACT",
+)
+
+
+class AuditError(RuntimeError):
+    """Fail-closed static parsing or file-identity audit error."""
+
+
+class StaticValueError(ValueError):
+    """Unsupported AST value; it is ignored rather than executed."""
+
+
+def canonical(value: Any) -> bytes:
+    return json.dumps(
+        value, sort_keys=True, separators=(",", ":"), ensure_ascii=True
+    ).encode("ascii")
+
+
+def digest(value: Any) -> str:
+    return hashlib.sha256(canonical(value)).hexdigest()
+
+
+def require(condition: bool, label: str) -> None:
+    if not condition:
+        raise AuditError(label)
+
+
+def _basename(name: str) -> str:
+    require(isinstance(name, str) and name != "", "nonempty filename")
+    require(PurePath(name).name == name, f"basename-only:{name}")
+    require("/" not in name and "\\" not in name and name not in {".", ".."}, f"safe basename:{name}")
+    return name
+
+
+def _fingerprint(metadata: os.stat_result) -> tuple[int, int, int, int, int, int]:
+    return (
+        metadata.st_dev, metadata.st_ino, metadata.st_mode,
+        metadata.st_nlink, metadata.st_size, metadata.st_mtime_ns,
+    )
+
+
+def _stream_fd(fd: int, *, capture: bool) -> tuple[str, bytes | None, int]:
+    os.lseek(fd, 0, os.SEEK_SET)
+    hasher = hashlib.sha256()
+    chunks: list[bytes] | None = [] if capture else None
+    total = 0
+    while True:
+        chunk = os.read(fd, 1024 * 1024)
+        if not chunk:
+            break
+        hasher.update(chunk)
+        total += len(chunk)
+        if chunks is not None:
+            chunks.append(chunk)
+    return hasher.hexdigest(), b"".join(chunks) if chunks is not None else None, total
+
+
+def admit_held_fd(
+    directory_fd: int, name: str, expected_size: int | None,
+    expected_sha256: str, *, capture_source: bool,
+) -> dict[str, Any]:
+    """Open, admit, and retain one immutable file descriptor."""
+    name = _basename(name)
+    require(HEX64.fullmatch(expected_sha256) is not None, f"sha syntax:{name}")
+    path = HERE / name
+    before_real = os.path.realpath(path)
+    require(PurePath(before_real).parent == PurePath(os.path.realpath(HERE)), f"realpath containment:{name}")
+    before_path = os.stat(name, dir_fd=directory_fd, follow_symlinks=False)
+    require(stat.S_ISREG(before_path.st_mode), f"path regular:{name}")
+    require(before_path.st_nlink == 1, f"path nlink one:{name}")
+    flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    fd = os.open(name, flags, dir_fd=directory_fd)
+    try:
+        before_fd = os.fstat(fd)
+        require(stat.S_ISREG(before_fd.st_mode), f"fd regular:{name}")
+        require(before_fd.st_nlink == 1, f"fd nlink one:{name}")
+        require((before_fd.st_dev, before_fd.st_ino) == (before_path.st_dev, before_path.st_ino), f"path/fd inode:{name}")
+        require(expected_size is None or before_fd.st_size == expected_size, f"size pin:{name}")
+        actual_sha256, source, total = _stream_fd(fd, capture=capture_source)
+        require(total == before_fd.st_size, f"complete same-fd read:{name}")
+        require(actual_sha256 == expected_sha256, f"sha pin:{name}")
+        after_fd = os.fstat(fd)
+        require(_fingerprint(after_fd) == _fingerprint(before_fd), f"same-fd stable:{name}")
+    except BaseException:
+        os.close(fd)
+        raise
+    try:
+        after_path = os.stat(name, dir_fd=directory_fd, follow_symlinks=False)
+        after_real = os.path.realpath(path)
+        require(_fingerprint(after_path) == _fingerprint(before_path), f"path replacement:{name}")
+        require(after_real == before_real, f"realpath replacement:{name}")
+        return {
+            "fd": fd,
+            "name": name,
+            "expected_sha256": expected_sha256,
+            "before_fd": before_fd,
+            "before_path": before_path,
+            "before_real": before_real,
+            "source": source,
+            "record": {"filename": name, "size": total, "sha256": expected_sha256},
+        }
+    except BaseException:
+        os.close(fd)
+        raise
+
+
+def reaudit_held_fd(directory_fd: int, held: dict[str, Any]) -> None:
+    """Second same-fd hash and final path/inode audit while every fd is held."""
+    name = held["name"]
+    actual_sha256, _, total = _stream_fd(held["fd"], capture=False)
+    require(actual_sha256 == held["expected_sha256"], f"second-pass sha:{name}")
+    require(total == held["before_fd"].st_size, f"second-pass size:{name}")
+    after_fd = os.fstat(held["fd"])
+    require(_fingerprint(after_fd) == _fingerprint(held["before_fd"]), f"global held-fd stable:{name}")
+    after_path = os.stat(name, dir_fd=directory_fd, follow_symlinks=False)
+    require(_fingerprint(after_path) == _fingerprint(held["before_path"]), f"global path stable:{name}")
+    require((after_path.st_dev, after_path.st_ino) == (after_fd.st_dev, after_fd.st_ino), f"global path/fd inode:{name}")
+    require(os.path.realpath(HERE / name) == held["before_real"], f"global realpath stable:{name}")
+
+
+def _static_eval(node: ast.AST, values: dict[str, Any]) -> Any:
+    if isinstance(node, ast.Constant) and isinstance(node.value, (str, int, bool, type(None))):
+        return node.value
+    if isinstance(node, ast.Name):
+        if node.id not in values:
+            raise StaticValueError(node.id)
+        return values[node.id]
+    if isinstance(node, ast.List):
+        return [_static_eval(item, values) for item in node.elts]
+    if isinstance(node, ast.Tuple):
+        return tuple(_static_eval(item, values) for item in node.elts)
+    if isinstance(node, ast.Set):
+        return frozenset(_static_eval(item, values) for item in node.elts)
+    if isinstance(node, ast.Dict):
+        result: dict[Any, Any] = {}
+        for key, value in zip(node.keys, node.values, strict=True):
+            if key is None:
+                expanded = _static_eval(value, values)
+                if not isinstance(expanded, dict):
+                    raise StaticValueError("dict expansion")
+                result.update(expanded)
+            else:
+                result[_static_eval(key, values)] = _static_eval(value, values)
+        return result
+    if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Add):
+        return _static_eval(node.left, values) + _static_eval(node.right, values)
+    if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Div):
+        # Safe lexical Path joining: only the right basename is material.
+        return PurePath(str(_static_eval(node.right, values))).name
+    if isinstance(node, ast.JoinedStr):
+        parts: list[str] = []
+        for item in node.values:
+            if isinstance(item, ast.Constant) and isinstance(item.value, str):
+                parts.append(item.value)
+            elif isinstance(item, ast.FormattedValue) and item.conversion == -1 and item.format_spec is None:
+                parts.append(str(_static_eval(item.value, values)))
+            else:
+                raise StaticValueError("formatted string")
+        return "".join(parts)
+    if isinstance(node, ast.Subscript):
+        return _static_eval(node.value, values)[_static_eval(node.slice, values)]
+    if isinstance(node, ast.Attribute) and node.attr == "name":
+        return PurePath(str(_static_eval(node.value, values))).name
+    # Calls, comprehensions, lambdas, starred values, and executable syntax are
+    # deliberately outside this grammar.
+    raise StaticValueError(type(node).__name__)
+
+
+def _first_file_sha(value: Any) -> str | None:
+    if isinstance(value, str) and HEX64.fullmatch(value):
+        return value
+    if isinstance(value, (list, tuple)) and value:
+        first = value[0]
+        if isinstance(first, str) and HEX64.fullmatch(first):
+            return first
+    if isinstance(value, dict):
+        for key in ("sha256", "file_sha256", "expected_sha256"):
+            candidate = value.get(key)
+            if isinstance(candidate, str) and HEX64.fullmatch(candidate):
+                return candidate
+    return None
+
+
+def static_pins(source: bytes, parent: str) -> dict[str, str]:
+    """Extract only the exact top-level ``PINS`` mapping, without execution."""
+    try:
+        text = source.decode("utf-8")
+        tree = ast.parse(text, filename=parent, mode="exec")
+    except (UnicodeDecodeError, SyntaxError) as exc:
+        raise AuditError(f"static AST parse:{parent}:{exc}") from exc
+    values: dict[str, Any] = {}
+    assignments: dict[str, Any] = {}
+    for _ in range(max(1, len(tree.body) + 1)):
+        changed = False
+        for statement in tree.body:
+            if not isinstance(statement, (ast.Assign, ast.AnnAssign)):
+                continue
+            targets = statement.targets if isinstance(statement, ast.Assign) else [statement.target]
+            if len(targets) != 1 or not isinstance(targets[0], ast.Name) or statement.value is None:
+                continue
+            name = targets[0].id
+            try:
+                value = _static_eval(statement.value, values)
+            except (StaticValueError, KeyError, IndexError, TypeError, ValueError):
+                continue
+            if name not in values or values[name] != value:
+                values[name] = value
+                assignments[name] = value
+                changed = True
+        if not changed:
+            break
+    found: dict[str, str] = {}
+
+    def add(child: str, sha256: str) -> None:
+        if PurePath(child).name != child:
+            raise AuditError(f"non-basename PINS key:{parent}:{child}")
+        _basename(child)
+        require(HEX64.fullmatch(sha256) is not None, f"static pin sha:{parent}:{child}")
+        if child in found and found[child] != sha256:
+            raise AuditError(f"conflicting direct pin:{parent}:{child}")
+        found[child] = sha256
+
+    pins = assignments.get("PINS")
+    if pins is None:
+        return found
+    require(isinstance(pins, dict), f"top-level PINS is dict:{parent}")
+    for key, item in pins.items():
+        require(isinstance(key, str), f"PINS key string:{parent}")
+        if isinstance(item, str):
+            sha256 = item
+        elif isinstance(item, (tuple, list)) and item:
+            sha256 = item[0]
+        else:
+            raise AuditError(f"PINS value grammar:{parent}:{key}")
+        require(isinstance(sha256, str), f"PINS SHA string:{parent}:{key}")
+        require(sha256 is not None, f"PINS value file SHA:{parent}:{key}")
+        add(key, sha256)
+    return found
+
+
+def _record_domain(records: list[dict[str, Any]], *, with_label: bool = False) -> dict[str, Any]:
+    if with_label:
+        records.sort(key=lambda row: (row["label"], row["filename"], row["size"], row["sha256"]))
+    else:
+        records.sort(key=lambda row: row["filename"])
+    return {
+        "count": len(records),
+        "total_bytes": sum(row["size"] for row in records),
+        "records": records,
+        "records_sha256": digest(records),
+    }
+
+
+def _inventory_domain(records: list[dict[str, Any]]) -> dict[str, Any]:
+    records.sort(key=lambda row: row["filename"])
+    return {
+        "count": len(records),
+        "file_count": len(records),
+        "total_bytes": sum(row["exact_size"] for row in records),
+        "records": records,
+        "records_sha256": digest(records),
+        "inventory_rows_sha256": digest(records),
+    }
+
+
+def _authority_contract_document(
+    authority_file_rows: list[dict[str, Any]],
+    role_policies: list[dict[str, Any]],
+    table_rows: list[dict[str, Any]],
+) -> dict[str, Any]:
+    """Build the byte-identical primary/independent authority contract."""
+    return {
+        "schema": "cm2.round306b1af3.authority-frontier.v1",
+        "six_partition_census": SIX_PARTITION_CENSUS,
+        "authority_file_count": EXPECTED_AUTHORITY_FILE_COUNT,
+        "authority_file_bytes": EXPECTED_AUTHORITY_FILE_BYTES,
+        "authority_file_catalog_sha256": (
+            EXPECTED_AUTHORITY_FILE_CATALOG_SHA256
+        ),
+        "authority_files": authority_file_rows,
+        "authority_role_policies": role_policies,
+        "authority_role_catalog_sha256": (
+            EXPECTED_AUTHORITY_ROLE_CATALOG_SHA256
+        ),
+        "table_authority_count": len(table_rows),
+        "table_authorities": table_rows,
+        "table_authority_catalog_sha256": digest(table_rows),
+        "field_scoped_precedence": list(FIELD_SCOPED_PRECEDENCE),
+        "field_scoped_precedence_sha256": digest(
+            list(FIELD_SCOPED_PRECEDENCE)
+        ),
+        "forbidden_as_support_exclusions": list(
+            FORBIDDEN_AS_SUPPORT_EXCLUSIONS
+        ),
+        "analytic_AST_frozen": False,
+        "typed_support_AST_frozen": False,
+        "certificate_grammar_frozen": False,
+        "member_representation_schema_frozen": False,
+        "transition_ready_handles_frozen": False,
+        "formal_B1A": False,
+        "theorem_obligation_census_is_final_feature_ledger_count": False,
+        "theorem_obligation_census": 824864,
+    }
+
+
+def build_result() -> dict[str, Any]:
+    directory_flags = (
+        os.O_RDONLY
+        | getattr(os, "O_CLOEXEC", 0)
+        | getattr(os, "O_DIRECTORY", 0)
+    )
+    directory_before_path = os.stat(HERE, follow_symlinks=False)
+    directory_before_real = os.path.realpath(HERE)
+    directory_fd = os.open(str(HERE), directory_flags)
+    held_by_name: dict[str, dict[str, Any]] = {}
+    try:
+        directory_before_fd = os.fstat(directory_fd)
+        require(
+            (directory_before_fd.st_dev, directory_before_fd.st_ino)
+            == (directory_before_path.st_dev, directory_before_path.st_ino),
+            "directory path/fd inode",
+        )
+        root_expected = {
+            name: (size, sha256) for name, size, sha256 in ROOT_PINS
+        }
+
+        def ensure_held(
+            name: str,
+            expected_size: int | None,
+            expected_sha256: str,
+            *,
+            capture_source: bool,
+        ) -> dict[str, Any]:
+            if name in held_by_name:
+                held = held_by_name[name]
+                record = held["record"]
+                require(
+                    record["sha256"] == expected_sha256,
+                    f"cross-domain sha identity:{name}",
+                )
+                require(
+                    expected_size is None or record["size"] == expected_size,
+                    f"cross-domain size identity:{name}",
+                )
+                if capture_source and held["source"] is None:
+                    actual, source, total = _stream_fd(
+                        held["fd"], capture=True
+                    )
+                    require(
+                        actual == expected_sha256
+                        and total == record["size"]
+                        and source is not None,
+                        f"late source capture:{name}",
+                    )
+                    held["source"] = source
+                return held
+            held = admit_held_fd(
+                directory_fd,
+                name,
+                expected_size,
+                expected_sha256,
+                capture_source=capture_source,
+            )
+            held_by_name[name] = held
+            return held
+
+        known: dict[str, tuple[int | None, str]] = dict(root_expected)
+        queue: deque[str] = deque(sorted(root_expected))
+        scanned_python: set[str] = set()
+        edges: set[tuple[str, str, str]] = set()
+        while queue:
+            parent = queue.popleft()
+            if parent in scanned_python:
+                continue
+            require(
+                parent.endswith(".py"),
+                f"only Python PINS nodes recurse:{parent}",
+            )
+            scanned_python.add(parent)
+            expected_size, expected_sha256 = known[parent]
+            held = ensure_held(
+                parent,
+                expected_size,
+                expected_sha256,
+                capture_source=True,
+            )
+            source = held["source"]
+            require(isinstance(source, bytes), f"source bytes:{parent}")
+            for child, child_sha256 in sorted(
+                static_pins(source, parent).items()
+            ):
+                edges.add((parent, child, child_sha256))
+                if child in known:
+                    require(
+                        known[child][1] == child_sha256,
+                        f"transitive pin conflict:{child}",
+                    )
+                else:
+                    known[child] = (None, child_sha256)
+                if (
+                    child.endswith(".py")
+                    and child not in scanned_python
+                ):
+                    queue.append(child)
+
+        require(
+            len(known) == EXPECTED_CLOSURE_FILE_COUNT,
+            "exact 143-file construction-source closure",
+        )
+        for name in sorted(known):
+            size, sha256 = known[name]
+            ensure_held(
+                name,
+                size,
+                sha256,
+                capture_source=False,
+            )
+
+        governance_records: list[dict[str, Any]] = []
+        for label, name, size, sha256 in GOVERNANCE_SEALS:
+            held = ensure_held(
+                name, size, sha256, capture_source=False
+            )
+            governance_records.append(
+                {"label": label, **held["record"]}
+            )
+
+        # The authority frontier is a separate exact-byte domain.  It is not
+        # required to be a subset of the 143-file static-PINS closure.  A
+        # filename present in more than one domain is nevertheless admitted
+        # exactly once by ``ensure_held`` and must carry identical pins.
+        authority_records = [
+            {
+                "filename": name,
+                "exact_size": size,
+                "sha256": sha256,
+            }
+            for name, size, sha256 in EXPANDED_AUTHORITY_FILE_PINS
+        ]
+        authority_records.sort(key=lambda row: row["filename"])
+        require(
+            len(authority_records) == EXPECTED_AUTHORITY_FILE_COUNT,
+            "45 authority files",
+        )
+        require(
+            sum(row["exact_size"] for row in authority_records)
+            == EXPECTED_AUTHORITY_FILE_BYTES,
+            "authority file bytes",
+        )
+        require(
+            digest(authority_records)
+            == EXPECTED_AUTHORITY_FILE_CATALOG_SHA256,
+            "authority file catalog digest",
+        )
+        authority_by_name = {
+            row["filename"]: row for row in authority_records
+        }
+        require(
+            len(authority_by_name) == EXPECTED_AUTHORITY_FILE_COUNT,
+            "unique authority filenames",
+        )
+        closure_names = set(known)
+        authority_names = set(authority_by_name)
+        require(
+            len(closure_names & authority_names) == 26,
+            "26 closure/authority overlaps",
+        )
+        require(
+            len(authority_names - closure_names) == 19,
+            "19 authority-only files",
+        )
+        for row in authority_records:
+            ensure_held(
+                row["filename"],
+                row["exact_size"],
+                row["sha256"],
+                capture_source=False,
+            )
+
+        table_rows = [dict(row) for row in TABLE_AUTHORITIES]
+        require(len(table_rows) == 82, "82 table authorities")
+        require(
+            digest(table_rows) == EXPECTED_TABLE_AUTHORITIES_SHA256,
+            "table authority catalog digest",
+        )
+        require(
+            {row["filename"] for row in table_rows} == authority_names,
+            "every authority file has a table and every table file is pinned",
+        )
+        for row in table_rows:
+            pin = authority_by_name[row["filename"]]
+            require(
+                row["source_exact_size"] == pin["exact_size"]
+                and row["source_sha256"] == pin["sha256"],
+                f"table source identity:{row['authority']}",
+            )
+
+        role_policies = [
+            dict(row) for row in AUTHORITY_ROLE_CATALOG["role_policies"]
+        ]
+        role_file_rows = [
+            dict(row) for row in AUTHORITY_ROLE_CATALOG["authority_files"]
+        ]
+        role_file_rows.sort(key=lambda row: row["filename"])
+        require(len(role_policies) == 7, "7 authority role policies")
+        require(
+            digest(AUTHORITY_ROLE_CATALOG)
+            == EXPECTED_AUTHORITY_ROLE_CATALOG_SHA256,
+            "authority role catalog digest",
+        )
+        require(
+            [row["filename"] for row in role_file_rows]
+            == [row["filename"] for row in authority_records],
+            "authority file role coverage",
+        )
+        authority_file_rows = [
+            {
+                **pin,
+                **{
+                    key: role[key]
+                    for key in (
+                        "authority_roles",
+                        "admitted_for_construction",
+                        "forbidden_as",
+                    )
+                },
+            }
+            for pin, role in zip(authority_records, role_file_rows)
+        ]
+        require(
+            AUTHORITY_ROLE_CATALOG["table_authorities"]
+            == [
+                {
+                    key: row[key]
+                    for key in (
+                        "authority",
+                        "filename",
+                        "authority_role",
+                        "admitted_for_construction",
+                        "forbidden_as",
+                    )
+                }
+                for row in table_rows
+            ],
+            "table authority role projection",
+        )
+
+        # The merged domain is 117 closure-only + 26 closure/authority
+        # overlaps + 19 authority-only + 17 governance-only files.
+        require(len(held_by_name) == 179, "179 unique held files")
+
+        # All admitted fds remain open through this global second-pass audit.
+        for name in sorted(held_by_name):
+            reaudit_held_fd(directory_fd, held_by_name[name])
+        directory_after_fd = os.fstat(directory_fd)
+        directory_after_path = os.stat(HERE, follow_symlinks=False)
+        require(
+            _fingerprint(directory_after_fd)
+            == _fingerprint(directory_before_fd),
+            "held directory fd stable",
+        )
+        require(
+            _fingerprint(directory_after_path)
+            == _fingerprint(directory_before_path),
+            "directory path stable",
+        )
+        require(
+            os.path.realpath(HERE) == directory_before_real,
+            "directory realpath stable",
+        )
+
+        closure_records_by_name = {
+            name: held_by_name[name]["record"] for name in known
+        }
+        inventory_records = [
+            {
+                "filename": name,
+                "exact_size": record["size"],
+                "sha256": record["sha256"],
+                "root_source": name in root_expected,
+            }
+            for name, record in closure_records_by_name.items()
+        ]
+        inventory = _inventory_domain(inventory_records)
+        require(
+            inventory["file_count"] == EXPECTED_CLOSURE_FILE_COUNT,
+            "inventory file count",
+        )
+        require(
+            inventory["total_bytes"] == EXPECTED_CLOSURE_TOTAL_BYTES,
+            "inventory total bytes",
+        )
+        require(
+            inventory["inventory_rows_sha256"]
+            == EXPECTED_INVENTORY_ROWS_SHA256,
+            "inventory rows digest",
+        )
+        root_records = [
+            row for row in inventory["records"] if row["root_source"]
+        ]
+        require(len(root_records) == 36, "direct root count")
+        edge_records = [
+            {"parent": parent, "child": child, "sha256": sha256}
+            for parent, child, sha256 in sorted(edges)
+        ]
+        governance_domain = _record_domain(
+            governance_records, with_label=True
+        )
+    finally:
+        for held in held_by_name.values():
+            try:
+                os.close(held["fd"])
+            except OSError:
+                pass
+        os.close(directory_fd)
+
+    result = {
+        "schema": SCHEMA,
+        "status": "ZERO_FULL_SUPPORT_CREDIT",
+        "direct_root_count": 36,
+        "transitive_file_count": EXPECTED_CLOSURE_FILE_COUNT,
+        "transitive_file_bytes": EXPECTED_CLOSURE_TOTAL_BYTES,
+        "inventory_rows_sha256": EXPECTED_INVENTORY_ROWS_SHA256,
+        "algorithm": {
+            "closure_domain": (
+                "ROOTS_UNION_RECURSIVE_EXACT_TOP_LEVEL_PINS_KEYS_"
+                "ALL_FILE_TYPES"
+            ),
+            "direct_edges_only": True,
+            "expected_closure_file_count": EXPECTED_CLOSURE_FILE_COUNT,
+            "static_ast_parse_only": True,
+            "safe_literal_nodes": [
+                "Constant",
+                "Name",
+                "List",
+                "Tuple",
+                "Set",
+                "Dict",
+                "string_Add",
+                "JoinedStr",
+                "Subscript",
+                "Attribute.name",
+                "lexical_Path_Div",
+            ],
+            "rejected_executable_nodes": [
+                "Call",
+                "Comprehension",
+                "Lambda",
+                "Starred",
+                "ImportExecution",
+                "compile",
+                "eval",
+                "exec",
+            ],
+            "tuple_or_list_pin_value": "FIRST_64HEX_IS_FILE_SHA256",
+            "mapping_domains": "EXACT_TOP_LEVEL_VARIABLE_NAMED_PINS_ONLY",
+            "ignored_mapping_names": [
+                "SOURCE_PINS",
+                "INPUT_PINS",
+                "BYTE_PINS",
+                "DIRECT_FILE_PINS",
+                "DEPENDENCIES",
+                "UPSTREAM_PINS",
+                "BASELINE_PINS",
+            ],
+            "catalog_key_domain": "ALL_EXISTING_BASENAME_FILE_TYPES",
+            "recursive_key_domain": "PY_SUFFIX_ONLY",
+            "upstream_import_count": 0,
+            "upstream_exec_count": 0,
+            "upstream_compile_count": 0,
+            "B1A_or_B2_heavy_run": False,
+        },
+        "root_producers": _inventory_domain(root_records),
+        "closure": {
+            **inventory,
+            "python_file_count": sum(
+                row["filename"].endswith(".py")
+                for row in inventory["records"]
+            ),
+            "edges": edge_records,
+            "edges_sha256": digest(edge_records),
+            "conflict_count": 0,
+            "static_ast_parse_only": True,
+        },
+        "governance_seals": governance_domain,
+        "authority_contract": _authority_contract_document(
+            authority_file_rows, role_policies, table_rows
+        ),
+        "formal_credit": {
+            "normalized_full_support_members": 0,
+            "normalized_full_support_denominator": 564492,
+            "representation_cover": 0,
+            "representation_cover_denominator": 611904,
+            "formal_B1A": False,
+            "transition_atlas_families": 0,
+            "transition_atlas_denominator": 20,
+            "known_edge_geometry_first_rediscovery": 0,
+            "known_edge_geometry_first_denominator": 478718,
+            "pair_routing": 0,
+            "pair_routing_denominator": 158838084354,
+            "component_maximality_credit": 0,
+            "official_fibre_credit": 0,
+            "source_G_disposition_credit": 0,
+            "D02": "BLOCKED",
+            "D03": "NOT_REACHED",
+            "D04": "NOT_MINTED",
+            "CM2": "NO-GO_FOR_CLAIM",
+        },
+        "safety": {
+            "read_only": True,
+            "candidate_files_written": 0,
+            "filesystem_write_calls": 0,
+            "held_fd_SHA256": True,
+            "two_pass_same_fd_SHA256": True,
+            "all_domain_fds_held_until_global_reaudit": True,
+            "O_NOFOLLOW": True,
+            "regular_file_required": True,
+            "nlink_one_required": True,
+            "pre_post_fstat_required": True,
+            "same_fd_hash_required": True,
+            "path_lstat_realpath_inode_replacement_fail_close": True,
+            "directory_fd_held_and_reaudited": True,
+            "TOCTOU_fail_close": True,
+        },
+    }
+    return result
+
+
+def self_test() -> dict[str, Any]:
+    require(len(ROOT_PINS) == 36, "36 root pins")
+    require(len(GOVERNANCE_SEALS) == 17, "17 governance seals")
+    require(sum(row["member_count"] for row in SIX_PARTITION_CENSUS["partitions"]) == 564492, "six partition sum")
+    builder = "cm2_round292_source_g_occurrence_registry_candidate_construction.py"
+    require(builder not in {row[0] for row in ROOT_PINS}, "builder not root")
+    authority_records = sorted(
+        [
+            {"filename": name, "exact_size": size, "sha256": sha256}
+            for name, size, sha256 in EXPANDED_AUTHORITY_FILE_PINS
+        ],
+        key=lambda row: row["filename"],
+    )
+    require(len(authority_records) == 45, "45 authority files")
+    require(
+        sum(row["exact_size"] for row in authority_records)
+        == EXPECTED_AUTHORITY_FILE_BYTES,
+        "authority file bytes",
+    )
+    require(
+        digest(authority_records)
+        == EXPECTED_AUTHORITY_FILE_CATALOG_SHA256,
+        "authority file catalog digest",
+    )
+    role_file_rows = sorted(
+        [dict(row) for row in AUTHORITY_ROLE_CATALOG["authority_files"]],
+        key=lambda row: row["filename"],
+    )
+    require(
+        [row["filename"] for row in role_file_rows]
+        == [row["filename"] for row in authority_records],
+        "authority file role coverage",
+    )
+    authority_file_rows = [
+        {
+            **pin,
+            **{
+                key: role[key]
+                for key in (
+                    "authority_roles",
+                    "admitted_for_construction",
+                    "forbidden_as",
+                )
+            },
+        }
+        for pin, role in zip(authority_records, role_file_rows)
+    ]
+    role_policies = [
+        dict(row) for row in AUTHORITY_ROLE_CATALOG["role_policies"]
+    ]
+    table_rows = [dict(row) for row in TABLE_AUTHORITIES]
+    require(len(role_policies) == 7, "7 authority role policies")
+    require(len(table_rows) == 82, "82 table authorities")
+    require(
+        digest(AUTHORITY_ROLE_CATALOG)
+        == EXPECTED_AUTHORITY_ROLE_CATALOG_SHA256,
+        "authority role catalog digest",
+    )
+    require(
+        digest(table_rows) == EXPECTED_TABLE_AUTHORITIES_SHA256,
+        "table authority catalog digest",
+    )
+    authority_contract = _authority_contract_document(
+        authority_file_rows, role_policies, table_rows
+    )
+    require(
+        "table_authorities_sha256" not in authority_contract,
+        "obsolete plural table digest key absent",
+    )
+    require(authority_contract["formal_B1A"] is False, "formal B1A false")
+    encoded = canonical(authority_contract)
+    require(encoded == canonical(json.loads(encoded)), "canonical JSON unique")
+    return authority_contract
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument("--print-result", action="store_true")
+    group.add_argument("--self-test", action="store_true")
+    args = parser.parse_args(argv)
+    if args.print_result:
+        sys.stdout.buffer.write(canonical(build_result()) + b"\n")
+        return 0
+    if args.self_test:
+        result = self_test()
+        print(f"SELF_TEST_PASS {digest(result)}")
+        return 0
+    parser.print_usage(sys.stderr)
+    return 2
+
+
+if __name__ == "__main__":
+    try:
+        raise SystemExit(main())
+    except (AuditError, OSError) as exc:
+        print(f"FAIL:{exc}", file=sys.stderr)
+        raise SystemExit(1)

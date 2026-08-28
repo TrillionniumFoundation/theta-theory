@@ -1,0 +1,877 @@
+\documentclass[11pt]{amsart}
+
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsfonts,amsthm,mathtools}
+\usepackage{enumitem}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+\usepackage[noabbrev,capitalize]{cleveref}
+\setlength{\emergencystretch}{2em}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{assumption}[theorem]{Assumption}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\R}{\mathbb R}
+\newcommand{\T}{\mathbb T}
+\newcommand{\Etheta}{\mathcal E^\theta}
+\newcommand{\Hcal}{\mathcal H}
+\newcommand{\Bcal}{\mathcal B}
+\newcommand{\Acal}{\mathcal A}
+\newcommand{\Dcal}{\mathcal D}
+\newcommand{\Lcal}{\mathcal L}
+\newcommand{\Pcal}{\mathcal P}
+\newcommand{\Rcal}{\mathcal R}
+\newcommand{\Tcal}{\mathcal T}
+\newcommand{\Vcal}{\mathcal V}
+\newcommand{\Ycal}{\mathcal Y}
+\newcommand{\Adm}{\mathcal A^{\mathrm{adm}}}
+\newcommand{\Piperp}{\Pi^\perp}
+\newcommand{\Sfr}{\mathcal S_{\rm fr}}
+\newcommand{\Ssing}{\mathcal S_{\rm sing}}
+\newcommand{\Tr}{\operatorname{Tr}}
+\newcommand{\Sym}{\operatorname{Sym}}
+\newcommand{\supp}{\operatorname{supp}}
+\newcommand{\Thetacal}{\Theta}
+\newcommand{\dist}{\operatorname{dist}}
+\newcommand{\norm}[1]{\left\lVert #1\right\rVert}
+\newcommand{\PaperOne}[2]{Paper 1, \emph{#1}}
+
+\title[Deterministic Billiards and theta-Expectations]{A First-Principles Construction of theta-Expectations from Deterministic Billiards}
+\author{Qian Qi}
+\date{\today}
+
+\begin{document}
+
+\begin{abstract}
+We derive a nonlinear HJB limit and the associated theta-expectation semigroup
+from deterministic finite-horizon dispersing billiards with a finite-response
+mechanical port.  The singular-billiard
+response package is imported as a named theorem interface from the companion
+response-theory paper: primitive spectral/resolvent control, the suspension
+Laplace contour, moving-singularity response, trace insertion into resolvent
+words, uniform multi-response bounds, and the finite regularity-loss budget have
+already been derived from primitive billiard geometry.  Using only that exported
+interface and the deterministic finite-response action, we construct the
+Green-Kubo diffusion tensor, the effective Hamiltonian, the perturbed-test
+corrector hierarchy, and the viscosity limit.  The resulting Hamiltonian may be
+nonconvex in the gradient, and the induced theta-expectation is not generally
+subadditive.
+\end{abstract}
+
+\maketitle
+
+\section{Introduction}
+
+This paper is the second article in a three-paper sequence.  Its task is not
+to reprove singular-billiard response theory.  Its task is to use the companion
+response theorem, specifically
+\PaperOne{First-principles response package}{thm:main_response_package}, as the
+already verified dynamical engine and then prove the deterministic
+homogenization and nonlinear expectation theorem.
+
+\paragraph{First-principles interface.}
+The phrase first principles means the following dependency chain:
+\begin{equation}
+\begin{gathered}
+\hbox{primitive billiard geometry and finite-response mechanics}\\
+\Longrightarrow\ \hbox{Paper 1 first-principles response package}
+\Longrightarrow\ \hbox{deterministic HJB limit}\\
+\Longrightarrow\ \hbox{theta-expectation semigroup}.
+\end{gathered}
+\end{equation}
+BSDE, Girsanov, and payoff-dependent representation formulae are not used in
+this paper's derivation; they belong to the representation-calculus paper.
+
+\subsection{Theorem map}
+
+\begin{center}
+\small
+\begin{tabular}{p{0.22\linewidth}p{0.36\linewidth}p{0.32\linewidth}}
+\hline
+Layer & Paper theorem & Proof role \\
+\hline
+Response input & \cref{ass:paper1_response_input} &
+companion theorem imported, not reproved \\
+Coefficients & \cref{def:effective_coefficients,prop:coefficient_structure} &
+deterministic transfer-resolvent coefficients \\
+Limit theorem & \cref{thm:main_hjb_limit} &
+half-relaxed viscosity closure \\
+Nonconvexity & \cref{thm:nonconvex_theta_expectation} &
+concrete port and short-time Hamiltonian defect \\
+Semigroup & \cref{def:theta_expectation_semigroup,thm:theta_expectation_properties} &
+nonlinear expectation output \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Provenance and scope}
+
+The singular-billiard estimates used here are imported only through the
+companion theorem interface in \cref{ass:paper1_response_input}.  The present
+paper cites the standard PDE and nonlinear-expectation technology it uses:
+viscosity solutions and comparison follow
+\cite{CrandallIshiiLions1992,FlemingSoner2006}, half-relaxed stability and
+monotone consistency follow \cite{BarlesSouganidis1991}, perturbed-test
+homogenization is in the line of
+\cite{BensoussanLionsPapanicolaou1978,Evans1992,PavliotisStuart2008}, and the
+sublinear benchmark called a \(G\)-expectation follows the nonlinear
+expectation terminology in \cite{Peng2019}.  These references supply the
+macroscopic language; the coefficients themselves are deterministic
+transfer-resolvent outputs from Paper 1 and the finite-response port.
+
+The technical appendices record the finite-response micro-action ledger, the
+full contact-frozen corrector hierarchy, the four-scale residual identity, the
+half-relaxed viscosity passage, and the coefficient/nonconvexity checks
+supporting the proof below.
+
+\section{Response Theorem Imported from Paper 1}
+
+\begin{assumption}[Companion response theorem as imported theorem]
+\label{ass:paper1_response_input}
+The companion response-theory paper proves, from primitive finite-horizon
+dispersing billiard geometry and the compact finite-response port, the following
+package:
+\begin{enumerate}[label=\textup{(\roman*)},wide,labelindent=0pt]
+  \item an a.e. singular hyperbolic collision map and suspension flow;
+  \item uniform anisotropic transfer spaces and reduced observable resolvents;
+  \item moving-singularity response formulae in the Banach bundle;
+  \item a finite regularity-loss budget for all coefficient derivatives used in
+  the present HJB derivation.
+\end{enumerate}
+This item is a theorem of Paper 1, not a macroscopic assumption in the present
+paper.  The exact imported interface is
+\PaperOne{First-principles response package}{thm:main_response_package}.  The
+parts of that interface used below are:
+\begin{center}
+\small
+\begin{tabular}{p{0.30\linewidth}p{0.60\linewidth}}
+\hline
+Paper 1 source & Use in the present paper \\
+\hline
+\PaperOne{Primitive spectral and resolvent theorem}{thm:primitive_spectral_resolvent} &
+spectral gap, invariant projector, zero-mean reduced observable resolvent, and
+Green-Kubo correlation control. \\
+\PaperOne{Suspension Laplace contour and frequency partition}{lem:suspension_laplace_contour} &
+continuous-time reduced resolvent and contour bounds for suspension
+correctors. \\
+\PaperOne{Smooth deterministic response}{thm:smooth_deterministic_response} and
+\PaperOne{Moving-singularity response theorem}{thm:moving_singularity_response} &
+differentiability of invariant pairings, correctors, projectors, and
+coefficient functionals in the moving billiard fiber. \\
+\PaperOne{Trace insertion into resolvent words}{lem:trace_resolvent_insertion} and
+\PaperOne{Uniform multi-response bounds}{prop:uniform_multiresponse_bounds} &
+bounded differentiated resolvent words, including moving-boundary trace
+insertions. \\
+\PaperOne{Finite regularity-loss budget}{thm:regularity_loss_budget} &
+the eight-derivative primitive loss used by the HJB coefficient calculus. \\
+\hline
+\end{tabular}
+\end{center}
+\end{assumption}
+
+\section{Finite-Response Mechanics and Effective Coefficients}
+
+\begin{definition}[Finite-response prelimit data]
+\label{def:finite_response_prelimit_data}
+The slow variable is $x\in\R^m$ and the microscopic variable lies in the
+suspension billiard fiber selected by a finite-response parameter
+$\Theta(x,p)$.  The mechanical port provides branchwise smooth read-outs:
+\begin{equation}
+  B(x,p,z),\qquad V(x,p,z),\qquad \Theta(x,p),
+\end{equation}
+where $B$ is the centered slow drift after subtracting the instantaneous
+microcanonical mean and $V$ is the action-density contribution.  These read-outs
+are primitive finite-response objects; they are fixed before the effective
+Hamiltonian is defined.
+\end{definition}
+
+\begin{definition}[Effective coefficients]
+\label{def:effective_coefficients}
+For each compact jet window, \PaperOne{Primitive spectral and resolvent
+theorem}{thm:primitive_spectral_resolvent}, with the continuous-time contour
+control from
+\PaperOne{Suspension Laplace contour and frequency partition}{lem:suspension_laplace_contour},
+gives the zero-mean corrector
+\begin{equation}
+  \chi_{x,p}=(-\Acal_{\Theta(x,p)}|_{\ker\Pi_{\Theta(x,p)}})^{-1}B(x,p,\cdot).
+\end{equation}
+The diffusion tensor and Hamiltonian are deterministic pairings in the
+anisotropic observable bundle:
+\begin{align}
+  D(x,p)&=\int_0^\infty
+  \langle B(x,p,\cdot),B(x,p,\Phi_{\Theta(x,p)}^t\cdot)\rangle_{\Theta(x,p)}
+  \,dt,\\
+  H(x,p)&=\langle V(x,p,\cdot)\rangle_{\Theta(x,p)}
+  +\hbox{the finite-response work and corrector contributions}.
+\end{align}
+The HJB operator is
+\begin{equation}
+  \Hcal(x,p,X)=-\operatorname{tr}(D(x,p)X)-H(x,p).
+\end{equation}
+\end{definition}
+
+\begin{proposition}[Coefficient structure]
+\label{prop:coefficient_structure}
+On compact jet windows, $D$ is symmetric and positive semidefinite, $H(x,0)=0$,
+and $\Hcal$ is affine in the Hessian variable $X$.  The dependence on the
+gradient $p$ is inherited from the finite-response port and need not be convex.
+All derivatives used below are obtained from
+\PaperOne{Smooth deterministic response}{thm:smooth_deterministic_response},
+\PaperOne{Uniform multi-response bounds}{prop:uniform_multiresponse_bounds},
+and the finite-response read-outs.
+\end{proposition}
+
+\begin{definition}[Corrector hierarchy and perturbed test]
+\label{def:corrector_hierarchy}
+Let $\varphi\in C^3$ be a macroscopic test function and set
+$p=D\varphi(t,x)$ and $X=D^2\varphi(t,x)$.  The first corrector is the zero-mean
+solution
+\begin{equation}
+  -\Acal_{\Theta(x,p)}\chi_{x,p}=B(x,p,\cdot),
+  \qquad \Pi_{\Theta(x,p)}\chi_{x,p}=0.
+\end{equation}
+The second corrector $\psi_{x,p,X}$ is the zero-mean solution of the cell
+equation whose right-hand side is the centered second-order transport/action
+residual after inserting $\chi_{x,p}$.  The perturbed test function is
+\begin{equation}
+  \varphi^\varepsilon(t,x,z)
+  =\varphi(t,x)+\varepsilon\chi_{x,p(t,x)}(z)
+  +\varepsilon^2\psi_{x,p(t,x),X(t,x)}(z).
+\end{equation}
+All correctors are transfer-resolvent outputs supplied by
+\PaperOne{Primitive spectral and resolvent theorem}{thm:primitive_spectral_resolvent}
+and its suspension version
+\PaperOne{Suspension Laplace contour and frequency partition}{lem:suspension_laplace_contour}.
+\end{definition}
+
+\begin{lemma}[Deterministic residual identity]
+\label{lem:deterministic_residual_identity}
+At a viscosity contact point, freeze the finite-response parameter at
+$\Theta(x,D\varphi)$ and insert
+\cref{def:corrector_hierarchy} into the deterministic prelimit
+Hamilton-Jacobi operator.  Then
+\begin{equation}
+  \mathcal L^\varepsilon\varphi^\varepsilon
+  =
+  \partial_t\varphi+\Hcal(x,D\varphi,D^2\varphi)+R^\varepsilon_\varphi,
+\end{equation}
+where $R^\varepsilon_\varphi$ is an anisotropic-duality residual satisfying, on
+every compact jet window,
+\begin{equation}
+  |\langle R^\varepsilon_\varphi,\zeta\rangle|
+  \le \omega_M(\varepsilon)
+  \|\zeta\|_{\Bcal^\#}
+  \bigl(1+\|\varphi\|_{C^3}\bigr),
+  \qquad \omega_M(\varepsilon)\to0 .
+\end{equation}
+The identity contains no uncancelled $\varepsilon^{-1}$ term and no pointwise
+claim that a zero-mean microscopic observable is small at a maximum point.
+\end{lemma}
+
+\begin{proof}
+All expansions are made after freezing the actual contact jet.  Write
+\[
+  p_\varepsilon=D\varphi(t_\varepsilon,x_\varepsilon),\qquad
+  X_\varepsilon=D^2\varphi(t_\varepsilon,x_\varepsilon),\qquad
+  \theta_\varepsilon=\Theta(x_\varepsilon,p_\varepsilon).
+\]
+The first corrector is evaluated in the fiber over $\theta_\varepsilon$ and
+satisfies
+\[
+  -\Acal_{\theta_\varepsilon}\chi_{x_\varepsilon,p_\varepsilon}
+  =B(x_\varepsilon,p_\varepsilon,\cdot).
+\]
+Consequently the scale-$\varepsilon^{-1}$ terms in the branchwise prelimit
+operator cancel at the contact jet before any limiting passage is taken.  This
+prevents an uncancelled
+$\varepsilon^{-1}(p_\varepsilon-D\varphi(t_0,x_0))$ error.
+
+The order-one part contains the finite-response action read-out and the work
+created by the horizontal derivative of the first corrector.  The physical
+gradient increment has the form
+\[
+  q_\varepsilon
+  =D_x^{\mathrm{fr}}\chi_{x_\varepsilon,p_\varepsilon}
+   +X_\varepsilon^T\boldsymbol\chi_{x_\varepsilon,p_\varepsilon},
+\]
+where $\boldsymbol\chi$ denotes the vector of first correctors for the slow
+coordinates.
+\PaperOne{Smooth deterministic response}{thm:smooth_deterministic_response},
+combined with
+\PaperOne{Uniform multi-response bounds}{prop:uniform_multiresponse_bounds},
+identifies the invariant projection of this complete order-one observable with
+\[
+  \operatorname{tr}(D(x_\varepsilon,p_\varepsilon)X_\varepsilon)
+  +H(x_\varepsilon,p_\varepsilon).
+\]
+Because $\Hcal(x,p,X)=-\operatorname{tr}(D(x,p)X)-H(x,p)$, this is exactly the
+coefficient contribution appearing in
+$\partial_t\varphi+\Hcal(x,D\varphi,D^2\varphi)$ after moving the prelimit
+operator to the viscosity side.  The centered order-one part is solved by the
+second cell equation defining $\psi_{x,p,X}$.
+
+Every term not cancelled in these two steps has at least one small factor or a
+controlled contact-jet displacement.  The list is finite: Taylor remainders of
+the smooth test, horizontal products involving the normalized first and second
+correctors, finite-response parameter variation on the compact jet window, and
+moving-singularity boundary traces.  Paper 1 supplies the product, response, and
+strip-tail bounds for these terms through
+\PaperOne{Trace insertion into resolvent words}{lem:trace_resolvent_insertion},
+\PaperOne{Uniform multi-response bounds}{prop:uniform_multiresponse_bounds},
+and \PaperOne{Finite regularity-loss budget}{thm:regularity_loss_budget}.
+Pairing with $\zeta\in\Bcal^\#$ therefore gives the stated residual estimate
+with $\omega_M(\varepsilon)\to0$.
+\end{proof}
+
+\begin{lemma}[Contact-frozen perturbed tests]
+\label{lem:contact_frozen_perturbed_tests}
+Let $\varphi\in C^3$ touch the upper half-relaxed limit strictly at
+$(t_0,x_0)$.  Then, for $\varepsilon$ small, there are prelimit contact points
+$(t_\varepsilon,x_\varepsilon,z_\varepsilon)\to(t_0,x_0,z_0)$ outside the
+zero-measure singular strata such that the perturbed test in
+\cref{def:corrector_hierarchy}, frozen at
+$(t_\varepsilon,x_\varepsilon)$ and normalized by subtracting its microscopic
+value at that contact point, is an admissible upper viscosity-duality test for
+$u^\varepsilon$.  The analogous lower-contact statement holds for lower
+half-relaxed limits.
+\end{lemma}
+
+\begin{proof}
+Make the macroscopic contact strict by adding a small positive bump and later
+letting the bump size go to zero.  The half-relaxed definition then gives
+prelimit maximizing triples in every compact cylinder.  The iterated grazing and
+multiple-collision strata have zero Liouville flux measure, and admissible
+density tests have summable high-strip tails, so the triples may be chosen in
+homogeneous branches.  The first and second cell equations are solved after
+freezing the actual contact jet
+\[
+  p_\varepsilon=D\varphi(t_\varepsilon,x_\varepsilon),\qquad
+  X_\varepsilon=D^2\varphi(t_\varepsilon,x_\varepsilon).
+\]
+Subtracting the microscopic gauge value at the contact point leaves all
+generator and horizontal derivatives unchanged but makes the contact equality
+valid for the normalized test.  This is the point that replaces any invalid
+claim that a zero-mean corrector is pointwise small at a maximum.
+\end{proof}
+
+\begin{proposition}[Subsolution and supersolution residuals]
+\label{prop:subsuper_residuals}
+The upper half-relaxed limit of the deterministic prelimit solutions is a
+viscosity subsolution of the effective HJB equation, and the lower half-relaxed
+limit is a viscosity supersolution.  In both cases the only microscopic input
+is \cref{lem:deterministic_residual_identity}; singular-billiard estimates enter
+only through the named Paper 1 interface in \cref{ass:paper1_response_input}.
+\end{proposition}
+
+\begin{proof}
+For the subsolution inequality, let $\varphi$ touch the upper relaxed limit from
+above.  Use \cref{lem:contact_frozen_perturbed_tests} to choose homogeneous
+prelimit contact points and the normalized contact-frozen perturbed test
+$\varphi^\varepsilon$.  Applying the prelimit viscosity-duality subsolution
+inequality to this test and then using
+\cref{lem:deterministic_residual_identity} gives
+\[
+  \partial_t\varphi+\Hcal(x,D\varphi,D^2\varphi)
+  \le
+  |\langle R^\varepsilon_\varphi,\zeta_\varepsilon\rangle|.
+\]
+The residual bound is uniform on compact jet windows and bounded admissible
+density balls, hence the right-hand side tends to zero.  This gives the
+subsolution inequality.  The lower-contact construction in
+\cref{lem:contact_frozen_perturbed_tests} is identical, and the
+viscosity-duality inequality is reversed; this gives the supersolution
+inequality.
+\end{proof}
+
+\begin{proposition}[Comparison modulus for the derived HJB]
+\label{prop:comparison_modulus}
+On every compact jet window, the Hamiltonian derived in
+\cref{def:effective_coefficients} satisfies the Crandall-Ishii continuity
+modulus required for viscosity comparison.  More precisely, if
+$X,Y\in\mathrm{Sym}_m$ and $\lambda>0$ satisfy
+\begin{equation}
+  -3\lambda
+  \begin{pmatrix} I&0\\0&I\end{pmatrix}
+  \le
+  \begin{pmatrix} X&0\\0&-Y\end{pmatrix}
+  \le
+  3\lambda
+  \begin{pmatrix} I&-I\\-I&I\end{pmatrix},
+\end{equation}
+then there is a modulus $\omega_M$ such that
+\begin{equation}
+  \Hcal(y,p,Y)-\Hcal(x,p,X)
+  \le
+  \omega_M\!\left(|x-y|(1+|p|)+\lambda |x-y|^2\right)
+\end{equation}
+for all $(x,y,p,X,Y)$ in that window.  The modulus is a deterministic
+consequence of the finite-response saturation, Paper 1's smooth-response and
+multi-response bounds, and the Green-Kubo factorization of the diffusion tensor.
+\end{proposition}
+
+\begin{proof}
+\PaperOne{Smooth deterministic response}{thm:smooth_deterministic_response}
+and \PaperOne{Uniform multi-response bounds}{prop:uniform_multiresponse_bounds}
+give the required horizontal regularity of the resolvent outputs that define
+$D$ and $H$.  Finite-response compactness keeps the parameter selector, branch
+charts, invariant projectors, and port derivatives in one compact family on the
+chosen jet window.  Hence
+\[
+  \|D(x,p)-D(y,p)\|+|H(x,p)-H(y,p)|
+  \le C_M(1+|p|)|x-y|.
+\]
+The Green-Kubo construction gives a correlation Hilbert factorization
+$D=\Sigma\Sigma^*$ with
+\[
+  \|\Sigma(x,p)-\Sigma(y,p)\|_{\operatorname{HS}}^2
+  \le C_M(1+|p|)|x-y|.
+\]
+Apply the Ishii matrix inequality to the vectors
+$(\Sigma(x,p)^*\xi,\Sigma(y,p)^*\xi)$ and pass through finite-rank projections
+in the correlation Hilbert bundle.  This yields
+\[
+  \operatorname{tr}(D(x,p)X)-\operatorname{tr}(D(y,p)Y)
+  \le C_M\lambda |x-y|^2 .
+\]
+Combining the trace estimate with the Hamiltonian Lipschitz estimate gives the
+displayed modulus for $\Hcal(y,p,Y)-\Hcal(x,p,X)$.
+\end{proof}
+
+\begin{theorem}[Comparison for the derived HJB]
+\label{thm:comparison_derived_hjb}
+Let $u$ be a bounded upper semicontinuous viscosity subsolution and let $v$ be a
+bounded lower semicontinuous viscosity supersolution of
+\begin{equation}
+  \partial_t w+\Hcal(x,Dw,D^2w)=0
+\end{equation}
+on $[0,T]$.  If $u(T,\cdot)\le v(T,\cdot)$ at the terminal time, then $u\le v$.
+Consequently the effective HJB in \cref{thm:main_hjb_limit} has at most one
+bounded viscosity solution in the comparison class used here.
+\end{theorem}
+
+\begin{proof}
+Suppose that $\sup(u-v)=\delta>0$.  After the usual compact localization in the
+viscosity-comparison framework of
+\cite{CrandallIshiiLions1992,FlemingSoner2006},
+choose $\lambda\to\infty$, $\beta\downarrow0$, and $\eta\downarrow0$, and
+maximize
+\[
+  u(t,x)-v(s,y)-\frac{\lambda}{2}|x-y|^2
+  -\frac{|t-s|^2}{2\beta}-\eta(T-t)^{-1}.
+\]
+The terminal penalty and the terminal ordering force the doubled maximizer into
+the parabolic interior for small parameters.  Standard doubled-variable
+estimates give
+\[
+  \lambda |x_\lambda-y_\lambda|^2\to0,\qquad
+  |t_\lambda-s_\lambda|^2/\beta\to0 .
+\]
+The parabolic Ishii lemma supplies jets with common spatial gradient
+$p_\lambda=\lambda(x_\lambda-y_\lambda)$ and matrices $X_\lambda,Y_\lambda$
+satisfying the block inequality in \cref{prop:comparison_modulus}.  Applying
+the subsolution inequality to $u$, the supersolution inequality to $v$, and
+subtracting gives
+\[
+  \frac{\eta}{(T-t_\lambda)^2}
+  \le
+  \omega_M\!\left(|x_\lambda-y_\lambda|(1+|p_\lambda|)
+  +\lambda |x_\lambda-y_\lambda|^2\right)+o_\beta(1).
+\]
+The right-hand side tends to zero in the comparison limit, while the barrier
+term is strictly positive.  This contradiction proves $u\le v$.
+\end{proof}
+
+\section{Deterministic HJB Limit}
+
+\begin{theorem}[Deterministic billiards to nonconvex HJB]
+\label{thm:main_hjb_limit}
+Assume the primitive billiard geometry, the finite-response mechanical port, and
+the companion theorem
+\PaperOne{First-principles response package}{thm:main_response_package}.  Let
+$u^\varepsilon$ be the prelimit viscosity-duality solution generated by the
+deterministic slow-fast billiard system.  Then $u^\varepsilon$ converges locally
+uniformly in the macroscopic variables, after the anisotropic microscopic
+pairing and Liouville-a.e. identification, to the unique viscosity solution $u$ of
+\begin{equation}
+  \partial_t u+\Hcal(x,Du,D^2u)=0,
+  \qquad u(T,x)=\varphi(x).
+\end{equation}
+Every coefficient in $\Hcal$ is a deterministic transfer-resolvent output.  No
+stochastic microscopic limit theorem, independence postulate, BSDE
+representation, or Girsanov formula is used in the derivation.
+\end{theorem}
+
+\begin{proof}
+Define the upper and lower half-relaxed paired envelopes of
+$u^\varepsilon$ on a fixed compact macroscopic cylinder and compact cotangent
+window.  The prelimit viscosity-duality comparison estimate gives bounded
+macroscopic equicontinuity, while compactness of the admissible density bundle
+prevents escape of mass into grazing strips.  The terminal condition passes
+directly because $u^\varepsilon(T,x,z)=\varphi(x)$ is independent of the
+microscopic state.
+
+By \cref{prop:subsuper_residuals}, the upper envelope is a viscosity
+subsolution of the effective HJB and the lower envelope is a viscosity
+supersolution.  The comparison theorem \cref{thm:comparison_derived_hjb} gives
+upper envelope $\le$ lower envelope; the opposite inequality is part of the
+definition of relaxed limits.  Hence the two envelopes coincide with the unique
+viscosity solution $u$.
+
+The residual constants in \cref{lem:deterministic_residual_identity} are uniform
+over bounded admissible density balls and compact contact-jet windows, so the
+paired convergence is uniform on those windows.  The Liouville-a.e. microscopic
+state statement follows by applying the paired convergence to a countable
+homogeneous-rectangle density basis and then using the deterministic branchwise
+oscillation modulus.  The exceptional set is the union of the iterated singular
+orbit set with countably many density-basis null sets, and therefore has
+Liouville measure zero.  No stochastic microscopic limit theorem enters the
+argument.
+\end{proof}
+
+\section{Nonconvexity and theta-Expectations}
+
+\begin{theorem}[Nonconvex theta-expectation]
+\label{thm:nonconvex_theta_expectation}
+There are finite-response billiard ports for which $p\mapsto H(x,p)$ is locally
+nonconvex.  For such ports, the nonlinear semigroup generated by
+\cref{thm:main_hjb_limit} is not generally subadditive:
+\begin{equation}
+  \Etheta_t[\varphi+\psi]\ne
+  \Etheta_t[\varphi]+\Etheta_t[\psi]
+\end{equation}
+in general, and the subadditive inequality may fail in either direction.
+\end{theorem}
+
+\begin{proof}
+Use the concrete port in \cref{prop:inspectable_nonconvexity_coefficient} and
+choose $x$ in the open set where
+\(\mathfrak c_e(x)=\frac{d^2}{ds^2}H(x,se)|_{s=0}<0\).  For small \(a>0\),
+\[
+  H(x,2ae)-2H(x,ae)=\mathfrak c_e(x)a^2+o(a^2)<0 .
+\]
+Choose smooth terminal payoffs $\varphi,\psi$ supported in a coordinate chart so
+that at $x$
+\[
+  D\varphi=D\psi=ae,\qquad D^2\varphi=D^2\psi=0.
+\]
+For the terminal-value convention in \cref{def:theta_expectation_semigroup}, the
+short-time viscosity expansion at such a smooth contact is
+\[
+  \Etheta_t[\varphi](x)=\varphi(x)-tH(x,ae)+o(t),
+  \qquad
+  \Etheta_t[\varphi+\psi](x)=\varphi(x)+\psi(x)-tH(x,2ae)+o(t).
+\]
+Therefore
+\[
+  \Etheta_t[\varphi+\psi](x)-\Etheta_t[\varphi](x)-\Etheta_t[\psi](x)
+  =
+  -t\{H(x,2ae)-2H(x,ae)\}+o(t)>0
+\]
+for small $t>0$.  This violates subadditivity.  Changing the sign of the
+microscopic response direction gives the opposite Hamiltonian defect when that
+direction is desired, so the failure is not tied to a convex/sublinear
+special case.
+\end{proof}
+
+\begin{definition}[theta-expectation semigroup]
+\label{def:theta_expectation_semigroup}
+For a terminal payoff $\varphi$, define
+\begin{equation}
+  \Etheta_t[\varphi](x)=u(0,x),
+\end{equation}
+where $u$ is the viscosity solution of the HJB equation in
+\cref{thm:main_hjb_limit} on the interval $[0,t]$ with terminal payoff
+$\varphi$ at time $t$.
+\end{definition}
+
+\begin{theorem}[Basic theta-expectation properties]
+\label{thm:theta_expectation_properties}
+The semigroup $\Etheta_t$ is constant preserving, monotone, and dynamically
+consistent.  It is generally nonlinear and, by
+\cref{thm:nonconvex_theta_expectation}, it is not a subadditive
+\(G\)-expectation in the sense of \cite{Peng2019} in general.
+\end{theorem}
+
+\section{Concrete Example Requirement}
+
+\begin{definition}[Concrete finite-horizon triangular Lorentz cell]
+\label{def:triangular_lorentz_cell}
+Let $\Lambda$ be the triangular lattice generated by
+\[
+  a_1=(1,0),\qquad a_2=(1/2,\sqrt3/2),
+\]
+and let $\T_\Lambda^2=\R^2/\Lambda$.  Fix a circular scatterer centered at the
+lattice point with radius
+\[
+  r_0\in\left(\frac{1}{2\sqrt3},\,\frac12\right).
+\]
+The billiard cell is $\T_\Lambda^2\setminus B(0,r_0)$.  This is the standard
+finite-horizon triangular Lorentz cell: the lower bound on $r_0$ blocks the
+maximal triangular-lattice corridors, while the upper bound keeps neighboring
+scatterers disjoint.  Small $C^{r+3}$ normal deformations of the boundary stay
+inside the same finite-horizon dispersing class.
+\end{definition}
+
+\begin{definition}[Two-mode finite-response port on the concrete cell]
+\label{def:two_mode_port_example}
+Start from \cref{def:triangular_lorentz_cell}.  Write the circular boundary in
+arclength $s\in\R/(2\pi r_0\mathbb Z)$ and set
+\[
+  \beta(t)=
+  \begin{cases}
+  \exp\!\bigl(-1/(1-t^2)\bigr),& |t|<1,\\
+  0,& |t|\ge1.
+  \end{cases}
+\]
+Choose $\delta<\pi r_0/12$ and define the normalized arclength bumps
+\[
+  \beta_{s_0,\delta}(s)
+  =
+  \frac{\beta(\dist(s,s_0)/\delta)}
+  {\|\beta(\dist(\cdot,s_0)/\delta)\|_{C^{r+3}}}.
+\]
+Set
+\[
+  \psi_1=\beta_{0,\delta},
+  \qquad
+  \psi_2=\beta_{2\pi r_0/3,\delta}.
+\]
+These are disjoint nonnegative $C^{r+3}$ normal deformation modes with
+$C^{r+3}$ norm one.  The deformed boundary is
+\[
+  q(s,\theta)=q(s,0)+\theta_1\psi_1(s)n(s)
+  +\theta_2\psi_2(s)n(s),
+  \qquad \theta\in[-\theta_*,\theta_*]^2 .
+\]
+For $\theta_*$ sufficiently small, the deformed cell remains strictly
+dispersing and finite horizon by openness of the curvature, separation, and
+corridor-blocking inequalities.
+For a fixed macroscopic direction $e\in\R^m$, define a microscopic
+finite-response selector
+\begin{equation}
+  \Theta(x,p)=
+  \theta_0+\alpha_1(x)(p\cdot e)e_1
+  +\alpha_2(x)(p\cdot e)^2 e_2 ,
+\end{equation}
+where $e_1,e_2$ are the coordinate directions in parameter space.  The centered
+drift read-out and action read-out have branchwise smooth expansions
+\begin{align}
+  B(x,p,z)&=B_0(x,z)+(p\cdot e)B_1(x,z)+(p\cdot e)^2B_2(x,z)+O(|p|^3),\\
+  V(x,p,z)&=V_0(x,z)-\lambda(x)\eta(z)(p\cdot e)^2
+  +\kappa(x)\eta(z)(p\cdot e)^4+O(|p|^5),
+\end{align}
+with $\lambda(x)>0$, $\kappa(x)>0$, and a nonnegative branchwise smooth
+observable $\eta$ with positive billiard average.  These read-outs are part of
+the primitive finite-response port; they are fixed before the effective
+Hamiltonian is computed.
+\end{definition}
+
+\begin{definition}[Concrete observable and dominance constant]
+\label{def:concrete_eta_dominance}
+Let
+\[
+  \chi_\eta(s)=\beta_{4\pi r_0/3,\delta}(s).
+\]
+This bump is supported on a boundary arc disjoint from the supports of
+$\psi_1,\psi_2$.  Define
+\begin{equation}
+  \eta(s,\varphi)=\chi_\eta(s)\cos^2\varphi .
+\end{equation}
+Then $\langle\eta\rangle_{\theta_0}>0$.  Let $C_{\rm resp}(x)$ be the
+Paper-1-exported response bound defined in \cref{def:Cresp_bound}.  It controls
+all second-order invariant-density and corrector-resolvent terms appearing in
+\cref{prop:inspectable_nonconvexity_coefficient}, excluding the direct action
+average.  The dominance condition is
+\begin{equation}
+  2\lambda(x)\langle\eta\rangle_{\theta_0}
+  >
+  C_{\rm resp}(x)+\delta_x
+  \qquad(\delta_x>0).
+\end{equation}
+Under this checkable inequality the directional Taylor coefficient is strictly
+negative.
+\end{definition}
+
+\begin{definition}[Paper 1 response bound used by the concrete example]
+\label{def:Cresp_bound}
+For the concrete port, let the norms of the primitive read-outs be measured in
+the response domain exported by Paper 1 with the eight-derivative loss recorded
+in \PaperOne{Finite regularity-loss budget}{thm:regularity_loss_budget}.
+Denote by
+\[
+  \mathfrak C_{\Pi,2},\qquad
+  \mathfrak C_{\mathcal R,2},\qquad
+  \mathfrak C_{\mathrm{tr},2},\qquad
+  \mathfrak C_{\mathrm{loss}}
+\]
+the uniform constants exported by the following Paper 1 components.
+\begin{center}
+\small
+\begin{tabular}{p{0.20\linewidth}p{0.70\linewidth}}
+\hline
+Constant & Paper 1 source \\
+\hline
+$\mathfrak C_{\Pi,2}$ &
+\PaperOne{Smooth deterministic response}{thm:smooth_deterministic_response}
+and \PaperOne{Uniform multi-response bounds}{prop:uniform_multiresponse_bounds}. \\
+$\mathfrak C_{\mathcal R,2}$ &
+\PaperOne{Primitive spectral and resolvent theorem}{thm:primitive_spectral_resolvent},
+\PaperOne{Suspension Laplace contour and frequency partition}{lem:suspension_laplace_contour},
+and \PaperOne{Uniform multi-response bounds}{prop:uniform_multiresponse_bounds}. \\
+$\mathfrak C_{\mathrm{tr},2}$ &
+\PaperOne{Trace insertion into resolvent words}{lem:trace_resolvent_insertion}
+together with the moving-boundary trace estimates. \\
+$\mathfrak C_{\mathrm{loss}}$ &
+\PaperOne{Finite regularity-loss budget}{thm:regularity_loss_budget}. \\
+\hline
+\end{tabular}
+\end{center}
+They control, respectively, second derivatives of invariant projectors, second
+derivatives of reduced observable resolvents, moving-trace insertions in
+differentiated resolvent words, and the finite regularity-loss embedding.
+Define
+\begin{align}
+  C_{\rm resp}(x)
+  &:=
+  \mathfrak C_{\mathrm{loss}}
+  \Big[
+    \mathfrak C_{\Pi,2}\|V_0(x,\cdot)\|_{r+8}
+    +\mathfrak C_{\mathcal R,2}
+      \bigl(\|B_1(x,\cdot)\|_{r+8}^2+\|B_2(x,\cdot)\|_{r+8}\bigr)
+      \notag\\
+  &\hspace{3.0cm}
+    +\mathfrak C_{\mathrm{tr},2}
+      \bigl(\|\psi_1\|_{C^{r+8}}+\|\psi_2\|_{C^{r+8}}\bigr)
+      \bigl(\|V_0(x,\cdot)\|_{r+8}+\|B_1(x,\cdot)\|_{r+8}\bigr)
+  \Big].
+\end{align}
+All constants in this display are downstream of
+\PaperOne{First-principles response package}{thm:main_response_package} and are
+produced before the HJB theorem.  No effective Hamiltonian coefficient is
+included as input.
+\end{definition}
+
+\begin{proposition}[Response-bound provenance for the dominance test]
+\label{prop:Cresp_controls_response_terms}
+For the concrete port in \cref{def:two_mode_port_example}, the sum of all
+second-order invariant-density response terms and corrector/resolvent response
+terms in the directional coefficient $\mathfrak c_e(x)$ is bounded in absolute
+value by $C_{\rm resp}(x)$.
+\end{proposition}
+
+\begin{proof}
+The second derivative of the invariant average is controlled by the projector
+derivative constant $\mathfrak C_{\Pi,2}$.  The derivatives of the first
+corrector and of the second-order corrector are controlled by the differentiated
+reduced-resolvent words, hence by $\mathfrak C_{\mathcal R,2}$.  Terms in which
+the differentiated homogeneous partition or moving singularity boundary enters
+a resolvent word are controlled by
+\PaperOne{Trace insertion into resolvent words}{lem:trace_resolvent_insertion},
+represented here by $\mathfrak C_{\mathrm{tr},2}$.  The downstream coefficient
+calculation consumes the derivative loss in
+\PaperOne{Finite regularity-loss budget}{thm:regularity_loss_budget},
+represented here by $\mathfrak C_{\mathrm{loss}}$.  Multiplying these constants
+by the displayed primitive read-out norms gives exactly the bound in
+\cref{def:Cresp_bound}.
+\end{proof}
+
+\begin{proposition}[Inspectable nonconvexity coefficient]
+\label{prop:inspectable_nonconvexity_coefficient}
+For the example target in \cref{def:two_mode_port_example}, define the
+deterministic Taylor coefficient
+\begin{equation}
+  \mathfrak c_e(x)=
+  \left.\frac{d^2}{ds^2}H(x,se)\right|_{s=0},
+\end{equation}
+where $H$ is computed from the transfer-resolvent formula in
+\cref{def:effective_coefficients}.  The coefficient $\mathfrak c_e(x)$ is an
+explicit finite sum of:
+\begin{enumerate}[label=\textup{(\roman*)},wide,labelindent=0pt]
+  \item direct action averages from $\partial_s^2V(x,se,\cdot)|_{s=0}$;
+  \item response derivatives of the invariant density under
+  $\Theta(x,se)$;
+  \item corrector/resolvent pairings involving
+  $\partial_sB(x,se,\cdot)|_{s=0}$ and
+  $\partial_s^2B(x,se,\cdot)|_{s=0}$.
+\end{enumerate}
+If the direct negative action term dominates the two response-corrector terms,
+so that $\mathfrak c_e(x)<0$ on some open macroscopic set, then
+$p\mapsto H(x,p)$ is locally nonconvex there.  Consequently
+\cref{thm:nonconvex_theta_expectation} applies to concrete payoffs whose
+contact gradients lie in that set.  For the concrete choice in
+\cref{def:concrete_eta_dominance}, the sufficient dominance condition is
+\[
+  2\lambda(x)\langle\eta\rangle_{\theta_0}
+  >C_{\rm resp}(x)+\delta_x .
+\]
+\end{proposition}
+
+\begin{proof}
+Differentiate the deterministic coefficient formula in
+\cref{def:effective_coefficients} twice along $p=se$.
+\PaperOne{Smooth deterministic response}{thm:smooth_deterministic_response} and
+\PaperOne{Moving-singularity response theorem}{thm:moving_singularity_response}
+justify differentiating the invariant density, projectors, and reduced
+resolvent in the moving billiard fiber, while
+\PaperOne{Trace insertion into resolvent words}{lem:trace_resolvent_insertion}
+controls trace terms inside differentiated resolvent words.  Thus the second
+derivative splits into the direct action term, the invariant-density response
+term, and the corrector/resolvent response term listed in the statement.
+
+For the concrete read-out in \cref{def:two_mode_port_example}, the direct action
+contribution is
+\[
+  \left.\frac{d^2}{ds^2}
+  \langle-\lambda(x)\eta\,s^2\rangle_{\theta_0}\right|_{s=0}
+  =
+  -2\lambda(x)\langle\eta\rangle_{\theta_0}.
+\]
+By \cref{prop:Cresp_controls_response_terms}, the absolute value of all
+remaining second-order response-corrector contributions is bounded by
+$C_{\rm resp}(x)$.
+The dominance condition in \cref{def:concrete_eta_dominance} therefore gives
+\[
+  \mathfrak c_e(x)\le -\delta_x<0 .
+\]
+Taylor's formula then gives
+\[
+  H(x,se)+H(x,-se)-2H(x,0)
+  =\mathfrak c_e(x)s^2+o(s^2)<0
+\]
+for all sufficiently small nonzero $s$.  Hence $p\mapsto H(x,p)$ is locally
+nonconvex, and the same negative two-point defect is the short-time
+non-subadditivity input used in \cref{thm:nonconvex_theta_expectation}.
+\end{proof}
+
+\paragraph{Citation-provenance status.}
+The example is now inspectable at the level needed by Paper 2: the bump
+functions $\psi_1,\psi_2,\chi_\eta$ are explicit, the finite-horizon base table
+and dominance inequality are fixed in
+\cref{def:triangular_lorentz_cell,def:concrete_eta_dominance}, and the analytic
+constant $C_{\rm resp}(x)$ is tied to the named Paper 1 response theorems in
+\cref{def:Cresp_bound}.  The bibliography in this paper anchors only the
+macroscopic viscosity, homogenization, and nonlinear-expectation tools listed
+above.  The singular-billiard literature is attached to the Paper 1 theorem
+statements rather than repeated here.
+
+\section{Use by the Representation Paper}
+
+The representation-calculus paper may take $\Etheta_t$ and its generator as
+inputs.  BSDE, Girsanov, and Cameron-Martin formulae should remain downstream
+representations and should not be used to prove \cref{thm:main_hjb_limit}.
+
+\appendix
+\input{technical-appendix}
+
+\bibliographystyle{plain}
+\bibliography{../../reference}
+
+\end{document}

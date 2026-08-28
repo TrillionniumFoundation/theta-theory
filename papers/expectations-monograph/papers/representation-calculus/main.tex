@@ -1,0 +1,523 @@
+\documentclass[11pt]{amsart}
+
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsfonts,amsthm,mathtools}
+\usepackage{enumitem}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+\usepackage[noabbrev,capitalize]{cleveref}
+\setlength{\emergencystretch}{2em}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{assumption}[theorem]{Assumption}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\R}{\mathbb R}
+\newcommand{\Mcal}{\mathcal M}
+\newcommand{\Etheta}{\mathcal E^\theta}
+\newcommand{\Hcal}{\mathcal H}
+\newcommand{\Lcal}{\mathcal L}
+\newcommand{\Gcal}{\mathcal G}
+\newcommand{\Dcal}{\mathcal D}
+\newcommand{\Tr}{\operatorname{tr}}
+
+\title[Representation Calculus for theta-Expectations]{Representation Calculus for theta-Expectations}
+\author{Qian Qi}
+\date{\today}
+
+\begin{document}
+
+\begin{abstract}
+This paper develops the representation theory that lies downstream of the
+first-principles theta-expectation construction.  The nonlinear semigroup and
+its nonconvex HJB generator are taken as outputs of the companion
+homogenization paper.  After this input is fixed, each sufficiently regular
+payoff determines a linearized parabolic generator, a carre-du-champ, a
+calibrated diffusion representation, a decoupled BSDE, and a semigroup-level
+Cameron-Martin--Girsanov formula.  These objects represent the already-derived
+semigroup; they are not inputs to the deterministic billiard derivation.
+\end{abstract}
+
+\maketitle
+
+\section{Introduction}
+
+This is the third article in the sequence.  Paper 1 proves the singular
+billiard response package.  Paper 2 uses that package to derive the nonconvex
+HJB equation and the theta-expectation semigroup from deterministic billiards.
+The present paper begins only after those two steps are complete.
+
+\paragraph{Representation, not derivation.}
+The central point is the payoff dependence of every classical probabilistic
+representation.  A genuinely nonlinear HJB semigroup cannot be represented by a
+single classical martingale problem for all test functions.  Once a terminal
+payoff is fixed, however, its decoupling field freezes the nonlinear generator
+into an ordinary linear parabolic operator.  Diffusions, BSDEs, and Girsanov
+formulae are then available for that calibrated linear problem.
+
+\subsection{Theorem map}
+
+\begin{center}
+\small
+\begin{tabular}{p{0.24\linewidth}p{0.38\linewidth}p{0.28\linewidth}}
+\hline
+Layer & Paper theorem & Proof role \\
+\hline
+Semigroup input & \cref{ass:theta_semigroup_input} &
+imported from Paper 2 \\
+Obstruction & \cref{thm:linearity_obstruction} &
+rules out one universal law \\
+Linearization & \cref{thm:linearized_representation} &
+freezes a fixed payoff \\
+Regularized diffusion & \cref{thm:regularized_diffusion_representation} &
+represents the calibrated linear problem \\
+BSDE & \cref{thm:fbsde_representation} &
+uses \(Z=\sigma^\top\nabla u\) \\
+Orientation & \cref{prop:parabolic_orientation_ledger} &
+checks terminal-value signs \\
+Girsanov & \cref{thm:nonlinear_cm_formula} &
+semigroup-level shift identity \\
+Stress test & \cref{prop:robust_pricing_stress_test} &
+short application illustration \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Provenance and dependency guardrail}
+
+The stochastic-analysis tools used below are classical: the martingale-problem
+representation follows \cite{stroock2007multidimensional}, the parabolic and
+viscosity stability language follows
+\cite{CrandallIshiiLions1992,FlemingSoner2006}, the BSDE convention follows
+\cite{PardouxPeng1992}, and the stochastic-calculus/Girsanov notation follows
+\cite{protter2012stochastic}.  Nonlinear expectation terminology follows
+\cite{Peng2019}.  These references are used only after the deterministic
+theta-expectation semigroup has been derived in the companion HJB paper.
+
+\section{Input from the theta-Expectation Paper}
+
+\begin{assumption}[Derived nonlinear semigroup]
+\label{ass:theta_semigroup_input}
+The companion theta-expectation paper has constructed coefficients
+\[
+  D(x,p)\in\R^{d\times d}_{\mathrm{sym},+},
+  \qquad H(x,p)\in\R,
+\]
+from deterministic billiard response theory and finite-response mechanics.  It
+has also proved comparison and uniqueness for the terminal-value HJB equation
+\begin{equation}
+\label{eq:input_hjb}
+  -\partial_t u-\Tr(D(x,\nabla u)\nabla^2u)-H(x,\nabla u)=0,
+  \qquad u(T,\cdot)=\phi .
+\end{equation}
+The normalized semigroup is
+\begin{equation}
+  \Etheta_{t,T}[\phi](x)=u(t,x).
+\end{equation}
+It is constant preserving, cash additive, monotone, and time consistent, and it
+is generally nonlinear and not subadditive.
+\end{assumption}
+
+\begin{remark}
+\Cref{ass:theta_semigroup_input} is the only connection to deterministic
+billiards used in this paper.  All microscopic response estimates and the HJB
+homogenization theorem belong to the companion papers.
+\end{remark}
+
+\begin{assumption}[Representation window]
+\label{ass:representation_window}
+Fix a compact cylinder \(Q=[t_0,T]\times K\) and a compact jet set containing
+all gradients and Hessians used below.  On \(Q\), the payoff under discussion
+has a decoupling field \(u\) that is either \(C^{1,2}\) or the locally uniform
+limit of smooth uniformly parabolic regularizations.  The coefficients
+\(D,H\) and their first \(p\)-derivatives are bounded and continuous on this
+jet set.  In the nondegenerate diffusion and BSDE statements, also assume
+\(a^u=2D(x,\nabla u)\) is uniformly positive definite and has a chosen square
+root \(\sigma^u\) with the regularity needed for the corresponding stochastic
+equations.
+\end{assumption}
+
+\section{Linearity Obstruction}
+
+\begin{theorem}[Linearity obstruction]
+\label{thm:linearity_obstruction}
+Let $\Gcal$ be an operator on a vector space of smooth tests.  If there is a
+single probability law under which
+\begin{equation}
+  f(t,X_t)-f(0,X_0)-\int_0^t \Gcal f(s,X_s)\,ds
+\end{equation}
+is a martingale for every test $f$, then $\Gcal$ is additive on that class.
+Consequently a genuinely nonlinear operator
+\begin{equation}
+  \Gcal f=\partial_t f+\Tr(D(x,\nabla f)\nabla^2f)+H(x,\nabla f)
+\end{equation}
+cannot be the generator of one classical martingale problem for all tests.
+\end{theorem}
+
+\begin{proof}
+Apply the martingale property to $f$, $g$, and $f+g$.  Subtracting the three
+martingales gives a finite-variation martingale with drift
+\[
+  \Gcal(f+g)-\Gcal f-\Gcal g .
+\]
+It is constant, so the drift vanishes along the support of the law.  Varying
+the initial point gives additivity on the test class.  Nonlinear dependence on
+$\nabla f$ or $\nabla^2 f$ violates this except in accidentally linear cases.
+\end{proof}
+
+\section{Payoff-Dependent Linearization}
+
+\begin{definition}[Calibrated linear generator]
+\label{def:calibrated_linear_generator}
+Work on a representation window satisfying
+\cref{ass:representation_window}.  For a fixed terminal payoff \(\phi\), let
+\(u\) be its decoupling field.  Set
+\begin{align}
+  a^u(t,x)&=2D(x,\nabla u(t,x)),\\
+  b^u_k(t,x)&=\partial_{p_k}H(x,\nabla u(t,x))
+  +\sum_{i,j}\partial_{p_k}D_{ij}(x,\nabla u(t,x))\,\partial_{ij}u(t,x).
+\end{align}
+The payoff-calibrated generator is
+\begin{equation}
+  \Lcal_t^u f(x)=\frac12\Tr(a^u(t,x)\nabla^2 f(x))
+  +b^u(t,x)\cdot\nabla f(x).
+\end{equation}
+Its carre-du-champ is
+\begin{equation}
+  \Gamma_t^u(f,g)
+  =\frac12\bigl(\Lcal_t^u(fg)-f\Lcal_t^ug-g\Lcal_t^uf\bigr)
+  =\frac12\nabla f^\top a^u\nabla g.
+\end{equation}
+\end{definition}
+
+\begin{theorem}[Linearized representation for a fixed payoff]
+\label{thm:linearized_representation}
+Let $u$ be the smooth solution of \eqref{eq:input_hjb} with terminal payoff
+$\phi$.  If $u^\delta$ solves the same HJB equation with terminal payoff
+$\phi+\delta\eta$ and $u^\delta=u+\delta v+o(\delta)$ locally uniformly, then
+$v$ solves
+\begin{equation}
+  -\partial_t v-\Lcal_t^u v=0,\qquad v(T,\cdot)=\eta .
+\end{equation}
+Thus the first variation of the nonlinear semigroup at $\phi$ is represented
+by the linear parabolic equation generated by $\Lcal^u$.
+\end{theorem}
+
+\begin{proof}
+Insert $u^\delta=u+\delta v+o(\delta)$ into the HJB operator and differentiate
+at $\delta=0$.  The derivative of the Hessian term gives
+$\Tr(D(x,\nabla u)\nabla^2 v)$ plus the drift correction
+\[
+  \sum_{i,j,k}\partial_{p_k}D_{ij}(x,\nabla u)\,\partial_{ij}u\,\partial_k v.
+\]
+The derivative of $H$ gives $\partial_pH(x,\nabla u)\cdot\nabla v$.  These
+terms are exactly $\Lcal_t^u v$ with the sign convention above.
+\end{proof}
+
+\section{Calibrated Diffusion Representation}
+
+\begin{theorem}[Smooth nondegenerate calibrated diffusion]
+\label{thm:smooth_diffusion_representation}
+Assume $a^u$ is uniformly positive definite and the coefficients in
+\cref{def:calibrated_linear_generator} are regular enough for the martingale
+problem of $\Lcal^u$ to be well posed.  Then the derivative semigroup in
+\cref{thm:linearized_representation} has the classical diffusion
+representation
+\begin{equation}
+  dX_s=b^u(s,X_s)\,ds+\sigma^u(s,X_s)\,dW_s,
+  \qquad \sigma^u(\sigma^u)^\top=a^u .
+\end{equation}
+The representing law depends on the payoff through $u$.
+\end{theorem}
+
+\begin{proof}
+For fixed $u$, the operator $\Lcal^u$ is linear.  The standard parabolic
+martingale-problem representation
+\cite{stroock2007multidimensional,FlemingSoner2006} applies to that linear
+operator.  The
+dependence on $\phi$ enters through the coefficients $a^u$ and $b^u$.
+\end{proof}
+
+\begin{theorem}[Degenerate representation by viscosity regularization]
+\label{thm:regularized_diffusion_representation}
+Suppose the viscosity solution $u$ is the locally uniform limit of smooth
+solutions $u^\varepsilon$ to uniformly parabolic regularizations with
+$D$ replaced by $D+\varepsilon I$.  The corresponding calibrated linear
+diffusion semigroups converge locally uniformly to the payoff-calibrated
+representation of the original degenerate HJB semigroup.
+\end{theorem}
+
+\begin{proof}
+For each $\varepsilon>0$, the matrix $2(D+\varepsilon I)$ is uniformly positive
+and gives a classical diffusion representation.  Stability of viscosity
+solutions \cite{CrandallIshiiLions1992,FlemingSoner2006} and stability of the
+linearized coefficients along the smooth regularization identify the locally
+uniform limit with the derivative of the original nonlinear semigroup.  The
+construction starts after the effective HJB has been derived.
+\end{proof}
+
+\section{BSDE Representation}
+
+\begin{lemma}[Gradient variable versus BSDE integrand]
+\label{lem:gradient_z_conversion}
+In the representation window, the HJB gradient variable is
+\[
+  p(t,x)=\nabla u(t,x).
+\]
+The BSDE martingale integrand is not \(p\).  It is
+\[
+  Z_t=\sigma(X_t,p(t,X_t))^\top p(t,X_t).
+\]
+When \(\sigma^\top\) is invertible on the chosen nondegenerate jet region, one
+may recover \(p=(\sigma^\top)^{-1}Z\).  All BSDE drivers below use this
+conversion only after the payoff and decoupling field are fixed.
+\end{lemma}
+
+\begin{theorem}[Decoupled FBSDE for a smooth payoff]
+\label{thm:fbsde_representation}
+Let $u$ be a smooth HJB solution and assume
+\[
+  \sigma(x,p)\sigma(x,p)^\top=2D(x,p)
+\]
+is nondegenerate on the relevant jet range.  Let $X$ solve
+\begin{equation}
+  dX_t=b^u(t,X_t)\,dt+\sigma(X_t,\nabla u(t,X_t))\,dW_t .
+\end{equation}
+Set
+\[
+  Y_t=u(t,X_t),\qquad
+  Z_t=\sigma(X_t,\nabla u(t,X_t))^\top\nabla u(t,X_t).
+\]
+Then $(X,Y,Z)$ satisfies the decoupled BSDE
+\begin{equation}
+  dY_t=-g(t,X_t,Z_t)\,dt+Z_t\,dW_t,
+  \qquad Y_T=\phi(X_T),
+\end{equation}
+where, writing $p=(\sigma^\top)^{-1}Z$,
+\begin{equation}
+  g(t,x,Z)=H(x,p)-b^u(t,x)\cdot p .
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+Apply Ito's formula to $Y_t=u(t,X_t)$, using the convention in
+\cref{lem:gradient_z_conversion}.  The martingale coefficient is
+$Z_t=\sigma^\top\nabla u$.  The drift is
+\[
+  \partial_tu+b^u\cdot\nabla u+\frac12\Tr(\sigma\sigma^\top\nabla^2u)
+  =\partial_tu+b^u\cdot p+\Tr(D\nabla^2u).
+\]
+Using the HJB equation, this equals $b^u\cdot p-H(x,p)=-g(t,x,Z)$.
+\end{proof}
+
+\section{Sign Convention and Parabolic Orientation}
+
+\begin{proposition}[Parabolic orientation ledger]
+\label{prop:parabolic_orientation_ledger}
+The terminal-value convention in \cref{eq:input_hjb}, the calibrated diffusion
+orientation, and the BSDE sign convention are consistent as follows.  For
+\[
+  Y_s=u(s,X_s),\qquad
+  Z_s=\sigma(X_s,\nabla u(s,X_s))^\top\nabla u(s,X_s),
+\]
+the differential form
+\[
+  dY_s=-g(s,X_s,Z_s)\,ds+Z_s\,dW_s
+\]
+is equivalent to the backward integral equation
+\[
+  Y_t=\phi(X_T)+\int_t^T g(s,X_s,Z_s)\,ds
+       -\int_t^T Z_s\,dW_s.
+\]
+If one writes forward parabolic time as \(\tau=T-t\) and
+\(U(\tau,x)=u(T-\tau,x)\), then the same terminal-value HJB becomes
+\[
+  \partial_\tau U
+  -\Tr\bigl(D(x,\nabla U)\nabla^2U\bigr)-H(x,\nabla U)=0,
+  \qquad U(0,\cdot)=\phi .
+\]
+Thus no sign is changed when passing from the terminal HJB to the backward
+BSDE; only the time orientation changes.
+\end{proposition}
+
+\begin{proof}
+For the calibrated diffusion, Ito's formula gives
+\[
+  dY_s
+  =
+  \bigl(\partial_su+b^u\cdot\nabla u
+  +\Tr(D(x,\nabla u)\nabla^2u)\bigr)(s,X_s)\,ds
+  +Z_s\,dW_s .
+\]
+The terminal-value HJB gives
+\[
+  \partial_su+\Tr(D(x,\nabla u)\nabla^2u)=-H(x,\nabla u),
+\]
+so the drift is \(b^u\cdot p-H(x,p)=-g(s,x,Z)\).  Integrating the differential
+identity from \(t\) to \(T\) gives the displayed BSDE.  The forward-time
+equation follows by the substitution \(U(\tau,x)=u(T-\tau,x)\), for which
+\(\partial_\tau U=-\partial_tu\).
+\end{proof}
+
+\section{Nonlinear Cameron-Martin--Girsanov Formula}
+
+\begin{definition}[Hamiltonian shift]
+\label{def:hamiltonian_shift}
+For a deterministic shift $h(t,x)$ define
+\begin{align}
+  H^h(x,p)&=H(x,p+h)-H(x,h),\\
+  D^h(x,p)&=D(x,p+h).
+\end{align}
+The shifted semigroup is generated by the HJB equation with $D,H$ replaced by
+$D^h,H^h$.
+\end{definition}
+
+\begin{theorem}[Semigroup-level Cameron-Martin formula]
+\label{thm:nonlinear_cm_formula}
+Let $u_h$ solve the shifted equation.  Then $u_h$ also solves the unshifted
+equation with deterministic generator defect
+\begin{equation}
+\label{eq:lambda_h}
+  \Lambda_h(t,x,p,X)
+  =\Tr\bigl((D(x,p+h)-D(x,p))X\bigr)
+  +H(x,p+h)-H(x,h)-H(x,p).
+\end{equation}
+Equivalently,
+\begin{equation}
+  -\partial_tu_h-\Tr(D(x,\nabla u_h)\nabla^2u_h)-H(x,\nabla u_h)
+  -\Lambda_h(t,x,\nabla u_h,\nabla^2u_h)=0.
+\end{equation}
+When $D$ is independent of $p$ and $H$ is linear-quadratic, this identity
+reduces after linearization to the classical Cameron-Martin--Girsanov drift
+tilt \cite{protter2012stochastic}.
+\end{theorem}
+
+\begin{proof}
+Insert the definitions of $D^h$ and $H^h$ into the shifted HJB equation.  Add
+and subtract the unshifted terms
+\[
+  \Tr(D(x,\nabla u_h)\nabla^2u_h)+H(x,\nabla u_h).
+\]
+The remainder is exactly \eqref{eq:lambda_h}.  The linear-quadratic special
+case gives
+$H(x,p+h)-H(x,h)-H(x,p)=p^\top a(x)h$, the usual drift-tilt term for the
+payoff-calibrated linear diffusion.
+\end{proof}
+
+\section{A Short Robust-Pricing Illustration}
+
+\begin{definition}[Calibrated stress family]
+\label{def:calibrated_stress_family}
+Fix a terminal payoff \(\phi\) in a representation window and let
+\(\mathfrak H\) be a compact family of deterministic shifts \(h(t,x)\) for
+which the shifted equations in \cref{def:hamiltonian_shift} remain in the same
+regularity window.  For each \(h\in\mathfrak H\), let \(u^h\) be the shifted
+solution with terminal value \(\phi\).  The calibrated stress envelope is
+\[
+  \Pi_{\mathfrak H}\phi(t,x)
+  =
+  \sup_{h\in\mathfrak H} u^h(t,x).
+\]
+This envelope is a post-derivation stress test for the already constructed
+theta-expectation semigroup, not a new primitive market model.
+\end{definition}
+
+\begin{proposition}[Robust-pricing stress test]
+\label{prop:robust_pricing_stress_test}
+In the smooth nondegenerate representation window, each \(h\in\mathfrak H\)
+has a payoff-calibrated diffusion and BSDE representation obtained from the
+shifted coefficients \(D^h,H^h\).  The envelope
+\(\Pi_{\mathfrak H}\phi\) therefore records a family of calibrated drift and
+Hamiltonian stresses for the fixed payoff.  When \(D\) is independent of \(p\)
+and \(H\) is linear-quadratic, this reduces to the familiar drift-uncertainty
+stress test after the Cameron-Martin--Girsanov tilt.  In the nonconvex
+theta-expectation case the envelope should not be read as a sublinear
+expectation unless the additional sublinearity inequalities are separately
+verified.
+\end{proposition}
+
+\begin{proof}
+For each fixed \(h\), \cref{thm:nonlinear_cm_formula} rewrites the shifted
+equation as the unshifted equation plus the deterministic defect
+\(\Lambda_h\).  Once the payoff and shifted decoupling field \(u^h\) are
+fixed, the construction of
+\cref{def:calibrated_linear_generator,thm:smooth_diffusion_representation,thm:fbsde_representation}
+applies with \(D,H,u\) replaced by \(D^h,H^h,u^h\).  Compactness of
+\(\mathfrak H\) and the representation-window bounds keep the family in one
+local regularity class.  In the linear-quadratic case the defect is the
+classical drift tilt \(p^\top a h\).  For a nonconvex Hamiltonian, taking a
+supremum over calibrated stresses gives a useful pricing diagnostic, but it
+does not restore the global subadditivity that Paper 2 proves can fail.
+\end{proof}
+
+\begin{proposition}[Post-derivation calibration]
+\label{prop:post_derivation_calibration}
+The calibrated laws and BSDEs in
+\cref{thm:smooth_diffusion_representation,thm:regularized_diffusion_representation,thm:fbsde_representation}
+are downstream representations of a fixed payoff.  They do not form a single
+payoff-independent martingale problem and cannot be used to prove
+\cref{ass:theta_semigroup_input}.
+\end{proposition}
+
+\begin{proof}
+The law in \cref{thm:smooth_diffusion_representation} depends on \(u\), and
+\(u\) is determined by the terminal payoff through the nonlinear HJB semigroup.
+Changing the payoff changes \(u\), hence changes \(a^u\), \(b^u\), the
+calibrated diffusion, and the BSDE driver.  A payoff-independent law would
+contradict \cref{thm:linearity_obstruction} except in accidentally linear
+cases.  Therefore the logical order is acyclic: Paper 2 first supplies the
+semigroup, then the present paper represents its fixed-payoff derivatives.
+\end{proof}
+
+\section{Main Representation Package}
+
+\begin{theorem}[Representation calculus package]
+\label{thm:representation_package}
+Under \cref{ass:theta_semigroup_input}, every sufficiently regular terminal
+payoff determines:
+\begin{enumerate}[label=\textup{(\roman*)},wide,labelindent=0pt]
+  \item a payoff-calibrated linearized generator $\Lcal^u$;
+  \item a carre-du-champ $\Gamma^u$;
+  \item a smooth or regularized calibrated diffusion representation;
+  \item a decoupled BSDE representation on nondegenerate jet regions;
+  \item a semigroup-level Cameron-Martin--Girsanov formula.
+  \item a terminal-value sign-convention ledger;
+  \item for any compact deterministic stress family, a calibrated
+  robust-pricing stress envelope.
+\end{enumerate}
+All objects above are post-derivation representations of the theta-expectation
+semigroup.  None is used to prove the deterministic billiard response theorem
+or the HJB homogenization theorem.
+\end{theorem}
+
+\begin{proof}
+Items (i) and (ii) are \cref{def:calibrated_linear_generator}.  Item (iii) is
+\cref{thm:smooth_diffusion_representation,thm:regularized_diffusion_representation}.
+Item (iv) is \cref{thm:fbsde_representation}.  Item (v) is
+\cref{thm:nonlinear_cm_formula}.  Item (vi) is
+\cref{prop:parabolic_orientation_ledger}.  Item (vii) is
+\cref{def:calibrated_stress_family,prop:robust_pricing_stress_test}.  The
+downstream character follows from the single input assumption
+\cref{ass:theta_semigroup_input} and the calibration guardrail in
+\cref{prop:post_derivation_calibration}.
+\end{proof}
+
+\section{Submission Scope}
+
+The paper's submission version should keep smoothness, nondegeneracy, and
+localization assumptions close to each representation theorem.  It should not
+import billiard technical lemmas except through Paper 2's HJB theorem.  The
+robust-pricing example above should remain a short illustration of calibrated
+stress testing, not an additional primitive derivation.
+
+\bibliographystyle{plain}
+\bibliography{../../reference}
+
+\end{document}
