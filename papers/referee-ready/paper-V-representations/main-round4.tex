@@ -1,0 +1,693 @@
+\documentclass[11pt,reqno]{amsart}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsfonts,amsthm,mathtools,mathrsfs}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+\usepackage[nameinlink,capitalize]{cleveref}
+\allowdisplaybreaks
+\setlength{\emergencystretch}{2em}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{assumption}[theorem]{Assumption}
+\newtheorem{example}[theorem]{Example}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\C}{\mathbb C}
+\newcommand{\E}{\mathbb E}
+\newcommand{\F}{\mathcal F}
+\newcommand{\Pp}{\mathbb P}
+\newcommand{\Qp}{\mathbb Q}
+\newcommand{\R}{\mathbb R}
+\newcommand{\T}{\mathbb T}
+\newcommand{\cE}{\mathcal E}
+\newcommand{\cP}{\mathcal P}
+\newcommand{\Id}{\mathrm{Id}}
+\newcommand{\tr}{\operatorname{tr}}
+\newcommand{\esssup}{\operatorname*{ess\,sup}}
+\newcommand{\norm}[1]{\left\lVert #1\right\rVert}
+\newcommand{\abs}[1]{\left\lvert #1\right\rvert}
+
+\title[Tangent-law characterization and stochastic representations]{Tangent-Law Characterization and Stochastic Representations of Theta-Semigroups}
+\author{Qian Qi}
+\address{Peking University, Beijing 100871, China}
+\email{qiqian@pku.edu.cn}
+\subjclass[2020]{Primary 60H10, 60H30; Secondary 35K55, 35D40, 49L25}
+\keywords{nonlinear semigroup, tangent law, characterization theorem, Girsanov theorem, BSDE, PPDE, second-order BSDE}
+\date{August 29, 2026}
+
+\begin{document}
+
+\begin{abstract}
+We develop a representation theory that is intrinsic to the theta-semigroups
+constructed from deterministic moving collision dynamics in the companion
+papers.  The first result is a parabolic implicit-function theorem: under
+explicit uniform parabolicity and H\"older hypotheses, the terminal-data
+solution map is Fr\'echet differentiable and its derivative is the unique
+solution of the linear tangent equation.  Differentiability is proved rather
+than assumed.
+
+For the actual entropic theta-semigroup, the terminal map is real analytic on
+bounded payoffs.  Its first derivative is expectation under an explicit
+payoff-dependent tangent law and its second derivative is the corresponding
+covariance.  The tangent kernels form a cocycle obtained by differentiating
+nonlinear time consistency.  We prove a converse characterization: a monotone
+cash-additive $C^2$ functional whose tangent probabilities have the covariance
+curvature
+\[
+ D^2\mathfrak E_\phi(f,g)
+ =\vartheta\operatorname{Cov}_{Q_\phi}(f,g)
+\]
+must be the logarithmic moment-generating functional of its zero-payoff tangent
+law.  The dynamic version characterizes entropic theta-semigroups by their
+tangent-kernel bundle.
+
+The finite collision recursions of the homogenization paper have exact
+pathwise exponential tangent laws.  We prove convergence of these microscopic
+tangent laws, and of their first two derivative operators, to the continuum
+tangent diffusion.  For smooth data the density process is a stochastic
+exponential with integrand $\vartheta\sigma^TDu$.  A bounded-martingale/BMO
+argument and, in the bounded-gradient window, Novikov's condition give a
+genuine Girsanov theorem with a Radon--Nikodym density and changed Brownian
+drift.  No inversion of $Z=\sigma^TDu$ is used.
+
+The same solution admits a quadratic BSDE, a linear tangent BSDE under the
+tilted law, a path-dependent PPDE/BSDE extension, an exact pure energy-game
+representation, and a stable volatility-control 2BSDE branch.
+\end{abstract}
+
+\maketitle
+\tableofcontents
+
+\section{Introduction}
+
+A genuinely nonlinear semigroup cannot be represented by one
+payoff-independent Markov kernel for all terminal payoffs.  It may nevertheless
+carry a canonical bundle of payoff-dependent tangent laws.  For the entropic
+theta-semigroup this bundle has three rigid features: the first derivative is a
+probability kernel, the second derivative is its covariance multiplied by one
+constant $\vartheta$, and the kernels compose according to nonlinear time
+consistency.  We prove that these properties characterize the semigroup.
+
+This paper begins after the deterministic response, rough homogenization, and
+HJB limits have been established.  It does not use stochastic representation
+to derive those limits.  Instead, it proves that the finite deterministic
+collision evaluations and their derivatives converge to the continuum
+stochastic objects.
+
+Classical BSDE theory begins with Pardoux--Peng \cite{PardouxPeng1990};
+quadratic equations are treated in \cite{Kobylanski2000}.  Functional It\^o
+calculus and PPDEs are developed in
+\cite{Dupire2009,ContFournie2013,EkrenTouziZhang2014I,
+EkrenTouziZhang2014II}.  Nondominated second-order BSDEs are treated in
+\cite{CheriditoSonerTouziVictoir2007,SonerTouziZhang2012}.  Our contribution is
+the tangent-law characterization, its microscopic convergence from one
+collision system, and the dynamically consistent Girsanov/BSDE bundle.
+
+\section{The fixed-law obstruction}
+
+Let $E$ be a Polish state space.
+
+\begin{theorem}[A payoff-independent law forces linearity]\label{thm:fixed-law}
+Suppose that for fixed $s<t$ and every initial state $x$ there is one
+probability kernel $P_{s,t}(x,dy)$ such that, for every
+$\phi\in C_b(E)$,
+\[
+ \cE_{s,t}[\phi](x)=\int_E\phi(y)P_{s,t}(x,dy).
+\]
+Then $\cE_{s,t}$ is linear, positive, and constant preserving.  Hence a
+semigroup with a genuinely nonlinear generator cannot have one universal
+payoff-independent classical law.
+\end{theorem}
+
+\begin{proof}
+Integration against a fixed probability kernel preserves arbitrary linear
+combinations, order, and constants at every initial state.
+\end{proof}
+
+The theorem does not exclude payoff-dependent tangent laws, controlled
+families, games, or nondominated representations.
+
+\section{A parabolic implicit-function theorem}
+
+Work on the torus $\T^d$.  Fix $0<\alpha<1$ and put
+\[
+ \mathbb X=C^{1+\alpha/2,2+\alpha}([0,T]\times\T^d),
+ \qquad
+ \mathbb Y=C^{\alpha/2,\alpha}([0,T]\times\T^d)
+ \times C^{2+\alpha}(\T^d).
+\]
+Let $F(t,x,r,p,X)$ be $C^k$, $k\ge2$, on a neighbourhood of the relevant jet
+set and consider
+\begin{equation}\label{eq:PDE}
+ -u_t-F(t,x,u,Du,D^2u)=0,
+ \qquad u(T)=\phi.
+\end{equation}
+
+\begin{assumption}[Uniform classical window]\label{ass:window}
+There are $0<\lambda\le\Lambda$ such that
+\[
+ \lambda I\le F_X(t,x,r,p,X)\le\Lambda I
+\]
+on the jet neighbourhood.  All derivatives of $F$ through order $k$ are
+bounded and H\"older there.  At one pair $(u_0,\phi_0)$,
+$u_0\in\mathbb X$ solves \eqref{eq:PDE}.
+\end{assumption}
+
+\begin{theorem}[Fr\'echet differentiability of the terminal map]\label{thm:IFT}
+Under \cref{ass:window}, there are neighbourhoods of $\phi_0$ in
+$C^{2+\alpha}$ and of $u_0$ in $\mathbb X$ on which the solution map
+$\phi\mapsto u[\phi]$ is $C^{k-1}$.  For a terminal direction $\eta$, the first
+derivative $v=Du[\phi]\eta$ is the unique classical solution of
+\begin{equation}\label{eq:tangent-general}
+ -v_t-F_rv-F_p\cdot Dv-F_X:D^2v=0,
+ \qquad v(T)=\eta,
+\end{equation}
+where the coefficients are evaluated along $u[\phi]$.
+\end{theorem}
+
+\begin{proof}
+Define
+\[
+ \mathfrak F(u,\phi)=
+ \bigl(-u_t-F(t,x,u,Du,D^2u),\ u(T)-\phi\bigr).
+\]
+H\"older composition makes $\mathfrak F:\mathbb X\times C^{2+\alpha}	o
+\mathbb Y$ a $C^{k-1}$ map.  Its derivative in $u$ is the uniformly parabolic
+terminal operator
+\[
+ v\mapsto
+ \bigl(-v_t-F_rv-F_p\cdot Dv-F_X:D^2v,\ v(T)\bigr).
+\]
+Schauder theory makes this a bounded isomorphism from $\mathbb X$ to
+$\mathbb Y$.  The Banach implicit-function theorem gives the $C^{k-1}$
+solution map.  Differentiating
+$\mathfrak F(u[\phi],\phi)=0$ yields \eqref{eq:tangent-general}.
+\end{proof}
+
+No conclusion about a degenerate regularization limit is inferred from local
+uniform convergence alone.  Whenever a degenerate tangent limit is used, its
+uniform tangent estimates are stated separately.
+
+\section{The actual entropic theta-semigroup}
+
+Let $X^{t,x}$ solve
+\begin{equation}\label{eq:forward}
+ dX_s=b(s,X_s)ds+\sigma(s,X_s)dW_s,
+ \qquad X_t=x,
+\end{equation}
+where $b,\sigma$ are bounded globally Lipschitz and
+$a=\sigma\sigma^T$ is uniformly elliptic.  Let $P_{t,T}$ be the transition
+operator.  For $\vartheta\ne0$ define
+\begin{equation}\label{eq:theta}
+ \cE_{t,T}^{\vartheta}[\phi](x)
+ ={1\over\vartheta}\log P_{t,T}(e^{\vartheta\phi})(x).
+\end{equation}
+
+\begin{theorem}[Global analytic terminal map]\label{thm:analytic}
+For fixed $(t,x)$, the map
+$C_b(\R^d)\ni\phi\mapsto\cE_{t,T}^{\vartheta}[\phi](x)$ is real analytic.
+Its first two Fr\'echet derivatives are
+\begin{align}
+ D\cE_{t,T}^{\vartheta}[\phi]\eta
+ &=\frac{P_{t,T}(e^{\vartheta\phi}\eta)}
+        {P_{t,T}(e^{\vartheta\phi})},\label{eq:first}\\
+ D^2\cE_{t,T}^{\vartheta}[\phi](\eta_1,\eta_2)
+ &=\vartheta\left[
+ \frac{P_{t,T}(e^{\vartheta\phi}\eta_1\eta_2)}
+      {P_{t,T}(e^{\vartheta\phi})}
+ -\prod_{j=1}^2
+ \frac{P_{t,T}(e^{\vartheta\phi}\eta_j)}
+      {P_{t,T}(e^{\vartheta\phi})}
+ \right].\label{eq:second}
+\end{align}
+Higher derivatives are the tilted joint cumulants multiplied by
+$\vartheta^{n-1}$.
+\end{theorem}
+
+\begin{proof}
+On every bounded ball of $C_b$, the exponential Nemytskii map has an
+absolutely convergent power series in the sup norm.  The Markov operator is
+bounded and positive, and
+\[
+ P_{t,T}e^{\vartheta\phi}
+ \ge e^{-\abs\vartheta\norm\phi_\infty}>0.
+\]
+The logarithm is analytic on a neighbourhood of the range.  Differentiating
+the composition gives \eqref{eq:first}--\eqref{eq:second}; higher logarithmic
+derivatives are cumulants.
+\end{proof}
+
+\section{Tangent laws and their cocycle}
+
+Define the terminally tilted law
+\begin{equation}\label{eq:tilted-law}
+ {d\Qp_{t,x}^{\phi}\over d\Pp_{t,x}}
+ ={e^{\vartheta\phi(X_T)}
+ \over P_{t,T}e^{\vartheta\phi}(x)}.
+\end{equation}
+Then \eqref{eq:first} is
+\begin{equation}\label{eq:tangent-expectation}
+ D\cE_{t,T}^{\vartheta}[\phi]\eta(x)
+ =\E^{\Qp_{t,x}^{\phi}}\eta(X_T).
+\end{equation}
+For an intermediate interval define
+\begin{equation}\label{eq:tangent-kernel}
+ K_{s,t}^{\psi}(x,dy)=
+ {e^{\vartheta\psi(y)}P_{s,t}(x,dy)
+ \over P_{s,t}e^{\vartheta\psi}(x)}.
+\end{equation}
+
+\begin{theorem}[Tangent-kernel cocycle]\label{thm:cocycle}
+The nonlinear semigroup is time consistent and its tangent kernels satisfy
+\begin{equation}\label{eq:cocycle}
+ K_{r,t}^{\phi}
+ =K_{r,s}^{\cE_{s,t}^{\vartheta}[\phi]}
+  K_{s,t}^{\phi},
+ \qquad r\le s\le t.
+\end{equation}
+Equivalently,
+\[
+ D\cE_{r,t}^{\vartheta}[\phi]
+ =D\cE_{r,s}^{\vartheta}
+   [\cE_{s,t}^{\vartheta}[\phi]]
+ \circ D\cE_{s,t}^{\vartheta}[\phi].
+\]
+\end{theorem}
+
+\begin{proof}
+The Markov property gives
+\[
+ P_{r,t}e^{\vartheta\phi}
+ =P_{r,s}\exp\{\vartheta\cE_{s,t}^{\vartheta}[\phi]\}.
+\]
+This is nonlinear time consistency.  The Radon--Nikodym factors in
+\eqref{eq:tangent-kernel} multiply and the intermediate normalizations cancel,
+giving \eqref{eq:cocycle}.  The derivative identity follows from the Banach
+chain rule.
+\end{proof}
+
+\section{A characterization by tangent curvature}
+
+Let $(E,\mathcal E)$ be a measurable space and let
+$\mathfrak E:L^\infty(E)\to\R$ be twice Fr\'echet differentiable.
+
+\begin{assumption}[Probability tangents and covariance curvature]\label{ass:curvature}
+The functional is monotone, cash additive, and $\mathfrak E(0)=0$.  For every
+$\phi$, there is a probability measure $Q_\phi$ such that
+\begin{align}
+ D\mathfrak E(\phi)f&=Q_\phi(f),\label{eq:tangent-prob}\\
+ D^2\mathfrak E(\phi)(f,g)
+ &=\vartheta\left(Q_\phi(fg)-Q_\phi(f)Q_\phi(g)\right)
+ \label{eq:cov-curvature}
+\end{align}
+for one fixed nonzero constant $\vartheta$.
+\end{assumption}
+
+\begin{theorem}[Static tangent-law characterization]\label{thm:characterization}
+Under \cref{ass:curvature},
+\begin{equation}\label{eq:characterization}
+ \mathfrak E(\phi)
+ ={1\over\vartheta}\log Q_0(e^{\vartheta\phi}),
+ \qquad
+ {dQ_\phi\over dQ_0}
+ ={e^{\vartheta\phi}\over Q_0(e^{\vartheta\phi})}.
+\end{equation}
+Thus the tangent-probability and covariance-curvature identities characterize
+the logarithmic moment-generating functional; they are not merely consequences
+of a chosen name.
+\end{theorem}
+
+\begin{proof}
+Fix $\phi$ and put $Q_t=Q_{t\phi}$.  For every bounded $f$,
+\begin{align*}
+ {d\over dt}Q_t(f)
+ &=D^2\mathfrak E(t\phi)(\phi,f)\\
+ &=\vartheta\left(Q_t(\phi f)-Q_t(\phi)Q_t(f)\right).
+\end{align*}
+The probability measures
+\[
+ \widetilde Q_t(f)=
+ {Q_0(e^{\vartheta t\phi}f)
+  \over Q_0(e^{\vartheta t\phi})}
+\]
+solve the same weak differential equation and have the same initial condition.
+Uniqueness follows by Gronwall after testing the difference against bounded
+functions.  Hence $Q_t=\widetilde Q_t$.  Finally,
+\[
+ {d\over dt}\mathfrak E(t\phi)=Q_t(\phi)
+ ={d\over dt}{1\over\vartheta}
+ \log Q_0(e^{\vartheta t\phi}).
+\]
+Integrate from zero to one.
+\end{proof}
+
+\begin{theorem}[Dynamic characterization]\label{thm:dynamic-characterization}
+Let $(\mathfrak E_{s,t})_{s\le t}$ be a monotone cash-additive $C^2$ dynamic
+semigroup.  Suppose that for every $(s,t,x)$ its first and second terminal
+derivatives satisfy \eqref{eq:tangent-prob}--\eqref{eq:cov-curvature}, that
+the zero-payoff tangent kernels $P_{s,t}$ form a Markov semigroup, and that the
+tangent kernels satisfy the cocycle \eqref{eq:cocycle}.  Then
+\[
+ \mathfrak E_{s,t}[\phi](x)
+ ={1\over\vartheta}\log P_{s,t}e^{\vartheta\phi}(x).
+\]
+\end{theorem}
+
+\begin{proof}
+Apply \cref{thm:characterization} at each $(s,t,x)$.  The base probability is
+the zero-payoff tangent $P_{s,t}(x,dy)$.  Its Markov property and the tangent
+cocycle give dynamic time consistency.
+\end{proof}
+
+\section{Microscopic tangent laws converge}
+
+Let $X^h$ be the finite collision recursion from the homogenization paper
+\cite{QiRoughRound4}, with path law $P_h^{t,x}$ obtained by pushing the
+Lebesgue fast reference law through the deterministic collision map.  Define
+\begin{equation}\label{eq:discrete-theta}
+ \cE_{h,t,T}^{\vartheta}[\phi](x)
+ ={1\over\vartheta}\log
+ \E_{P_h^{t,x}}e^{\vartheta\phi(X_T^h)}
+\end{equation}
+and
+\begin{equation}\label{eq:discrete-tangent}
+ {dQ_{h,t,x}^{\phi}\over dP_h^{t,x}}
+ ={e^{\vartheta\phi(X_T^h)}
+  \over\E_{P_h^{t,x}}e^{\vartheta\phi(X_T^h)}}.
+\end{equation}
+
+\begin{theorem}[Microscopic-to-continuum tangent convergence]\label{thm:micro-tangent}
+Assume $X^h\Rightarrow X$ in path space, as proved for the moving collision
+system in the companion paper, and let $\phi$ be bounded continuous.  Then
+\begin{enumerate}[label=(\roman*)]
+\item $Q_{h,t,x}^{\phi}\Rightarrow Q_{t,x}^{\phi}$, where
+\[
+ {dQ_{t,x}^{\phi}\over dP_{t,x}}
+ ={e^{\vartheta\phi(X_T)}
+  \over\E_{P_{t,x}}e^{\vartheta\phi(X_T)}};
+\]
+\item for every bounded continuous terminal direction $\eta$,
+\[
+ D\cE_{h,t,T}^{\vartheta}[\phi]\eta
+ \longrightarrow D\cE_{t,T}^{\vartheta}[\phi]\eta;
+\]
+\item the second derivatives converge to the continuum tilted covariances;
+\item the discrete tangent kernels converge jointly on every finite time
+partition and their cocycle converges to \eqref{eq:cocycle}.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+For every bounded continuous path functional $G$,
+\[
+ \E_{Q_h^\phi}G
+ ={\E_{P_h}[G e^{\vartheta\phi(X_T^h)}]
+  \over\E_{P_h}e^{\vartheta\phi(X_T^h)}}.
+\]
+Weak convergence and bounded continuity give convergence of numerator and
+denominator, and the denominator is uniformly positive.  This proves (i).
+The first and second derivative formulas are expectations and covariances under
+$Q_h^\phi$, giving (ii) and (iii).  Apply the same argument to joint path
+functionals at finitely many times; the exact discrete tower identity passes to
+the limit, proving (iv).
+\end{proof}
+
+This theorem is the direct deterministic-microscopic origin of the tangent
+law.  It is not a post hoc representation of an unrelated diffusion.
+
+\section{The tangent PDE}
+
+Assume now that $b,\sigma$, and $\phi$ are smooth enough for a classical
+solution and set
+$u(t,x)=\cE_{t,T}^{\vartheta}[\phi](x)$.  Then
+\begin{equation}\label{eq:entropic-PDE}
+ -u_t-b\cdot Du-{1\over2}a:D^2u
+ -{\vartheta\over2}\abs{\sigma^TDu}^2=0,
+ \qquad u(T)=\phi.
+\end{equation}
+For a terminal perturbation $\eta$, put
+$v=D\cE_{t,T}^{\vartheta}[\phi]\eta$.
+
+\begin{theorem}[Tangent PDE]\label{thm:tangent-PDE}
+The derivative $v$ is the unique solution of
+\begin{equation}\label{eq:tangent-PDE}
+ -v_t-\left(b+\vartheta aDu\right)\cdot Dv
+ -{1\over2}a:D^2v=0,
+ \qquad v(T)=\eta.
+\end{equation}
+Its transition law is precisely the tangent kernel
+$K_{s,t}^{\cE_{t,T}^{\vartheta}[\phi]}$.
+\end{theorem}
+
+\begin{proof}
+Apply \cref{thm:IFT} to \eqref{eq:entropic-PDE}; differentiating the quadratic
+gradient term gives $\vartheta aDu\cdot Dv$.  The Feynman--Kac formula for the
+linear equation identifies its transition kernel.  Formula
+\eqref{eq:tangent-expectation} identifies the same kernel as the tilted
+tangent law.
+\end{proof}
+
+\section{A genuine Girsanov theorem}
+
+Set
+\[
+ Z_s=\sigma(s,X_s)^TDu(s,X_s),
+ \qquad
+ M_s={e^{\vartheta u(s,X_s)}
+ \over e^{\vartheta u(t,x)}}.
+\]
+The linearized exponential $e^{\vartheta u}$ solves the backward Kolmogorov
+equation.
+
+\begin{theorem}[Tangent-law Girsanov theorem]\label{thm:Girsanov}
+Let $\phi$ be bounded.  Then $M$ is a positive uniformly integrable martingale,
+$M_t=1$, and
+\begin{equation}\label{eq:stochastic-exponential}
+ M_s=\mathcal E\left(
+ \int_t^s\vartheta Z_r\,dW_r\right).
+\end{equation}
+It defines the tangent law on $\F_s$ by
+$d\Qp^\phi/d\Pp=M_s$.  Under $\Qp^\phi$,
+\begin{equation}\label{eq:Q-Brownian}
+ W_s^{\Qp}=W_s-\int_t^s\vartheta Z_rdr
+\end{equation}
+is Brownian, and the state has drift
+$b+\vartheta aDu$.  If $Z$ is bounded, Novikov's condition
+\[
+ \E\exp\left({\vartheta^2\over2}\int_t^T\abs{Z_s}^2ds\right)<\infty
+\]
+holds directly.  For bounded terminal data the bounded density martingale also
+gives the BMO/uniform-integrability route when a global gradient bound is not
+used.
+\end{theorem}
+
+\begin{proof}
+It\^o's formula and \eqref{eq:entropic-PDE} give
+$dM_s=M_s\vartheta Z_s\,dW_s$.  Since
+\[
+ M_s={\E[e^{\vartheta\phi(X_T)}\mid\F_s]
+ \over\E e^{\vartheta\phi(X_T)}},
+\]
+it is positive, bounded above and below by constants depending only on
+$\norm\phi_\infty$, and uniformly integrable.  Therefore
+\eqref{eq:stochastic-exponential} defines a probability change of measure.
+Girsanov's theorem yields \eqref{eq:Q-Brownian}; substitution in
+\eqref{eq:forward} gives the changed drift.  The bounded-$Z$ statement is
+Novikov's criterion, while the bounded positive density gives the alternative
+BMO route.
+\end{proof}
+
+This is a measure-change theorem with a Radon--Nikodym derivative; it is not an
+algebraic shift of the Hamiltonian.
+
+\section{Quadratic and tangent BSDEs}
+
+\begin{theorem}[Quadratic BSDE representation]\label{thm:BSDE}
+Let $Y_s=u(s,X_s)$ and $Z_s=\sigma^TDu(s,X_s)$.  Then
+\begin{equation}\label{eq:BSDE}
+ Y_s=\phi(X_T)+
+ \int_s^T{\vartheta\over2}\abs{Z_r}^2dr
+ -\int_s^TZ_r\,dW_r.
+\end{equation}
+For bounded terminal data this quadratic BSDE has the entropic solution
+\eqref{eq:theta}.
+\end{theorem}
+
+\begin{proof}
+Apply It\^o's formula to $u(s,X_s)$ and use
+\eqref{eq:entropic-PDE}.  Exponentiating $\vartheta Y$ gives the bounded
+martingale $P_{s,T}e^{\vartheta\phi}$, which identifies the solution.
+\end{proof}
+
+\begin{corollary}[Linear tangent BSDE]\label{cor:tangent-BSDE}
+For a terminal direction $\eta$, the tangent process
+$V_s=v(s,X_s)$ satisfies under $\Qp^\phi$
+\begin{equation}\label{eq:tangent-BSDE}
+ V_s=\eta(X_T)-\int_s^T\widehat Z_r\,dW_r^{\Qp}.
+\end{equation}
+Thus the derivative semigroup is the martingale representation under the
+payoff-dependent tangent law.
+\end{corollary}
+
+\begin{proof}
+The drift in the tangent PDE \eqref{eq:tangent-PDE} is exactly the drift of
+$X$ under $\Qp^\phi$.  It\^o's formula gives the martingale identity.
+\end{proof}
+
+No inversion of the nonlinear map $p\mapsto\sigma(x,p)^Tp$ appears: in this
+actual branch $\sigma$ is a state coefficient, and the tangent drift is written
+directly in terms of the already proved decoupling field.
+
+\section{Path-dependent entropic evaluation}
+
+Let $\Omega=C([0,T];\R^d)$ and let $\Phi:\Omega\to\R$ be bounded uniformly
+continuous.  Define
+\begin{equation}\label{eq:path-evaluation}
+ U(t,\omega)={1\over\vartheta}
+ \log\E_{t,\omega}e^{\vartheta\Phi(X)}.
+\end{equation}
+
+\begin{theorem}[Path DPP, PPDE, and BSDE]\label{thm:path}
+The path evaluation is time consistent.  In the smooth functional It\^o
+window it solves
+\begin{equation}\label{eq:PPDE}
+ -\partial_tU-b\cdot\partial_\omega U
+ -{1\over2}a:\partial_{\omega\omega}^2U
+ -{\vartheta\over2}
+ \abs{\sigma^T\partial_\omega U}^2=0,
+ \qquad U(T,\omega)=\Phi(\omega).
+\end{equation}
+It has the quadratic BSDE representation
+\[
+ Y_s=\Phi(X)+\int_s^T{\vartheta\over2}\abs{Z_r}^2dr
+ -\int_s^TZ_r\,dW_r.
+\]
+For bounded uniformly continuous data, \eqref{eq:path-evaluation} is the unique
+bounded path-viscosity solution in the standard comparison class.
+\end{theorem}
+
+\begin{proof}
+The tower property of conditional exponential moments gives the path DPP.
+Functional It\^o calculus gives \eqref{eq:PPDE} and the BSDE in the smooth
+window.  The exponential transform turns the PPDE into the linear path
+Kolmogorov equation.  Stability and comparison for bounded path-viscosity
+solutions identify the general case; see
+\cite{ContFournie2013,EkrenTouziZhang2014I,EkrenTouziZhang2014II}.
+\end{proof}
+
+\section{The pure energy path game}
+
+Consider
+\[
+ dX_s=(u_s+v_s)ds+\sigma dW_s
+\]
+with running payoff
+$-\mu u_s^2/2+\nu v_s^2/2$ and bounded path terminal payoff $\Phi(X)$.
+Set
+\[
+ c={1\over2}(\mu^{-1}-\nu^{-1}),
+ \qquad \vartheta={2c\over\sigma^2},
+\]
+and assume $c\ne0$.
+
+\begin{theorem}[Exact pure path-game representation]\label{thm:path-game}
+The lower and upper path-game values coincide and equal
+\begin{equation}\label{eq:path-game-value}
+ U(t,\omega)={1\over\vartheta}
+ \log\E_{t,\omega}e^{\vartheta\Phi(X)}.
+\end{equation}
+In the smooth window the unique pure feedback saddle is
+\[
+ u_s^*={\partial_\omega U(s,X)\over\mu},
+ \qquad
+ v_s^*=-{\partial_\omega U(s,X)\over\nu}.
+\]
+The same value is the bounded path-viscosity solution and the quadratic BSDE
+solution of \cref{thm:path}.
+\end{theorem}
+
+\begin{proof}
+The local Hamiltonian is $c p^2$.  With $p=\partial_\omega U$,
+\[
+ -cp^2+p(u+v)-{\mu\over2}u^2+{\nu\over2}v^2
+ =-{\mu\over2}(u-p/\mu)^2
+ +{\nu\over2}(v+p/\nu)^2.
+\]
+Functional It\^o calculus therefore gives
+$J(u,v^*)\le U\le J(u^*,v)$ for every admissible pair.  The Cole--Hopf
+transform with $\vartheta=2c/\sigma^2$ gives
+\eqref{eq:path-game-value}.  Approximation and path-viscosity comparison pass
+the identity beyond the smooth window.
+\end{proof}
+
+\section{A nondominated second-order branch}
+
+Let $0<\underline\sigma\le\overline\sigma$ and let
+$\mathcal A$ be the progressively measurable volatility controls with values
+in this interval.  Put
+\[
+ X_s^{\alpha}=x+\int_t^s\alpha_r\,dW_r
+\]
+and define
+\begin{equation}\label{eq:G-evaluation}
+ \mathcal E_{t,T}^G[\Phi](\omega)
+ =\sup_{\alpha\in\mathcal A}
+ \E\Phi\left(\omega\otimes_tX^\alpha\right).
+\end{equation}
+The family of induced laws is stable under conditioning and pasting.
+
+\begin{theorem}[Path $G$-heat equation and 2BSDE]\label{thm:2BSDE}
+The evaluation \eqref{eq:G-evaluation} is time consistent and is the unique
+bounded path-viscosity solution of
+\begin{equation}\label{eq:G-PPDE}
+ -\partial_tU-G(\partial_{\omega\omega}^2U)=0,
+ \qquad
+ G(\Gamma)={1\over2}
+ \sup_{a\in[\underline\sigma^2,\overline\sigma^2]}a\Gamma.
+\end{equation}
+It admits the nondominated second-order BSDE representation
+\begin{equation}\label{eq:2BSDE}
+ Y_s=\Phi-\int_s^TZ_r\,dB_r+K_T^P-K_s^P,
+ \qquad P\text{-a.s. for every }P\in\mathcal P,
+\end{equation}
+with the usual minimality condition on the increasing family $K^P$.
+\end{theorem}
+
+\begin{proof}
+Stability under conditioning and pasting gives the DPP.  Dynamic programming
+and the functional It\^o expansion give \eqref{eq:G-PPDE}.  The representation
+by the essential supremum of continuation laws and the minimal increasing
+process is the standard 2BSDE construction
+\cite{CheriditoSonerTouziVictoir2007,SonerTouziZhang2012}.  Comparison
+identifies the value.
+\end{proof}
+
+\section{Conclusion}
+
+The representation layer now contains a theorem that is specific to the theta
+structure: tangent probabilities with covariance curvature characterize the
+entropic functional, and their dynamic cocycle characterizes the semigroup.
+These tangent laws are limits of exact exponential tilts of the finite
+deterministic collision recursions.  The Girsanov theorem has an actual density
+and changed Brownian motion, the terminal derivative is proved by a parabolic
+implicit-function theorem, and the path and second-order branches are typed by
+their own DPPs.
+
+\section*{Disclosure and review status}
+The author is responsible for all proofs, references, and computations.
+Structural verifiers do not certify the analytical arguments.  This revision
+is prepared for a new independent formal review.
+
+\bibliographystyle{plain}
+\bibliography{references-round4}
+
+\end{document}
