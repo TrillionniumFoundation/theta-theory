@@ -1,12 +1,5 @@
-# OB3-PE-v1 - specular path-ensemble platform
+# OB3-PE-v1 - archived open-billiard benchmark
 
-- System: three circular no-eclipse obstacles in the plane.
-- Reflection: genuine Euclidean specular reflection.
-- Fast invariant preparation: Bowen-Margulis equilibrium state selected by the actual free-flight roof.
-- Mechanical macro observable: impact frequency on obstacle 1.
-- Endogenous conjugate field: `theta = I_rho'(r)`.
-- Driven preparation: equilibrium state of the tilted geometric potential on the same billiard.
-- Physical clock: actual free-flight roof.
-- Main use: Papers I-V v7.
-
-Not claimed: compact periodic Sinai Liouville/SRB theorem.
+The v7 no-eclipse open billiard remains a benchmark for fixed symbolic
+coding and trapped-set equilibrium preparations.  It is not load-bearing in
+v8 and may not be confused with the compact periodic Liouville platform.

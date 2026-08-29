@@ -1,9 +1,11 @@
-# Repository governance - v7 candidate
+# Repository governance - v8 candidate
 
-- Exactly five active papers.
-- Exactly one `main.tex` and one `references.bib` in each paper folder.
-- Historical paper versions are forbidden on the candidate branch.
-- Every load-bearing result is typed `OB3-PE-v1`.
-- `FB4-PE-v1` and `SL-SIM-v1` are benchmarks only.
-- Build, mathematical, platform, and external-review statuses are independent.
-- The candidate may not be merged by its author without independent review.
+The candidate contains exactly five active manuscripts.  Each paper has one
+controlling `main.tex`, one `references.bib`, and normative source modules under
+`sections/`.
+
+Every load-bearing theorem must carry `TL1-LIO-v1`.  Older v6/v7 systems are
+comparison branches only.  Cross-platform coefficient assembly is forbidden.
+
+Mathematical manuscript status, build status, finite-dimensional verification,
+and external review status are independent.

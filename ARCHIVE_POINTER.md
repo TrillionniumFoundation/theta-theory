@@ -1,5 +1,6 @@
 # Archive pointer
 
-Historical v4-v6 materials remain on their archive and series branches. They are provenance and regression sources, not controlling v7 manuscripts.
-
-The v7 candidate is developed on `series/v7-specular-path-ensemble-2026-08-29`.
+The v8 candidate is stacked on the preserved v7 branch
+`series/v7-specular-path-ensemble-2026-08-29`.  Earlier v6, v5, CM2, recursive,
+and legacy paper trees remain available on their historical branches and are
+not controlling sources for v8.

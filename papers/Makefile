@@ -1,12 +1,8 @@
-PAPERS := paper-I-specular-ensembles paper-II-specular-homogenization paper-III-specular-theta paper-IV-specular-control paper-V-specular-rigidity
+PAPERS := paper-I-liouville-ensembles paper-II-cell-homogenization paper-III-theta-generator paper-IV-control-information paper-V-rigidity-tangent
 
-all:
-	@set -e; for p in $(PAPERS); do \
-	  cd $$p; pdflatex -interaction=nonstopmode -halt-on-error main.tex >/dev/null; \
-	  bibtex main >/dev/null; \
-	  pdflatex -interaction=nonstopmode -halt-on-error main.tex >/dev/null; \
-	  pdflatex -interaction=nonstopmode -halt-on-error main.tex >/dev/null; cd ..; \
-	done
-
+.PHONY: all clean $(PAPERS)
+all: $(PAPERS)
+$(PAPERS):
+	cd $@ && latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex
 clean:
-	@find . -name '*.aux' -o -name '*.bbl' -o -name '*.blg' -o -name '*.log' -o -name '*.out' -o -name '*.toc' | xargs -r rm -f
+	@for p in $(PAPERS); do cd $$p && latexmk -C main.tex; cd ..; done

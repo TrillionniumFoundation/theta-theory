@@ -1,3 +1,6 @@
-# FB4-PE-v1 - exact benchmark retained
+# FB4-PE-v1 - archived exact benchmark
 
-The v6 four-branch deterministic area-preserving collision map is retained only as an exact algebraic and regression benchmark. It is not a Euclidean specular billiard and does not supply any load-bearing theorem to the v7 `OB3-PE-v1` same-platform chain.
+The v6 full-cover path-ensemble model remains a benchmark for exact algebra,
+finite-window conditioning, and CI regression.  It is not load-bearing in the
+v8 periodic-Sinai theorem and may not supply coefficients to a `TL1-LIO-v1`
+same-platform conclusion.

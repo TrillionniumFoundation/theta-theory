@@ -1,20 +1,32 @@
-# v7 closure report
+# v8 closure report
 
-## Closed in `OB3-PE-v1`
+The v8 candidate replaces the open-repeller physical spine by a compact
+periodic triangular-lattice Sinai billiard with natural Liouville collision
+measure and actual lattice displacement.
 
-1. Replaced the full-cover baker map by an explicit three-disk no-eclipse Euclidean specular billiard.
-2. Replaced an arbitrary finite transition matrix by the Bowen-Margulis equilibrium preparation selected through the actual billiard roof.
-3. Replaced the exact Bernoulli conditioning theorem by a spectral lattice local-limit/Gibbs-conditioning theorem for the billiard's symbolic Gibbs state.
-4. Replaced the v6 exact driven-map identity by a same-billiard tilted equilibrium state and Doob-normalized Ruelle operator.
-5. Retained the actual nonconstant free-flight roof through collision and physical-time homogenization.
-6. Added spectral exponential control of the inverse clock and random-window current.
-7. Derived the microscopic nonlinear operator as an exact canonical Ruelle excess-pressure DPP.
-8. Derived the physical theta-generator from the homogenized diffusion path law.
-9. Kept fixed-law, fixed-policy, and controlled risk-sensitive values separate; retained optimizer response in controlled second variations.
-10. Added a marked-period theorem proving that the moving obstacle produces a non-cohomologically-trivial physical roof deformation.
-11. Corrected the finite-microcanonical/canonical distinction: the DPP is exact canonically and microcanonical only in the proved central-window limit.
-12. Removed arbitrary-fast-boundary collapse from the load-bearing chain; the main theorem starts from the stationary geometry-selected preparation.
+## Closed interfaces
 
-## Stronger scope not claimed
+1. Explicit uniform finite horizon on `R in [9/20,47/100]`.
+2. One common angular collision space and radius-independent normalized
+   Liouville cosine measure.
+3. Actual bounded lattice displacement cocycle and a span-one translating
+   periodic orbit.
+4. Nonconjugate radius deformation and explicit Santaló mean-roof response.
+5. Twisted Lorentz spectral packet, local LDP, strict convexity, and
+   `theta=I'(j)`.
+6. Two-sided central-window Gibbs conditioning and same-billiard Doob
+   preparation.
+7. Correct physical clock observable `G=J-v tau`, joint ASIP, pressure-root
+   ballistic velocity and diffusion.
+8. Exponential random-horizon estimate.
+9. Exact canonical quotient-state excess-pressure DPP, multiplicative cell
+   corrector, physical theta-HJB, and microcanonical preparation order of
+   limits.
+10. Controlled saddle envelope and fixed-law tangent-law typing.
 
-The candidate is an open-billiard trapped-set theorem. It does not prove the same chain for a compact periodic finite-horizon Sinai billiard under Liouville measure.
+## Review boundary
+
+The most review-sensitive blocks are the application of the complex twisted
+anisotropic spectral packet, the central-window conditioning estimate, and the
+nonlinear multiplicative corrector.  Finite-dimensional verifiers do not
+certify these arguments.

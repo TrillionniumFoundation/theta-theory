@@ -1,34 +1,28 @@
-# Hostile proof audit - v7 specular candidate
+# Hostile proof audit - v8
 
-## Highest-risk interfaces
+## High-risk interfaces
 
-### 1. Natural-measure semantics
-The Bowen-Margulis state is geometry-selected and invariant on the trapped set, but it is not ambient Liouville measure. Every abstract, theorem, and registry entry must preserve that distinction.
+- The triangular no-corridor argument must cover every primitive lattice
+  direction and use compactness to upgrade absence of an infinite line to a
+  uniform horizon bound.
+- The translating period-two itinerary must be checked against all nearby
+  scatterers and the variational billiard construction.
+- Piecewise-constant lattice displacement must act boundedly in the declared
+  twisted anisotropic/tower packet.
+- Central conditioning must use a two-sided window; endpoint conditioning has
+  an eigenfunction bias.
+- The driven kernel is a disintegration of a deterministic path measure, not a
+  new stochastic collision law.
+- At nonzero current, physical variance is based on `J-v tau`; using
+  `Lambda''/mean(tau)` without the clock correction is wrong.
+- The canonical DPP is exact.  Finite microcanonical conditioning is only a
+  preparation limit and is not Markov.
+- The controlled second derivative includes the optimizer-response Schur
+  complement.
 
-### 2. Gibbs conditioning
-The central-window result needs the lattice local limit theorem for the twisted Ruelle family; one-sided endpoint windows would carry an eigenfunction boundary bias. Review the aperiodicity argument using the period-two `23` and `12` orbits and the claimed uniformity on compact geometry/preparation sets.
+## Scope guards
 
-### 3. Ruelle orientation
-The normalized Ruelle kernel is a conditional disintegration of the invariant two-sided deterministic ensemble. The manuscript uses reverse symbolic time and billiard reversibility; it must not be described as new microscopic randomness.
-
-### 4. Actual roof
-Paper II states the bounded roof-coboundary transfer explicitly; the precise suspension conjugacy and inverse-clock `O(1)` comparison still require line-by-line review.
-
-### 5. Random-window exponential estimate
-The proof relies on uniform spectral Bernstein inequalities for forward and reverse centered sums and sub-Gaussian inverse-clock tails. This is the main Paper II review target.
-
-### 6. Nonlinear homogenization
-Paper III starts the load-bearing chain from the stationary canonical preparation. Bounded exponential path functionals are passed through uniform path-law convergence; unbounded rewards are outside scope. The generator is obtained after the diffusion limit, not by assuming a microscopic PDE.
-
-### 7. Canonical versus finite microcanonical dynamics
-Finite microcanonical conditioning is not Markov. Paper III states an exact DPP only for the canonical Doob preparation, with the microcanonical interpretation supplied asymptotically by Paper I's central-window theorem.
-
-### 8. Fast symbolic boundary conditions
-Uniform collapse for arbitrary path-dependent terminal data is not claimed. Only a bounded-Hölder terminal-state forgetting lemma is retained as an auxiliary result.
-
-### 9. Controlled derivatives
-The pure covariance Hessian is fixed-law/fixed-policy only. Optimized values include the explicit saddle-envelope correction.
-
-## Internal verdict
-
-No unnamed interface remains in the declared `OB3-PE-v1` scope. External line-by-line review is required, especially for items 2, 4, 5, 6, and 7.
+- No differentiability in the radius of every tilted coefficient is claimed.
+- No control-dependent moving geometry is claimed.
+- The theta range is local to the simple spectral branch.
+- External line-by-line review is pending.
