@@ -1,64 +1,46 @@
-# θ-Theory research archive
+# θ-Theory active manuscript tree
 
-This private repository is a curated, reproducible archive of the θ-Theory
-program as of **2026-08-28**.  It keeps the latest-wins canonical volumes,
-the three-paper source stack, the CM2 bridge history, and the readable CM2
-source/evidence needed to continue the work in a fresh environment.
+This branch is the clean active development tree for the five-paper θ-Theory series.
+Historical manuscripts, cumulative canonical volumes, CM2 evidence, legacy tools,
+and superseded source variants are preserved on the archive branch:
 
-## Start here
-
-1. `canonical/theta_theory_navier_stokes_initial_md_all_chat_canonical_latest_nonrecursive_through_v16320_2026-08-28.md` — current non-recursive θ-Theory/NSE canonical volume (`v16320-DRAFT`).
-2. `canonical/theta_theory_recursive.md` — recursive/type-checked θ-Theory architecture (`v164`).
-3. `canonical/CM2_无条件攻坚_Canonical_Latest-Wins_非递归单一总卷_through_r63bd_2026-08-26.md` — CM2 origin, audit history, and controlling `r63bd` state.
-4. `canonical/CM2_LATEST_STATUS.md` — compact CM2 status snapshot.
-
-The canonical volumes are editorial consolidations.  They preserve
-provenance and latest-wins control, but do not create a new theorem or
-authority certificate.  Their explicit fail-closed/NO-GO boundaries remain
-the controlling interpretation.
-
-## Layout
-
-| Path | Contents |
-| --- | --- |
-| `canonical/` | Latest θ-Theory, recursive, and CM2 control volumes. |
-| `papers/expectations-monograph/` | Source snapshot of `A_Theory_of__Expectations`: monograph, Paper 1 response theory, Paper 2 theta-expectation/HJB, Paper 3 representation calculus, CM2 bridge, plans, inventories, and referee material. LaTeX build by-products are omitted. |
-| `evidence/cm2/bridge-notes/` | CM2 bridge-note source/PDF version history (plus the retained v15 source/PDF). |
-| `evidence/cm2/deliverables/` | Readable CM2 reports, source programs, TeX, PDFs, checksums, and small machine-readable manifests/certificates. |
-| `evidence/cm2/artifacts/` | Additional retained CM2/response PDFs. |
-| `tools/cm2-scripts/` | CM2/C79g launchers, builders, reviewers, and canonical-volume helpers. |
-| `provenance/` | Inclusion manifest, source inventory, and exclusion policy. |
-
-## Reuse and verification
-
-The exact per-file SHA-256 manifest is
-`provenance/inclusion-manifest.tsv`.  Paths in the manifest are archive
-relative and the source labels identify the local corpus without copying
-private workspace memory.  To verify the archive after checkout:
-
-```sh
-awk -F '\t' 'NR > 1 { print $5 "  " $1 }' provenance/inclusion-manifest.tsv \
-  | sha256sum -c -
+```text
+archive/full-v4-pre-governance-2026-08-29
+archive marker commit: 0662b24c2ad652f64fa3153b62190f925e802b32
+source snapshot commit: bf88e63b9cb75709a42075d0d5e0fc54299c0661
 ```
 
-For the three LaTeX papers, use the source files and the retained PDFs under
-`papers/expectations-monograph/papers/`.  Their `compile-status.md` files
-record the last successful local build and its scope; generated `.aux`,
-`.log`, `.fls`, `.fdb_latexmk`, `.out`, `.toc`, and `.blg` files are not part
-of this archive.  The small `.bbl` bibliography snapshots are retained where
-present to make the recorded paper builds easier to reproduce.
+## Current controlling sources
 
-## Scope and exclusions
+The current baseline remains the v4 five-paper set under `papers/referee-ready/`.
+In every paper folder:
 
-This is a research-source archive, not a raw disk image.  Raw agent memory,
-chat/session logs, credentials, cookies, virtual environments, Python bytecode,
-large generated ledgers, and unrelated projects are intentionally excluded.
-The exclusion inventory and rationale are recorded in
-`provenance/excluded-local-corpus.md`; no excluded item is silently treated as
-part of the canonical theory.  Large generated evidence can be regenerated or
-located from its original local provenance when a future release explicitly
-needs it.
+```text
+main.tex        controlling manuscript
+references.bib  controlling bibliography
+```
 
-Inherited copyright and license notices remain with their respective source
-files.  See `NOTICE.md`; this repository does not grant a blanket public
-license over the research manuscripts.
+Versioned manuscript copies are not stored in the active tree. Git commits and the
+archive branch preserve their history.
+
+## Active layout
+
+| Path | Purpose |
+| --- | --- |
+| `papers/referee-ready/` | Five current manuscripts, normative appendices, series manifests and review material. |
+| `status/ACTIVE_TREE_STATUS.yaml` | Machine-readable governance state. |
+| `platforms/` | Current platform decisions and future theorem-platform registry. |
+| `tools/verify_active_tree.py` | Repository hygiene verifier. |
+| `ARCHIVE_POINTER.md` | Exact archive and source-commit pointer. |
+| `GOVERNANCE.md` | Rules separating active theorem sources from research provenance. |
+
+## Verification
+
+```bash
+python3 tools/verify_active_tree.py
+make -C papers/referee-ready all
+```
+
+The first command checks repository governance only. LaTeX compilation and finite-
+dimensional checks do not certify the analytical proofs. The current series remains a
+research manuscript set awaiting independent line-by-line review.
