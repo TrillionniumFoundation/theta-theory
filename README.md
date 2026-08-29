@@ -1,27 +1,22 @@
-# Theta-Theory v6 deterministic path-ensemble review tree
+# Theta-Theory v7 - specular path-ensemble external-review candidate
 
-This package contains five revised manuscripts whose load-bearing platform is
-`FB4-PE-v1`.
+This package replaces the exact full-cover v6 spine with a genuine planar specular no-eclipse billiard.
 
-The central change is that the stochastic path law and theta parameter are no
-longer supplied independently.  Lebesgue uncertainty in a deterministic
-area-preserving collision map gives the base path law.  Conditioning a
-mechanical current selects a unique canonical driven ensemble and
+The controlling chain is:
 
-\[
-\theta=I'(a).
-\]
-
-The theta-semigroup is the excess pressure of that path ensemble.  The five
-papers then derive physical-time homogenization, dynamic programming,
-controlled saddle corrections, axiomatic rigidity, tangent laws, Girsanov, and
-BSDE representations.
-
-Build all papers with:
-
-```bash
-make -C papers all
-python tools/verify_v6.py
+```text
+specular three-obstacle geometry
+  -> fixed symbolic coding and actual free-flight roof
+  -> geometry-selected Bowen-Margulis path preparation
+  -> mechanical impact-frequency LDP
+  -> theta = I'(r)
+  -> finite-window Gibbs conditioning on the same billiard
+  -> deterministic physical-time homogenization
+  -> Ruelle excess-pressure DPP
+  -> physical theta-generator
+  -> controlled and tangent representations
 ```
 
-External line-by-line mathematical review is pending.
+Only the five `papers/*/main.tex` files are active manuscript sources. Historical versions remain on archive branches.
+
+Truth boundary: internal research-draft closure in the `OB3-PE-v1` open-billiard scope; no compact periodic Sinai/Liouville theorem and no external mathematical certification are claimed.

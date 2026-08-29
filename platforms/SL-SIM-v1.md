@@ -1,14 +1,3 @@
-# SL-SIM-v1 — similarity Lorentz control
+# SL-SIM-v1 - similarity Lorentz control
 
-This platform retains genuine periodic specular Lorentz dynamics while moving
-only along an exact Euclidean-similarity conjugacy orbit.
-
-It is kept for:
-
-- exact scaling and rotation formulas;
-- collision/physical-time normalization checks;
-- all-order finite-dimensional chain rules;
-- the theorem that a global line- and specular-angle-preserving coordinate
-  bypass must itself be a similarity.
-
-It does not provide a nonzero normalized collision-operator source.
+The similarity Lorentz family remains a specular conjugacy/scaling control and a no-coordinate-bypass boundary. It is not the v7 path-ensemble platform and may not supply a nonzero conditioned-current theorem to `OB3-PE-v1`.

@@ -1,7 +1,9 @@
-# Five-paper v6 series
+# Five-paper v7 series
 
-- `paper-I-path-ensembles` - Deterministic Path Ensembles, Driven Collision Maps, and Endogenous Conjugate Parameters
-- `paper-II-physical-homogenization` - Physical-Time Homogenization in Deterministic Driven Collision Ensembles
-- `paper-III-endogenous-theta` - Microcanonical Free-Energy Dynamic Programming and Endogenous Theta-Semigroups
-- `paper-IV-saddle-information` - Information Structures, Filtering, and Risk-Sensitive Saddle Envelopes
-- `paper-V-rigidity-tangent` - Axiomatic Rigidity, Tangent Laws, and Representations of Endogenous Theta-Semigroups
+1. `paper-I-specular-ensembles` - geometry-selected path ensembles and endogenous conjugate fields.
+2. `paper-II-specular-homogenization` - physical-time deterministic homogenization.
+3. `paper-III-specular-theta` - Ruelle free-energy DPP and theta-generator.
+4. `paper-IV-specular-control` - information and saddle extensions.
+5. `paper-V-specular-rigidity` - rigidity and tangent representations.
+
+Dependency spine: I -> II -> III; III -> IV and III -> V; IV -> V only for the optional controlled branch.

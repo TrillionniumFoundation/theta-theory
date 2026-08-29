@@ -1,39 +1,15 @@
-# Common actual platform - deterministic path-ensemble v6
+# Common actual platform - `OB3-PE-v1`
 
-The load-bearing platform is `FB4-PE-v1`, an invertible area-preserving
-four-branch baker collision map with natural Lebesgue measure.
+For `rho in [-1/20,1/20]`, use three circular obstacles
 
-A base preparation at current `a0=2/5` is conditioned on a mechanical signed
-winding current.  For target current `a in (-1,1)`,
+```text
+K1(rho) = B((0,0),1+rho),  K2 = B((6,0),1),  K3 = B((0,9),1)
+```
 
-\[
-\theta(a)=I'(a)=\frac12\log\frac{3(1+a)}{7(1-a)}.
-\]
+with unit-speed free flight and Euclidean specular reflection. Uniform no-eclipse margins give the fixed code shift with no consecutive repeated obstacle.
 
-The canonical tilted path law is exactly the Lebesgue branch law of another
-member of the same moving-seam family.  The branch impulse and roof are
+The actual free-flight roof is `tau_rho`. The base path preparation is the Bowen-Margulis equilibrium state of the suspension potential `-h_rho tau_rho`, where `P(-h_rho tau_rho)=0`. The mechanical macro observable is the fraction of collisions on obstacle 1.
 
-\[
-d_1=(2,0),\ d_2=(-1,0),\ d_3=(0,4),\ d_4=(0,-3),
-\]
+A prepared impact frequency `r in (0,1/2)` selects `theta_rho(r)` through the pressure derivative. The tilted equilibrium state remains an invariant preparation of the same deterministic billiard.
 
-\[
-\tau_1=\tau_2=2,\qquad \tau_3=\tau_4=1.
-\]
-
-Thus
-
-\[
-C(a)=\operatorname{diag}(1-a,6(1+a)),\qquad
-\bar\tau(a)=\frac{3-a}{2}.
-\]
-
-Paper I derives the natural law, LDP, ensemble equivalence, theta, driven map,
-and excess pressure.  Paper II derives the physical stochastic limit.  Paper
-III derives the microscopic free-energy DPP and physical theta-HJB.  Paper IV
-handles information and optimizer response.  Paper V proves axiomatic rigidity
-and tangent representations.
-
-`OB3-MG-v1`, `FB4-EXACT-v1`, and `SL-SIM-v1` are retained as physical or
-benchmark branches but do not supply load-bearing coefficients to the v6
-same-platform theorem.
+The centered impact fluctuation has collision variance `Lambda_rho''(theta)` and physical variance obtained by division by the mean actual roof. Papers I-III use only this platform.

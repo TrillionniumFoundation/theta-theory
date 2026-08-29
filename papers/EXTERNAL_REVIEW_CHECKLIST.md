@@ -1,17 +1,11 @@
-# External review checklist - v6
+# External review checklist - v7
 
-Review the exact commit and record theorem labels checked.
-
-1. Verify that Lebesgue measure is the natural law of the deterministic map.
-2. Check the explicit LDP, strict convexity, and `theta=I'(a)` inversion.
-3. Check the finite-window microcanonical conditioning bound.
-4. Check that canonical tilting gives exactly the driven branch weights.
-5. Check the centered graded response norm.
-6. Check conditional centering inside each roof class and physical clock.
-7. Check the excess-pressure origin of the microscopic theta recursion.
-8. Check the tilted Orlicz random-horizon estimate.
-9. Check the saddle-envelope optimizer correction.
-10. Check the cash-additive exponential rigidity proof.
-
-No build receipt or verifier is a substitute for line-by-line mathematical
-review.
+- Pin the exact commit and tree.
+- Confirm the geometry is a genuine Euclidean specular billiard.
+- Review the Bowen-Margulis preparation and distinguish it from Liouville/SRB claims.
+- Check the lattice local-limit/Gibbs-conditioning theorem in Paper I.
+- Check the joint current/roof ASIP and random-window exponential estimate in Paper II.
+- Check that Paper III's DPP is a Doob-normalized partition identity, and that the physical theta-generator follows from the deterministic homogenized path law.
+- Check Paper IV's optimizer-response term and information-order boundary.
+- Check Paper V's fixed-law versus optimized-value typing.
+- Record every imported theorem accepted without proof.
