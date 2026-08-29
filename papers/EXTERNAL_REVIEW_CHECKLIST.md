@@ -3,7 +3,7 @@
 Every report must record the exact commit SHA, paper, and theorem labels.
 
 1. Check the triangular-lattice finite-horizon proof and common Liouville measure.
-2. Check the translating periodic orbit and the nonconjugate marked-period test.
+2. Check the open displacement branches, LLT nondegeneracy, and the nonconjugate marked-period test.
 3. Check applicability of the twisted Lorentz spectral packet to the lattice current.
 4. Check strict convexity and the central-window Gibbs-conditioning proof.
 5. Check that the Doob kernel is a disintegration, not microscopic noise.

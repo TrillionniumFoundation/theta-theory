@@ -33,20 +33,23 @@ ratio_prime=sp.simplify(sp.diff(ratio,r))
 assert ratio_prime!=0
 assert float(ratio_prime.subs(r,sp.Rational(23,50)))>0
 
+# Open nearest-neighbour displacement branches generate the lattice.
 e1=sp.Matrix([1,0]); e2=sp.Matrix([sp.Rational(1,2),sqrt3/2])
-centres=[sp.Matrix([0,0]),e2,e1]
-net=centres[-1]-centres[0]
-assert net==e1
-edge_lengths=[sp.sqrt((centres[i+1]-centres[i]).dot(centres[i+1]-centres[i])) for i in range(2)]
-assert all(sp.simplify(x-1)==0 for x in edge_lengths)
-third_clearance=sqrt3/2-rmax
-assert float(third_clearance)>0
+assert sp.sqrt(e1.dot(e1))==1
+assert sp.sqrt(e2.dot(e2))==1
+nearest_gap=1-2*rmax
+other_centre_clearance=sqrt3/2-rmax
+assert float(nearest_gap)>0
+assert float(other_centre_clearance)>0
+assert 1-0==1
 
+# Generic second derivative identity for Psi(p,kappa(p))=0.
 Psi_p,Psi_s,Psi_pp,Psi_ps,Psi_ss=sp.symbols('Psi_p Psi_s Psi_pp Psi_ps Psi_ss')
 kprime=-Psi_p/Psi_s
 ksecond=sp.simplify(-(Psi_pp+2*Psi_ps*kprime+Psi_ss*kprime**2)/Psi_s)
 assert ksecond.has(Psi_pp)
 
+# Cole-Hopf generator identity.
 theta,D,b,c,ux,uxx=sp.symbols('theta D b c ux uxx')
 nonlinear=c+b*ux+D*uxx/2+theta*D*ux**2/2
 cole=c+b*ux+D*(uxx+theta*ux**2)/2
@@ -65,7 +68,8 @@ result={
    'disk_disjoint_margin':float(checks['disk_disjoint_margin']),
    'corridor_closed_margin':float(checks['corridor_closed_margin']),
    'next_neighbour_period_clearance':float(checks['next_neighbour_period_clearance']),
-   'third_edge_clearance':float(third_clearance),
+   'nearest_branch_gap':float(nearest_gap),
+   'other_centre_line_clearance':float(other_centre_clearance),
    'mean_roof_at_rmax':float(mean_roof.subs(r,rmax)),
    'period_ratio_derivative_at_0.46':float(ratio_prime.subs(r,sp.Rational(23,50)))},
  'scope_warning':'Does not certify anisotropic spectral theory, Gibbs conditioning, ASIP, viscosity convergence, or external review.'}

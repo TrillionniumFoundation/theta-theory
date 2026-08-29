@@ -4,7 +4,7 @@ Review the exact commit and state every theorem not checked.
 
 ## Priority checks
 1. finite-horizon geometry and Liouville normalization.
-2. period-two travelling current witness.
+2. open one-step displacement branches and the nondegenerate Lorentz LLT packet.
 3. twisted spectral packet and strict pressure convexity.
 4. central-window Gibbs conditioning.
 5. Doob kernel deterministic interpretation.

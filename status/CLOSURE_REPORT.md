@@ -9,8 +9,8 @@ measure and actual lattice displacement.
 1. Explicit uniform finite horizon on `R in [9/20,47/100]`.
 2. One common angular collision space and radius-independent normalized
    Liouville cosine measure.
-3. Actual bounded lattice displacement cocycle and a span-one translating
-   periodic orbit.
+3. Actual bounded lattice displacement cocycle, open nearest-neighbour branches,
+   and the nondegenerate span-one Lorentz local-limit packet.
 4. Nonconjugate radius deformation and explicit Santaló mean-roof response.
 5. Twisted Lorentz spectral packet, local LDP, strict convexity, and
    `theta=I'(j)`.

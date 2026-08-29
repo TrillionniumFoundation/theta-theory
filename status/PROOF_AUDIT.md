@@ -5,8 +5,8 @@
 - The triangular no-corridor argument must cover every primitive lattice
   direction and use compactness to upgrade absence of an infinite line to a
   uniform horizon bound.
-- The translating period-two itinerary must be checked against all nearby
-  scatterers and the variational billiard construction.
+- The open nearest-neighbour displacement branches and the applicability of the
+  nondegenerate Lorentz local-limit packet must be checked uniformly in radius.
 - Piecewise-constant lattice displacement must act boundedly in the declared
   twisted anisotropic/tower packet.
 - Central conditioning must use a two-sided window; endpoint conditioning has
