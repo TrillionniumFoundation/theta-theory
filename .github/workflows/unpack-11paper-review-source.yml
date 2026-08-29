@@ -1,75 +1,16 @@
-name: unpack-eleven-paper-review-source
+name: archived-unpack-helper-disabled
 
 on:
-  push:
-    branches:
-      - review/top4-harsh-referee-reports-11paper-2026-08-30
+  workflow_dispatch:
 
 permissions:
-  contents: write
-
-concurrency:
-  group: unpack-eleven-paper-review-source
-  cancel-in-progress: false
+  contents: read
 
 jobs:
-  unpack:
-    if: github.actor != 'github-actions[bot]'
+  notice:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out isolated review branch
-        uses: actions/checkout@v4
-        with:
-          ref: review/top4-harsh-referee-reports-11paper-2026-08-30
-          fetch-depth: 0
-          persist-credentials: true
-
-      - name: Verify and unpack pinned eleven-paper source
-        shell: bash
+      - name: Explain why automatic unpacking is disabled on the review branch
         run: |
-          set -euo pipefail
-          archive="$RUNNER_TEMP/clean_main_11paper.tar.gz"
-          extracted="$RUNNER_TEMP/extracted"
-          cat migration/clean-main-11paper/parts/part-*.b64 | tr -d '\r\n' | base64 --decode > "$archive"
-          expected='566335121763abaa7ed8ed2280a3b4345877777e8bedbd80f4eef0a6b48745e2'
-          actual="$(sha256sum "$archive" | awk '{print $1}')"
-          test "$actual" = "$expected"
-          mkdir -p "$extracted"
-          tar -xzf "$archive" -C "$extracted"
-
-          python3 - "$extracted" <<'PY'
-          from pathlib import Path
-          import sys
-          root = Path(sys.argv[1])
-          expected = {
-              'A1-exact-benchmarks',
-              'A2-sinai-homological-pressure',
-              'A3-full-empirical-path-ldp',
-              'A4-history-memory-universal-pressure',
-              'B1-microcanonical-preparation',
-              'B2-collision-clusters-dynamic-ldp',
-              'B3-hamilton-boltzmann-cotangents',
-              'B4-nonlinear-kinetic-semigroups',
-              'C1-information-risk-sensitive-saddles',
-              'C2-cotangent-rigidity-tangent-representations',
-              'D1-deterministic-theta-contractions',
-          }
-          found = {p.name for p in (root / 'papers').iterdir() if p.is_dir()}
-          assert found == expected, (found, expected)
-          for name in expected:
-              folder = root / 'papers' / name
-              assert (folder / 'main.tex').is_file()
-              assert (folder / 'references.bib').is_file()
-              assert (folder / 'README.md').is_file()
-              assert (folder / 'REFEREE_GUIDE.md').is_file()
-          PY
-
-          rsync -a --delete --exclude='.git/' "$extracted/" ./
-          test "$(find papers -mindepth 1 -maxdepth 1 -type d | wc -l)" -eq 11
-          test "$(find papers -mindepth 2 -maxdepth 2 -type f -name main.tex | wc -l)" -eq 11
-
-          git config user.name 'theta-theory-review-bot'
-          git config user.email 'theta-theory-review-bot@users.noreply.github.com'
-          git add -A
-          git commit -m 'Unpack pinned eleven-paper source for independent review'
-          git push origin HEAD:review/top4-harsh-referee-reports-11paper-2026-08-30
+          echo "Automatic unpacking is intentionally disabled on the referee-report branch."
+          echo "The pinned source archive remains in the branch, but review files must never be deleted by rsync."
