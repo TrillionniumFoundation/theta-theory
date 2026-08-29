@@ -1,82 +1,39 @@
-# Common actual platform — v5 external-review series
+# Common actual platform - deterministic path-ensemble v6
 
-## 1. Physical flagship: `OB3-MG-v1`
+The load-bearing platform is `FB4-PE-v1`, an invertible area-preserving
+four-branch baker collision map with natural Lebesgue measure.
 
-For \(a\in[-1/20,1/20]\), take three circular obstacles
-
-\[
-K_1(a)=\overline B((0,0),1+a),\qquad
-K_2=\overline B((6,0),1),\qquad
-K_3=\overline B((0,9),1)
-\]
-
-in the plane and use specular exterior billiard dynamics.  Uniform no-eclipse
-margins give a fixed obstacle-code shift
+A base preparation at current `a0=2/5` is conditioned on a mechanical signed
+winding current.  For target current `a in (-1,1)`,
 
 \[
-\Sigma=\{\omega\in\{1,2,3\}^{\mathbb Z}:\omega_{k+1}\ne\omega_k\}.
+\theta(a)=I'(a)=\frac12\log\frac{3(1+a)}{7(1-a)}.
 \]
 
-The invariant reference law is the stationary Markov-Gibbs law with
+The canonical tilted path law is exactly the Lebesgue branch law of another
+member of the same moving-seam family.  The branch impulse and roof are
 
 \[
-P=\begin{pmatrix}
-0&2/3&1/3\\
-1/3&0&2/3\\
-2/3&1/3&0
-\end{pmatrix},
-\qquad \pi=(1/3,1/3,1/3).
+d_1=(2,0),\ d_2=(-1,0),\ d_3=(0,4),\ d_4=(0,-3),
 \]
-
-The actual free-flight roof is \(\tau_a\), not a constant or substituted
-clock.  Paper I proves strict mean-roof response.  Paper II proves correlated
-rough convergence, nonzero area anomaly, and physical-time change.  Paper III
-uses the same code, law, roof, and collision observable in its microscopic DPP
-and HJB limit.
-
-## 2. Collision observable
 
 \[
-g_1=(1,0),\quad
-g_2=(-1/2,\sqrt3/2),\quad
-g_3=(-1/2,-\sqrt3/2).
+\tau_1=\tau_2=2,\qquad \tau_3=\tau_4=1.
 \]
 
-The exact collision coefficients are
+Thus
 
 \[
-\Sigma_{\rm coll}=\frac17I_2,\qquad
-\Gamma_{\rm coll}^{\rm as}
-=-\frac{\sqrt3}{28}
-\begin{pmatrix}0&-1\\1&0\end{pmatrix}.
+C(a)=\operatorname{diag}(1-a,6(1+a)),\qquad
+\bar\tau(a)=\frac{3-a}{2}.
 \]
 
-Physical coefficients are divided by the same mean roof \(\bar\tau_a\).
+Paper I derives the natural law, LDP, ensemble equivalence, theta, driven map,
+and excess pressure.  Paper II derives the physical stochastic limit.  Paper
+III derives the microscopic free-energy DPP and physical theta-HJB.  Paper IV
+handles information and optimizer response.  Paper V proves axiomatic rigidity
+and tangent representations.
 
-## 3. Exact benchmark: `FB4-EXACT-v1`
-
-The four-branch full-cover moving-seam map remains active only as an exact
-all-order response, finite-difference, exact-innovation, and CI benchmark.
-Its coefficients may not be inserted into an `OB3-MG-v1` same-platform theorem.
-
-## 4. Similarity control: `SL-SIM-v1`
-
-The similarity Lorentz family remains active only as:
-
-- an exact conjugate specular control;
-- a tensorial scaling and rotation check;
-- the similarity-maximality/no-coordinate-bypass theorem.
-
-It is not a nonzero moving-singularity source.
-
-## 5. Downstream extensions
-
-Paper IV uses `OB3-MG-v1 × AR-FILTER-v1`.  Paper V core uses the physical
-theta-semigroup from Paper III.  Its volatility-uncertain branch is separately
-typed `SV-CONTROL-v1`.
-
-## 6. Status boundary
-
-The active papers are research drafts prepared for external review.  The
-platform registry distinguishes manuscript proof, machine checks, and
-independent review.  No successful verifier grants peer-review status.
+`OB3-MG-v1`, `FB4-EXACT-v1`, and `SL-SIM-v1` are retained as physical or
+benchmark branches but do not supply load-bearing coefficients to the v6
+same-platform theorem.

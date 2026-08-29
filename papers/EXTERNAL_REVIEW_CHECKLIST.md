@@ -1,29 +1,17 @@
-# External-review checklist
+# External review checklist - v6
 
-Every report must identify the exact commit SHA and paper.
+Review the exact commit and record theorem labels checked.
 
-## Required checks
+1. Verify that Lebesgue measure is the natural law of the deterministic map.
+2. Check the explicit LDP, strict convexity, and `theta=I'(a)` inversion.
+3. Check the finite-window microcanonical conditioning bound.
+4. Check that canonical tilting gives exactly the driven branch weights.
+5. Check the centered graded response norm.
+6. Check conditional centering inside each roof class and physical clock.
+7. Check the excess-pressure origin of the microscopic theta recursion.
+8. Check the tilted Orlicz random-horizon estimate.
+9. Check the saddle-envelope optimizer correction.
+10. Check the cash-additive exponential rigidity proof.
 
-1. Verify the declared platform identifier for every load-bearing theorem.
-2. Reject any silent cross-platform assembly.
-3. Check theorem statements against their proof scope and invariant law.
-4. Distinguish manuscript proof, finite-dimensional verification, and external
-   mathematical review.
-5. Record every theorem or appendix not checked.
-
-## Report template
-
-```yaml
-reviewed_commit:
-paper:
-reviewer_specialty:
-theorem_labels_checked:
-platform_scope_checked:
-major_issues:
-minor_issues:
-claims_not_checked:
-recommendation:
-```
-
-No paper is externally certified until a signed independent report identifies
-the reviewed commit and theorem labels.
+No build receipt or verifier is a substitute for line-by-line mathematical
+review.
