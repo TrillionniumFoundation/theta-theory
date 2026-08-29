@@ -31,6 +31,23 @@ VERSIONED_SOURCE = re.compile(
     r"^(main-(?:final|submission|round\d+|v\d+)\.tex|references-round\d+\.bib)$"
 )
 
+FORBIDDEN_TOP_LEVEL = {
+    "COMMON_REFERENCE_PLATFORM_V3.md",
+    "COMMON_REFERENCE_PLATFORM_V3_FINAL.md",
+    "MANUSCRIPT_FORMULA_AUDIT.json",
+    "Makefile.v3",
+    "REFEREE_BUILD_RECEIPT.json",
+    "REFEREE_MANUSCRIPT_STATUS.md",
+    "REFEREE_REVISION_V3_STATUS.md",
+    "REFEREE_REVISION_V4_FINAL_STATUS.md",
+    "REFEREE_REVISION_V4_STATUS.md",
+    "REVISION_V2_RESPONSE_TO_REFEREES.md",
+    "REVISION_V3_FORMULA_AUDIT.json",
+    "REVISION_V3_HOSTILE_PROOF_AUDIT.md",
+    "REVISION_V3_POSITIVE_RESPONSE_TO_REFEREES.md",
+    "REVISION_V3_THEOREM_MANIFEST.yaml",
+}
+
 
 def require(condition: bool, message: str) -> None:
     if not condition:
@@ -40,9 +57,13 @@ def require(condition: bool, message: str) -> None:
 def main() -> int:
     require((ROOT / "ARCHIVE_POINTER.md").is_file(), "missing archive pointer")
     require((ROOT / "GOVERNANCE.md").is_file(), "missing governance policy")
+    require((ROOT / "platforms" / "platform-registry.yaml").is_file(), "missing platform registry")
 
     for rel in ARCHIVED_PATHS:
         require(not (ROOT / rel).exists(), f"archived path remains active: {rel}")
+
+    legacy_top = sorted(name for name in FORBIDDEN_TOP_LEVEL if (PAPERS / name).exists())
+    require(not legacy_top, f"legacy top-level review assets remain active: {legacy_top}")
 
     for name in PAPER_DIRS:
         folder = PAPERS / name
@@ -60,6 +81,7 @@ def main() -> int:
             (PAPERS / p / "references.bib").is_file() for p in PAPER_DIRS
         ),
         "archived_paths_absent": True,
+        "legacy_top_level_assets_absent": True,
         "versioned_sources_absent": True,
     }
     print(json.dumps(result, indent=2, sort_keys=True))
