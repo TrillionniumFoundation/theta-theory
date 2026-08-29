@@ -1,41 +1,13 @@
-# θ-Theory — active five-paper external-review repository
+# Theta-Theory v8 - periodic Sinai first-principles review tree
 
-The default branch contains only the current five-paper series, its platform
-registry, governance rules, and build/verification tools.
+This review package upgrades the v7 open-billiard construction to a compact
+periodic finite-horizon Sinai table with natural Liouville measure and actual
+lattice cell displacement.
 
-## Start here
+The controlling platform is `TL1-LIO-v1`: a triangular-lattice Lorentz gas
+with one circular scatterer per cell and a nonconjugate radius deformation.
 
-1. `papers/README.md`
-2. `papers/COMMON_ACTUAL_PLATFORM.md`
-3. `papers/SERIES_MANIFEST.yaml`
-4. `status/ACTIVE_STATUS.yaml`
-5. `papers/EXTERNAL_REVIEW_CHECKLIST.md`
-
-## Active papers
-
-1. Geometric response and symbolic desingularization.
-2. Physical-time correlated rough homogenization.
-3. Microscopic collision games and physical theta-semigroups.
-4. Information, filtering, and Isaacs extensions.
-5. Tangent laws and stochastic representations.
-
-## Historical archive
-
-All previous manuscripts, cumulative canonical volumes, CM2 evidence, and
-older review materials remain preserved on:
-
-```text
-archive/full-v4-pre-governance-2026-08-29
-```
-
-Archived files are not current theorem sources.
-
-## Build and verify
-
-```bash
-make -C papers all
-python3 tools/verify_external_review_tree.py
-```
-
-The active branch is a research manuscript set.  Successful builds and
-finite-dimensional checks do not constitute external mathematical review.
+Start with `papers/README.md`, `papers/COMMON_ACTUAL_PLATFORM.md`, and
+`papers/SERIES_MANIFEST.yaml`.  The five manuscripts are research drafts for
+independent line-by-line review; build and formula checks do not certify their
+analysis.
