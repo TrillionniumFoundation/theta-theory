@@ -1,0 +1,176 @@
+name: promote-clean-main-11paper-v3
+
+on:
+  push:
+    branches:
+      - staging/promote-clean-main-11paper-v3-2026-08-30
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Promote verified eleven-paper source to main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'theta-theory-governance'
+          git config user.email 'governance@users.noreply.github.com'
+
+          SOURCE_DIR="$RUNNER_TEMP/source"
+          SOURCE_REF=''
+          for ref in \
+            archive/full-v12-review-tree-2026-08-30 \
+            archive/v12-eleven-paper-full-assets-2026-08-30 \
+            archive/11paper-full-review-assets-2026-08-30 \
+            series/v12-eleven-paper-top-journal-2026-08-30; do
+            if git fetch origin "$ref"; then
+              SOURCE_REF="$ref"
+              break
+            fi
+          done
+          [[ -n "$SOURCE_REF" ]] || { echo 'No eleven-paper source branch found' >&2; exit 1; }
+          git worktree add --detach "$SOURCE_DIR" "FETCH_HEAD"
+
+          mapfile -t PAPER_DIRS < <(
+            find "$SOURCE_DIR/papers" -mindepth 2 -maxdepth 2 -type f -name main.tex -printf '%h\n' 2>/dev/null | sort -u
+          )
+          if [[ "${#PAPER_DIRS[@]}" -ne 11 ]]; then
+            echo "Expected 11 paper folders under source papers/, found ${#PAPER_DIRS[@]}" >&2
+            printf '%s\n' "${PAPER_DIRS[@]}" >&2
+            exit 1
+          fi
+          for d in "${PAPER_DIRS[@]}"; do
+            [[ -f "$d/references.bib" ]] || { echo "Missing references.bib in $d" >&2; exit 1; }
+          done
+
+          git fetch origin main
+          git checkout -B main origin/main
+          git rm -r -f .
+          mkdir -p papers
+
+          for src in "${PAPER_DIRS[@]}"; do
+            name="$(basename "$src")"
+            mkdir -p "papers/$name"
+            cp -a "$src/." "papers/$name/"
+          done
+
+          find papers -type f \( \
+            -name '*.aux' -o -name '*.bbl' -o -name '*.bcf' -o -name '*.blg' -o \
+            -name '*.fdb_latexmk' -o -name '*.fls' -o -name '*.log' -o -name '*.out' -o \
+            -name '*.run.xml' -o -name '*.synctex.gz' -o -name '*.toc' -o \
+            -name '*.zip' -o -name '*.tar.gz' -o -name '*.b64' \
+          \) -delete
+          find papers -type d -name '__pycache__' -prune -exec rm -rf {} +
+
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          dirs = sorted(p.parent for p in Path('papers').glob('*/main.tex'))
+          assert len(dirs) == 11, len(dirs)
+          records=[]
+          for d in dirs:
+              assert (d/'references.bib').is_file()
+              txt=(d/'main.tex').read_text(encoding='utf-8', errors='replace')
+              m=re.search(r'\\title\{(.+?)\}', txt, re.S)
+              title=re.sub(r'\s+',' ',m.group(1)).strip() if m else d.name
+              records.append((d.name,title.replace('$','')))
+
+          root=[
+              '# Theta-Theory — eleven-paper external-review tree','',
+              'The default branch contains only the eleven current manuscript folders and minimal governance files.',
+              'All historical manuscripts, derivation volumes, evidence, registries, verifiers, build receipts, renderings, and synthesis packages are preserved on archive or series branches.','',
+              '## Active manuscripts',''
+          ]
+          for i,(name,title) in enumerate(records,1):
+              root.append(f'{i}. [`papers/{name}/`](papers/{name}/) — {title}')
+          root += ['', 'Each manuscript folder has exactly one controlling `main.tex` and one `references.bib`.', '',
+                   '## Archive branches','',
+                   '- `archive/main-pre-11paper-cleanup-2026-08-30` — previous default branch.',
+                   '- `archive/v11-five-paper-synthesis-2026-08-30` — five-paper integration/synthesis tree.',
+                   '- `archive/full-v12-review-tree-2026-08-30` (or equivalent v12 archive branch) — full eleven-paper review assets.',
+                   '- Earlier `series/*` and `archive/*` branches retain all v4–v11 provenance and benchmarks.','',
+                   'Build success and machine verification do not constitute external mathematical certification.']
+          Path('README.md').write_text('\n'.join(root)+'\n',encoding='utf-8')
+
+          Path('ARCHIVE_POINTER.md').write_text('''# Archive pointer
+
+The default branch is restricted to the eleven current manuscript folders.
+
+Historical and non-manuscript assets are preserved on archive and series branches, including:
+
+- `archive/main-pre-11paper-cleanup-2026-08-30`
+- `archive/v11-five-paper-synthesis-2026-08-30`
+- the v12 full-review archive branch
+
+Archived material is not a controlling theorem source unless migrated through an explicit reviewed change.
+''',encoding='utf-8')
+
+          Path('GOVERNANCE.md').write_text('''# Main-tree governance
+
+1. Exactly eleven directories are permitted under `papers/`.
+2. Each paper has one controlling `main.tex` and one `references.bib`.
+3. Historical versions, cumulative derivations, evidence bundles, source archives, registries, verifiers, CI receipts, and rendered review packages belong on archive branches.
+4. A build or machine check cannot upgrade external-review status.
+5. Mathematical edits must remain ordinary, line-reviewable source changes inside the relevant paper folder.
+''',encoding='utf-8')
+
+          plines=['# Eleven active manuscripts','']+[f'- `{n}` — {t}' for n,t in records]
+          Path('papers/README.md').write_text('\n'.join(plines)+'\n',encoding='utf-8')
+          Path('papers/Makefile').write_text('''PAPERS := $(sort $(patsubst %/main.tex,%,$(wildcard */main.tex)))
+
+.PHONY: all clean list
+all:
+\t@set -e; for p in $(PAPERS); do latexmk -cd -pdf -interaction=nonstopmode -halt-on-error $$p/main.tex; done
+clean:
+\t@set -e; for p in $(PAPERS); do latexmk -cd -C $$p/main.tex; done
+list:
+\t@printf '%s\\n' $(PAPERS)
+''',encoding='utf-8')
+          PY
+
+          cat > .gitignore <<'EOF'
+          *.aux
+          *.bbl
+          *.bcf
+          *.blg
+          *.fdb_latexmk
+          *.fls
+          *.log
+          *.out
+          *.run.xml
+          *.synctex.gz
+          *.toc
+          __pycache__/
+          *.py[cod]
+          EOF
+          sed -i 's/^          //' .gitignore
+
+          test "$(find papers -mindepth 2 -maxdepth 2 -type f -name main.tex | wc -l)" -eq 11
+          test "$(find papers -mindepth 2 -maxdepth 2 -type f -name references.bib | wc -l)" -eq 11
+          test "$(find papers -mindepth 1 -maxdepth 1 -type d | wc -l)" -eq 11
+          if find papers -type f | grep -E '/(main-(v[0-9]+|final|submission|round[0-9]+)|.*FINAL_STATUS|.*LATEST_WINS)'; then
+            echo 'Historical manuscript filename found' >&2
+            exit 1
+          fi
+          if find . -maxdepth 1 -mindepth 1 -type d ! -name .git ! -name papers | grep .; then
+            echo 'Unexpected top-level directory found' >&2
+            exit 1
+          fi
+
+          git add -A
+          if git diff --cached --quiet; then
+            echo 'Main already equals the clean eleven-paper tree.'
+            exit 0
+          fi
+          git commit -m 'Clean main to eleven external-review manuscript folders'
+          git push origin HEAD:main
