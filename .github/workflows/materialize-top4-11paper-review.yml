@@ -1,0 +1,122 @@
+name: Materialize eleven-paper harsh referee review
+
+on:
+  push:
+    branches:
+      - automation/materialize-top4-11paper-review-2026-08-30
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: materialize-top4-11paper-review
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out migration branch
+        uses: actions/checkout@v4
+        with:
+          ref: automation/materialize-top4-11paper-review-2026-08-30
+          fetch-depth: 0
+
+      - name: Reconstruct and verify the pinned eleven-paper source tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          archive_dir="migration/clean-main-11paper"
+          work="/tmp/theta-11paper-review"
+          archive="/tmp/clean_main_11paper.tar.gz"
+          rm -rf "$work" "$archive"
+          mkdir -p "$work"
+          cat "$archive_dir"/parts/part-*.b64 | tr -d '\r\n' | base64 --decode > "$archive"
+          echo "566335121763abaa7ed8ed2280a3b4345877777e8bedbd80f4eef0a6b48745e2  $archive" | sha256sum -c -
+          tar -xzf "$archive" -C "$work"
+          python - <<'PY'
+          from pathlib import Path
+
+          root = Path('/tmp/theta-11paper-review')
+          expected = {
+              'A1-exact-benchmarks',
+              'A2-sinai-homological-pressure',
+              'A3-full-empirical-path-ldp',
+              'A4-history-memory-universal-pressure',
+              'B1-microcanonical-preparation',
+              'B2-collision-clusters-dynamic-ldp',
+              'B3-hamilton-boltzmann-cotangents',
+              'B4-nonlinear-kinetic-semigroups',
+              'C1-information-risk-sensitive-saddles',
+              'C2-cotangent-rigidity-tangent-representations',
+              'D1-deterministic-theta-contractions',
+          }
+          actual = {p.name for p in (root / 'papers').iterdir() if p.is_dir()}
+          assert actual == expected, (actual, expected)
+          assert len(list(root.rglob('main.tex'))) == 11
+          assert len(list(root.rglob('references.bib'))) == 11
+          for name in expected:
+              paper = root / 'papers' / name
+              assert {p.name for p in paper.iterdir()} == {
+                  'main.tex', 'references.bib', 'README.md', 'REFEREE_GUIDE.md'
+              }
+          assert {p.name for p in root.iterdir()} == {
+              'README.md', 'Makefile', '.gitignore', 'papers'
+          }
+          PY
+
+      - name: Embed the eleven independent referee reports
+        shell: bash
+        run: |
+          set -euo pipefail
+          work="/tmp/theta-11paper-review"
+          source_branch="review/top4-harsh-referee-reports-11paper-2026-08-30"
+          git fetch --depth=1 origin "$source_branch:refs/remotes/origin/refreports"
+          papers=(
+            A1-exact-benchmarks
+            A2-sinai-homological-pressure
+            A3-full-empirical-path-ldp
+            A4-history-memory-universal-pressure
+            B1-microcanonical-preparation
+            B2-collision-clusters-dynamic-ldp
+            B3-hamilton-boltzmann-cotangents
+            B4-nonlinear-kinetic-semigroups
+            C1-information-risk-sensitive-saddles
+            C2-cotangent-rigidity-tangent-representations
+            D1-deterministic-theta-contractions
+          )
+          for paper in "${papers[@]}"; do
+            git show "origin/refreports:papers/$paper/REFEREE_REPORT.md" > "$work/papers/$paper/REFEREE_REPORT.md"
+            test -s "$work/papers/$paper/REFEREE_REPORT.md"
+          done
+          git show "origin/refreports:REFEREE_REPORTS_INDEX.md" > "$work/REFEREE_REPORTS_INDEX.md"
+          cat > "$work/REVIEW_PROVENANCE.md" <<'EOF'
+          # Review provenance
+
+          This branch materializes the SHA-256-pinned clean eleven-paper source archive and embeds one independent `REFEREE_REPORT.md` inside each actual manuscript folder.
+
+          - Source archive SHA-256: `566335121763abaa7ed8ed2280a3b4345877777e8bedbd80f4eef0a6b48745e2`
+          - Source migration commit: `95ede02063a3c6b124f06d42e351101bab2c94f9`
+          - Original report branch: `review/top4-harsh-referee-reports-11paper-2026-08-30`
+          - Editorial standard: *Annals of Mathematics*, *Acta Mathematica*, *Inventiones Mathematicae*, and *Journal of the American Mathematical Society*
+
+          The default `main` branch is intentionally untouched because it currently carries a different five-paper active series.
+          EOF
+          test "$(find "$work/papers" -mindepth 2 -maxdepth 2 -name REFEREE_REPORT.md -type f | wc -l)" -eq 11
+
+      - name: Publish the materialized review branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          work="/tmp/theta-11paper-review"
+          target="review/top4-harsh-referee-reports-11paper-materialized-2026-08-30"
+          git checkout --orphan materialized-review
+          git rm -rf --ignore-unmatch .
+          find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf -- {} +
+          cp -a "$work"/. .
+          git add -A
+          git config user.name "theta-theory-review-bot"
+          git config user.email "theta-theory-review-bot@users.noreply.github.com"
+          git commit -m "Materialize eleven-paper source tree with harsh referee reports"
+          git push --force origin "HEAD:refs/heads/$target"
