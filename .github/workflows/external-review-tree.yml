@@ -1,0 +1,20 @@
+name: external-review-tree
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install TeX
+        run: sudo apt-get update && sudo apt-get install -y texlive-latex-base texlive-latex-extra texlive-fonts-recommended
+      - name: Verify active tree
+        run: python3 tools/verify_external_review_tree.py
+      - name: Verify exact formulas
+        run: python3 tools/verify_v5_formulas.py
+      - name: Build five papers
+        run: make -C papers all

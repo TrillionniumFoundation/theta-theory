@@ -1,42 +1,44 @@
 # Repository governance
 
-## 1. One active source per paper
+## Source authority
 
-Each current paper has exactly one `main.tex` and one `references.bib`. Versions are
-represented by commits and tags, not filenames such as `main-final.tex`, `main-v3.tex`
-or `main-round4.tex`.
+The only active manuscript source for each paper is its `main.tex`, and the
+only active bibliography is `references.bib`.
 
-## 2. Archive separation
+Historical filenames such as `main-v2.tex`, `main-final.tex`,
+`main-round4.tex`, and competing `FINAL_STATUS` pages are forbidden on the
+default branch.
 
-Historical manuscripts, cumulative chat/canonical volumes, CM2 evidence and legacy
-verification programs live only on the archive branch identified in
-`ARCHIVE_POINTER.md`.
+## Platform typing
 
-## 3. Authority separation
+Every load-bearing theorem must carry a platform identifier from
+`platforms/platform-registry.yaml`.
 
-The following are distinct and must never be collapsed into one status:
+A same-platform theorem may use only imports with the same platform identifier,
+unless a separate bridge theorem is stated and proved.
 
-```text
-proved in manuscript
-actual model supplied
-build or formula check passed
-independent mathematical review completed
-```
+## Status dimensions
 
-## 4. Platform binding
+The following statuses are independent:
 
-Every load-bearing theorem must carry a `platform_id`. Theorems from different
-platforms cannot be composed into a `SAME_PLATFORM` conclusion without an explicit
-bridge theorem.
+- mathematical manuscript status;
+- actual-system/platform status;
+- build/verification status;
+- independent external review status.
 
-## 5. No unscoped finality labels
+A build receipt may not upgrade mathematical or review status.
 
-The active tree must not introduce competing `FINAL`, `LATEST_WINS`, `RemainingGaps: 0`
-or global `CLOSED` status pages. One machine-readable registry will generate human
-status summaries.
+## Archive
 
-## 6. Review preservation
+Historical assets are immutable on
+`archive/full-v4-pre-governance-2026-08-29`.  They may be consulted for
+provenance and regression testing, but they are not controlling sources.
 
-Referee reports and hostile audits remain active review records when they apply to the
-current theorem lineage. Historical reports must state the reviewed commit and are
-retained on the archive branch or in a scoped review folder.
+## Changes
+
+A mathematical change must update:
+
+1. the relevant `main.tex`;
+2. `papers/SERIES_MANIFEST.yaml`;
+3. `status/ACTIVE_STATUS.yaml`;
+4. the paper's `REFEREE_GUIDE.md` when the review surface changes.

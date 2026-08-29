@@ -1,0 +1,522 @@
+\documentclass[11pt,reqno]{amsart}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsfonts,amsthm,mathtools,mathrsfs}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{microtype}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+\usepackage[nameinlink,capitalize]{cleveref}
+\allowdisplaybreaks
+\setlength{\emergencystretch}{2em}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{assumption}[theorem]{Assumption}
+\newtheorem{example}[theorem]{Example}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\A}{\mathcal A}
+\newcommand{\B}{\mathcal B}
+\newcommand{\C}{\mathbb C}
+\newcommand{\E}{\mathbb E}
+\newcommand{\F}{\mathcal F}
+\newcommand{\N}{\mathbb N}
+\newcommand{\Pp}{\mathbb P}
+\newcommand{\Qp}{\mathbb Q}
+\newcommand{\R}{\mathbb R}
+\newcommand{\T}{\mathbb T}
+\newcommand{\cE}{\mathcal E}
+\newcommand{\cP}{\mathcal P}
+\newcommand{\Id}{\mathrm{Id}}
+\newcommand{\tr}{\operatorname{tr}}
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\Cov}{\operatorname{Cov}}
+\newcommand{\Lip}{\operatorname{Lip}}
+\newcommand{\osc}{\operatorname{osc}}
+\newcommand{\supp}{\operatorname{supp}}
+\newcommand{\norm}[1]{\left\lVert #1\right\rVert}
+\newcommand{\abs}[1]{\left\lvert #1\right\rvert}
+\newcommand{\pair}[2]{\left\langle #1,#2\right\rangle}
+
+\title[Collision games and theta semigroups]{Microscopic Collision Games and Physical-Time Theta-Semigroups}
+\author{Qian Qi}
+\address{Peking University, Beijing 100871, China}
+\email{qiqian@pku.edu.cn}
+\subjclass[2020]{Primary 49L25, 35D40; Secondary 60F17, 93E20}
+\keywords{dynamic programming, viscosity solutions, nonlinear expectation, collision games, physical time}
+\date{August 29, 2026}
+
+\begin{document}
+
+\begin{abstract}
+We construct microscopic collision games and nonlinear terminal semigroups on
+the same moving specular open billiard used in the response and rough
+homogenization papers.  The fast state is the current obstacle label of a
+non-reversible Markov--Gibbs orbit.  The slow collision update, action order,
+running reward, and terminal payoff are explicit.  Backward induction gives an
+exact finite-state dynamic programming equation; no microscopic PDE,
+anisotropic pairing, or hidden pointwise contact assumption is introduced.
+
+A Dobrushin contraction shows that the value oscillation in the fast label is
+$O(\varepsilon)$.  The Poisson corrector from Paper II cancels the
+order-$\varepsilon$ collision displacement, and a finite-state cell problem
+gives the collision-clock Isaacs Hamiltonian
+\[
+ H_{\rm coll}(x,p,X)
+ =
+ \frac13\sum_{i=1}^3\max_u\min_v
+ \{c_i^{uv}(x)+b_i^{uv}(x)\cdot p\}
+ +\frac1{14}\operatorname{tr}X.
+\]
+The scheme is monotone, stable, and locally uniformly consistent, so the
+values converge to the unique viscosity solution.
+
+The actual free-flight clock is then restored.  The random-index window
+theorem of Paper II gives an $O(\sqrt\varepsilon)$ comparison between the
+random physical horizon and its deterministic collision approximation.
+Hence the physical Hamiltonian is $\bar\tau_a^{-1}H_{\rm coll}$ and its
+diffusion coefficient has the strict moving-obstacle response
+\[
+ D_{\rm HJB}'(a)
+ =-\frac{\bar\tau_a'}{14\bar\tau_a^2}I_2\ne0.
+\]
+An exact exponential collision recursion defines the theta-semigroup.  Its
+limit adds the entropic term
+$\frac{\vartheta}{2\bar\tau_a}p^T\Sigma_{\rm coll}p$.
+\end{abstract}
+
+\maketitle
+\tableofcontents
+
+\section{Introduction}
+
+Papers I and II supply a same-platform response and physical-time rough limit.
+The present paper supplies the missing microscopic value problem.  The
+construction is deliberately finite and explicit: the fast state is one of
+three obstacle labels, both players act at collision epochs, and the fast
+transition matrix is fixed by the chosen invariant Markov--Gibbs ensemble.
+
+The primary platform remains \texttt{OB3-MG-v1}.  The four-branch exact model
+is used only as a regression benchmark for one-step formulas.  Filtering and
+noncompact hidden states are postponed to Paper IV; the fully observed base
+game is already complete here.
+
+We use monotone approximation and viscosity comparison
+\cite{BarlesSouganidis1991,CrandallIshiiLions1992,FlemingSouganidis1989}.
+The finite-state corrector and the random-clock interface are proved
+explicitly or imported by named theorem from Paper II.
+
+\section{The microscopic collision game}\label{sec:game}
+
+Let
+\[
+ P=\begin{pmatrix}
+ 0&2/3&1/3\\
+ 1/3&0&2/3\\
+ 2/3&1/3&0
+ \end{pmatrix},
+ \qquad
+ \pi=(1/3,1/3,1/3),
+\]
+and let
+\[
+ g_1=(1,0),\quad
+ g_2=\left(-\frac12,\frac{\sqrt3}{2}\right),\quad
+ g_3=\left(-\frac12,-\frac{\sqrt3}{2}\right).
+\]
+Let $U,V$ be finite action sets.  For each obstacle label and action pair, let
+\[
+ b_i^{uv}:\R^2\to\R^2,\qquad
+ c_i^{uv}:\R^2\to\R
+\]
+be bounded and globally Lipschitz.  Let the terminal payoff
+$\Phi:\R^2\to\R$ be bounded and globally Lipschitz.
+
+At collision $k$, player I observes $(X_k,I_k)$ and chooses $u_k$.  Player II
+observes $(X_k,I_k,u_k)$ and chooses $v_k$.  Then
+\begin{equation}\label{eq:slow}
+ X_{k+1}
+ =
+ X_k+\varepsilon g_{I_k}
+ +\varepsilon^2 b_{I_k}^{u_kv_k}(X_k),
+\end{equation}
+the reward is $\varepsilon^2c_{I_k}^{u_kv_k}(X_k)$, and
+$I_{k+1}$ is drawn according to $P_{I_k\cdot}$.  This stochastic description
+is the image of the deterministic open billiard under its invariant initial
+law.
+
+For a deterministic terminal collision $N$, let
+$U_k^\varepsilon(x,i)$ be the lower value.
+
+\begin{theorem}[Exact collision DPP]\label{thm:dpp}
+The value satisfies
+\begin{equation}\label{eq:dpp}
+\begin{aligned}
+ U_k^\varepsilon(x,i)
+ =
+ \max_{u\in U}\min_{v\in V}
+ \Bigg\{&
+ \varepsilon^2c_i^{uv}(x)\\
+ &+\sum_{j=1}^3P_{ij}
+ U_{k+1}^\varepsilon
+ \bigl(x+\varepsilon g_i+\varepsilon^2b_i^{uv}(x),j\bigr)
+ \Bigg\},
+\end{aligned}
+\end{equation}
+with $U_N^\varepsilon(x,i)=\Phi(x)$.
+\end{theorem}
+
+\begin{proof}
+At a fixed state and action pair, the only next-step uncertainty is the
+declared transition row of $P$.  Conditioning on the next label and applying
+backward induction gives \eqref{eq:dpp}.  The sequential lower-game order
+gives $\max_u\min_v$.
+\end{proof}
+
+\section{Fast-label collapse}\label{sec:collapse}
+
+For $z\in\R^3$, put
+\[
+ \osc z=\max_i z_i-\min_i z_i.
+\]
+
+\begin{lemma}[Dobrushin contraction]\label{lem:dobrushin}
+For every $z\in\R^3$,
+\[
+ \osc(Pz)\le\frac23\osc z.
+\]
+\end{lemma}
+
+\begin{proof}
+The overlap of every two rows of $P$ is $1/3$.  The Dobrushin coefficient is
+therefore $1-1/3=2/3$.
+\end{proof}
+
+\begin{proposition}[Value oscillation]\label{prop:oscillation}
+For each fixed macroscopic horizon $T=N\varepsilon^2$,
+\[
+ \sup_{0\le k\le N}\sup_x\max_{i,j}
+ \abs{U_k^\varepsilon(x,i)-U_k^\varepsilon(x,j)}
+ \le C_T\varepsilon.
+\]
+The values are uniformly Lipschitz in $x$.
+\end{proposition}
+
+\begin{proof}
+Backward induction propagates a uniform spatial Lipschitz constant because
+the drift and reward are Lipschitz and the horizon is $O(\varepsilon^{-2})$.
+Comparing two labels in \eqref{eq:dpp}, use nonexpansiveness of max and min,
+\cref{lem:dobrushin}, and the $O(\varepsilon)$ difference of the spatial
+shifts:
+\[
+ \delta_k\le\frac23\delta_{k+1}+C\varepsilon.
+\]
+Since $\delta_N=0$, iteration gives the result.
+\end{proof}
+
+Thus every half-relaxed limit is scalar, independent of the fast label.
+
+\section{The Poisson corrector and cell problem}\label{sec:cell}
+
+Paper II computes
+\[
+ A=-\frac12I_2+\frac{\sqrt3}{6}
+ \begin{pmatrix}0&-1\\1&0\end{pmatrix},
+ \qquad
+ H=(I-A)^{-1}
+ =\frac1{14}
+ \begin{pmatrix}9&-\sqrt3\\\sqrt3&9\end{pmatrix}.
+\]
+Set $h_i=Hg_i$.  Then
+\[
+ h_i-(Ph)_i=g_i.
+\]
+
+For a symmetric matrix $X$, define
+\[
+ q_i(X)
+ =
+ \frac12g_i^TXg_i+(Ph)_i^TXg_i,
+\]
+and
+\[
+ r_i(x,p)
+ =
+ \max_{u\in U}\min_{v\in V}
+ \{c_i^{uv}(x)+b_i^{uv}(x)\cdot p\}.
+\]
+
+\begin{lemma}[Second-order average]\label{lem:average}
+For every symmetric $X$,
+\[
+ \frac13\sum_{i=1}^3q_i(X)
+ =\frac1{14}\tr X.
+\]
+\end{lemma}
+
+\begin{proof}
+The left side is one half of the Green--Kubo covariance contracted with $X$.
+Paper II computes $\Sigma_{\rm coll}=I_2/7$.
+\end{proof}
+
+Define
+\begin{equation}\label{eq:Hcoll}
+ H_{\rm coll}(x,p,X)
+ =
+ \frac13\sum_{i=1}^3r_i(x,p)+\frac1{14}\tr X.
+\end{equation}
+
+\begin{proposition}[Finite-state cell equation]\label{prop:cell}
+There is a unique normalized vector $\chi(x,p,X)\in\R^3$ with
+$\sum_i\chi_i=0$ satisfying
+\[
+ \chi_i-(P\chi)_i
+ =
+ r_i(x,p)+q_i(X)-H_{\rm coll}(x,p,X).
+\]
+It is locally Lipschitz in $(x,p,X)$.
+\end{proposition}
+
+\begin{proof}
+The right side has zero $\pi$-mean by \cref{lem:average}.  The restriction of
+$I-P$ to the two-dimensional mean-zero space is invertible, with a bounded
+inverse.  Lipschitz dependence follows from the finite action sets and the
+Lipschitz coefficients.
+\end{proof}
+
+\section{Consistency}\label{sec:consistency}
+
+Let $\phi\in C^3$ and use the perturbed test
+\[
+ \phi_i^\varepsilon(t,x)
+ =
+ \phi(t,x)
+ +\varepsilon h_i\cdot D\phi(t,x)
+ +\varepsilon^2\chi_i
+ \bigl(x,D\phi(t,x),D^2\phi(t,x)\bigr).
+\]
+
+\begin{theorem}[Locally uniform consistency]\label{thm:consistency}
+When the one-step operator in \eqref{eq:dpp} is applied to
+$\phi^\varepsilon$, the order-$\varepsilon$ term vanishes and
+\[
+ \frac{\mathcal S_\varepsilon\phi^\varepsilon-\phi^\varepsilon}
+ {\varepsilon^2}
+ \longrightarrow
+ \partial_t\phi+
+ H_{\rm coll}(x,D\phi,D^2\phi)
+\]
+locally uniformly in $(t,x,i)$.
+\end{theorem}
+
+\begin{proof}
+Taylor expansion gives the first-order vector
+\[
+ g_i+(Ph)_i-h_i=0.
+\]
+The order-$\varepsilon^2$ terms are $r_i+q_i+(P\chi)_i-\chi_i$.
+The cell equation makes this independent of $i$ and equal to
+$H_{\rm coll}$.  Bounded third derivatives and bounded increments give an
+$O(\varepsilon)$ normalized remainder.
+\end{proof}
+
+\section{Collision-clock HJB limit}\label{sec:hjb}
+
+\begin{theorem}[Collision-clock convergence]\label{thm:collision-hjb}
+Let the collision time be $s=k\varepsilon^2$.  The interpolation of
+$U_k^\varepsilon$ converges locally uniformly, independently of the fast
+label, to the unique bounded viscosity solution of
+\begin{equation}\label{eq:collision-pde}
+ -\partial_sU
+ =
+ H_{\rm coll}(x,DU,D^2U),
+ \qquad U(T,x)=\Phi(x).
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+The scheme is monotone because $P$ has nonnegative entries and expectation,
+max, and min preserve order.  It is stable because bounded one-step rewards
+accumulate for $O(\varepsilon^{-2})$ steps.  Consistency follows from
+\cref{thm:consistency}, and scalar compactness from
+\cref{prop:oscillation}.  The operator is uniformly elliptic with coefficient
+$I_2/14$ and continuous in all variables.  The standard
+doubling-of-variables argument gives comparison for bounded viscosity
+solutions.  The half-relaxed-limit method therefore proves convergence
+\cite{BarlesSouganidis1991,CrandallIshiiLions1992}.
+\end{proof}
+
+\section{Restoring physical time}\label{sec:physical}
+
+Let $\tau_a$ be the actual free-flight roof and
+\[
+ N_\varepsilon(T)
+ =
+ N_a(T/\varepsilon^2),\qquad
+ n_\varepsilon(T)
+ =
+ \left\lfloor\frac{T}{\varepsilon^2\bar\tau_a}\right\rfloor.
+\]
+Define the physical-horizon game by stopping at the last collision before
+physical time $T$.
+
+\begin{theorem}[Physical-horizon replacement]\label{thm:physical-replacement}
+Uniformly over admissible collision-feedback strategies,
+\[
+ \sup_x
+ \abs{
+ V_{\rm phys}^{\varepsilon,a}(T,x)
+ -
+ V_{\rm coll}^{\varepsilon}
+ (n_\varepsilon(T),x)}
+ \le C_T\sqrt\varepsilon.
+\]
+\end{theorem}
+
+\begin{proof}
+Couple the two games on the same fast path and use identical actions until the
+shorter horizon.  Paper II proves
+\[
+ \E\abs{
+ \varepsilon\sum_{k=n_\varepsilon}^{N_\varepsilon-1}g_{I_k}}
+ \le C_T\sqrt\varepsilon.
+\]
+The terminal payoff is Lipschitz.  The extra controlled drift and reward are
+bounded by
+\[
+ C\varepsilon^2\E\abs{N_\varepsilon-n_\varepsilon}
+ =O(\varepsilon).
+\]
+The fast clock is action independent, so the estimate is uniform over both
+players.
+\end{proof}
+
+\begin{corollary}[Physical-time Isaacs equation]\label{cor:physical-hjb}
+The physical values converge to the unique solution of
+\begin{equation}\label{eq:physical-pde}
+ -\partial_tV
+ =
+ H_{{\rm phys},a}(x,DV,D^2V),
+ \qquad
+ H_{{\rm phys},a}
+ =\frac1{\bar\tau_a}H_{\rm coll}.
+\end{equation}
+The generator diffusion coefficient is
+\[
+ D_{\rm HJB}(a)=\frac1{14\bar\tau_a}I_2
+\]
+and
+\[
+ D_{\rm HJB}'(a)
+ =-\frac{\bar\tau_a'}{14\bar\tau_a^2}I_2\ne0.
+\]
+\end{corollary}
+
+\section{The microscopic theta-semigroup}\label{sec:theta}
+
+Fix $\vartheta\ne0$.  Define the one-step lower entropic operator
+\begin{equation}\label{eq:theta-step}
+\begin{aligned}
+ (\mathcal T_\varepsilon^\vartheta F)_i(x)
+ =
+ \max_u\min_v\frac1\vartheta\log
+ \sum_jP_{ij}\exp\Bigl(\vartheta[
+ &\varepsilon^2c_i^{uv}(x)\\
+ &+F_j(x+\varepsilon g_i+\varepsilon^2b_i^{uv}(x))
+ ]\Bigr).
+\end{aligned}
+\end{equation}
+It is monotone, cash additive, and stable.
+
+Let $\lambda(\zeta)$ be the Perron eigenvalue of the tilted matrix
+\[
+ P_\zeta(i,j)=e^{\zeta\cdot g_i}P_{ij}.
+\]
+Then
+\[
+ D\log\lambda(0)=0,\qquad
+ D^2\log\lambda(0)=\Sigma_{\rm coll}.
+\]
+
+\begin{theorem}[Theta-HJB limit]\label{thm:theta-hjb}
+The finite-horizon recursion generated by
+$\mathcal T_\varepsilon^\vartheta$ converges to the physical-time equation
+\begin{equation}\label{eq:theta-pde}
+ -\partial_tV
+ =
+ \frac1{\bar\tau_a}
+ \left[
+ \frac13\sum_i r_i(x,DV)
+ +\frac1{14}\Delta V
+ +\frac{\vartheta}{14}\abs{DV}^2
+ \right].
+\end{equation}
+Equivalently, the entropic term is
+\[
+ \frac{\vartheta}{2\bar\tau_a}
+ DV^T\Sigma_{\rm coll}DV.
+\]
+\end{theorem}
+
+\begin{proof}
+Use the exponential perturbed cell eigenvector associated with $P_\zeta$.
+The first derivative of $\log\lambda$ vanishes by centering; its Hessian is
+the Green--Kubo covariance.  Expansion of \eqref{eq:theta-step} therefore adds
+$\vartheta DV^T\Sigma_{\rm coll}DV/2$ to the additive cell Hamiltonian.
+Monotonicity, stability, and comparison proceed as in
+\cref{thm:collision-hjb}; \cref{thm:physical-replacement} restores physical
+time.
+\end{proof}
+
+\begin{definition}[Physical theta-semigroup]
+For $0\le s\le t$, $\cE^{\vartheta,a}_{s,t}\Phi$ is the solution at time $s$
+of \eqref{eq:theta-pde} with terminal datum $\Phi$ at time $t$.
+\end{definition}
+
+\begin{corollary}[Time consistency]\label{cor:time-consistency}
+The family $\cE^{\vartheta,a}$ is monotone, cash additive, constant preserving,
+and satisfies
+\[
+ \cE^{\vartheta,a}_{r,t}
+ =
+ \cE^{\vartheta,a}_{r,s}
+ \circ\cE^{\vartheta,a}_{s,t}.
+\]
+\end{corollary}
+
+\section{Architecture and exports}
+
+The core results of this paper import only \texttt{OB3-MG-v1} objects from
+Papers I and II.  Paper IV may add hidden states and information constraints.
+Paper V differentiates the terminal semigroup and its microscopic recursion.
+Neither downstream paper is used in the proof above.
+
+\begin{theorem}[Same-platform collision-to-HJB theorem]\label{thm:main}
+The moving obstacle, nonzero roof source, physical covariance, collision
+recursion, random physical horizon, and limiting theta-HJB operator all belong
+to \texttt{OB3-MG-v1}.  No coefficient or probabilistic limit from a benchmark
+platform is used in this conclusion.
+\end{theorem}
+
+\begin{proof}
+Combine Papers I--II with
+\cref{thm:dpp,thm:collision-hjb,thm:physical-replacement,cor:physical-hjb,thm:theta-hjb}.
+\end{proof}
+
+\section*{Scope and review status}
+
+The controls affect the slow collision port and reward, not the fast obstacle
+geometry or invariant Markov transition law.  Partially observed and
+noncompact extensions are treated separately in Paper IV.  The manuscript is
+prepared for independent external review.
+
+\bibliographystyle{plain}
+\bibliography{references}
+\end{document}

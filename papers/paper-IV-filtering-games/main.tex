@@ -1,0 +1,431 @@
+\documentclass[11pt,reqno]{amsart}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsfonts,amsthm,mathtools,mathrsfs}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{microtype}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+\usepackage[nameinlink,capitalize]{cleveref}
+\allowdisplaybreaks
+\setlength{\emergencystretch}{2em}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{assumption}[theorem]{Assumption}
+\newtheorem{example}[theorem]{Example}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\A}{\mathcal A}
+\newcommand{\B}{\mathcal B}
+\newcommand{\C}{\mathbb C}
+\newcommand{\E}{\mathbb E}
+\newcommand{\F}{\mathcal F}
+\newcommand{\N}{\mathbb N}
+\newcommand{\Pp}{\mathbb P}
+\newcommand{\Qp}{\mathbb Q}
+\newcommand{\R}{\mathbb R}
+\newcommand{\T}{\mathbb T}
+\newcommand{\cE}{\mathcal E}
+\newcommand{\cP}{\mathcal P}
+\newcommand{\Id}{\mathrm{Id}}
+\newcommand{\tr}{\operatorname{tr}}
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\Cov}{\operatorname{Cov}}
+\newcommand{\Lip}{\operatorname{Lip}}
+\newcommand{\osc}{\operatorname{osc}}
+\newcommand{\supp}{\operatorname{supp}}
+\newcommand{\norm}[1]{\left\lVert #1\right\rVert}
+\newcommand{\abs}[1]{\left\lvert #1\right\rvert}
+\newcommand{\pair}[2]{\left\langle #1,#2\right\rangle}
+
+\title[Filtering and Isaacs extensions]{Information Structures, Noncompact Filtering, and Isaacs Games beyond the Collision State}
+\author{Qian Qi}
+\address{Peking University, Beijing 100871, China}
+\email{qiqian@pku.edu.cn}
+\subjclass[2020]{Primary 93E11, 49L25; Secondary 60J60, 35D40, 91A23}
+\keywords{nonlinear filtering, information structures, Isaacs equations, noncompact controls, deterministic multiscale games}
+\date{August 29, 2026}
+
+\begin{document}
+
+\begin{abstract}
+We extend the fully observed collision game of Paper III in two independent
+directions: partial observation of a noncompact hidden coordinate and
+pure-strategy Isaacs structure on noncompact control sets.  These extensions
+are downstream of the base physical-time HJB theorem and are not required for
+its validity.
+
+The hidden state is a refresh--autoregressive Markov process realized by a
+deterministic product shift.  A common refresh component gives strict
+total-variation contraction, the autoregressive component gives a quadratic
+Lyapunov drift, and bounded nondegenerate observations preserve an explicit
+posterior moment ball.  Sufficient prediction time between observations makes
+the nonlinear filter contract uniformly over strategy trees.  A vanishing
+initial layer removes the initial belief from the macroscopic value.
+
+We also prove an information-order no-go theorem: exact pre-action observation
+of a nonzero fast payoff cannot in general collapse to the fully observed-base
+Hamiltonian with the fast variable removed.  The positive soft-observation
+theorem and the exact-observation obstruction are therefore stated as distinct
+branches.
+
+For pure games, quadratic actuator energies compensate adverse control
+curvature.  The resulting saddle variational inequality is strongly monotone,
+has a unique global pure saddle, and admits a Lipschitz selector on closed
+convex, possibly noncompact control sets.  Coupled with the collision
+coefficients of Paper III, this yields a partially observed physical-time
+Isaacs limit on the product platform
+\texttt{OB3-MG-v1}$\times$\texttt{AR-FILTER-v1}.
+\end{abstract}
+
+\maketitle
+\tableofcontents
+
+\section{Introduction}
+
+Paper III already gives an exact microscopic DPP and physical-time HJB when
+the slow state and current obstacle label are observed.  This paper does not
+re-prove that base theorem.  It asks what changes when an additional hidden
+state affects drift, reward, or observation, and when the local lower and
+upper game operators must be shown to have a common pure saddle.
+
+Filtering stability and Isaacs equality are separate questions.  A filter can
+be stable while a pure game has no value; a game can have a value while exact
+observations prevent belief collapse.  We therefore keep the information and
+game branches typed separately.
+
+We use standard nonlinear filtering references
+\cite{BainCrisan2009,AtarZeitouni1997,vanHandel2009}, stochastic-game
+viscosity theory \cite{FlemingSouganidis1989,FlemingSoner2006}, and monotone
+operator methods.
+
+\section{The product platform}\label{sec:platform}
+
+Let $(I_k)$ be the obstacle-label process of Papers II--III.  Independently,
+let $(Y_k)$ be a hidden Markov state with kernel
+\begin{equation}\label{eq:kernel}
+ P_Y(y,\cdot)
+ =
+ \delta\gamma+(1-\delta)N(ry,1-r^2),
+ \qquad
+ 0<\delta<1,\quad \abs r<1,
+\end{equation}
+where $\gamma=N(0,1)$.  The kernel is realized by a deterministic shift with
+a Bernoulli refresh coordinate and a Gaussian innovation coordinate.  The
+full fast platform is the deterministic product of that shift with the coded
+open billiard.
+
+Let $W(y)=1+y^2$.  The observation alphabet is $\{-1,1\}$ and
+\begin{equation}\label{eq:likelihood}
+ g_o(y)=\frac{1+o\epsilon_o\tanh y}{2},
+ \qquad0<\epsilon_o<1.
+\end{equation}
+Thus
+\[
+ g_-=rac{1-\epsilon_o}{2},\qquad
+ g_+=\frac{1+\epsilon_o}{2}.
+\]
+
+\section{Prediction and Bayes operators}\label{sec:filter}
+
+For a belief $\pi$, define
+\[
+ \mathsf{Pred}(\pi)=\pi P_Y,\qquad
+ \mathsf B_o(\pi)(dy)
+ =
+ \frac{g_o(y)\pi(dy)}{\pi(g_o)}.
+\]
+Use
+\[
+ \norm{\mu-\nu}_{\rm TV}
+ =\sup_{\abs f\le1}\abs{\mu(f)-\nu(f)}.
+\]
+
+\begin{lemma}[Bayes expansion]\label{lem:bayes}
+If $0<g_-\le g\le g_+$, then
+\[
+ \norm{\mathsf B_g(\mu)-\mathsf B_g(\nu)}_{\rm TV}
+ \le
+ C_B\norm{\mu-\nu}_{\rm TV},
+ \qquad
+ C_B=\frac{2g_+}{g_-}.
+\]
+\end{lemma}
+
+\begin{proof}
+For $\abs f\le1$, add and subtract $\nu(gf)/\mu(g)$.  Bound the numerator
+differences by $g_+\norm{\mu-\nu}_{\rm TV}$ and both denominators by $g_-$.
+\end{proof}
+
+\begin{lemma}[Refresh contraction and drift]\label{lem:refresh}
+For all probability measures $\mu,\nu$,
+\[
+ \norm{\mu P_Y-\nu P_Y}_{\rm TV}
+ \le(1-\delta)\norm{\mu-\nu}_{\rm TV}.
+\]
+With $\alpha=(1-\delta)r^2<1$,
+\[
+ P_YW(y)=\alpha W(y)+2(1-\alpha).
+\]
+\end{lemma}
+
+\begin{proof}
+The common refresh part cancels in the signed difference.  The remaining
+kernel is a contraction.  The second identity follows from the conditional
+second moment of \eqref{eq:kernel}.
+\end{proof}
+
+\begin{theorem}[Noncompact soft-filter contraction]\label{thm:filter}
+Choose an integer $m_*$ such that
+\[
+ q=C_B(1-\delta)^{m_*}<1,\qquad
+ \kappa=\frac{g_+}{g_-}\alpha^{m_*}<1.
+\]
+Then one block of $m_*$ predictions followed by one observation:
+\begin{enumerate}[label=(\roman*)]
+\item contracts total variation by $q$;
+\item preserves every moment ball $\{\pi:\pi(W)\le R\}$ with
+\[
+ R\ge\frac{2g_+/g_-}{1-\kappa};
+\]
+\item contracts uniformly along every common observation and strategy tree;
+\item remains stable under compact slow/control perturbations preserving the
+two strict inequalities.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+Apply \cref{lem:refresh} $m_*$ times and then
+\cref{lem:bayes}.  The drift iteration gives
+\[
+ P_Y^{m_*}W\le\alpha^{m_*}W+2.
+\]
+A Bayes update multiplies the moment by at most $g_+/g_-$.  This gives the
+affine moment recursion $\kappa M+2g_+/g_-$ and the stated invariant ball.
+\end{proof}
+
+\section{Initial-layer belief collapse}\label{sec:initial-layer}
+
+Let $\ell_\varepsilon$ filter blocks occur before the first macroscopic reward,
+during physical time $\delta_\varepsilon^{\rm init}$.
+
+\begin{theorem}[Value-level prior removal]\label{thm:prior}
+Assume
+\[
+ \ell_\varepsilon\to\infty,\qquad
+ \delta_\varepsilon^{\rm init}\to0,
+\]
+and that the running reward in the initial layer is bounded by
+$C\delta_\varepsilon^{\rm init}$.  Then values started from beliefs
+$\pi,\pi'$ in the invariant moment ball satisfy
+\[
+ \abs{V^\varepsilon(\pi)-V^\varepsilon(\pi')}
+ \le
+ C_Tq^{\ell_\varepsilon}
+ \norm{\pi-\pi'}_{\rm TV}
+ +C\delta_\varepsilon^{\rm init}
+ +\operatorname{Err}_\varepsilon.
+\]
+Here $\operatorname{Err}_\varepsilon$ is the geometric convolution of the
+slow-freezing moduli.  If it vanishes, the macroscopic value is independent of
+the initial hidden belief.
+\end{theorem}
+
+\begin{proof}
+Couple both filters along the same observations and strategy tree.
+\cref{thm:filter} gives the first term at the first macroscopic reward.
+Only the initial layer sees the uncontracted prior.  Subsequent slow
+perturbations satisfy an affine recursion with factor $q$, whose iteration is
+the displayed convolution.
+\end{proof}
+
+\section{Exact observation is a different problem}\label{sec:no-go}
+
+The next theorem prevents an illegitimate upgrade from soft observations to
+exact pre-action information.
+
+\begin{theorem}[Exact-observation no-go]\label{thm:exact-no-go}
+Let a centered nonzero fast payoff $g$ be revealed exactly before the control
+is chosen, and let the control set contain $\{-1,1\}$.  For reward
+$r(u,z)=ug(z)$,
+\[
+ \int\sup_{u\in\{-1,1\}}r(u,z)\,d\mu(z)
+ =
+ \int\abs{g(z)}\,d\mu(z)>0,
+\]
+whereas
+\[
+ \sup_{u\in\{-1,1\}}\int r(u,z)\,d\mu(z)=0.
+\]
+Therefore a high-rate exact pre-action observation cannot, without an
+additional sufficient statistic, collapse to the blind macroscopic
+Hamiltonian of the unobserved model.
+\end{theorem}
+
+\begin{proof}
+The first controller chooses $u(z)=\operatorname{sign}g(z)$.  A controller
+who acts before seeing $z$ receives $u\int g\,d\mu=0$.
+\end{proof}
+
+\begin{remark}
+The theorem does not exclude an exact belief-state DPP.  It excludes silently
+reusing the soft-filter collapse theorem in an exact-information model.
+\end{remark}
+
+\section{Curvature compensation}\label{sec:curvature}
+
+Let $U\subset\R^m$ and $V\subset\R^n$ be closed convex sets.  Let
+$F_0(z,u,v)$ be $C^2$ in $(u,v)$ with
+\[
+ D_{uu}^2F_0\le L_uI,\qquad
+ D_{vv}^2F_0\ge-L_vI.
+\]
+Define
+\begin{equation}\label{eq:payoff}
+ F(z,u,v)
+ =
+ F_0(z,u,v)-\frac\mu2\abs u^2+\frac\nu2\abs v^2,
+ \qquad \mu>L_u,\quad\nu>L_v.
+\end{equation}
+Let
+\[
+ G_z(u,v)=(-D_uF(z,u,v),D_vF(z,u,v)).
+\]
+
+\begin{theorem}[Pure-saddle theorem]\label{thm:saddle}
+Assume $G_z+N_{U\times V}$ is coercive.  Then it is strongly maximal monotone
+with constant
+\[
+ \lambda=\min\{\mu-L_u,\nu-L_v\}>0.
+\]
+There is a unique solution $(u_*(z),v_*(z))$ of
+\[
+ 0\in G_z(u,v)+N_{U\times V}(u,v),
+\]
+and it is the unique global pure saddle:
+\[
+ F(z,u,v_*)\le F(z,u_*,v_*)\le F(z,u_*,v).
+\]
+If $G_z$ is Lipschitz in $z$, the selector is Lipschitz.
+\end{theorem}
+
+\begin{proof}
+The symmetric quadratic form of $DG_z$ in an increment
+$(\dot u,\dot v)$ is
+\[
+ -\dot u^TD_{uu}^2F\dot u+\dot v^TD_{vv}^2F\dot v.
+\]
+The mixed Hessian terms cancel.  Equation \eqref{eq:payoff} bounds this below
+by $\lambda(\abs{\dot u}^2+\abs{\dot v}^2)$.  Strong monotonicity, maximality
+of the normal cone, and coercivity give existence and uniqueness.  The
+variational inequalities plus strong concavity/convexity give the saddle
+inequalities.  Comparing two inclusions gives Lipschitz dependence.
+\end{proof}
+
+\begin{example}[Energy-generated nonconvexity]\label{ex:energy}
+For
+\[
+ F(p;u,v)
+ =
+ p(u+v)-\frac\mu2u^2+\frac\nu2v^2
+\]
+on $\R^2$, the saddle is
+\[
+ u_*=p/\mu,\qquad v_*=-p/\nu,
+\]
+and
+\[
+ H(p)=\frac12(\mu^{-1}-\nu^{-1})p^2.
+\]
+It is concave when $\mu>\nu$.
+\end{example}
+
+\section{Belief-state collision DPP}\label{sec:belief-dpp}
+
+Let the slow state be $x$, current obstacle label $i$, and hidden belief
+$\pi$.  Over one decision block, choose $(u,v)$, evolve the open-billiard
+collision state and the hidden prediction, observe $o$, and update by Bayes.
+The exact lower recursion is
+\[
+\begin{aligned}
+ \mathcal V_k^\varepsilon(x,i,\pi)
+ =
+ \max_u\min_v
+ \E\Big[
+ &\varepsilon^2 c_i^{uv}(x,Y_k)\\
+ &+\mathcal V_{k+1}^\varepsilon
+ (X_{k+1},I_{k+1},\mathsf B_o(\pi P_Y^{m_*}))
+ \Big].
+\end{aligned}
+\]
+
+\begin{proposition}[Exactness and monotonicity]\label{prop:belief-dpp}
+The recursion is the exact finite-horizon DPP on the sufficient state
+$(x,i,\pi)$.  It is monotone and stable on the invariant moment ball.
+\end{proposition}
+
+\begin{proof}
+Condition successively on actions, hidden prediction, observation, and the
+next collision label.  The Bayes posterior is the conditional law of the
+hidden state, so $(x,i,\pi)$ is Markov.  Positivity of expectation and
+max--min preserve order; bounded rewards give stability.
+\end{proof}
+
+\section{The partially observed Isaacs limit}\label{sec:limit}
+
+Assume the slow coefficients obtained by averaging over the posterior are
+uniformly Lipschitz on the invariant moment ball and that the base diffusion
+coefficient is the physical coefficient of Paper III:
+\[
+ D_{\rm HJB}(a)=\frac1{14\bar\tau_a}I_2.
+\]
+Assume the local game payoff satisfies \cref{thm:saddle} uniformly.
+
+\begin{theorem}[Filtered physical-time Isaacs limit]\label{thm:filtered-limit}
+Under the filter gates of \cref{thm:filter}, the initial-layer scaling of
+\cref{thm:prior}, and the uniform pure-saddle conditions, the lower and upper
+belief-state schemes converge to the same viscosity solution.  After the
+initial layer the limiting value is independent of the initial belief, while
+the effective coefficients retain the declared posterior-averaged information
+structure.  The local lower and upper Hamiltonians agree and are attained by
+the unique pure Lipschitz saddle selector.
+\end{theorem}
+
+\begin{proof}
+The filter contraction gives compactness in the value-relevant belief
+direction and removes the initial prior.  The base collision scheme supplies
+monotonicity, physical clock, and uniform ellipticity.  The saddle theorem
+identifies the lower and upper local operators and provides continuous
+selectors.  Perturbed-test consistency and viscosity comparison then give the
+common limit.
+\end{proof}
+
+\section{Dependency statement}
+
+Paper III is complete without this paper.  The core exports here are:
+\[
+ \text{soft filter stability},\quad
+ \text{exact-observation no-go},\quad
+ \text{pure-saddle selector},\quad
+ \text{partially observed Isaacs extension}.
+\]
+Only the game-representation branch of Paper V imports the pure-saddle result.
+The tangent-law core of Paper V depends directly on Paper III.
+
+\section*{Scope and review status}
+
+The positive filter theorem uses bounded nondegenerate observations and
+sufficient prediction spacing.  Exact high-rate pre-action observation is
+classified separately by \cref{thm:exact-no-go}.  The manuscript is prepared
+for independent external review.
+
+\bibliographystyle{plain}
+\bibliography{references}
+\end{document}
