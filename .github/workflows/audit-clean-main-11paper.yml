@@ -1,0 +1,66 @@
+name: audit-clean-main-11paper
+
+on:
+  push:
+    branches:
+      - staging/promote-clean-main-11paper-v3-2026-08-30
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Wait for and audit clean main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'theta-theory-governance'
+          git config user.email 'governance@users.noreply.github.com'
+
+          ok=0
+          for attempt in $(seq 1 36); do
+            git fetch origin main
+            git checkout -B main origin/main
+            paper_dirs=$(find papers -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l || true)
+            mains=$(find papers -mindepth 2 -maxdepth 2 -type f -name main.tex 2>/dev/null | wc -l || true)
+            bibs=$(find papers -mindepth 2 -maxdepth 2 -type f -name references.bib 2>/dev/null | wc -l || true)
+            extras=$(find . -maxdepth 1 -mindepth 1 -type d ! -name .git ! -name papers 2>/dev/null | wc -l || true)
+            historical=$(find papers -type f 2>/dev/null | grep -Ec '/(main-(v[0-9]+|final|submission|round[0-9]+)|.*FINAL_STATUS|.*LATEST_WINS)' || true)
+            if [[ "$paper_dirs" -eq 11 && "$mains" -eq 11 && "$bibs" -eq 11 && "$extras" -eq 0 && "$historical" -eq 0 ]]; then
+              ok=1
+              break
+            fi
+            sleep 5
+          done
+          [[ "$ok" -eq 1 ]] || { echo 'main did not reach clean eleven-paper shape' >&2; exit 1; }
+
+          commit=$(git rev-parse HEAD)
+          tree=$(git rev-parse HEAD^{tree})
+          cat > MAIN_TREE_AUDIT.md <<EOF
+          # Main-tree audit receipt
+
+          - audited commit before receipt: \`$commit\`
+          - audited tree: \`$tree\`
+          - paper directories: 11
+          - controlling \`main.tex\` files: 11
+          - controlling \`references.bib\` files: 11
+          - unexpected top-level directories: 0
+          - historical manuscript filenames: 0
+          - audit status: PASS
+
+          Historical and non-manuscript assets are preserved on the archive branches listed in \`ARCHIVE_POINTER.md\`.
+          EOF
+          sed -i 's/^          //' MAIN_TREE_AUDIT.md
+
+          git add MAIN_TREE_AUDIT.md
+          if ! git diff --cached --quiet; then
+            git commit -m 'Record clean eleven-paper main-tree audit'
+            git push origin HEAD:main
+          fi
