@@ -1,0 +1,30 @@
+name: external-review-v11
+on:
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Reconstruct controlling source
+        run: |
+          cd review/v11-hard-sphere-kinetic
+          cat source/part-*.b64 | base64 -d > theta_v11_hard_sphere_kinetic_source_only.tar.gz
+          sha256sum -c theta_v11_source_only.tar.gz.sha256
+          mkdir extracted
+          tar -xzf theta_v11_hard_sphere_kinetic_source_only.tar.gz -C extracted
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify source and formulas
+        run: |
+          ROOT=review/v11-hard-sphere-kinetic/extracted/theta_v11_hard_sphere_kinetic_external_review
+          python "$ROOT/tools/verify_v11.py"
+          python "$ROOT/tools/verify_v11_deep.py"
+      - name: Install TeX
+        run: sudo apt-get update && sudo apt-get install -y latexmk biber texlive-latex-base texlive-latex-extra texlive-fonts-recommended texlive-bibtex-extra
+      - name: Build five papers
+        run: |
+          ROOT=review/v11-hard-sphere-kinetic/extracted/theta_v11_hard_sphere_kinetic_external_review
+          make -C "$ROOT/papers" all
