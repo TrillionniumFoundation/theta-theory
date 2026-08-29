@@ -1,0 +1,32 @@
+name: external-review-v9-bundle
+
+on:
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify source bundle checksum
+        run: |
+          echo "7b011597fa08ae6b6e7404490ce50d503b3d000ba522092c82d132c8ee7d9864  review/v9-homological-pressure/theta_v9_source_only.tar.gz" | sha256sum -c -
+      - name: Extract controlling v9 source
+        run: |
+          mkdir _v9
+          tar -xzf review/v9-homological-pressure/theta_v9_source_only.tar.gz -C _v9
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install verifier dependencies
+        run: pip install sympy
+      - name: Run structural and formula checks
+        working-directory: _v9
+        run: |
+          python tools/verify_v9.py
+          python tools/verify_v9_deep.py
+      - name: Install TeX
+        run: sudo apt-get update && sudo apt-get install -y latexmk biber texlive-latex-base texlive-latex-extra texlive-fonts-recommended texlive-bibtex-extra
+      - name: Build five manuscripts
+        working-directory: _v9
+        run: make -C papers all
