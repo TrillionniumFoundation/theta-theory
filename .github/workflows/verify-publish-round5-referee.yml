@@ -1,0 +1,174 @@
+name: verify-publish-round5-referee
+
+on:
+  push:
+    branches:
+      - revision/round5-referee-positive-closure-11paper-2026-08-31
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: verify-publish-round5-referee
+  cancel-in-progress: true
+
+jobs:
+  verify-and-publish:
+    if: ${{ !contains(github.event.head_commit.message || '', '[skip ci]') }}
+    runs-on: ubuntu-latest
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      REVISION_BRANCH: revision/round5-referee-positive-closure-11paper-2026-08-31
+      ARCHIVE_BRANCH: archive/main-pre-round5-positive-closure-2026-08-31
+      PUBLICATION_TAG: round5-positive-closure-verified-2026-08-31
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Record immutable materialization source
+        shell: bash
+        run: echo "SOURCE_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+
+      - name: Syntax-check all round-five tooling
+        run: |
+          python -m py_compile \
+            tools/materialize_round5_referee.py \
+            tools/verify_round5_referee.py \
+            tools/hostile_rereview_round5.py \
+            tools/hostile_rereview_round5_v2.py \
+            tools/write_round5_certificate.py \
+            tools/write_round5_publication_record.py
+
+      - name: Materialize all eleven controlling manuscripts
+        run: python tools/materialize_round5_referee.py
+
+      - name: Run exact-source and dependency-aware hostile gates
+        run: |
+          python tools/verify_round5_referee.py
+          python tools/hostile_rereview_round5_v2.py
+
+      - name: Install TeX toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            latexmk biber \
+            texlive-latex-base texlive-latex-extra \
+            texlive-fonts-recommended texlive-bibtex-extra
+
+      - name: Clean-build all eleven revised papers
+        run: python tools/build_round3.py
+
+      - name: Fail on unresolved references or citations
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -R --include='*.log' -E \
+            'LaTeX Warning: (Reference|Citation).*undefined|There were undefined references|There were undefined citations' \
+            papers; then
+            echo 'Unresolved LaTeX reference or citation detected.' >&2
+            exit 1
+          fi
+
+      - name: Write exact source and PDF certificate
+        run: python tools/write_round5_certificate.py --source-sha "$SOURCE_SHA"
+
+      - name: Recheck gates after certificate generation
+        run: |
+          python tools/verify_round5_referee.py
+          python tools/hostile_rereview_round5_v2.py
+          python - <<'PY'
+          import json
+          for path in (
+              'ROUND5_STRUCTURAL_VERIFICATION.json',
+              'ROUND5_HOSTILE_REREVIEW.json',
+              'ROUND3_BUILD_SUMMARY.json',
+              'ROUND5_FINAL_CERTIFICATE.json',
+          ):
+              data=json.load(open(path, encoding='utf-8'))
+              if path.endswith('FINAL_CERTIFICATE.json'):
+                  ok=all(v == 'PASS' or v == 0 for v in data['gates'].values())
+              else:
+                  ok=data.get('status') == 'PASS'
+              if not ok:
+                  raise SystemExit(f'{path}: final gate is not PASS')
+          print('ROUND5_FINAL_GATE_SET_PASS')
+          PY
+
+      - name: Commit the verified mathematical tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name theta-theory-round5-bot
+          git config user.email round5-bot@users.noreply.github.com
+          git add -A
+          git status --short
+          git commit -m 'Materialize and verify round-five positive closure for all eleven papers [skip ci]'
+          echo "VERIFIED_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+
+      - name: Capture and archive the current main tip
+        shell: bash
+        run: |
+          set -euo pipefail
+          MAIN_SHA="$(git ls-remote origin refs/heads/main | awk '{print $1}')"
+          test -n "$MAIN_SHA"
+          echo "PRE_MAIN_SHA=$MAIN_SHA" >> "$GITHUB_ENV"
+          EXISTING="$(git ls-remote origin "refs/heads/$ARCHIVE_BRANCH" | awk '{print $1}')"
+          if [ -n "$EXISTING" ]; then
+            test "$EXISTING" = "$MAIN_SHA"
+          else
+            git push origin "$MAIN_SHA:refs/heads/$ARCHIVE_BRANCH"
+          fi
+
+      - name: Write publication record without changing paper sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/write_round5_publication_record.py \
+            --verified-sha "$VERIFIED_SHA" \
+            --pre-main-sha "$PRE_MAIN_SHA" \
+            --archive-branch "$ARCHIVE_BRANCH" \
+            --tag "$PUBLICATION_TAG"
+          git add ROUND5_PUBLICATION_RECORD.json \
+                  ROUND5_REVISION_STATUS.md \
+                  ROUND5_REVISION_MANIFEST.yaml
+          git commit -m 'Record round-five verified-parent publication [skip ci]'
+          PUBLICATION_SHA="$(git rev-parse HEAD)"
+          echo "PUBLICATION_SHA=$PUBLICATION_SHA" >> "$GITHUB_ENV"
+          CHANGED="$(git diff --name-only "$VERIFIED_SHA" "$PUBLICATION_SHA" | sort)"
+          EXPECTED=$'ROUND5_PUBLICATION_RECORD.json\nROUND5_REVISION_MANIFEST.yaml\nROUND5_REVISION_STATUS.md'
+          test "$CHANGED" = "$EXPECTED"
+
+      - name: Push revision branch and publish verified tree to main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git push origin "HEAD:refs/heads/$REVISION_BRANCH"
+          git push origin \
+            "$PUBLICATION_SHA:refs/heads/main" \
+            --force-with-lease="refs/heads/main:$PRE_MAIN_SHA"
+          REMOTE_MAIN="$(git ls-remote origin refs/heads/main | awk '{print $1}')"
+          test "$REMOTE_MAIN" = "$PUBLICATION_SHA"
+
+      - name: Tag and post-publication audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git tag -a "$PUBLICATION_TAG" "$PUBLICATION_SHA" \
+            -m 'Round-five eleven-paper positive referee closure: verified source parent and publication record'
+          git push origin "refs/tags/$PUBLICATION_TAG"
+          TAG_SHA="$(git rev-list -n1 "$PUBLICATION_TAG")"
+          test "$TAG_SHA" = "$PUBLICATION_SHA"
+          git fetch origin main "$REVISION_BRANCH" "$ARCHIVE_BRANCH"
+          test "$(git rev-parse origin/main)" = "$PUBLICATION_SHA"
+          test "$(git rev-parse "origin/$ARCHIVE_BRANCH")" = "$PRE_MAIN_SHA"
+          git diff --exit-code "$VERIFIED_SHA" "$PUBLICATION_SHA" -- papers revision/round5-referee-final
+          python tools/verify_round5_referee.py
+          python tools/hostile_rereview_round5_v2.py
+          echo "ROUND5_POSTPUBLICATION_AUDIT_PASS main=$PUBLICATION_SHA archive=$PRE_MAIN_SHA"
