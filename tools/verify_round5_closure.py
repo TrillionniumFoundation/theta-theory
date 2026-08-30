@@ -114,7 +114,7 @@ FORBIDDEN = {
     ],
     "B3-hamilton-boltzmann-cotangents": [
         "\\Delta p+\\Delta p_*",
-        "4(\\Delta_\\omega\\phi)^2",
+        "=4(\\Delta_\\omega\\phi)^2",
     ],
     "B4-nonlinear-kinetic-semigroups": [
         "energy alone controls",
