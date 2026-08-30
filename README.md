@@ -1,6 +1,6 @@
-# Theta-Theory - eleven-paper external-review tree
+# Theta-Theory — eleven-paper external-review tree
 
-The default branch contains only the current eleven manuscripts and minimal build metadata. Historical manuscripts, cumulative derivations, review receipts, proof audits, generated PDFs, verifier generations, and candidate bundles are preserved on archive/series branches and are not controlling sources on `main`.
+The default branch contains the current eleven manuscript sources, their paper-level referee material, and the minimal build metadata. Historical manuscript series, cumulative derivations, proof-audit bundles, generated PDFs, migration payloads, and candidate trees are preserved on archive/review/series branches and are not controlling sources on `main`.
 
 ## Papers
 
@@ -16,7 +16,20 @@ The default branch contains only the current eleven manuscripts and minimal buil
 10. `papers/C2-cotangent-rigidity-tangent-representations`
 11. `papers/D1-deterministic-theta-contractions`
 
-Each folder has one controlling `main.tex`, one `references.bib`, a README, a referee guide, and any normative `sections/` files. Generated PDFs and build products are intentionally untracked.
+Each paper folder contains:
+
+- one controlling `main.tex`;
+- one `references.bib`;
+- `README.md` and `REFEREE_GUIDE.md`;
+- the original `REFEREE_REPORT.md`; and
+- the independent `REFEREE_REPORT_GPT56_PRO.md`.
+
+Series-level review indexes are stored at:
+
+- `papers/REFEREE_REPORTS_INDEX.md`
+- `papers/GPT56_PRO_REFEREE_REPORTS_INDEX.md`
+
+Generated PDFs and LaTeX build products are intentionally untracked.
 
 ## Build
 
@@ -24,4 +37,4 @@ Each folder has one controlling `main.tex`, one `references.bib`, a README, a re
 make all
 ```
 
-The manuscripts remain research drafts pending independent line-by-line mathematical and novelty review.
+The eleven source manuscripts were reconstructed from the SHA-256-pinned clean source package, structurally audited, and compiled successfully before promotion. The manuscripts remain research drafts; successful compilation is not a mathematical correctness certificate.
