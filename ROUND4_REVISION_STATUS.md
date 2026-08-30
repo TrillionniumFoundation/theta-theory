@@ -2,7 +2,7 @@
 
 - New referee branch: `review/round3-referee-reports-11paper-2026-08-30`
 - Revision branch: `revision/round4-referee-positive-closure-11paper-2026-08-30`
-- Materialization source: `0cd270c8a2066ac83e8cc14df2f9fb9c23c33ac9`
+- Materialization source: `86c02da9d490c2506f9a17c0ac3bcf22db7e2d94`
 - Archived recursive/CM2 audit: **PASS**
 - Reviewed round-three baseline verifier: **PASS**
 - Useful orphan repair packets materialized and checked: **PASS**
