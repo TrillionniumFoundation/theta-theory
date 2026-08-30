@@ -154,10 +154,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          rm -rf revision/round2
-          rm -f .github/workflows/bootstrap-referee-round2.yml
           git config user.name theta-theory-revision-bot
           git config user.email revision-bot@users.noreply.github.com
-          git add -A
-          git commit -m "Materialize positive referee closure across all eleven papers"
+          git add -A -- . ':(exclude).github/workflows/**' ':(exclude)revision/round2/**'
+          if git diff --cached --quiet; then
+            echo "No materialized manuscript changes to publish."
+            exit 0
+          fi
+          git commit -m "Materialize positive referee closure across all eleven papers [skip ci]"
           git push origin HEAD:revision/referee-round-positive-closure-11paper-2026-08-30
