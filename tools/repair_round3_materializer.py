@@ -67,6 +67,7 @@ def repair_harsh_driver() -> int:
         return 0
     lines = path.read_text(encoding="utf-8").splitlines()
     changed = 0
+    slash = chr(92)
     index = 0
     while index < len(lines):
         line = lines[index]
@@ -88,7 +89,7 @@ def repair_harsh_driver() -> int:
             if index + 1 >= len(lines):
                 raise SystemExit("truncated A3 proof_marker in hostile-fix driver")
             next_stripped = lines[index + 1].strip()
-            expected_next = r'Theorem~\ref{thm:r3-a3-block}."'
+            expected_next = "Theorem~" + slash + 'ref{thm:r3-a3-block}."'
             if next_stripped != expected_next:
                 raise SystemExit(
                     "unexpected A3 proof_marker continuation: " + repr(next_stripped)
@@ -97,7 +98,9 @@ def repair_harsh_driver() -> int:
                 '        proof_marker = r"""The mark statements are the '
                 'exponential-tilt argument used in'
             )
-            lines[index + 1] = r'Theorem~\ref{thm:r3-a3-block}."""'
+            lines[index + 1] = (
+                "Theorem~" + slash + 'ref{thm:r3-a3-block}."""'
+            )
             changed += 1
             index += 1
         index += 1
