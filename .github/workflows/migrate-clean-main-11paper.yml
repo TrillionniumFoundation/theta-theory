@@ -13,28 +13,66 @@ concurrency:
   group: clean-main-11paper-migration
   cancel-in-progress: false
 
+env:
+  SOURCE_BRANCH: staging/clean-main-11paper-2026-08-30
+  EXPECTED_SOURCE_COMMIT: 95ede02063a3c6b124f06d42e351101bab2c94f9
+  EXPECTED_OLD_MAIN: d20f2c0de77cd7f2b90fb48a51f2d0d580b3feb7
+  EXPECTED_ARCHIVE_SHA256: 566335121763abaa7ed8ed2280a3b4345877777e8bedbd80f4eef0a6b48745e2
+  OLD_FIVE_ARCHIVE: archive/v5-five-paper-main-2026-08-30
+  PRE_CLEAN_ARCHIVE: archive/main-pre-11paper-cleanup-2026-08-30
+
 jobs:
-  validate-and-migrate:
+  validate-build-archive-and-promote:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out staging source
+      - name: Check out pinned staging source
         uses: actions/checkout@v4
         with:
-          ref: staging/clean-main-11paper-2026-08-30
+          ref: ${{ env.SOURCE_BRANCH }}
           path: staging
+          fetch-depth: 0
+          persist-credentials: true
 
-      - name: Reconstruct and verify clean tree
+      - name: Verify staging ref and reconstruct clean source
         shell: bash
         run: |
           set -euo pipefail
-          cd staging/migration/clean-main-11paper
+          cd staging
+          ACTUAL_SOURCE_COMMIT="$(git rev-parse HEAD)"
+          if [[ "$ACTUAL_SOURCE_COMMIT" != "$EXPECTED_SOURCE_COMMIT" && "$ACTUAL_SOURCE_COMMIT" != "$GITHUB_SHA" ]]; then
+            echo "Unexpected staging history: $ACTUAL_SOURCE_COMMIT" >&2
+            exit 1
+          fi
+
+          cd migration/clean-main-11paper
           cat parts/part-*.b64 | tr -d '\r\n' | base64 --decode > clean_main_11paper.tar.gz
+          ACTUAL_ARCHIVE_SHA256="$(sha256sum clean_main_11paper.tar.gz | awk '{print $1}')"
+          test "$ACTUAL_ARCHIVE_SHA256" = "$EXPECTED_ARCHIVE_SHA256"
           sha256sum -c clean_main_11paper.tar.gz.sha256
+
           mkdir extracted
-          tar -xzf clean_main_11paper.tar.gz -C extracted
-          python - <<'PY'
+          python3 - <<'PY'
           from pathlib import Path
-          root = Path('extracted')
+          import tarfile
+
+          archive = Path('clean_main_11paper.tar.gz')
+          root = Path('extracted').resolve()
+          with tarfile.open(archive, 'r:gz') as tf:
+              for member in tf.getmembers():
+                  target = (root / member.name).resolve()
+                  if target != root and root not in target.parents:
+                      raise SystemExit(f'Unsafe archive path: {member.name}')
+              tf.extractall(root)
+          PY
+
+      - name: Verify exact eleven-paper source tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          root = Path('staging/migration/clean-main-11paper/extracted')
           expected = {
               'A1-exact-benchmarks',
               'A2-sinai-homological-pressure',
@@ -48,44 +86,156 @@ jobs:
               'C2-cotangent-rigidity-tangent-representations',
               'D1-deterministic-theta-contractions',
           }
-          assert {p.name for p in (root/'papers').iterdir() if p.is_dir()} == expected
-          assert len(list(root.rglob('main.tex'))) == 11
-          assert len(list(root.rglob('references.bib'))) == 11
+          assert {p.name for p in root.iterdir()} == {'README.md', 'Makefile', '.gitignore', 'papers'}
+          papers = root / 'papers'
+          actual = {p.name for p in papers.iterdir() if p.is_dir()}
+          assert actual == expected, (actual, expected)
+          assert len(list(papers.glob('*/main.tex'))) == 11
+          assert len(list(papers.glob('*/references.bib'))) == 11
           for name in expected:
-              p = root/'papers'/name
-              assert {x.name for x in p.iterdir()} == {'main.tex','references.bib','README.md','REFEREE_GUIDE.md'}
-          assert {p.name for p in root.iterdir()} == {'README.md','Makefile','.gitignore','papers'}
+              p = papers / name
+              assert {x.name for x in p.iterdir()} == {
+                  'main.tex', 'references.bib', 'README.md', 'REFEREE_GUIDE.md'
+              }, (name, sorted(x.name for x in p.iterdir()))
+          forbidden = {
+              'paper-I-geometric-response',
+              'paper-II-physical-rough',
+              'paper-III-dpp-hjb',
+              'paper-IV-filtering-games',
+              'paper-V-tangent-laws',
+          }
+          assert not (actual & forbidden)
+          assert not list(root.rglob('*.b64'))
+          assert not list(root.rglob('*.tar.gz'))
+          assert not list(root.rglob('*.zip'))
           PY
 
       - name: Install TeX
         run: sudo apt-get update && sudo apt-get install -y latexmk biber texlive-latex-base texlive-latex-extra texlive-fonts-recommended texlive-bibtex-extra
 
-      - name: Build all eleven papers
+      - name: Build all eleven papers from clean source
         run: make -C staging/migration/clean-main-11paper/extracted all
 
-      - name: Check out current main
+      - name: Check out and lock current main
         uses: actions/checkout@v4
         with:
           ref: main
           path: main-worktree
           fetch-depth: 0
+          persist-credentials: true
 
-      - name: Replace main atomically
+      - name: Archive old five-paper main and replace it atomically
         shell: bash
         run: |
           set -euo pipefail
-          rsync -a --delete --exclude='.git/' staging/migration/clean-main-11paper/extracted/ main-worktree/
           cd main-worktree
-          test "$(find papers -mindepth 1 -maxdepth 1 -type d | wc -l)" -eq 11
-          test "$(find papers -name main.tex -type f | wc -l)" -eq 11
-          test "$(find papers -name references.bib -type f | wc -l)" -eq 11
-          test "$(find . -mindepth 1 -maxdepth 1 -type d | sed 's#^./##')" = papers
-          git config user.name 'theta-theory-cleanup-bot'
-          git config user.email 'theta-theory-cleanup-bot@users.noreply.github.com'
+          OLD_MAIN="$(git rev-parse HEAD)"
+          test "$OLD_MAIN" = "$EXPECTED_OLD_MAIN"
+
+          git config user.name 'theta-theory-governance'
+          git config user.email 'governance@users.noreply.github.com'
+
+          # These refs make the old five-paper tree independently discoverable.
+          git push origin "$OLD_MAIN:refs/heads/$OLD_FIVE_ARCHIVE"
+          git push origin "$OLD_MAIN:refs/heads/$PRE_CLEAN_ARCHIVE"
+
+          rsync -a --delete --exclude='.git/' \
+            ../staging/migration/clean-main-11paper/extracted/ ./
+
+          python3 - <<'PY'
+          from pathlib import Path
+
+          root = Path('.')
+          expected = {
+              'A1-exact-benchmarks',
+              'A2-sinai-homological-pressure',
+              'A3-full-empirical-path-ldp',
+              'A4-history-memory-universal-pressure',
+              'B1-microcanonical-preparation',
+              'B2-collision-clusters-dynamic-ldp',
+              'B3-hamilton-boltzmann-cotangents',
+              'B4-nonlinear-kinetic-semigroups',
+              'C1-information-risk-sensitive-saddles',
+              'C2-cotangent-rigidity-tangent-representations',
+              'D1-deterministic-theta-contractions',
+          }
+          assert {p.name for p in root.iterdir() if p.name != '.git'} == {
+              'README.md', 'Makefile', '.gitignore', 'papers'
+          }
+          papers = root / 'papers'
+          actual = {p.name for p in papers.iterdir() if p.is_dir()}
+          assert actual == expected
+          assert len(list(papers.glob('*/main.tex'))) == 11
+          assert len(list(papers.glob('*/references.bib'))) == 11
+          for name in expected:
+              assert {x.name for x in (papers / name).iterdir()} == {
+                  'main.tex', 'references.bib', 'README.md', 'REFEREE_GUIDE.md'
+              }
+          forbidden = {
+              'paper-I-geometric-response',
+              'paper-II-physical-rough',
+              'paper-III-dpp-hjb',
+              'paper-IV-filtering-games',
+              'paper-V-tangent-laws',
+          }
+          assert not (actual & forbidden)
+          assert not list(root.rglob('*.b64'))
+          assert not list(root.rglob('*.tar.gz'))
+          assert not list(root.rglob('*.zip'))
+          PY
+
           git add -A
           if git diff --cached --quiet; then
-            echo 'main already matches clean eleven-paper tree'
+            echo 'main already matches the clean eleven-paper tree'
             exit 0
           fi
-          git commit -m 'Replace main with eleven-paper external-review tree'
-          git push origin HEAD:main
+
+          git commit -m 'Replace main with latest eleven-paper manuscript tree'
+          NEW_MAIN="$(git rev-parse HEAD)"
+          git push --force-with-lease="refs/heads/main:$OLD_MAIN" origin "$NEW_MAIN:refs/heads/main"
+
+          git fetch origin refs/heads/main:refs/remotes/origin/main
+          test "$(git rev-parse refs/remotes/origin/main)" = "$NEW_MAIN"
+          echo "OLD_MAIN=$OLD_MAIN"
+          echo "NEW_MAIN=$NEW_MAIN"
+
+      - name: Independent server-side audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf final-main
+          git clone --depth 1 --branch main "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" final-main
+          python3 - <<'PY'
+          from pathlib import Path
+
+          root = Path('final-main')
+          papers = root / 'papers'
+          expected = {
+              'A1-exact-benchmarks',
+              'A2-sinai-homological-pressure',
+              'A3-full-empirical-path-ldp',
+              'A4-history-memory-universal-pressure',
+              'B1-microcanonical-preparation',
+              'B2-collision-clusters-dynamic-ldp',
+              'B3-hamilton-boltzmann-cotangents',
+              'B4-nonlinear-kinetic-semigroups',
+              'C1-information-risk-sensitive-saddles',
+              'C2-cotangent-rigidity-tangent-representations',
+              'D1-deterministic-theta-contractions',
+          }
+          actual = {p.name for p in papers.iterdir() if p.is_dir()}
+          assert actual == expected
+          assert len(list(papers.glob('*/main.tex'))) == 11
+          assert len(list(papers.glob('*/references.bib'))) == 11
+          assert not list(root.rglob('paper-I-geometric-response'))
+          assert not list(root.rglob('paper-II-physical-rough'))
+          assert not list(root.rglob('paper-III-dpp-hjb'))
+          assert not list(root.rglob('paper-IV-filtering-games'))
+          assert not list(root.rglob('paper-V-tangent-laws'))
+          assert not list(root.rglob('*.b64'))
+          assert not list(root.rglob('*.tar.gz'))
+          assert not list(root.rglob('*.zip'))
+          print('REMOTE_MAIN_AUDIT_PASS')
+          for name in sorted(actual):
+              print(name)
+          PY
