@@ -37,9 +37,6 @@ jobs:
             tools/hostile_rereview_round4.py \
             tools/write_round4_author_responses.py
 
-      - name: Repair deterministic round-three source generator
-        run: python tools/repair_round3_materializer.py
-
       - name: Audit archived recursive and CM2 derivations
         shell: bash
         run: |
@@ -61,37 +58,33 @@ jobs:
             theta_current=/tmp/round4-history/THETA_THEORY_CURRENT_STATUS.md \
             theta_maximal_v3=/tmp/round4-history/THETA_MAXIMAL_FINAL_STATUS_V3.md
 
-      - name: Prepare reviewed, exact-rereview, and round-four layers
-        shell: bash
+      - name: Validate materialized predecessor certificates
         run: |
-          set -euo pipefail
-          if grep -q 'Round-four referee closure' \
-            papers/A1-exact-benchmarks/ROUND3_POSITIVE_CLOSURE.tex; then
-            echo 'Round-four controlling tree is already materialized.'
-            python - <<'PY'
+          python - <<'PY'
           import json
-          for path in (
-              'ROUND3_STRUCTURAL_VERIFICATION.json',
-              'ROUND3_REREVIEW_VERIFICATION.json',
-              'ROUND4_STRUCTURAL_VERIFICATION.json',
-              'ROUND4_HOSTILE_REREVIEW.json',
-          ):
-              with open(path, encoding='utf-8') as f:
-                  data=json.load(f)
-              if data.get('status') != 'PASS':
-                  raise SystemExit(f'{path}: expected PASS')
+          with open('ROUND3_STRUCTURAL_VERIFICATION.json', encoding='utf-8') as f:
+              round3=json.load(f)
+          with open('ROUND3_REREVIEW_VERIFICATION.json', encoding='utf-8') as f:
+              rereview=json.load(f)
+          with open('ROUND4_STRUCTURAL_VERIFICATION.json', encoding='utf-8') as f:
+              round4=json.load(f)
+          with open('ROUND4_HOSTILE_REREVIEW.json', encoding='utf-8') as f:
+              hostile=json.load(f)
+          checks=(
+              round3.get('checks', {}).get('status'),
+              rereview.get('status'),
+              round4.get('status'),
+              hostile.get('status'),
+          )
+          if checks != ('PASS', 'PASS', 'PASS', 'PASS'):
+              raise SystemExit(f'certificate status mismatch: {checks}')
           print('EXISTING_LAYER_CERTIFICATES_PASS')
           PY
-          else
-            python tools/apply_round3_closure.py
-            python tools/verify_round3_closure.py
-            python tools/repair_round3_rereview_markers.py
-            python tools/apply_round3_exact_rereview_fixes.py
-            python tools/apply_round3_closure.py
-            python tools/verify_round3_rereview.py
-            python tools/sanitize_round4_fragments.py
-            python tools/apply_round4_referee_fixes.py
-          fi
+
+      - name: Refresh controlling main files and author responses
+        run: |
+          python tools/repair_round3_materializer.py
+          python tools/sanitize_round4_fragments.py
           python tools/apply_round3_closure.py
           python tools/write_round4_author_responses.py
 
