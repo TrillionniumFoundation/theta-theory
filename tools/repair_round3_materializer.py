@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Repair deterministic round-three source-generation and TeX typos.
+"""Repair deterministic round-three generator and one-shot driver defects.
 
-The first bootstrap used raw strings ending in ``\n`` and therefore emitted
-literal backslash+n characters in generated manuscripts.  The A2 module also
-contained one transposition, ``\night)`` instead of ``\right)``.  This script
-is deliberately narrow, idempotent, and fail-closed: it changes only the known
-source forms and verifies that the corrected forms are present afterwards.
+This bootstrap repair is intentionally narrow.  It fixes the original raw
+newline generator lines, the first A2 delimiter typo, and two over-escaped
+idempotence markers in the hostile-fix driver.  The latter matters because
+build diagnostics are committed with ``[skip ci]`` and a later proof edit must
+be able to rerun the same hostile-fix pass safely.
 """
 from pathlib import Path
 
@@ -42,7 +42,7 @@ def repair_materializer() -> int:
     return changed
 
 
-def repair_tex_sources() -> int:
+def repair_a2_delimiter() -> int:
     path = ROOT / "papers" / "A2-sinai-homological-pressure" / "ROUND3_POSITIVE_CLOSURE.tex"
     text = path.read_text(encoding="utf-8")
     slash = chr(92)
@@ -55,15 +55,47 @@ def repair_tex_sources() -> int:
     if occurrences == 1:
         text = text.replace(old, new, 1)
         changed = 1
-    if old in text or new not in text:
+    # Do not use the mere presence of another \right as the success test.
+    if old in text:
         raise SystemExit("A2 delimiter repair did not converge")
     path.write_text(text, encoding="utf-8")
     return changed
 
 
+def repair_harsh_driver_markers() -> int:
+    path = ROOT / "tools" / "apply_round3_harsh_fixes.py"
+    if not path.is_file():
+        return 0
+    lines = path.read_text(encoding="utf-8").splitlines()
+    changed = 0
+    for index, line in enumerate(lines):
+        stripped = line.strip()
+        if stripped.startswith('if "homogeneity cutoff ') and stripped.endswith('not in text:'):
+            desired = '    if "homogeneity cutoff" not in text:'
+            if line != desired:
+                lines[index] = desired
+                changed += 1
+        elif 'return replace_once(path, old, new, "remaining ' in stripped:
+            desired = (
+                '    return replace_once(path, old, new, '
+                '"remaining cycle occurrences are not claimed")'
+            )
+            if line != desired:
+                lines[index] = desired
+                changed += 1
+    text = "\n".join(lines) + "\n"
+    if 'if "homogeneity cutoff" not in text:' not in text:
+        raise SystemExit("A3 hostile-fix idempotence marker was not normalized")
+    if '"remaining cycle occurrences are not claimed")' not in text:
+        raise SystemExit("B2 hostile-fix idempotence marker was not normalized")
+    path.write_text(text, encoding="utf-8")
+    return changed
+
+
 materializer_changes = repair_materializer()
-tex_changes = repair_tex_sources()
+a2_changes = repair_a2_delimiter()
+driver_changes = repair_harsh_driver_markers()
 print(
-    "ROUND3_SOURCE_REPAIR_PASS "
-    f"materializer_changes={materializer_changes} tex_changes={tex_changes}"
+    "ROUND3_BOOTSTRAP_REPAIR_PASS "
+    f"materializer={materializer_changes} a2={a2_changes} driver={driver_changes}"
 )
