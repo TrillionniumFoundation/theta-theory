@@ -285,8 +285,8 @@ If \(h_j\) is the maximal homogeneity index of block \(j\), then
         if text.count(marker) != 1:
             raise SystemExit("A3 frequency-ledger insertion point is ambiguous")
         text = text.replace(marker, addition, 1)
-        proof_marker = r"The mark statements are the exponential-tilt argument used in
-Theorem~\ref{thm:r3-a3-block}."
+        proof_marker = r"""The mark statements are the exponential-tilt argument used in
+Theorem~\ref{thm:r3-a3-block}."""
         proof_addition = proof_marker + r"""  For high homogeneity, use the
 fixed-\(s\) pressure convergence for \(s1_{\{h>K\}}\) proved in that theorem;
 Chernoff first sends \(K\to\infty\) and then \(s\to\infty\)."""
