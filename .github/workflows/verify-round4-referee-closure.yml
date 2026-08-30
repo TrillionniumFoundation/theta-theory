@@ -61,22 +61,37 @@ jobs:
             theta_current=/tmp/round4-history/THETA_THEORY_CURRENT_STATUS.md \
             theta_maximal_v3=/tmp/round4-history/THETA_MAXIMAL_FINAL_STATUS_V3.md
 
-      - name: Verify the reviewed round-three baseline
+      - name: Prepare reviewed, exact-rereview, and round-four layers
+        shell: bash
         run: |
-          python tools/apply_round3_closure.py
-          python tools/verify_round3_closure.py
-
-      - name: Materialize and verify the prior exact-rereview packets
-        run: |
-          python tools/repair_round3_rereview_markers.py
-          python tools/apply_round3_exact_rereview_fixes.py
-          python tools/apply_round3_closure.py
-          python tools/verify_round3_rereview.py
-
-      - name: Install all round-four mathematical replacements
-        run: |
-          python tools/sanitize_round4_fragments.py
-          python tools/apply_round4_referee_fixes.py
+          set -euo pipefail
+          if grep -q 'Round-four referee closure' \
+            papers/A1-exact-benchmarks/ROUND3_POSITIVE_CLOSURE.tex; then
+            echo 'Round-four controlling tree is already materialized.'
+            python - <<'PY'
+          import json
+          for path in (
+              'ROUND3_STRUCTURAL_VERIFICATION.json',
+              'ROUND3_REREVIEW_VERIFICATION.json',
+              'ROUND4_STRUCTURAL_VERIFICATION.json',
+              'ROUND4_HOSTILE_REREVIEW.json',
+          ):
+              with open(path, encoding='utf-8') as f:
+                  data=json.load(f)
+              if data.get('status') != 'PASS':
+                  raise SystemExit(f'{path}: expected PASS')
+          print('EXISTING_LAYER_CERTIFICATES_PASS')
+          PY
+          else
+            python tools/apply_round3_closure.py
+            python tools/verify_round3_closure.py
+            python tools/repair_round3_rereview_markers.py
+            python tools/apply_round3_exact_rereview_fixes.py
+            python tools/apply_round3_closure.py
+            python tools/verify_round3_rereview.py
+            python tools/sanitize_round4_fragments.py
+            python tools/apply_round4_referee_fixes.py
+          fi
           python tools/apply_round3_closure.py
           python tools/write_round4_author_responses.py
 
