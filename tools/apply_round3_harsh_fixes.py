@@ -242,7 +242,7 @@ estimates.
     )
 
     text = path.read_text(encoding="utf-8")
-    if "homogeneity cutoff \\(K\\)" not in text:
+    if "homogeneity cutoff" not in text:
         old = r"""Fix a collision-window radius \(q\) and a return cutoff \(L\).  Let
 \(\mathcal S_{q,L}\) be the union, over retained branches, of singularity
 curves met by the expanded window.  Homogeneity and the complexity estimate
@@ -401,7 +401,7 @@ simplex.  Thus, for \(c\ge1\),
 is valid, while \(c=0\) is the creation-forest estimate.  The factorial is
 the volume of the ordered cycle-time simplex; no cycle is counted as a new
 label."""
-    return replace_once(path, old, new, "remaining \\(c-1\\) cycle")
+    return replace_once(path, old, new, "remaining cycle occurrences are not claimed")
 
 
 def fix_b4() -> int:
