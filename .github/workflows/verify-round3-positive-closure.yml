@@ -30,8 +30,11 @@ jobs:
       - name: Repair deterministic round-three sources
         run: python tools/repair_round3_materializer.py
 
-      - name: Apply source sanitation and hostile proof-audit fixes
+      - name: Apply source sanitation and first hostile proof-audit fixes
         run: python tools/apply_round3_harsh_fixes.py
+
+      - name: Apply exact-commit mathematical rereview fixes
+        run: python tools/apply_round3_exact_rereview_fixes.py
 
       - name: Audit archived recursive and CM2 derivations
         shell: bash
@@ -59,7 +62,9 @@ jobs:
         run: python tools/apply_round3_closure.py
 
       - name: Run fail-closed structural proof checks
-        run: python tools/verify_round3_closure.py
+        run: |
+          python tools/verify_round3_closure.py
+          python tools/verify_round3_rereview.py
 
       - name: Install TeX toolchain
         run: |
@@ -83,19 +88,24 @@ jobs:
           git add -A -- \
             papers/*/main.tex \
             papers/*/ROUND3_POSITIVE_CLOSURE.tex \
+            revision/round3-rereview/*.tex \
             tools/apply_round3_closure.py \
             tools/apply_round3_harsh_fixes.py \
+            tools/apply_round3_exact_rereview_fixes.py \
             tools/audit_historical_derivations.py \
             tools/build_round3.py \
             tools/repair_round3_materializer.py \
             tools/summarize_round3_build_failures.py \
             tools/verify_round3_closure.py \
+            tools/verify_round3_rereview.py \
             ROUND3_BUILD_SUMMARY.json \
             ROUND3_BUILD_FAILURES.md \
             ROUND3_HISTORICAL_DERIVATION_AUDIT.md \
+            ROUND3_INTERNAL_HARSH_REREVIEW.md \
+            ROUND3_REREVIEW_VERIFICATION.json \
             ROUND3_STRUCTURAL_VERIFICATION.json
           if ! git diff --cached --quiet; then
-            git commit -m 'Record round-three all-paper build diagnostics [skip ci]'
+            git commit -m 'Record exact-rereview build diagnostics [skip ci]'
             git push origin HEAD:revision/round3-full-positive-closure-11paper-2026-08-30
           fi
 
@@ -115,7 +125,7 @@ jobs:
         run: |
           set -euo pipefail
           rm -f ROUND3_BUILD_FAILURES.md
-          sed -i 's/status: materialized_pending_build/status: structural_and_build_pass/' ROUND3_REVISION_MANIFEST.yaml
+          sed -i 's/status: materialized_pending_build/status: rereview_repairs_structural_and_build_pass/' ROUND3_REVISION_MANIFEST.yaml
           SOURCE_SHA="$(git rev-parse HEAD)"
           TOTAL_THEOREMS="$(python - <<'PY'
           import json
@@ -129,14 +139,16 @@ jobs:
           - Reviewed base: \`970d88ae41faf601ae609d833b48288f213e5c5c\`
           - Materialization source: \`${SOURCE_SHA}\`
           - Archived recursive/CM2 derivation audit: **PASS**
+          - Exact-commit hostile rereview repairs installed: **PASS**
           - Controlling manuscripts regenerated: **11/11 PASS**
           - Round-three proof modules present: **11/11 PASS**
           - Structural verifier: **PASS**
+          - Exact-rereview verifier: **PASS**
           - Theorem-like environments with paired proofs: **${TOTAL_THEOREMS}/${TOTAL_THEOREMS} PASS**
           - Local LaTeX references in round-three modules: **PASS**
           - Clean LaTeX build: **11/11 PASS**
           - Undefined LaTeX references/citations: **0 PASS**
-          - Independent round-three harsh rereview of this exact materialized commit: **PENDING**
+          - Independent rereview of the exact post-repair commit: **PENDING**
           - Main-tree update: **PENDING**
           - Mathematical status: **INTERNAL_POSITIVE_CLOSURE_CANDIDATE**
 
@@ -152,17 +164,22 @@ jobs:
           git add -A -- \
             papers/*/main.tex \
             papers/*/ROUND3_POSITIVE_CLOSURE.tex \
+            revision/round3-rereview/*.tex \
             tools/apply_round3_closure.py \
             tools/apply_round3_harsh_fixes.py \
+            tools/apply_round3_exact_rereview_fixes.py \
             tools/audit_historical_derivations.py \
             tools/build_round3.py \
             tools/repair_round3_materializer.py \
             tools/summarize_round3_build_failures.py \
             tools/verify_round3_closure.py \
+            tools/verify_round3_rereview.py \
             ROUND3_BUILD_SUMMARY.json \
             ROUND3_BUILD_FAILURES.md \
             ROUND3_PROOF_DEPENDENCY_LEDGER.md \
             ROUND3_HISTORICAL_DERIVATION_AUDIT.md \
+            ROUND3_INTERNAL_HARSH_REREVIEW.md \
+            ROUND3_REREVIEW_VERIFICATION.json \
             ROUND3_REVISION_MANIFEST.yaml \
             ROUND3_STRUCTURAL_VERIFICATION.json \
             ROUND3_REVISION_STATUS.md \
@@ -171,5 +188,5 @@ jobs:
             echo 'No materialized changes to publish.'
             exit 0
           fi
-          git commit -m 'Materialize and build round-three positive closure for all eleven papers [skip ci]'
+          git commit -m 'Materialize exact-rereview mathematical closure for all eleven papers [skip ci]'
           git push origin HEAD:revision/round3-full-positive-closure-11paper-2026-08-30
