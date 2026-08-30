@@ -1,0 +1,479 @@
+\documentclass[11pt,reqno]{amsart}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsfonts,amsthm,mathtools,mathrsfs,bm}
+\usepackage{enumitem,booktabs,microtype}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+\usepackage[nameinlink,capitalize]{cleveref}
+\usepackage[backend=biber,style=numeric,sorting=nyt,maxbibnames=99]{biblatex}
+\addbibresource{references.bib}
+\allowdisplaybreaks
+\setlength{\emergencystretch}{2em}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{assumption}[theorem]{Assumption}
+\newtheorem{example}[theorem]{Example}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newcommand{\E}{\mathbb E}
+\newcommand{\Pp}{\mathbb P}
+\newcommand{\Qp}{\mathbb Q}
+\newcommand{\R}{\mathbb R}
+\newcommand{\Z}{\mathbb Z}
+\newcommand{\N}{\mathbb N}
+\newcommand{\T}{\mathbb T}
+\newcommand{\cE}{\mathcal E}
+\newcommand{\cL}{\mathcal L}
+\newcommand{\cP}{\mathcal P}
+\newcommand{\cI}{\mathcal I}
+\newcommand{\cH}{\mathcal H}
+\newcommand{\cA}{\mathcal A}
+\newcommand{\cM}{\mathcal M}
+\newcommand{\Id}{\mathrm{Id}}
+\newcommand{\tr}{\operatorname{tr}}
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\Cov}{\operatorname{Cov}}
+\newcommand{\AVar}{\operatorname{AVar}}
+\newcommand{\TV}{\mathrm{TV}}
+\newcommand{\supp}{\operatorname{supp}}
+\newcommand{\Ent}{\operatorname{Ent}}
+\newcommand{\argmin}{\operatorname*{argmin}}
+\newcommand{\argmax}{\operatorname*{argmax}}
+\newcommand{\norm}[1]{\left\lVert #1\right\rVert}
+\newcommand{\abs}[1]{\left\lvert #1\right\rvert}
+\newcommand{\pair}[2]{\left\langle #1,#2\right\rangle}
+\title[History, memory, and universal pressure]{Exact History Dynamics, Domain-Safe Memory, and Universal Excess Path Pressure}
+\author{Qian Qi}
+\address{Peking University, Beijing 100871, China}
+\email{qiqian@pku.edu.cn}
+\subjclass[2020]{Primary 37A50, 82C31, 60F10; Secondary 47D03, 60H10}
+\keywords{Sinai billiards, Mori--Zwanzig, empirical paths, excess pressure, nonlinear semigroup, memory}
+\date{August 30, 2026}
+\begin{document}
+\raggedbottom
+\begin{abstract}
+We combine two layers that must be reviewed together but not conflated.  The
+first derives a domain-safe Mori--Zwanzig memory identity for Liouville-prepared
+Sinai billiards, proves that complete resolved history is an exact sufficient
+state, and identifies a Markov diffusion only as a short-memory tangent.  The
+second derives finite-volume canonical tilts, universal excess path pressure,
+an exact nonlinear tower on history space, and the exponential-transform
+generator, including phase labels when the constrained preparation is not
+unique.  The resulting manuscript provides the precise bridge from exact
+memory-bearing deterministic coarse dynamics to nonlinear path-pressure
+semigroups.
+\end{abstract}
+\maketitle
+\noindent\textbf{Platform identifier:} \texttt{TL3-LPATH-v1}.
+\tableofcontents
+
+% ---- inlined from sections/memory-001.tex ----
+\section{Prepared Koopman dynamics}
+Let \(\nu\) be either the Liouville orbit law or a unique information
+projection from Paper I.  The billiard flow \(\Phi^t\) preserves \(\nu\).
+Therefore
+\[
+ U_tF=F\circ\Phi^t
+\]
+is a strongly continuous unitary group on \(L^2(\nu)\), with skew-adjoint
+generator \(L\).
+
+Let \(\mathscr R\subset L^2(\nu)\) be a closed resolved subspace and let
+\(P=P_\nu\) be the orthogonal projection onto \(\mathscr R\); put
+\(Q=I-P\).  Conditional expectation onto a resolved sigma-field is an
+important example.  All projections in this paper are formed in the prepared
+inner product \(L^2(\nu)\).
+
+\begin{proposition}[Preparation before coarse graining]\label{mem:prop:order}
+If \(\nu\ne\mu_R\), then in general \(P_\nu\ne P_{\mu_R}\).  The exact
+coarse equation for the prepared ensemble uses \(P_\nu\).  Projecting under
+base Liouville measure and tilting afterwards introduces the commutator
+correction \((P_\nu-P_{\mu_R})L\) and is not the same model.
+\end{proposition}
+\begin{proof}
+Orthogonal projection is determined by the inner product.  Exponential or
+information tilting changes conditional moments unless the resolved and
+unresolved variables are exceptionally independent under both measures.
+\end{proof}
+
+% ---- end inline ----
+
+
+% ---- inlined from sections/memory-002.tex ----
+\section{Domain-safe Mori--Zwanzig representations}
+The formal orthogonal generator \(QL\) need not be known a priori to generate
+a strongly continuous semigroup.  We therefore begin with a bounded exact
+identity and isolate the additional condition needed for the classical
+unregularized formula.
+
+For \(\lambda>0\), let
+\[
+ L_\lambda=\lambda L(\lambda I-L)^{-1}.
+\]
+Since \(L\) is skew-adjoint, \(L_\lambda\) is bounded, and
+\(L_\lambda A\to LA\) for every \(A\in D(L)\).  Put
+\(U_t^\lambda=e^{tL_\lambda}\).
+
+\begin{theorem}[Exact Yosida-regularized memory identity]\label{mem:thm:mz-reg}
+For every \(A\in\mathscr R\) and every \(t\ge0\),
+\[
+\boxed{
+ \frac d{dt}U_t^\lambda A
+ =U_t^\lambda PL_\lambda A
+ +\int_0^tU_{t-s}^\lambda PL_\lambda
+   e^{sQL_\lambda}QL_\lambda A\,ds
+ +e^{tQL_\lambda}QL_\lambda A.}
+\]
+Every term is a bounded-operator expression.  For a fixed initial billiard
+point the final term is deterministic; ensemble randomness enters only through
+the prepared initial law.
+\end{theorem}
+\begin{proof}
+Apply the bounded Dyson identity
+\[
+ e^{tL_\lambda}=e^{tQL_\lambda}
+ +\int_0^t e^{(t-s)L_\lambda}PL_\lambda
+ e^{sQL_\lambda}\,ds
+\]
+to \(QL_\lambda A\), and split
+\(L_\lambda A=PL_\lambda A+QL_\lambda A\).
+\end{proof}
+
+\begin{theorem}[Classical orthogonal-dynamics limit]\label{mem:thm:mz-limit}
+Assume the explicit packet \(\mathrm{ORTH\mbox{-}GEN}(A)\): the closure of
+\(QLQ\) on \(Q L^2(\nu)\) generates a strongly continuous semigroup \(V_t^Q\),
+and the Yosida orthogonal propagators and memory integrands converge uniformly
+on compact time intervals when applied to \(A\).  Then
+\cref{mem:thm:mz-reg} converges in \(L^2(\nu)\) to
+\[
+ \frac d{dt}U_tA
+ =U_tPLA+
+ \int_0^tU_{t-s}PLV_s^QQLA\,ds+V_t^QQLA.
+\]
+If \(\mathrm{ORTH\mbox{-}GEN}(A)\) is not verified, the exact controlling
+coarse dynamics is the history kernel of \cref{mem:thm:history}; no formal
+\(e^{tQL}\) is asserted.
+\end{theorem}
+\begin{proof}
+Strong Yosida convergence gives \(U_t^\lambda A\to U_tA\) and
+\(L_\lambda A\to LA\).  The declared uniform convergence of the orthogonal
+propagators and integrands permits dominated convergence in the memory
+integral.  Without that packet the regularized identities remain exact but no
+unbounded orthogonal semigroup is inferred.
+\end{proof}
+
+\begin{remark}
+The classical formula of Mori and Zwanzig is recovered by
+\cref{mem:thm:mz-limit} \cite{Mori1965,Zwanzig1961,ChorinHaldKupferman2000}.
+The separation between \cref{mem:thm:mz-reg} and
+\cref{mem:thm:mz-limit} closes the generator-domain ambiguity rather than hiding
+it inside the notation \(e^{tQL}\).
+\end{remark}
+
+% ---- end inline ----
+
+
+% ---- inlined from sections/memory-003.tex ----
+\section{Exact history-state Markovization}
+Let \(Y_t=\Pi(\Phi^tz)\) be any resolved observation with values in a Polish
+space \(E\).  Define its complete past history
+\[
+ H_t=(Y_{t+s})_{s\le0}\in\mathsf H=D((\! -\infty,0],E).
+\]
+
+\begin{theorem}[History is an exact sufficient state]\label{mem:thm:history}
+Under every stationary prepared law \(\nu\), the history process \(H_t\) is
+Markov on \(\mathsf H\).  There exists a regular conditional kernel
+\(K_\nu(h,d\eta)\) for the next history segment, and all finite-horizon
+conditional expectations of resolved path functionals are obtained by
+iterating this kernel.  No finite-dimensional Markov state is claimed unless
+a separate sufficient-statistic theorem is proved.
+\end{theorem}
+\begin{proof}
+The future conditional law of the resolved process given its complete past is
+a regular conditional probability on the Polish path space.  Appending a
+future segment and shifting the history gives a transition kernel depending
+only on the present history.  This is canonical Markovization on path space.
+\end{proof}
+
+\begin{remark}
+The history representation and the domain-safe Mori--Zwanzig family are complementary:
+the former is probabilistic and exact for arbitrary resolved observables; the
+latter decomposes the same coarse dynamics into instantaneous, memory, and
+orthogonal components in \(L^2\).
+\end{remark}
+
+% ---- end inline ----
+
+
+% ---- inlined from sections/memory-004.tex ----
+\section{Short-memory tangent and recovery of the v9 limit}
+The universal theory retains memory.  A Markovian tangent requires an
+additional scaling statement.
+
+\begin{lemma}[Concentrating-kernel estimate]\label{mem:lem:kernel}
+Let \(K\in L^1(\R_+;\mathcal L(\R^d))\) with
+\(\int_0^\infty s\norm{K(s)}ds<\infty\), and put
+\(K_\delta(s)=\delta^{-1}K(s/\delta)\).  For every Lipschitz path \(x\),
+\[
+\begin{aligned}
+ \left\|
+ \int_0^tK_\delta(s)x(t-s)ds-\Gamma x(t)
+ \right\|
+ &\le
+ \delta\operatorname{Lip}(x)
+ \int_0^\infty s\norm{K(s)}ds\\
+ &\quad+
+ \norm{x}_\infty
+ \int_{t/\delta}^\infty\norm{K(s)}ds.
+\end{aligned}
+\]
+where \(\Gamma=\int_0^\infty K(s)ds\).
+\end{lemma}
+\begin{proof}
+Add and subtract \(x(t)\), change variables \(s=\delta u\), and use the
+Lipschitz bound.  The second term is the missing tail beyond time \(t\).
+\end{proof}
+
+\begin{theorem}[Markov tangent, not a primitive assumption]\label{mem:thm:tangent}
+If, under a declared scale separation, the prepared memory kernels concentrate
+as in \cref{mem:lem:kernel} and the integrated orthogonal forces satisfy the
+joint invariance principle verified for the homological currents in v9, then
+the exact history dynamics converges to the v9 Markov diffusion and its
+pressure Hamiltonian.  Without these conditions the exact history dynamics and the bounded
+regularized memory identities remain the controlling objects.
+\end{theorem}
+\begin{proof}
+The memory convolution converges to its instantaneous friction by
+\cref{mem:lem:kernel}; the orthogonal-force integral converges by the assumed
+invariance principle.  Stability of the resolved integral equation completes
+the limit \cite{GivonKupfermanStuart2004,KellyMelbourne2017}.
+\end{proof}
+
+\begin{theorem}[Memory closure]\label{mem:thm:main}
+Prepared Liouville billiard paths admit an exact history-state Markov
+representation and an exact Yosida-regularized Mori--Zwanzig family.  The
+classical unregularized memory formula requires the explicit ORTH-GEN packet.
+Markovian diffusion is a proved tangent when its scaling conditions hold, not
+an implicit axiom.
+\end{theorem}
+\begin{proof}
+Combine \cref{mem:thm:mz-reg,mem:thm:mz-limit,mem:thm:history,mem:thm:tangent}.
+\end{proof}
+
+% ---- end inline ----
+
+
+% ---- inlined from sections/pressure-001.tex ----
+\section{Static pressure and finite-horizon canonical tilts}
+Let \(\cI_R^p\) be the full physical empirical-path rate from Paper I and set
+\[
+ Q_R(F)=\sup_\nu\left\{\int F\,d\nu-\cI_R^p(\nu)\right\},
+ \qquad F\in C_b(\Omega_R^p).
+\]
+For a prepared cotangent potential \(\Psi\), define the asymptotic excess
+pressure
+\[
+ \boxed{\Delta Q_R^\Psi(F)=Q_R(\Psi+F)-Q_R(\Psi).}
+\]
+
+For a physical horizon \(T\), put
+\[
+ A_T(F)=\int_0^T F(\Theta_t\omega)\,dt
+\]
+and define the finite-horizon canonical path law
+\[
+ \frac{d\Pp_{R,T}^\Psi}{d\Pp_R^p}
+ =\frac{e^{A_T(\Psi)}}
+        {\E_{\Pp_R^p}e^{A_T(\Psi)}}.
+\]
+
+\begin{theorem}[Exact tilt ratio and pressure bridge]\label{pres:thm:bridge}
+For every bounded continuous \(F\),
+\[
+ \frac1T\log\E_{\Pp_{R,T}^\Psi}e^{A_T(F)}
+ =Q_{R,T}(\Psi+F)-Q_{R,T}(\Psi),
+\]
+where
+\(Q_{R,T}(G)=T^{-1}\log\E_{\Pp_R^p}e^{A_T(G)}\).  Hence
+\[
+ \lim_{T\to\infty}\frac1T
+ \log\E_{\Pp_{R,T}^\Psi}e^{A_T(F)}
+ =\Delta Q_R^\Psi(F).
+\]
+Every random-root local limit of \(\Pp_{R,T}^\Psi\) is a maximizing phase of
+\(\nu(\Psi)-\cI_R^p(\nu)\); if the maximizer is unique, it is the stationary
+prepared law \(\Pp_R^\Psi\).
+\end{theorem}
+\begin{proof}
+The first equality is the exact ratio of partition functions.  Paper I's full
+LDP and Varadhan duality give convergence of both finite-horizon pressures.
+The exponential-tilt LDP has rate
+\[
+ \cI_R^{p,\Psi}(\nu)
+ =\cI_R^p(\nu)-\nu(\Psi)+Q_R(\Psi),
+\]
+so its zero set is precisely the maximizing phase set.  Apply Paper I's
+random-root conditioning argument.
+\end{proof}
+
+\begin{proposition}[Structural properties]\label{pres:prop:static}
+The map \(F\mapsto\Delta Q_R^\Psi(F)\) is monotone, convex, constant
+preserving in the additive convention, and invariant under adding a common
+path coboundary to \(\Psi\) and \(\Psi+F\).  If \(\Psi\) has a unique
+maximizer \(\Pp_R^\Psi\), then
+\[
+ DQ_R(\Psi)F=\int F\,d\Pp_R^\Psi.
+\]
+\end{proposition}
+\begin{proof}
+These are direct consequences of the variational formula and the envelope
+theorem at a unique maximizer.
+\end{proof}
+
+On a calibrated scalar ray \(\Psi=\theta G\), terminal work \(X\) measured in
+the dual units of \(G\) has normalized asymptotic certainty equivalent
+\[
+ \frac1\theta\Delta Q_R^{\theta G}(\theta X).
+\]
+The scalar \(\theta\) is selected by the macro preparation; it is not free in
+the first-principles branch.
+
+% ---- end inline ----
+
+
+% ---- inlined from sections/pressure-002.tex ----
+\section{Exact dynamic pressure on complete histories}
+Assume first that \(\Psi\) has a unique stationary maximizing path law
+\(\Pp_R^\Psi\).  Let \(\mathcal F_t\) be the resolved path filtration and
+\(H_t\) the complete history state from Paper II.
+
+For bounded future path work \(F\), define the finite-horizon canonical
+functional
+\[
+ \boxed{
+ \cE_{s,t}^{\Psi}[F]
+ =\log\E_{\Pp_R^\Psi}
+ \left[e^F\mid\mathcal F_s\right].}
+\]
+
+\begin{theorem}[Exact history-space nonlinear tower]\label{pres:thm:tower}
+The operators are monotone, cash additive, and satisfy
+\[
+ \cE_{r,t}^{\Psi}
+ =\cE_{r,s}^{\Psi}\circ\cE_{s,t}^{\Psi}.
+\]
+They admit versions depending only on the current history \(H_s\).  If
+\(K_\Psi(h,d\eta)\) is the history transition kernel, the discrete
+finite-horizon value satisfies
+\[
+ V_k(h)=\log\int
+ \exp\{c_k(h,\eta)+V_{k+1}(h\star\eta)\}
+ K_\Psi(h,d\eta).
+\]
+For additive time-averaged work, the long-horizon growth rate of the canonical
+finite-volume construction is the static excess pressure in
+\cref{pres:thm:bridge}.  No finite microcanonical law and no finite-dimensional
+coarse state is declared Markov.
+\end{theorem}
+\begin{proof}
+Exponentiate and apply the ordinary conditional-expectation tower.  Paper II
+shows that complete history is a sufficient Markov state.  Conditioning on the
+next history segment gives the recursion.  The last assertion is exactly the
+partition-function bridge of \cref{pres:thm:bridge}.
+\end{proof}
+
+% ---- end inline ----
+
+
+% ---- inlined from sections/pressure-003.tex ----
+\section{The exact nonlinear history generator}
+Let \(\cA_\Psi\) be the linear generator of the history process under
+\(\Pp_R^\Psi\), on a core \(\mathcal D\) of bounded cylinder functionals.
+
+\begin{theorem}[Exponential-transform generator]\label{pres:thm:generator}
+For \(\Phi\in\mathcal D\) such that \(e^\Phi\in D(\cA_\Psi)\), the nonlinear
+generator of the log-Laplace history semigroup is
+\[
+ \boxed{
+ \mathfrak G_\Psi\Phi(h)
+ =e^{-\Phi(h)}\cA_\Psi(e^\Phi)(h).}
+\]
+On a calibrated scalar ray, the normalized generator is
+\[
+ \boxed{
+ \mathfrak G_{\theta,G}\Phi
+ =\frac1\theta e^{-\theta\Phi}
+ \cA_{\theta G}(e^{\theta\Phi}).}
+\]
+The generator includes memory exactly through the history state.  If a
+finite-dimensional Markov tangent exists, contraction of this identity gives
+the v8 theta-HJB and the v9 full pressure Hamiltonian.
+\end{theorem}
+\begin{proof}
+Differentiate
+\(\log P_t^\Psi(e^\Phi)\) at \(t=0\).  The contraction statement follows by
+applying the identity to cylinder functionals depending only on a sufficient
+finite-dimensional state.
+\end{proof}
+
+\begin{corollary}[Mori--Zwanzig compatibility]
+For a resolved observable, the linear generator \(\cA_\Psi\) on history and
+the domain-safe regularized Mori--Zwanzig family of Paper II describe the
+same conditional path law; the unregularized formula is used only under the
+ORTH-GEN packet.  The former yields nonlinear dynamic programming; the latter
+separates instantaneous, memory, and orthogonal contributions.
+\end{corollary}
+
+% ---- end inline ----
+
+
+% ---- inlined from sections/pressure-004.tex ----
+\section{Phase-resolved dynamic consistency}
+At a nondifferentiable preparation potential, let
+\[
+ \cM(\Psi)=\argmax_\nu\{\nu(\Psi)-\cI_R^p(\nu)\}.
+\]
+
+\begin{theorem}[Phase label is a necessary state variable]\label{pres:thm:phase}
+For every \(q\in\cM(\Psi)\), the phase law \(\Pp_R^{\Psi,q}\) defines its own
+exact history semigroup \(\cE^{\Psi,q}_{s,t}\).  On the augmented state
+\((q,H_t)\), the family is time consistent.  Without a phase label or declared
+mixing weights, there is no canonical single conditional semigroup in general.
+The unlabelled object is the set-valued correspondence
+\[
+ F\longmapsto
+ \{\cE^{\Psi,q}_{s,t}[F]:q\in\cM(\Psi)\}.
+\]
+\end{theorem}
+\begin{proof}
+Each invariant phase admits regular conditional probabilities and hence the
+exact tower.  Different phases can have different conditional kernels; a
+mixture weight is part of the preparation and cannot be reconstructed from the
+unlabelled pressure face.
+\end{proof}
+
+\begin{theorem}[Universal nonlinear-semigroup closure]\label{pres:thm:main}
+The full Liouville path rate produces a universal static excess pressure,
+exact history-space dynamic programming, an exact nonlinear history generator,
+and phase-resolved coexistence dynamics.  The earlier finite-dimensional
+theta generators are contractions, not primitive inputs.
+\end{theorem}
+\begin{proof}
+Combine \cref{pres:prop:static,pres:thm:tower,pres:thm:generator,pres:thm:phase}.
+\end{proof}
+
+% ---- end inline ----
+
+\section*{Scope and external-review status}
+This manuscript is the unique controlling source in its folder.  It is a
+research draft with internal proof closure in the explicitly stated scope.
+Independent line-by-line mathematical review, novelty review, and journal
+acceptance are not claimed.
+\printbibliography
+\end{document}
