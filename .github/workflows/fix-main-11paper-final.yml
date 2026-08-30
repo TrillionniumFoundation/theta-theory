@@ -1,0 +1,212 @@
+name: fix-main-11paper-final
+
+on:
+  push:
+    branches:
+      - staging/fix-main-11paper-2026-08-30
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fix-main-11paper-final
+  cancel-in-progress: false
+
+env:
+  EXPECTED_ARCHIVE_SHA256: 566335121763abaa7ed8ed2280a3b4345877777e8bedbd80f4eef0a6b48745e2
+  EXPECTED_OLD_MAIN: e581678d8b7d19246cdaa5a9576920a07b25bfaa
+  REVIEW_BRANCH: review/gpt56-pro-harsh-referee-11paper-2026-08-30
+
+jobs:
+  materialize-verify-and-promote:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out pinned migration source
+        uses: actions/checkout@v4
+        with:
+          ref: staging/fix-main-11paper-2026-08-30
+          path: staging
+          fetch-depth: 0
+
+      - name: Reconstruct and verify the pinned eleven-paper source
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd staging/migration/clean-main-11paper
+          cat parts/part-*.b64 | tr -d '\r\n' | base64 --decode > clean_main_11paper.tar.gz
+          actual="$(sha256sum clean_main_11paper.tar.gz | awk '{print $1}')"
+          test "$actual" = "$EXPECTED_ARCHIVE_SHA256"
+          sha256sum -c clean_main_11paper.tar.gz.sha256
+          mkdir extracted
+          python3 - <<'PY'
+          from pathlib import Path
+          import tarfile
+
+          archive = Path('clean_main_11paper.tar.gz')
+          root = Path('extracted').resolve()
+          with tarfile.open(archive, 'r:gz') as tf:
+              for member in tf.getmembers():
+                  target = (root / member.name).resolve()
+                  if target != root and root not in target.parents:
+                      raise SystemExit(f'unsafe archive path: {member.name}')
+              tf.extractall(root)
+          PY
+
+      - name: Check out independent referee reports
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.REVIEW_BRANCH }}
+          path: review
+          fetch-depth: 1
+
+      - name: Overlay both referee reports into the eleven paper folders
+        shell: bash
+        run: |
+          set -euo pipefail
+          root='staging/migration/clean-main-11paper/extracted'
+          papers=(
+            A1-exact-benchmarks
+            A2-sinai-homological-pressure
+            A3-full-empirical-path-ldp
+            A4-history-memory-universal-pressure
+            B1-microcanonical-preparation
+            B2-collision-clusters-dynamic-ldp
+            B3-hamilton-boltzmann-cotangents
+            B4-nonlinear-kinetic-semigroups
+            C1-information-risk-sensitive-saddles
+            C2-cotangent-rigidity-tangent-representations
+            D1-deterministic-theta-contractions
+          )
+          for name in "${papers[@]}"; do
+            test -f "review/papers/$name/REFEREE_REPORT.md"
+            test -f "review/papers/$name/REFEREE_REPORT_GPT56_PRO.md"
+            cp "review/papers/$name/REFEREE_REPORT.md" "$root/papers/$name/REFEREE_REPORT.md"
+            cp "review/papers/$name/REFEREE_REPORT_GPT56_PRO.md" "$root/papers/$name/REFEREE_REPORT_GPT56_PRO.md"
+          done
+          cp review/REFEREE_REPORTS_INDEX.md "$root/papers/REFEREE_REPORTS_INDEX.md"
+          cp review/GPT56_PRO_REFEREE_REPORTS_INDEX.md "$root/papers/GPT56_PRO_REFEREE_REPORTS_INDEX.md"
+
+      - name: Verify exact final source-and-review contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          root = Path('staging/migration/clean-main-11paper/extracted')
+          expected = {
+              'A1-exact-benchmarks',
+              'A2-sinai-homological-pressure',
+              'A3-full-empirical-path-ldp',
+              'A4-history-memory-universal-pressure',
+              'B1-microcanonical-preparation',
+              'B2-collision-clusters-dynamic-ldp',
+              'B3-hamilton-boltzmann-cotangents',
+              'B4-nonlinear-kinetic-semigroups',
+              'C1-information-risk-sensitive-saddles',
+              'C2-cotangent-rigidity-tangent-representations',
+              'D1-deterministic-theta-contractions',
+          }
+          assert {p.name for p in root.iterdir()} == {'README.md', 'Makefile', '.gitignore', 'papers'}
+          papers = root / 'papers'
+          actual = {p.name for p in papers.iterdir() if p.is_dir()}
+          assert actual == expected, (actual, expected)
+          assert {p.name for p in papers.iterdir() if p.is_file()} == {
+              'REFEREE_REPORTS_INDEX.md', 'GPT56_PRO_REFEREE_REPORTS_INDEX.md'
+          }
+          required = {
+              'main.tex', 'references.bib', 'README.md', 'REFEREE_GUIDE.md',
+              'REFEREE_REPORT.md', 'REFEREE_REPORT_GPT56_PRO.md'
+          }
+          for name in expected:
+              assert {x.name for x in (papers / name).iterdir()} == required, name
+          assert len(list(papers.glob('*/main.tex'))) == 11
+          assert len(list(papers.glob('*/references.bib'))) == 11
+          assert len(list(papers.glob('*/REFEREE_REPORT.md'))) == 11
+          assert len(list(papers.glob('*/REFEREE_REPORT_GPT56_PRO.md'))) == 11
+          forbidden = {
+              'paper-I-geometric-response',
+              'paper-II-physical-rough',
+              'paper-III-dpp-hjb',
+              'paper-IV-filtering-games',
+              'paper-V-tangent-laws',
+          }
+          assert not (actual & forbidden)
+          assert not list(root.rglob('*.b64'))
+          assert not list(root.rglob('*.tar.gz'))
+          assert not list(root.rglob('*.zip'))
+          print('FINAL_TREE_CONTRACT_PASS')
+          PY
+
+      - name: Upload verified final tree as a recovery artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: verified-main-11paper-final
+          path: staging/migration/clean-main-11paper/extracted
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Check out current main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: main-worktree
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Replace main atomically
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd main-worktree
+          old_main="$(git rev-parse HEAD)"
+          test "$old_main" = "$EXPECTED_OLD_MAIN"
+          git config user.name 'theta-theory-main-tree-fix'
+          git config user.email 'theta-theory-main-tree-fix@users.noreply.github.com'
+          rsync -a --delete --exclude='.git/' \
+            ../staging/migration/clean-main-11paper/extracted/ ./
+          git add -A
+          git commit -m 'Replace main with verified eleven-paper source and referee reports'
+          new_main="$(git rev-parse HEAD)"
+          git push --force-with-lease="refs/heads/main:$old_main" origin "$new_main:refs/heads/main"
+          echo "OLD_MAIN=$old_main"
+          echo "NEW_MAIN=$new_main"
+
+      - name: Audit the server-side main tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf final-main
+          git clone --depth 1 --branch main "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" final-main
+          python3 - <<'PY'
+          from pathlib import Path
+
+          root = Path('final-main')
+          papers = root / 'papers'
+          expected = {
+              'A1-exact-benchmarks',
+              'A2-sinai-homological-pressure',
+              'A3-full-empirical-path-ldp',
+              'A4-history-memory-universal-pressure',
+              'B1-microcanonical-preparation',
+              'B2-collision-clusters-dynamic-ldp',
+              'B3-hamilton-boltzmann-cotangents',
+              'B4-nonlinear-kinetic-semigroups',
+              'C1-information-risk-sensitive-saddles',
+              'C2-cotangent-rigidity-tangent-representations',
+              'D1-deterministic-theta-contractions',
+          }
+          actual = {p.name for p in papers.iterdir() if p.is_dir()}
+          assert actual == expected
+          assert len(list(papers.glob('*/main.tex'))) == 11
+          assert len(list(papers.glob('*/references.bib'))) == 11
+          assert len(list(papers.glob('*/REFEREE_REPORT.md'))) == 11
+          assert len(list(papers.glob('*/REFEREE_REPORT_GPT56_PRO.md'))) == 11
+          assert not list(papers.glob('paper-I-*'))
+          assert not list(papers.glob('paper-II-*'))
+          assert not list(papers.glob('paper-III-*'))
+          assert not list(papers.glob('paper-IV-*'))
+          assert not list(papers.glob('paper-V-*'))
+          print('REMOTE_MAIN_AUDIT_PASS')
+          PY
