@@ -55,12 +55,30 @@ def sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def pages(path: Path) -> int:
-    completed = run(["pdfinfo", str(path)], path.parent)
-    if completed.returncode != 0:
-        return 0
-    match = re.search(r"^Pages:\s+(\d+)\s*$", completed.stdout, re.MULTILINE)
-    return int(match.group(1)) if match else 0
+def pages(path: Path) -> tuple[int, str]:
+    """Return a fail-closed page count plus compact diagnostics.
+
+    Poppler versions differ in whitespace and line endings, so parse the
+    ``Pages:`` field permissively. If ``pdfinfo`` succeeds but its localized
+    output cannot be parsed, fall back to counting PDF page objects. The
+    fallback deliberately excludes the ``/Pages`` tree object via a word
+    boundary and is used only for PDFs just emitted by pdfTeX.
+    """
+    completed = run(["pdfinfo", str(path.resolve())], path.parent)
+    output = completed.stdout.replace("\r", "\n")
+    if completed.returncode == 0:
+        match = re.search(r"(?im)^\s*Pages\s*:\s*(\d+)\b", output)
+        if match:
+            return int(match.group(1)), "pdfinfo"
+    try:
+        data = path.read_bytes()
+    except OSError as exc:
+        return 0, f"read-error:{exc}"
+    page_objects = len(re.findall(rb"/Type\s*/Page\b", data))
+    if page_objects > 0:
+        return page_objects, "pdf-object-fallback"
+    diagnostic = " | ".join(line.strip() for line in output.splitlines()[:8])
+    return 0, f"pdfinfo-returncode={completed.returncode}; output={diagnostic}"
 
 
 def concise_context(text: str, radius: int = 8, max_blocks: int = 6) -> list[str]:
@@ -123,13 +141,15 @@ def main() -> None:
         log_path.write_text(completed.stdout, encoding="utf-8", errors="replace")
 
         pdf = paper / "main.pdf"
-        page_count = pages(pdf) if pdf.is_file() else 0
-        undefined = bool(re.search(
-            r"LaTeX Warning: (?:Reference|Citation).*undefined|"
-            r"There were undefined references|There were undefined citations",
-            completed.stdout,
-            re.IGNORECASE,
-        ))
+        page_count, page_counter = pages(pdf) if pdf.is_file() else (0, "missing-pdf")
+        undefined = bool(
+            re.search(
+                r"LaTeX Warning: (?:Reference|Citation).*undefined|"
+                r"There were undefined references|There were undefined citations",
+                completed.stdout,
+                re.IGNORECASE,
+            )
+        )
         ok = (
             completed.returncode == 0
             and pdf.is_file()
@@ -146,6 +166,7 @@ def main() -> None:
             "returncode": completed.returncode,
             "pdf_bytes": pdf.stat().st_size if pdf.is_file() else 0,
             "pdf_pages": page_count,
+            "page_counter": page_counter,
             "pdf_sha256": sha256(pdf) if pdf.is_file() else None,
             "module_sha256": sha256(paper / "ROUND5_POSITIVE_CLOSURE.tex")
             if (paper / "ROUND5_POSITIVE_CLOSURE.tex").is_file()
@@ -158,16 +179,28 @@ def main() -> None:
         if ok:
             print(
                 f"ROUND5_BUILD_PASS {name} pages={page_count} "
-                f"pdf_bytes={pdf.stat().st_size}"
+                f"counter={page_counter} pdf_bytes={pdf.stat().st_size}"
             )
         else:
             failures.append(name)
             blocks = concise_context(completed.stdout)
-            failure_blocks += [f"## {name}", "", "```text"]
+            failure_blocks += [
+                f"## {name}",
+                "",
+                f"- latexmk return code: `{completed.returncode}`",
+                f"- page count: `{page_count}` via `{page_counter}`",
+                f"- PDF exists: `{pdf.is_file()}`",
+                f"- undefined references/citations: `{undefined}`",
+                "",
+                "```text",
+            ]
             failure_blocks += blocks
             failure_blocks += ["```", ""]
             print(
-                f"ROUND5_BUILD_FAIL_BEGIN {name} returncode={completed.returncode}",
+                f"ROUND5_BUILD_FAIL_BEGIN {name} "
+                f"returncode={completed.returncode} pages={page_count} "
+                f"counter={page_counter} pdf_exists={pdf.is_file()} "
+                f"undefined={undefined}",
                 file=sys.stderr,
             )
             for block in blocks:
@@ -186,13 +219,17 @@ def main() -> None:
     SUMMARY_PATH.write_text(
         json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
-    FAILURE_BLOCKS = failure_blocks if failures else [
-        "# Round-five build failures",
-        "",
-        "None. All eleven manuscripts clean-built with resolved references and citations.",
-        "",
-    ]
-    FAILURES_PATH.write_text("\n".join(FAILURE_BLOCKS), encoding="utf-8")
+    failure_output = (
+        failure_blocks
+        if failures
+        else [
+            "# Round-five build failures",
+            "",
+            "None. All eleven manuscripts clean-built with resolved references and citations.",
+            "",
+        ]
+    )
+    FAILURES_PATH.write_text("\n".join(failure_output), encoding="utf-8")
 
     if failures:
         print(
