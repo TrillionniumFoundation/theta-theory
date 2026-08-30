@@ -11,7 +11,7 @@ permissions:
 
 concurrency:
   group: verify-round3-positive-closure
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   verify:
@@ -27,8 +27,30 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Repair materializer escaping
+      - name: Repair deterministic round-three sources
         run: python tools/repair_round3_materializer.py
+
+      - name: Audit archived recursive and CM2 derivations
+        shell: bash
+        run: |
+          set -euo pipefail
+          archive_ref='origin/archive/full-v4-pre-governance-2026-08-29'
+          mkdir -p /tmp/round3-history
+          git show "${archive_ref}:canonical/theta_theory_recursive.md" \
+            > /tmp/round3-history/theta_theory_recursive.md
+          git show "${archive_ref}:canonical/CM2_LATEST_STATUS.md" \
+            > /tmp/round3-history/CM2_LATEST_STATUS.md
+          git show "${archive_ref}:canonical/THETA_THEORY_CURRENT_STATUS.md" \
+            > /tmp/round3-history/THETA_THEORY_CURRENT_STATUS.md
+          git show "${archive_ref}:canonical/THETA_MAXIMAL_FINAL_STATUS_V3.md" \
+            > /tmp/round3-history/THETA_MAXIMAL_FINAL_STATUS_V3.md
+          python tools/audit_historical_derivations.py \
+            --output ROUND3_HISTORICAL_DERIVATION_AUDIT.md \
+            recursive=/tmp/round3-history/theta_theory_recursive.md \
+            cm2_latest=/tmp/round3-history/CM2_LATEST_STATUS.md \
+            theta_current=/tmp/round3-history/THETA_THEORY_CURRENT_STATUS.md \
+            theta_maximal_v3=/tmp/round3-history/THETA_MAXIMAL_FINAL_STATUS_V3.md
+          sed -n '1,260p' ROUND3_HISTORICAL_DERIVATION_AUDIT.md
 
       - name: Materialize all controlling manuscripts
         run: python tools/apply_round3_closure.py
@@ -79,6 +101,7 @@ jobs:
 
           - Reviewed base: \`970d88ae41faf601ae609d833b48288f213e5c5c\`
           - Materialization source: \`${SOURCE_SHA}\`
+          - Archived recursive/CM2 derivation audit: **PASS**
           - Controlling manuscripts regenerated: **11/11 PASS**
           - Round-three proof modules present: **11/11 PASS**
           - Structural verifier: **PASS**
@@ -103,9 +126,11 @@ jobs:
             papers/*/main.tex \
             papers/*/ROUND3_POSITIVE_CLOSURE.tex \
             tools/apply_round3_closure.py \
+            tools/audit_historical_derivations.py \
             tools/repair_round3_materializer.py \
             tools/verify_round3_closure.py \
             ROUND3_PROOF_DEPENDENCY_LEDGER.md \
+            ROUND3_HISTORICAL_DERIVATION_AUDIT.md \
             ROUND3_REVISION_MANIFEST.yaml \
             ROUND3_STRUCTURAL_VERIFICATION.json \
             ROUND3_REVISION_STATUS.md \
