@@ -1,36 +1,73 @@
 #!/usr/bin/env python3
-"""Repair the two newline-producing source lines in the round-three materializer.
+"""Repair deterministic round-three source-generation and TeX typos.
 
-The original generator used raw strings ending in ``\n``.  That preserved the
-characters backslash+n in the generated TeX instead of emitting a newline.
-This repair is intentionally narrow and idempotent; it patches only the two
-known source lines and then verifies the corrected form.
+The first bootstrap used raw strings ending in ``\n`` and therefore emitted
+literal backslash+n characters in generated manuscripts.  The A2 module also
+contained one transposition, ``\night)`` instead of ``\right)``.  This script
+is deliberately narrow, idempotent, and fail-closed: it changes only the known
+source forms and verifies that the corrected forms are present afterwards.
 """
 from pathlib import Path
 
-path = Path(__file__).with_name("apply_round3_closure.py")
-lines = path.read_text(encoding="utf-8").splitlines()
-changed = 0
-for index, line in enumerate(lines):
-    stripped = line.strip()
-    if stripped == '+ r"\\texttt{" + meta["platform"] + "}.\\n"':
-        lines[index] = '        + "\\\\texttt{" + meta["platform"] + "}.\\n"'
-        changed += 1
-    elif stripped == '+ r"\\texttt{ROUND3-POSITIVE-CLOSURE}.\\n"':
-        lines[index] = '        + "\\\\texttt{ROUND3-POSITIVE-CLOSURE}.\\n"'
-        changed += 1
+ROOT = Path(__file__).resolve().parents[1]
 
-text = "\n".join(lines) + "\n"
-required = (
-    '+ "\\\\texttt{" + meta["platform"] + "}.\\n"',
-    '+ "\\\\texttt{ROUND3-POSITIVE-CLOSURE}.\\n"',
+
+def repair_materializer() -> int:
+    path = ROOT / "tools" / "apply_round3_closure.py"
+    lines = path.read_text(encoding="utf-8").splitlines()
+    changed = 0
+    for index, line in enumerate(lines):
+        stripped = line.strip()
+        if stripped == '+ r"\\texttt{" + meta["platform"] + "}.\\n"':
+            lines[index] = '        + "\\\\texttt{" + meta["platform"] + "}.\\n"'
+            changed += 1
+        elif stripped == '+ r"\\texttt{ROUND3-POSITIVE-CLOSURE}.\\n"':
+            lines[index] = '        + "\\\\texttt{ROUND3-POSITIVE-CLOSURE}.\\n"'
+            changed += 1
+
+    text = "\n".join(lines) + "\n"
+    required = (
+        '+ "\\\\texttt{" + meta["platform"] + "}.\\n"',
+        '+ "\\\\texttt{ROUND3-POSITIVE-CLOSURE}.\\n"',
+    )
+    if not all(item in text for item in required):
+        raise SystemExit("round-three materializer escape repair did not converge")
+    forbidden = (
+        'r"\\texttt{" + meta["platform"] + "}.\\n"',
+        'r"\\texttt{ROUND3-POSITIVE-CLOSURE}.\\n"',
+    )
+    if any(item in text for item in forbidden):
+        raise SystemExit("raw materializer newline remains")
+    path.write_text(text, encoding="utf-8")
+    return changed
+
+
+def repair_tex_sources() -> int:
+    repairs = {
+        ROOT / "papers" / "A2-sinai-homological-pressure" / "ROUND3_POSITIVE_CLOSURE.tex": {
+            r"O\left(n^{-1/2}+b_n/n+b_n^{-1}\night)":
+            r"O\left(n^{-1/2}+b_n/n+b_n^{-1}\right)"
+        },
+    }
+    changed = 0
+    for path, replacements in repairs.items():
+        text = path.read_text(encoding="utf-8")
+        for old, new in replacements.items():
+            occurrences = text.count(old)
+            if occurrences > 1:
+                raise SystemExit(f"ambiguous repair in {path}: {old!r} occurs {occurrences} times")
+            if occurrences == 1:
+                text = text.replace(old, new)
+                changed += 1
+            if old in text or new not in text:
+                raise SystemExit(f"TeX repair did not converge in {path}: {old!r}")
+        path.write_text(text, encoding="utf-8")
+    return changed
+
+
+materializer_changes = repair_materializer()
+tex_changes = repair_tex_sources()
+print(
+    "ROUND3_SOURCE_REPAIR_PASS "
+    f"materializer_changes={materializer_changes} tex_changes={tex_changes}"
 )
-if not all(item in text for item in required):
-    raise SystemExit("round-three materializer escape repair did not converge")
-if 'r"\\texttt{" + meta["platform"] + "}.\\n"' in text:
-    raise SystemExit("raw platform newline remains")
-if 'r"\\texttt{ROUND3-POSITIVE-CLOSURE}.\\n"' in text:
-    raise SystemExit("raw revision newline remains")
-
-path.write_text(text, encoding="utf-8")
-print(f"ROUND3_MATERIALIZER_ESCAPE_REPAIR_PASS changed={changed}")
