@@ -66,12 +66,34 @@ jobs:
             texlive-latex-base texlive-latex-extra \
             texlive-fonts-recommended texlive-bibtex-extra
 
-      - name: Clean-build all eleven papers
+      - name: Clean-build all eleven papers with persisted diagnostics
+        run: python tools/build_round3.py
+
+      - name: Persist concise diagnostics after a build failure
+        if: failure()
         shell: bash
         run: |
           set -euo pipefail
-          make clean || true
-          make all
+          python tools/summarize_round3_build_failures.py
+          git config user.name theta-theory-revision-bot
+          git config user.email revision-bot@users.noreply.github.com
+          git add -A -- \
+            papers/*/main.tex \
+            papers/*/ROUND3_POSITIVE_CLOSURE.tex \
+            tools/apply_round3_closure.py \
+            tools/audit_historical_derivations.py \
+            tools/build_round3.py \
+            tools/repair_round3_materializer.py \
+            tools/summarize_round3_build_failures.py \
+            tools/verify_round3_closure.py \
+            ROUND3_BUILD_SUMMARY.json \
+            ROUND3_BUILD_FAILURES.md \
+            ROUND3_HISTORICAL_DERIVATION_AUDIT.md \
+            ROUND3_STRUCTURAL_VERIFICATION.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'Record round-three all-paper build diagnostics [skip ci]'
+            git push origin HEAD:revision/round3-full-positive-closure-11paper-2026-08-30
+          fi
 
       - name: Fail on unresolved LaTeX references or citations
         shell: bash
@@ -124,11 +146,15 @@ jobs:
           git config user.email revision-bot@users.noreply.github.com
           git add -A -- \
             papers/*/main.tex \
+            papers/*/main.pdf \
             papers/*/ROUND3_POSITIVE_CLOSURE.tex \
             tools/apply_round3_closure.py \
             tools/audit_historical_derivations.py \
+            tools/build_round3.py \
             tools/repair_round3_materializer.py \
+            tools/summarize_round3_build_failures.py \
             tools/verify_round3_closure.py \
+            ROUND3_BUILD_SUMMARY.json \
             ROUND3_PROOF_DEPENDENCY_LEDGER.md \
             ROUND3_HISTORICAL_DERIVATION_AUDIT.md \
             ROUND3_REVISION_MANIFEST.yaml \
