@@ -10,3 +10,10 @@ Review the exact commit and record theorem labels.  The highest-risk interfaces 
 - fixed-law versus optimized tangent typing.
 
 Machine checks do not certify these analytic arguments.
+
+## Round-two positive-closure checks
+
+- verify the new addendum in the compiled PDF;
+- check every new theorem against both report files;
+- check cross-paper dependencies against `REVISION_MANIFEST.yaml`;
+- do not treat successful compilation as mathematical certification.

@@ -38,3 +38,7 @@ make all
 ```
 
 The eleven source manuscripts were reconstructed from the SHA-256-pinned clean source package, structurally audited, and compiled successfully before promotion. The manuscripts remain research drafts; successful compilation is not a mathematical correctness certificate.
+
+## Referee round-two revision branch
+
+On `revision/referee-round-positive-closure-11paper-2026-08-30`, all eleven controlling manuscripts include a positive-closure addendum. The exact branch head, build result, and external rereview status are recorded in `REVISION_STATUS.md`.

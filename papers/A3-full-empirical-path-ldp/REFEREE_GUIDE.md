@@ -13,3 +13,10 @@ Review `main.tex` and all included sections.  Principal checks:
   preparation.
 
 Record the exact artifact hash and every imported theorem not checked.
+
+## Round-two positive-closure checks
+
+- verify the new addendum in the compiled PDF;
+- check every new theorem against both report files;
+- check cross-paper dependencies against `REVISION_MANIFEST.yaml`;
+- do not treat successful compilation as mathematical certification.
