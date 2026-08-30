@@ -43,25 +43,21 @@ def repair_materializer() -> int:
 
 
 def repair_tex_sources() -> int:
-    repairs = {
-        ROOT / "papers" / "A2-sinai-homological-pressure" / "ROUND3_POSITIVE_CLOSURE.tex": {
-            r"O\left(n^{-1/2}+b_n/n+b_n^{-1}\night)":
-            r"O\left(n^{-1/2}+b_n/n+b_n^{-1}\right)"
-        },
-    }
+    path = ROOT / "papers" / "A2-sinai-homological-pressure" / "ROUND3_POSITIVE_CLOSURE.tex"
+    text = path.read_text(encoding="utf-8")
+    slash = chr(92)
+    old = slash + "night)"
+    new = slash + "right)"
+    occurrences = text.count(old)
+    if occurrences > 1:
+        raise SystemExit(f"ambiguous A2 delimiter repair: {old!r} occurs {occurrences} times")
     changed = 0
-    for path, replacements in repairs.items():
-        text = path.read_text(encoding="utf-8")
-        for old, new in replacements.items():
-            occurrences = text.count(old)
-            if occurrences > 1:
-                raise SystemExit(f"ambiguous repair in {path}: {old!r} occurs {occurrences} times")
-            if occurrences == 1:
-                text = text.replace(old, new)
-                changed += 1
-            if old in text or new not in text:
-                raise SystemExit(f"TeX repair did not converge in {path}: {old!r}")
-        path.write_text(text, encoding="utf-8")
+    if occurrences == 1:
+        text = text.replace(old, new, 1)
+        changed = 1
+    if old in text or new not in text:
+        raise SystemExit("A2 delimiter repair did not converge")
+    path.write_text(text, encoding="utf-8")
     return changed
 
 
