@@ -109,7 +109,7 @@ def fix_a2() -> int:
         subsection("Uniform geometry and the moving-cut bundle"),
         "Let " + BS + "(\\mathcal W_R^s\\) be stable curves",
         geometry,
-        "all primitive triangular-lattice direction",
+        "For a primitive lattice direction",
     )
 
     temporal = read(FRAG / "A2_TEMPORAL_PACKET.tex")

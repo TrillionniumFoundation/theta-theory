@@ -11,7 +11,7 @@ REPORT = ROOT / "ROUND3_REREVIEW_VERIFICATION.json"
 
 required = {
     "A2-sinai-homological-pressure": [
-        "all primitive triangular-lattice direction",
+        "For a primitive lattice direction",
         "Uniform polygon generating functions",
         "bar\\tau=-\\partial_sP_R",
     ],
