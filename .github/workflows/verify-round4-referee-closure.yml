@@ -36,11 +36,8 @@ jobs:
             tools/hostile_rereview_round4.py \
             tools/write_round4_author_responses.py
 
-      - name: Repair and materialize prior exact-rereview packets
-        run: |
-          python tools/repair_round3_materializer.py
-          python tools/repair_round3_rereview_markers.py
-          python tools/apply_round3_exact_rereview_fixes.py
+      - name: Repair deterministic round-three source generator
+        run: python tools/repair_round3_materializer.py
 
       - name: Audit archived recursive and CM2 derivations
         shell: bash
@@ -63,10 +60,16 @@ jobs:
             theta_current=/tmp/round4-history/THETA_THEORY_CURRENT_STATUS.md \
             theta_maximal_v3=/tmp/round4-history/THETA_MAXIMAL_FINAL_STATUS_V3.md
 
-      - name: Verify the prior repair layer before superseding it
+      - name: Verify the reviewed round-three baseline
         run: |
           python tools/apply_round3_closure.py
           python tools/verify_round3_closure.py
+
+      - name: Materialize and verify the prior exact-rereview packets
+        run: |
+          python tools/repair_round3_rereview_markers.py
+          python tools/apply_round3_exact_rereview_fixes.py
+          python tools/apply_round3_closure.py
           python tools/verify_round3_rereview.py
 
       - name: Install all round-four mathematical replacements
@@ -126,6 +129,7 @@ jobs:
             fail_closed: true
           gates:
             historical_derivation_audit: pass
+            reviewed_round3_baseline: pass
             prior_orphan_packet_materialization: pass
             structural_verification: pass
             hostile_dependency_rereview: pass
@@ -139,6 +143,7 @@ jobs:
           - Revision branch: \`revision/round4-referee-positive-closure-11paper-2026-08-30\`
           - Materialization source: \`${SOURCE_SHA}\`
           - Archived recursive/CM2 audit: **PASS**
+          - Reviewed round-three baseline verifier: **PASS**
           - Useful orphan repair packets materialized and checked: **PASS**
           - New round-four proof packets installed: **11/11 PASS**
           - Per-paper author responses: **11/11 PASS**
