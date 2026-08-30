@@ -1,0 +1,101 @@
+name: bootstrap-referee-round2-review
+
+on:
+  push:
+    branches:
+      - review/referee-round2-positive-closure-materialized-2026-08-30
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bootstrap-referee-round2-review
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Verify and unpack revision payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat revision/round2/parts/part-*.b64 | tr -d '\r\n' | base64 --decode > revision/round2/payload.tar.gz
+          cd revision/round2
+          sha256sum -c payload.sha256
+          mkdir extracted
+          python - <<'PY'
+          from pathlib import Path
+          import tarfile
+          root = Path('extracted').resolve()
+          with tarfile.open('payload.tar.gz', 'r:gz') as tf:
+              for member in tf.getmembers():
+                  target = (root / member.name).resolve()
+                  if target != root and root not in target.parents:
+                      raise SystemExit(f'unsafe member: {member.name}')
+              tf.extractall(root)
+          PY
+          cd ../..
+          rsync -a revision/round2/extracted/ ./
+          sed -i 's#revision/referee-round-positive-closure-11paper-2026-08-30#review/referee-round2-positive-closure-materialized-2026-08-30#g' .github/workflows/referee-round2-positive-closure.yml
+
+      - name: Apply and verify all eleven manuscript revisions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/apply_referee_round_positive_closure.py
+          test "$(find papers -mindepth 1 -maxdepth 1 -type d | wc -l)" -eq 11
+          test "$(find papers -name REFEREE_REVISION_ADDENDUM.tex | wc -l)" -eq 11
+          test "$(grep -R -l 'REFEREE_ROUND2_POSITIVE_CLOSURE' papers/*/main.tex | wc -l)" -eq 11
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          for p in Path('papers').glob('*/REFEREE_REVISION_ADDENDUM.tex'):
+              text = p.read_text()
+              n = len(re.findall(r'\\begin\{(?:theorem|lemma|proposition|corollary)\}', text))
+              q = text.count('\\begin{proof}')
+              assert n == q and n > 0, (p, n, q)
+          print('ROUND2_PROOF_COVERAGE_PASS')
+          PY
+
+      - name: Install TeX and build all eleven papers
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y latexmk biber texlive-latex-base texlive-latex-extra texlive-fonts-recommended texlive-bibtex-extra
+          make clean || true
+          make all
+
+      - name: Record and push materialized revision
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > REVISION_STATUS.md <<EOF
+          # Referee round-two revision status
+
+          - Base reviewed commit: `ae2fdc16bf1ad4a6b58cca6020a7b8b61236e2ad`
+          - Bootstrap source commit: `${GITHUB_SHA}`
+          - Manuscripts materialized: 11/11
+          - Referee addenda integrated: 11/11
+          - LaTeX build: PASS 11/11
+          - Theorem/proof coverage in addenda: PASS
+          - Mathematical status: INTERNAL_POSITIVE_CLOSURE_CANDIDATE
+          - Independent external rereview: PENDING
+          EOF
+          rm -rf revision/round2
+          rm -f .github/workflows/bootstrap-referee-round2.yml
+          rm -f .github/workflows/bootstrap-referee-round2-review.yml
+          git config user.name theta-theory-revision-bot
+          git config user.email revision-bot@users.noreply.github.com
+          git add -A
+          git commit -m 'Materialize positive referee closure across all eleven papers'
+          git push origin HEAD:review/referee-round2-positive-closure-materialized-2026-08-30
