@@ -9,6 +9,44 @@ SRC = ROOT / "revision" / "round7-referee-final"
 
 changed = 0
 
+# JSON/string transport can interpret a single TeX prefix such as ``\v`` as
+# an ASCII control byte.  Restore the corresponding TeX command prefix in
+# every registered source, and then fail if any non-newline control remains.
+CONTROL_PREFIX = {
+    0x07: r"\a",
+    0x08: r"\b",
+    0x09: r"\t",
+    0x0B: r"\v",
+    0x0C: r"\f",
+    0x0D: r"\r",
+}
+for source in sorted(SRC.glob("*.tex")):
+    text = source.read_text(encoding="utf-8")
+    repaired_parts: list[str] = []
+    replacements = 0
+    for char in text:
+        code = ord(char)
+        if code in CONTROL_PREFIX:
+            repaired_parts.append(CONTROL_PREFIX[code])
+            replacements += 1
+        else:
+            repaired_parts.append(char)
+    repaired = "".join(repaired_parts)
+    leftovers = [
+        (index, ord(char))
+        for index, char in enumerate(repaired)
+        if ord(char) < 32 and char != "\n"
+    ]
+    if leftovers:
+        raise SystemExit(f"{source}: unrepaired ASCII controls {leftovers[:8]}")
+    if repaired != text:
+        source.write_text(repaired, encoding="utf-8")
+        changed += 1
+        print(
+            f"ROUND7_TEX_CONTROL_REPAIR {source.name} "
+            f"replacements={replacements}"
+        )
+
 # Correct a harmless but ambiguous typography in A1.
 a1 = SRC / "A1_BISEAM_ANISOTROPIC_AUTONOMOUS.tex"
 text = a1.read_text(encoding="utf-8")
