@@ -35,13 +35,16 @@ jobs:
           echo "PRE_MAIN=$(git rev-parse origin/main)" >> "$GITHUB_ENV"
           echo "REVISION_SOURCE=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
 
-      - name: Repair materializer regex substitutions
-        run: python tools/repair_round6_materializer.py
+      - name: Repair materializer and verifier semantics
+        run: |
+          python tools/repair_round6_materializer.py
+          python tools/repair_round6_verifier.py
 
       - name: Syntax-check all round-six tooling
         run: |
           python -m py_compile \
             tools/repair_round6_materializer.py \
+            tools/repair_round6_verifier.py \
             tools/repair_round6_source_controls.py \
             tools/apply_round6_referee_fixes.py \
             tools/verify_round6_referee.py \
@@ -174,6 +177,7 @@ jobs:
             papers \
             revision/round6-referee-final \
             tools/repair_round6_materializer.py \
+            tools/repair_round6_verifier.py \
             tools/repair_round6_source_controls.py \
             tools/apply_round6_referee_fixes.py \
             tools/verify_round6_referee.py \
