@@ -15,12 +15,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 1
-      - name: Verify review head and create snapshot
+          fetch-depth: 0
+      - name: Verify review object and create snapshot
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD^)" = "7bdc2ef6fd248fd18fa347e02dce3c40883bb173"
+          git cat-file -e 7bdc2ef6fd248fd18fa347e02dce3c40883bb173^{commit}
+          test "$(git show -s --format=%T 7bdc2ef6fd248fd18fa347e02dce3c40883bb173)" = "708c20c5d272e6fca56cec39607240e22933f6d7"
           git archive --format=tar.gz --output=theta-round13-reviewed-tree.tar.gz 7bdc2ef6fd248fd18fa347e02dce3c40883bb173
       - uses: actions/upload-artifact@v4
         with:
