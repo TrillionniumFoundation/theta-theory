@@ -27,13 +27,21 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Capture immutable round-eight inputs
+      - name: Capture immutable round-eight inputs and merge latest main
         shell: bash
         run: |
           set -euo pipefail
           git fetch origin main --tags
           PRE_MAIN="$(git rev-parse origin/main)"
-          test "$PRE_MAIN" = 'b1e3d17f59ca9bb1a04d4ac9157f10dc333f9607'
+          test "$PRE_MAIN" = 'b1df534388f5ccd6de686caf5656447d607df0fb'
+          git merge-base --is-ancestor \
+            e366e858b564d9cdda389674ae3dfb6e65813a1e HEAD
+          git config user.name theta-theory-revision-bot
+          git config user.email revision-bot@users.noreply.github.com
+          if ! git merge-base --is-ancestor "$PRE_MAIN" HEAD; then
+            git merge --no-edit "$PRE_MAIN"
+          fi
+          git merge-base --is-ancestor "$PRE_MAIN" HEAD
           git merge-base --is-ancestor \
             e366e858b564d9cdda389674ae3dfb6e65813a1e HEAD
           echo "PRE_MAIN=$PRE_MAIN" >> "$GITHUB_ENV"
