@@ -1,0 +1,33 @@
+name: export-round11-reviewed-tree
+
+on:
+  push:
+    branches:
+      - review/round11-gpt56-pro-harsh-11paper-2026-08-31
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify reviewed head and create source snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          git merge-base --is-ancestor 8605a0b68c8bb99c2e49e4d5d177d1ff67bdf958 HEAD
+          rm -f .github/workflows/export-round11-reviewed-tree.yml
+          tar --exclude=.git -czf /tmp/theta-round11-reviewed-tree.tar.gz .
+          sha256sum /tmp/theta-round11-reviewed-tree.tar.gz > /tmp/theta-round11-reviewed-tree.tar.gz.sha256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-round11-reviewed-tree
+          path: |
+            /tmp/theta-round11-reviewed-tree.tar.gz
+            /tmp/theta-round11-reviewed-tree.tar.gz.sha256
+          if-no-files-found: error
