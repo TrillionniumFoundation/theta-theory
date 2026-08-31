@@ -44,8 +44,22 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(find .round12 -maxdepth 1 -name 'payload.part-*' -type f | wc -l)" -eq 5
-          cat .round12/payload.part-* | tr -d '\r\n' | base64 --decode > /tmp/round12-payload.tar.xz
+          test -f .round12/payload.part-00a
+          test -f .round12/payload.part-00b
+          test -f .round12/payload.part-00c
+          test -f .round12/payload.part-01
+          test -f .round12/payload.part-02
+          test -f .round12/payload.part-03
+          test -f .round12/payload.part-04
+          cat \
+            .round12/payload.part-00a \
+            .round12/payload.part-00b \
+            .round12/payload.part-00c \
+            .round12/payload.part-01 \
+            .round12/payload.part-02 \
+            .round12/payload.part-03 \
+            .round12/payload.part-04 \
+            | tr -d '\r\n' | base64 --decode > /tmp/round12-payload.tar.xz
           echo 'f5f1d51fdf531ddac6c2c32114bc952a186768cea7efa6a472a5e50323f4e38a  /tmp/round12-payload.tar.xz' | sha256sum --check
           tar -xJf /tmp/round12-payload.tar.xz
           rm -rf .round12
