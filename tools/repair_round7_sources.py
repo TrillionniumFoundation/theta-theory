@@ -87,6 +87,33 @@ if new != text:
     a1.write_text(new, encoding="utf-8")
     changed += 1
 
+# A JSON ``\r`` escape in the A4 source was normalized to a physical line
+# break before Python could see the carriage-return byte, leaving ``ight]``.
+# Restore the exact closing delimiter and fail if neither audited form occurs.
+a4 = SRC / "A4_COARSE_HISTORY_RIESZ_SCHUR.tex"
+text = a4.read_text(encoding="utf-8")
+a4_old = " h_\\Psi(Y_1)\night]."
+a4_new = " h_\\Psi(Y_1)\n \\right]."
+if a4_old in text:
+    text = text.replace(a4_old, a4_new, 1)
+    a4.write_text(text, encoding="utf-8")
+    changed += 1
+elif a4_new not in text:
+    raise SystemExit("A4 history eigenfunction closing delimiter not found")
+
+# ``D_\tan`` makes TeX parse the trigonometric operator as a naked subscript.
+# The intended symbol is the textual tangential derivative label.
+b2 = SRC / "B2_FRAME_RESET_MEASURE_TRACE_LDP.tex"
+text = b2.read_text(encoding="utf-8")
+b2_old = r"D_\tan\gamma_{k,\rm ac}^-"
+b2_new = r"D_{\mathrm{tan}}\gamma_{k,\mathrm{ac}}^-"
+if b2_old in text:
+    text = text.replace(b2_old, b2_new, 1)
+    b2.write_text(text, encoding="utf-8")
+    changed += 1
+elif b2_new not in text:
+    raise SystemExit("B2 tangential trace notation not found")
+
 # The backward observable propagator V(t,s), t <= s, is constructed by
 # forward evolution in the remaining-time variable.  This is not a
 # negative-time BBGKY group.  Its terminal-value formula has positive sign.
