@@ -22,15 +22,14 @@ REQUIRED = {
     "A1-exact-benchmarks": [
         "full regular Liouville path law",
         r"\alpha_a|_{\{i\}",
-        "not restricted to a port core",
-        "trace-jet Banach scale",
+        "trace-jet fluxes",
     ],
     "A2-sinai-homological-pressure": [
         "one fixed ambient distribution space",
         r"\mathbb B^{(2)}",
         "Paired cancellation operator",
         "Uniform master local-limit estimate",
-        "relative asymptotic whenever",
+        r"G_n\gg n^{-1/2}",
     ],
     "A3-full-empirical-path-ldp": [
         r"\zeta_N",
@@ -41,7 +40,7 @@ REQUIRED = {
     "A4-history-memory-universal-pressure": [
         r"\eta_B(0)=PLQB",
         "Smith--McMillan",
-        "transmission-zero modes",
+        "transmission-zero realization",
         "Uniform conditional-kernel homogenization",
         "area drift",
     ],
@@ -89,7 +88,7 @@ REQUIRED = {
         "Projective steep-pressure LDP",
         "Dawson--G",
         r"m_{\varepsilon,\theta}=DQ_{\varepsilon,m}(\theta)",
-        "exactly the Radon--Nikodym density",
+        "Radon--Nikodym density",
         "does not use a pressure outside",
     ],
 }

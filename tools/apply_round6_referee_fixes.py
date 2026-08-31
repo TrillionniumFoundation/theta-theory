@@ -260,22 +260,26 @@ for paper, meta in DATA.items():
 
     main = PAPERS / paper / "main.tex"
     old = main.read_text(encoding="utf-8")
-    old = DATE_RE.sub(r"\\date{August 31, 2026}", old, count=1)
-    old = ABSTRACT_RE.sub(
-        "\\begin{abstract}\n"
+    old = DATE_RE.sub(
+        lambda _match: r"\date{August 31, 2026}", old, count=1
+    )
+    abstract_text = (
+        r"\begin{abstract}" + "\n"
         + meta["abstract"].strip()
-        + "\n\\end{abstract}",
-        old,
-        count=1,
+        + "\n" + r"\end{abstract}"
     )
-    old = CONTROL_MARKER_RE.sub(
-        r"\\noindent\\textbf{Controlling revision:} "
-        r"\\texttt{ROUND6-REFEREE-POSITIVE-CLOSURE}.",
-        old,
-        count=1,
+    old = ABSTRACT_RE.sub(lambda _match: abstract_text, old, count=1)
+    marker_text = (
+        r"\noindent\textbf{Controlling revision:} "
+        r"\texttt{ROUND6-REFEREE-POSITIVE-CLOSURE}."
     )
+    old = CONTROL_MARKER_RE.sub(lambda _match: marker_text, old, count=1)
     if INPUT_RE.search(old):
-        old = INPUT_RE.sub(r"\\input{ROUND6_POSITIVE_CLOSURE.tex}", old, count=1)
+        old = INPUT_RE.sub(
+            lambda _match: r"\input{ROUND6_POSITIVE_CLOSURE.tex}",
+            old,
+            count=1,
+        )
     elif r"\input{ROUND6_POSITIVE_CLOSURE.tex}" not in old:
         raise SystemExit(f"{main}: controlling input not found")
     old = old.replace("round-three dependency ledger", "round-six dependency ledger")
