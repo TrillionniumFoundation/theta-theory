@@ -76,20 +76,47 @@ jobs:
       - name: Clean-build all eleven round-six papers
         run: python tools/build_round3.py
 
-      - name: Fail on unresolved references citations or empty PDFs
+      - name: Check final-pass references citations and PDFs
         shell: bash
         run: |
           set -euo pipefail
-          if grep -R -E \
-            'LaTeX Warning: (Reference|Citation).*undefined|There were undefined references|There were undefined citations' \
-            ROUND3_BUILD_LOGS papers --include='*.log'; then
-            echo 'Undefined LaTeX reference or citation detected.' >&2
-            exit 1
-          fi
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          logs = sorted(Path('papers').glob('*/main.log'))
+          if len(logs) != 11:
+              raise SystemExit(f'expected 11 final main.log files, found {len(logs)}')
+
+          pattern = re.compile(
+              r'LaTeX Warning: (?:Reference|Citation).*undefined|'
+              r'There were undefined references|'
+              r'There were undefined citations|'
+              r'Please \(re\)run Biber',
+              re.IGNORECASE,
+          )
+          failures = []
+          for log in logs:
+              text = log.read_text(encoding='utf-8', errors='replace')
+              matches = sorted(set(pattern.findall(text)))
+              if pattern.search(text):
+                  lines = [line for line in text.splitlines() if pattern.search(line)]
+                  failures.append((str(log), lines[:20]))
+          if failures:
+              for path, lines in failures:
+                  print(f'FINAL_LATEX_REFERENCE_FAILURE {path}')
+                  for line in lines:
+                      print(line)
+              raise SystemExit('undefined reference/citation remains in a final-pass LaTeX log')
+          print('ROUND6_FINAL_LATEX_REFERENCE_PASS logs=11')
+          PY
           test "$(find papers -mindepth 2 -maxdepth 2 -name main.pdf -type f -size +0c | wc -l)" -eq 11
           for pdf in papers/*/main.pdf; do
-            test "$(pdfinfo "$pdf" | awk '/^Pages:/ {print $2}')" -ge 1
+            pages="$(pdfinfo "$pdf" | awk '/^Pages:/ {print $2}')"
+            test -n "$pages"
+            test "$pages" -ge 1
           done
+          echo 'ROUND6_FINAL_PDF_PASS pdfs=11'
 
       - name: Re-run exact-byte and counterexample-aware gates after build
         run: |
