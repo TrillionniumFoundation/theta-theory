@@ -16,6 +16,18 @@ replacements_verify = {
         '        "independent of ancestral depth", "Common-root translation is not used",',
     '        "N_{\\\\rm int}", "N_{\\\\rm press}", "constants are absent",':
         '        "N_{\\\\rm int}", "N_{\\\\rm press}", "Constants are absent",',
+    '        "biseam completion", "horizontal germ", "anisotropic spectral packet",':
+        '        "biseam completion", "horizontal germ", "Anisotropic spectral packet",',
+    '        "Complemented physical realization", "five-word joint aperiodicity",':
+        '        "Complemented physical realization", "Five-word joint aperiodicity",',
+    '        "4\\\\times4", "near-opposition inequality", "target-dependent saddle",':
+        '        "4\\\\times4", "Near-opposition inequality", "target-dependent saddle",',
+    '        "bounded-gradient comparison",':
+        '        "Bounded-gradient comparison",',
+    '        "Weighted Folner averaging", "covariant Doob-memory response",':
+        '        "Weighted Folner averaging", "Covariant Doob-memory response",',
+    '        "delta^{C(1+m)}", "O(h^M)", "delete later contacts",':
+        '        "delta^{C(1+m)}", "balance commutator is $O(h^M)$", "delete later contacts",',
     '    "C2-cotangent-rigidity-tangent-representations": [\n        "R\\\\mathbf1+",  # exact old null-space notation without the two-space split\n    ],\n':
         '    "C2-cotangent-rigidity-tangent-representations": [],\n',
 }
