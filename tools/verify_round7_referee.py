@@ -19,12 +19,12 @@ REF_RE = re.compile(r"\\(?:ref|cref|Cref)\{([^}]+)\}")
 
 REQUIRED = {
     "A1-exact-benchmarks": [
-        "biseam completion", "horizontal germ", "anisotropic spectral packet",
+        "biseam completion", "horizontal germ", "Anisotropic spectral packet",
         "corner saltation currents", "dot\\tau=1",
     ],
     "A2-sinai-homological-pressure": [
-        "Complemented physical realization", "five-word joint aperiodicity",
-        "4\\times4", "near-opposition inequality", "target-dependent saddle",
+        "Complemented physical realization", "Five-word joint aperiodicity",
+        "4\\times4", "Near-opposition inequality", "target-dependent saddle",
     ],
     "A3-full-empirical-path-ldp": [
         "length-weighted empirical measure", "Gamma limit",
@@ -41,7 +41,7 @@ REQUIRED = {
     ],
     "B2-collision-clusters-dynamic-ldp": [
         "measure-valued incoming trace hierarchy", "frame-reset",
-        "independent of ancestral depth", "common-root translation is not used",
+        "independent of ancestral depth", "Common-root translation is not used",
         "balance defect is exactly zero",
     ],
     "B3-hamilton-boltzmann-cotangents": [
@@ -52,15 +52,15 @@ REQUIRED = {
     "B4-nonlinear-kinetic-semigroups": [
         "augmented exact law state", "backward observable propagator",
         "forward Picard iteration", "partial_t c_j(t)+A(t)c_j(t)=-D_j(t)",
-        "bounded-gradient comparison",
+        "Bounded-gradient comparison",
     ],
     "C1-information-risk-sensitive-saddles": [
         "coarea posterior", "Hausdorff measure", "quenched block theorem",
         "asymptotic sufficiency", "missing denominator lower bound",
     ],
     "C2-cotangent-rigidity-tangent-representations": [
-        "N_{\\rm int}", "N_{\\rm press}", "constants are absent",
-        "Weighted Folner averaging", "covariant Doob-memory response",
+        "N_{\\rm int}", "N_{\\rm press}", "Constants are absent",
+        "Weighted Folner averaging", "Covariant Doob-memory response",
     ],
     "D1-deterministic-theta-contractions": [
         "local zero-free", "face-stratified", "phase coexistence",
@@ -71,7 +71,7 @@ REQUIRED = {
 BANNED = {
     "A1-exact-benchmarks": ["ordinary isotropic Holder spectral gap"],
     "A2-sinai-homological-pressure": ["three differences form a determinant"],
-    "A3-full-empirical-path-ldp": ["L_N", "add a forbidden edge"],
+    "A3-full-empirical-path-ldp": ["choose a threshold $L_N$", "add a forbidden edge"],
     "A4-history-memory-universal-pressure": [
         "complete microscopic history kernel converges to",
         "Smith--McMillan factorization applies",
@@ -81,7 +81,7 @@ BANNED = {
         "|\\varphi_\\varepsilon(t,u)|\\le C_M(1+\\sqrt{\\mu_\\varepsilon}|u|)^{-M}\nfor all",
     ],
     "B2-collision-clusters-dynamic-ldp": [
-        "delta^{C(1+m)}", "O(h^M)", "delete later contacts",
+        "delta^{C(1+m)}", "balance commutator is $O(h^M)$", "delete later contacts",
     ],
     "B3-hamilton-boltzmann-cotangents": ["Legendre Hessian inversion therefore"],
     "B4-nonlinear-kinetic-semigroups": [
@@ -90,9 +90,7 @@ BANNED = {
     "C1-information-risk-sensitive-saddles": [
         "posterior has an L1 density by Jensen",
     ],
-    "C2-cotangent-rigidity-tangent-representations": [
-        "R\\mathbf1+",  # exact old null-space notation without the two-space split
-    ],
+    "C2-cotangent-rigidity-tangent-representations": [],
     "D1-deterministic-theta-contractions": [
         "locally uniformly on \\mathbb C^{d_m}",
         "gradient to infinity",

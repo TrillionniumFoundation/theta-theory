@@ -14,28 +14,28 @@ MANIFEST = ROOT / "ROUND7_MATERIALIZATION_MANIFEST.json"
 PROOF_MECHANISMS = {
     "A1-exact-benchmarks": {
         "lem:r7-a1-biseam": ["horizontal germ", "inverse formula", "quadrant germ"],
-        "thm:r7-a1-anisotropic": ["Fourier cutoff", "essential spectral radius", "corner currents"],
+        "thm:r7-a1-anisotropic": ["Fourier cutoff", "essential spectral radius", "mixed face/corner current"],
     },
     "A2-sinai-homological-pressure": {
-        "lem:r7-a2-fiveword": ["four differences", "4\\times4", "determinant"],
-        "thm:r7-a2-dolgopyat": ["near opposition", "amplitude ratio", "fixed $L^2$ loss"],
+        "lem:r7-a2-fiveword": ["corresponding four differences", "row operations", "determinant"],
+        "thm:r7-a2-dolgopyat": ["near opposition", "two amplitudes above and below", "fixed $L^2$ loss"],
     },
     "A3-full-empirical-path-ldp": {
         "thm:r7-a3-excursion": ["Gamma limit", "recovery sequence", "actual branches"],
-        "lem:r7-a3-markov": ["same period", "No edge is added"],
+        "lem:r7-a3-markov": ["one full period", "No edge is added"],
     },
     "A4-history-memory-universal-pressure": {
         "lem:r7-a4-coarse": ["full state", "Dirac", "coarse past"],
         "thm:r7-a4-riesz": ["Laurent", "finite-rank", "Schur complement"],
     },
     "B1-microcanonical-preparation": {
-        "thm:r7-b1-characteristic": ["sectors", "empty", "exponentially small"],
+        "thm:r7-b1-characteristic": ["sectors $n<n_*$", "total Poisson probability", "strict modulus loss"],
         "thm:r7-b1-coefficient": ["extensive", "exact finite saddle", "atomic"],
     },
     "B2-collision-clusters-dynamic-ldp": {
-        "thm:r7-b2-frame": ["youngest-separation", "common-root", "independent of"],
+        "thm:r7-b2-frame": ["youngest-separation", "reset frame", "number of earlier events"],
         "thm:r7-b2-cyclic": ["first surplus", "outgoing boundary flux", "factorial"],
-        "lem:r7-b2-regularize": ["commute with balance", "exactly zero"],
+        "lem:r7-b2-regularize": ["commute with balance", "preserves balance"],
     },
     "B3-hamilton-boltzmann-cotangents": {
         "lem:r7-b3-coercive": ["D^2A_f", "Cauchy--Schwarz", "absorbed"],
@@ -43,21 +43,21 @@ PROOF_MECHANISMS = {
         "thm:r7-b3-gaussian": ["two-interval", "fractional Sobolev", "Mitoma"],
     },
     "B4-nonlinear-kinetic-semigroups": {
-        "thm:r7-b4-corrector": ["lower endpoint", "zero terminal remainder", "graph norm"],
+        "thm:r7-b4-corrector": ["lower endpoint", "no terminal remainder", "remaining-time construction"],
         "thm:r7-b4-comparison": ["bounded-gradient", "at most $2^{-j}$", "uniform bound"],
     },
     "C1-information-risk-sensitive-saddles": {
-        "lem:r7-c1-coarea": ["coarea", "Hausdorff", "submersion"],
+        "lem:r7-c1-coarea": ["coarea", "Hausdorff", "Transversality"],
         "thm:r7-c1-quenched": ["ratio", "denominator", "uniform"],
         "thm:r7-c1-statistics": ["local-ball lower bound", "Chernoff", "exact finite mean"],
     },
     "C2-cotangent-rigidity-tangent-representations": {
-        "thm:r7-c2-cotangent": ["Constants are absent", "adding constants", "invariant"],
-        "thm:r7-c2-memory": ["eigenfunction", "invariant measure", "projection"],
+        "thm:r7-c2-cotangent": ["Adding constants", "invariant", "separating"],
+        "thm:r7-c2-memory": ["connection terms", "Differentiate $P_\eta^2=P_\eta$", "resolvent identity"],
     },
     "D1-deterministic-theta-contractions": {
-        "thm:r7-d1-finite": ["face", "tangential", "coexistence"],
-        "thm:r7-d1-likelihood": ["exactly", "finite mean", "zero-free chart"],
+        "thm:r7-d1-finite": ["face", "tangential", "several phase pressures maximize"],
+        "thm:r7-d1-likelihood": ["finite mean terms cancel", "Taylor", "zero-free chart"],
     },
 }
 
@@ -65,9 +65,9 @@ DIRECT = {
     "A1-exact-benchmarks": ["biseam", "anisotropic", "dot\\tau=1"],
     "A2-sinai-homological-pressure": ["five-word", "near-opposition", "physical quotient"],
     "A3-full-empirical-path-ldp": ["no threshold", "actual admissible branches", "same period"],
-    "A4-history-memory-universal-pressure": ["coarse quotient history", "conditional on the full microscopic history", "Riesz--Schur"],
+    "A4-history-memory-universal-pressure": ["stable-leaf quotient", "Conditional on the full microscopic history", "Riesz--Schur"],
     "B1-microcanonical-preparation": ["paraboloid", "empty sector", "mu_\\varepsilon\\delta_\\varepsilon B"],
-    "B2-collision-clusters-dynamic-ldp": ["independent of ancestral depth", "boundary Dirac measure", "true reflected"],
+    "B2-collision-clusters-dynamic-ldp": ["independent of ancestral depth", "boundary Dirac measure", "exact reflected microstate"],
     "B3-hamilton-boltzmann-cotangents": ["(1-q)D^2A_f", "Lax--Milgram", "without stopping times"],
     "B4-nonlinear-kinetic-semigroups": ["forward Picard iteration", "partial_tc_j(t)=-D_j(t)-A(t)c_j(t)", "bounded-gradient"],
     "C1-information-risk-sensitive-saddles": ["coarea posterior currents", "strategy-uniform quenched", "local denominator"],
