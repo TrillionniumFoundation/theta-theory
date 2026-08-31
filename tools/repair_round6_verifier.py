@@ -10,7 +10,7 @@ replacements = {
     '        "not restricted to a port core",\n': '',
     '        "trace-jet Banach scale",\n': '        "trace-jet fluxes",\n',
     '        "relative asymptotic whenever",\n': '        r"G_n\\gg n^{-1/2}",\n',
-    '        "transmission-zero modes",\n': '        "Transmission-zero realization",\n',
+    '        "transmission-zero modes",\n': '        "transmission-zero realization",\n',
     '        "exactly the Radon--Nikodym density",\n': '        "Radon--Nikodym density",\n',
 }
 changed = 0
