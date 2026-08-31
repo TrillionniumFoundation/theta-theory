@@ -1,0 +1,172 @@
+name: verify-publish-round11-referee
+
+on:
+  push:
+    branches:
+      - revision/round11-referee-positive-closure-11paper-2026-08-31
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: verify-publish-round11-referee
+  cancel-in-progress: true
+
+jobs:
+  verify-build-publish:
+    if: ${{ github.event_name == 'workflow_dispatch' || !contains(github.event.head_commit.message || '', '[skip ci]') }}
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Capture current main and lock the reviewed report tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name theta-theory-revision-bot
+          git config user.email revision-bot@users.noreply.github.com
+          git fetch origin main review/round10-gpt56-pro-harsh-11paper-2026-08-31 --tags
+          PRE_MAIN="$(git rev-parse origin/main)"
+          git merge --no-edit origin/main
+          git merge-base --is-ancestor 97681a32383b0d0deee05316b8e941ed9ded9060 HEAD
+          echo "PRE_MAIN=$PRE_MAIN" >> "$GITHUB_ENV"
+          echo "REVISION_SOURCE=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+
+      - name: Syntax-check Round-Eleven tooling
+        run: |
+          python -m py_compile \
+            tools/bootstrap_round11.py \
+            tools/verify_round11_referee_v2.py \
+            tools/hostile_rereview_round11_v2.py \
+            tools/build_round11.py \
+            tools/write_round11_certificate.py
+
+      - name: Materialize all manuscripts, inventories, and responses
+        run: python tools/bootstrap_round11.py
+
+      - name: Run exact-source and direct-counterexample gates
+        run: |
+          python tools/verify_round11_referee_v2.py
+          python tools/hostile_rereview_round11_v2.py
+
+      - name: Install TeX and PDF inspection toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            latexmk biber poppler-utils \
+            texlive-latex-base texlive-latex-extra \
+            texlive-fonts-recommended texlive-bibtex-extra
+
+      - name: Clean-build all eleven papers
+        run: python tools/build_round11.py
+
+      - name: Re-run source and hostile gates after build
+        run: |
+          python tools/verify_round11_referee_v2.py
+          python tools/hostile_rereview_round11_v2.py
+
+      - name: Commit the verified mathematical tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -A
+          git add -f papers/*/main.pdf
+          if git diff --cached --quiet; then
+            echo 'Round-Eleven materialization produced no changes.' >&2
+            exit 1
+          fi
+          git commit -m 'Materialize round-eleven positive referee closure for all eleven papers [skip ci]'
+          echo "MATHEMATICAL_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          git push origin HEAD:revision/round11-referee-positive-closure-11paper-2026-08-31
+
+      - name: Write exact-source certificate and publication record
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/write_round11_certificate.py \
+            --mathematical-sha "$MATHEMATICAL_SHA" \
+            --pre-main "$PRE_MAIN" \
+            --workflow-run "$GITHUB_RUN_ID"
+          git add \
+            ROUND11_FINAL_CERTIFICATE.json \
+            ROUND11_PUBLICATION_RECORD.json \
+            ROUND11_REVISION_STATUS.md
+          git commit -m 'Record exact round-eleven verification and publication metadata [skip ci]'
+          echo "FINAL_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          git push origin HEAD:revision/round11-referee-positive-closure-11paper-2026-08-31
+
+      - name: Archive old main and atomically publish the verified tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          ARCHIVE='archive/main-pre-round11-positive-closure-2026-08-31'
+          TAG='round11-positive-closure-verified-2026-08-31'
+          git fetch origin main
+          test "$(git rev-parse origin/main)" = "$PRE_MAIN"
+          git merge-base --is-ancestor "$PRE_MAIN" HEAD
+          if git ls-remote --exit-code --heads origin "refs/heads/$ARCHIVE" >/tmp/round11-archive 2>/dev/null; then
+            test "$(cut -f1 /tmp/round11-archive)" = "$PRE_MAIN"
+          else
+            git push origin "$PRE_MAIN:refs/heads/$ARCHIVE"
+          fi
+          if git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null 2>&1; then
+            echo 'Round-Eleven tag already exists.' >&2
+            exit 1
+          fi
+          git tag -a "$TAG" -m 'Verified round-eleven positive referee closure for eleven papers' HEAD
+          git push --atomic \
+            --force-with-lease="refs/heads/main:$PRE_MAIN" \
+            origin \
+            HEAD:refs/heads/main \
+            "refs/tags/$TAG"
+
+      - name: Verify remote main archive and tag topology
+        shell: bash
+        run: |
+          set -euo pipefail
+          ARCHIVE='archive/main-pre-round11-positive-closure-2026-08-31'
+          TAG='round11-positive-closure-verified-2026-08-31'
+          git fetch origin main "$ARCHIVE" "refs/tags/$TAG:refs/tags/$TAG"
+          test "$(git rev-parse origin/main)" = "$FINAL_SHA"
+          test "$(git rev-parse "origin/$ARCHIVE")" = "$PRE_MAIN"
+          test "$(git rev-list -n1 "$TAG")" = "$FINAL_SHA"
+          git diff --exit-code "$MATHEMATICAL_SHA" "$FINAL_SHA" -- \
+            papers \
+            revision/round11-referee-final \
+            tools/bootstrap_round11.py \
+            tools/verify_round11_referee_v2.py \
+            tools/hostile_rereview_round11_v2.py \
+            tools/build_round11.py \
+            ROUND11_HISTORICAL_DERIVATION_AUDIT.md \
+            ROUND11_PROOF_DEPENDENCY_LEDGER.md \
+            ROUND11_REFEREE_INVENTORY.md \
+            ROUND11_REFEREE_INVENTORY.json \
+            REFEREE_ROUND11_RESPONSE.md
+          echo "ROUND11_REMOTE_PUBLICATION_PASS main=$FINAL_SHA archive=$PRE_MAIN"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-theory-round11-verified-papers-and-audit
+          path: |
+            papers/*/main.pdf
+            papers/*/AUTHOR_RESPONSE_ROUND11.md
+            ROUND11_FINAL_CERTIFICATE.json
+            ROUND11_PUBLICATION_RECORD.json
+            ROUND11_REVISION_STATUS.md
+            ROUND11_BUILD_SUMMARY.json
+            ROUND11_STRUCTURAL_VERIFICATION.json
+            ROUND11_HOSTILE_REREVIEW.json
+            ROUND11_HISTORICAL_DERIVATION_AUDIT.md
+            ROUND11_PROOF_DEPENDENCY_LEDGER.md
+            ROUND11_REFEREE_INVENTORY.md
+            ROUND11_REFEREE_INVENTORY.json
+            REFEREE_ROUND11_RESPONSE.md
+          if-no-files-found: error
