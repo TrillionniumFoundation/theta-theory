@@ -1,0 +1,154 @@
+name: verify-publish-round13-referee
+
+on:
+  push:
+    branches:
+      - revision/round13-referee-positive-closure-11paper-2026-09-01
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: verify-publish-round13-referee
+  cancel-in-progress: true
+
+jobs:
+  verify-build-publish:
+    if: ${{ github.event_name == 'workflow_dispatch' || !contains(github.event.head_commit.message || '', '[skip ci]') }}
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Capture current main and merge locked Round-Twelve reports
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name theta-theory-revision-bot
+          git config user.email revision-bot@users.noreply.github.com
+          git fetch origin main review/round12-gpt56-pro-harsh-11paper-2026-08-31 --tags
+          PRE_MAIN="$(git rev-parse origin/main)"
+          git merge --no-edit origin/main
+          git merge --no-edit 0b58d25307d28a9f06313aea4ef32c4d6e58c16e
+          git merge-base --is-ancestor 0b58d25307d28a9f06313aea4ef32c4d6e58c16e HEAD
+          echo "PRE_MAIN=$PRE_MAIN" >> "$GITHUB_ENV"
+
+      - name: Restore checksum-pinned Round-Thirteen payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f .round13/payload.part-000
+          test -f .round13/payload.part-001
+          test -f .round13/payload.part-002
+          test -f .round13/payload.part-003
+          test -f .round13/payload.part-004
+          test -f .round13/payload.part-005
+          cat .round13/payload.part-000 .round13/payload.part-001 .round13/payload.part-002 .round13/payload.part-003 .round13/payload.part-004 .round13/payload.part-005 \
+            | tr -d '\r\n' | base64 --decode > /tmp/round13-payload.tar.xz
+          echo '42dfd722447955d45bd1cdd6e9f79c316bac0a2e7f253af547b7d97d37891d27  /tmp/round13-payload.tar.xz' | sha256sum --check
+          tar -xJf /tmp/round13-payload.tar.xz
+          rm -rf .round13
+          chmod +x tools/materialize_round13_referee.py tools/verify_round13_referee.py tools/hostile_rereview_round13.py tools/build_round13.py tools/write_round13_certificate.py
+
+      - name: Syntax-check and materialize
+        run: |
+          python -m py_compile tools/round13_config.py tools/materialize_round13_referee.py tools/verify_round13_referee.py tools/hostile_rereview_round13.py tools/build_round13.py tools/write_round13_certificate.py
+          python tools/materialize_round13_referee.py
+
+      - name: Run exact-source and direct-counterexample gates
+        run: |
+          python tools/verify_round13_referee.py
+          python tools/hostile_rereview_round13.py
+
+      - name: Install TeX and PDF tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y latexmk biber poppler-utils texlive-latex-base texlive-latex-extra texlive-fonts-recommended texlive-bibtex-extra
+
+      - name: Clean-build all eleven papers
+        run: python tools/build_round13.py
+
+      - name: Re-run gates after build
+        run: |
+          python tools/verify_round13_referee.py
+          python tools/hostile_rereview_round13.py
+
+      - name: Commit verified mathematical tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -A
+          git add -f papers/*/main.pdf
+          if git diff --cached --quiet; then echo 'No Round-Thirteen changes.' >&2; exit 1; fi
+          git commit -m 'Materialize round-thirteen positive referee closure for all eleven papers [skip ci]'
+          echo "MATHEMATICAL_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          git push origin HEAD:revision/round13-referee-positive-closure-11paper-2026-09-01
+
+      - name: Write certificate and publication record
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/write_round13_certificate.py --mathematical-sha "$MATHEMATICAL_SHA" --pre-main "$PRE_MAIN" --workflow-run "$GITHUB_RUN_ID"
+          git add ROUND13_FINAL_CERTIFICATE.json ROUND13_PUBLICATION_RECORD.json ROUND13_REVISION_STATUS.md
+          git commit -m 'Record exact round-thirteen verification and publication metadata [skip ci]'
+          echo "FINAL_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          git push origin HEAD:revision/round13-referee-positive-closure-11paper-2026-09-01
+
+      - name: Archive old main and atomically publish
+        shell: bash
+        run: |
+          set -euo pipefail
+          ARCHIVE='archive/main-pre-round13-positive-closure-2026-09-01'
+          TAG='round13-positive-closure-verified-2026-09-01'
+          git fetch origin main
+          test "$(git rev-parse origin/main)" = "$PRE_MAIN"
+          git merge-base --is-ancestor "$PRE_MAIN" HEAD
+          if git ls-remote --exit-code --heads origin "refs/heads/$ARCHIVE" >/tmp/r13archive 2>/dev/null; then
+            test "$(cut -f1 /tmp/r13archive)" = "$PRE_MAIN"
+          else
+            git push origin "$PRE_MAIN:refs/heads/$ARCHIVE"
+          fi
+          if git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null 2>&1; then echo 'Round-Thirteen tag already exists.' >&2; exit 1; fi
+          git tag -a "$TAG" -m 'Verified round-thirteen positive referee closure for eleven papers' HEAD
+          git push --atomic --force-with-lease="refs/heads/main:$PRE_MAIN" origin HEAD:refs/heads/main "refs/tags/$TAG"
+
+      - name: Verify remote topology and immutable math tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          ARCHIVE='archive/main-pre-round13-positive-closure-2026-09-01'
+          TAG='round13-positive-closure-verified-2026-09-01'
+          git fetch origin main "$ARCHIVE" "refs/tags/$TAG:refs/tags/$TAG"
+          test "$(git rev-parse origin/main)" = "$FINAL_SHA"
+          test "$(git rev-parse "origin/$ARCHIVE")" = "$PRE_MAIN"
+          test "$(git rev-list -n1 "$TAG")" = "$FINAL_SHA"
+          git diff --exit-code "$MATHEMATICAL_SHA" "$FINAL_SHA" -- papers revision/round13-referee-final tools/round13_config.py tools/materialize_round13_referee.py tools/verify_round13_referee.py tools/hostile_rereview_round13.py tools/build_round13.py ROUND13_HISTORICAL_DERIVATION_AUDIT.md ROUND13_PROOF_DEPENDENCY_LEDGER.md ROUND13_REFEREE_INVENTORY.md ROUND13_REFEREE_INVENTORY.json REFEREE_ROUND13_RESPONSE.md
+          echo "ROUND13_REMOTE_PUBLICATION_PASS main=$FINAL_SHA archive=$PRE_MAIN"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-theory-round13-verified-papers-and-audit
+          path: |
+            papers/*/main.pdf
+            papers/*/AUTHOR_RESPONSE_ROUND13.md
+            ROUND13_FINAL_CERTIFICATE.json
+            ROUND13_PUBLICATION_RECORD.json
+            ROUND13_REVISION_STATUS.md
+            ROUND13_BUILD_SUMMARY.json
+            ROUND13_STRUCTURAL_VERIFICATION.json
+            ROUND13_HOSTILE_REREVIEW.json
+            ROUND13_INTERNAL_HARSH_REREVIEW.md
+            ROUND13_HISTORICAL_DERIVATION_AUDIT.md
+            ROUND13_PROOF_DEPENDENCY_LEDGER.md
+            ROUND13_REFEREE_INVENTORY.md
+            ROUND13_REFEREE_INVENTORY.json
+            REFEREE_ROUND13_RESPONSE.md
+          if-no-files-found: error
+          retention-days: 90
