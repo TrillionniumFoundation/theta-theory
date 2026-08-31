@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import re
 
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "revision" / "round7-referee-final"
@@ -11,7 +12,10 @@ changed = 0
 
 # JSON/string transport can interpret a single TeX prefix such as ``\v`` as
 # an ASCII control byte.  Restore the corresponding TeX command prefix in
-# every registered source, and then fail if any non-newline control remains.
+# every registered source.  A second transport pathology turns a TeX command
+# beginning with ``n`` (for example ``\nu``, ``\nabla``, or ``\neq``) into a
+# single backslash, a physical newline, and the remaining command letters.
+# The negative lookbehind deliberately excludes a legal TeX ``\\`` row break.
 CONTROL_PREFIX = {
     0x07: r"\a",
     0x08: r"\b",
@@ -20,18 +24,32 @@ CONTROL_PREFIX = {
     0x0C: r"\f",
     0x0D: r"\r",
 }
+BROKEN_N_PREFIX = re.compile(r"(?<!\\)\\\n([A-Za-z]+)")
+
 for source in sorted(SRC.glob("*.tex")):
     text = source.read_text(encoding="utf-8")
     repaired_parts: list[str] = []
-    replacements = 0
+    control_replacements = 0
     for char in text:
         code = ord(char)
         if code in CONTROL_PREFIX:
             repaired_parts.append(CONTROL_PREFIX[code])
-            replacements += 1
+            control_replacements += 1
         else:
             repaired_parts.append(char)
     repaired = "".join(repaired_parts)
+
+    recovered_commands: list[str] = []
+
+    def restore_n_prefix(match: re.Match[str]) -> str:
+        command = "\\n" + match.group(1)
+        recovered_commands.append(command)
+        return command
+
+    repaired, n_prefix_replacements = BROKEN_N_PREFIX.subn(
+        restore_n_prefix, repaired
+    )
+
     leftovers = [
         (index, ord(char))
         for index, char in enumerate(repaired)
@@ -39,12 +57,23 @@ for source in sorted(SRC.glob("*.tex")):
     ]
     if leftovers:
         raise SystemExit(f"{source}: unrepaired ASCII controls {leftovers[:8]}")
+    broken_n_leftovers = [
+        (match.start(), match.group(0))
+        for match in BROKEN_N_PREFIX.finditer(repaired)
+    ]
+    if broken_n_leftovers:
+        raise SystemExit(
+            f"{source}: unrepaired TeX n-prefix breaks {broken_n_leftovers[:8]}"
+        )
+
     if repaired != text:
         source.write_text(repaired, encoding="utf-8")
         changed += 1
         print(
-            f"ROUND7_TEX_CONTROL_REPAIR {source.name} "
-            f"replacements={replacements}"
+            f"ROUND7_TEX_TRANSPORT_REPAIR {source.name} "
+            f"control_replacements={control_replacements} "
+            f"n_prefix_replacements={n_prefix_replacements} "
+            f"commands={','.join(recovered_commands[:20])}"
         )
 
 # Correct a harmless but ambiguous typography in A1.
