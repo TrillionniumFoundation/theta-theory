@@ -38,11 +38,15 @@ jobs:
       - name: Syntax-check all round-six tooling
         run: |
           python -m py_compile \
+            tools/repair_round6_source_controls.py \
             tools/apply_round6_referee_fixes.py \
             tools/verify_round6_referee.py \
             tools/hostile_rereview_round6.py \
             tools/write_round6_certificate.py \
             tools/build_round3.py
+
+      - name: Repair JSON-escaped TeX command prefixes
+        run: python tools/repair_round6_source_controls.py
 
       - name: Materialize all eleven controlling manuscripts
         run: python tools/apply_round6_referee_fixes.py
@@ -165,6 +169,7 @@ jobs:
           git diff --exit-code "$MATHEMATICAL_SHA" "$FINAL_SHA" -- \
             papers \
             revision/round6-referee-final \
+            tools/repair_round6_source_controls.py \
             tools/apply_round6_referee_fixes.py \
             tools/verify_round6_referee.py \
             tools/hostile_rereview_round6.py
