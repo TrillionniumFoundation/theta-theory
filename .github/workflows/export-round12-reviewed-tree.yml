@@ -1,0 +1,36 @@
+name: export-round12-reviewed-tree
+
+on:
+  push:
+    branches:
+      - review/round12-gpt56-pro-harsh-11paper-2026-08-31
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify reviewed head and create source snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          LOCKED=0b58d25307d28a9f06313aea4ef32c4d6e58c16e
+          git cat-file -e "$LOCKED^{commit}"
+          rm -rf /tmp/theta-round12-reviewed-tree
+          mkdir -p /tmp/theta-round12-reviewed-tree
+          git archive "$LOCKED" | tar -x -C /tmp/theta-round12-reviewed-tree
+          printf '%s\n' "$LOCKED" > /tmp/theta-round12-reviewed-tree/LOCKED_REVIEW_HEAD
+          (cd /tmp && zip -qr theta-round12-reviewed-tree.zip theta-round12-reviewed-tree)
+          sha256sum /tmp/theta-round12-reviewed-tree.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-round12-reviewed-tree
+          path: /tmp/theta-round12-reviewed-tree.zip
+          if-no-files-found: error
+          retention-days: 90
