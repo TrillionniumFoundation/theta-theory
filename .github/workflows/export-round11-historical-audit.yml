@@ -1,0 +1,67 @@
+name: export-round11-historical-audit
+
+on:
+  push:
+    branches:
+      - review/round10-gpt56-pro-harsh-11paper-2026-08-31
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Materialize exact historical sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin \
+            cm2-v83-canonical-all-chat \
+            archive/full-v4-pre-governance-2026-08-29
+          mkdir -p /tmp/round11-history
+          git show origin/cm2-v83-canonical-all-chat:canonical/theta_theory_recursive.md \
+            > /tmp/round11-history/theta_theory_recursive.md
+          git show origin/cm2-v83-canonical-all-chat:canonical/CM2_LATEST_STATUS.md \
+            > /tmp/round11-history/CM2_LATEST_STATUS.md
+          git show origin/cm2-v83-canonical-all-chat:canonical/CM2_CURRENT_STATUS.md \
+            > /tmp/round11-history/CM2_CURRENT_STATUS.md
+          git show origin/cm2-v83-canonical-all-chat:cm2/canonical/v83/sources/reconstructed/CM2_missing_stages_RECONSTRUCTED.md \
+            > /tmp/round11-history/CM2_missing_stages_RECONSTRUCTED.md
+          if git cat-file -e origin/archive/full-v4-pre-governance-2026-08-29:papers/expectations-monograph/papers/positive-response/cm2-bridge-note.tex 2>/dev/null; then
+            git show origin/archive/full-v4-pre-governance-2026-08-29:papers/expectations-monograph/papers/positive-response/cm2-bridge-note.tex \
+              > /tmp/round11-history/cm2-bridge-note.tex
+          fi
+          cp ROUND10_HISTORICAL_DERIVATION_AUDIT.md /tmp/round11-history/
+          cp ROUND9_HISTORICAL_DERIVATION_AUDIT.md /tmp/round11-history/
+          sha256sum /tmp/round11-history/* > /tmp/round11-history/SHA256SUMS
+      - name: Run fail-closed vocabulary audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=(
+            recursive=/tmp/round11-history/theta_theory_recursive.md
+            cm2_latest=/tmp/round11-history/CM2_LATEST_STATUS.md
+            cm2_current=/tmp/round11-history/CM2_CURRENT_STATUS.md
+            cm2_reconstructed=/tmp/round11-history/CM2_missing_stages_RECONSTRUCTED.md
+            round9_audit=/tmp/round11-history/ROUND9_HISTORICAL_DERIVATION_AUDIT.md
+            round10_audit=/tmp/round11-history/ROUND10_HISTORICAL_DERIVATION_AUDIT.md
+          )
+          if test -f /tmp/round11-history/cm2-bridge-note.tex; then
+            args+=(cm2_bridge=/tmp/round11-history/cm2-bridge-note.tex)
+          fi
+          python tools/audit_historical_derivations.py \
+            --output /tmp/round11-history/ROUND11_HISTORICAL_RAW_AUDIT.md \
+            "${args[@]}"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-round11-historical-audit
+          path: /tmp/round11-history
+          if-no-files-found: error
