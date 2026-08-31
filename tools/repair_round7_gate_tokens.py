@@ -46,12 +46,32 @@ replacements_hostile = {
         '"thm:r7-a1-anisotropic": ["Fourier cutoff", "essential spectral radius", "mixed face/corner current"],',
     '"lem:r7-a2-fiveword": ["four differences", "4\\\\times4", "determinant"],':
         '"lem:r7-a2-fiveword": ["corresponding four differences", "row operations", "determinant"],',
+    '"thm:r7-a2-dolgopyat": ["near opposition", "amplitude ratio", "fixed $L^2$ loss"],':
+        '"thm:r7-a2-dolgopyat": ["near opposition", "two amplitudes above and below", "fixed $L^2$ loss"],',
+    '"lem:r7-a3-markov": ["same period", "No edge is added"],':
+        '"lem:r7-a3-markov": ["one full period", "No edge is added"],',
+    '"thm:r7-b1-characteristic": ["sectors", "empty", "exponentially small"],':
+        '"thm:r7-b1-characteristic": ["sectors $n<n_*$", "total Poisson probability", "strict modulus loss"],',
     '"thm:r7-b2-frame": ["youngest-separation", "common-root", "independent of"],':
         '"thm:r7-b2-frame": ["youngest-separation", "reset frame", "number of earlier events"],',
+    '"lem:r7-b2-regularize": ["commute with balance", "exactly zero"],':
+        '"lem:r7-b2-regularize": ["commute with balance", "preserves balance"],',
+    '"thm:r7-b4-corrector": ["lower endpoint", "zero terminal remainder", "graph norm"],':
+        '"thm:r7-b4-corrector": ["lower endpoint", "no terminal remainder", "remaining-time construction"],',
+    '"lem:r7-c1-coarea": ["coarea", "Hausdorff", "submersion"],':
+        '"lem:r7-c1-coarea": ["coarea", "Hausdorff", "Transversality"],',
     '"thm:r7-c2-cotangent": ["Constants are absent", "adding constants", "invariant"],':
         '"thm:r7-c2-cotangent": ["Adding constants", "invariant", "separating"],',
+    '"thm:r7-c2-memory": ["eigenfunction", "invariant measure", "projection"],':
+        '"thm:r7-c2-memory": ["connection terms", "Differentiate $P_\\eta^2=P_\\eta$", "resolvent identity"],',
+    '"thm:r7-d1-finite": ["face", "tangential", "coexistence"],':
+        '"thm:r7-d1-finite": ["face", "tangential", "several phase pressures maximize"],',
+    '"thm:r7-d1-likelihood": ["exactly", "finite mean", "zero-free chart"],':
+        '"thm:r7-d1-likelihood": ["finite mean terms cancel", "Taylor", "zero-free chart"],',
     '"A4-history-memory-universal-pressure": ["coarse quotient history", "conditional on the full microscopic history", "Riesz--Schur"],':
-        '"A4-history-memory-universal-pressure": ["stable-leaf quotient history", "conditional on the full microscopic history", "Riesz--Schur"],',
+        '"A4-history-memory-universal-pressure": ["stable-leaf quotient", "Conditional on the full microscopic history", "Riesz--Schur"],',
+    '"B2-collision-clusters-dynamic-ldp": ["independent of ancestral depth", "boundary Dirac measure", "true reflected"],':
+        '"B2-collision-clusters-dynamic-ldp": ["independent of ancestral depth", "boundary Dirac measure", "exact reflected microstate"],',
 }
 for old, new in replacements_hostile.items():
     if old in text:
