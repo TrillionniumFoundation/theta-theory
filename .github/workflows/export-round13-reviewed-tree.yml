@@ -1,0 +1,29 @@
+name: export-round13-reviewed-tree
+
+on:
+  push:
+    branches:
+      - automation/export-round13-reviewed-tree-2026-09-01
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Verify review head and create snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "7bdc2ef6fd248fd18fa347e02dce3c40883bb173"
+          git archive --format=tar.gz --output=theta-round13-reviewed-tree.tar.gz 7bdc2ef6fd248fd18fa347e02dce3c40883bb173
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-round13-reviewed-tree
+          path: theta-round13-reviewed-tree.tar.gz
+          if-no-files-found: error
