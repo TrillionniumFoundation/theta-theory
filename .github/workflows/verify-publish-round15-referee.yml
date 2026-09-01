@@ -1,0 +1,102 @@
+name: verify-publish-round15-referee
+
+on:
+  push:
+    branches:
+      - revision/round15-referee-positive-closure-11paper-2026-09-01
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: verify-publish-round15-referee
+  cancel-in-progress: false
+
+jobs:
+  verify-build-publish:
+    if: ${{ !contains(github.event.head_commit.message || '', '[skip ci]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Restore checksum-pinned Round-Fifteen reconstruction
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(find .round15 -maxdepth 1 -name 'payload.bin-*' -type f | wc -l)" -eq 8
+          cat .round15/payload.bin-00 .round15/payload.bin-01 .round15/payload.bin-02 .round15/payload.bin-03 .round15/payload.bin-04 .round15/payload.bin-05 .round15/payload.bin-06 .round15/payload.bin-07 > /tmp/round15-payload.tar.xz
+          echo '8884db97bff710815e08e85882bf42bc09743a66c80f123f1694ee34ec7820a0  /tmp/round15-payload.tar.xz' | sha256sum -c -
+          git config user.name theta-theory-revision-bot
+          git config user.email revision-bot@users.noreply.github.com
+          git fetch origin main review/round14-gpt56-pro-harsh-11paper-2026-09-01 --tags
+          PRE_MAIN="$(git rev-parse origin/main)"
+          git switch --detach "$PRE_MAIN"
+          git switch -c round15-publication-work
+          git merge --no-edit c0a436c8c952eb53f16ea40163105d7baee5e328
+          git merge-base --is-ancestor c0a436c8c952eb53f16ea40163105d7baee5e328 HEAD
+          tar -xJf /tmp/round15-payload.tar.xz
+          chmod +x tools/materialize_round15_referee.py tools/verify_round15_referee.py tools/hostile_rereview_round15.py tools/build_round15.py tools/write_round15_certificate.py
+          echo "PRE_MAIN=$PRE_MAIN" >> "$GITHUB_ENV"
+      - name: Materialize and run mathematical proof gates
+        run: |
+          python tools/materialize_round15_referee.py
+          python tools/verify_round15_referee.py
+          python tools/hostile_rereview_round15.py
+      - name: Install TeX and PDF tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y latexmk biber poppler-utils texlive-latex-base texlive-latex-extra texlive-fonts-recommended texlive-bibtex-extra
+      - name: Clean-build all eleven papers and rerun gates
+        run: |
+          python tools/build_round15.py
+          python tools/verify_round15_referee.py
+          python tools/hostile_rereview_round15.py
+      - name: Commit verified mathematical tree
+        shell: bash
+        run: |
+          git add -A
+          git commit -m 'Materialize round-fifteen positive referee closure for all eleven papers [skip ci]'
+          echo "MATHEMATICAL_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - name: Write exact certificate and publication metadata
+        shell: bash
+        run: |
+          python tools/write_round15_certificate.py
+          git add ROUND15_FINAL_CERTIFICATE.json ROUND15_PUBLICATION_RECORD.json ROUND15_REVISION_STATUS.md
+          git commit -m 'Record exact round-fifteen verification and publication metadata [skip ci]'
+          echo "PUBLICATION_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - name: Archive old main and atomically publish
+        shell: bash
+        run: |
+          git push origin "$PRE_MAIN:refs/heads/archive/main-pre-round15-positive-closure-2026-09-01"
+          git push --force-with-lease=refs/heads/revision/round15-referee-positive-closure-11paper-2026-09-01:${GITHUB_SHA} origin "$PUBLICATION_SHA:refs/heads/revision/round15-referee-positive-closure-11paper-2026-09-01"
+          git push --force-with-lease=refs/heads/main:$PRE_MAIN origin "$PUBLICATION_SHA:refs/heads/main"
+          git tag -a round15-positive-closure-verified-2026-09-01 "$PUBLICATION_SHA" -m 'Verified round-fifteen positive referee closure for eleven papers'
+          git push origin refs/tags/round15-positive-closure-verified-2026-09-01
+      - name: Verify remote topology and immutable mathematical tree
+        shell: bash
+        run: |
+          git fetch origin main revision/round15-referee-positive-closure-11paper-2026-09-01 archive/main-pre-round15-positive-closure-2026-09-01 --tags
+          test "$(git rev-parse origin/main)" = "$PUBLICATION_SHA"
+          test "$(git rev-parse origin/revision/round15-referee-positive-closure-11paper-2026-09-01)" = "$PUBLICATION_SHA"
+          test "$(git rev-parse origin/archive/main-pre-round15-positive-closure-2026-09-01)" = "$PRE_MAIN"
+          test "$(git rev-list -n1 round15-positive-closure-verified-2026-09-01)" = "$PUBLICATION_SHA"
+          git diff --quiet "$MATHEMATICAL_SHA" "$PUBLICATION_SHA" -- papers revision/round15-referee-final tools ROUND15_HISTORICAL_DERIVATION_AUDIT.md ROUND15_PROOF_DEPENDENCY_LEDGER.md REFEREE_ROUND15_RESPONSE.md ROUND15_REFEREE_INVENTORY.json ROUND15_MATERIALIZATION_MANIFEST.json ROUND15_STRUCTURAL_VERIFICATION.json ROUND15_HOSTILE_REREVIEW.json ROUND15_BUILD_SUMMARY.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-theory-round15-verified-papers-and-audit
+          path: |
+            papers/*/main.pdf
+            papers/*/main.tex
+            papers/*/ROUND15_POSITIVE_CLOSURE.tex
+            papers/*/AUTHOR_RESPONSE_ROUND15.md
+            revision/round15-referee-final
+            ROUND15_*.json
+            ROUND15_*.md
+            REFEREE_ROUND15_RESPONSE.md
+          if-no-files-found: error
