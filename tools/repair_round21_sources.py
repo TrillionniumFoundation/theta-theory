@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Repair the one audited JSON-escape corruption in the Round-21 payload.
+"""Repair the two audited JSON-escape corruptions in the Round-21 payload.
 
-The A2 Gaussian coefficient was transmitted with JSON's form-feed escape in
-place of the TeX command ``\\frac``.  This script performs exactly that one
-byte-level repair and then fails on every remaining C0 control character or
-standalone truncated ``rac12`` token.  It is idempotent after the repaired
-source is committed by the verification workflow.
+A2's ``\\frac12`` was transmitted through JSON's form-feed escape, and one
+C1 ``\\vartheta`` was transmitted as a vertical tab.  Only those exact byte
+patterns are repaired.  The script then rejects every remaining C0 control
+byte other than line feed and every standalone truncated fraction token.  It
+is idempotent after the repaired sources are committed by the workflow.
 """
 from __future__ import annotations
 
@@ -13,8 +13,15 @@ from pathlib import Path
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-A2 = ROOT / "papers/A2-sinai-homological-pressure/ROUND17_POSITIVE_CLOSURE.tex"
 ACTIVE = sorted((ROOT / "papers").glob("*/ROUND17_POSITIVE_CLOSURE.tex"))
+REPAIRS = {
+    ROOT / "papers/A2-sinai-homological-pressure/ROUND17_POSITIVE_CLOSURE.tex": [
+        (b"\x0crac12", b"\\frac12", "A2 JSON form-feed corruption: \\frac12"),
+    ],
+    ROOT / "papers/C1-information-risk-sensitive-saddles/ROUND17_POSITIVE_CLOSURE.tex": [
+        (b"\x0bartheta", b"\\vartheta", "C1 JSON vertical-tab corruption: \\vartheta"),
+    ],
+}
 
 
 def fail(message: str) -> None:
@@ -23,34 +30,55 @@ def fail(message: str) -> None:
 
 
 def main() -> None:
-    raw = A2.read_bytes()
-    broken = b"\x0crac12"
-    repaired = b"\\frac12"
-    count = raw.count(broken)
-    if count > 1:
-        fail(f"A2 contains {count} copies of the audited corruption")
-    if count == 1:
-        raw = raw.replace(broken, repaired, 1)
-        A2.write_bytes(raw)
-        print("repaired A2 JSON form-feed corruption: \\frac12")
-    else:
-        print("A2 audited transport repair already present")
-
-    for path in ACTIVE:
-        data = path.read_bytes()
-        for value in list(range(0x00, 0x09)) + [0x0B, 0x0C, 0x0E, 0x0F]:
-            if bytes([value]) in data:
+    total_repairs = 0
+    for path, replacements in REPAIRS.items():
+        raw = path.read_bytes()
+        changed = False
+        for broken, repaired, label in replacements:
+            count = raw.count(broken)
+            if count > 1:
+                fail(f"{path.relative_to(ROOT)} contains {count} copies of {label}")
+            if count == 1:
+                raw = raw.replace(broken, repaired, 1)
+                changed = True
+                total_repairs += 1
+                print(f"repaired {label}")
+            elif repaired not in raw:
                 fail(
-                    f"unexpected control byte 0x{value:02x} in "
+                    f"neither broken nor repaired token found for {label} in "
                     f"{path.relative_to(ROOT)}"
                 )
-        # A valid TeX token ``\\frac12`` naturally contains the suffix
-        # ``rac12``.  Remove valid occurrences before looking for the audited
-        # standalone truncation.
+            else:
+                print(f"repair already present: {label}")
+        if changed:
+            path.write_bytes(raw)
+
+    diagnostics: list[str] = []
+    for path in ACTIVE:
+        data = path.read_bytes()
+        for offset, value in enumerate(data):
+            if value < 0x20 and value != 0x0A:
+                lo = max(0, offset - 24)
+                hi = min(len(data), offset + 40)
+                context = repr(data[lo:hi])
+                diagnostics.append(
+                    f"{path.relative_to(ROOT)} offset={offset} "
+                    f"control=0x{value:02x} context={context}"
+                )
         residue = data.replace(b"\\frac12", b"")
         if b"rac12" in residue:
-            fail(f"truncated TeX fraction remains in {path.relative_to(ROOT)}")
-    print("ROUND21_SOURCE_REPAIR_PASS active_modules=11")
+            diagnostics.append(
+                f"{path.relative_to(ROOT)} contains standalone truncated rac12"
+            )
+    if diagnostics:
+        for item in diagnostics:
+            print(f"ROUND21_SOURCE_REPAIR_DIAGNOSTIC: {item}", file=sys.stderr)
+        fail(f"{len(diagnostics)} unapproved source transport corruptions remain")
+
+    print(
+        f"ROUND21_SOURCE_REPAIR_PASS active_modules={len(ACTIVE)} "
+        f"repairs_applied={total_repairs}"
+    )
 
 
 if __name__ == "__main__":
