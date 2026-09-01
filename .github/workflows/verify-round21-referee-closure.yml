@@ -1,0 +1,154 @@
+name: Verify and build Round Twenty One
+
+on:
+  push:
+    branches:
+      - revision/round21-referee-positive-closure-11paper-2026-09-02
+  pull_request:
+    paths:
+      - 'papers/**'
+      - 'tools/verify_round21.py'
+      - 'tools/update_round21_wrappers.py'
+      - 'ROUND21_*.md'
+      - 'REFEREE_ROUND20_RESPONSE.md'
+      - '.github/workflows/verify-round21-referee-closure.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: round21-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify-build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Check out exact revision tree
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Update eleven manuscript wrappers to Round Twenty One
+        run: python3 tools/update_round21_wrappers.py
+
+      - name: Verify source structure and dependency order
+        run: python3 tools/verify_round21.py
+
+      - name: Install TeX toolchain
+        run: |
+          sudo apt-get update
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            latexmk biber lmodern \
+            texlive-latex-base texlive-latex-recommended texlive-latex-extra \
+            texlive-fonts-recommended texlive-bibtex-extra
+
+      - name: Build all eleven papers from clean auxiliary state
+        run: |
+          make clean || true
+          make all
+
+      - name: Verify PDFs and write exact build records
+        run: |
+          python3 - <<'PY'
+          from __future__ import annotations
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          papers = [
+              "A1-exact-benchmarks",
+              "A2-sinai-homological-pressure",
+              "A3-full-empirical-path-ldp",
+              "A4-history-memory-universal-pressure",
+              "B1-microcanonical-preparation",
+              "B2-collision-clusters-dynamic-ldp",
+              "B3-hamilton-boltzmann-cotangents",
+              "B4-nonlinear-kinetic-semigroups",
+              "C1-information-risk-sensitive-saddles",
+              "C2-cotangent-rigidity-tangent-representations",
+              "D1-deterministic-theta-contractions",
+          ]
+          rows = []
+          for name in papers:
+              folder = Path("papers") / name
+              pdf = folder / "main.pdf"
+              source = folder / "ROUND17_POSITIVE_CLOSURE.tex"
+              wrapper = folder / "main.tex"
+              response = folder / "AUTHOR_RESPONSE_ROUND20.md"
+              for path in (pdf, source, wrapper, response):
+                  if not path.is_file():
+                      raise SystemExit(f"missing publication file: {path}")
+              if pdf.stat().st_size < 10_000:
+                  raise SystemExit(f"suspiciously small PDF: {pdf}")
+              rows.append({
+                  "paper": name,
+                  "source_bytes": source.stat().st_size,
+                  "source_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
+                  "wrapper_sha256": hashlib.sha256(wrapper.read_bytes()).hexdigest(),
+                  "response_sha256": hashlib.sha256(response.read_bytes()).hexdigest(),
+                  "pdf_bytes": pdf.stat().st_size,
+                  "pdf_sha256": hashlib.sha256(pdf.read_bytes()).hexdigest(),
+              })
+          payload = {
+              "schema": "theta-round21-build-summary-v1",
+              "source_commit": os.environ.get("GITHUB_SHA"),
+              "workflow_run": os.environ.get("GITHUB_RUN_ID"),
+              "paper_count": len(rows),
+              "papers": rows,
+              "status": "STRUCTURAL_AND_TEX_BUILD_PASS",
+              "disclaimer": "Internal reproducibility gate; not external peer review.",
+          }
+          Path("ROUND21_BUILD_SUMMARY.json").write_text(
+              json.dumps(payload, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          status = f"""# Round-Twenty-One revision status
+
+**Source commit verified:** `{payload['source_commit']}`  
+**Workflow run:** `{payload['workflow_run']}`  
+**Paper count:** `{payload['paper_count']}`  
+**Structural verifier:** **PASS**  
+**Clean TeX builds:** **11/11 PASS**  
+**Generated PDFs:** **11/11 nonempty and hash-recorded**
+
+The workflow ran `tools/update_round21_wrappers.py`,
+`tools/verify_round21.py`, and `make all` from a clean checkout.  Exact source,
+wrapper, author-response, and PDF hashes are recorded in
+`ROUND21_BUILD_SUMMARY.json`.
+
+This is an internal source-identity, dependency, and reproducibility result.
+It is not a claim of external journal acceptance or a substitute for a new
+independent referee review.
+"""
+          Path("ROUND21_REVISION_STATUS.md").write_text(status, encoding="utf-8")
+          print(json.dumps(payload, indent=2))
+          PY
+
+      - name: Upload built manuscripts
+        uses: actions/upload-artifact@v4
+        with:
+          name: theta-theory-round21-eleven-papers-${{ github.sha }}
+          path: |
+            papers/*/main.pdf
+            ROUND21_BUILD_SUMMARY.json
+            ROUND21_REVISION_STATUS.md
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Publish wrappers, PDFs, and exact build records
+        if: github.event_name == 'push'
+        run: |
+          git config user.name "theta-theory-round21-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add papers/*/main.tex papers/*/main.pdf \
+            ROUND21_BUILD_SUMMARY.json ROUND21_REVISION_STATUS.md
+          if git diff --cached --quiet; then
+            echo "No generated publication files changed."
+          else
+            git commit -m "Build all eleven Round-Twenty-One manuscripts [skip ci]"
+            git push origin HEAD:${GITHUB_REF_NAME}
+          fi
