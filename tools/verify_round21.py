@@ -103,8 +103,55 @@ def check_dependency_graph() -> None:
 
 
 def check_balanced(text: str, name: str, begin: str, end: str) -> None:
-    if text.count(begin) != text.count(end):
+    depth = 0
+    events: list[tuple[int, int, int, int, str]] = []
+    first_negative: tuple[int, str] | None = None
+    for number, line in enumerate(text.splitlines(), start=1):
+        opens = line.count(begin)
+        closes = line.count(end)
+        if opens or closes:
+            depth += opens - closes
+            events.append((number, opens, closes, depth, line.strip()))
+            if depth < 0 and first_negative is None:
+                first_negative = (number, line.strip())
+    if depth != 0 or first_negative is not None:
+        print(
+            f"ROUND21_BALANCE_DIAGNOSTIC paper={name} begin={begin!r} "
+            f"end={end!r} final_depth={depth}",
+            file=sys.stderr,
+        )
+        if first_negative is not None:
+            print(
+                f"first_negative_line={first_negative[0]} text={first_negative[1]!r}",
+                file=sys.stderr,
+            )
+        for number, opens, closes, running, line in events:
+            print(
+                f"line={number} opens={opens} closes={closes} "
+                f"depth={running} text={line!r}",
+                file=sys.stderr,
+            )
         fail(f"{name}: unbalanced {begin}/{end}")
+
+
+def check_transport_corruption(text: str, name: str) -> None:
+    suspicious = {
+        "form-feed": "\x0c",
+        "vertical-tab": "\x0b",
+        "carriage-return": "\r",
+        "truncated-frac": "rac12",
+    }
+    for label, token in suspicious.items():
+        if token not in text:
+            continue
+        for number, line in enumerate(text.splitlines(), start=1):
+            if token in line:
+                print(
+                    f"ROUND21_TRANSPORT_DIAGNOSTIC paper={name} "
+                    f"kind={label} line={number} text={line!r}",
+                    file=sys.stderr,
+                )
+        fail(f"{name}: source transport corruption detected ({label})")
 
 
 def main() -> None:
@@ -139,6 +186,7 @@ def main() -> None:
             fail(f"{key}: fewer proof environments than theorem environments")
         check_balanced(text, key, "\\begin{proof}", "\\end{proof}")
         check_balanced(text, key, "\\[", "\\]")
+        check_transport_corruption(text, key)
         if re.search(r"\b(TODO|TBD|FIXME|PLACEHOLDER)\b", text, re.I):
             fail(f"{key}: placeholder token in active proof")
         response_text = response.read_text(encoding="utf-8")

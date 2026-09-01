@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Update all eleven manuscript wrappers to Round-Twenty-One metadata.
+"""Idempotently update all eleven manuscript wrappers to Round Twenty One.
 
 The active proof filename is retained for build compatibility, while its bytes
 are replaced by the Round-Twenty-One mathematical module.
@@ -30,13 +30,17 @@ for paper in PAPERS:
     output: list[str] = []
     response_written = False
     for line in original.splitlines():
+        # Remove any old generated response line; exactly one fresh line is
+        # inserted immediately after the proof-source metadata below.
+        if "Round-Twenty referee response:" in line:
+            continue
         if line.startswith(r"\date{"):
             line = r"\date{September 2, 2026}"
         elif "Platform identifier:" in line:
-            changed = re.sub(r"([vV])17(?=})", r"\g<1>21", line)
-            if changed == line:
-                changed = line.replace(r"}.\par", r"-R21}.\par", 1)
-            line = changed
+            if re.search(r"([vV])17(?=})", line):
+                line = re.sub(r"([vV])17(?=})", r"\g<1>21", line)
+            elif not re.search(r"([vV])21(?=})|R21(?=})", line):
+                line = line.replace(r"}.\par", r"-R21}.\par", 1)
         elif "Controlling revision:" in line:
             line = (
                 r"\noindent\textbf{Controlling revision:} "
@@ -55,8 +59,6 @@ for paper in PAPERS:
             )
             response_written = True
             continue
-        if "AUTHOR_RESPONSE_ROUND20.md" in line:
-            response_written = True
         output.append(line)
 
     text = "\n".join(output) + "\n"
