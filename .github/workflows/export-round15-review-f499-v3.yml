@@ -1,0 +1,33 @@
+name: export-round15-review-f499-v3
+
+on:
+  push:
+    branches:
+      - automation/export-round15-review-f499-v3-2026-09-01
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify and archive locked review tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          git cat-file -e f499b6aaa4c94d58e21c112ab7f35b41e0b16453^{commit}
+          test "$(git rev-parse f499b6aaa4c94d58e21c112ab7f35b41e0b16453^)" = "dd9dbcb891076b7dbfe388bd8543d8342ba103c0"
+          git archive --format=tar.gz --prefix=theta-round15-review/ -o theta-round15-review-f499.tar.gz f499b6aaa4c94d58e21c112ab7f35b41e0b16453
+          sha256sum theta-round15-review-f499.tar.gz > theta-round15-review-f499.tar.gz.sha256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-round15-review-f499
+          path: |
+            theta-round15-review-f499.tar.gz
+            theta-round15-review-f499.tar.gz.sha256
+          if-no-files-found: error
