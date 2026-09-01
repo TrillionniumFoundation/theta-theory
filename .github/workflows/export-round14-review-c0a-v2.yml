@@ -1,0 +1,33 @@
+name: export-round14-review-c0a-v2
+
+on:
+  push:
+    branches:
+      - automation/export-round14-review-c0a-v2-2026-09-01
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify exact review object and create snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD^)" = "c0a436c8c952eb53f16ea40163105d7baee5e328"
+          git cat-file -e c0a436c8c952eb53f16ea40163105d7baee5e328^{commit}
+          git archive --format=tar.gz --output=theta-round14-review-c0a.tar.gz c0a436c8c952eb53f16ea40163105d7baee5e328
+          sha256sum theta-round14-review-c0a.tar.gz > theta-round14-review-c0a.tar.gz.sha256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-round14-review-c0a
+          path: |
+            theta-round14-review-c0a.tar.gz
+            theta-round14-review-c0a.tar.gz.sha256
+          if-no-files-found: error
