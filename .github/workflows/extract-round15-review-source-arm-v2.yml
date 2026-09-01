@@ -1,0 +1,76 @@
+name: extract-round15-review-source-arm-v2
+
+on:
+  push:
+    branches:
+      - review/round15-payload-rescue-2026-09-01
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  extract:
+    if: ${{ !contains(github.event.head_commit.message || '', '[skip ci]') }}
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Download validated historical-corpus artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/r15-expanded /tmp/r15-unpacked
+          mkdir -p /tmp/r15-expanded /tmp/r15-unpacked
+          gh run download 33459091399 \
+            --repo TrillionniumFoundation/theta-theory \
+            --name theta-round15-historical-corpus \
+            --dir /tmp/r15-expanded
+          find /tmp/r15-expanded -maxdepth 3 -type f -printf '%p %s bytes\n' | head -100
+
+      - name: Locate Round Fifteen registered source tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          find /tmp/r15-expanded -type f \( -name '*.tar.xz' -o -name '*.tar.gz' -o -name '*.tgz' -o -name '*.tar' -o -name '*.zip' \) -print0 | while IFS= read -r -d '' archive; do
+            dest="/tmp/r15-unpacked/$(basename "$archive" | tr '. ' '__')"
+            mkdir -p "$dest"
+            case "$archive" in
+              *.tar.xz) tar -xJf "$archive" -C "$dest" ;;
+              *.tar.gz|*.tgz) tar -xzf "$archive" -C "$dest" ;;
+              *.tar) tar -xf "$archive" -C "$dest" ;;
+              *.zip) unzip -q "$archive" -d "$dest" ;;
+            esac
+          done
+          SRC="$(find /tmp/r15-expanded /tmp/r15-unpacked -type d -path '*/revision/round15-referee-final' | head -1)"
+          test -n "$SRC"
+          ROOT="${SRC%/revision/round15-referee-final}"
+          echo "SRC=$SRC" >> "$GITHUB_ENV"
+          echo "ROOT=$ROOT" >> "$GITHUB_ENV"
+          echo "registered source: $SRC"
+          find "$SRC" -maxdepth 1 -type f -printf '%f %s bytes\n' | sort
+
+      - name: Commit compact source mirror to isolated rescue branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf .round15-review-source
+          mkdir -p .round15-review-source/revision .round15-review-source/tools
+          cp -a "$SRC" .round15-review-source/revision/
+          find "$ROOT/tools" -maxdepth 1 -type f -name '*round15*' -exec cp -a {} .round15-review-source/tools/ \;
+          for f in "$ROOT"/ROUND15_*.json "$ROOT"/ROUND15_*.md "$ROOT"/REFEREE_ROUND15_RESPONSE.md; do
+            [ -e "$f" ] && cp -a "$f" .round15-review-source/
+          done
+          find .round15-review-source -type f -exec sha256sum {} + | sort > .round15-review-source/SHA256SUMS
+          test "$(find .round15-review-source/revision/round15-referee-final -maxdepth 1 -type f -name '*.tex' | wc -l)" -eq 11
+          git config user.name theta-review-source-rescue
+          git config user.email review-source-rescue@users.noreply.github.com
+          git add .round15-review-source
+          git commit -m 'Recover compact Round Fifteen registered review sources [skip ci]'
+          git push origin HEAD:review/round15-payload-rescue-2026-09-01
