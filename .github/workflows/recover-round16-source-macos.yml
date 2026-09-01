@@ -1,0 +1,86 @@
+name: recover-round16-source-macos
+
+on:
+  push:
+    branches:
+      - review/round16-source-recovery-2026-09-01
+
+permissions:
+  contents: write
+
+concurrency:
+  group: recover-round16-source-macos
+  cancel-in-progress: false
+
+jobs:
+  recover-macos:
+    if: ${{ !contains(github.event.head_commit.message || '', '[skip ci]') }}
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Decode and safely extract immutable payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf round16_recovered
+          mkdir -p round16_recovered/source
+          python3 - <<'PY'
+          import base64, hashlib, io, json, lzma, pathlib, tarfile
+          repo = pathlib.Path('.')
+          parts = sorted((repo / '.round16').glob('payload.part-*'))
+          if len(parts) != 6:
+              raise SystemExit(f'expected six payload parts, found {len(parts)}')
+          encoded = ''.join(p.read_text(encoding='utf-8').strip() for p in parts)
+          if len(encoded) != 55200:
+              raise SystemExit(f'unexpected encoded length {len(encoded)}')
+          compressed = base64.b64decode(encoded, validate=True)
+          raw_tar = lzma.decompress(compressed)
+          out = repo / 'round16_recovered' / 'source'
+          records = []
+          with tarfile.open(fileobj=io.BytesIO(raw_tar), mode='r:') as tf:
+              for m in tf.getmembers():
+                  target = (out / m.name).resolve()
+                  if out.resolve() not in target.parents and target != out.resolve():
+                      raise SystemExit(f'unsafe archive path: {m.name}')
+                  if m.issym() or m.islnk():
+                      raise SystemExit(f'links forbidden: {m.name}')
+                  records.append({'name': m.name, 'size': m.size})
+              tf.extractall(out)
+          manifest = {
+              'source_branch_head': '2901535c56013bb61ca4211d7b7bb2b35007fff0',
+              'parts': [p.as_posix() for p in parts],
+              'encoded_sha256': hashlib.sha256(encoded.encode()).hexdigest(),
+              'compressed_sha256': hashlib.sha256(compressed).hexdigest(),
+              'tar_sha256': hashlib.sha256(raw_tar).hexdigest(),
+              'member_count': len(records),
+              'members': records,
+          }
+          (repo / 'round16_recovered' / 'RECOVERY_MANIFEST.json').write_text(
+              json.dumps(manifest, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+          for p in sorted(out.rglob('*')):
+              if p.is_file():
+                  print(p)
+          PY
+          python3 - <<'PY'
+          import hashlib, pathlib
+          root = pathlib.Path('round16_recovered')
+          lines=[]
+          for p in sorted(root.rglob('*')):
+              if p.is_file() and p.name != 'FILE_SHA256SUMS.txt':
+                  lines.append(f"{hashlib.sha256(p.read_bytes()).hexdigest()}  {p.as_posix()}")
+          (root/'FILE_SHA256SUMS.txt').write_text('\n'.join(lines)+'\n')
+          PY
+
+      - name: Commit recovered files
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name theta-theory-review-bot
+          git config user.email review-bot@users.noreply.github.com
+          git add round16_recovered .github/workflows/recover-round16-source-macos.yml
+          git commit -m 'Recover immutable Round-Sixteen source bundle on macOS [skip ci]'
+          git push origin HEAD:refs/heads/review/round16-source-recovery-2026-09-01
