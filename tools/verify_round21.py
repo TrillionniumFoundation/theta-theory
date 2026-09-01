@@ -145,7 +145,6 @@ def check_transport_corruption(text: str, name: str) -> None:
         "form-feed": "\x0c",
         "vertical-tab": "\x0b",
         "carriage-return": "\r",
-        "truncated-frac": "rac12",
     }
     for label, token in suspicious.items():
         if token not in text:
@@ -154,6 +153,12 @@ def check_transport_corruption(text: str, name: str) -> None:
         fail(
             f"{name}: source transport corruption detected ({label}) "
             f"near line {line_number}"
+        )
+    residue = text.replace("\\frac12", "")
+    if "rac12" in residue:
+        line_number = text[: text.index("rac12")].count("\n") + 1
+        fail(
+            f"{name}: standalone truncated TeX fraction near line {line_number}"
         )
 
 

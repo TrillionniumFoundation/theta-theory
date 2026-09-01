@@ -4,8 +4,8 @@
 The A2 Gaussian coefficient was transmitted with JSON's form-feed escape in
 place of the TeX command ``\\frac``.  This script performs exactly that one
 byte-level repair and then fails on every remaining C0 control character or
-truncated ``rac12`` token.  It is idempotent after the repaired source is
-committed by the verification workflow.
+standalone truncated ``rac12`` token.  It is idempotent after the repaired
+source is committed by the verification workflow.
 """
 from __future__ import annotations
 
@@ -44,8 +44,11 @@ def main() -> None:
                     f"unexpected control byte 0x{value:02x} in "
                     f"{path.relative_to(ROOT)}"
                 )
-        text = data.decode("utf-8")
-        if "rac12" in text:
+        # A valid TeX token ``\\frac12`` naturally contains the suffix
+        # ``rac12``.  Remove valid occurrences before looking for the audited
+        # standalone truncation.
+        residue = data.replace(b"\\frac12", b"")
+        if b"rac12" in residue:
             fail(f"truncated TeX fraction remains in {path.relative_to(ROOT)}")
     print("ROUND21_SOURCE_REPAIR_PASS active_modules=11")
 
