@@ -1,0 +1,44 @@
+name: export-round15-historical-corpus
+
+on:
+  push:
+    branches:
+      - automation/export-round15-historical-corpus-2026-09-01
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Export exact historical branches
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin \
+            cm2-v83-canonical-all-chat \
+            theta-dependency-closure-2026-08-28 \
+            archive/full-v4-pre-governance-2026-08-29 \
+            theta-maximal-final-closure-v7-2026-08-28 \
+            theta-referee-revision-v4-full-positive-2026-08-29
+          mkdir -p export
+          for ref in \
+            cm2-v83-canonical-all-chat \
+            theta-dependency-closure-2026-08-28 \
+            archive/full-v4-pre-governance-2026-08-29 \
+            theta-maximal-final-closure-v7-2026-08-28 \
+            theta-referee-revision-v4-full-positive-2026-08-29; do
+            safe="${ref//\//__}"
+            git archive --format=tar.gz --output="export/${safe}.tar.gz" "origin/${ref}"
+          done
+          sha256sum export/*.tar.gz > export/SHA256SUMS
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-round15-historical-corpus
+          path: export
+          if-no-files-found: error
