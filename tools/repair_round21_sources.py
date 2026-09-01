@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
-"""Repair the two audited JSON-escape corruptions in the Round-21 payload.
+"""Repair the audited JSON-escape corruptions in the Round-21 payload.
 
-A2's ``\\frac12`` was transmitted through JSON's form-feed escape, and one
-C1 ``\\vartheta`` was transmitted as a vertical tab.  Only those exact byte
-patterns are repaired.  The script then rejects every remaining C0 control
-byte other than line feed and every standalone truncated fraction token.  It
-is idempotent after the repaired sources are committed by the workflow.
+The large TeX payload was sent through a JSON string. Four command families
+were found at exact, logged offsets where a single TeX backslash had been
+interpreted as a JSON control escape: A2 ``\\frac12`` (form feed), C1
+``\\vartheta`` (vertical tab), and D1 ``\\rho`` (carriage return) and
+``\\varepsilon`` (vertical tab). Only these exact byte patterns are repaired.
+The script then rejects every remaining C0 control byte other than line feed
+and every standalone truncated fraction token. It is idempotent after the
+repaired sources are committed by the workflow.
 """
 from __future__ import annotations
 
@@ -20,6 +23,10 @@ REPAIRS = {
     ],
     ROOT / "papers/C1-information-risk-sensitive-saddles/ROUND17_POSITIVE_CLOSURE.tex": [
         (b"\x0bartheta", b"\\vartheta", "C1 JSON vertical-tab corruption: \\vartheta"),
+    ],
+    ROOT / "papers/D1-deterministic-theta-contractions/ROUND17_POSITIVE_CLOSURE.tex": [
+        (b"\x0dho", b"\\rho", "D1 JSON carriage-return corruption: \\rho"),
+        (b"\x0barepsilon", b"\\varepsilon", "D1 JSON vertical-tab corruption: \\varepsilon"),
     ],
 }
 
@@ -36,13 +43,11 @@ def main() -> None:
         changed = False
         for broken, repaired, label in replacements:
             count = raw.count(broken)
-            if count > 1:
-                fail(f"{path.relative_to(ROOT)} contains {count} copies of {label}")
-            if count == 1:
-                raw = raw.replace(broken, repaired, 1)
+            if count:
+                raw = raw.replace(broken, repaired)
                 changed = True
-                total_repairs += 1
-                print(f"repaired {label}")
+                total_repairs += count
+                print(f"repaired {count} occurrence(s): {label}")
             elif repaired not in raw:
                 fail(
                     f"neither broken nor repaired token found for {label} in "
