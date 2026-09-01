@@ -1,0 +1,78 @@
+name: recover-round16-source-for-review
+
+on:
+  push:
+    branches:
+      - review/round16-source-recovery-2026-09-01
+
+permissions:
+  contents: write
+
+jobs:
+  recover:
+    if: ${{ !contains(github.event.head_commit.message || '', '[skip ci]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Decode and safely extract immutable Round-Sixteen payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf round16_recovered
+          mkdir -p round16_recovered/source
+          python - <<'PY'
+          import base64, hashlib, io, json, lzma, pathlib, tarfile
+
+          repo = pathlib.Path('.')
+          parts = sorted((repo / '.round16').glob('payload.part-*'))
+          if not parts:
+              raise SystemExit('no Round-Sixteen payload parts found')
+          encoded = ''.join(p.read_text(encoding='utf-8').strip() for p in parts)
+          compressed = base64.b64decode(encoded, validate=True)
+          raw_tar = lzma.decompress(compressed)
+
+          out = repo / 'round16_recovered' / 'source'
+          members = []
+          with tarfile.open(fileobj=io.BytesIO(raw_tar), mode='r:') as tf:
+              for member in tf.getmembers():
+                  target = (out / member.name).resolve()
+                  if out.resolve() not in target.parents and target != out.resolve():
+                      raise SystemExit(f'unsafe archive path: {member.name}')
+                  if member.issym() or member.islnk():
+                      raise SystemExit(f'links forbidden in recovery archive: {member.name}')
+                  members.append({
+                      'name': member.name,
+                      'size': member.size,
+                      'type': member.type.decode('latin1') if isinstance(member.type, bytes) else str(member.type),
+                  })
+              tf.extractall(out)
+
+          manifest = {
+              'payload_parts': [p.as_posix() for p in parts],
+              'encoded_sha256': hashlib.sha256(encoded.encode()).hexdigest(),
+              'compressed_sha256': hashlib.sha256(compressed).hexdigest(),
+              'tar_sha256': hashlib.sha256(raw_tar).hexdigest(),
+              'member_count': len(members),
+              'members': members,
+          }
+          (repo / 'round16_recovered' / 'RECOVERY_MANIFEST.json').write_text(
+              json.dumps(manifest, indent=2, sort_keys=True) + '\n', encoding='utf-8'
+          )
+          print(json.dumps({k: manifest[k] for k in manifest if k != 'members'}, indent=2))
+          PY
+          find round16_recovered -type f -print0 | sort -z | xargs -0 sha256sum > round16_recovered/FILE_SHA256SUMS.txt
+          find round16_recovered/source -maxdepth 5 -type f | sort | sed -n '1,300p'
+
+      - name: Commit recovered source bundle to isolated review branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name theta-theory-review-bot
+          git config user.email review-bot@users.noreply.github.com
+          git add round16_recovered .github/workflows/recover-round16-source-for-review.yml
+          git commit -m 'Recover immutable Round-Sixteen source bundle for isolated review [skip ci]'
+          git push origin HEAD:refs/heads/review/round16-source-recovery-2026-09-01
