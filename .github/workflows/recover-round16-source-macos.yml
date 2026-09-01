@@ -22,49 +22,108 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Decode and safely extract immutable payload
+      - name: Decode, diagnose, and safely extract immutable payload
         shell: bash
         run: |
           set -euo pipefail
           rm -rf round16_recovered
           mkdir -p round16_recovered/source
           python3 - <<'PY'
-          import base64, hashlib, io, json, lzma, pathlib, tarfile
+          import base64, hashlib, io, json, lzma, pathlib, tarfile, traceback
+
           repo = pathlib.Path('.')
+          out_root = repo / 'round16_recovered'
+          out = out_root / 'source'
           parts = sorted((repo / '.round16').glob('payload.part-*'))
-          if len(parts) != 6:
-              raise SystemExit(f'expected six payload parts, found {len(parts)}')
-          encoded = ''.join(p.read_text(encoding='utf-8').strip() for p in parts)
-          if len(encoded) != 55200:
-              raise SystemExit(f'unexpected encoded length {len(encoded)}')
-          compressed = base64.b64decode(encoded, validate=True)
-          raw_tar = lzma.decompress(compressed)
-          out = repo / 'round16_recovered' / 'source'
+          diagnostics = []
           records = []
-          with tarfile.open(fileobj=io.BytesIO(raw_tar), mode='r:') as tf:
-              for m in tf.getmembers():
-                  target = (out / m.name).resolve()
-                  if out.resolve() not in target.parents and target != out.resolve():
-                      raise SystemExit(f'unsafe archive path: {m.name}')
-                  if m.issym() or m.islnk():
-                      raise SystemExit(f'links forbidden: {m.name}')
-                  records.append({'name': m.name, 'size': m.size})
-              tf.extractall(out)
+          extracted = False
+
+          diagnostics.append(f'part_count={len(parts)}')
+          raw_parts = []
+          for p in parts:
+              text = p.read_text(encoding='utf-8')
+              raw_parts.append(text)
+              diagnostics.append(
+                  f'{p.as_posix()}: bytes={p.stat().st_size} chars={len(text)} '
+                  f'strip={len(text.strip())} no_whitespace={len("".join(text.split()))}'
+              )
+
+          encoded = ''.join(''.join(text.split()) for text in raw_parts)
+          diagnostics.append(f'encoded_length={len(encoded)}')
+          diagnostics.append(f'encoded_sha256={hashlib.sha256(encoded.encode()).hexdigest()}')
+
+          compressed = b''
+          raw_payload = b''
+          error = None
+          try:
+              compressed = base64.b64decode(encoded, validate=True)
+              diagnostics.append(f'compressed_length={len(compressed)}')
+              diagnostics.append(f'compressed_sha256={hashlib.sha256(compressed).hexdigest()}')
+              diagnostics.append(f'compressed_prefix={compressed[:16].hex()}')
+              diagnostics.append(f'compressed_suffix={compressed[-16:].hex()}')
+              try:
+                  raw_payload = lzma.decompress(compressed, format=lzma.FORMAT_AUTO)
+              except Exception as first:
+                  diagnostics.append(f'lzma.decompress failed: {type(first).__name__}: {first}')
+                  with lzma.LZMAFile(io.BytesIO(compressed), mode='rb') as fh:
+                      raw_payload = fh.read()
+              diagnostics.append(f'decompressed_length={len(raw_payload)}')
+              diagnostics.append(f'decompressed_sha256={hashlib.sha256(raw_payload).hexdigest()}')
+              diagnostics.append(f'decompressed_prefix={raw_payload[:32].hex()}')
+
+              try:
+                  with tarfile.open(fileobj=io.BytesIO(raw_payload), mode='r:*') as tf:
+                      members = tf.getmembers()
+                      diagnostics.append(f'tar_member_count={len(members)}')
+                      for m in members:
+                          target = (out / m.name).resolve()
+                          if out.resolve() not in target.parents and target != out.resolve():
+                              raise RuntimeError(f'unsafe archive path: {m.name}')
+                          if m.issym() or m.islnk():
+                              raise RuntimeError(f'links forbidden: {m.name}')
+                          records.append({'name': m.name, 'size': m.size, 'type': m.type.decode('latin1') if isinstance(m.type, bytes) else str(m.type)})
+                      tf.extractall(out)
+                  extracted = True
+              except Exception as tar_error:
+                  diagnostics.append(f'tar extraction failed: {type(tar_error).__name__}: {tar_error}')
+                  try:
+                      decoded_text = raw_payload.decode('utf-8')
+                  except UnicodeDecodeError:
+                      (out_root / 'DECOMPRESSED_PAYLOAD.base64').write_text(
+                          base64.b64encode(raw_payload).decode('ascii') + '\n', encoding='ascii')
+                  else:
+                      (out_root / 'DECOMPRESSED_PAYLOAD.txt').write_text(decoded_text, encoding='utf-8')
+          except Exception as exc:
+              error = f'{type(exc).__name__}: {exc}'
+              diagnostics.append(f'payload recovery failed: {error}')
+              diagnostics.append(traceback.format_exc())
+
           manifest = {
+              'source_branch': 'revision/round16-referee-positive-closure-11paper-2026-09-01',
               'source_branch_head': '2901535c56013bb61ca4211d7b7bb2b35007fff0',
               'parts': [p.as_posix() for p in parts],
+              'encoded_length': len(encoded),
               'encoded_sha256': hashlib.sha256(encoded.encode()).hexdigest(),
-              'compressed_sha256': hashlib.sha256(compressed).hexdigest(),
-              'tar_sha256': hashlib.sha256(raw_tar).hexdigest(),
+              'compressed_length': len(compressed),
+              'compressed_sha256': hashlib.sha256(compressed).hexdigest() if compressed else None,
+              'decompressed_length': len(raw_payload),
+              'decompressed_sha256': hashlib.sha256(raw_payload).hexdigest() if raw_payload else None,
+              'extracted': extracted,
               'member_count': len(records),
               'members': records,
+              'error': error,
           }
-          (repo / 'round16_recovered' / 'RECOVERY_MANIFEST.json').write_text(
+          (out_root / 'RECOVERY_MANIFEST.json').write_text(
               json.dumps(manifest, indent=2, sort_keys=True) + '\n', encoding='utf-8')
-          for p in sorted(out.rglob('*')):
+          (out_root / 'RECOVERY_DIAGNOSTIC.txt').write_text(
+              '\n'.join(diagnostics) + '\n', encoding='utf-8')
+
+          for p in sorted(out_root.rglob('*')):
               if p.is_file():
                   print(p)
           PY
+
           python3 - <<'PY'
           import hashlib, pathlib
           root = pathlib.Path('round16_recovered')
@@ -75,12 +134,16 @@ jobs:
           (root/'FILE_SHA256SUMS.txt').write_text('\n'.join(lines)+'\n')
           PY
 
-      - name: Commit recovered files
+      - name: Commit recovery result or diagnostics
+        if: always()
         shell: bash
         run: |
           set -euo pipefail
           git config user.name theta-theory-review-bot
           git config user.email review-bot@users.noreply.github.com
           git add round16_recovered .github/workflows/recover-round16-source-macos.yml
-          git commit -m 'Recover immutable Round-Sixteen source bundle on macOS [skip ci]'
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m 'Record robust Round-Sixteen source recovery result [skip ci]'
           git push origin HEAD:refs/heads/review/round16-source-recovery-2026-09-01
