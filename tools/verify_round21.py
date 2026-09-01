@@ -34,8 +34,6 @@ REQUIRED_ROOT = [
     "REFEREE_ROUND20_RESPONSE.md",
 ]
 
-# Exact fragments encoding superseded proof mechanisms.  This scan is
-# restricted to the active TeX modules, so reports may discuss the old errors.
 FORBIDDEN = {
     "linear nonlinear-resolvent identity": r"R_\\lambda-R_\\mu\s*=",
     "negative Sobolev restriction by duality":
@@ -51,9 +49,9 @@ FORBIDDEN = {
 }
 
 MAIN_LABEL = {key: f"thm:r21-{key.lower()}-main" for key in PAPERS}
+DISPLAY_OPEN = re.compile(r"(?<!\\)\\\[")
+DISPLAY_CLOSE = re.compile(r"(?<!\\)\\\]")
 
-# Edges point from prerequisite to dependent node.  B2 is split logically into
-# its grand-canonical and microcanonical stages to expose any B1 cycle.
 NODES = [
     "A1", "A2", "A3", "A4", "B2-GC", "B1", "B2-MC", "B3", "B4",
     "C1", "C2", "D1",
@@ -102,13 +100,21 @@ def check_dependency_graph() -> None:
     print("dependency_order=" + " -> ".join(seen))
 
 
+def counts(line: str, begin: str, end: str) -> tuple[int, int]:
+    if begin == "\\[" and end == "\\]":
+        # TeX array row spacing ``\\\\[1mm]`` must not be mistaken for the
+        # display delimiter ``\\[``.  Count only a backslash not itself
+        # preceded by another backslash.
+        return len(DISPLAY_OPEN.findall(line)), len(DISPLAY_CLOSE.findall(line))
+    return line.count(begin), line.count(end)
+
+
 def check_balanced(text: str, name: str, begin: str, end: str) -> None:
     depth = 0
     events: list[tuple[int, int, int, int, str]] = []
     first_negative: tuple[int, str] | None = None
     for number, line in enumerate(text.splitlines(), start=1):
-        opens = line.count(begin)
-        closes = line.count(end)
+        opens, closes = counts(line, begin, end)
         if opens or closes:
             depth += opens - closes
             events.append((number, opens, closes, depth, line.strip()))
@@ -144,14 +150,11 @@ def check_transport_corruption(text: str, name: str) -> None:
     for label, token in suspicious.items():
         if token not in text:
             continue
-        for number, line in enumerate(text.splitlines(), start=1):
-            if token in line:
-                print(
-                    f"ROUND21_TRANSPORT_DIAGNOSTIC paper={name} "
-                    f"kind={label} line={number} text={line!r}",
-                    file=sys.stderr,
-                )
-        fail(f"{name}: source transport corruption detected ({label})")
+        line_number = text[: text.index(token)].count("\n") + 1
+        fail(
+            f"{name}: source transport corruption detected ({label}) "
+            f"near line {line_number}"
+        )
 
 
 def main() -> None:
@@ -184,9 +187,9 @@ def main() -> None:
             fail(f"{key}: fewer than three theorem environments")
         if proof_count < theorem_count:
             fail(f"{key}: fewer proof environments than theorem environments")
+        check_transport_corruption(text, key)
         check_balanced(text, key, "\\begin{proof}", "\\end{proof}")
         check_balanced(text, key, "\\[", "\\]")
-        check_transport_corruption(text, key)
         if re.search(r"\b(TODO|TBD|FIXME|PLACEHOLDER)\b", text, re.I):
             fail(f"{key}: placeholder token in active proof")
         response_text = response.read_text(encoding="utf-8")

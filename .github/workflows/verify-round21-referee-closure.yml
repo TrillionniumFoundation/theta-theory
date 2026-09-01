@@ -31,9 +31,12 @@ jobs:
       - name: Update manuscript wrappers
         run: python tools/update_round21_wrappers.py
 
+      - name: Apply the audited source-transport repair
+        run: python tools/repair_round21_sources.py
+
       - name: Run source and dependency gates
         run: |
-          python -m py_compile tools/update_round21_wrappers.py tools/verify_round21.py tools/write_round21_build_record.py
+          python -m py_compile tools/update_round21_wrappers.py tools/repair_round21_sources.py tools/verify_round21.py tools/write_round21_build_record.py
           python tools/verify_round21.py
 
       - name: Install TeX toolchain
@@ -51,13 +54,14 @@ jobs:
           python tools/verify_round21.py
           python tools/write_round21_build_record.py
 
-      - name: Commit rebuilt wrappers, PDFs, and records
+      - name: Commit repaired sources, wrappers, PDFs, and records
         shell: bash
         run: |
           set -euo pipefail
           git config user.name theta-theory-round21-bot
           git config user.email actions@users.noreply.github.com
-          git add papers/*/main.tex ROUND21_BUILD_SUMMARY.json ROUND21_REVISION_STATUS.md
+          git add papers/*/ROUND17_POSITIVE_CLOSURE.tex papers/*/main.tex \
+            ROUND21_BUILD_SUMMARY.json ROUND21_REVISION_STATUS.md
           git add -f papers/*/main.pdf
           if git diff --cached --quiet; then
             echo 'No generated Round-Twenty-One files changed.' >&2
