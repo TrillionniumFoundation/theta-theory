@@ -1,0 +1,33 @@
+name: export-round16-referee-tree
+
+on:
+  push:
+    branches:
+      - automation/export-round16-referee-tree-2026-09-01
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify and archive exact referee tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          git cat-file -e d3833aaa2db4bf0a13a67083f27ff23f28ab6e4f^{commit}
+          test "$(git rev-parse HEAD^)" = "d3833aaa2db4bf0a13a67083f27ff23f28ab6e4f"
+          git archive --format=tar.gz --prefix=theta-round16-referee/ -o theta-round16-referee-tree.tar.gz d3833aaa2db4bf0a13a67083f27ff23f28ab6e4f
+          sha256sum theta-round16-referee-tree.tar.gz > theta-round16-referee-tree.tar.gz.sha256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-round16-referee-tree
+          path: |
+            theta-round16-referee-tree.tar.gz
+            theta-round16-referee-tree.tar.gz.sha256
+          if-no-files-found: error
