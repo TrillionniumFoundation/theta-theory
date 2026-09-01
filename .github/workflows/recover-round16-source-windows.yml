@@ -18,7 +18,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Decode and safely extract Round-Sixteen archive
+      - name: Stream-decode and recover every complete tar member
         shell: bash
         run: |
           set -euo pipefail
@@ -26,16 +26,18 @@ jobs:
           mkdir -p round16_recovered/source
           python - <<'PY'
           import base64, hashlib, io, json, lzma, pathlib, tarfile, traceback
+
           root = pathlib.Path('.')
           out_root = root / 'round16_recovered'
           out = out_root / 'source'
           parts = sorted((root / '.round16').glob('payload.part-*'))
           notes=[]
-          members_out=[]
-          extracted=False
+          recovered=[]
+          incomplete=[]
           compressed=b''
           raw=b''
           error=None
+
           try:
               texts=[p.read_text(encoding='utf-8') for p in parts]
               for p,t in zip(parts,texts):
@@ -44,38 +46,67 @@ jobs:
               notes.append(f'parts={len(parts)} encoded_length={len(encoded)} encoded_sha256={hashlib.sha256(encoded.encode()).hexdigest()}')
               compressed=base64.b64decode(encoded, validate=True)
               notes.append(f'compressed_length={len(compressed)} compressed_sha256={hashlib.sha256(compressed).hexdigest()} prefix={compressed[:16].hex()}')
-              raw=lzma.decompress(compressed)
-              notes.append(f'decompressed_length={len(raw)} decompressed_sha256={hashlib.sha256(raw).hexdigest()} prefix={raw[:32].hex()}')
-              with tarfile.open(fileobj=io.BytesIO(raw), mode='r:*') as tf:
-                  members=tf.getmembers()
-                  notes.append(f'tar_member_count={len(members)}')
-                  for m in members:
-                      target=(out/m.name).resolve()
-                      if out.resolve() not in target.parents and target != out.resolve():
-                          raise RuntimeError(f'unsafe archive path: {m.name}')
-                      if m.issym() or m.islnk():
-                          raise RuntimeError(f'link forbidden: {m.name}')
-                      members_out.append({'name':m.name,'size':m.size,'type':str(m.type)})
-                  tf.extractall(out)
-              extracted=True
+
+              dec=lzma.LZMADecompressor(format=lzma.FORMAT_AUTO)
+              raw=dec.decompress(compressed)
+              notes.append(f'decompressed_partial_length={len(raw)} decompressed_sha256={hashlib.sha256(raw).hexdigest()}')
+              notes.append(f'lzma_eof={dec.eof} needs_input={dec.needs_input} unused_data={len(dec.unused_data)}')
+              (out_root/'PARTIAL_TAR_SHA256.txt').write_text(hashlib.sha256(raw).hexdigest()+'\n',encoding='ascii')
+
+              tf=tarfile.open(fileobj=io.BytesIO(raw), mode='r:')
+              while True:
+                  try:
+                      m=tf.next()
+                  except Exception as exc:
+                      incomplete.append({'stage':'next','error':f'{type(exc).__name__}: {exc}'})
+                      notes.append(f'tar iteration stopped: {type(exc).__name__}: {exc}')
+                      break
+                  if m is None:
+                      break
+                  target=(out/m.name).resolve()
+                  if out.resolve() not in target.parents and target != out.resolve():
+                      raise RuntimeError(f'unsafe archive path: {m.name}')
+                  if m.issym() or m.islnk():
+                      recovered.append({'name':m.name,'size':m.size,'kind':'link-skipped'})
+                      continue
+                  if m.isdir():
+                      target.mkdir(parents=True,exist_ok=True)
+                      recovered.append({'name':m.name,'size':0,'kind':'directory'})
+                      continue
+                  if not m.isfile():
+                      recovered.append({'name':m.name,'size':m.size,'kind':'special-skipped'})
+                      continue
+                  try:
+                      fh=tf.extractfile(m)
+                      data=fh.read() if fh is not None else b''
+                  except Exception as exc:
+                      incomplete.append({'name':m.name,'expected_size':m.size,'error':f'{type(exc).__name__}: {exc}'})
+                      notes.append(f'incomplete member {m.name}: {type(exc).__name__}: {exc}')
+                      break
+                  if len(data)!=m.size:
+                      incomplete.append({'name':m.name,'expected_size':m.size,'actual_size':len(data),'error':'short read'})
+                      notes.append(f'incomplete member {m.name}: expected={m.size} actual={len(data)}')
+                      break
+                  target.parent.mkdir(parents=True,exist_ok=True)
+                  target.write_bytes(data)
+                  recovered.append({'name':m.name,'size':m.size,'kind':'file','sha256':hashlib.sha256(data).hexdigest()})
           except Exception as exc:
               error=f'{type(exc).__name__}: {exc}'
               notes.append(error)
               notes.append(traceback.format_exc())
-              if raw:
-                  try:
-                      (out_root/'DECOMPRESSED_PAYLOAD.txt').write_text(raw.decode('utf-8'),encoding='utf-8')
-                  except UnicodeDecodeError:
-                      (out_root/'DECOMPRESSED_PAYLOAD.base64').write_text(base64.b64encode(raw).decode('ascii')+'\n',encoding='ascii')
+
           manifest={
               'source_branch':'revision/round16-referee-positive-closure-11paper-2026-09-01',
               'source_head':'2901535c56013bb61ca4211d7b7bb2b35007fff0',
               'parts':[p.as_posix() for p in parts],
               'compressed_length':len(compressed),
-              'decompressed_length':len(raw),
-              'extracted':extracted,
-              'member_count':len(members_out),
-              'members':members_out,
+              'compressed_sha256':hashlib.sha256(compressed).hexdigest() if compressed else None,
+              'partial_decompressed_length':len(raw),
+              'partial_decompressed_sha256':hashlib.sha256(raw).hexdigest() if raw else None,
+              'lzma_complete':False,
+              'recovered_entry_count':len(recovered),
+              'recovered':recovered,
+              'incomplete':incomplete,
               'error':error,
           }
           (out_root/'RECOVERY_MANIFEST.json').write_text(json.dumps(manifest,indent=2,sort_keys=True)+'\n',encoding='utf-8')
@@ -85,9 +116,12 @@ jobs:
               if p.is_file() and p.name!='FILE_SHA256SUMS.txt':
                   lines.append(f'{hashlib.sha256(p.read_bytes()).hexdigest()}  {p.as_posix()}')
           (out_root/'FILE_SHA256SUMS.txt').write_text('\n'.join(lines)+'\n',encoding='utf-8')
+          print(f'recovered files: {sum(1 for r in recovered if r.get("kind")=="file")}')
+          for r in recovered:
+              if r.get('kind')=='file': print(r['name'], r['size'])
           PY
 
-      - name: Commit recovery result
+      - name: Commit partial recovery result
         if: always()
         shell: bash
         run: |
@@ -96,5 +130,5 @@ jobs:
           git config user.email review-bot@users.noreply.github.com
           git add round16_recovered .github/workflows/recover-round16-source-windows.yml
           if git diff --cached --quiet; then exit 0; fi
-          git commit -m 'Record Windows Round-Sixteen source recovery result [skip ci]'
+          git commit -m 'Record partial Round-Sixteen tar recovery [skip ci]'
           git push origin HEAD:refs/heads/review/round16-source-recovery-windows-2026-09-01
