@@ -1,0 +1,89 @@
+name: extract-round15-review-source-arm
+
+on:
+  push:
+    branches:
+      - review/round15-payload-rescue-2026-09-01
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  extract:
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download validated historical-corpus artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/r15-artifact /tmp/r15-expanded /tmp/r15-unpacked /tmp/r15-out
+          python - <<'PY'
+          import os, pathlib, urllib.request
+          repo = 'TrillionniumFoundation/theta-theory'
+          artifact_id = 9782533018
+          token = os.environ['GH_TOKEN']
+          req = urllib.request.Request(
+              f'https://api.github.com/repos/{repo}/actions/artifacts/{artifact_id}/zip',
+              headers={
+                  'Accept': 'application/vnd.github+json',
+                  'Authorization': f'Bearer {token}',
+                  'X-GitHub-Api-Version': '2022-11-28',
+                  'User-Agent': 'theta-round15-review-extractor',
+              },
+          )
+          with urllib.request.urlopen(req, timeout=900) as response:
+              data = response.read()
+          path = pathlib.Path('/tmp/r15-artifact/source.zip')
+          path.write_bytes(data)
+          print('downloaded', len(data), path)
+          PY
+          unzip -q /tmp/r15-artifact/source.zip -d /tmp/r15-expanded
+
+      - name: Locate and extract the Round Fifteen source root
+        shell: bash
+        run: |
+          set -euo pipefail
+          find /tmp/r15-expanded -type f \( -name '*.tar.xz' -o -name '*.tar.gz' -o -name '*.tgz' -o -name '*.tar' \) -print0 | while IFS= read -r -d '' archive; do
+            dest="/tmp/r15-unpacked/$(basename "$archive" | tr '. ' '__')"
+            mkdir -p "$dest"
+            case "$archive" in
+              *.tar.xz) tar -xJf "$archive" -C "$dest" ;;
+              *.tar.gz|*.tgz) tar -xzf "$archive" -C "$dest" ;;
+              *.tar) tar -xf "$archive" -C "$dest" ;;
+            esac
+          done
+          SCRIPT="$(find /tmp/r15-expanded /tmp/r15-unpacked -type f -path '*/tools/materialize_round15_referee.py' | head -1)"
+          test -n "$SCRIPT"
+          ROOT="${SCRIPT%/tools/materialize_round15_referee.py}"
+          test -d "$ROOT/revision/round15-referee-final"
+          echo "ROOT=$ROOT" >> "$GITHUB_ENV"
+          find "$ROOT/revision/round15-referee-final" -maxdepth 1 -type f -print | sort
+
+      - name: Build compact review bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/r15-out/revision /tmp/r15-out/tools
+          cp -a "$ROOT/revision/round15-referee-final" /tmp/r15-out/revision/
+          find "$ROOT/tools" -maxdepth 1 -type f -name '*round15*' -exec cp -a {} /tmp/r15-out/tools/ \;
+          for f in "$ROOT"/ROUND15_*.json "$ROOT"/ROUND15_*.md "$ROOT"/REFEREE_ROUND15_RESPONSE.md; do
+            [ -e "$f" ] && cp -a "$f" /tmp/r15-out/
+          done
+          tar -cJf /tmp/round15-review-source.tar.xz -C /tmp/r15-out .
+          sha256sum /tmp/round15-review-source.tar.xz | tee /tmp/round15-review-source.sha256
+          du -h /tmp/round15-review-source.tar.xz
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: round15-compact-review-source-arm
+          path: |
+            /tmp/round15-review-source.tar.xz
+            /tmp/round15-review-source.sha256
+          if-no-files-found: error
+          retention-days: 7
