@@ -1,0 +1,45 @@
+name: Finalize Round 31 source once
+
+on:
+  push:
+    branches:
+      - revision/round31-referee-positive-closure-11paper-2026-09-03
+    paths:
+      - 'ROUND31_PREAMBLE.tex'
+      - 'papers/A4-history-memory-universal-pressure/ROUND31_POSITIVE_CLOSURE.tex'
+      - 'tools/verify_round31.py'
+      - 'tools/finalize_round31_once.py'
+      - '.github/workflows/finalize-round31-once.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  finalize-active-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: revision/round31-referee-positive-closure-11paper-2026-09-03
+          fetch-depth: 0
+      - name: Apply exact final corrections
+        run: python3 tools/finalize_round31_once.py
+      - name: Validate source graph before commit
+        run: python3 tools/verify_round31.py
+      - name: Commit finalized source when needed
+        shell: bash
+        run: |
+          if git diff --quiet --exit-code && git diff --cached --quiet --exit-code; then
+            echo 'No finalizer changes remain.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add ROUND31_PREAMBLE.tex \
+                  papers/A4-history-memory-universal-pressure/ROUND31_POSITIVE_CLOSURE.tex \
+                  tools/verify_round31.py \
+                  .round31-finalized
+          git commit -m 'Round 31: finalize common domains and regression gates'
+          git push origin HEAD:revision/round31-referee-positive-closure-11paper-2026-09-03
