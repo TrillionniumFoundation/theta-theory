@@ -1,0 +1,94 @@
+name: Publish Round 31 verification evidence
+
+on:
+  push:
+    branches:
+      - revision/round31-referee-positive-closure-11paper-2026-09-03
+    paths:
+      - '.round31-finalized'
+      - '.round31-hardened'
+      - 'papers/**/ROUND31_POSITIVE_CLOSURE.tex'
+      - 'papers/**/ROUND31_REVISION.tex'
+      - 'papers/**/main.tex'
+      - 'ROUND31_*'
+      - 'AUTHOR_RESPONSE_ROUND30.md'
+      - 'tools/verify_round31.py'
+      - 'tools/finalize_round31_once.py'
+      - 'tools/harden_round31_once.py'
+      - '.github/workflows/publish-round31-verification.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: round31-publish-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  verify-build-render-and-record:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: revision/round31-referee-positive-closure-11paper-2026-09-03
+          fetch-depth: 0
+      - name: Require fully materialized source
+        run: |
+          python3 tools/finalize_round31_once.py
+          python3 tools/harden_round31_once.py
+          git diff --exit-code
+      - name: Install TeX and PDF tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            latexmk texlive-latex-base texlive-latex-recommended \
+            texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+      - name: Run fail-closed source regressions and clean builds
+        env:
+          TERM: xterm
+        run: python3 tools/verify_round31.py --build
+      - name: Write exact remote verification evidence
+        shell: bash
+        run: |
+          DOSSIER_PAGES=$(pdfinfo ROUND31_REVISION_DOSSIER.pdf | awk '/^Pages:/{print $2}')
+          cat > ROUND31_REMOTE_VERIFICATION.md <<EOF
+          # Round-Thirty-One Remote Verification Evidence
+
+          - Verified source commit: \`${GITHUB_SHA}\`
+          - Workflow run: \`${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}\`
+          - Branch: \`${GITHUB_REF_NAME}\`
+          - Active sources: 11
+          - Standalone clean builds: 11
+          - Consolidated dossier clean build: pass
+          - Consolidated dossier pages: ${DOSSIER_PAGES}
+          - Source/counterexample verifier: pass
+          - First-page PDF render checks: 12/12 pass
+          - Detailed generated record: \`ROUND31_CI_VERIFICATION.json\`
+
+          This evidence records reproducibility, active-source identity, and the executable regressions. It is not an independent specialist referee certificate.
+          EOF
+      - name: Upload next-review manuscript artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: theta-round31-verified-next-review-manuscripts
+          if-no-files-found: error
+          path: |
+            ROUND31_REVISION_DOSSIER.pdf
+            papers/*/ROUND31_REVISION.pdf
+            papers/*/main.pdf
+            ROUND31_CI_VERIFICATION.json
+            ROUND31_REMOTE_VERIFICATION.md
+      - name: Commit verification evidence
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add ROUND31_CI_VERIFICATION.json ROUND31_REMOTE_VERIFICATION.md
+          if git diff --cached --quiet --exit-code; then
+            echo 'Verification evidence is unchanged.'
+            exit 0
+          fi
+          git commit -m 'Round 31: record exact remote build and regression evidence [skip ci]'
+          git push origin HEAD:revision/round31-referee-positive-closure-11paper-2026-09-03
