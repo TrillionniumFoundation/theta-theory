@@ -1,8 +1,8 @@
 # Round-Twenty-Three CI diagnostic
 
 **Stage:** source/citation/dependency/mathematical-regression verifier  
-**Source commit:** `858760ee456fbf0b5c668028aec81e4518668961`  
-**Run:** `33591152290`
+**Source commit:** `1280e919d1564f3889b2e68ad39d8bcc3af861f8`  
+**Run:** `33592084886`
 
 ```text
 ROUND23_VERIFY_FAIL: B2: control character in source
