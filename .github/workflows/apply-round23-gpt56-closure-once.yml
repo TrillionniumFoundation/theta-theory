@@ -52,6 +52,15 @@ jobs:
           patched_actual = hashlib.sha256(source).hexdigest()
           if patched_actual != patched_expected:
               raise SystemExit(f'patched source digest mismatch: {patched_actual}')
+          regex_old = base64.b64decode('ICAgIHRleHQsIG4gPSBwYXR0ZXJuLnN1Ym4ocmVwbGFjZW1lbnQsIHRleHQsIGNvdW50PTEpCg==')
+          regex_new = base64.b64decode('ICAgIHRleHQsIG4gPSBwYXR0ZXJuLnN1Ym4obGFtYmRhIF9tYXRjaDogcmVwbGFjZW1lbnQsIHRleHQsIGNvdW50PTEpCg==')
+          if source.count(regex_old) != 1:
+              raise SystemExit('literal regex replacement patch site is not unique')
+          source = source.replace(regex_old, regex_new, 1)
+          final_expected = '928d9281a4723b642d52abbe3fbc8fabcc834db4aa9aaa35c61c8d69c06f0854'
+          final_actual = hashlib.sha256(source).hexdigest()
+          if final_actual != final_expected:
+              raise SystemExit(f'final source digest mismatch: {final_actual}')
           target = Path('tools/apply_round23_gpt56_closure.py')
           target.write_bytes(source)
           PY
