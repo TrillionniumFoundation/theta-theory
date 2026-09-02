@@ -1,0 +1,103 @@
+name: verify-publish-round23-referee
+
+on:
+  push:
+    branches:
+      - revision/round23-referee-positive-closure-11paper-2026-09-02
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: verify-publish-round23-referee
+  cancel-in-progress: false
+
+jobs:
+  verify-build-publish:
+    if: ${{ github.event_name == 'workflow_dispatch' || !contains(github.event.head_commit.message || '', '[skip ci]') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+
+    steps:
+      - name: Check out the exact revision branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run source, citation, dependency, and mathematical regression gates
+        run: |
+          set -euo pipefail
+          python -m py_compile tools/verify_round23.py tools/write_round23_build_record.py
+          python tools/verify_round23.py
+
+      - name: Install the TeX toolchain
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y \
+            latexmk \
+            biber \
+            lmodern \
+            texlive-latex-base \
+            texlive-latex-recommended \
+            texlive-latex-extra \
+            texlive-fonts-recommended \
+            texlive-bibtex-extra
+
+      - name: Clean-build all eleven manuscripts
+        run: |
+          set -euo pipefail
+          make clean
+          make all
+
+      - name: Re-run fail-closed gates and write exact build records
+        run: |
+          set -euo pipefail
+          python tools/verify_round23.py
+          python tools/write_round23_build_record.py
+
+      - name: Commit generated regression evidence, PDFs, and hashes
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name theta-theory-round23-bot
+          git config user.email actions@users.noreply.github.com
+          git add \
+            ROUND23_REGRESSION_RESULTS.json \
+            ROUND23_BUILD_SUMMARY.json \
+            ROUND23_REVISION_STATUS.md
+          git add -f papers/*/main.pdf
+          if git diff --cached --quiet; then
+            echo 'Generated Round-Twenty-Three artifacts already match the branch.'
+          else
+            git commit -m 'Build all eleven Round-Twenty-Three manuscripts [skip ci]'
+            git push origin HEAD:revision/round23-referee-positive-closure-11paper-2026-09-02
+          fi
+
+      - name: Upload the next-round referee packet
+        uses: actions/upload-artifact@v4
+        with:
+          name: theta-theory-round23-referee-packet-${{ github.run_id }}
+          path: |
+            papers/*/main.pdf
+            papers/*/ROUND23_POSITIVE_CLOSURE.tex
+            papers/*/AUTHOR_RESPONSE_ROUND22.md
+            REFEREE_REPORT_ROUND22_GPT56_PRO_HARSH.md
+            REFEREE_ROUND22_RESPONSE.md
+            ROUND23_HISTORICAL_DERIVATION_AUDIT.md
+            ROUND23_PROOF_DEPENDENCY_LEDGER.md
+            ROUND23_MATHEMATICAL_REGRESSION.md
+            ROUND23_INTERNAL_HARSH_REREVIEW.md
+            ROUND23_SOURCE_MANIFEST.json
+            ROUND23_REGRESSION_RESULTS.json
+            ROUND23_BUILD_SUMMARY.json
+            ROUND23_REVISION_STATUS.md
+          if-no-files-found: error
+          retention-days: 90
