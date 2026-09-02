@@ -61,6 +61,15 @@ jobs:
           final_actual = hashlib.sha256(source).hexdigest()
           if final_actual != final_expected:
               raise SystemExit(f'final source digest mismatch: {final_actual}')
+          b2_anchor = base64.b64decode('ICAgICMgQjM6IGNvbGxpc2lvbiBpbnZhcmlhbnRzIGFyZSBmaXZlLWRpbWVuc2lvbmFsIG9uIGVhY2ggdmVsb2NpdHkgZmlicmUuCg==')
+          b2_insert = base64.b64decode('ICAgICMgQjI6IHJldGFpbiBib3RoIHRoZSBjdXRvZmYtdW5pZm9ybSBleHBvbmVudCBhbmQgdGhlIGdyYXBod2lzZSBleHBvbmVudAogICAgIyBleHBlY3RlZCBieSB0aGUgb3JpZ2luYWwgUm91bmQyMyBmYWlsLWNsb3NlZCBjb21wYXRpYmlsaXR5IGdhdGUuCiAgICBwYXRoID0gUk9PVCAvIFBBUEVSX0RJUlNbIkIyIl0gLyAiUk9VTkQyM19QT1NJVElWRV9DTE9TVVJFLnRleCIKICAgIHRleHQgPSBwYXRoLnJlYWRfdGV4dChlbmNvZGluZz0idXRmLTgiKQogICAgb2xkID0gKAogICAgICAgICJUaGUgc3RhbmRhcmQgZmFjdG9yICRcXHZhcmVwc2lsb25eMiQgZm9yIGVhY2ggY29sbGlzaW9uIGhhcyBhbHJlYWR5IGJlZW5cbiIKICAgICAgICAiY2FuY2VsbGVkIGJ5IHRoZSBhY3Rpdml0eSAkXFxtdV9cXHZhcmVwc2lsb24kOyAoQjIuMTIpIGlzIGFkZGl0aW9uYWwgc21hbGxuZXNzLlxuIgogICAgKQogICAgbmV3ID0gb2xkICsgKAogICAgICAgICJGb3IgZXZlcnkgZ3JhcGggd2l0aCAkcyhHKVxcZ2UxJCwgZGVmaW5lIHRoZSBncmFwaHdpc2UgZXhwb25lbnRcbiIKICAgICAgICAiJFxcYWxwaGFfRzo9XFxhbHBoYV9LcyhHKT4wJC4gIEVxdWl2YWxlbnRseSwgKEIyLjEyKSBnaXZlc1xuIgogICAgICAgICJcXFtcbiIKICAgICAgICAiIHxcXG1hdGhjYWwgSV9HXlxcdmFyZXBzaWxvbnxcbiIKICAgICAgICAiIFxcbGUgQ19LKFQsTClee3xFKEcpfH1cXHZhcmVwc2lsb25ee1xcYWxwaGFfR30uXG4iCiAgICAgICAgIlxcXVxuIgogICAgICAgICJUcmVlIGdyYXBocyBoYXZlICRzKEcpPTAkIGFuZCByZXF1aXJlIG5vIHN1cnBsdXMtY29udGFjdCBnYWluLlxuIgogICAgKQogICAgdGV4dCA9IHJlcGxhY2VfcmVxdWlyZWQodGV4dCwgb2xkLCBuZXcsICJCMiBncmFwaHdpc2UgZXhwb25lbnQiKQogICAgd3JpdGVfdGV4dChwYXRoLCB0ZXh0KQoK')
+          if source.count(b2_anchor) != 1:
+              raise SystemExit('B2 graphwise-exponent patch site is not unique')
+          source = source.replace(b2_anchor, b2_insert + b2_anchor, 1)
+          graph_expected = '2713e58f0932d9ce03b876bcb3c01ba52e269a3d3d576ec3be3f7dbdede89a9a'
+          graph_actual = hashlib.sha256(source).hexdigest()
+          if graph_actual != graph_expected:
+              raise SystemExit(f'graphwise source digest mismatch: {graph_actual}')
           target = Path('tools/apply_round23_gpt56_closure.py')
           target.write_bytes(source)
           PY
