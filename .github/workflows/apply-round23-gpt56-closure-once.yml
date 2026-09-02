@@ -43,6 +43,15 @@ jobs:
           actual = hashlib.sha256(source).hexdigest()
           if actual != expected:
               raise SystemExit(f'payload digest mismatch: {actual}')
+          old = base64.b64decode('ICAgIGZvciBiYWQsIGdvb2QgaW4gcmVwYWlyczoKICAgICAgICBkYXRhID0gZGF0YS5yZXBsYWNlKGJhZCwgZ29vZCkKICAgIHJlbWFpbmluZyA9IFsoaSwgYikgZm9yIGksIGIgaW4gZW51bWVyYXRlKGRhdGEpIGlmIChiIDwgMzIgYW5kIGIgIT0gMTApIG9yIGIgPT0gMTI3XQo=')
+          new = base64.b64decode('ICAgIGZvciBiYWQsIGdvb2QgaW4gcmVwYWlyczoKICAgICAgICBkYXRhID0gZGF0YS5yZXBsYWNlKGJhZCwgZ29vZCkKICAgICMgUHl0aG9uIHN0cmluZy1lc2NhcGUgZGFtYWdlIG1hcHMgVGVYIGNvbW1hbmRzIGJlZ2lubmluZyBpbiBhLCBiLCB2LCBmLAogICAgIyBvciByIHRvIEJFTC9CUy9WVC9GRi9DUi4gIFRoZXNlIGJ5dGVzIGFyZSBuZXZlciB2YWxpZCBtYW51c2NyaXB0CiAgICAjIGNvbnRlbnQ7IHJlc3RvcmUgdGhlIG1pc3NpbmcgY29tbWFuZCBwcmVmaXggZ2VuZXJpY2FsbHkgYWZ0ZXIgdGhlCiAgICAjIHByZWNpc2UgcmVwYWlycyBhYm92ZS4gIFRhYnMgcmVtYWluIGNvbnRleHQtY2hlY2tlZCBiZWNhdXNlIGxpdGVyYWwKICAgICMgaW5kZW50YXRpb24gdGFicyBhcmUgcG9zc2libGUuCiAgICBkYXRhID0gZGF0YS5yZXBsYWNlKGIiXHJcbiIsIGIiXG4iKQogICAgZm9yIGNvZGUsIGxldHRlciBpbiAoKDcsIGIiYSIpLCAoOCwgYiJiIiksICgxMSwgYiJ2IiksICgxMiwgYiJmIiksICgxMywgYiJyIikpOgogICAgICAgIGRhdGEgPSBkYXRhLnJlcGxhY2UoYnl0ZXMoW2NvZGVdKSwgYiJcXCIgKyBsZXR0ZXIpCiAgICByZW1haW5pbmcgPSBbKGksIGIpIGZvciBpLCBiIGluIGVudW1lcmF0ZShkYXRhKSBpZiAoYiA8IDMyIGFuZCBiICE9IDEwKSBvciBiID09IDEyN10K')
+          if source.count(old) != 1:
+              raise SystemExit('control-byte repair patch site is not unique')
+          source = source.replace(old, new, 1)
+          patched_expected = '06eb339da6c75896bec5682334814071246eb4137c84b6d63baaf678bd86d743'
+          patched_actual = hashlib.sha256(source).hexdigest()
+          if patched_actual != patched_expected:
+              raise SystemExit(f'patched source digest mismatch: {patched_actual}')
           target = Path('tools/apply_round23_gpt56_closure.py')
           target.write_bytes(source)
           PY
