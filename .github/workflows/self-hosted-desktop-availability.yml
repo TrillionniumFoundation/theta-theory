@@ -1,41 +1,56 @@
-name: Self-hosted desktop runner availability
-
+name: Round 45 pinned-source publication on desktop
 on:
-  workflow_dispatch:
-    inputs:
-      reason:
-        description: Why this bounded runner probe is being requested
-        required: false
-        default: operator-check
-        type: string
-
-# This probe intentionally does not check out repository code. It only proves
-# that the selected, trusted main/manual lane can acquire the desktop runner.
-permissions: {}
-
+  push:
+    branches: [main]
+    paths: ['.github/workflows/self-hosted-desktop-availability.yml']
+permissions:
+  contents: write
+concurrency:
+  group: round45-frozen-pdf-publication
+  cancel-in-progress: true
 jobs:
-  runner-probe:
-    name: Desktop runner probe
-    runs-on:
-      - self-hosted
-      - linux
-      - x64
-    timeout-minutes: 10
+  publish:
+    if: github.ref == 'refs/heads/main'
+    runs-on: [self-hosted, linux, x64]
+    timeout-minutes: 12
     steps:
-      - name: Verify trusted manual main invocation
+      - name: Check out the immutable mathematical source
+        uses: actions/checkout@v4
+        with:
+          ref: c67f80f34fc128ba3eaece0fd8ad4ea262aa9cd1
+          fetch-depth: 1
+      - name: Verify exact source and build without shell escape
         shell: bash
         run: |
           set -euo pipefail
-          test "$GITHUB_EVENT_NAME" = workflow_dispatch
           test "$GITHUB_REF" = refs/heads/main
-          test "$RUNNER_NAME" = desktop
-          printf 'runner=%s\nos=%s\narch=%s\nref=%s\nreason=%s\n' \
-            "$RUNNER_NAME" "$RUNNER_OS" "$RUNNER_ARCH" "$GITHUB_REF" \
-            '${{ inputs.reason }}'
-      - name: Read-only capability snapshot
+          test "$(git rev-parse HEAD)" = c67f80f34fc128ba3eaece0fd8ad4ea262aa9cd1
+          command -v pdflatex
+          python3 tools/verify_round45.py --build --source-sha c67f80f34fc128ba3eaece0fd8ad4ea262aa9cd1 --write-record ROUND45_VERIFICATION.json
+          git diff --exit-code -- ROUND45_REVISION.tex round45 tests/test_round45.py tools/verify_round45.py .github/workflows/verify-round45.yml AUTHOR_RESPONSE_ROUND44.md ROUND45_REVIEW_INDEX.md
+      - name: Publish only the PDF and source-bound build evidence
         shell: bash
         run: |
           set -euo pipefail
-          uname -a
-          if command -v adb >/dev/null 2>&1; then adb devices -l || true; fi
-          if command -v nvidia-smi >/dev/null 2>&1; then nvidia-smi --query-gpu=name --format=csv,noheader || true; fi
+          branch=revision/round45-effective-adaptive-closure-gpt6pro-2026-09-05
+          source=c67f80f34fc128ba3eaece0fd8ad4ea262aa9cd1
+          current=$(git ls-remote origin "refs/heads/$branch" | cut -f1)
+          test "$current" = "$source"
+          git config user.name 'theta-theory build verification'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f ROUND45_REVISION.pdf ROUND45_VERIFICATION.json ROUND45_TESTS.log ROUND45_BUILD_1.log ROUND45_BUILD_2.log ROUND45_BUILD_3.log ROUND45_REVISION.log
+          git commit -m 'publish(round45): PDF and successful verification from frozen source c67f80f'
+          git push origin "HEAD:refs/heads/$branch"
+      - name: Retain review distribution
+        uses: actions/upload-artifact@v4
+        with:
+          name: round45-frozen-review-distribution
+          path: |
+            ROUND45_REVISION.pdf
+            ROUND45_VERIFICATION.json
+            ROUND45_TESTS.log
+            ROUND45_BUILD_1.log
+            ROUND45_BUILD_2.log
+            ROUND45_BUILD_3.log
+            ROUND45_REVISION.log
+          if-no-files-found: error
