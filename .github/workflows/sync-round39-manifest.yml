@@ -1,0 +1,87 @@
+name: Synchronize Round 39 source manifest
+
+on:
+  push:
+    branches:
+      - 'revision/round39-adaptive-jacobi-identification-gpt56pro-2026-09-04'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+
+      - name: Regenerate exact source manifest
+        run: |
+          python3 - <<'PY'
+          import hashlib
+          import json
+          from pathlib import Path
+
+          root = Path('.')
+          paths = [
+              'ROUND39_REVISION.tex',
+              'round39/preamble.tex',
+              'round39/introduction.tex',
+              'round39/triangular.tex',
+              'round39/lattice.tex',
+              'round39/filter_memory.tex',
+              'round39/infinite_jacobi.tex',
+              'round39/preparations_verification.tex',
+              'round39/appendix_uniformity.tex',
+              'round39/references.tex',
+              'AUTHOR_RESPONSE_ROUND38.md',
+              'ROUND39_REVIEW_INDEX.md',
+              'ROUND39_READY_FOR_REVIEW.md',
+              'round39/HISTORICAL_REUSE.md',
+              'round39/PROOF_LEDGER.json',
+              'ROUND39_LOCAL_VERIFICATION.json',
+              'tools/verify_round39.py',
+              'tests/test_round39.py',
+              '.github/workflows/verify-round39.yml',
+              '.github/workflows/sync-round39-manifest.yml',
+          ]
+          entries = []
+          for relative in paths:
+              data = (root / relative).read_bytes()
+              entries.append({
+                  'path': relative,
+                  'bytes': len(data),
+                  'sha256': hashlib.sha256(data).hexdigest(),
+              })
+          manifest = {
+              'source_set': 'round39-positive-revision',
+              'base_revision': 'revision/round35-mechanical-identification-2026-09-03',
+              'controlling_report': 'REFEREE_REPORT_ROUND38_GPT56_PRO_ADVERSARIAL.md',
+              'reviewed_head': 'bca291f85e47916cc5f089c0c01350f0c0c6f3b0',
+              'review_commit': '39d9622406d4a50680992836ee1f70e970d6d627',
+              'hash': 'sha256',
+              'generated_by': '.github/workflows/sync-round39-manifest.yml',
+              'files': entries,
+          }
+          Path('round39/SOURCE_MANIFEST.json').write_text(
+              json.dumps(manifest, indent=2, sort_keys=False) + '\n',
+              encoding='utf-8',
+          )
+          PY
+
+      - name: Commit synchronized manifest when needed
+        run: |
+          if git diff --quiet -- round39/SOURCE_MANIFEST.json; then
+            echo 'Manifest already synchronized.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add round39/SOURCE_MANIFEST.json
+          git commit -m 'ci(round39): synchronize exact source manifest'
+          git push origin HEAD:${{ github.ref_name }}
