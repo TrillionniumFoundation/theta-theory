@@ -65,7 +65,8 @@ tri_path = R41 / "triangular.tex"
 tri = tri_path.read_text(encoding="utf-8")
 tri = replace_once(
     tri,
-    r"""The true transient cross term is at most
+    r"""The
+true transient cross term is at most
 \(B\sum_i d_i\abs{\theta-\theta_0}\), and""",
     r"""Because \(\abs{d_i(\theta)}\le B\abs{\theta-\theta_0}\), the true
 transient cross term is at most

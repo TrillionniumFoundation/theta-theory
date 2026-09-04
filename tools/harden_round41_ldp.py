@@ -197,7 +197,7 @@ For every \(\eta>0\), the open set
 mass by full support.  Thus
 \[
  \frac1n\log Z_n\ge-\eta-
- \norm{\ell_n+I_{\beta_0}}_\infty+rac1n\log\Pi(G_\eta),
+ \norm{\ell_n+I_{\beta_0}}_\infty+\frac1n\log\Pi(G_\eta),
 \]
 and letting first \(n\to\infty\), then \(\eta\downarrow0\), proves
 \begin{equation}
