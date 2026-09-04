@@ -16,7 +16,10 @@ concurrency:
 jobs:
   materialize:
     if: github.actor != 'github-actions[bot]'
-    runs-on: ubuntu-latest
+    runs-on:
+      - self-hosted
+      - linux
+      - x64
     timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
@@ -93,8 +96,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-fonts-recommended lmodern
+          if ! command -v pdflatex >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-fonts-recommended lmodern
+          fi
 
       - name: Run exact source and algebra tests
         shell: bash
