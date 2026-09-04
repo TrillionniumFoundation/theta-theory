@@ -79,6 +79,12 @@ jobs:
           python3 tools/harden_round41_ldp.py
           python3 tools/materialize_round43.py
 
+      - name: Verify inherited Round 41 object before retiring legacy writers
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest -v tests/test_round41.py
+
       - name: Remove staging payload and every source-writing workflow
         shell: bash
         run: |
@@ -106,11 +112,10 @@ jobs:
             sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-fonts-recommended lmodern
           fi
 
-      - name: Run exact source and algebra tests
+      - name: Run Round 43 source and algebra tests on the frozen object
         shell: bash
         run: |
           set -euo pipefail
-          python3 -m unittest -v tests/test_round41.py
           python3 -m unittest -v tests/test_round43.py
 
       - name: Build the exact materialized manuscript twice
