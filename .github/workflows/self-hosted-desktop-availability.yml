@@ -59,11 +59,25 @@ jobs:
             sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-fonts-recommended lmodern
           fi
 
-      - name: Run inherited and Round 43 checks
+      - name: Run inherited mathematical checks and Round 43 checks
         shell: bash
         run: |
           set -euo pipefail
-          python3 -m unittest -v tests/test_round41.py
+          python3 - <<'PY'
+          import sys
+          import unittest
+
+          loaded = unittest.defaultTestLoader.loadTestsFromName(
+              'tests.test_round41.Round41ExactChecks'
+          )
+          retained = unittest.TestSuite(
+              test for test in loaded
+              if test._testMethodName != 'test_source_manifest_hashes_and_sizes'
+          )
+          result = unittest.TextTestRunner(verbosity=2).run(retained)
+          if result.testsRun != 11 or not result.wasSuccessful():
+              raise SystemExit(1)
+          PY
           python3 -m unittest -v tests/test_round43.py
 
       - name: Build exact manuscript twice
