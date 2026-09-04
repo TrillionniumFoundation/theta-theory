@@ -1,0 +1,25 @@
+name: Read-only Round 45 source export
+on:
+  push:
+    branches: ['work/round45-source-and-build-2026-09-05']
+permissions:
+  contents: read
+jobs:
+  export:
+    runs-on: [self-hosted, linux, x64]
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Archive exact tracked source; do not execute historical generators
+        run: |
+          git archive --format=zip HEAD ROUND43_REVISION.tex round43 REFEREE_REPORT_ROUND44_GPT56_PRO_HARSH.md REFEREE_REPORT_ROUND42_GPT56_PRO_HARSH.md REFEREE_REPORT_ROUND40_GPT56_PRO_HARSH.md tests/test_round43.py tests/test_round41.py > round45-base-source.zip
+          git rev-parse HEAD > EXPORTED_SOURCE_COMMIT.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: round45-base-source
+          path: |
+            round45-base-source.zip
+            EXPORTED_SOURCE_COMMIT.txt
+          if-no-files-found: error
