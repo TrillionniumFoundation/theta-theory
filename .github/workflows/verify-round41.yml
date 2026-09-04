@@ -6,16 +6,30 @@ on:
       - 'revision/round41-*'
   workflow_dispatch:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: round41-verify-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   verify:
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
+    runs-on:
+      - self-hosted
+      - linux
+      - x64
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
+        with:
+          clean: true
 
       - name: Detect a materialized Round 41 source set
         id: gate
+        shell: bash
         run: |
+          set -euo pipefail
           if test -f ROUND41_REVISION.tex; then
             echo 'present=true' >> "$GITHUB_OUTPUT"
           else
@@ -23,29 +37,50 @@ jobs:
             echo 'Materializer has not committed the source set yet; verification is intentionally skipped on this bootstrap push.'
           fi
 
-      - name: Install TeX and PDF inspection tools
+      - name: Ensure TeX and PDF inspection tools
         if: steps.gate.outputs.present == 'true'
+        shell: bash
         run: |
-          sudo apt-get update
-          sudo apt-get install -y texlive-latex-base texlive-latex-recommended texlive-fonts-recommended poppler-utils
+          set -euo pipefail
+          missing=0
+          for cmd in pdflatex pdftoppm pdfinfo pdftotext; do
+            if ! command -v "$cmd" >/dev/null 2>&1; then
+              missing=1
+            fi
+          done
+          if [ "$missing" -eq 1 ]; then
+            sudo -n apt-get update
+            sudo -n apt-get install -y texlive-latex-base texlive-latex-recommended texlive-fonts-recommended poppler-utils
+          fi
 
       - name: Run exact algebra and source regression tests
         if: steps.gate.outputs.present == 'true'
-        run: python3 -m unittest -v tests/test_round41.py
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest -v tests/test_round41.py
 
       - name: Build the manuscript twice
         if: steps.gate.outputs.present == 'true'
+        shell: bash
         run: |
+          set -euo pipefail
           pdflatex -interaction=nonstopmode -halt-on-error ROUND41_REVISION.tex
           pdflatex -interaction=nonstopmode -halt-on-error ROUND41_REVISION.tex
 
       - name: Verify source manifest and clean build
         if: steps.gate.outputs.present == 'true'
-        run: python3 tools/verify_round41.py --check-manifest --check-build --json ROUND41_CI_VERIFICATION.json
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/verify_round41.py --check-manifest --check-build --json ROUND41_CI_VERIFICATION.json
 
       - name: Render and inspect every PDF page
         if: steps.gate.outputs.present == 'true'
+        shell: bash
         run: |
+          set -euo pipefail
+          rm -rf ROUND41_RENDER
           mkdir -p ROUND41_RENDER
           pdftoppm -png -r 120 ROUND41_REVISION.pdf ROUND41_RENDER/page
           pages=$(pdfinfo ROUND41_REVISION.pdf | awk '/^Pages:/ {print $2}')

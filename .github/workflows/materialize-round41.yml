@@ -9,38 +9,72 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: round41-materialize-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   materialize:
     if: github.actor != 'github-actions[bot]'
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
+    runs-on:
+      - self-hosted
+      - linux
+      - x64
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.ref_name }}
           fetch-depth: 0
-
-      - name: Install TeX and PDF inspection tools
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y texlive-latex-base texlive-latex-recommended texlive-fonts-recommended poppler-utils
+          clean: true
 
       - name: Materialize the positive revision
-        run: python3 tools/run_materialize_round41.py
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/run_materialize_round41.py
+
+      - name: Ensure TeX and PDF inspection tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          missing=0
+          for cmd in pdflatex pdftoppm pdfinfo pdftotext; do
+            if ! command -v "$cmd" >/dev/null 2>&1; then
+              missing=1
+            fi
+          done
+          if [ "$missing" -eq 1 ]; then
+            sudo -n apt-get update
+            sudo -n apt-get install -y texlive-latex-base texlive-latex-recommended texlive-fonts-recommended poppler-utils
+          fi
+          pdflatex --version | head -n 1
+          pdfinfo -v 2>&1 | head -n 1
 
       - name: Run exact algebra and source regression tests
-        run: python3 -m unittest -v tests/test_round41.py
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest -v tests/test_round41.py
 
       - name: Build the manuscript twice
+        shell: bash
         run: |
+          set -euo pipefail
           pdflatex -interaction=nonstopmode -halt-on-error ROUND41_REVISION.tex
           pdflatex -interaction=nonstopmode -halt-on-error ROUND41_REVISION.tex
 
       - name: Verify source manifest and clean build
-        run: python3 tools/verify_round41.py --check-manifest --check-build --json ROUND41_LOCAL_VERIFICATION.json
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/verify_round41.py --check-manifest --check-build --json ROUND41_LOCAL_VERIFICATION.json
 
       - name: Render and inspect every PDF page
+        shell: bash
         run: |
+          set -euo pipefail
+          rm -rf ROUND41_RENDER
           mkdir -p ROUND41_RENDER
           pdftoppm -png -r 120 ROUND41_REVISION.pdf ROUND41_RENDER/page
           pages=$(pdfinfo ROUND41_REVISION.pdf | awk '/^Pages:/ {print $2}')
@@ -53,7 +87,9 @@ jobs:
           grep -q 'Supremum-norm response strong laws' ROUND41_RENDER/manuscript.txt
 
       - name: Commit the generated revision and verification record
+        shell: bash
         run: |
+          set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add ROUND41_REVISION.tex round41 AUTHOR_RESPONSE_ROUND40.md ROUND41_REVIEW_INDEX.md ROUND41_READY_FOR_REVIEW.md tests/test_round41.py tools/verify_round41.py ROUND41_LOCAL_VERIFICATION.json
