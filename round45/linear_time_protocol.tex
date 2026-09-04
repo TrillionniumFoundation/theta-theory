@@ -1,0 +1,145 @@
+\section{No-washout identification under arbitrary bounded adaptive baselines}
+\label{sec:linear-time-protocol}
+Put \(g_\beta(t)=\ell e^{tA_\beta}B=h_\beta'(t)\).
+Product convergence gives uniform convergence of \(g_\beta\) on every
+bounded time interval, and common stability gives the tail envelope
+\(C_*e^{-\lambda_*t}\). Dominated convergence therefore proves
+continuity of \(\beta\mapsto g_\beta\) into \(L^1(0,\infty)\), with
+compact image. For all realized inputs with \(\|u\|_\infty\le U_*\),
+\begin{equation}
+ \sup_{t\ge0}|((g_\beta-g_\gamma)*u)(t)|
+ \le U_*\|g_\beta-g_\gamma\|_1.
+ \label{eq:policy-uniform-convolution}
+\end{equation}
+This holds for arbitrary switching and feedback histories, not just for a
+particular controller.
+
+Fix \(\tau_g>0\), \(T_0,U_0<\infty\), and \(\rho\in(0,1]\).
+At stage \(i\), the controller first chooses a baseline segment of duration
+\(r_i\in[\tau_g,\tau_g+T_0]\). A fresh exploration flag has probability
+\(\rho\); on exploration draw a cell \(M_i\sim\omega\), otherwise the
+controller selects any cell. The baseline during both the first segment and
+the final probe is bounded by \(U_0\), and is fixed before the fresh sign.
+Then add \(aS_i\) during the final interval \(t_{M_i}\), and draw readout
+noise only at its end. Any baseline randomizers are included before the
+sign. The parameter-independent policy may depend on the horizon. Thus
+\begin{equation}
+ \mathcal F_{i-1}\longrightarrow(r_i,u_i^0,E_i,M_i)
+ \longrightarrow S_i\longrightarrow\xi_i\longrightarrow Y_i,
+ \qquad \tau_g n\le\mathsf T_n\le\tau_+n,
+ \quad\tau_+=\tau_g+T_0+T.
+ \label{eq:linear-time-chronology}
+\end{equation}
+No washout or state reset is required. Write \(U_*=U_0+a\).
+
+\subsection{A deterministic metric controlling every policy}
+Define the compact metric
+\begin{equation}
+ d_*(\beta,\gamma)=U_*\|g_\beta-g_\gamma\|_1
+                  +a\|h_\beta-h_\gamma\|_{C([0,T])}.
+ \label{eq:policy-controlling-metric}
+\end{equation}
+Continuity follows from the compact response images. Injectivity follows
+from boundary reconstruction, so this metric induces the product topology.
+For \(f_i(\beta)=m_i^\beta-m_i^{\beta_0}\), where \(m_i\) is the mean
+from zero initial state under the complete realized input, linearity gives
+\begin{equation}
+ f_i(\beta)=P_i(\beta)+aS_i[h_\beta(t_{M_i})-h_{\beta_0}(t_{M_i})],
+ \label{eq:predictable-intercept-decomposition}
+\end{equation}
+with \(P_i\) measurable before \(S_i\). Removing only the current signed
+pulse leaves an input bounded by \(U_*\), hence
+\[
+ |P_i(\beta)-P_i(\gamma)|\le U_*\|g_\beta-g_\gamma\|_1,
+ \qquad |f_i(\beta)-f_i(\gamma)|\le d_*(\beta,\gamma).
+\]
+The full-input convolution also gives \(|f_i|\le2U_*C_*/\lambda_*\).
+Use \(M=\max(1,2U_*C_*/\lambda_*)\) in the finite-n field estimates.
+
+\begin{lemma}[Predictable-intercept information floor]
+\label{lem:predictable-intercept-information}
+Conditioning on every action selected before \(S_i\),
+\[
+ E[f_i(\beta)^2\mid\mathcal F_{i-1},r_i,u_i^0,E_i,M_i]
+ =P_i(\beta)^2+a^2[h_\beta(t_{M_i})-h_{\beta_0}(t_{M_i})]^2.
+\]
+Consequently,
+\begin{equation}
+ E[f_i(\beta)^2\mid\mathcal F_{i-1}]\ge\rho a^2D(\beta,\beta_0).
+ \label{eq:linear-time-information-floor}
+\end{equation}
+The same sign identity holds for directional derivatives on any fixed
+finite coefficient cylinder.
+\end{lemma}
+\begin{proof}
+The cross term has mean zero under the independent fresh sign. On an
+exploration stage the remaining response square averages to \(a^2D\).
+All other conditional-square terms are nonnegative. Differentiation of the
+linear decomposition proves the cylinder statement.
+\end{proof}
+
+The exact initial-state contribution at stage \(i\) is
+\(b_i^\beta(z)=\ell e^{\mathsf T_iA_\beta}z\), and is bounded by
+\(r_i=C_*R e^{-\lambda_*\tau_gi}\). The finite-n correction lemma applies
+with, explicitly,
+\[
+ R_1=\frac{C_*R}{e^{\lambda_*\tau_g}-1},\qquad
+ R_2=\frac{C_*^2R^2}{e^{2\lambda_*\tau_g}-1}.
+\]
+Every fixed cylinder derivative is bounded by a polynomial in \(i\)
+times this exponential, by the same-rate Duhamel calculation.
+
+\begin{theorem}[Policy-uniform no-washout posterior exponent]
+\label{thm:linear-time-adaptive-jacobi}
+For each admissible policy sequence, with the coupling convention of
+Section~\ref{sec:finite-sample-geometry}, almost surely for every closed
+\(F\subset\mathfrak B\),
+\begin{equation}
+ \limsup_n n^{-1}\log\Pi_{n,\mathrm{lin}}^{\nu_n}(F)
+ \le-\frac{\rho a^2}{2\sigma^2}\inf_{\beta\in F}D(\beta,\beta_0).
+ \label{eq:linear-posterior-upper}
+\end{equation}
+For a coefficient cylinder the infimum is at least
+\(\underline\kappa_J(\delta)\). In physical time the guaranteed upper
+exponent is divided by at most \(\tau_+\). At every finite \(n\), the
+field error is bounded by \eqref{eq:finite-n-field-bound} with the explicit
+metric \(d_*\), and the exact-likelihood correction by
+\eqref{eq:finite-n-transient-tail}, uniformly over all such policies.
+\end{theorem}
+\begin{proof}
+All hypotheses of Proposition~\ref{prop:finite-n-field-concentration} have
+just been checked with a deterministic compact metric common to every
+history and policy. The conditional-square lower bound is
+\eqref{eq:linear-time-information-floor}; the transient budget is the
+summable global initial-state envelope above. Thus uniform likelihood
+tracking \eqref{eq:adaptive-uniform-likelihood-tracking} holds, with
+\(Q_n\ge\rho a^2D/(2\sigma^2)\).
+To normalize, a \(d_*\)-ball of radius \(s\) about the truth satisfies
+\(|f_i|\le s\) for all stages and policies. The finite-n denominator
+argument of Theorem~\ref{thm:finite-n-posterior-separation}, or the uniform
+Laplace bound with \(\varphi=0\), makes its exponent zero as
+\(s\downarrow0\). Integrating the likelihood upper bound over \(F\)
+proves the result. The effective inverse bound gives the cylinder claim.
+Since \(\log\Pi(F)\le0\) and \(n/\mathsf T_n\ge1/\tau_+\), the
+physical-time conclusion follows with the stated direction of inequality.
+\end{proof}
+
+The theorem is a guaranteed information floor. The actual adaptive
+information \(Q_n\) also includes the baseline response. Rather than
+identify it incorrectly with the floor, Theorem~\ref{thm:adaptive-laplace-tracking}
+gives exact Laplace tracking and full LDPs along every uniformly convergent
+information subsequence. A matching full-sequence LDP follows whenever
+that predictable information converges uniformly. No convergence of the
+information is assumed for the universal upper exponent.
+
+For the washed experiment one may similarly draw a fresh exploration flag,
+use \(\omega\) on exploration, and choose all other diagnostic cells
+predictably before the fresh sign. With \(d=a\|h_\beta-h_\gamma\|_\infty\),
+the same argument gives
+\begin{equation}
+ \limsup_n n^{-1}\log\Pi_n^{\nu_n}(F)
+ \le-\frac{\rho a^2}{2\sigma^2}\inf_F D.
+ \label{eq:adaptive-exploration-rate}
+\end{equation}
+This is the exploration-floor extension; the finite-n and growing-depth
+versions are included in the next section.
