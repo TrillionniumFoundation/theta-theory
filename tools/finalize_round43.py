@@ -32,6 +32,41 @@ def run(*parts: str) -> None:
     subprocess.run(parts, cwd=ROOT, check=True)
 
 
+def mirror_generated_text(
+    materializer_text: str,
+    original: str,
+    patched: str,
+    label: str,
+    fallback_markers: tuple[str, ...],
+) -> str:
+    """Replace exactly the AST string constant embedding one generated file."""
+    tree = ast.parse(materializer_text)
+    candidates = [
+        node
+        for node in ast.walk(tree)
+        if isinstance(node, ast.Constant)
+        and isinstance(node.value, str)
+        and (
+            node.value == original
+            or all(marker in node.value for marker in fallback_markers)
+        )
+    ]
+    if len(candidates) != 1:
+        raise RuntimeError(f"{label}: expected one embedded string, found {len(candidates)}")
+    node = candidates[0]
+    if node.value != original:
+        raise RuntimeError(f"{label}: selected embedded string diverges from generated file")
+    segment = ast.get_source_segment(materializer_text, node)
+    if not segment:
+        raise RuntimeError(f"{label}: could not recover source segment")
+    return replace_exactly_once(
+        materializer_text,
+        segment,
+        repr(patched),
+        f"{label} source segment",
+    )
+
+
 # Freeze the already-reviewed Round 41 constructors before executing them.
 generator = ROOT / "tools/materialize_round41.py"
 text = generator.read_text(encoding="utf-8")
@@ -97,21 +132,19 @@ run(sys.executable, "tools/materialize_round41.py")
 run(sys.executable, "tools/harden_round41_ldp.py")
 run(sys.executable, "tools/materialize_round43.py")
 
-# Patch the actual generated test, then replace precisely the AST string
-# constant that embeds that test in the materializer.  This avoids touching a
-# second human-readable occurrence of the same historical malformed token.
+literal_pattern = re.compile(r'''(?P<prefix>[rRuUbBfF]{0,2})(?P<quote>["'])rac1n(?P=quote)''')
+
+# Strengthen the generated regression test.
 test_path = ROOT / "tests/test_round43.py"
 original_test_text = test_path.read_text(encoding="utf-8")
 test_text = original_test_text
-literal_pattern = re.compile(r'''(?P<prefix>[rRuUbBfF]{0,2})(?P<quote>["'])rac1n(?P=quote)''')
 literal_matches = list(literal_pattern.finditer(test_text))
 if len(literal_matches) != 1:
     raise RuntimeError(
         f"generated Round 43 malformed-token literal: expected one, found {len(literal_matches)}"
     )
-literal_match = literal_matches[0]
-test_text = test_text[: literal_match.start()] + "chr(12)" + test_text[literal_match.end() :]
-
+lm = literal_matches[0]
+test_text = test_text[: lm.start()] + "chr(12)" + test_text[lm.end() :]
 assertion_pattern = re.compile(
     r'''(?m)^(?P<indent>\s*)self\.assertNotIn\(token,\s*(?P<subject>[A-Za-z_][A-Za-z0-9_]*)\)\s*$'''
 )
@@ -120,72 +153,52 @@ if len(assertion_matches) != 1:
     raise RuntimeError(
         f"generated Round 43 token-loop assertion: expected one, found {len(assertion_matches)}"
     )
-match = assertion_matches[0]
-indent = match.group("indent")
-subject = match.group("subject")
+am = assertion_matches[0]
+indent = am.group("indent")
+subject = am.group("subject")
 new_assertion_lines = (
     f"{indent}self.assertNotIn(token, {subject})\n"
     f'{indent}self.assertIn(r"{bs}frac1n{bs}log", {subject})'
 )
-test_text = test_text[: match.start()] + new_assertion_lines + test_text[match.end() :]
+test_text = test_text[: am.start()] + new_assertion_lines + test_text[am.end() :]
 test_path.write_text(test_text, encoding="utf-8")
 
+# Replace the verifier's substring check by the same exact control character.
+verifier_path = ROOT / "tools/verify_round43.py"
+original_verifier_text = verifier_path.read_text(encoding="utf-8")
+verifier_text = original_verifier_text
+verifier_matches = list(literal_pattern.finditer(verifier_text))
+if len(verifier_matches) != 1:
+    raise RuntimeError(
+        "generated Round 43 verifier malformed-token literal: "
+        f"expected one, found {len(verifier_matches)}"
+    )
+vm = verifier_matches[0]
+verifier_text = verifier_text[: vm.start()] + "chr(12)" + verifier_text[vm.end() :]
+verifier_path.write_text(verifier_text, encoding="utf-8")
+
+# Mirror both exact generated files into AST-bounded materializer constants.
 materializer_text = materializer.read_text(encoding="utf-8")
-tree = ast.parse(materializer_text)
-candidates = [
-    node
-    for node in ast.walk(tree)
-    if isinstance(node, ast.Constant)
-    and isinstance(node.value, str)
-    and (
-        node.value == original_test_text
-        or ("rac1n" in node.value and "self.assertNotIn(token" in node.value)
-    )
-]
-if len(candidates) != 1:
-    raise RuntimeError(
-        f"embedded Round 43 test constant: expected one, found {len(candidates)}"
-    )
-node = candidates[0]
-embedded_original = node.value
-embedded_patched = embedded_original
-embedded_literal_matches = list(literal_pattern.finditer(embedded_patched))
-if len(embedded_literal_matches) != 1:
-    raise RuntimeError(
-        "embedded Round 43 malformed-token literal is not unique inside selected constant"
-    )
-em = embedded_literal_matches[0]
-embedded_patched = embedded_patched[: em.start()] + "chr(12)" + embedded_patched[em.end() :]
-embedded_assertions = list(assertion_pattern.finditer(embedded_patched))
-if len(embedded_assertions) != 1:
-    raise RuntimeError("embedded Round 43 token-loop assertion is not unique")
-em = embedded_assertions[0]
-em_indent = em.group("indent")
-em_subject = em.group("subject")
-embedded_new_lines = (
-    f"{em_indent}self.assertNotIn(token, {em_subject})\n"
-    f'{em_indent}self.assertIn(r"{bs}frac1n{bs}log", {em_subject})'
-)
-embedded_patched = (
-    embedded_patched[: em.start()] + embedded_new_lines + embedded_patched[em.end() :]
-)
-if embedded_patched != test_text:
-    raise RuntimeError("generated test and selected materializer constant diverge")
-source_segment = ast.get_source_segment(materializer_text, node)
-if not source_segment:
-    raise RuntimeError("could not recover materializer test-string source segment")
-materializer_text = replace_exactly_once(
+materializer_text = mirror_generated_text(
     materializer_text,
-    source_segment,
-    repr(embedded_patched),
-    "embedded Round 43 test source segment",
+    original_test_text,
+    test_text,
+    "embedded Round 43 test",
+    ("rac1n", "self.assertNotIn(token"),
+)
+materializer_text = mirror_generated_text(
+    materializer_text,
+    original_verifier_text,
+    verifier_text,
+    "embedded Round 43 verifier",
+    ("rac1n", "stale forbidden token"),
 )
 materializer.write_text(materializer_text, encoding="utf-8")
 postpatch_sha = sha256_bytes(materializer.read_bytes())
-py_compile.compile(str(materializer), doraise=True)
-py_compile.compile(str(test_path), doraise=True)
+for path in (materializer, test_path, verifier_path):
+    py_compile.compile(str(path), doraise=True)
 
-# Make the source-control-character repair an explicit invariant.
+# Make the repaired denominator an explicit invariant of the frozen object.
 for relative in ("round41/infinite_jacobi.tex", "round43/infinite_jacobi.tex"):
     rendered = (ROOT / relative).read_text(encoding="utf-8")
     if chr(12) in rendered:
@@ -206,5 +219,6 @@ print(
         "materializer_sha256": postpatch_sha,
         "control_character_repair": "verified",
         "generated_test_repair": "AST-bounded-and-mirrored",
+        "generated_verifier_repair": "AST-bounded-and-mirrored",
     }
 )
