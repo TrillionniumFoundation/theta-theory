@@ -1,0 +1,49 @@
+name: Materialize Round 41 source only
+
+on:
+  push:
+    branches:
+      - 'revision/round41-referee-positive-closure-gpt56pro-2026-09-04'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: round41-source-only-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: macos-15
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+          clean: true
+
+      - name: Materialize and harden source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/run_materialize_round41.py
+          python3 tools/harden_round41_ldp.py
+          python3 -m unittest -v tests/test_round41.py
+          python3 tools/verify_round41.py --check-manifest --json ROUND41_SOURCE_VERIFICATION.json
+
+      - name: Commit complete source tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add ROUND41_REVISION.tex round41 AUTHOR_RESPONSE_ROUND40.md ROUND41_REVIEW_INDEX.md ROUND41_READY_FOR_REVIEW.md tests/test_round41.py tools/verify_round41.py ROUND41_SOURCE_VERIFICATION.json
+          if git diff --cached --quiet; then
+            echo 'Round 41 source is already materialized.'
+            exit 0
+          fi
+          git commit -m 'revision(round41): materialize referee closure and full Jacobi posterior LDP'
+          git push origin HEAD:${{ github.ref_name }}
