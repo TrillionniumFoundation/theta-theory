@@ -87,44 +87,8 @@ replacements = [
 ]
 for old, new in replacements:
     text = replace_exactly_once(text, old, new, "Round 43 TeX certificate literal")
-
-# The stale regression is represented as one member of a token tuple, followed
-# by a generic assertion.  Replace that tuple member with the actual control
-# character and strengthen the same loop with a positive denominator check.
-token_pattern = re.compile(
-    r'''(?m)^(?P<indent>\s*)(?P<prefix>[rRuUbBfF]*)(?P<quote>["'])rac1n(?P=quote),\s*$'''
-)
-
-def replace_bad_token(match: re.Match[str]) -> str:
-    return f'{match.group("indent")}chr(12),'
-
-text, token_count = token_pattern.subn(replace_bad_token, text)
-if token_count != 1:
-    raise RuntimeError(
-        f"Round 43 malformed-token tuple: expected one member, found {token_count}"
-    )
-
-assertion_pattern = re.compile(
-    r'''(?m)^(?P<indent>\s*)self\.assertNotIn\(token,\s*(?P<subject>[A-Za-z_][A-Za-z0-9_]*)\)\s*$'''
-)
-
-def strengthen_token_loop(match: re.Match[str]) -> str:
-    indent = match.group("indent")
-    subject = match.group("subject")
-    return (
-        f"{indent}self.assertNotIn(token, {subject})\n"
-        f'{indent}self.assertIn(r"{bs}frac1n{bs}log", {subject})'
-    )
-
-text, assertion_count = assertion_pattern.subn(strengthen_token_loop, text)
-if assertion_count != 1:
-    raise RuntimeError(
-        f"Round 43 token-loop assertion: expected one line, found {assertion_count}"
-    )
-
 materializer.write_text(text, encoding="utf-8")
 materializer.chmod(0o755)
-postpatch_sha = sha256_bytes(materializer.read_bytes())
 
 for path in (generator, hardener, materializer):
     py_compile.compile(str(path), doraise=True)
@@ -132,6 +96,58 @@ for path in (generator, hardener, materializer):
 run(sys.executable, "tools/materialize_round41.py")
 run(sys.executable, "tools/harden_round41_ldp.py")
 run(sys.executable, "tools/materialize_round43.py")
+
+# Strengthen the test from the actual generated Python source, then mirror the
+# exact source lines into the materializer template so regeneration is stable.
+test_path = ROOT / "tests/test_round43.py"
+test_text = test_path.read_text(encoding="utf-8")
+literal_pattern = re.compile(
+    r'''(?P<prefix>[rRuUbBfF]{0,2})(?P<quote>["'])rac1n(?P=quote)'''
+)
+literal_matches = list(literal_pattern.finditer(test_text))
+if len(literal_matches) != 1:
+    raise RuntimeError(
+        f"generated Round 43 malformed-token literal: expected one, found {len(literal_matches)}"
+    )
+old_literal = literal_matches[0].group(0)
+test_text = test_text[: literal_matches[0].start()] + "chr(12)" + test_text[literal_matches[0].end() :]
+
+assertion_pattern = re.compile(
+    r'''(?m)^(?P<indent>\s*)self\.assertNotIn\(token,\s*(?P<subject>[A-Za-z_][A-Za-z0-9_]*)\)\s*$'''
+)
+assertion_matches = list(assertion_pattern.finditer(test_text))
+if len(assertion_matches) != 1:
+    raise RuntimeError(
+        f"generated Round 43 token-loop assertion: expected one, found {len(assertion_matches)}"
+    )
+match = assertion_matches[0]
+old_assertion_line = match.group(0)
+indent = match.group("indent")
+subject = match.group("subject")
+new_assertion_lines = (
+    f"{indent}self.assertNotIn(token, {subject})\n"
+    f'{indent}self.assertIn(r"{bs}frac1n{bs}log", {subject})'
+)
+test_text = test_text[: match.start()] + new_assertion_lines + test_text[match.end() :]
+test_path.write_text(test_text, encoding="utf-8")
+
+materializer_text = materializer.read_text(encoding="utf-8")
+materializer_text = replace_exactly_once(
+    materializer_text,
+    old_literal,
+    "chr(12)",
+    "materializer malformed-token literal",
+)
+materializer_text = replace_exactly_once(
+    materializer_text,
+    old_assertion_line,
+    new_assertion_lines,
+    "materializer token-loop assertion",
+)
+materializer.write_text(materializer_text, encoding="utf-8")
+postpatch_sha = sha256_bytes(materializer.read_bytes())
+py_compile.compile(str(materializer), doraise=True)
+py_compile.compile(str(test_path), doraise=True)
 
 # Make the source-control-character repair an explicit invariant of the frozen object.
 for relative in ("round41/infinite_jacobi.tex", "round43/infinite_jacobi.tex"):
@@ -154,5 +170,6 @@ print(
         "round": 43,
         "materializer_sha256": postpatch_sha,
         "control_character_repair": "verified",
+        "generated_test_repair": "mirrored-to-materializer",
     }
 )
