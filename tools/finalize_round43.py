@@ -6,6 +6,7 @@ import base64
 import gzip
 import hashlib
 import py_compile
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -83,13 +84,31 @@ replacements = [
         'self.assertIn(r"K_J' + bs * 2 + 'delta^{2R_J+3}", quantitative)',
         'self.assertIn(r"K_J' + bs + 'delta^{2R_J+3}", quantitative)',
     ),
-    (
-        'self.assertNotIn("rac1n", article)',
-        'self.assertNotIn(chr(12), article)\n        self.assertIn(r"' + bs + 'frac1n' + bs + 'log", article)',
-    ),
 ]
 for old, new in replacements:
-    text = replace_exactly_once(text, old, new, "Round 43 certificate-test literal")
+    text = replace_exactly_once(text, old, new, "Round 43 TeX certificate literal")
+
+# The old regression assertion named the malformed suffix rather than the
+# actual control character.  Match its syntax, preserve its subject variable,
+# and strengthen it into a negative and a positive source invariant.
+pattern = re.compile(
+    r'''(?m)^(?P<indent>\s*)self\.assertNotIn\((?P<quote>["'])rac1n(?P=quote),\s*(?P<subject>[A-Za-z_][A-Za-z0-9_]*)\)\s*$'''
+)
+
+def strengthen_control_character_guard(match: re.Match[str]) -> str:
+    indent = match.group("indent")
+    subject = match.group("subject")
+    return (
+        f"{indent}self.assertNotIn(chr(12), {subject})\n"
+        f'{indent}self.assertIn(r"{bs}frac1n{bs}log", {subject})'
+    )
+
+text, guard_count = pattern.subn(strengthen_control_character_guard, text)
+if guard_count != 1:
+    raise RuntimeError(
+        f"Round 43 LDP guard: expected one syntactic assertion, found {guard_count}"
+    )
+
 materializer.write_text(text, encoding="utf-8")
 materializer.chmod(0o755)
 postpatch_sha = sha256_bytes(materializer.read_bytes())
