@@ -11,7 +11,7 @@ permissions:
 
 concurrency:
   group: round41-materialize-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   materialize:
@@ -28,11 +28,12 @@ jobs:
           fetch-depth: 0
           clean: true
 
-      - name: Materialize the positive revision
+      - name: Materialize and mathematically harden the positive revision
         shell: bash
         run: |
           set -euo pipefail
           python3 tools/run_materialize_round41.py
+          python3 tools/harden_round41_ldp.py
 
       - name: Ensure TeX and PDF inspection tools
         shell: bash
@@ -82,7 +83,7 @@ jobs:
           test "$pages" -gt 0
           test "$rendered" -eq "$pages"
           pdftotext ROUND41_REVISION.pdf ROUND41_RENDER/manuscript.txt
-          grep -q 'Jacobi posterior response-rate bound' ROUND41_RENDER/manuscript.txt
+          grep -q 'Full posterior large-deviation principle' ROUND41_RENDER/manuscript.txt
           grep -q 'Complete windows in every finite prefix' ROUND41_RENDER/manuscript.txt
           grep -q 'Supremum-norm response strong laws' ROUND41_RENDER/manuscript.txt
 
@@ -98,7 +99,7 @@ jobs:
             echo 'Round 41 is already materialized.'
             exit 0
           fi
-          git commit -m 'revision(round41): close referee gaps and add Jacobi posterior rates'
+          git commit -m 'revision(round41): close referee gaps and prove full Jacobi posterior LDP'
           git push origin HEAD:${{ github.ref_name }}
 
       - uses: actions/upload-artifact@v4
