@@ -31,87 +31,12 @@ jobs:
           fetch-depth: 1
           clean: true
 
-      - name: Freeze the stored Round 41 construction inputs
+      - name: Materialize and freeze the ordinary Round 43 source tree
         shell: bash
         run: |
           set -euo pipefail
           test "$RUNNER_NAME" = desktop
-          python3 - <<'PY'
-          from pathlib import Path
-
-          generator = Path('tools/materialize_round41.py')
-          text = generator.read_text(encoding='utf-8')
-          old = 'r"""The true transient cross term is at most\n'
-          new = 'r"""The\ntrue transient cross term is at most\n'
-          if old in text:
-              text = text.replace(old, new, 1)
-          elif new not in text:
-              raise SystemExit('Round 41 frozen-source anchor not found')
-          generator.write_text(text, encoding='utf-8')
-
-          hardener = Path('tools/harden_round41_ldp.py')
-          text = hardener.read_text(encoding='utf-8')
-          bs = chr(92)
-          old = '\n' + 'rac1n' + bs + 'log'
-          new = '\n ' + bs + 'frac1n' + bs + 'log'
-          if old in text:
-              text = text.replace(old, new, 1)
-          elif new not in text:
-              raise SystemExit('Round 41 denominator typo anchor not found')
-          hardener.write_text(text, encoding='utf-8')
-          PY
-
-      - name: Restore and deterministically patch the Round 43 materializer
-        shell: bash
-        run: |
-          set -euo pipefail
-          cat .round43_payload/part*.b64 > /tmp/materialize_round43.py.gz.b64
-          test "$(sha256sum /tmp/materialize_round43.py.gz.b64 | cut -d' ' -f1)" = "5e5ed75a74776c957674a48d28151fa2322131a1487b8dfeccbfc11a14caf72f"
-          base64 --decode /tmp/materialize_round43.py.gz.b64 | gzip -dc > tools/materialize_round43.py
-          test "$(sha256sum tools/materialize_round43.py | cut -d' ' -f1)" = "27041361d57cb4c0112e49ddb55c18859d8ea0920fe8548808c4cbe68918aa3d"
-          python3 - <<'PY'
-          from pathlib import Path
-
-          path = Path('tools/materialize_round43.py')
-          text = path.read_text(encoding='utf-8')
-          bs = chr(92)
-          replacements = [
-              (
-                  'self.assertIn(r"M_R=2e^{' + bs * 2 + 'Lambda_AT}' + bs * 2 + 'Lambda_A^R", quantitative)',
-                  'self.assertIn(r"M_R=2e^{' + bs + 'Lambda_AT}' + bs + 'Lambda_A^R", quantitative)',
-              ),
-              (
-                  'self.assertIn(r"C_R' + bs * 2 + 'le 2^{R+1}(R+1)!", quantitative)',
-                  'self.assertIn(r"C_R' + bs + 'le 2^{R+1}(R+1)!", quantitative)',
-              ),
-              (
-                  'self.assertIn(r"K_J' + bs * 2 + 'delta^{2R_J+3}", quantitative)',
-                  'self.assertIn(r"K_J' + bs + 'delta^{2R_J+3}", quantitative)',
-              ),
-          ]
-          for old, new in replacements:
-              count = text.count(old)
-              if count != 1:
-                  raise SystemExit(f'Round 43 test-literal anchor count={count}: {old!r}')
-              text = text.replace(old, new, 1)
-          path.write_text(text, encoding='utf-8')
-          PY
-          chmod +x tools/materialize_round43.py
-          sha256sum tools/materialize_round43.py | cut -d' ' -f1 > /tmp/round43_materializer_sha256
-          python3 -m py_compile tools/materialize_round41.py tools/harden_round41_ldp.py tools/materialize_round43.py
-
-      - name: Materialize ordinary manuscript sources
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 tools/materialize_round41.py
-          python3 tools/harden_round41_ldp.py
-          python3 tools/materialize_round43.py
-          {
-            printf '%s  %s\n' '5e5ed75a74776c957674a48d28151fa2322131a1487b8dfeccbfc11a14caf72f' '.round43_payload/concatenated-base64'
-            printf '%s  %s\n' '27041361d57cb4c0112e49ddb55c18859d8ea0920fe8548808c4cbe68918aa3d' 'tools/materialize_round43.py.prepatch'
-            printf '%s  %s\n' "$(cat /tmp/round43_materializer_sha256)" 'tools/materialize_round43.py'
-          } > round43/MATERIALIZATION_PROVENANCE.sha256
+          python3 tools/finalize_round43.py
 
       - name: Verify inherited Round 41 object before retiring legacy writers
         shell: bash
@@ -132,7 +57,7 @@ jobs:
               if path.name in keep or not path.is_file():
                   continue
               text = path.read_text(encoding='utf-8', errors='replace')
-              if 'contents: write' in text or 'git push' in text or 'materialize' in path.name:
+              if 'contents: write' in text or 'git push' in text or 'materialize' in path.name or 'finalize' in path.name:
                   path.unlink()
                   print(f'removed source-writing workflow: {path}')
           PY
