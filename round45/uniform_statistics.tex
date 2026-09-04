@@ -1,0 +1,231 @@
+\section{Finite-sample likelihood geometry for adaptive experiments}
+\label{sec:finite-sample-geometry}
+This section supplies estimates at shrinking net resolution, not just a
+fixed-resolution strong law. It also distinguishes a uniform probability
+bound from a single event asserted for uncountably many policies.
+
+Let \(\mathcal K\) be a compact metric parameter space with metric \(d\).
+At stage \(i\), let \(\mathcal F_{i-1}\) be the observed past and
+\(\mathcal A_i\) the information after all current actions but before the
+readout. The noise \(\xi_i\), conditionally on \(\mathcal A_i\), is
+\(N(0,\sigma^2)\), independent of that information. Policy kernels are
+parameter independent on every history; candidate likelihoods hold the
+entire realized action record fixed. Let \(f_i(\beta_0)=0\) and assume,
+pathwise on all histories,
+\begin{equation}
+ |f_i(\beta)|\le M,\qquad
+ |f_i(\beta)-f_i(\gamma)|\le d(\beta,\gamma),\qquad M\ge1.
+ \label{eq:uniform-field-hypotheses}
+\end{equation}
+Each field is \(\mathcal A_i\)-measurable. Denote the logarithmic covering
+number by \(\mathcal H_d(\epsilon)=\log N(\mathcal K,d,\epsilon)\).
+Define
+\[
+ Z_n=n^{-1}\sum_i|\xi_i|,\quad z=3\sigma+1,\quad
+ V=\max\{1,M^4,\sigma^2M^2\},\quad
+ e(t)=\min\{1,t/(8M),t/(2z)\}.
+\]
+
+\begin{proposition}[Policy-uniform shrinking-net concentration]
+\label{prop:finite-n-field-concentration}
+For every \(n\ge1\), \(t>0\), and every admissible policy, including
+horizon-dependent policies, the probability that either
+\[
+ \sup_\beta\left|n^{-1}\sum_i\xi_if_i(\beta)\right|>t
+ \quad\text{or}\quad
+ \sup_\beta\left|n^{-1}\sum_i\{f_i(\beta)^2-
+ E[f_i(\beta)^2\mid\mathcal F_{i-1}]\}\right|>t
+\]
+is at most
+\begin{equation}
+ \Psi_n(t)=4\exp\{\mathcal H_d(e(t))-nt^2/(8V)\}+e^{-n}.
+ \label{eq:finite-n-field-bound}
+\end{equation}
+All suprema are measurable. The same estimate holds uniformly over the
+true parameter whenever the constants and covering numbers are common.
+\end{proposition}
+\begin{proof}
+At one deterministic net point, the centered square is a martingale
+difference bounded in absolute value by \(M^2\). Conditional exponential
+bounds and Markov's inequality give
+\[
+ P\{|n^{-1}\sum_i(f_i^2-E_{i-1}f_i^2)|>t/2\}
+ \le2e^{-nt^2/(8M^4)}.
+\]
+For the score, conditioning first on \(\mathcal A_i\) gives
+\(E[e^{\lambda\xi_if_i}\mid\mathcal A_i]
+ =e^{\lambda^2\sigma^2f_i^2/2}\).
+Iterated conditioning therefore gives the corresponding bound
+\(2e^{-nt^2/(8\sigma^2M^2)}\). These calculations do not condition on
+future actions or on the final design matrix.
+
+The elementary bound \(E e^{|\xi_i|/\sigma}\le2e^{1/2}\), followed by
+iterated conditioning, proves
+\(P(Z_n>3\sigma)\le e^{n(\log2+1/2-3)}\le e^{-n}\).
+For parameters in one \(e(t)\)-ball, square-field interpolation costs
+at most \(4Me(t)\le t/2\), including the conditional expectation;
+score interpolation costs at most \(e(t)Z_n\le t/2\) on \(Z_n\le z\).
+A union bound over the deterministic net proves \eqref{eq:finite-n-field-bound}.
+Continuous fields on a compact metric space have suprema over a fixed
+countable dense set, proving measurability. All constants are independent
+of the policy and sample size.
+\end{proof}
+
+\subsection{An exact integrated-likelihood remainder}
+Suppose the observation model is
+\[
+ Y_i=m_i^{\beta_0}+b_i^{\beta_0}(z_0)+\xi_i,
+ \qquad f_i(\beta)=m_i^\beta-m_i^{\beta_0},
+\]
+and \(\sup_{\beta,\|z\|\le R}|b_i^\beta(z)|\le r_i\), for a common
+deterministic summable sequence. Put
+\(R_1=\sum_i r_i\), \(R_2=\sum_i r_i^2\).
+The working prior \(\nu_n\) may be any probability on this Hilbert ball.
+No density or weak convergence of \(\nu_n\) is assumed.
+
+\begin{lemma}[Source-independent transient budget]
+\label{lem:finite-n-exact-correction}
+Writing \(\ell_n(\beta)=n^{-1}\log
+[L_n^{\nu_n}(\beta)/L_n^{\nu_n}(\beta_0)]\), one has
+\begin{equation}
+ \ell_n(\beta)=\frac1{n\sigma^2}\sum_i\xi_if_i(\beta)
+ -\frac1{2n\sigma^2}\sum_i f_i(\beta)^2+\mathcal R_n(\beta)/n,
+ \qquad \sup_\beta|\mathcal R_n(\beta)|\le B_n,
+ \label{eq:finite-n-exact-expansion}
+\end{equation}
+where
+\[
+ B_n=\sigma^{-2}\{2\sum_{i\le n}r_i|\xi_i|+3MR_1+3R_2\},\quad
+ b_0=3(MR_1+R_2)/\sigma^2,\quad b_1=2R_1/\sigma.
+\]
+In particular, for \(u>0\),
+\begin{equation}
+ P\{B_n>b_0+b_1\sqrt{2u}\}\le2e^{-u}.
+ \label{eq:finite-n-transient-tail}
+\end{equation}
+\end{lemma}
+\begin{proof}
+Let \(L_n^\star\) be the product Gaussian likelihood with means
+\(m_i^\beta\). Gaussian completion expresses \(L_n^{\nu_n}/L_n^\star\)
+as the integral of \(\exp V_n^\beta(z)\), where
+\[
+ V_n^\beta(z)=\sigma^{-2}\sum_i
+ \{b_i^\beta(z)(Y_i-m_i^\beta)-\tfrac12 b_i^\beta(z)^2\}.
+\]
+Its absolute value is bounded by
+\(\sigma^{-2}\{\sum r_i|\xi_i|+MR_1+3R_2/2\}\).
+A normalized positive integral has logarithm between the infimum and
+supremum of its exponent. Apply this at \(\beta\) and \(\beta_0\);
+the ideal likelihood expansion has the additional term
+\(\sigma^{-2}\sum b_i^{\beta_0}(z_0)f_i(\beta)\), bounded by
+\(MR_1/\sigma^2\). This proves the stated budget.
+For \(R_1>0\), convexity, with weights \(r_i/R_1\) and any remaining
+weight at zero, gives
+\[
+ E\exp\{\lambda\sum_{i\le n}r_i|\xi_i|\}
+ \le2\exp\{\lambda^2\sigma^2R_1^2/2\}.
+\]
+Optimizing Markov's inequality yields \eqref{eq:finite-n-transient-tail}.
+For \(R_1=0\) the remainder is identically zero.
+\end{proof}
+
+\begin{theorem}[A finite-n posterior separation inequality]
+\label{thm:finite-n-posterior-separation}
+Let \(F\subset\mathcal K\) be a measurable set satisfying, pathwise,
+\[
+ \inf_{\beta\in F}n^{-1}\sum_iE[f_i(\beta)^2\mid\mathcal F_{i-1}]
+ \ge q>0.
+\]
+If the prior mass of the \(d\)-ball of radius \(\sqrt q/4\) around the
+truth is at least \(e^{-\mathcal P_d(\sqrt q/4)}\), then
+\begin{equation}
+ \Pi_n^{\nu_n}(F)\le
+ \exp\{\mathcal P_d(\sqrt q/4)-nq/(4\sigma^2)\}
+ \label{eq:finite-n-posterior-mass}
+\end{equation}
+except on an event of probability at most
+\begin{equation}
+ \Psi_n(q/16)+P\{B_n>nq/(32\sigma^2)\},
+ \label{eq:finite-n-posterior-failure}
+\end{equation}
+where the second term is explicitly bounded by
+\eqref{eq:finite-n-transient-tail}.
+Thus \(\mathcal P_d\) is an \emph{upper} bound on minus log prior mass.
+\end{theorem}
+\begin{proof}
+On the good event of Proposition~\ref{prop:finite-n-field-concentration}
+with \(t=q/16\), the numerator likelihood ratio over \(F\) is at most
+\(\exp\{-13nq/(32\sigma^2)+B_n\}\).
+On the indicated prior ball, \(|f_i|\le\sqrt q/4\) at every stage, and
+the same score bound gives a likelihood ratio at least
+\(\exp\{-3nq/(32\sigma^2)-B_n\}\).
+Divide the integrated numerator by the integrated denominator and use
+\(2B_n\le nq/(16\sigma^2)\). The remaining exponent is
+\(-nq/(4\sigma^2)+\mathcal P_d\), as claimed. Every coefficient in this
+calculation is retained; there is no unspecified constant multiplying a
+shrinking separation.
+\end{proof}
+
+\subsection{Triangular experiments and nonstationary Laplace limits}
+For a fixed infinite policy, the usual noise coupling is available. For
+horizon-dependent policies, choose any joint probability space carrying
+one admissible row of length \(n\) for each \(n\); rows need not be
+independent. For each fixed \(t>0\), the right side of
+\eqref{eq:finite-n-field-bound} is summable in \(n\). So is the transient
+probability at a fixed positive multiple of \(n\). Borel--Cantelli at
+countably many \(t\downarrow0\) proves, for each such chosen policy
+sequence and coupling,
+\begin{equation}
+ \|\ell_n+Q_n\|_\infty\longrightarrow0\quad\text{almost surely},\qquad
+ Q_n(\beta)=\frac1{2n\sigma^2}\sum_i
+ E[f_i(\beta)^2\mid\mathcal F_{i-1}].
+ \label{eq:adaptive-uniform-likelihood-tracking}
+\end{equation}
+The statement is not an intersection of probability-one events over an
+uncountable collection of policies. Uniformity means that the finite-n
+bounds preceding it are common to the full class.
+
+\begin{theorem}[Adaptive posterior Laplace tracking and cluster LDPs]
+\label{thm:adaptive-laplace-tracking}
+Assume the preceding hypotheses and a fixed full-support prior on
+\(\mathcal K\). For every continuous \(\varphi:\mathcal K\to\R\),
+\begin{equation}
+ -\frac1n\log\int e^{-n\varphi(\beta)}\Pi_n^{\nu_n}(d\beta)
+ -\inf_{\beta\in\mathcal K}\{\varphi(\beta)+Q_n(\beta)\}
+ \longrightarrow0\quad\text{almost surely}.
+ \label{eq:adaptive-laplace-tracking}
+\end{equation}
+The sequence \(Q_n\) is precompact in the uniform norm. Every uniform
+cluster limit \(I\) is a good rate function, vanishes at \(\beta_0\),
+and the corresponding subsequence of posteriors satisfies the full
+open-set lower and closed-set upper LDP with rate \(I\) and speed \(n\).
+If \(Q_n\to I\) uniformly along the full sequence, this is a full adaptive
+posterior LDP. These statements hold on one event for all continuous
+\(\varphi\) and all Borel sets.
+\end{theorem}
+\begin{proof}
+One has \(0\le Q_n\le M^2/(2\sigma^2)\), \(Q_n(\beta_0)=0\), and
+\(|Q_n(\beta)-Q_n(\gamma)|\le M d(\beta,\gamma)/\sigma^2\).
+Arzela--Ascoli gives precompactness. For every radius \(s>0\), full
+support and a finite \(s/2\)-cover give
+\[
+ m(s):=\inf_{\beta\in\mathcal K}\Pi\{d(\gamma,\beta)<s\}>0.
+\]
+For the equicontinuous family \(\varphi+Q_n\), integration over an
+\(s\)-ball about a minimizer gives
+\[
+ \inf(\varphi+Q_n)\le -n^{-1}\log\int e^{-n(\varphi+Q_n)}d\Pi
+ \le\inf(\varphi+Q_n)+\omega_\varphi(s)+Ms/\sigma^2
+       -n^{-1}\log m(s).
+\]
+Use this direct upper/lower integral bound also
+with \(\varphi=0\), use \eqref{eq:adaptive-uniform-likelihood-tracking},
+then let \(n\to\infty\) and \(s\downarrow0\).
+The argument is deterministic once the uniform tracking event holds, so it
+holds there for every continuous function without another exceptional set.
+On a subsequence with \(Q_n\to I\), it gives the uniform log-likelihood
+limit \(-I\). For an open set integrate a small neighbourhood of any one
+of its points; for a closed set take the supremum of the likelihood over
+that compact set. The denominator has exponent zero by the preceding
+argument. These give the two LDP bounds simultaneously for all Borel sets.
+\end{proof}
