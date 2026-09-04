@@ -25,6 +25,8 @@ MANIFEST_PATHS = (
     "round43/filter_memory.tex",
     "round43/infinite_jacobi.tex",
     "round43/quantitative_jacobi.tex",
+    "round43/effective_inversion_details.tex",
+    "round43/linear_time_protocol.tex",
     "round43/preparations.tex",
     "round43/appendix_uniformity.tex",
     "round43/references.tex",
@@ -51,10 +53,20 @@ REQUIRED_LABELS = (
     "thm:jacobi-reconstruction",
     "eq:jacobi-posterior-ldp",
     "thm:effective-jacobi-stability",
+    "lem:response-moment-triangularity",
+    "prop:effective-gram-reconstruction",
+    "thm:effective-response-jet-audit",
     "thm:growing-depth-recovery",
+    "thm:explicit-shrinking-block-rate",
     "cor:weighted-operator-recovery",
     "thm:adaptive-exploration-floor",
     "thm:honest-jacobi-cylinders",
+    "lem:l1-impulse-geometry",
+    "lem:predictable-intercept-information",
+    "thm:linear-time-adaptive-jacobi",
+    "thm:linear-time-honest-cylinders",
+    "eq:linear-physical-time",
+    "eq:linear-elapsed-rate",
     "eq:physical-time-complexity",
     "eq:physical-time-speed",
 )
@@ -72,7 +84,7 @@ def refresh_manifest() -> None:
             raise SystemExit(f"manifest source missing: {relative}")
         entries.append({"path": relative, "bytes": path.stat().st_size, "sha256": sha256(path)})
     payload = {
-        "source_set": "round43-positive-referee-closure-effective-jacobi",
+        "source_set": "round43-positive-referee-closure-v2-linear-time-effective-jacobi",
         "controlling_report": "REFEREE_REPORT_ROUND42_GPT56_PRO_HARSH.md",
         "reviewed_report_commit": "f66cb02217574c12b17b3a49ea630086da437e1f",
         "hash": "sha256",
@@ -92,10 +104,30 @@ def check_structure() -> dict[str, Any]:
     for label in REQUIRED_LABELS:
         if f"\\label{{{label}}}" not in article:
             failures.append(f"missing label {label}")
-    for token in (chr(12), "w_i=w_*i", "Doob's inequality", "conditional second moment at most"):
+    for token in (
+        chr(12),
+        "w_i=w_*i",
+        "Doob's inequality",
+        "conditional second moment at most",
+        r"C_\alpha(i+1)^{-1-\epsilon_w}",
+    ):
         if token in article:
             failures.append(f"stale forbidden token: {token}")
-    workflow = (ROOT / ".github/workflows/verify-round43.yml").read_text(encoding="utf-8")
+    for token in (
+        r"(1+\log(i+1))^{|\alpha|}",
+        r"\label{eq:explicit-moment-recursion}",
+        r"\label{eq:linear-posterior-upper}",
+        r"\label{eq:linear-confidence-radius}",
+    ):
+        if token not in article:
+            failures.append(f"required v2 source invariant absent: {token}")
+
+    workflow_dir = ROOT / ".github/workflows"
+    retained = sorted(p.name for p in workflow_dir.glob("*.yml"))
+    if retained != ["verify-round43.yml"]:
+        failures.append(f"unexpected retained workflows: {retained}")
+    workflow_path = workflow_dir / "verify-round43.yml"
+    workflow = workflow_path.read_text(encoding="utf-8") if workflow_path.is_file() else ""
     if "contents: read" not in workflow or "contents: write" in workflow or "git push" in workflow:
         failures.append("Round 43 verification workflow is not read-only")
     return {"passed": not failures, "failures": failures}
@@ -109,6 +141,8 @@ def check_manifest() -> dict[str, Any]:
     entries = data.get("files", [])
     if tuple(e.get("path") for e in entries) != MANIFEST_PATHS:
         failures.append("manifest path list differs from verifier publication unit")
+    if data.get("source_set") != "round43-positive-referee-closure-v2-linear-time-effective-jacobi":
+        failures.append("manifest source_set is not the v2 publication unit")
     for entry in entries:
         path = ROOT / entry["path"]
         if not path.is_file():
@@ -128,7 +162,14 @@ def check_build() -> dict[str, Any]:
     log = LOG.read_text(encoding="utf-8", errors="replace") if LOG.is_file() else ""
     if not LOG.is_file():
         failures.append("ROUND43_REVISION.log missing")
-    for token in ("! LaTeX Error:", "There were undefined references", "Citation `", "Reference `", "Emergency stop", "Fatal error occurred"):
+    for token in (
+        "! LaTeX Error:",
+        "There were undefined references",
+        "Citation `",
+        "Reference `",
+        "Emergency stop",
+        "Fatal error occurred",
+    ):
         if token in log:
             failures.append(f"build log contains: {token}")
     match = re.search(r"Output written on .*?\((\d+) pages?", log)
@@ -158,8 +199,26 @@ def main() -> int:
         "structure": check_structure(),
         "scope": {
             "formal_proof_assistant": False,
-            "checked": ["source invariants", "finite Vandermonde algebra", "manifest hashes", "two-pass LaTeX build", "read-only workflow"],
-            "analytic_proofs_for_referee": ["adaptive martingale likelihood", "strong dual measurability", "posterior LDP", "effective inverse stability", "growing-depth contraction", "confidence cylinders"],
+            "checked": [
+                "source invariants",
+                "finite Vandermonde algebra",
+                "response-moment recursion",
+                "finite Gram reconstruction",
+                "predictable-intercept sub-Gaussian inequality",
+                "manifest hashes",
+                "two-pass LaTeX build",
+                "single read-only workflow",
+            ],
+            "analytic_proofs_for_referee": [
+                "adaptive martingale likelihood",
+                "strong dual measurability",
+                "posterior LDP",
+                "effective inverse stability",
+                "growing-depth contraction",
+                "explicit shrinking radii",
+                "no-washout linear-time posterior bound",
+                "confidence cylinders",
+            ],
         },
     }
     if args.check_manifest:
