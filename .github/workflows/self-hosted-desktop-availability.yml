@@ -28,7 +28,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: revision/round43-referee-positive-closure-gpt56pro-2026-09-04
-          fetch-depth: 0
+          fetch-depth: 1
           clean: true
 
       - name: Freeze the stored Round 41 construction inputs
@@ -60,44 +60,14 @@ jobs:
           hardener.write_text(text, encoding='utf-8')
           PY
 
-      - name: Restore and harden the deterministic Round 43 materializer
+      - name: Restore and validate the hardened Round 43 materializer
         shell: bash
         run: |
           set -euo pipefail
           cat .round43_payload/part*.b64 > /tmp/materialize_round43.py.gz.b64
-          test "$(sha256sum /tmp/materialize_round43.py.gz.b64 | cut -d' ' -f1)" = "e5a60fc31aea1f860bc1c0b2b604ed7e8f6173bf848899935b3b4d115a55bb6d"
+          test "$(sha256sum /tmp/materialize_round43.py.gz.b64 | cut -d' ' -f1)" = "5e5ed75a74776c957674a48d28151fa2322131a1487b8dfeccbfc11a14caf72f"
           base64 --decode /tmp/materialize_round43.py.gz.b64 | gzip -dc > tools/materialize_round43.py
-          test "$(sha256sum tools/materialize_round43.py | cut -d' ' -f1)" = "af440e952aa27937786a01bc8cf39b66430165d4312779550dafe9f2501a207c"
-          python3 - <<'PY'
-          from pathlib import Path
-          p = Path('tools/materialize_round43.py')
-          text = p.read_text(encoding='utf-8')
-          old = r''' \frac{\sigma}{a}\sqrt{\frac{2\log(2|\mathcal Q|/\alpha)}{N_q(n)}}'''
-          new = r''' \frac{\sigma}{a}\sqrt{\frac{2\log(2n|\mathcal Q|/\alpha)}{N_q(n)}}'''
-          if text.count(old) != 1:
-              raise SystemExit(f'confidence-radius anchor count={text.count(old)}')
-          text = text.replace(old, new, 1)
-          old_proof = (
-              r"Conditional on the action record, the Gaussian terms in every \(\widehat h_q\)\n"
-              r"have variance \(\sigma^2/(a^2N_q)\).  The persistent-state bias is bounded by\n"
-              r"the second term of \eqref{eq:response-confidence-radius}.  A Gaussian tail\n"
-              r"bound and a union bound prove simultaneous coverage.  Apply"
-          )
-          new_proof = (
-              r"For every cell, the visit indicator at stage \(i\) is predictable before the\n"
-              r"fresh Gaussian readout.  Therefore the selected Gaussian sums are martingale\n"
-              r"transforms.  At each possible visit count \(1\le m\le n\), the corresponding\n"
-              r"sum is \(N(0,m\sigma^2)\); a union bound over cells, signs, and the at most\n"
-              r"\(n\) possible counts gives the first term of\n"
-              r"\eqref{eq:response-confidence-radius}.  This argument remains valid when\n"
-              r"future visits depend on earlier readouts.  The persistent-state bias is\n"
-              r"bounded by the second term.  Apply"
-          )
-          if text.count(old_proof) != 1:
-              raise SystemExit(f'confidence-proof anchor count={text.count(old_proof)}')
-          text = text.replace(old_proof, new_proof, 1)
-          p.write_text(text, encoding='utf-8')
-          PY
+          test "$(sha256sum tools/materialize_round43.py | cut -d' ' -f1)" = "27041361d57cb4c0112e49ddb55c18859d8ea0920fe8548808c4cbe68918aa3d"
           chmod +x tools/materialize_round43.py
           python3 -m py_compile tools/materialize_round41.py tools/harden_round41_ldp.py tools/materialize_round43.py
 
@@ -116,14 +86,15 @@ jobs:
           rm -rf .round43_payload
           python3 - <<'PY'
           from pathlib import Path
+
           keep = {'verify-round43.yml'}
           for path in Path('.github/workflows').glob('*'):
               if path.name in keep or not path.is_file():
                   continue
               text = path.read_text(encoding='utf-8', errors='replace')
-              if 'contents: write' in text or 'git push' in text or path.name == 'materialize-round43-bootstrap.yml':
+              if 'contents: write' in text or 'git push' in text or 'materialize' in path.name:
                   path.unlink()
-                  print(f'removed write-enabled workflow: {path}')
+                  print(f'removed source-writing workflow: {path}')
           PY
 
       - name: Ensure TeX dependencies
