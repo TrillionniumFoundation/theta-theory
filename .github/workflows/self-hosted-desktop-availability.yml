@@ -1,5 +1,4 @@
-# Finalizer source revision: 2a8c00de16f901213b94dae3b4738dbb9b5a1a38
-name: Trusted Round 43 materialization on desktop
+name: Trusted Round 43 final audit on desktop
 
 on:
   push:
@@ -11,12 +10,12 @@ permissions:
   contents: write
 
 concurrency:
-  group: trusted-round43-materialization
+  group: trusted-round43-final-audit
   cancel-in-progress: false
 
 jobs:
-  materialize-round43:
-    name: Materialize Round 43 on trusted desktop
+  audit-round43:
+    name: Strengthen and verify Round 43
     runs-on:
       - self-hosted
       - linux
@@ -25,43 +24,30 @@ jobs:
     env:
       REVISION_BRANCH: revision/round43-referee-positive-closure-gpt56pro-2026-09-04
     steps:
-      - name: Check out the revision branch
+      - name: Check out current revision head
         uses: actions/checkout@v4
         with:
           ref: revision/round43-referee-positive-closure-gpt56pro-2026-09-04
           fetch-depth: 1
           clean: true
 
-      - name: Materialize and freeze the ordinary Round 43 source tree
+      - name: Apply final mathematical and packet audit corrections
         shell: bash
         run: |
           set -euo pipefail
           test "$RUNNER_NAME" = desktop
-          python3 tools/finalize_round43.py
+          python3 tools/patch_round43_final_audit.py
+          rm tools/patch_round43_final_audit.py
 
-      - name: Verify inherited Round 41 object before retiring legacy writers
+      - name: Assert immutable workflow topology
         shell: bash
         run: |
           set -euo pipefail
-          python3 -m unittest -v tests/test_round41.py
-
-      - name: Remove staging payload and every source-writing workflow
-        shell: bash
-        run: |
-          set -euo pipefail
-          rm -rf .round43_payload
-          python3 - <<'PY'
-          from pathlib import Path
-
-          keep = {'verify-round43.yml'}
-          for path in Path('.github/workflows').glob('*'):
-              if path.name in keep or not path.is_file():
-                  continue
-              text = path.read_text(encoding='utf-8', errors='replace')
-              if 'contents: write' in text or 'git push' in text or 'materialize' in path.name or 'finalize' in path.name:
-                  path.unlink()
-                  print(f'removed source-writing workflow: {path}')
-          PY
+          test "$(find .github/workflows -maxdepth 1 -type f | wc -l)" -eq 1
+          test -f .github/workflows/verify-round43.yml
+          grep -q 'contents: read' .github/workflows/verify-round43.yml
+          ! grep -q 'contents: write' .github/workflows/verify-round43.yml
+          ! grep -q 'git push' .github/workflows/verify-round43.yml
 
       - name: Ensure TeX dependencies
         shell: bash
@@ -72,36 +58,35 @@ jobs:
             sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-fonts-recommended lmodern
           fi
 
-      - name: Run Round 43 source and algebra tests on the frozen object
+      - name: Run inherited and Round 43 checks
         shell: bash
         run: |
           set -euo pipefail
+          python3 -m unittest -v tests/test_round41.py
           python3 -m unittest -v tests/test_round43.py
 
-      - name: Build the exact materialized manuscript twice
+      - name: Build exact manuscript twice
         shell: bash
         run: |
           set -euo pipefail
           pdflatex -interaction=nonstopmode -halt-on-error ROUND43_REVISION.tex
           pdflatex -interaction=nonstopmode -halt-on-error ROUND43_REVISION.tex
 
-      - name: Refresh manifest and write verification record
+      - name: Refresh manifest and verification record
         shell: bash
         run: |
           set -euo pipefail
           python3 tools/verify_round43.py --refresh-manifest --check-manifest --check-build --json ROUND43_LOCAL_VERIFICATION.json
           python3 tools/verify_round43.py --check-manifest --check-build
 
-      - name: Commit reviewer object without workflow mutation
+      - name: Commit audited reviewer object
         shell: bash
         run: |
           set -euo pipefail
           git fetch origin "$REVISION_BRANCH"
           test "$(git rev-parse HEAD)" = "$(git rev-parse FETCH_HEAD)"
-          rm -rf .github/workflows
-          git checkout HEAD -- .github/workflows
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
-          git commit -m 'revision(round43): materialize effective Jacobi closure for re-review'
+          git commit -m 'revision(round43): strengthen adaptive rates and freeze review packet'
           git push origin HEAD:"$REVISION_BRANCH"
