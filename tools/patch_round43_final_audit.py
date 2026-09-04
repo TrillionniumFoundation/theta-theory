@@ -67,7 +67,7 @@ follows from Corollary~\ref{cor:weighted-operator-recovery}.
 
 replace_once(
     "round43/quantitative_jacobi.tex",
-    r"""uniform over the coefficient
+    r"""uniformly over the coefficient
 box, bounded feedback segments, and working initial-state priors.  If
 \(\mathcal Q\) contains the grid selected by \(s_J(\delta)\) and
 \(2\max_{q\in\mathcal Q}R_{q,n}(\alpha)\) is below the grid threshold in the
@@ -76,7 +76,7 @@ proof of Theorem~\ref{thm:effective-jacobi-stability}, then
 continues to hold for the growing regimes of
 Theorem~\ref{thm:growing-depth-recovery} whenever the corresponding cell
 counts diverge.""",
-    r"""uniform over the coefficient
+    r"""uniformly over the coefficient
 box, bounded feedback segments, and working initial-state priors.  Let
 \[
  \epsilon_{J,\delta}=\zeta_{R_J}2^{-s_J(\delta)}
@@ -91,7 +91,7 @@ Theorem~\ref{thm:effective-jacobi-stability}.  If \(\mathcal Q\) contains its
  \label{eq:honest-cylinder-explicit-threshold}
 \end{equation}
 then \(\operatorname{diam}_{d_J}\mathcal C_n(\alpha)\le\delta\).  The same
-coverage statement holds for triangular finite cell sets \(\mathcal Q_n\)\)
+coverage statement holds for triangular finite cell sets \(\mathcal Q_n\)
 when \(|\mathcal Q|\) in \eqref{eq:response-confidence-radius} is replaced by
 \(|\mathcal Q_n|\); the growing-block diameter conclusion follows whenever
 \eqref{eq:honest-cylinder-explicit-threshold} eventually holds.""",
