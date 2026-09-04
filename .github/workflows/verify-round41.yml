@@ -1,0 +1,68 @@
+name: Verify Round 41 revision
+
+on:
+  push:
+    branches:
+      - 'revision/round41-*'
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Detect a materialized Round 41 source set
+        id: gate
+        run: |
+          if test -f ROUND41_REVISION.tex; then
+            echo 'present=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'present=false' >> "$GITHUB_OUTPUT"
+            echo 'Materializer has not committed the source set yet; verification is intentionally skipped on this bootstrap push.'
+          fi
+
+      - name: Install TeX and PDF inspection tools
+        if: steps.gate.outputs.present == 'true'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y texlive-latex-base texlive-latex-recommended texlive-fonts-recommended poppler-utils
+
+      - name: Run exact algebra and source regression tests
+        if: steps.gate.outputs.present == 'true'
+        run: python3 -m unittest -v tests/test_round41.py
+
+      - name: Build the manuscript twice
+        if: steps.gate.outputs.present == 'true'
+        run: |
+          pdflatex -interaction=nonstopmode -halt-on-error ROUND41_REVISION.tex
+          pdflatex -interaction=nonstopmode -halt-on-error ROUND41_REVISION.tex
+
+      - name: Verify source manifest and clean build
+        if: steps.gate.outputs.present == 'true'
+        run: python3 tools/verify_round41.py --check-manifest --check-build --json ROUND41_CI_VERIFICATION.json
+
+      - name: Render and inspect every PDF page
+        if: steps.gate.outputs.present == 'true'
+        run: |
+          mkdir -p ROUND41_RENDER
+          pdftoppm -png -r 120 ROUND41_REVISION.pdf ROUND41_RENDER/page
+          pages=$(pdfinfo ROUND41_REVISION.pdf | awk '/^Pages:/ {print $2}')
+          rendered=$(find ROUND41_RENDER -maxdepth 1 -name 'page-*.png' | wc -l)
+          test "$pages" -gt 0
+          test "$rendered" -eq "$pages"
+          pdftotext ROUND41_REVISION.pdf ROUND41_RENDER/manuscript.txt
+          grep -q 'Jacobi posterior response-rate bound' ROUND41_RENDER/manuscript.txt
+          grep -q 'Complete windows in every finite prefix' ROUND41_RENDER/manuscript.txt
+          grep -q 'Supremum-norm response strong laws' ROUND41_RENDER/manuscript.txt
+
+      - uses: actions/upload-artifact@v4
+        if: steps.gate.outputs.present == 'true'
+        with:
+          name: round41-verified-revision
+          path: |
+            ROUND41_REVISION.pdf
+            ROUND41_REVISION.log
+            ROUND41_CI_VERIFICATION.json
+            ROUND41_RENDER/
