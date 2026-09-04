@@ -83,9 +83,13 @@ replacements = [
         'self.assertIn(r"K_J' + bs * 2 + 'delta^{2R_J+3}", quantitative)',
         'self.assertIn(r"K_J' + bs + 'delta^{2R_J+3}", quantitative)',
     ),
+    (
+        'self.assertNotIn("rac1n", article)',
+        'self.assertNotIn(chr(12), article)\n        self.assertIn(r"' + bs + 'frac1n' + bs + 'log", article)',
+    ),
 ]
 for old, new in replacements:
-    text = replace_exactly_once(text, old, new, "Round 43 TeX certificate literal")
+    text = replace_exactly_once(text, old, new, "Round 43 certificate-test literal")
 materializer.write_text(text, encoding="utf-8")
 materializer.chmod(0o755)
 postpatch_sha = sha256_bytes(materializer.read_bytes())
@@ -100,8 +104,8 @@ run(sys.executable, "tools/materialize_round43.py")
 # Make the source-control-character repair an explicit invariant of the frozen object.
 for relative in ("round41/infinite_jacobi.tex", "round43/infinite_jacobi.tex"):
     rendered = (ROOT / relative).read_text(encoding="utf-8")
-    if "rac1n" in rendered or chr(12) in rendered:
-        raise RuntimeError(f"stale LDP denominator survived in {relative}")
+    if chr(12) in rendered:
+        raise RuntimeError(f"form-feed survived in {relative}")
     if good_denominator not in rendered:
         raise RuntimeError(f"correct LDP denominator missing from {relative}")
 
