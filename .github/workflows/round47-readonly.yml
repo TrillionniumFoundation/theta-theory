@@ -1,0 +1,49 @@
+name: Round 47 read-only source and proof-build checks
+on:
+  push:
+    branches: ['revision/round47-sharp-boundary-depth-2026-09-05']
+    paths:
+      - '.github/workflows/round47-readonly.yml'
+      - 'ROUND47_REVISION.tex'
+      - 'round47/**'
+      - 'tools/verify_round47.py'
+      - 'tests/test_round47.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: [self-hosted, linux, x64]
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Export the exact checked-out source for local analysis
+        shell: bash
+        run: |
+          set -euo pipefail
+          git ls-files -z '*.tex' '*.md' '*.py' '*.json' '*.yml' '*.yaml' '*.bib' 'Makefile' > "$RUNNER_TEMP/round47-paths"
+          tar --null -T "$RUNNER_TEMP/round47-paths" -czf ROUND47_SOURCE_SNAPSHOT.tar.gz
+          git rev-parse HEAD > ROUND47_SNAPSHOT_COMMIT.txt
+      - name: Verify and build when the revision is present
+        shell: bash
+        run: |
+          set -euo pipefail
+          if test -f tools/verify_round47.py && test -f ROUND47_REVISION.tex; then
+            python3 tools/verify_round47.py --build --source-sha "$(git rev-parse HEAD)"
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: round47-readonly-${{ github.sha }}
+          path: |
+            ROUND47_SOURCE_SNAPSHOT.tar.gz
+            ROUND47_SNAPSHOT_COMMIT.txt
+            ROUND47_REVISION.pdf
+            ROUND47_REVISION.log
+            ROUND47_VERIFICATION.json
+            ROUND47_BUILD_*.log
+            ROUND47_TESTS.log
+          if-no-files-found: error
