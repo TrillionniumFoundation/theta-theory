@@ -88,25 +88,38 @@ replacements = [
 for old, new in replacements:
     text = replace_exactly_once(text, old, new, "Round 43 TeX certificate literal")
 
-# The old regression assertion named the malformed suffix rather than the
-# actual control character.  Match its syntax, preserve its subject variable,
-# and strengthen it into a negative and a positive source invariant.
-pattern = re.compile(
-    r'''(?m)^(?P<indent>\s*)self\.assertNotIn\((?P<quote>["'])rac1n(?P=quote),\s*(?P<subject>[A-Za-z_][A-Za-z0-9_]*)\)\s*$'''
+# The stale regression is represented as one member of a token tuple, followed
+# by a generic assertion.  Replace that tuple member with the actual control
+# character and strengthen the same loop with a positive denominator check.
+token_pattern = re.compile(
+    r'''(?m)^(?P<indent>\s*)(?P<prefix>[rRuUbBfF]*)(?P<quote>["'])rac1n(?P=quote),\s*$'''
 )
 
-def strengthen_control_character_guard(match: re.Match[str]) -> str:
+def replace_bad_token(match: re.Match[str]) -> str:
+    return f'{match.group("indent")}chr(12),'
+
+text, token_count = token_pattern.subn(replace_bad_token, text)
+if token_count != 1:
+    raise RuntimeError(
+        f"Round 43 malformed-token tuple: expected one member, found {token_count}"
+    )
+
+assertion_pattern = re.compile(
+    r'''(?m)^(?P<indent>\s*)self\.assertNotIn\(token,\s*(?P<subject>[A-Za-z_][A-Za-z0-9_]*)\)\s*$'''
+)
+
+def strengthen_token_loop(match: re.Match[str]) -> str:
     indent = match.group("indent")
     subject = match.group("subject")
     return (
-        f"{indent}self.assertNotIn(chr(12), {subject})\n"
+        f"{indent}self.assertNotIn(token, {subject})\n"
         f'{indent}self.assertIn(r"{bs}frac1n{bs}log", {subject})'
     )
 
-text, guard_count = pattern.subn(strengthen_control_character_guard, text)
-if guard_count != 1:
+text, assertion_count = assertion_pattern.subn(strengthen_token_loop, text)
+if assertion_count != 1:
     raise RuntimeError(
-        f"Round 43 LDP guard: expected one syntactic assertion, found {guard_count}"
+        f"Round 43 token-loop assertion: expected one line, found {assertion_count}"
     )
 
 materializer.write_text(text, encoding="utf-8")
