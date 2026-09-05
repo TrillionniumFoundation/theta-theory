@@ -1,0 +1,105 @@
+\section{Finite-order jets and executable derivative recursions}\label{app:jets}
+\subsection{Bell polynomials with every coefficient specified}
+For $1\le k\le r$, the partial exponential Bell polynomial is
+\begin{equation}
+ B_{r,k}(x_1,\ldots,x_{r-k+1})
+ =\sum_{\substack{m_1,\ldots,m_r\ge0\\\sum m_j=k,\ \sum jm_j=r}}
+ \frac{r!}{\prod_jm_j!}\prod_j\left(\frac{x_j}{j!}\right)^{m_j}.
+ \label{eq:Bell}
+\end{equation}
+Then
+\[
+ \frac{d^r}{da^r}f(b(a))
+ =\sum_{k=1}^rf^{(k)}(b(a))B_{r,k}(b',\ldots,b^{(r-k+1)}).
+\]
+To prove the coefficient, expand $b(a+h)-b(a)$ to order $r$, insert it into the Taylor polynomial of $f$, and collect the coefficient of $h^r$. A choice of $m_j$ uses $k=\sum m_j$ factors of the inner expansion with total order $\sum jm_j=r$. The multinomial factor $k!/\prod m_j!$ cancels the outer $1/k!$, while multiplication by $r!$ converts the coefficient into the derivative. This proves \eqref{eq:Bell} without assuming an infinite convergent Taylor series.
+
+The first four derivatives are
+\begin{align*}
+ (f\circ b)'&=f'b',\\
+ (f\circ b)''&=f''b'^2+f'b'',\\
+ (f\circ b)'''&=f'''b'^3+3f''b'b''+f'b''',\\
+ (f\circ b)^{(4)}&=f^{(4)}b'^4+6f'''b'^2b''+3f''b''^2
+ +4f''b'b'''+f'b^{(4)}.
+\end{align*}
+
+\subsection{Distributional signs at a moving threshold}
+For $H_b(x)=\one_{x\ge b(a)}$,
+\begin{align*}
+ \partial_aH_b&=-b'\delta(x-b),\\
+ \partial_a^2H_b&=-b''\delta(x-b)+b'^2\delta'(x-b),\\
+ \partial_a^3H_b&=-b'''\delta(x-b)+3b'b''\delta'(x-b)-b'^3\delta''(x-b).
+\end{align*}
+Since $\langle\delta^{(j)}(x-b),f\rangle=(-1)^jf^{(j)}(b)$, the integrated derivatives are respectively
+\[
+ -b'f(b),\quad -b''f(b)-b'^2f'(b),\quad
+ -b'''f(b)-3b'b''f'(b)-b'^3f''(b).
+\]
+These signs explain why every term of \eqref{eq:local-all} has the same minus sign despite alternating delta derivatives in \eqref{eq:local-current}.
+
+\subsection{All finite parameter jets of a smooth ODE}
+Let $\dot z=f(a,z)$ and $z_j=\partial_a^jz$. The complete derivative of $f(a,z(a))$ at order $r$ is
+\begin{equation}
+ \sum_{\substack{p,m_1,\ldots,m_r\ge0\\p+\sum jm_j=r}}
+ \frac{r!}{p!\prod_jm_j!(j!)^{m_j}}
+ (\partial_a^pD_z^kf)
+ [z_1^{\otimes m_1},\ldots,z_r^{\otimes m_r}],
+ \quad k=\sum_jm_j.
+ \label{eq:ODE-jets}
+\end{equation}
+The term $p=0,m_r=1$ is $D_zf\,z_r$. Removing it leaves a forcing $\mathcal F_r$ depending only on lower jets and derivatives of $f$, so
+\[
+ \dot z_r=D_zf\,z_r+\mathcal F_r.
+\]
+The coefficient is obtained from the multivariate finite Taylor expansion in $(a,z)$, exactly as above. In particular,
+\begin{align*}
+ \mathcal F_1&=f_a,\\
+ \mathcal F_2&=f_{aa}+2f_{az}z_1+f_{zz}[z_1,z_1],\\
+ \mathcal F_3&=f_{aaa}+3f_{aaz}z_1+3f_{azz}[z_1,z_1]+f_{zzz}[z_1,z_1,z_1]\\
+ &\quad+3f_{az}z_2+3f_{zz}[z_1,z_2].
+\end{align*}
+If $\norm{D_zf}\le L$, variation of constants gives
+\[
+ |z_r(t)|\le e^{Lt}\left(|z_r(0)|+\int_0^te^{-Ls}|\mathcal F_r(s)|ds\right).
+\]
+This is a finite recursion for every norm bound. It does not promise a common analytic radius or favorable growth in collision number.
+
+\subsection{Implicit event times: a coefficient algorithm}
+For $F(a,t)$ with $F(a_0,\tau_0)=0$, $F_t\ne0$, write
+$\tau(a_0+h)=\tau_0+\sum_{j=1}^rc_jh^j+o(h^r)$.
+At step $j$, substitute the known terms $c_1,\ldots,c_{j-1}$ into the order-$j$ Taylor polynomial of $F$, setting $c_j=0$, and let $d_j$ be the coefficient of $h^j$. The only contribution of the unknown $c_j$ at this order is $F_tc_jh^j$. Therefore
+\[
+ c_j=-d_j/F_t,\qquad \tau^{(j)}=j!c_j.
+\]
+All operations are finite polynomial additions, multiplications, and one division by the known nonzero transverse derivative. This proves the algorithm and the formulas \eqref{eq:tau-high}. For certified interval arithmetic, the interval for $F_t$ must exclude zero; a nonzero floating sample is insufficient.
+
+\subsection{Quotients, logarithms, and updated predictor jets}
+For $U=N/Z$ with $Z>0$,
+\begin{equation}
+ U^{(r)}=\frac{N^{(r)}-\sum_{j=1}^r\binom rjZ^{(j)}U^{(r-j)}}{Z}.
+ \label{eq:quotient-jets}
+\end{equation}
+This is the $r$th derivative of $ZU=N$, solved for the highest derivative. It applies equally to conditional predictions, collision probabilities, and vector-valued normalized currents. If $Z\ge z_*$, a computable bound is
+\[
+ B_r\le z_*^{-1}\left(N_r+\sum_{j=1}^r\binom rj Z_jB_{r-j}\right),
+\]
+where $N_r,Z_j$ bound the numerator and denominator derivatives. The same algebra gives the perturbation recursion \eqref{eq:response-error}.
+
+For $\Psi=\log Z$, differentiate $Z'=Z\Psi'$ to obtain
+\[
+ \Psi^{(r)}=
+ \frac{Z^{(r)}-\sum_{j=1}^{r-1}\binom{r-1}{j}Z^{(j)}\Psi^{(r-j)}}Z.
+\]
+This agrees with the partition formula \eqref{eq:cumulants}. Derivative arrays use actual derivatives, not Taylor coefficients; factors of $j!$ are inserted explicitly when passing to polynomial algorithms.
+
+\subsection{Uniform remainders}
+For a Banach-valued $C^r$ curve on an interval,
+\[
+ J(a+h)-\sum_{j=0}^{r-1}\frac{h^j}{j!}J^{(j)}(a)
+ =\frac{h^r}{(r-1)!}\int_0^1(1-t)^{r-1}J^{(r)}(a+th)dt.
+\]
+Its norm is at most $|h|^r\sup\norm{J^{(r)}}/r!$. Subtracting the $r$th Taylor term leaves $o(|h|^r)$ if $J^{(r)}$ is uniformly continuous. For finite assemblies, a common Cauchy bound through order $r$ allows this formula to pass to the limit. The next derivative cannot be invoked unless it exists on a stated stronger domain.
+
+\subsection{The entire-equilibrium collision derivatives as an independent check}
+For $p_R=2TR/(A_\Lambda-\pi R^2)$, compute jets by differentiating this scalar rational function, or independently by the product equation $A_Rp_R=2TR$. At $r\ge2$ the latter gives the two-term recursion in Corollary~\ref{cor:global-hit}. The independent routes agree at every finite order and are tested through several orders in the accompanying program. Their agreement checks coefficient indexing but is not a proof of the geometric tube identity.
+\par

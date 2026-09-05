@@ -1,0 +1,74 @@
+\section{Stability and finite implementation certificates}\label{sec:stability}
+\subsection{Coefficient errors without cancellation}
+Suppose $c_i>0$ and an unnormalized approximation satisfies
+$(1-\delta)c_i\le\widetilde c_i\le(1+\delta)c_i$ for $0\le\delta<1$.
+Since Bernstein basis functions are nonnegative and sum to one, the same
+inequality holds for $P_{\widetilde c}/P_c$. Posterior normalization therefore
+gives
+\begin{equation}
+ \TV(\pi_c,\pi_{\widetilde c})\le
+             \min\{1,\delta/(1-\delta)\}.
+ \label{eq:posterior-error}
+\end{equation}
+Indeed the normalized density ratio is between
+$(1-\delta)/(1+\delta)$ and $(1+\delta)/(1-\delta)$; integrating its
+absolute difference and dividing by two proves the stated conservative
+bound. Zero coefficients of an approximant are not permitted when claiming
+a relative-error certificate with $\delta<1$.
+
+More generally suppose each positive update is performed with a componentwise
+relative error in $[1-\rho_j,1+\rho_j]$, with $\rho_j<1$. Work with
+unnormalized coefficient vectors; exact rescaling by a common scalar does
+not affect the posterior. Positivity of \eqref{eq:bern-product} propagates
+componentwise bounds. After $n$ updates the true and computed polynomial
+ratio is between $L_n=\prod_j(1-\rho_j)$ and
+$U_n=\prod_j(1+\rho_j)$. Thus
+\begin{equation}
+ \TV(\pi,\widetilde\pi)\le
+              \min\{1,(U_n-L_n)/(2L_n)\}.
+ \label{eq:accumulated-error}
+\end{equation}
+Errors in command selection or detector evaluation are not automatically
+coefficient roundoff and must be bounded separately. The estimate does not
+assert that an arbitrary floating-point implementation meets its hypothesis.
+
+\subsection{Values are stable under prior perturbation}
+For any two posterior probabilities $\pi,\widetilde\pi$ at the same resource
+state, the ideal admissible continuation-policy set is the same. For a
+fixed remaining-$b$ policy, the conditional expected payoff as a function of
+$R$ lies in $[G_-e^{-b|\lambda|B},G_+e^{b|\lambda|B}]$. Integration against
+the two priors gives
+\begin{equation}
+ |V_b(\pi)-V_b(\widetilde\pi)|\le
+ \bigl(G_+e^{b|\lambda|B}-G_-e^{-b|\lambda|B}\bigr)
+                         \TV(\pi,\widetilde\pi).
+ \label{eq:value-stability}
+\end{equation}
+The bound holds for suprema because the same bound holds uniformly for
+every fixed policy; a policy may be optimized separately for each prior.
+It also holds for a common restricted finite command menu. Combining it
+with \eqref{eq:posterior-error} or \eqref{eq:accumulated-error} gives a
+state-rounding value certificate. This is a bound on values from the two
+priors, not an automatic optimality bound for every history-dependent
+rounded-state implementation. Choosing a policy optimal for the approximate
+prior gives a bound of twice the displayed error on its regret at that
+single decision problem, by adding and subtracting its value under the
+approximate prior.
+
+\subsection{What the executable checks establish}
+The companion test program checks the exact polynomial identities, the
+Bernstein multiplication and posterior formulas, failure updates, a discrete
+support-function and two-step control diagnostic, and the information and
+response calculations. Independent ambient geometric sampling solves
+line--circle intersections rather than drawing from the collision-tube
+coordinates. Its finite sample tolerance is reported with the seed and
+standard errors. It does not establish the geometric coverage proof.
+
+The original referee's twelve-check script is retained byte-for-byte and
+rerun separately. Its counterexamples remain useful regression tests:
+passing them does not mean the earlier broad statements were correct.
+Appendix~\ref{app:repairs} supplies the corrected statements and proofs.
+The new execution receipts distinguish exact symbolic/rational identities,
+floating numerical checks, stochastic checks, source compilation, and visual
+inspection. No proof-assistant verification, exhaustive priority search, or
+journal assessment follows from these checks.
