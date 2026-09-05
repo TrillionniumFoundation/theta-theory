@@ -1,0 +1,128 @@
+\section{Positive inference and the rank of attainable likelihoods}\label{sec:rank}
+\subsection{An exact filter with boundary-complete failures}
+Put $t=(R-l)/(u-l)$, $\Delta=u-l$ and $B_i^d(t)=\binom di t^i(1-t)^{d-i}$. The degree-three Bernstein coefficients of $R,R^2,R^3$ are
+\[
+ r_j=l+\Delta j/3,\quad s_j=l^2+2l\Delta j/3+\Delta^2j(j-1)/6,
+ \quad d_j=l^{3-j}u^j\quad(0\le j\le3).
+\]
+Consequently the raw numerator coefficients are
+\[
+ h_j(a,\partial)=\pi s_j,\quad h_j(a,0,y)=a_0-\pi s_j-br_j,
+ \quad h_j(a,1,y)=b(r_j+\epsilon d_j\cos(y-\theta)).
+\]
+They are uniformly positive: $l\le r_j\le u$, $s_j\le u^2$ and $d_j\le u^2r_j$. The last inequality follows directly for $j=0,3$; for $j=1,2$ it reduces to $3l^2\le u(2l+u)$ and $3l\le l+2u$. Thus $h_j\ge h_*$, and write $H_*$ for a finite common upper bound.
+
+\begin{theorem}[Full-likelihood positive filter]\label{thm:filter}
+For every fixed adaptive controller, every non-null length-$n$ history has a likelihood, up to a positive radius-independent scalar,
+\[
+ P_c(R)=\sum_{i=0}^{3n}c_iB_i^{3n}(t),\qquad c_i>0,\quad\sum_i c_i=1.
+\]
+At degree $d=3n$, on an accepted $x$ use $h_j=h_j(a,x)$; on censoring use $h_j=\int(1-g)h_j(a,x)\,d\nu$. The update is
+\begin{equation}
+ \widehat c_k=\sum_{i+j=k}\frac{\binom di\binom3j}{\binom{d+3}k}c_i h_j,
+ \qquad c'_k=\widehat c_k/\sum_\ell\widehat c_\ell.
+ \label{eq:update}
+\end{equation}
+For any fixed prior $\pi_0$, the posterior is
+$\pi_c=P_c\pi_0/\int P_c\,d\pi_0$. Under a uniform prior in $t$, it is the mixture $\sum_i c_i\,\mathrm{Beta}(i+1,d-i+1)$. The update uses $O(n)$ positive arithmetic operations once the four one-step coefficients are available.
+
+These conclusions hold for $0\le g\le1$. For each finite budget there are compact state strata $\cS_n$, closed under actual non-null updates, whose normalized coefficients are bounded away from zero. The posterior map on each stratum is continuous in total variation. A null branch may be assigned any fixed next state.
+\end{theorem}
+\begin{proof}
+At a realized history the command is fixed independently of $R$. The chronological likelihood is a product of accepted factors $g(x)H_a(R,x)/a_0$ and failed factors $H_\dagger(R;m)/a_0$. Only radius-independent positive scalars are discarded. The identity
+$B_i^dB_j^3=\binom di\binom3j\binom{d+3}{i+j}^{-1}B_{i+j}^{d+3}$ gives the update and its positivity. There are at most four summands per output coordinate. Bayes' formula proves the posterior assertion, and $\int_0^1B_i^d=1/(d+1)$ proves the beta-mixture weights.
+
+For endpoint gates put $s(g)=\int(1-g)\,d\nu$. If a failure is possible then $s(g)>0$ and its coefficients lie in $[h_*s(g),H_*s(g)]$. Normalize a factor before multiplication. Every normalized raw or nonzero failed factor then has each coordinate at least $h_*/(4H_*)$. Products of the compact set of such normalized factors give compact $\cS_n$ with positive minima on each finite stratum. An accepted point with $g(x)=0$ and a failure with $s(g)=0$ are null for every radius. Coefficient convergence implies uniform polynomial convergence, and the positive minima control Bayes normalizers for any prior; hence posterior total-variation continuity follows.
+\end{proof}
+
+This is a full curve on $I$, not a nominal-radius jet. The first three posterior moments predict one raw report, but they need not determine future decisions. Computing arbitrary gate integrals, prior integrals, or an optimal value function is not included in the coefficient arithmetic count.
+
+\begin{proposition}[Uniform positive elevation and a retained denominator]\label{prop:elevation}
+Suppose $H(t)=\sum_{j=0}^q a_jt^j\ge h>0$ on $[0,1]$, with uniform bounds on $a_j$ over an experiment family. At every sufficiently large common degree $m$, its Bernstein coefficients are uniformly positive. In particular, densities $H_a(R,x)/D(R)$ with a fixed positive denominator admit exact positive likelihood updates of the form $P_n(R)/D(R)^n$. The denominator may not be discarded.
+\end{proposition}
+\begin{proof}
+At degree $m\ge q$ the coefficient at $k$ is $b_{k,m}=\sum_j a_j(k)_j/(m)_j$, with a zero ratio when $k<j$. Sampling $j$ times without replacement versus with replacement gives
+\[
+ |b_{k,m}-H(k/m)|\le\frac1{2m}\sum_{j=0}^q|a_j|j(j-1).
+\]
+Indeed the procedures couple until a repeated draw, whose probability is at most $j(j-1)/(2m)$. Choose $m$ so the bound is below $h/2$. Positive gates and integrals against $1-g$ preserve the positive coefficients; normalize nonzero factors to handle endpoint gates. Bernstein multiplication then proves the likelihood formula. Conditional successful-placement trials, for example, retain $A(R)^{-n}$, unlike the ambient counted experiment.
+\end{proof}
+
+\subsection{A necessary and sufficient coefficient-rank criterion}
+Consider now a fixed normalized polynomial channel $k_R(x)$ on a finite reference space $(X,\nu)$, with $R$ in a nondegenerate compact interval. Assume its monomial coefficients are bounded and measurable, $0<\kappa\le k_R(x)\le K$, and $\int k_R\,d\nu=1$ for every $R$. Let
+\[
+ T f=\int f(x)k_{\cdot}(x)\,d\nu(x),\qquad V=\operatorname{range}T\subset\mathcal P_q,
+ \quad r=\dim V,
+\]
+where $q$ is the maximal degree occurring in $V$. All identities between coefficient functions are interpreted on one common full-measure set. In particular $1=T1\in V$. Choose a basis $p_1,\ldots,p_r$ of $V$ and write $k_R(x)=\sum_i\psi_i(x)p_i(R)$. The $\psi_i$ are bounded and linearly independent in $L^1(\nu)$.
+
+\begin{theorem}[Attainability rank and exact product dimension]\label{thm:rank}
+Let $0\le\eta<1/2$. The failure set
+$\mathcal F_\eta=\{T(1-g):\eta\le g\le1-\eta\}$ has nonempty relative interior in $V$. In the full monomial basis it has nonempty interior in $\mathcal P_q$ if and only if its $q+1$ coefficient functions are linearly independent in $L^1(\nu)$.
+
+For every $n$, normalized likelihoods of $n$ possible reports from this channel, with arbitrary common gates, have Hausdorff dimension exactly $n(r-1)$ in polynomial-coefficient space. There is a relatively open set of normalized factor tuples whose product images are locally smooth embedded manifolds of that dimension; all-censoring histories already realize them. Any continuously encoded Euclidean state that determines these likelihoods up to scalar has at least $n(r-1)$ coordinates. A full-support prior gives the same posterior-state lower bound. When $r=q+1$, the bound is $qn$ and is attained by the normalized degree-$qn$ polynomial coefficients.
+
+More quantitatively, put
+\[
+ G=\int\psi\psi^\top\,d\nu,\quad C=\mathop{\rm ess\,sup}_x\norm{G^{-1}\psi(x)}_2,
+ \quad s=1/2-\eta.
+\]
+Then $G$ is positive definite and the coordinate ball of radius $s/C$ around $T(1/2)$ lies in $\mathcal F_\eta$. Under a perturbation in the same fixed polynomial basis with
+$\|\widetilde\psi-\psi\|_{L^\infty(\ell^2)}\le e$ and $\|\psi\|_{L^\infty(\ell^2)}\le M$, independence persists whenever
+\begin{equation}
+ \nu(X)(2Me+e^2)<\lambda_{\min}(G).
+ \label{eq:rank-stability}
+\end{equation}
+Normalization and positive density bounds must also be preserved by the perturbed channel.
+\end{theorem}
+\begin{proof}
+Independence gives $z^\top Gz=\int(z\cdot\psi)^2>0$ for $z\ne0$. A desired coordinate displacement $d$ is realized by
+$1-g=1/2+\psi^\top G^{-1}d$, whose distance from $1/2$ is at most $C\|d\|_2$. This proves the ball and relative interior. Conversely a linear dependence among the full coefficient functions puts the entire range in a proper hyperplane. This proves necessity as well as sufficiency, including the command realization.
+
+Fix $R_*\in I$ and normalize every positive factor by its value there. Non-null raw factors and failed factors lie in $V$. Their normalized coefficient vectors belong to a bounded subset of the affine space $\{F\in V:F(R_*)=1\}$: raw coefficients are bounded and raw values are at least $\kappa$; for failures the same bounds are multiplied by $\int(1-g)\,d\nu$, which cancels on normalization. Thus every product lies in the image of a bounded subset of $\R^{n(r-1)}$ under a polynomial multiplication map. That map is Lipschitz on bounded sets, so its image has Hausdorff dimension at most $n(r-1)$.
+
+For the lower bound assume $r>1$; the case $r=1$ is the parameter-independent channel and is immediate. Choose $P\in V$ of degree $q$. The attainable interior contains $F_i=1/2+\gamma_iP$ for distinct sufficiently small nonzero $\gamma_i$. Each has degree $q$ and they are pairwise coprime: a common root for $F_i,F_j$ would imply $-1/(2\gamma_i)=-1/(2\gamma_j)$. The product differential is
+\[
+ (\dot F_i)_{i=1}^n\longmapsto\sum_i\dot F_i\prod_{j\ne i}F_j.
+\]
+If it vanishes, reduction modulo $F_i$ and coprimality imply $F_i\mid\dot F_i$. Since both degrees are at most $q$, $\dot F_i=\lambda_iF_i$. On the normalized factor hyperplanes $\dot F_i(R_*)=0$, so all $\lambda_i=0$. The differential is injective and has rank $n(r-1)$. The constant-rank theorem gives a locally embedded product image. Coprimality remains true in a neighborhood; the vanishing resultant is a proper polynomial condition, so such tuples form the nondegenerate generic stratum. The displayed right inverse to $T$ realizes these factors by gates continuously, and their failures have positive probability at every radius. This proves the matching dimension.
+
+Compose any exact continuous encoding with the local command section of this manifold. It must be a continuous injection from an open subset of $\R^{n(r-1)}$. No such injection into $\R^k$ with $k<n(r-1)$ exists: padding with zeros contradicts invariance of domain. Equality of posterior measures under a full-support prior implies equality of their continuous positive normalized likelihoods, yielding the posterior version. For full rank, ordinary degree-$qn$ coefficients normalized at $R_*$ give exactly $qn$ continuous free coordinates; positivity of Bernstein coordinates is a separate representation property.
+
+Finally, expand the difference of the two Gram matrices. The operator norm is at most $\nu(X)(2Me+e^2)$. The Rayleigh quotient then bounds the new least eigenvalue below by the old one minus this quantity, proving the perturbation assertion.
+\end{proof}
+
+The rank-deficient result is a statement about local and Hausdorff dimension, not a claim of a global $n(r-1)$-coordinate embedding of a possibly singular product space. The full-rank coefficient representation does attain the global lower bound. The theorem assumes a normalized polynomial density; the rational-denominator closure above is not silently used to assert $1\in V$ for an unnormalized numerator space.
+
+\subsection{Selection-induced rank amplification in the actual apparatus}
+\begin{theorem}[Passive dimension, active dimension and an attainable radius]\label{thm:amplification}
+Fix $T>0$, $\epsilon>0$ and $\theta$ in the Lorentz apparatus. At budget $n$, passive reports with $g\equiv1$ have maximal likelihood dimension $n$. Allowing common gates at this same fixed mode gives dimension $3n$ already on all-censoring histories. Thus the $3n$ free coordinates of Theorem~\ref{thm:filter} are necessary and sufficient for the full continuous command family.
+
+For failure \emph{numerators}, a coefficient cube of radius
+\begin{equation}
+ \rho=\frac{1/2-\eta}{\max\{a_0^{-1}+\pi^{-1},\ a_0^{-1}+b^{-1}+2/(b\epsilon)\}}
+ \label{eq:lorentz-inball}
+\end{equation}
+around $a_0/2$ is attainable. If $\epsilon=0$, active dimension is $2n$ and passive dimension is zero.
+\end{theorem}
+\begin{proof}
+Use $g(\partial)=1/2+\alpha_\partial$, $g(0,y)=1/2+\alpha_0$ and
+$g(1,y)=1/2+\alpha_1+\alpha_2\cos(y-\theta)$. The displacement of the four power coefficients of the failed numerator is
+\[
+ (d_0,d_1,d_2,d_3)=(-a_0\alpha_0,\ b(\alpha_0-\alpha_1),
+ \pi(\alpha_0-\alpha_\partial),\ -b\epsilon\alpha_2/2).
+\]
+This map is invertible. Its inverse gives
+$\alpha_0=-d_0/a_0$, $\alpha_1=-d_0/a_0-d_1/b$,
+$\alpha_\partial=-d_0/a_0-d_2/\pi$ and $\alpha_2=-2d_3/(b\epsilon)$.
+The cube in the statement ensures $|\alpha_\partial|,|\alpha_0|\le1/2-\eta$ and $|\alpha_1|+|\alpha_2|\le1/2-\eta$, proving admissibility. The coefficient rank is four, so Theorem~\ref{thm:rank} gives $3n$.
+
+For a passive history let its tag counts be $n_\partial,n_0,n_1$. Up to scalars its likelihood is
+\[
+ R^{2n_\partial+n_1}(a_0-\pi R^2-bR)^{n_0}
+ \prod_{i=1}^{n_1}(1+\epsilon c_iR^2),\qquad c_i=\cos(y_i-\theta).
+\]
+Each fixed tag pattern therefore contributes at most $n_1$ dimensions, and there are finitely many patterns. On all-hit histories choose distinct nonzero $c_i\in(-1,1)$. The coprime linear-factor differential in the variable $R^2$ has rank $n$, with a smooth local section through $y_i\in(0,\pi)$ after the phase shift. Multiplication by $R^n$ and normalization do not change rank. This proves equality. For $\epsilon=0$, all raw records depend only on the three tags, giving finitely many likelihoods at each budget. Their polynomial space is exactly $\operatorname{span}\{1,R,R^2\}$; the active rank is three and its dimension is $2n$.
+\end{proof}
+
+The interior radius tends to zero with $\epsilon$. Exact rank is consequently not a uniform numerical conditioning assertion near the degenerate detector. Nor does dimension amplification assert an information increase by censoring: the comparison is across \emph{known command histories}. For any fixed gate, censoring is still a garbling of its raw experiment, as the information calculation below confirms.
