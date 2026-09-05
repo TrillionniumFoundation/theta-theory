@@ -1,0 +1,126 @@
+\subsection{Finite-sample concentration, including the nuisance integral}
+Set
+\[
+ z=3\sigma+1,\quad V=\max(1,M^4,\sigma^2M^2),\quad
+ e(t)=\min\{1,t/(8M),t/(2z)\},
+\]
+and define
+\begin{equation}
+ \Psi_n(t)=4\exp\{\overline{\mathcal H}(e(t))-nt^2/(8V)\}+e^{-n}.
+ \label{eq:field-tail}
+\end{equation}
+Bounds larger than one can always be truncated at one.
+
+\begin{proposition}[Common finite-$n$ score and square bounds]
+\label{prop:concentration}
+Except on an event of probability at most $\Psi_n(t)$, both
+\[
+ \sup_\beta\left|n^{-1}\sum_i\xi_i f_i(\beta)\right|\le t,
+ \qquad
+ \sup_\beta\left|n^{-1}\sum_i
+ (f_i(\beta)^2-\E[f_i(\beta)^2\mid\mathcal F_{i-1}])\right|\le t
+\]
+hold. The bound is uniform in the policy, truth, and horizon.
+\end{proposition}
+\begin{proof}
+At a deterministic metric-net point the centered squares are martingale
+differences bounded in absolute value by $M^2$, and conditional Gaussian
+exponentiation of the score is taken after the current actions but before the
+readout. Exponential Markov bounds give respectively
+$2e^{-nt^2/(8M^4)}$ and $2e^{-nt^2/(8\sigma^2M^2)}$ at threshold $t/2$.
+They never condition on future actions or the terminal design. Also
+$\E e^{|\xi_i|/\sigma}\le2e^{1/2}$ implies
+$\Pp(n^{-1}\sum|\xi_i|>3\sigma)\le e^{-n}$.
+Within one $e(t)$-ball, interpolation costs at most $4Me(t)$ for the centered
+square (including its conditional expectation), and at most
+$e(t)n^{-1}\sum|\xi_i|$ for the score. Both are at most $t/2$ on the stated
+event. A union bound over the deterministic cover proves the claim. Continuity
+on the compact metric space makes the suprema measurable using a fixed
+countable dense subset.
+\end{proof}
+
+\begin{lemma}[Exact integrated-likelihood remainder]
+\label{lem:remainder}
+Writing $\ell_n(\beta)=n^{-1}\log[L_n^{\zeta_n}(\beta)/L_n^{\zeta_n}(\beta_0)]$,
+\begin{equation}
+ \ell_n(\beta)=\frac1{n\sigma^2}\sum_i\xi_i f_i(\beta)
+ -\frac1{2n\sigma^2}\sum_i f_i(\beta)^2+\mathcal R_n(\beta)/n,
+ \qquad \sup_\beta|\mathcal R_n(\beta)|\le B_n,
+ \label{eq:likelihood}
+\end{equation}
+where
+\[
+ B_n=\sigma^{-2}\{2\sum_{i\le n}r_i|\xi_i|+3MR_1+3R_2\},\quad
+ b_0=3(MR_1+R_2)/\sigma^2,\quad b_1=2R_1/\sigma.
+\]
+For $x>0$, $\Pp\{B_n>b_0+b_1\sqrt{2x}\}\le2e^{-x}$.
+\end{lemma}
+\begin{proof}
+Relative to the product likelihood with means $m_i^\beta$, the exact
+integrated factor is the integral of the exponential of
+$\sigma^{-2}\sum_i\{b_i^\beta(z)(Y_i-m_i^\beta)-b_i^\beta(z)^2/2\}$.
+Its exponent is uniformly bounded in absolute value by
+$\sigma^{-2}\{\sum r_i|\xi_i|+MR_1+3R_2/2\}$. The logarithm of a normalized
+positive integral lies between the infimum and supremum of its exponent.
+Apply this at the candidate and truth. The remaining true-initial-state cross
+term costs at most $MR_1/\sigma^2$, proving \eqref{eq:likelihood}.
+For the tail, convexity with weights $r_i/R_1$ and any remaining mass at zero
+gives $\E\exp(\lambda\sum r_i|\xi_i|)\le
+2\exp(\lambda^2\sigma^2R_1^2/2)$. Optimize Markov's inequality.
+When $R_1=0$ the remainder is identically zero.
+\end{proof}
+
+\begin{theorem}[Finite-sample posterior budget]
+\label{thm:posterior}
+For a set $F$ with
+$\inf_{\beta\in F}n^{-1}\sum_i\E[f_i(\beta)^2\mid\mathcal F_{i-1}]\ge q>0$,
+\begin{equation}
+ \Pi_n^{\zeta_n}(F)\le
+ \exp\{\mathcal P(\sqrt q/4)-nq/(4\sigma^2)\}
+ \label{eq:posterior-bound}
+\end{equation}
+except with probability at most
+$\Psi_n(q/16)+\Pp\{B_n>nq/(32\sigma^2)\}$.
+For $F=\{d_J(\beta,\beta_0)\ge\delta\}$ one may use
+$q=\rho a^2\kappa_c(J,\delta)$ or $q=\rho a^2\kappa_\infty(J,\delta)$
+in the corresponding experiment.
+\end{theorem}
+\begin{proof}
+On the concentration event at $t=q/16$, the likelihood ratio on $F$ is at most
+$\exp\{-13nq/(32\sigma^2)+B_n\}$. On the metric ball of radius $\sqrt q/4$
+around the truth, $|f_i|\le\sqrt q/4$ at every stage. The same score event
+gives likelihood ratio at least $\exp\{-3nq/(32\sigma^2)-B_n\}$ there.
+Integrate the denominator over this ball using Lemma~\ref{lem:entropy}.
+When $2B_n\le nq/(16\sigma^2)$, the net exponent is
+$-13/32+3/32+1/16=-1/4$. The last statement follows from the fresh-sign
+identity and the appropriate deterministic separation theorem.
+\end{proof}
+
+\begin{corollary}[Growing depth at the two declared scales]
+\label{cor:rates}
+The posterior conclusions of Theorem~\ref{thm:main} hold uniformly over all
+horizon-dependent policies with the declared common bounds, and over all
+initial-state working priors on the stated ball.
+\end{corollary}
+\begin{proof}
+For the compact law, \eqref{eq:compact-separation} gives
+$q_n\ge\rho a^2\exp\{-C_cj_n\log(ej_n)\}n^{-\eta/4}
+=n^{-\eta/4-o(1)}$. Thus $nq_n^2\ge n^{1-\eta/2-o(1)}$, whereas
+$\overline{\mathcal H}(e(q_n/16))$ and $\mathcal P(\sqrt{q_n}/4)$ are
+$O((\log n)^2)$. The transient tail tends to zero at the required threshold.
+For the long law, $J_n=\lfloor r\log n\rfloor$ and $\delta_n=n^{-s}$ give
+$q_n\ge\rho a^2e^{-C_\infty}n^{-(C_\infty r+8s)}$. If the exponent is
+less than $1/2$, the same bounds apply. The explicit pair of constants in
+Theorem~\ref{thm:main} makes this exponent $1/4$. Apply
+Theorem~\ref{thm:posterior} and Proposition~\ref{prop:clock}. This is a
+finite-$n$ argument at shrinking resolution, not an interchange with a
+fixed-resolution limit.
+\end{proof}
+
+For a horizon-dependent floor $\rho_n>0$, the same finite-$n$ bounds hold
+with $q_n=\rho_n a^2\kappa(J_n,\delta_n)$. A sufficient condition is
+$nq_n^2\to\infty$,
+$\overline{\mathcal H}(e(q_n/16))=o(nq_n^2)$, and
+$\mathcal P(\sqrt{q_n}/4)=o(nq_n)$. Thus the fixed-floor examples above
+are explicit attainable regimes, not a restriction of the finite-sample theorem.
+

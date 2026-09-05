@@ -1,0 +1,106 @@
+\section{Oversampling on the original fixed window}
+\label{sec:compact}
+The essential change is to interpolate to an order $N$ \emph{larger} than the
+jet order $R$. Shrinking the physical grid to suppress an order-$R$ remainder
+unnecessarily pays the inverse condition number again at every derivative.
+Instead we keep the window fixed and suppress the remainder by oversampling.
+
+\begin{lemma}[Exponential interpolation bound]
+\label{lem:grid}
+Let $V_N=(k^r/r!)_{0\le k,r\le N}$. Then
+$\|V_N^{-1}\|_\infty\le2^N\binom{2N}{N}\le8^N$.
+For $f=h_\beta-h_\gamma$, $N\ge R\ge1$ and $0<u\le1$, put
+\[
+ A_{N,R,u}=8^N u^{-R},\qquad
+ E_{N,u}=2e^{\Lambda Nu}\frac{(\Lambda Nu)^{N+1}}{(N+1)!}.
+\]
+Then
+\begin{equation}
+ \max_{r\le R}|f^{(r)}(0)|\le
+ A_{N,R,u}\left(\max_{1\le k\le N}|f(ku)|+E_{N,u}\right).
+ \label{eq:oversample}
+\end{equation}
+The zero node is supplied by $f(0)=0$ and requires no observation.
+\end{lemma}
+\begin{proof}
+The $k$th Lagrange polynomial is
+$L_k(x)=\prod_{l\ne k}(x-l)/\prod_{l\ne k}(k-l)$.
+An inverse-matrix entry is $r![x^r]L_k(x)$. Since $r!\le N^r$, its absolute
+value is at most the absolute-coefficient numerator evaluated at $N$, divided
+by $k!(N-k)!$. This is at most
+$((2N)!/N!)/(k!(N-k)!)$. Summing over $k$ gives
+$2^N\binom{2N}{N}$. The usual central-binomial bound gives $8^N$.
+Taylor's formula and $|f^{(N+1)}(t)|\le2e^{\Lambda t}\Lambda^{N+1}$ give a
+remainder at most $E_{N,u}$ at all grid nodes. Invert $V_N$ for the scaled
+jets $u^r f^{(r)}(0)$ and use $u^{-r}\le u^{-R}$ for $r\le R$.
+\end{proof}
+
+For $j=J+1$, $R=4J+8$, $L=Q^{25j}$ and $v=\log(1/\delta)$,
+$0<\delta\le1$, set $\tau=T/4$ and define the multiple of four
+\begin{equation}
+\begin{split}
+ H_c&=\max\left\{8,2R,T/2,256e^2\Lambda^2\tau,
+ \frac{\log4+\Lambda\tau+25j\log Q+v}{\log2}\right\},\\
+ N_c&=4\lceil H_c/4\rceil,\qquad
+ A_c=8^{N_c}(N_c/\tau)^R,\qquad
+ p_c=2^{-N_c/4-1}/N_c,\\
+ \kappa_c(J,\delta)&=\frac{p_c\delta^2}{4L^2 A_c^2}.
+\end{split}\label{eq:compact-certificate}
+\end{equation}
+This uses the existing cells $(K,1,k)$ with $K=(N_c-8)/4$: because
+$N_c\ge T/2$, their times are precisely $k\tau/N_c$ and their masses are
+$p_c$. Thus it does not introduce a new sampling distribution.
+
+\begin{theorem}[Fixed-window separation with linear-logarithmic depth cost]
+\label{thm:compact}
+Define the explicit constants
+\begin{align}
+ K_c&=32+T+256e^2\Lambda^2\tau+2\Lambda\tau+50\log Q,\notag\\
+ C_c&=32+50\log Q+5K_c+17\log K_c+16|\log\tau|.
+ \label{eq:compact-constants}
+\end{align}
+For all $J\ge0$, $0<\delta\le1$, and $d_J(\beta,\gamma)\ge\delta$,
+\begin{equation}
+ D_\omega(\beta,\gamma)\ge\kappa_c(J,\delta)
+ \ge e^{-C_cj\log(ej)}\delta^{12},\qquad j=J+1.
+ \label{eq:compact-separation}
+\end{equation}
+\end{theorem}
+\begin{proof}
+For $N=N_c$, $u=\tau/N$, use $N\ge2R$, $N/\tau\ge1$, and
+$(N+1)!\ge((N+1)/e)^{N+1}$. Then
+\[
+ A_c E_{N,u}\le
+ 2e^{\Lambda\tau}
+ \left(8e\Lambda\sqrt{\tau/N}\right)^N\frac{e\Lambda\tau}{N}
+ \le 2e^{\Lambda\tau}2^{-N}.
+\]
+The definition of $N$ ensures $LA_cE_{N,u}\le\delta/2$.
+Equations~\eqref{eq:jet} and \eqref{eq:oversample} force some positive grid
+value to have magnitude at least $\delta/(2LA_c)$. Its weighted square proves
+the first assertion.
+
+We give the complete logarithmic reduction. From the maximum defining $H_c$,
+rounding by at most four, $R\le8j$, and $1/\log2<2$, one obtains
+$N\le K_cj+2v$. Put $a_0=2\log8+(\log2)/4<5$. Directly from the certificate,
+\[
+ -\log\kappa_c=2v+\log8+50j\log Q+a_0N+2R\log(N/\tau)+\log N.
+\]
+Since $\log N\le\log(K_cj)+2v/(K_cj)$ and $K_c\ge32$, the coefficient
+of $v$ on the right is at most
+$2+2a_0+34/K_c<12$. The remaining terms are at most
+\[
+ j\{\log8+50\log Q+5K_c+17\log K_c+16|\log\tau|\}
+       +17j\log j\le C_cj\log(ej).
+\]
+This includes $j=1$, arbitrary positive $T$, and arbitrary $\delta\le1$.
+\end{proof}
+
+\begin{remark}
+The report's $e^{-1000Fj^2}\delta^{20j}$ certificate already improves the
+preceding cubic-depth bound. Theorem~\ref{thm:compact} strengthens its depth
+\emph{order} by separating interpolation order from reconstruction depth.
+No inference is made that a previously valid weaker sufficient theorem was
+false. The constants here are deliberately explicit, not numerically optimized.
+\end{remark}
+
