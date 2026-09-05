@@ -1,0 +1,136 @@
+\section{Retained-state blocks: exact posterior and finite-sample confidence}
+\label{sec:blocks}
+Choose $\tau_g=t_0$ from \eqref{eq:fast-atom}, and make every baseline gap exactly
+$t_0$. Partition stages into blocks of length $m=N+1$ from
+\eqref{eq:block-certificate}. Before each block, choose a bounded baseline
+profile, or a sequence of stage profiles, based on earlier blocks only.
+Its dependence on the block's durations may be specified in advance; it must
+not depend on any sign or readout within that block. Zero baseline is an
+admissible example. Draw the original independent exploration flags, and on
+exploration draw $\omega$ independently at every stage. Nonexploration uses
+$q_0$. Signs remain independent at all stages. This is a subclass of the
+original chronological experiment, with block-committed control and no hidden
+observations, reset, or added long probe.
+
+A block is called successful if every stage explores and selects $q_0$.
+Conditional on its starting history, this event has probability
+$\pi_N=(\rho w_0)^m$ and is independent of all signs and readout noises within
+that block. Such success events can be determined by revealing the independent
+action randomizers in advance for the analysis; the implemented chronological
+law remains the same. On success all endpoint spacings within the block are
+$\Delta$.
+
+\begin{lemma}[A block-conditional information floor on the complete record]
+\label{lem:block-floor}
+For a block $G_b$ and its starting history,
+\begin{equation}
+ \E\left[\sum_{i\in G_b}f_i(\beta)^2\mid\mathcal F_{b,-}\right]
+ \ge a^2\pi_N\sum_{k=0}^N(b_{k,\beta}-b_{k,\beta_0})^2.
+ \label{eq:block-floor}
+\end{equation}
+In particular, on $\{d_J(\beta,\beta_0)\ge\delta\}$ this is at least
+$a^2\kappa_b$.
+\end{lemma}
+\begin{proof}
+Condition on success, the committed profiles, and all signs other than the
+first sign $S_{b,0}$. At lag $k$ in a successful block, linearity of the complete
+candidate trajectories gives
+\[
+ f_{b,k}(\beta)=P_{b,k}(\beta)
+       +aS_{b,0}(b_{k,\beta}-b_{k,\beta_0}).
+\]
+The first term includes the complete pre-block input, the baseline, and all
+other signed pulses, but not $S_{b,0}$. Block commitment is what makes it
+independent of that sign under this conditioning. Averaging its square over
+$S_{b,0}$ leaves the nonnegative intercept square and the displayed pulse square.
+Average other actions and multiply by $\pi_N$; the contribution of unsuccessful
+blocks is nonnegative. Proposition~\ref{prop:block-certificate} proves the last
+claim. No likelihood has been conditioned on success or had data discarded.
+\end{proof}
+
+\begin{theorem}[Exact bounded-probe posterior recovery and resource bound]
+\label{thm:block-posterior}
+For $n'=Bm$ readouts, use
+\begin{equation}
+ q_b=a^2\kappa_b/m
+ \label{eq:block-q}
+\end{equation}
+in Theorem~\ref{thm:posterior}, with group-size cap $m$. This gives a finite
+posterior guarantee and the explicit budget \eqref{eq:new-budget} for the
+complete likelihood of all $n'$ readouts. The clock satisfies
+$\mathsf T_{n'}\le(t_0+T)n'$ deterministically.
+Consequently all positive conclusions in Theorem~\ref{thm:main} hold.
+\end{theorem}
+\begin{proof}
+Lemma~\ref{lem:block-floor} gives $V_{n'}\ge Ba^2\kappa_b=n'q_b$ on the
+separated set. The common full-input metric, Gaussian chronology, product prior,
+and initial-state envelope have already been verified in
+Section~\ref{sec:likelihood}. Therefore Theorem~\ref{thm:posterior} applies
+without a change of likelihood.
+For an observation budget $n$, choose $J_n,\delta_n$ as in the main theorem,
+compute $m_n$, and use $n'=m_n\lfloor n/m_n\rfloor$ readouts. If
+$\gamma=C_b r+p_b s<1$, then $m_n=O(\log n)$ and
+$\kappa_b\ge e^{-C_b}n^{-\gamma}$, whereas $n'/n\to1$.
+Since $C_{m_n}=O(m_n)$,
+\[
+ n'q_b/C_{m_n}\ge c n^{1-\gamma}/(\log n)^2,
+ \qquad n'q_b\ge c n^{1-\gamma}/\log n.
+\]
+The direct certificate also gives $\log(1/q_b)=O(\log n)$, so entropy and
+negative log prior mass are $O((\log n)^2)$. All failure probabilities vanish
+and the posterior exponent diverges. The bound is uniform over the external
+initial state, coefficient truth, working initial-state law, and chosen
+block-committed profiles. If more than half the posterior lies in
+$d_J<\delta$, each finite-prefix coordinate median lies within $\delta$ of
+that truth. The product box admits a completion of those medians, giving an
+estimator without an unspecified selection oracle. Every stage lasts $t_0+t_i$
+with $t_i\le T$, proving the clock statement.
+\end{proof}
+
+\subsection{Direct pulse confidence from successful blocks}
+For a fixed selected $(J,\delta)$, let $M_B$ count successful blocks among the
+first $B$. For each lag $k\le N$, define
+\[
+ \widehat b_k=(aM_B)^{-1}\sum_{b\text{ successful}}S_{b,0}Y_{b,k}
+ \quad(M_B>0),\qquad
+ v_* =\sigma^2+B_*^2,\quad B_*=C_*(R_0+U_*/\lambda_*).
+\]
+Choose positive allocation weights $\eta_k$ summing to one over $0\le k\le N$.
+At $M_B=l>0$ the simultaneous radii are
+\begin{equation}
+ r_{k,l}=a^{-1}\sqrt{2v_*\log(2l(l+1)/(\alpha\eta_k))/l}.
+ \label{eq:pulse-bands}
+\end{equation}
+At no successful blocks impose no constraint.
+
+\begin{proposition}[Pulse confidence, diameter, and finite budget]
+\label{prop:pulse-confidence}
+With probability at least $1-\alpha$, every pulse response is inside its band
+for all block counts $B$. On this event the corresponding confidence set is
+nonempty. Its $d_J$ diameter is at most $\delta$ whenever
+$\max_k r_{k,M_B}\le r_*:=\delta/(4L\mathcal A_{N,R})$.
+The visit budget of Proposition~\ref{prop:visits} below applies with stages
+replaced by blocks, $\pi=\pi_N$, $\eta_{\min}=\min_k\eta_k$, zero residual
+bias, and count factor $N+1$. Thus a finite number of bounded-duration stages
+suffices with prescribed coverage and diameter error probabilities.
+\end{proposition}
+\begin{proof}
+On a successful block,
+$Y_{b,k}=aS_{b,0}b_{k,\beta_0}+B_{b,k}^0+\xi_{b,k}$.
+Conditioning on the committed profiles, success, and the other signs,
+$B_{b,k}^0$ does not depend on $S_{b,0}$ and has magnitude at most $B_*$.
+Its conditional exponential moment after multiplication by that sign is
+bounded by $e^{v_*\lambda^2/2}$. This conditioning does not include readout
+noises; they do not affect within-block actions. For each fixed lag, the
+selected block increments therefore have a nonnegative exponential
+supermartingale with variance proxy $v_*M_B$. Stop at the $l$th success and
+allocate errors $\alpha\eta_k/[l(l+1)]$; summing proves the single coverage
+event. There is no claim that these correlated lag statistics are independent.
+For two elements of the set, pulse differences are at most $2\max r$.
+Use \eqref{eq:sampled-jet}, $L\mathcal E\le\delta/2$ and \eqref{eq:jet}.
+Finally $\Pp\{M_B<B\pi_N/2\}\le e^{-B\pi_N/8}$; using the looser
+$(N+1)e^{-B\pi_N/8}$ in the cited budget is valid even though all lags
+share the same count.
+\end{proof}
+The pulse confidence estimator is a separate, constructive consequence.
+The exact posterior theorem above uses all blocks, including unsuccessful ones.

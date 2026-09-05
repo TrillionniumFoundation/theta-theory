@@ -1,0 +1,210 @@
+\section{Variance-sensitive likelihood geometry, including grouped contrasts}
+\label{sec:likelihood}
+Let $f_i(\beta)=m_i^\beta-m_i^{\beta_0}$ and define the compact metric
+\[
+ d(\beta,\gamma)=(U_*+a)\|g_\beta-g_\gamma\|_1,
+ \qquad M=\max(1,2U_*C_*/\lambda_*).
+\]
+For all histories $|f_i|\le M$ and $|f_i(\beta)-f_i(\gamma)|\le d(\beta,\gamma)$,
+by the full-input convolution bound. Injectivity follows from
+Theorem~\ref{thm:jet}. Removing the current pulse gives a pre-sign intercept,
+so for the unrestricted stagewise policies
+\begin{equation}
+ \E[f_i(\beta)^2\mid\mathcal F_{i-1}]
+       \ge\rho a^2D_\chi(\beta,\beta_0).
+ \label{eq:stage-floor}
+\end{equation}
+All other conditional square terms are nonnegative. Initial-state terms obey
+$r_i=C_*R_0e^{-\lambda_*\tau_gi}$; write
+\[
+ R_1=\frac{C_*R_0}{e^{\lambda_*\tau_g}-1},\quad
+ R_2=\frac{C_*^2R_0^2}{e^{2\lambda_*\tau_g}-1},\quad
+ b_0=3(MR_1+R_2)/\sigma^2,\quad b_1=2R_1/\sigma.
+\]
+
+\subsection{Constructive covers and prior balls}
+Assume a product prior with coordinate densities at least $p_->0$.
+Let $w_->0$ be the smallest interval width and $W\ge1$ the largest enlarged
+to one. Put $C_d=\max(1,4(U_*+a)C_*^2/\lambda_*^2)$. For $0<\epsilon<1$ set
+\begin{align}
+ S(\epsilon)&=\max\{1,\lambda_*^{-1}
+       \log(16(U_*+a)C_*/(\lambda_*\epsilon))\},\notag\\
+ K(\epsilon)&=\min\{K\ge0:2(U_*+a)S e^{\Lambda S}
+                 (\Lambda S)^{K+1}/(K+1)!\le\epsilon/8\},\notag\\
+ r(\epsilon)&=\min(w_-,1,\epsilon/(4C_d)),\notag\\
+ \overline{\mathcal H}(\epsilon)&=(2K+3)\log(2+W/r(\epsilon)),\notag\\
+ \mathcal P(\epsilon)&=(2K+3)\log(1/(p_-r(\epsilon))).
+ \label{eq:entropy}
+\end{align}
+For $\epsilon\ge1$ use the bounds at $1/2$.
+
+\begin{lemma}[Metric entropy and prior thickness]
+\label{lem:entropy}
+The log covering number is at most $\overline{\mathcal H}(\epsilon)$, and
+any open $d$-ball of radius $\epsilon$ has prior mass at least
+$e^{-\mathcal P(\epsilon)}$. Both functions are
+$O((1+|\log\epsilon|)^2)$ as $\epsilon\downarrow0$.
+\end{lemma}
+\begin{proof}
+Agreement through $c,a_0,b_0,\ldots,a_K,b_K$ implies agreement of boundary
+powers through order $K$. Exponential series and common stability give
+\[
+ \|g_\beta-g_\gamma\|_1\le2S e^{\Lambda S}
+    (\Lambda S)^{K+1}/(K+1)!+2C_*e^{-\lambda_*S}/\lambda_*.
+\]
+The chosen tail costs at most $\epsilon/4$ in $d$. A maximum coordinate
+change $r$ on this prefix, with tail fixed, changes $A$ by at most $4r$.
+Stable Duhamel factors give $L^1$ error at most $4rC_*^2/\lambda_*^2$.
+Insert an admissible hybrid to combine the bounds. A prefix mesh of radius
+$r(\epsilon)$ with a fixed tail is an $\epsilon/2$ cover of the stated size.
+Each coordinate interval about any truth, including a boundary truth, has
+length at least $r(\epsilon)$; the unrestricted tail has mass one, proving
+the mass lower bound. Finally $S=O(1+|\log\epsilon|)$ and choosing $K+1$ at least
+\[
+ \max\{2e\Lambda S,
+  [\log(16(U_*+a)S/\epsilon)+\Lambda S]/\log2,1\}
+\]
+controls the factorial tail. Hence $K=O(1+|\log\epsilon|)$ and the claims follow.
+\end{proof}
+
+Partition the $n$ readouts into consecutive deterministic groups $G_b$ of sizes
+at most $m$. Let $\mathcal F_{b,-}$ be the observed history at the start of group
+$b$, and put
+\[
+ A_n(\beta)=\sum_{i\le n}f_i(\beta)^2,\quad
+ S_n(\beta)=\sum_{i\le n}\xi_i f_i(\beta),\quad
+ V_n(\beta)=\sum_b\E[\sum_{i\in G_b}f_i(\beta)^2\mid\mathcal F_{b,-}].
+\]
+No independence of the groups is imposed. Their size cap controls square
+increments; the Gaussian score is still treated in the original chronology.
+Define
+\begin{equation}
+ \begin{split}
+ z&=3\sigma+1,\qquad e_q=\min\{1,q/[256(M+z)]\},\\
+ C_m&=1024\max\{1,\sigma^2,mM^2\},\qquad
+ \Phi_{n,m}(q)=3e^{\overline{\mathcal H}(e_q)-nq/C_m}+e^{-n}.
+ \end{split}
+ \label{eq:variance-tail}
+\end{equation}
+
+\begin{theorem}[Variance-sensitive score and grouped-square inequalities]
+\label{thm:variance}
+For any $q>0$, except with probability at most $\Phi_{n,m}(q)$, simultaneously
+for every $\beta$,
+\begin{equation}
+ |S_n(\beta)|\le A_n(\beta)/16+nq/64,\qquad
+ A_n(\beta)\ge V_n(\beta)/2-nq/32.
+ \label{eq:variance-event}
+\end{equation}
+Bounds are uniform over all declared policies and truths.
+\end{theorem}
+\begin{proof}
+At a deterministic net point, conditioning after current actions but before
+noise shows that $\exp\{\lambda S_n-\lambda^2\sigma^2A_n/2\}$ is a
+nonnegative martingale. With $\lambda=1/(8\sigma^2)$ and either sign,
+\[
+ \Pp\{|S_n|>A_n/16+8\sigma^2x\}\le2e^{-x}.
+\]
+For $X_b=\sum_{i\in G_b}f_i^2\in[0,mM^2]$ and $\alpha=1-e^{-1}$, the chord
+bound $e^{-u}\le1-\alpha u$ on $[0,1]$ implies
+\[
+ \E\left[\exp\left\{-\frac{X_b}{mM^2}
+       +\frac{\alpha\E[X_b\mid\mathcal F_{b,-}]}{mM^2}\right\}
+       \middle|\mathcal F_{b,-}\right]\le1.
+\]
+Thus $\Pp\{A_n<\alpha V_n-mM^2x\}\le e^{-x}$.
+Choose $x_s=nq/(1024\sigma^2)$ for the score and
+$x_v=nq/(64mM^2)$ for the squares. The event
+$n^{-1}\sum|\xi_i|\le z$ fails with probability at most $e^{-n}$ since
+$\E e^{|\xi_i|/\sigma}\le2e^{1/2}$.
+For distance $e_q$, score interpolation costs $ne_qz$ and interpolation of
+$A_n/16$ costs $ne_qM/8$. Their sum is at most $nq/256$; together with
+$8\sigma^2x_s=nq/128$ this is at most $nq/64$.
+Interpolation of $A_n-\alpha V_n$ costs at most $4Mne_q\le nq/64$,
+including conditional expectations. Adding $mM^2x_v=nq/64$ gives $nq/32$.
+Since $\alpha>1/2$ and $V_n\ge0$, a union bound proves \eqref{eq:variance-event}.
+Compact continuous fields have measurable suprema on a fixed countable dense
+set. Every probability estimate uses common constants and not a terminal
+fixed-design conditioning.
+\end{proof}
+
+\begin{lemma}[Exact nuisance integral budget]
+\label{lem:remainder}
+The exact working log ratio satisfies
+\[
+ \log\frac{L_n^{\zeta_n}(\beta)}{L_n^{\zeta_n}(\beta_0)}
+   =\sigma^{-2}(S_n-A_n/2)+\mathcal R_n(\beta),\qquad
+ \sup_\beta|\mathcal R_n(\beta)|\le B_n,
+\]
+where $B_n=\sigma^{-2}(2\sum r_i|\xi_i|+3MR_1+3R_2)$ and
+$\Pp\{B_n>b_0+b_1\sqrt{2x}\}\le2e^{-x}$ for $x>0$.
+\end{lemma}
+\begin{proof}
+Gaussian completion relative to zero-state product likelihood gives a normalized
+integral of $\exp\{\sigma^{-2}\sum[b_i^\beta(z)(Y_i-m_i^\beta)-b_i^\beta(z)^2/2]\}$.
+Its exponent has absolute value at most
+$\sigma^{-2}(\sum r_i|\xi_i|+MR_1+3R_2/2)$.
+The logarithm of a positive normalized integral lies between the exponent's
+infimum and supremum. Apply this at candidate and truth; the remaining true
+transient cross term is bounded by $MR_1/\sigma^2$. Jensen's inequality with
+weights $r_i/R_1$ gives
+$\E e^{\lambda\sum r_i|\xi_i|}\le2e^{\lambda^2\sigma^2R_1^2/2}$.
+Exponential Markov optimization proves the tail; if $R_1=0$ the remainder is zero.
+\end{proof}
+
+\begin{theorem}[Posterior separation at inverse-information, not squared-information, cost]
+\label{thm:posterior}
+Suppose $F$ is measurable and $\inf_F V_n\ge nq>0$ pathwise. Then
+\begin{equation}
+ \Pi_n^{\zeta_n}(F)\le
+ \exp\{\mathcal P(\sqrt q/4)-nq/(16\sigma^2)\}
+ \label{eq:new-posterior}
+\end{equation}
+except with probability at most
+$\Phi_{n,m}(q)+\Pp\{B_n>nq/(64\sigma^2)\}$.
+\end{theorem}
+\begin{proof}
+On \eqref{eq:variance-event}, $A_n\ge15nq/32$ on $F$. The log ratio in its
+numerator is at most $-97nq/(512\sigma^2)+B_n$.
+On the $d$-ball of radius $\sqrt q/4$ about the truth, $A_n\le nq/16$
+deterministically, so the ratio is at least
+$-13nq/(256\sigma^2)-B_n$ in logarithmic form.
+Integrate over that ball for the denominator. The exponent difference is
+$(-97+26)nq/(512\sigma^2)+2B_n$; the remainder condition leaves
+$-55nq/(512\sigma^2)\le-nq/(16\sigma^2)$.
+This establishes the stated bound with the correct direction of prior-mass control.
+\end{proof}
+
+For posterior error $\epsilon_p$ and failure $\alpha$, a sufficient deterministic
+budget is
+\begin{equation}
+ \begin{split}
+ n\ge\Big\lceil\max\Big\{&1,\ \frac{C_m}{q}
+ [\overline{\mathcal H}(e_q)+\log(9/\alpha)],\ \log(3/\alpha),\\
+ &\frac{64\sigma^2}{q}[b_0+b_1\sqrt{2\log(6/\alpha)}],\\
+ &\frac{16\sigma^2}{q}[\mathcal P(\sqrt q/4)+\log(1/\epsilon_p)]
+ \Big\}\Big\rceil.
+ \end{split}
+ \label{eq:new-budget}
+\end{equation}
+For groups of size $m$, round $n$ up to a multiple of $m$. Each of the three
+probability terms is then at most $\alpha/3$. The formula is explicit once
+$(J,\delta)$ and the experiment's information certificate are selected.
+
+\begin{corollary}[Stronger unrestricted-feedback sufficient regions]
+\label{cor:stage-rates}
+For arbitrary bounded predictable baselines, the compact law has posterior
+recovery at $J_n=\lfloor r\log n/\log\log n\rfloor$, $\delta_n=n^{-s}$ if
+$C_c r+12s<1$. The finite-mean law has recovery at
+$J_n=\lfloor r\log n\rfloor$, $\delta_n=n^{-s}$ if $C_\infty r+8s<1$.
+\end{corollary}
+\begin{proof}
+Use groups of size one, \eqref{eq:stage-floor}, and respectively
+$q=\rho a^2\kappa_c$ or $\rho a^2\kappa_\infty$.
+In either region $q\ge n^{-\gamma-o(1)}$ for some $\gamma<1$ and
+$\log(1/q)=O(\log n)$; the latter also follows from the direct certificates.
+Entropy and negative log prior mass are $O((\log n)^2)$, while $nq$ grows
+as a positive power. Apply Theorem~\ref{thm:posterior}. This improves the
+previous exponent-$1/2$ sufficient posterior region rather than transferring
+a confidence-set result to a posterior without proof.
+\end{proof}
