@@ -1,0 +1,45 @@
+# Claim-by-claim audit — A1 English v4
+
+**Source:** `e4b10bf7acebf38dbcfb466b3ee4cf30bb77b381`, `papers/A1-english-v4/`.
+
+This ledger covers all **22** proof-bearing principal labels identified by the submission: 13 inherited statements and 9 additions, including two overview theorems. “No blocking error found” means that the statement and its proof were inspected under their printed hypotheses. It is not formal verification, a literature-priority judgment, or a recommendation of acceptance. The editorial recommendation is **REJECT at the requested four-journal level** for the reasons in [REFEREE_REPORT.md](REFEREE_REPORT.md).
+
+The controlling anchors are the source labels, not unverified PDF page numbers. No PDF was compiled or inspected in this review.
+
+## Retained principal chain
+
+| Number / label | Source | Mathematical assessment | Essential scope and remaining issue |
+|---|---|---|---|
+| 1.1 `thm:main` | `sections/01_scope.tex` | No blocking error found in the overview after checking its dependencies. | One counted finite-budget apparatus; exact continuous likelihood state across commands; fixed-controller response. The overview does not prove a causal dependence between the state lower bound and the performance example. |
+| 2.1 `prop:raw` | `sections/02_laboratory.tex` | Collision-tube coverage, Jacobian, flag masses and normalization are consistent. Uniform positivity is verified by the printed separation and mode bounds. | At most one collision per independent ambient-placement cartridge. The engineered detector is not the complete singular collision record. No long-orbit result follows. |
+| 3.1 `thm:attainable` | `sections/03_attainability.tex` | Common-gate necessity/sufficiency and adaptive fresh-cartridge pasting are valid for the stated comparator class. | Ideal Borel comparator with a radius-independent gate; not a characterization of every physical instrument or finite circuit. Placement failure and censoring remain distinct and charged. |
+| 4.1 `thm:filter` | `sections/04_positive_filter.tex` | Positive Bernstein product, coefficient normalization, posterior and uniform-prior beta mixture are consistent. | The O(n) update count assumes the one-step coefficients have already been obtained; no claim of a fast gate integrator or global Bellman solver. |
+| 4.2 `thm:general` | `sections/04_positive_filter.tex` | Uniform degree elevation follows from the printed coefficient estimate; the fixed rational denominator is retained. | Positive implementation degree m can exceed algebraic degree q. The stored mn+1 array is not an intrinsic lower bound. |
+| 4.3 `thm:dimension` | `sections/04_positive_filter.tex` | Open failure-factor family, coprime product differential, local section and invariance-of-domain argument establish the sharp 3n bound. | Worst-case exact continuous encoding over known command histories. Not a lower bound for every fixed controller, approximate decisions, finite-bit memory, or a point-supported prior. |
+| 5.1 `lem:body` | `sections/05_control.tex` | Weak-star compactness, support function, jointly Borel representatives and compact-fiber selection are adequate in this reference space. | A body in R^5, not uniformly five-dimensional. The old dimensional overstatement is repaired. |
+| 5.2 `thm:control` | `sections/05_control.tex` | Compact continuous command maximization and backward induction justify attainment and sufficiency. The finite-menu approximation uses integrand approximation correctly. | The fifth moment is continuation-specific; it is not a universal instrument encoding. No polynomial-time optimization theorem is established. |
+| 5.3 `thm:boundary` | `sections/05_control.tex` | Nonzero failure factors retain a uniform normalized coefficient margin; zero-evidence weighted continuation is continuous. | The posterior itself need not converge on a null branch. Common support is parameter-independent for the stated detector and fixed policy. |
+| 6.1 `thm:response` | `sections/06_response.tex` | Chronological polynomial density, strong variation derivatives, quadratic-mean differentiability and conditional-score information sum are justified. | Hold the parameter-independent controller fixed. These are not derivatives of a changing optimizer or of the singular ideal record. |
+| A.1 `prop:biased` | `sections/A_scope_repairs.tex` | The relative-entropy identity retains the bias in the minimized objective. | Bare entropy only in the explicitly bias-free or constant-bias-expectation cases. Zero-probability events require a separate construction. |
+| A.2 `thm:two-trace` | `sections/A_scope_repairs.tex` | Reynolds differentiation retains both internal density traces and the appropriate external flux. | Eulerian derivative convention and moving-outer-boundary term are now explicit. No new counterexample identified under the stated branch regularity. |
+| A.3 `thm:transport-prep` | `sections/A_scope_repairs.tex` | The former Borel-readout defect is closed. Smooth readout, preparation transport/weight envelopes and Sobolev reporting-space conditions are now stated. | Smooth dynamics alone do not regularize a Borel threshold. The dimension in the negative-Sobolev condition is that of the fixed reporting space. |
+
+## Added statements
+
+| Number / label | Source | Mathematical assessment | Contribution assessment / precise limitation |
+|---|---|---|---|
+| 1.2 `thm:strengthening` | `sections/01_scope.tex` | Its four groups are supported by the subsequent stated results. | An overview of valid additions is not an independent significance argument. |
+| 8.1 `thm:rank-criterion` | `sections/08_structural_class.tex` | Gram independence/interior equivalence, explicit right inverse and sufficient perturbation margins are valid. | Finite-dimensional linear range theorem for unrestricted gates; not an optimal invariant robustness radius or a characterization of finite-precision apparatus constraints. |
+| 8.2 `thm:q-dimension` | `sections/08_structural_class.tex` | The coprime differential gives qn intrinsic dimension, with degree-elevation redundancy correctly separated. | The same method yields n(r-1) for a fixed rank-r polynomial factor space, including common factors; see the referee's proved extension in report Section 7. No formula is asserted for arbitrary unions of mode-dependent spaces. |
+| 9.1 `thm:endpoint` | `sections/09_policy_structure.tex` | Convex homogeneous continuation, layer cake, right continuity and the fixed threshold give a Borel endpoint optimum. | The previous referee's argument is credited. No nonlinear gate-value cost is included. |
+| 9.2 `thm:two-arcs` | `sections/09_policy_structure.tex` | The exact last-step formula and convex cosine-envelope argument are correct with tagwise accepted rewards. | The same structure extends to every finite stage by freezing an optimal failure continuation; report Section 8 supplies a proof and the Borel construction. This is a strengthening, not a counterexample. |
+| 9.3 `thm:lookup-rate` | `sections/09_policy_structure.tex` | The accepted-integrand and unnormalized-failure bounds, vertex replacement and Bellman error recurrence give the stated conservative rate. | Requires the printed Lipschitz constants. The finite menu can be exponential; sharp complexity or bit bounds are not proved. |
+| 10.1 `thm:model-stability` | `sections/10_robust_approximation.tex` | Common-history coupling gives 1-(1-e0)^N; oscillation controls values and factor-two policy regret. | Compare identical parameter-independent history policies, commands, payoffs and coupled random seeds. No uniform rare-history posterior bound. |
+| 10.2 `thm:smooth-surrogate` | `sections/10_robust_approximation.tex` | Positive Bernstein averaging preserves normalization and physical flag masses. The Lipschitz/C2 constants and regret conversion are consistent. | Sufficient approximation bounds, not minimax-optimal degrees, derivative approximation or a finite-energy calibration theorem. |
+| 11.1 `thm:adaptive-advantage` | `sections/11_adaptive_advantage.tex` | Full nominal Borel reduction and separate convexity justify the 64-pair comparison; exact independent arithmetic confirms the transfer lower bound above 11/10000. | The final exact gap is not computed. The nominal optimum is reproduced by a binary two-point experiment and the witness ignores the cubic mark. This is the report's principal significance objection, not a failure of comparator coverage. |
+
+## Evidence categories
+
+The 39 newly executed diagnostics are in [DIAGNOSTICS.json](DIAGNOSTICS.json). Exact arithmetic checks the finite certificate; symbolic computations check stated identities and finite examples. The analytical reasoning above, not the finite checks, supports the infinite-class and all-budget assessments. Author test counts, historical referee counts and author PDF receipts are not reused as current execution results.
+
+The following remain distinct: **no blocking error found**, **useful constructive result**, **new in the literature**, and **sufficient significance for the requested journals**. This review does not treat any one of these as proof of another.
