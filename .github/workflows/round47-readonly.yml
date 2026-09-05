@@ -1,0 +1,54 @@
+name: Round 47 read-only source-bound verification
+on:
+  push:
+    branches: ['revision/round47-sharp-boundary-depth-2026-09-05']
+    paths:
+      - 'ROUND47_REVISION.tex'
+      - 'ROUND47_RETAINED_RESULTS.tex'
+      - 'round47/**'
+      - 'tools/verify_round47.py'
+      - 'tools/round47_certificates.py'
+      - 'tests/test_round47.py'
+      - 'AUTHOR_RESPONSE_ROUND46.md'
+      - '.github/workflows/round47-readonly.yml'
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: 'Optional full immutable source commit; defaults to the checked-out commit'
+        required: false
+        type: string
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: [self-hosted, linux, x64]
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify the named source and build both manuscripts
+        shell: bash
+        env:
+          REQUESTED_SOURCE_SHA: ${{ inputs.source_sha }}
+        run: |
+          set -euo pipefail
+          SOURCE_SHA="${REQUESTED_SOURCE_SHA:-$(git rev-parse HEAD)}"
+          python3 tools/verify_round47.py --build --source-sha "$SOURCE_SHA"
+      - name: Retain verification outputs without modifying the repository
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: round47-verification-${{ github.sha }}
+          path: |
+            ROUND47_REVISION.pdf
+            ROUND47_RETAINED_RESULTS.pdf
+            ROUND47_VERIFICATION.json
+            ROUND47_TESTS.log
+            ROUND47_REVISION_BUILD_*.log
+            ROUND47_RETAINED_RESULTS_BUILD_*.log
+            ROUND47_REVISION.log
+            ROUND47_RETAINED_RESULTS.log
+            ROUND47_REVIEW_BUNDLE.tar.gz
+          if-no-files-found: warn

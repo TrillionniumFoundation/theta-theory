@@ -1,0 +1,138 @@
+\section{Finite observation budgets and honest, constructive uncertainty}
+\label{sec:operations}
+The following formulas turn the sufficient theorems into predetermined budgets.
+They are intentionally conservative and may be large. They distinguish a
+terminating construction from an efficient implementation.
+
+\begin{proposition}[An explicit posterior observation requirement]
+\label{prop:budget}
+Fix depth $J$, coefficient radius $\delta$, posterior error target
+$\epsilon_p\in(0,1)$, and failure probability $\alpha\in(0,1)$.
+Choose the appropriate certificate $q=\rho a^2\kappa(J,\delta)$. It suffices
+to take $n$ at least the ceiling of the maximum of
+\begin{equation}
+\begin{split}
+ &1,\quad \frac{2048V}{q^2}
+  \{\overline{\mathcal H}(e(q/16))+\log(12/\alpha)\},
+ \quad \log(3/\alpha),\\
+ &\frac{32\sigma^2}{q}\{b_0+b_1\sqrt{2\log(6/\alpha)}\},\quad
+ \frac{4\sigma^2}{q}\{\mathcal P(\sqrt q/4)+\log(1/\epsilon_p)\}.
+\end{split}\label{eq:sample-budget}
+\end{equation}
+Then, with probability at least $1-\alpha$,
+$\Pi_n^{\zeta_n}\{d_J\ge\delta\}\le\epsilon_p$.
+The compact no-washout clock is at most $(\tau_g+T_0+T)n$.
+For the long law, with an additional clock error $\alpha_t$, replace $x$ in
+\eqref{eq:clock-tail} by $\log(1/\alpha_t)$; both conclusions then hold with
+probability at least $1-\alpha-\alpha_t$.
+\end{proposition}
+\begin{proof}
+The first exponential in \eqref{eq:field-tail} at $q/16$, its $e^{-n}$ term,
+and the transient tail are each at most $\alpha/3$ under the corresponding
+three bounds. The last bound makes \eqref{eq:posterior-bound} at most
+$\epsilon_p$. A union bound with the clock event proves the final statement.
+\end{proof}
+
+\subsection{Countably simultaneous response bands}
+Let $p_q>0$ sum to one over all diagnostic labels, for instance the probe-law
+weights. Use only exploration visits, and let $m=N_q(n)$ and
+$\widehat h_{q,n}=(am)^{-1}\sum_{i\le n:\,i\text{ explores }q}S_iY_i$.
+Put $B_*=C_*(R_0+U_*/\lambda_*)$ and $v_*=\sigma^2+B_*^2$. For $m>0$ define
+\begin{equation}
+ R_{q,n}=\frac1a\sqrt{\frac{2v_*}{m}
+                  \log\frac{2m(m+1)}{\alpha p_q}},
+ \label{eq:bands}
+\end{equation}
+with radius $+\infty$ and no constraint when $m=0$.
+
+\begin{theorem}[Simultaneous coverage and improved depth diameter]
+\label{thm:confidence}
+For either duration law, a fixed infinite admissible policy satisfies
+\[
+ P_{\beta_0,z_0}\{|h_{\beta_0}(t_q)-\widehat h_{q,n}|\le R_{q,n}
+                \text{ for every }q,n\}\ge1-\alpha.
+\]
+At each horizon the assertion is uniform over horizon-dependent policies.
+Consequently, for any finite, possibly data-selected collection $\mathcal Q_n$,
+\[
+ \mathcal C_n=\{\beta:\ |h_\beta(t_q)-\widehat h_{q,n}|\le R_{q,n}
+                                    \ (q\in\mathcal Q_n)\}
+\]
+is an honest confidence set with simultaneous coverage. If $\mathcal Q_n$
+contains the $N$ positive nodes in the chosen certificate of
+\eqref{eq:compact-certificate} or \eqref{eq:long-certificate}, then
+\begin{equation}
+ \max_{q\text{ in that grid}}R_{q,n}\le \frac{\delta}{4LA}
+ \quad\Longrightarrow\quad \diam_{d_J}\mathcal C_n\le\delta.
+ \label{eq:diameter}
+\end{equation}
+The origin is known, not sampled. Empty sets have diameter zero and are
+excluded on the coverage event. These are frequentist confidence sets, not
+posterior credible sets.
+\end{theorem}
+\begin{proof}
+At a selected visit, $Y_i=aS_i h_{\beta_0}(t_q)+B_i^0+\xi_i$, where $B_i^0$
+is pre-sign measurable and $|B_i^0|\le B_*$. Conditional on that information,
+\[
+ \E e^{\lambda S_i(B_i^0+\xi_i)}
+ =e^{\lambda^2\sigma^2/2}\cosh(\lambda B_i^0)
+ \le e^{\lambda^2v_*/2}.
+\]
+Thus the exponential of the selected centered sum minus
+$\lambda^2v_*N_q/2$ is a nonnegative supermartingale. Stop at the $m$th visit,
+first with a deterministic time cutoff, then let that cutoff increase.
+The two-sided error threshold $\sqrt{2v_*m\log(2m(m+1)/(\alpha p_q))}$
+has probability at most $\alpha p_q/[m(m+1)]$. Summing over $m$ and $q$ gives
+$\alpha$. This proof does not claim that a selected sum is Gaussian conditional on
+its terminal visit count. It gives the same event for data-selected
+finite collections. For two parameters in $\mathcal C_n$, their grid-value
+differences are at most twice the largest radius. Apply
+\eqref{eq:oversample}, $LAE\le\delta/2$, and \eqref{eq:jet} to obtain
+\eqref{eq:diameter}.
+\end{proof}
+
+A washed version uses variance $\sigma^2$ in place of $v_*$ and adds the
+bias budget $(am)^{-1}\sum_{i\text{ in }q}r_i$ to the radius. The same stopped
+argument proves its coverage; the summable $r_i$ here are the undifferentiated
+washout residuals.
+
+\begin{proposition}[A predetermined visit budget for a selected grid]
+\label{prop:visits}
+Fix a grid of $N$ labels, each with exploration-law mass $p$, and put
+$\pi=\rho p$, $r_*=\delta/(4LA)$. Take confidence allocation
+$\alpha_c$ and count-error allocation $\alpha_v$. Let $R_b=0$ for no washout,
+or the sum of all residual envelopes for washout, and use respectively
+$v=v_*$ or $v=\sigma^2$. Define
+\[
+ B_v=\max\{1,16v/(a^2\pi r_*^2)\},\quad C_v=4/(\alpha_c p),\quad
+ L_v=\log(eC_v(16B_v)^2).
+\]
+It suffices to choose
+\begin{equation}
+ n\ge\left\lceil\max\{3,16B_vL_v,
+             4R_b/(a\pi r_*),\ (8/\pi)\log(N/\alpha_v)\}\right\rceil.
+ \label{eq:visit-budget}
+\end{equation}
+Then coverage and $d_J$ diameter at most $\delta$ hold together with
+probability at least $1-\alpha_c-\alpha_v$.
+\end{proposition}
+\begin{proof}
+A conditional Bernoulli Chernoff bound gives
+$\Pp\{N_q(n)<n\pi/2\}\le e^{-n\pi/8}$. Union over the predetermined grid
+costs at most $Ne^{-n\pi/8}$. On its complement all radii are at most
+\[
+ \sqrt{\frac{4v\log(C_vn^2)}{a^2n\pi}}+\frac{2R_b}{an\pi}.
+\]
+The choice $n\ge B_v\log(C_vn^2)$ makes the square-root term at most $r_*/2$,
+and the bias bound makes the second term at most $r_*/2$.
+To verify the implicit-looking first inequality from the explicit budget,
+put $n_0=16B_vL_v$. Then
+$\log(C_v n_0^2)=L_v-1+2\log L_v\le3L_v\le16L_v$.
+The function $\log(C_vn^2)/n$ is decreasing for $n\ge3$ because $C_v\ge4$.
+Thus the inequality persists for every larger $n$. Apply
+Theorem~\ref{thm:confidence}. Count budgeting here is for a predetermined grid;
+data selection of a grid does not automatically preserve this count bound,
+although the simultaneous coverage and deterministic diameter certificate
+remain valid.
+\end{proof}
+
