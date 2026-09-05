@@ -1,0 +1,157 @@
+name: Publish frozen A1 English review package
+
+on:
+  push:
+    branches:
+      - revision/a1-english-v2-referee-2026-09-05
+    paths:
+      - .github/workflows/a1-english-review-publication.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: a1-english-review-publication
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: revision/a1-english-v2-referee-2026-09-05
+          fetch-depth: 1
+      - name: Materialize and verify previously uploaded Git objects
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'PY'
+          import os, json, urllib.request, base64, hashlib
+          from pathlib import Path, PurePosixPath
+          repo = 'TrillionniumFoundation/theta-theory'
+          frozen = '900059b847980a27be4866d495b00eeb96562dc5'
+          api = 'https://api.github.com/repos/' + repo
+          def get(path):
+              req = urllib.request.Request(api + path, headers={'Authorization': 'Bearer ' + os.environ['GH_TOKEN'], 'Accept': 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28'})
+              with urllib.request.urlopen(req, timeout=60) as response:
+                  return json.load(response)
+          tree = get('/git/trees/' + frozen + '?recursive=1')
+          if tree.get('truncated'):
+              raise RuntimeError('Frozen source tree is truncated; refusing partial publication')
+          entries = [e for e in tree['tree'] if e['type'] == 'blob']
+          marker = 'sections/16_lorentz_global.tex'
+          matches = [e['path'][:-len(marker)] for e in entries if e['path'].endswith(marker)]
+          if len(matches) != 1:
+              raise RuntimeError('Cannot uniquely identify the frozen English A1 source root')
+          prefix = matches[0]
+          dest = Path('papers/A1-english-v2')
+          dest.mkdir(parents=True, exist_ok=True)
+          inventory = []
+          for entry in entries:
+              if not entry['path'].startswith(prefix):
+                  continue
+              relative = entry['path'][len(prefix):]
+              path = PurePosixPath(relative)
+              if not relative or path.is_absolute() or '..' in path.parts or '.git' in path.parts:
+                  raise RuntimeError('Unsafe source path')
+              if path.suffix.lower() in ('.ttf', '.otf', '.woff', '.woff2', '.pfb'):
+                  raise RuntimeError('Font file is not a publication source')
+              if entry.get('mode') not in ('100644', '100755'):
+                  raise RuntimeError('Unexpected source mode')
+              obj = get('/git/blobs/' + entry['sha'])
+              if obj.get('encoding') != 'base64':
+                  raise RuntimeError('Unexpected Git blob encoding')
+              data = base64.b64decode(obj['content'])
+              actual = hashlib.sha1(b'blob ' + str(len(data)).encode() + b'\0' + data).hexdigest()
+              if actual != entry['sha']:
+                  raise RuntimeError('Git blob identity mismatch: ' + relative)
+              target = dest.joinpath(*path.parts)
+              target.parent.mkdir(parents=True, exist_ok=True)
+              if target.exists() and target.read_bytes() != data:
+                  raise RuntimeError('Refusing to replace differing already published content: ' + relative)
+              target.write_bytes(data)
+              if entry['mode'] == '100755':
+                  target.chmod(0o755)
+              inventory.append({'path': relative, 'git_blob': actual, 'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest()})
+          if not (dest / 'main.tex').is_file():
+              raise RuntimeError('Frozen English source has no main.tex')
+          if len(list((dest / 'sections').glob('*.tex'))) < 24:
+              raise RuntimeError('Frozen source does not contain all 20 sections and four appendices')
+          (dest / 'GITHUB_SOURCE_TRANSPORT.json').write_text(json.dumps({'frozen_tree': frozen, 'source_prefix': prefix, 'files': inventory, 'mathematical_source_rewritten': False}, indent=2) + '\n')
+          print('Verified and materialized', len(inventory), 'frozen source files')
+          PY
+      - name: Install TeX build dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended texlive-science poppler-utils
+      - name: Build review PDF without shell escape
+        run: |
+          set -eu
+          mkdir -p /tmp/a1-isolated-build
+          cp -R papers/A1-english-v2/. /tmp/a1-isolated-build/
+          cd /tmp/a1-isolated-build
+          for pass in 1 2 3; do
+            pdflatex -no-shell-escape -interaction=nonstopmode -halt-on-error -file-line-error main.tex > "publication-pass-${pass}.txt" 2>&1
+          done
+          if grep -E 'Undefined control sequence|There were undefined references|Citation .* undefined|Reference .* undefined|Missing character:|Overfull \\[hv]box' main.log; then
+            echo 'Review build failed strict log checks'
+            exit 1
+          fi
+          pages=$(pdfinfo main.pdf | awk '/^Pages:/ {print $2}')
+          test "$pages" = 53
+          cp main.pdf "$GITHUB_WORKSPACE/papers/A1-english-v2/A1_REVIEW.pdf"
+          mkdir -p "$GITHUB_WORKSPACE/papers/A1-english-v2/github-build-evidence"
+          cp main.log publication-pass-*.txt "$GITHUB_WORKSPACE/papers/A1-english-v2/github-build-evidence/"
+      - name: Record publication and create reviewer entrance
+        run: |
+          python3 - <<'PY'
+          import json, hashlib, os
+          from pathlib import Path
+          d=Path('papers/A1-english-v2')
+          sources=json.loads((d/'GITHUB_SOURCE_TRANSPORT.json').read_text())
+          for item in sources['files']:
+              data=(d/item['path']).read_bytes()
+              if hashlib.sha256(data).hexdigest()!=item['sha256']:
+                  raise RuntimeError('Source changed during publication')
+          receipt={'operation':'GitHub publication from frozen source objects', 'source_tree':sources['frozen_tree'], 'run_id':os.environ['GITHUB_RUN_ID'], 'workflow_commit':os.environ['GITHUB_SHA'], 'pdf':'A1_REVIEW.pdf', 'pdf_pages':53, 'pdf_sha256':hashlib.sha256((d/'A1_REVIEW.pdf').read_bytes()).hexdigest(), 'pdf_origin':'fresh GitHub review build from unchanged split sources; not claimed byte-identical to the original local PDF', 'source_files_verified':len(sources['files']), 'mathematical_source_rewritten':False, 'latex_passes':3, 'shell_escape':False, 'tests_rerun_in_this_workflow':False, 'main_write_attempted':False}
+          (d/'GITHUB_PUBLICATION.json').write_text(json.dumps(receipt,indent=2)+'\n')
+          (d/'REFEREE_REVIEW_INDEX.md').write_text('''# A1 English edition 2.0 — frozen referee review
+
+          **A1: Realizable Mechanical Experiments, Path Selection, and Response**
+
+          *Instruments, Resource-Aware Predictive States, and Whole-Preparation Finite-Time Collision Calculus*
+
+          ## Reading entrance
+
+          [Review PDF, 53 pages](A1_REVIEW.pdf) · [LaTeX entry](main.tex) · [Proof sections](sections/) · [Source transport identities](GITHUB_SOURCE_TRANSPORT.json) · [GitHub build receipt](GITHUB_PUBLICATION.json)
+
+          The English mathematical sources are copied unchanged from frozen Git tree `900059b847980a27be4866d495b00eeb96562dc5`. Every transported blob is checked against its Git object identity and its SHA-256 digest. The review PDF is freshly compiled by this publication workflow; it is not represented as byte-identical to the earlier local PDF.
+
+          ## Referee priorities
+
+          Check realizability versus unconstrained reweighting, capped-preparation response, instrument back-action, parameter-family and resource-aware prediction, continuous-state update assumptions, feasible concatenation, and the whole-preparation collision-tube and response calculations in `sections/16_lorentz_global.tex`. Assess novelty independently against the cited primary literature.
+
+          The concrete whole-preparation result has `R in [0.45,0.47]` and `0<T<0.06`, hence at most one collision. It is not an arbitrary-time multi-collision response theorem, a full hard-sphere dynamic large-deviation theorem, or an independently realized nonconvex closure.
+
+          The original local creation receipt and any original package evidence remain historical verification records. Test counts, hashes and a successful PDF build are not formal mathematical verification or an editorial decision. This publication workflow does not rerun the mathematical finite-test suite; it verifies transport and recompiles the manuscript.
+
+          No historical manuscript is deleted, and no write to `main` is performed. Anchor review comments to this branch's exact publication commit and source labels.
+
+          ## Standalone build
+
+          In this directory, run `pdflatex -no-shell-escape -interaction=nonstopmode -halt-on-error main.tex` three times. The preprint uses standard TeX dependencies. See the original package instructions for its separate test/verifier commands.
+          '''.replace('\n          ','\n'))
+          Path('A1_ENGLISH_REVIEW_INDEX.md').write_text('# Current English A1 referee object\n\n[Open the frozen English A1 review package](papers/A1-english-v2/REFEREE_REVIEW_INDEX.md).\n\nThis independent publication branch preserves main and historical sources.\n')
+          PY
+      - name: Publish only to the isolated review branch
+        run: |
+          set -eu
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- papers/A1-english-v2 A1_ENGLISH_REVIEW_INDEX.md
+          git diff --cached --quiet && exit 0
+          git commit -m 'docs(A1): publish frozen English 2.0 sources and compiled referee PDF'
+          git push origin HEAD:refs/heads/revision/a1-english-v2-referee-2026-09-05
