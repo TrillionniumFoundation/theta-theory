@@ -1,0 +1,102 @@
+\section{Response, information and arithmetic stability}\label{sec:response}
+\subsection{The controller is fixed as a function of observed history}
+A fixed controller is a parameter-independent Borel rule that chooses the next mode and gate from its observed past. When differentiating the physical radius, this rule is held fixed. Its dependence on its history need not be differentiable. Conditioning on a final adaptively selected command as though it had been fixed in advance would be a different calculation.
+
+For the original cubic detector set
+\[
+ \beta_j=\sup_{R,a,x}\frac{|\partial_R^jk_R^a(x)|}{k_R^a(x)}\quad(0\le j\le3),
+ \qquad \beta_0=1,\qquad\beta_j=0\quad(j>3).
+\]
+These constants are finite: differentiate the three polynomials in \eqref{eq:raw} and use the explicit positive lower bound. An accepted gate factor cancels from a derivative ratio. On a nonzero failure branch,
+\[
+ |\partial_R^j f_R^{a,g}|\le\int(1-g)|\partial_R^jk_R^a|\,d\nu
+ \le\beta_j f_R^{a,g}.
+\]
+Thus derivative ratios remain bounded even for very rare censoring.
+
+\begin{theorem}[Strong response and information of the implemented experiment]\label{thm:response}
+For every fixed length-$N$ adaptive controller, the density of its report history relative to $\mu^N$, where $\mu=\nu+\delta_\dagger$, is a polynomial in $R$ of degree at most $3N$ with integrable coefficient functions. Its law $P_R$ is strongly $C^r$ in signed-measure variation at every finite order, and
+\begin{equation}
+ \|\partial_R^rP_R\|_{\rm var}
+ \le r!\sum_{j_1+\cdots+j_N=r}\prod_{i=1}^N\frac{\beta_{j_i}}{j_i!}.
+ \label{eq:path-response}
+\end{equation}
+All derivatives above order $3N$ vanish. At interior radii the family is differentiable in quadratic mean. Its score is the sum of conditional one-cartridge scores, and its Fisher information is
+\begin{equation}
+ I_N(R)=\sum_{i=1}^N\E_R I(R;a_{H_{i-1}},g_{H_{i-1}}).
+ \label{eq:adaptive-information}
+\end{equation}
+Endpoint gates, unsuccessful placements and retained censoring records are included.
+\end{theorem}
+\begin{proof}
+For a fixed history, its selected commands are the same at every radius. The chronological density is therefore a product of the corresponding polynomial conditional densities. Their coefficients are measurable in history and uniformly bounded over the compact mode space and the bounded gates. Since $\mu^N$ has mass $4^N$, each path coefficient belongs to $L^1(\mu^N)$. This proves strong polynomial dependence and the degree cutoff. Apply the product rule and the preceding derivative-ratio bounds pointwise on the common support, then integrate the path density. The resulting multinomial sum is \eqref{eq:path-response}.
+
+The support is independent of $R$. For accepted reports, vanishing depends only on $g(x)$; failure is null exactly when $g=1$ almost everywhere. On the support, raw positive bounds imply likelihood-ratio bounds between any two radii, inherited by failed integrals and chronological products. The first two relative derivatives are bounded by the same product-rule calculation. In particular,
+\[
+ \partial_R^2\sqrt{p_R}=\sqrt{p_R}
+ \left\{\frac{p_R''}{2p_R}-\frac{(p_R')^2}{4p_R^2}\right\}
+\]
+is dominated in absolute value by a constant times $\sqrt{p_{R_0}}$ for a fixed reference radius $R_0$. Taylor's integral remainder gives an $O(h^2)$ error in $L^2(\mu^N)$ after the linear square-root term. Off the common support both sides vanish. This proves quadratic-mean differentiability.
+
+The logarithm of the chronological product differentiates into the sum of the conditional scores. Each score has zero conditional expectation because its conditional density normalizes to one and differentiation is dominated. Earlier scores are measurable with respect to the preceding history. Distinct score increments are consequently orthogonal in $L^2$, giving \eqref{eq:adaptive-information}.
+\end{proof}
+
+A policy optimized at a nominal specification may be held fixed for this theorem. The optimized value itself need not be differentiable when optimizing policies exchange. The theorem is not applied to that changing optimizer. For the degree-$Q$ surrogates, the same proof gives degree $QN$ and their own finite relative derivative constants; it does not give a cubic cutoff for the true nonpolynomial detector.
+
+\subsection{A direct information calculation and its censored counterpart}
+Let $s_R=\pi R^2/a_0$ be placement-failure probability and $p_R=2TR/A(R)$ the hit probability conditional on placement success. Given a hit, the mark density is $1+\epsilon R^2\cos(y-\theta)$. For $|c|<1$,
+\[
+ \int\frac{dy}{2\pi(1+c\cos y)}=\frac1{\sqrt{1-c^2}}.
+\]
+The substitution $v=\tan(y/2)$ on the two semicircles reduces this integral to that of $\{(1+c)+(1-c)v^2\}^{-1}$ over the real line. Using
+$c^2\cos^2y/(1+c\cos y)=c\cos y-1+(1+c\cos y)^{-1}$ gives the conditional mark information
+\begin{equation}
+ J_R=\frac4{R^2}\left(\frac1{\sqrt{1-\epsilon^2R^4}}-1\right),
+ \qquad J_R=0\text{ at }\epsilon=0.
+ \label{eq:mark-information}
+\end{equation}
+The placement score, conditional hit score and conditional mark score have the successive zero-mean properties of conditional densities. Expanding the square of their sum therefore gives
+\begin{equation}
+ I_{\rm raw}(R)=\frac{(s_R')^2}{s_R(1-s_R)}
+ +(1-s_R)\left\{\frac{(p_R')^2}{p_R(1-p_R)}+p_RJ_R\right\}.
+ \label{eq:raw-information}
+\end{equation}
+For $\epsilon>0$, the mark supplies strictly positive additional information relative to the same counted placement/hit flags without the mark.
+
+Under a fixed gate the accepted score is the raw score. The censoring score, whenever its probability is nonzero, is
+\[
+ \frac{(f_R^{a,g})'}{f_R^{a,g}}
+ =\frac{\int(1-g)k_R^a\,\partial_R\log k_R^a\,d\nu}
+        {\int(1-g)k_R^a\,d\nu}.
+\]
+It is the conditional mean of the raw score given censoring. Conditional Jensen's inequality proves $I(R;a,g)\le I_{\rm raw}(R;a)$, with the null failure branch contributing zero rather than an undefined ratio. Selection-induced dimension amplification in Theorem~\ref{thm:amplification} is thus compatible with the information loss of every fixed garbling.
+
+\subsection{The ideal geometric record is a different experiment}
+An ideal collision record retaining $(q_0,v_0,s)$ admits the parameter-independent statistic
+$\widehat R=d_{\T_\Lambda^2}(q_0+sv_0,0)$. On its collision tag this equals $R$. For $R\ne R'$, the set $\{H=1,\widehat R=R\}$ has positive probability under $R$ and zero under $R'$. Interchanging radii gives infinite relative entropy in both directions. The full laws need not be mutually singular because their no-hit parts can overlap; their total-variation distance is at least the larger collision mass. In contrast, the specified positive detector has equivalent common-support laws and bounded likelihood ratios at finite budget. Its regularity is established by its integrated kernel, not by pretending that a moving ideal record has a classical score. The corrected whole-preparation distributional response is retained in the historical companion.
+
+For bounded parameter-independent path tests $F,V$, the quantities $J_R=P_R(e^VF)$ and $Z_R=P_R(e^V)$ are polynomials of degree at most $3N$. The normalized tilted expectation $U_R=J_R/Z_R$ has derivatives determined by
+\[
+ U^{(r)}=Z^{-1}\left(J^{(r)}-\sum_{j=1}^r\binom rj Z^{(j)}U^{(r-j)}\right).
+\]
+If the tests depend smoothly on radius in supremum norm, retain their ordinary product derivatives as well. This statement includes measurable thresholds of the positive detector and does not assert smoothness of arbitrary thresholds of an ideal trajectory.
+
+\subsection{Arithmetic and prior perturbations remain separate from model error}
+If positive unnormalized coefficients satisfy
+$(1-\delta)c_i\le\widetilde c_i\le(1+\delta)c_i$, $0\le\delta<1$, positivity of the Bernstein basis gives the same bounds on their polynomial ratio. After posterior normalization,
+\begin{equation}
+ \TV(\pi_c,\pi_{\widetilde c})\le\min\{1,\delta/(1-\delta)\}.
+ \label{eq:roundoff}
+\end{equation}
+Indeed the normalized density ratio lies between $(1-\delta)/(1+\delta)$ and $(1+\delta)/(1-\delta)$; integrate its absolute difference and divide by two. If update $j$ has componentwise relative error at most $\rho_j<1$, the positive convolution propagates bounds $L_n=\prod_j(1-\rho_j)$ and $U_n=\prod_j(1+\rho_j)$ on unnormalized polynomials, yielding the conservative bound
+\[
+ \TV(\pi,\widetilde\pi)\le\min\{1,(U_n-L_n)/(2L_n)\}.
+\]
+A common scalar rescaling is irrelevant. These are conditional error certificates, not claims that every floating-point implementation satisfies the premises.
+
+At a fixed remaining budget $b$, all admissible policy payoffs as functions of $R$ lie in a common interval of width
+$\Delta_b=G_+e^{b|\lambda|B}-G_-e^{-b|\lambda|B}$. Consequently
+\[
+ |V_b(\pi)-V_b(\widetilde\pi)|\le\Delta_b\TV(\pi,\widetilde\pi),
+\]
+because the estimate holds for each policy and hence for the common supremum. An optimizer for the approximate prior has regret at most twice this bound at that decision problem. This is not an automatic bound for an arbitrary recursively rounded controller. The detector changes of Section~\ref{sec:hierarchy} are controlled separately by complete-policy model error, not called coefficient roundoff.

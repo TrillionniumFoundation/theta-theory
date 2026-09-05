@@ -1,0 +1,116 @@
+\section{A quantitative hierarchy for nonpolynomial physical detectors}\label{sec:hierarchy}
+The exact cubic is a detector design, not a universal output of smooth mechanics. This section supplies a constructive class theorem rather than assuming that a small physical perturbation preserves exact degree. It compares complete policies on the same counted laboratory, including rare failures.
+
+\subsection{Uniform model error controls complete adaptive policies}
+Let $K_R^{a,g}$ and $\widetilde K_R^{a,g}$ be two apparatus families on the same standard Borel report space, with the same command class, resource accounting and bounded payoff. Suppose
+\begin{equation}
+ \sup_{R,a,g}\TV(K_R^{a,g},\widetilde K_R^{a,g})\le\varepsilon_0\le1.
+ \label{eq:model-tv}
+\end{equation}
+Here $\TV(P,Q)=\sup_A|P(A)-Q(A)|$, half the variation norm of $P-Q$. Let
+$m_N=G_-e^{-N|\lambda|B}$, $M_N=G_+e^{N|\lambda|B}$ and $\Delta_N=M_N-m_N$; any sharper common payoff-range width may replace $\Delta_N$.
+
+\begin{theorem}[Policy-uniform model comparison and regret]\label{thm:model-error}
+For every common fixed adaptive policy and common prior, the two joint parameter/history laws have distance at most
+\[
+ d_N=1-(1-\varepsilon_0)^N\le\min\{1,N\varepsilon_0\}.
+\]
+Their optimal values over the same policy class satisfy
+\begin{equation}
+ |V_N-\widetilde V_N|\le\Delta_N d_N.
+ \label{eq:model-value}
+\end{equation}
+A policy whose approximate-apparatus value is within $\tau$ of its optimum has true-apparatus regret at most $2\Delta_Nd_N+\tau$. A common comparator cannot increase the raw one-step error, so a raw-kernel bound suffices for \eqref{eq:model-tv}.
+\end{theorem}
+\begin{proof}
+Couple the parameter identically from the common prior. As long as observed histories agree, a fixed policy chooses the same command in both models; any external policy randomness can also be shared. Couple the next conditional reports maximally. Their mismatch probability is at most $\varepsilon_0$. Induction gives probability at least $(1-\varepsilon_0)^N$ of identical histories throughout. For our dominated kernels a measurable coupling is obtained from the pointwise minimum of the two densities and the two residual densities, with an arbitrary convention at zero residual mass. The coupling bound proves the joint-law estimate. Telescoping conditional kernels gives the weaker $N\varepsilon_0$ estimate independently.
+
+The identical payoff function of parameter and observed history lies in $[m_N,M_N]$, so its expectations differ by at most $\Delta_Nd_N$. This holds for every fixed policy, uniformly, and hence for the common supremum. For an approximate optimizer $\widetilde\Pi$, add and subtract the two model values of $\widetilde\Pi$ and the approximate optimal value to obtain $2\Delta_Nd_N+\tau$. Finally the comparator is a radius-independent Markov channel from raw to accepted/censored reports; integration against such a channel contracts total variation.
+\end{proof}
+
+An approximate posterior-based policy is deployed as its fixed Borel function of actual histories; it remains admissible in the true apparatus. The comparison does not differentiate a changing optimizer or claim uniform posterior closeness conditional on an arbitrarily rare history. The linear-in-$N$ version of this argument and the following sine diagnostic were already proposed in the v3 referee report \cite{RefereeV3}; the quantitative hierarchy below builds on them.
+
+\subsection{The positive collision-detector class}
+Let $a$ range over a compact mode space with continuous $T(a)\in[T_-,T_+]$, and put $t=(R-l)/(u-l)$. Suppose $q(a,t,y)$ is jointly continuous on the mode space, $[0,1]$ and the circle, with
+\begin{equation}
+ 0<q_-\le q\le q_+<\infty,\qquad
+ \int q(a,t,y)\frac{dy}{2\pi}=1.
+ \label{eq:detector-class}
+\end{equation}
+Its actual collision detector is the inverse of
+\[
+ F_{a,t}(y)=\int_0^y q(a,t,v)\frac{dv}{2\pi},\qquad
+ t=(|z|-l)/(u-l),
+\]
+applied to the prepared uniform $U$. Strict positivity gives a unique continuous inverse. Smooth $q$ gives a smooth local pointer map; continuous $q$ gives an ideal deterministic continuous detector. Values off the possible impact annulus can be extended without altering the experiment. In particular, this construction uses the same physical radius readout noted by the referee, not an oracle parameter input.
+
+The raw placement and no-hit components remain exactly those in \eqref{eq:raw}. The hit density becomes $(2TR/a_0)q(a,t,y)$. Let $Q_{a,t}$ be the circle law of density $q(a,t,\cdot)$ and let $p_*=2uT_+/a_0$. Assume
+\begin{equation}
+ \TV(Q_{a,t},Q_{a,s})\le L_t|t-s|\quad\hbox{uniformly in }a.
+ \label{eq:detector-lip}
+\end{equation}
+
+\begin{theorem}[Realizable positive-polynomial approximation hierarchy]\label{thm:hierarchy}
+For each integer $m\ge2$, define
+\begin{equation}
+ q_m(a,t,y)=\sum_{j=0}^m B_j^m(t)q(a,j/m,y).
+ \label{eq:detector-Bernstein}
+\end{equation}
+This is a normalized physical collision detector with the same positive margins, the same mechanical placement/no-hit laws and the same failure accounting. Its raw numerator has positive Bernstein coefficients at degree $Q=m+1$. It therefore has an exact positive state with $Qn+1$ coefficients at budget $n$, and boundary-complete attained control on the original gate class. Its raw one-step model error is at most $p_*L_t/(2\sqrt m)$, and an optimal surrogate policy has true-apparatus regret at most
+\begin{equation}
+ \Delta_N Np_*L_t/\sqrt m.
+ \label{eq:degree-regret}
+\end{equation}
+Thus regret at most $\rho>0$ is ensured by
+$m\ge\max\{2,(\Delta_NNp_*L_t/\rho)^2\}$, rounded upward.
+
+If instead the detector is twice continuously differentiable in $t$ as an $L^1$ density and
+\[
+ L_2=\sup_{a,t}\frac12\int|\partial_t^2q(a,t,y)|\frac{dy}{2\pi}<\infty,
+\]
+the one-step error is at most $p_*L_2/(8m)$ and the regret at most $\Delta_NNp_*L_2/(4m)$.
+
+For a finite lookup detector, additionally assume $q$ is uniformly $L_y$-Lipschitz in the circle coordinate measured by arclength. Replace each row of \eqref{eq:detector-Bernstein} by its average on $J$ equal circle cells of width $h=2\pi/J$. The resulting normalized positive detector has the same degree, is implemented by a finite cell CDF at each fixed mode, and has regret at most
+\begin{equation}
+ \Delta_NNp_*\{L_t/\sqrt m+L_yh\}.
+ \label{eq:lookup-regret}
+\end{equation}
+For example, choose
+\[
+ m\ge\max\{2,(2\Delta_NNp_*L_t/\rho)^2\},\qquad
+ J\ge\max\{1,4\pi\Delta_NNp_*L_y/\rho\},
+\]
+rounding upward, to obtain regret at most $\rho$ with $(m+1)J$ cell probabilities per fixed mode.
+\end{theorem}
+\begin{proof}
+The Bernstein weights are nonnegative and sum to one. Hence normalization, both positive bounds and joint mode continuity are preserved. The inverse-CDF construction just given realizes $q_m$ using the measured impact coordinate and the prepared seed; the insertion and flight are untouched. It is a new declared detector on the same laboratory, not a relabeling of the original likelihood.
+
+The hit numerator is $2TRq_m$. Multiplication of the positive degree-one Bernstein representation $R=lB_0^1+uB_1^1$ with the positive degree-$m$ row coefficients gives positive coefficients at degree $m+1$, bounded below by $2T_-lq_-$. The placement numerator has positive degree-two coefficients $\pi(l^2,lu,u^2)$. The no-hit coefficients at degree two are $a_0-\pi s_j-2Tr_j$, with $s_j\le u^2$ and $r_j\le u$, hence bounded below by $a_0-\pi u^2-2T_+u>0$. Degree elevation is by convex combinations and preserves these bounds. Upper bounds are also uniform. Normalizing nonzero failure factors gives compact finite-budget positive state strata exactly as in Theorem~\ref{thm:filter}, now with $Q+1$ coordinates per factor. Bernstein multiplication gives the exact $Qn+1$-coefficient state. The moment-body/control proof applies with all $Q+1$ raw coefficient functions in place of the four $v_a$ components, giving a body in $\R^{Q+2}$. At a fixed mode it can be compressed to $\R^{r+1}$ when its coefficient rank is $r$; no continuously varying rank-dependent basis is needed for mode selection. Joint continuity, measurable representatives and continuity of the failure-weighted term at zero evidence give attained Borel control by the same compactness and backward induction argument. These statements do not require full coefficient rank.
+
+For the error, let $S\sim\operatorname{Binomial}(m,t)$. The conditional surrogate circle law is $\E Q_{a,S/m}$. Convexity of total variation and \eqref{eq:detector-lip} give
+\[
+ \TV(Q_{a,t},Q_{m,a,t})\le L_t\E|S/m-t|
+ \le L_t\sqrt{t(1-t)/m}\le L_t/(2\sqrt m).
+\]
+The other raw components agree, so the raw distance is the hit mass times the conditional circle distance. Censoring contracts this bound. Theorem~\ref{thm:model-error} proves the stated regret and degree choice uniformly over the entire adaptive policy class.
+
+Under the second-derivative hypothesis, the $L^1$ Taylor expansion of $q(a,S/m,\cdot)$ at $t$ has a mean-zero linear term. The remainder, in half-variation norm, is bounded by $(L_2/2)\E(S/m-t)^2\le L_2/(8m)$. The same raw-mixture and policy comparison give the improved assertions.
+
+For circle cells, the deviation of a Lipschitz density from its cell average is at most $L_yh$ pointwise, so its total-variation error is at most $L_yh/2$. Row averaging preserves positive bounds and exact normalization, and commutes with the Bernstein mixture. Add this error to the parameter approximation error before applying the model comparison. This yields \eqref{eq:lookup-regret} and the two explicit size choices. For a fixed mode the table contains $(m+1)J$ positive cell probabilities. Compute their Bernstein-weighted sums, locate $U$ in their cumulative masses and linearly interpolate inside that cell; this is a finite deterministic inverse-CDF program. On the cell boundaries fix a common null-set convention. The finite fixed-cell coefficient functions remain continuous in mode and state in $L^1$; dominated convergence supplies the accepted-continuation continuity used in the control proof even though the density jumps at cell boundaries. A finite mode menu uses one such table per mode. Continuous-mode attainment is the separate compact control assertion, not a claim that infinitely many mode-dependent tables are finite constants.
+\end{proof}
+
+The coefficients and cell probabilities above are real data; their acquisition and bit precision are not included in the exact real-arithmetic state count. The factor-update cost at variable degree is $O(Qd)$ at current degree $d$, not $O(n)$ with a constant independent of $m$. Nor does a small state alone give a polynomial-time Bellman solver. Finite command-menu approximation follows as before, and any residual optimization error $\tau$ is explicitly added in Theorem~\ref{thm:model-error}.
+
+Uniform continuity without a Lipschitz rate still gives positive approximation. For any $h>0$, split the binomial expectation according to $|S/m-t|\le h$; a uniform total-variation modulus $\omega(h)$ then gives error at most $\omega(h)+1/(4mh^2)$, since every distance is at most one. Let first $m\to\infty$ and then $h\downarrow0$. Thus the same hierarchy covers the entire continuous positive class, with explicit rates once regularity constants are supplied.
+
+\subsection{A changed detector is not a roundoff perturbation}
+Take the original mark amplitude to $c_\delta(R)=\epsilon R^2+\delta\sin R$, with $|\delta|+Eu^2<1$. This is another smooth positive physical detector in the class. The additional hit numerator is $2T\delta R\sin R\cos(y-\theta)$, whose fourth radius derivative is
+\[
+ 2T\delta\{R\sin R-4\cos R\}\cos(y-\theta),
+\]
+not identically zero when $\delta\ne0$. Exact cubic closure and the one-cartridge cubic derivative cutoff therefore belong to the specified original detector, not to all nearby smooth detectors. Nevertheless the exact raw distance is
+\[
+ \TV(K_R^a,\widetilde K_R^a)
+ =\frac{2TR|\delta\sin R|}{a_0\pi},
+\]
+since the circle mean of $|\cos y|$ is $2/\pi$. Theorem~\ref{thm:model-error} gives finite-budget stability for this model change, and Theorem~\ref{thm:hierarchy} supplies controlled polynomial surrogates for the changed detector itself. Neither conclusion invokes a false degree cutoff for the perturbed physical law.
