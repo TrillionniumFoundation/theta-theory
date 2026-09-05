@@ -1,0 +1,223 @@
+\section{An exact positive finite-budget inference state}\label{sec:filter}
+\subsection{Cubic Bernstein coefficients of the mechanical kernel}
+Set $t=(R-l)/(u-l)$ and
+$B_i^d(t)=\binom di t^i(1-t)^{d-i}$. Write $\Delta=u-l$.
+The degree-three Bernstein coefficients of $R,R^2,R^3$ are respectively
+\begin{equation}
+ r_j=l+\Delta j/3,\quad
+ s_j=l^2+2l\Delta j/3+\Delta^2j(j-1)/6,\quad
+ d_j=l^{3-j}u^j,\qquad 0\le j\le3.
+ \label{eq:elementary-coefficients}
+\end{equation}
+These formulas follow by expanding $R=l+\Delta t$ and using the Bernstein
+representations of $1,t,t^2,t^3$. Therefore the raw numerator coefficients are
+\begin{equation}
+ h_j(a,\partial)=\pi s_j,\quad
+ h_j(a,0,y)=a_0-\pi s_j-br_j,\quad
+ h_j(a,1,y)=b\{r_j+\epsilon\cos(y-\theta)d_j\}.
+ \label{eq:raw-coefficients}
+\end{equation}
+They are strictly positive, uniformly over modes and reports. Indeed
+$l\le r_j\le u$, $l^2\le s_j\le u^2$, and $d_j\le u^2r_j$.
+For the last inequality it suffices to check $j=0,1,2,3$: the middle cases
+reduce to $3l^2\le u(2l+u)$ and $3l\le l+2u$.
+The same $h_*$ used in \eqref{eq:lower-bound} is a coefficient lower bound.
+The failure coefficients
+\begin{equation}
+ h_j(a,m,\dagger)=\int(1-g(x))h_j(a,x)\,\nu(dx)
+ \label{eq:failure-coefficients}
+\end{equation}
+are positive and depend only on the four moments $m$. The sum of the
+integrals of the raw coefficients is $a_0$ at every $j$, since the raw
+polynomial normalizes identically. Thus failure coefficients are in
+$[\eta a_0,(1-\eta)a_0]$. Accepted factors $g(x)$ are positive scalars
+independent of $R$ and may be omitted from a likelihood state.
+
+\begin{theorem}[Positive polynomial filter with a full parameter likelihood]\label{thm:filter}
+After $n$ consumed cartridges, the radius likelihood, up to a positive
+radius-independent scalar, is
+\[
+ P_c(R)=\sum_{i=0}^{3n}c_iB_i^{3n}(t),\qquad c_i>0,\quad\sum_i c_i=1.
+\]
+The initial state is $c=(1)$. On an accepted $x$, multiply by $H_a(R,x)$;
+on $\dagger$, multiply by \eqref{eq:failure-poly}. For a current degree $d$
+and cubic coefficients $h_j$, the unnormalized update is
+\begin{equation}
+ \widehat c_k=\sum_{i+j=k}
+ \frac{\binom di\binom3j}{\binom{d+3}k}c_i h_j,
+ \qquad c'_k=\widehat c_k/\sum_\ell\widehat c_\ell.
+ \label{eq:bern-product}
+\end{equation}
+For a fixed prior $\pi_0$, the exact posterior is
+\begin{equation}
+ \pi_c(dR)=\frac{P_c(R)\pi_0(dR)}{\int P_c\,d\pi_0}.
+ \label{eq:posterior}
+\end{equation}
+For the uniform prior on $I$, its density in $t$ is the beta mixture
+\begin{equation}
+ \sum_{i=0}^d c_i\,\mathrm{Beta}(i+1,d-i+1)(dt).
+ \label{eq:beta-mixture}
+\end{equation}
+Given the one-step coefficient vector, the update costs $O(n)$ positive
+arithmetic operations and stores $3n+1$ real coefficients. Computing the
+gate moments or preprocessing an arbitrary prior is not included in this
+coefficient-update count. It retains the whole likelihood curve on $I$ and all of
+its finite derivatives, not just information at one radius.
+\end{theorem}
+\begin{proof}
+For a realized history the chosen commands are fixed functions of that
+history, not of the unknown radius. Its density is a product of the
+one-cartridge densities from Theorem~\ref{thm:attainable}. An accepted
+observation contributes $g(x)H_a(R,x)/a_0$, and a censored observation
+contributes $H_\dagger(R;m)/a_0$. Discarding only the common positive scalars
+gives the asserted polynomial. The identity
+$B_i^dB_j^3=\binom di\binom3j\binom{d+3}{i+j}^{-1}B_{i+j}^{d+3}$ proves
+\eqref{eq:bern-product}; every summand is nonnegative and each output
+coefficient has a positive summand. Bayes' formula proves
+\eqref{eq:posterior}. Since $\int_0^1 B_i^d=1/(d+1)$ and
+$(d+1)B_i^d$ is a beta density, normalized coefficients give
+\eqref{eq:beta-mixture}. There are only four summands per output coefficient.
+\end{proof}
+
+For example, under the uniform prior,
+\[
+ \E_{\pi_c}t^q=\sum_{i=0}^d c_i
+ \frac{(i+1)(i+2)\cdots(i+q)}{(d+2)(d+3)\cdots(d+q+1)}.
+\]
+Moments up to order three determine a raw next-report density. This does
+not mean that only those moments determine all future Bayesian decisions:
+the full coefficient vector is retained for subsequent updates.
+
+\subsection{Compact state strata}
+Let $\mathcal H$ be a compact box containing all raw and failure cubic
+coefficient vectors, with a strictly positive lower coordinate bound.
+For each $n\le N$, take $\cS_n$ to be the image of $\mathcal H^n$ under
+polynomial multiplication and coefficient normalization. It is compact and
+all its coefficient coordinates have a positive lower bound depending on
+$n$. This follows because a positive continuous function on a compact set
+has a positive minimum, and every product coefficient is positive.
+The actual reachable states form a subset; this possibly larger compact
+state space is closed under every actual update. On $\cS_n$ the posterior
+map is continuous in variation: coefficient convergence gives uniform
+polynomial convergence, and the common positive lower bound controls the
+normalizer for any fixed prior. Raw and failure updates are jointly
+continuous on their respective compact domains. This directly supplies the
+continuity and evidence properties used below.
+
+\subsection{A general positive-polynomial closure theorem}
+\begin{theorem}[Uniform degree elevation and rational-experiment closure]\label{thm:general}
+Suppose a finite-reference-measure experiment has densities
+$H_a(R,x)/D(R)$ on a compact interval, where $D>0$ is fixed, $H$ is a
+polynomial of degree at most $q$, its power coefficients are uniformly
+bounded, and $H_a(R,x)\ge h>0$ uniformly. Then there is a common finite
+Bernstein degree $m$ at which every $H_a(\cdot,x)$ has strictly positive
+coefficients bounded above and below uniformly. Positive bounded
+radius-independent gates and their failure atoms preserve this property.
+After $n$ reports the likelihood has the form
+$P_n(R)/D(R)^n$, with a positive Bernstein numerator of degree at most $mn$.
+Consequently a normalized $mn+1$ coefficient vector and $n$ retain the
+entire likelihood and give exact positive updates and posterior prediction.
+\end{theorem}
+\begin{proof}
+Transform the parameter interval to $[0,1]$ and write
+$H(t)=\sum_{j=0}^q a_jt^j$. At degree $m\ge q$, the coefficients are
+\[
+ b_{k,m}=\sum_{j=0}^q a_j\frac{(k)_j}{(m)_j},
+\]
+where $(k)_j=k(k-1)\cdots(k-j+1)$ and the ratio is zero for $k<j$.
+The ratio is the probability that $j$ draws without replacement from $m$
+items all fall in a distinguished set of size $k$. The corresponding
+with-replacement probability is $(k/m)^j$. Couple the two procedures until
+the first repeated draw; its probability is at most $j(j-1)/(2m)$.
+Hence uniformly in $k$,
+\[
+ |b_{k,m}-H(k/m)|\le
+ \frac1{2m}\sum_{j=0}^q |a_j|j(j-1).
+\]
+Uniform coefficient bounds allow a common $m$ with this error less than
+$h/2$. Thus $b_{k,m}\ge h/2$ and they are uniformly bounded above.
+
+Accepted coefficients are multiplied by the positive scalar $g(x)$;
+failure coefficients are the integrals of $(1-g)$ times the original
+coefficients. Both operations preserve positive uniform bounds when the
+reference measure is finite and the gate is bounded away from zero and one.
+Multiplication of degree-$m$ Bernstein polynomials gives the same convolution
+identity as \eqref{eq:bern-product}. Dividing by $D^n$ gives the exact
+likelihood, and multiplication by a fixed prior followed by normalization
+gives the posterior. There is no finite-rank or horizon-independent claim.
+\end{proof}
+
+In the cartridge model $D=a_0$ and the explicit degree $m=3$ works without
+elevation. In the historically studied experiment conditional on successful
+placement, $D=A(R)$ and the two remaining numerators are again cubic.
+The same coefficient algorithm then retains the factor $A(R)^{-n}$ in the
+posterior; $n$ counts prepared experiments rather than ambient placement
+attempts. The two protocols are not equated by deleting this denominator.
+
+\subsection{A matching local dimension lower bound}
+The coefficient count is not merely an upper bound obtained by saving an
+arbitrary collection of tests. The following worst-case lower bound applies
+to continuous exact likelihood states for the entire command class.
+
+\begin{theorem}[Sharp continuous state dimension at a fixed budget]\label{thm:dimension}
+Assume the mode set contains a mode with $T>0$ and $\epsilon>0$. For each
+$n\ge1$, normalized likelihoods attainable after $n$ observed censoring
+failures contain a nonempty open subset of the degree-$3n$ coefficient
+simplex. Thus they have local dimension $3n$. Any Euclidean state that
+continuously encodes the known command history and reports, and exactly
+determines the likelihood curve up to a scalar, needs at least $3n$ real
+coordinates at that budget. The normalized $3n+1$ coefficient representation
+has exactly $3n$ free coordinates and attains this bound. The same conclusion
+holds for a posterior-determining state under a fixed full-support prior.
+\end{theorem}
+\begin{proof}
+Fix $a$ with $b=2T>0$ and $\epsilon>0$. Consider the smooth gate family
+\[
+ g(\partial)=\tfrac12+\alpha_\partial,\quad
+ g(0,y)=\tfrac12+\alpha_0,\quad
+ g(1,y)=\tfrac12+\alpha_1+\alpha_2\cos(y-\theta).
+\]
+In a neighborhood of zero all gates satisfy the strict bounds. Their four
+moments are $(1/2+\alpha_\partial,1/2+\alpha_0,1/2+\alpha_1,\alpha_2/2)$.
+The map from these moments to the four power coefficients of
+$H_\dagger$ is invertible: the constant coefficient determines $m_0$,
+the linear coefficient then determines $m_1$, the quadratic coefficient
+determines $m_\partial$, and the cubic coefficient determines $m_2$.
+Consequently the attainable failure cubics contain an open neighborhood of
+the constant polynomial $a_0/2$ in the four-dimensional polynomial space.
+
+Choose $n$ polynomials $F_i(R)=a_0/2+\gamma_iR^3$ in this neighborhood,
+with distinct small nonzero $\gamma_i$. They have degree three and are
+pairwise coprime: a common root for two would force the two $\gamma_i$ to
+coincide. The derivative of their product map is
+\[
+ (\delta F_1,\ldots,\delta F_n)\longmapsto
+                 \sum_i\delta F_i\prod_{j\ne i}F_j.
+\]
+If this polynomial vanishes, reducing it modulo $F_i$ and using coprimality
+shows that $F_i$ divides $\delta F_i$. Since both have degree at most three,
+$\delta F_i=\lambda_iF_i$. The remaining condition is
+$\sum_i\lambda_i=0$. The kernel has dimension $n-1$, so the product map
+has rank $4n-(n-1)=3n+1$, the full dimension of polynomials of degree at most
+$3n$. Normalization by the positive Bernstein coefficient sum removes one
+scalar and has rank $3n$. The submersion theorem therefore gives an open
+set of normalized positive coefficient vectors, with a continuous local
+section back to their gate command histories. Each such all-failure history
+has positive probability, at least $\eta^n$, at every radius.
+
+An exact continuous state composed with that local section is a continuous
+injection from an open subset of $\R^{3n}$ into its state space: equal states
+would give equal normalized likelihoods. There is no continuous injection
+of an open subset of $\R^{3n}$ into $\R^k$ for $k<3n$. Indeed, padding such
+an injection by zeros would contradict invariance of domain in
+$\R^{3n}$. A full-support prior also identifies continuous positive
+polynomials up to a scalar from their normalized posterior densities:
+equality almost everywhere extends to the interval by continuity and full
+support. This proves the posterior version.
+\end{proof}
+
+The bound is across the command family, not a claim that the histories of
+one fixed controller fill this open set. It excludes neither discontinuous
+set-theoretic encodings into a single real number nor approximate state
+reduction. It specifically establishes the sharp local continuous dimension
+for the full experiment family and its known commands.
