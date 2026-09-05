@@ -1,0 +1,791 @@
+\documentclass[11pt,reqno]{amsart}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern,amsmath,amssymb,amsthm,mathtools,booktabs,array}
+\usepackage[margin=1in]{geometry}
+\usepackage{microtype}
+\usepackage[hidelinks]{hyperref}
+\ifdefined\pdfinfoomitdate\pdfinfoomitdate=1\fi
+\ifdefined\pdftrailerid\pdftrailerid{}\fi
+\allowdisplaybreaks
+\setlength{\emergencystretch}{3em}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{remark}\newtheorem{remark}[theorem]{Remark}
+\newcommand{\R}{\mathbb R}\newcommand{\N}{\mathbb N}
+\newcommand{\E}{\mathbb E}\newcommand{\Pp}{\mathbb P}
+\newcommand{\Bcal}{\mathfrak B}\newcommand{\KL}{\operatorname{KL}}
+\newcommand{\op}{\mathrm{op}}\newcommand{\Jop}{\mathsf J}
+\newcommand{\diam}{\operatorname{diam}}
+\title[Energy-robust boundary identification]{Boundary Identification from Recurring Fast Probes:\\Energy-Robust Posteriors and Bound Observable Certificates}
+\author{Qian Qi}
+\date{September 5, 2026}
+\begin{document}
+\begin{abstract}
+We recover logarithmically many labeled physical coefficients of an infinite,
+pinned and damped Jacobi lattice from bounded probes without resetting the
+state. A recurring sufficiently short duration suffices; the exploration law
+may be atomless when nonexploratory short probes have positive probability.
+A channel-corrected sampled logarithm has an exact rational finite transform
+and a remainder governed by the actual clock norm. Together with a
+uniform-in-tail physical inverse and all-sign block energy, it gives an
+explicit region $C_\tau r+p_\tau s<1$ for depth $\lfloor r\log n\rfloor$
+and error $n^{-s}$. The likelihood uses every completed readout, with bounded
+feedback between precommitted blocks and an arbitrary working initial-state
+law on a fixed ball. We prove a separate chronological posterior transfer
+inequality for predictable readout discrepancies of cumulative squared energy
+$D_n$. It retains the region whenever $D_n=o(n^{1-C_\tau r-p_\tau s}/\log n)$,
+including non-summable, polynomially decaying discrepancies. We also give a
+compatible finite-response estimator, a dimension-uniform finite-section
+bound, and an all-policy logarithmic-depth lower bound in readout count.
+An executable rational enclosure contract binds the model, clock, complete
+observable grid, bands and error budgets before returning a diameter decision.
+The elapsed-time order is asserted for experiments with a positive sampling
+gap; no unrestricted sampling-rate or sharp joint-frontier claim is made.
+\end{abstract}
+\maketitle
+\tableofcontents
+
+\section{The result and its statistical interfaces}
+A short forcing interval and the age at which its response is observed are
+different resources. Retained state exposes a short pulse at many later lags.
+The target here is a labeled physical prefix, not a realization modulo a
+similarity transform. The following theorem gives the experiment precisely.
+
+\begin{theorem}[Recurring fast probes and logarithmic physical depth]
+\label{thm:main}
+Fix the coefficient box of Section~\ref{sec:model}, a duration cap $T>0$,
+noise variance $\sigma^2>0$, probing amplitude $a>0$, baseline bound $U_0$,
+and initial-state radius $R_0<\infty$. Choose $0<t_0\le T$ with
+$2t_0\Lambda\le1/64$. Let $\chi$ be any probability on $(0,T]$, put
+$w=\chi(\{t_0\})$, and choose $\rho\in[0,1]$ such that
+\[
+ p=1-\rho+\rho w>0.
+\]
+Each stage consists of a gap of length $t_0$ followed by a probe. Independently
+choose its duration from $\chi$ with probability $\rho$, and otherwise use
+$t_0$. Add an independent force $aS_i$, $S_i\in\{-1,1\}$ equiprobably,
+on every probe. Before a block starts, commit all baseline profiles, bounded
+by $U_0$, including their dependence on duration choices, without using any
+sign or readout from that block. Feedback from earlier blocks is unrestricted
+within this bound. The state is never reset.
+
+For the explicit constants in \eqref{eq:clock-constants}, let $r,s>0$ satisfy
+$\gamma=C_\tau r+p_\tau s<1$. There is a block length $m_n=O(\log n)$ such
+that, at $J_n=\lfloor r\log n\rfloor$, $\delta_n=n^{-s}$ and
+$n'=m_n\lfloor n/m_n\rfloor$, the complete working posterior satisfies
+\[
+ \Pi_{n'}^{\zeta_{n'}}\{d_{J_n}\ge\delta_n\}\longrightarrow0
+ \quad\hbox{in probability}.
+\]
+The convergence is uniform over admissible truths, bounded external initial
+states, product coefficient priors with a fixed positive lower density bound,
+working initial-state laws on the radius-$R_0$ ball, and these committed
+profiles. Coordinatewise posterior medians recover the prefix to error
+$\delta_n$ with probability tending to one. Deterministically,
+\[
+ t_0n'\le\mathsf T_{n'}\le(T+t_0)n'.
+\]
+A separate finite-response estimator attains the same sufficient region in
+this correctly specified physical experiment. The all-policy bound of
+Theorem~\ref{thm:global} matches its fixed-accuracy depth order in readout count.
+\end{theorem}
+
+When $\rho<1$, no atom of $\chi$ is required: take $w=0$ and count the
+nonexploratory short stages. At $\rho=0$ the duration law is irrelevant.
+At $\rho=1$ this construction requires $w>0$. This last requirement is a
+condition on the particular information certificate, not an impossibility
+statement about other experiments. The chosen fast clock and within-block
+commitment are explicit restrictions. All unsuccessful blocks remain in the
+likelihood.
+
+\begin{theorem}[Extension to cumulative-energy discrepancies]
+\label{thm:main-drift}
+In the same experiment, replace the observation equation by
+\[
+ Y_i=m_i^{\beta_0}+d_i+\xi_i,
+\]
+where $d_i$ is predictable before the fresh Gaussian noise $\xi_i$ and
+$\sum_{i\le n'}d_i^2\le D_{n'}$ pathwise for a deterministic envelope.
+The working likelihood is still \eqref{eq:likelihood}; it need not model $d_i$.
+The posterior and median conclusions of Theorem~\ref{thm:main} hold if
+\begin{equation}
+ D_{n'}=o\bigl(n^{1-\gamma}/\log n\bigr).
+ \label{eq:main-drift-rate}
+\end{equation}
+The bound is uniform for fixed uniform little-oh envelopes. The discrepancy
+may include the true initial-state response and additional predictable error.
+No assertion of an unbiased response estimator under arbitrary sign-correlated
+$d_i$ is made.
+\end{theorem}
+
+For instance, an additional discrepancy bounded by $C i^{-\alpha}$ with
+$0<\alpha\le1$ can fail to be summable. The posterior still attains every
+$\gamma<\min(1,2\alpha)$ (Corollary~\ref{cor:polynomial-drift}). Thus the
+new robustness statement is not limited to an exponentially transient initial
+condition. Its budget is relative to the available information, not to $n$
+alone, and it does not permit arbitrary fixed nonvanishing misspecification.
+
+\subsection{Contribution by precise interfaces}
+The classical moment and spectral inverse for Jacobi matrices is the
+starting point \cite{Teschl,MM2019}, not a new principle claimed here.
+The specific quantitative chain is: a channel-corrected pulse transform;
+an inverse Lipschitz constant uniform in the infinite tail; a chronological
+block-information floor; and a full-posterior transfer with an explicit
+squared-energy perturbation budget. The latter transfer is also formulated
+as an abstract contrast-family assertion in Theorem~\ref{thm:energy}.
+Sections~\ref{sec:transfer} and \ref{sec:comparison} expose what an existing
+finite-response estimate can supply, rather than treating latent dimension
+or bounded excitation as a general obstruction.
+
+Bayesian robustness to approximated likelihoods is a wider subject: for
+example, Seizilles--Siebel \cite{SS2026} study heteroscedastic nonlinear
+regression using proxy variances and forward maps. The statement proved here
+instead tracks a predictable chronological contrast family, conditional block
+information and an arbitrary integrated transient law. We neither import
+their theorems nor assert priority for posterior robustness in general.
+The explicit positive theorem, rather than an assertion of journal suitability,
+is the mathematical contribution submitted for examination.
+
+\input{round51/model_inverse.tex}
+
+\section{Clock-sensitive sampled inversion}
+\label{sec:sampled}
+Put $\Delta=2t_0$, $U_\beta=e^{\Delta A_\beta}$,
+$X_\beta=U_\beta-I$ and $H_\beta=\int_0^{t_0}e^{uA_\beta}\,du$. Write
+\[
+ b_{k,\beta}=\ell U_\beta^kH_\beta B
+   =h_\beta(k\Delta+t_0)-h_\beta(k\Delta).
+\]
+The extra subscript separates this pulse response from a physical diagonal
+coefficient. Set $x=\Delta\Lambda$ and
+\begin{equation}
+ \tau=\frac{2x}{1-x}\le\frac2{63}<\frac1{16}.
+ \label{eq:tau}
+\end{equation}
+
+\begin{lemma}[Pulse transform and actual-clock remainder]
+\label{lem:sampled}
+Let $N\ge R=4J+8$. There are parameter-independent rational coefficients
+$T_{rl}$ at rational clock inputs such that, with
+\begin{equation}
+ \mathcal A=8\Delta^{-R}4^N,\qquad
+ \mathcal E=\Delta^{-R}\tau^N,\qquad
+ \mathcal W=\max_{1\le r\le R}\sum_{l=0}^N\frac{T_{rl}^2}{N+1-l},
+ \label{eq:transform-budgets}
+\end{equation}
+we have $0<\mathcal W\le\mathcal A^2$. For every admissible pair, put
+$\mathcal D_R=\max_{0\le r\le R}|h_\beta^{(r)}(0)-h_\eta^{(r)}(0)|$.
+Then
+\begin{align}
+ \mathcal D_R&\le\mathcal A\max_{l\le N}|b_{l,\beta}-b_{l,\eta}|+\mathcal E,
+ \label{eq:sampled-infty}\\
+ \mathcal D_R&\le\sqrt{\mathcal W}
+ \left(\sum_{l=0}^N(N+1-l)|b_{l,\beta}-b_{l,\eta}|^2\right)^{1/2}
+ +\mathcal E.\label{eq:sampled-weighted}
+\end{align}
+\end{lemma}
+\begin{proof}
+The elementary series bound $e^x-1\le x/(1-x)$ gives
+$\|X_\beta\|\le x/(1-x)$. In this common norm ball the logarithm and square
+root converge absolutely, so $\log(I+X_\beta)=\Delta A_\beta$ and
+$(I+X_\beta)^{1/2}=e^{\Delta A_\beta/2}$. Define
+\[
+ F_r(z)=\Delta^{-r}[\log(1+z)]^{r-1}
+ \frac{\log(1+z)}{z}(\sqrt{1+z}+1)=\sum_{k\ge0}c_{rk}z^k.
+\]
+Analytic continuation defines the removable quotient at zero. Multiplication
+by the integrated channel gives $F_r(X_\beta)H_\beta=A_\beta^{r-1}$.
+On $|z|=1/2$, the logarithm has modulus at most $\log2<1$, its quotient
+has modulus at most $2$, and $|\sqrt{1+z}+1|<3$. Since $\Delta<1$,
+$|c_{rk}|\le6\Delta^{-R}2^k$ and $\|H_\beta\|\le\Delta$.
+The difference of two degree-$N$ tails is at most
+\[
+ 12\Delta^{1-R}\frac{\tau^{N+1}}{1-\tau}
+ =\Delta^{-R}\tau^N\frac{12\Delta\tau}{1-\tau}
+ \le\mathcal E,
+\]
+since the final factor is at most $24\Delta/61\le1$.
+Expanding $(U-I)^k$ gives
+$T_{rl}=\sum_{k=l}^N c_{rk}(-1)^{k-l}\binom{k}{l}$ and row one-norm at
+most $6\Delta^{-R}\sum_{k=0}^N4^k\le\mathcal A$.
+Weighted Cauchy--Schwarz proves the second assertion and
+$\mathcal W\le\mathcal A^2$. The first row is nonzero: its polynomial at
+$U=1$ is $c_{10}=2/\Delta$. Rational series operations prove rationality.
+The zeroth derivative difference is zero.
+\end{proof}
+
+Let $j=J+1$, $d_0=\log\Delta^{-1}$, $v=\log(1/\delta)$ and
+$\ell_\tau=\log(1/\tau)$. For $0<\delta\le1$, choose
+\begin{equation}
+ N=\max\left\{R,\left\lceil
+ \frac{\log2+25j\log Q+Rd_0+v}{\ell_\tau}\right\rceil\right\},\qquad m=N+1.
+ \label{eq:choose-N}
+\end{equation}
+This ensures $L\mathcal E\le\delta/2$. Define
+\begin{equation}
+ \kappa=p^m\frac{\delta^2}{4L^2\mathcal A^2},\qquad
+ \kappa_W=p^m\frac{\delta^2}{4L^2\mathcal W}\ge\kappa.
+ \label{eq:kappa}
+\end{equation}
+The following closed-form constants include the entire block probability:
+\begin{equation}
+ \begin{split}
+ K_\tau&=12+\frac{\log2+25\log Q+8d_0}{\ell_\tau},\qquad
+ H_p=\log(1/p)+\log16,\\
+ C_\tau&=\log256+50\log Q+16d_0+K_\tau H_p,\qquad
+ p_\tau=2+H_p/\ell_\tau.
+ \end{split}\label{eq:clock-constants}
+\end{equation}
+
+\begin{proposition}[Resource envelope]
+\label{prop:envelope}
+For all $J\ge0$ and $0<\delta\le1$,
+$m\le K_\tau j+v/\ell_\tau$ and
+$\kappa_W\ge\kappa\ge e^{-C_\tau j}\delta^{p_\tau}$.
+\end{proposition}
+\begin{proof}
+Use $R\le8j$, $j\ge1$ and a ceiling error at most one in
+\eqref{eq:choose-N}. Directly,
+\[
+ -\log\kappa=m\log(1/p)+2v+\log256+50j\log Q+2Rd_0+N\log16
+ \le C_\tau j+p_\tau v.
+\]
+\end{proof}
+For fixed $p>0$, smaller chosen clocks can make $p_\tau$ approach $2$.
+The depth constant changes at the same time and can worsen. This is an
+accuracy-exponent refinement, not a sharp fixed-depth tradeoff. The exact
+weighted certificate may further improve a finite instance without changing
+the conservative closed-form region.
+
+\input{round51/likelihood.tex}
+
+\section{A chronological posterior principle with an energy budget}
+\label{sec:energy}
+This section separates the nuisance integrated by the working likelihood from
+the discrepancy in the true conditional mean. It also records exactly which
+part of the argument is independent of the Jacobi model.
+
+\begin{theorem}[Predictable energy-robust posterior transfer]
+\label{thm:energy}
+Consider a compact metric parameter space and a predictable mean family
+$m_i^\beta$, continuous in the parameter at each fixed history, with
+contrast $f_i=m_i^\beta-m_i^{\beta_0}$, $|f_i|\le M$, and a deterministic
+metric dominating contrast differences uniformly over histories. Suppose
+its covering and prior-ball costs are bounded by
+$\overline{\mathcal H}$ and $\mathcal P$ as in Lemma~\ref{lem:entropy}.
+Use consecutive deterministic groups of size at most $m$, and define
+$A_n,S_n,V_n$ as in Section~\ref{sec:likelihood}. Observe
+$Y_i=m_i^{\beta_0}+d_i+\xi_i$, with $d_i$ predictable and fresh
+$\xi_i\sim N(0,\sigma^2)$. Assume $\sum_{i\le n}d_i^2\le D$ pathwise.
+
+Use a working likelihood integrating shifts $b_i^\beta(z)$ against any
+probability law, with the uniform envelope $|b_i^\beta(z)|\le r_i$ and
+$R_1=\sum_i r_i<\infty$, $R_2=\sum_i r_i^2<\infty$. The same law is used
+at candidate and truth; no support-at-the-truth condition is required.
+For a measurable $F$ with $\inf_F V_n\ge nq>0$ pathwise, put
+\begin{equation}
+ B_{n,D}=\sigma^{-2}\left(2\sum_{i\le n}r_i|\xi_i|
+       +2\sqrt{R_2D}+2MR_1+R_2\right).
+ \label{eq:energy-B}
+\end{equation}
+Except on an event of probability at most $\Phi_{n,m}(q)$ from
+\eqref{eq:variance-tail},
+\begin{equation}
+ \Pi_n(F)\le\exp\left\{\mathcal P(\sqrt q/4)
+ -\frac{27nq}{256\sigma^2}+\frac{8D}{\sigma^2}+2B_{n,D}\right\}.
+ \label{eq:energy-posterior}
+\end{equation}
+In particular, if $D\le nq/1024$, then
+$\Pi_n(F)\le\exp\{\mathcal P(\sqrt q/4)-nq/(16\sigma^2)\}$
+except with probability at most
+$\Phi_{n,m}(q)+\Pp\{B_{n,D}>nq/(64\sigma^2)\}$.
+For $u>0$, with probability at least $1-2e^{-u}$,
+\begin{equation}
+ B_{n,D}\le\sigma^{-2}
+ \left(2\sigma R_1\sqrt{2u}+2\sqrt{R_2D}+2MR_1+R_2\right).
+ \label{eq:energy-tail}
+\end{equation}
+\end{theorem}
+\begin{proof}
+The proof of Theorem~\ref{thm:variance} uses only predictability, Gaussian
+fresh noise, the bounded group increments, and the deterministic cover.
+Consequently its event remains valid under the present observation law;
+no correct-specification premise enters that martingale calculation.
+
+Let $L_n^0$ be the zero-shift Gaussian likelihood. Completing squares gives
+\[
+ \log\frac{L_n^0(\beta)}{L_n^0(\beta_0)}
+ =\sigma^{-2}\left(S_n-A_n/2+\sum_i d_i f_i\right).
+\]
+For a candidate, the exponent in $L_n(\beta)/L_n^0(\beta)$ is
+$\sigma^{-2}\sum_i[b_i^\beta(z)(\xi_i+d_i-f_i)
+ -(b_i^\beta(z))^2/2]$. Its absolute value is at most
+\[
+ \sigma^{-2}\left(\sum_i r_i|\xi_i|+\sqrt{R_2D}+MR_1+R_2/2\right)
+\]
+uniformly in $\beta,z$, by Cauchy--Schwarz. The log of its integral lies
+between its infimum and supremum. Subtracting the two log integrals thus
+has absolute value at most $B_{n,D}$, before any choice of working law.
+
+Young's inequality gives
+$|\sum_i d_i f_i|\le A_n/16+4D$.
+On the simultaneous score and square event,
+\begin{align*}
+ \log\frac{L_n(\beta)}{L_n(\beta_0)}
+ &\le\sigma^{-2}(-3A_n/8+nq/64+4D)+B_{n,D},\\
+ \log\frac{L_n(\beta)}{L_n(\beta_0)}
+ &\ge\sigma^{-2}(-5A_n/8-nq/64-4D)-B_{n,D}.
+\end{align*}
+On $F$, $A_n\ge15nq/32$, so the numerator coefficient is $-41/256$.
+On the prior ball of radius $\sqrt q/4$, $A_n\le nq/16$ pathwise, so the
+denominator coefficient is $-7/128$. Its prior mass is at least
+$e^{-\mathcal P(\sqrt q/4)}$. Taking the ratio proves
+\eqref{eq:energy-posterior}, since $-41/256+7/128=-27/256$.
+The particular budgets yield
+\[
+ -27/256+8/1024+2/64=-17/256\le-1/16.
+\]
+Finally, for $R_1>0$, Jensen with weights $r_i/R_1$ and
+$\E e^{\lambda|\xi_i|}\le2e^{\lambda^2\sigma^2/2}$ gives
+$\Pp\{\sum r_i|\xi_i|>\sigma R_1\sqrt{2u}\}\le2e^{-u}$ by exponential
+Markov. The $R_1=0$ case is immediate. This proves \eqref{eq:energy-tail}.
+\end{proof}
+
+The finite guarantee can be used without an asymptotic assertion: verify
+$D\le nq/1024$, the deterministic right side of \eqref{eq:energy-tail}
+is at most $nq/(64\sigma^2)$ for $u=\log(4/\alpha)$,
+$\Phi_{n,m}(q)\le\alpha/2$, and
+$\mathcal P(\sqrt q/4)+\log(1/\epsilon_p)\le nq/(16\sigma^2)$.
+These imply posterior error at most $\epsilon_p$ with failure at most $\alpha$.
+The square-energy loss $8D/\sigma^2$ is explicit even outside that convenient
+sufficient budget; no unmodeled persistent discrepancy is silently removed.
+
+\begin{corollary}[Non-summable polynomial discrepancies]
+\label{cor:polynomial-drift}
+In Theorem~\ref{thm:main-drift}, suppose the discrepancy is a bounded true
+initial-state response plus $e_i$, where $|e_i|\le C i^{-\alpha}$ pathwise
+and $\alpha>0$. Every $\gamma<\min(1,2\alpha)$ is attainable for the
+complete posterior and its prefix medians. This includes $0<\alpha\le1/2$,
+for which the envelope need not have finite total squared energy.
+\end{corollary}
+\begin{proof}
+The initial response has bounded summed squares. The inequality
+$(u+v)^2\le2u^2+2v^2$ reduces the envelope to a constant plus
+$2C^2\sum_{i\le n}i^{-2\alpha}$. This is $O(n^{1-2\alpha})$ when
+$\alpha<1/2$, $O(\log n)$ when $\alpha=1/2$, and $O(1)$ otherwise.
+Each is $o(n^{1-\gamma}/\log n)$ under the strict displayed condition.
+\end{proof}
+
+\section{Retained-state block information and contraction}
+\label{sec:blocks}
+A successful block has all $m$ durations equal to $t_0$. Its probability is
+$p^m$, generated by exogenous duration choices independently of signs and
+readouts. If only a designated atom or nonexploration label is counted,
+coincident durations can only enlarge the usable event. Duration randomizers
+can be exposed for the energy calculation without conditioning the actual
+likelihood on a terminal, response-dependent design.
+
+\begin{lemma}[All-sign information]
+\label{lem:block-floor}
+Conditional on a successful block's starting history and committed profiles,
+put $d_k^{\beta}=b_{k,\beta}-b_{k,\beta_0}$. Then
+\begin{equation}
+ \E_S\sum_{k=0}^{m-1}f_{b,k}(\beta)^2
+ =\sum_{k=0}^{m-1}P_{b,k}(\beta)^2
+   +a^2\sum_{k=0}^{m-1}(m-k)(d_k^{\beta})^2.
+ \label{eq:all-signs}
+\end{equation}
+Consequently the conditional group energy is at least $a^2\kappa_W$ on
+$\{d_J(\beta,\beta_0)\ge\delta\}$, also under the discrepancies of
+Theorem~\ref{thm:main-drift}.
+\end{lemma}
+\begin{proof}
+Along the common realized input,
+$f_{b,k}=P_{b,k}+a\sum_{j=0}^k S_{b,j}d_{k-j}^{\beta}$.
+Commitment makes the intercept independent of every current block sign.
+Sign orthogonality removes cross terms, and each squared response appears
+$m-k$ times. Multiply its nonnegative contribution by $p^m$; other duration
+patterns contribute nonnegative energy. The jet and weighted sampled inverses,
+with $L\mathcal E\le\delta/2$, imply a weighted squared-response energy at
+least $\delta^2/(4L^2\mathcal W)$ for separated parameters.
+An additive readout discrepancy changes histories and later committed
+profiles, but not this conditional algebra along a fixed history. Fresh
+signs remain independent of that history. Thus the same floor holds.
+\end{proof}
+
+\begin{theorem}[Finite information budget and proofs of the main results]
+\label{thm:block-posterior}
+At $n'=Bm$, the complete-posterior theorem applies with
+$q=a^2\kappa_W/m$ or its simpler value $q=a^2\kappa/m$.
+Theorem~\ref{thm:posterior} and budget \eqref{eq:posterior-budget} handle the
+bounded true initial state. Theorem~\ref{thm:energy} handles additional
+predictable discrepancies without altering the working likelihood.
+\end{theorem}
+\begin{proof}
+Summing Lemma~\ref{lem:block-floor} gives $V_{n'}\ge n'q$ on the entire
+separated set. For $J_n=\lfloor r\log n\rfloor$, $\delta_n=n^{-s}$,
+Proposition~\ref{prop:envelope} gives $m_n=O(\log n)$,
+$\kappa\ge e^{-C_\tau}n^{-\gamma}$ and $n'/n\to1$. Thus
+\[
+ n'q\ge c\,n^{1-\gamma}/\log n,\qquad
+ n'q/C_{m_n}\ge c\,n^{1-\gamma}/(\log n)^2.
+\]
+Also $\log(1/q)=O(\log n)$ directly from its formula. These quantities
+dominate the $O((\log n)^2)$ covering and prior costs. The bounded
+initial-state nuisance threshold diverges, proving Theorem~\ref{thm:main}.
+
+For Theorem~\ref{thm:main-drift}, condition \eqref{eq:main-drift-rate} gives
+$D_{n'}=o(n'q)$. In \eqref{eq:energy-B} the random weighted-noise term is
+uniformly $O_{\Pp}(1)$, while $\sqrt{R_2D_{n'}}=o(n'q)$.
+Therefore $B_{n',D_{n'}}=o_{\Pp}(n'q)$, and the same exponent dominates all
+costs. The finite-energy theorem proves contraction. Once the posterior has
+more than half its mass in $d_J<\delta$, every coordinate median lies within
+$\delta$ of its true coordinate; an admissible completion exists in the
+product box. Finally every stage has length $t_0+t_i$ between $t_0$ and
+$t_0+T$. This proves the elapsed-time bound for the attaining experiment.
+\end{proof}
+
+\section{Finite-response estimation and comparison}
+\label{sec:transfer}
+Let $\mathbf b_N(\beta)=(b_{0,\beta},\ldots,b_{N,\beta})$ with maximum
+norm. Its image is compact by Lemma~\ref{lem:stability}.
+
+\begin{theorem}[Response-to-physical transfer]
+\label{thm:transfer}
+Suppose $\|\widehat{\mathbf b}-\mathbf b_N(\beta_0)\|_\infty\le e$ on
+an event of probability at least $1-\alpha$. Take a finite deterministic
+$\eta$-net of the response image, assigning an admissible preimage and a
+fixed ordering to every point. Minimize the residual over those preimages,
+breaking ties by that ordering. Then, on the same event,
+\[
+ d_J(\widehat\beta,\beta_0)\le L\{\mathcal A(2e+\eta)+\mathcal E\}.
+\]
+The response confidence set of radius $e$ is nonempty and has $d_J$ diameter
+at most $L(2\mathcal A e+\mathcal E)$. Thus $e=\eta=\delta/(6L\mathcal A)$
+suffices for estimation, and $e\le\delta/(4L\mathcal A)$ for diameter.
+\end{theorem}
+\begin{proof}
+A net point within $\eta$ of the true response has residual at most $e+\eta$.
+The minimizing residual is no larger. The triangle inequality gives response
+distance at most $2e+\eta$ from truth. Apply the sampled and jet inverses.
+For two members of the confidence set, their response distance is at most
+$2e$. The remainder choice completes the claims; a finite ordered minimization
+is measurable.
+\end{proof}
+
+\begin{theorem}[A compatible nonreset response estimator]
+\label{thm:response-estimator}
+Under Theorem~\ref{thm:main}'s observation model without an additional
+discrepancy, let $M_B$ count successes among $B$ blocks. For $M_B>0$, put
+\[
+ \widehat b_k=\frac1{aM_B}\sum_{b\le B:\,E_b}S_{b,0}Y_{b,k},\quad
+ B_*=C_*(R_0+U_*/\lambda_*),\quad v_*=\sigma^2+B_*^2.
+\]
+Assign any output at $M_B=0$. For $e>0$,
+\begin{equation}
+ \Pp\{M_B<Bp^m/2\ \hbox{or}\
+ \|\widehat{\mathbf b}-\mathbf b_N(\beta_0)\|_\infty>e\}
+ \le e^{-Bp^m/8}+2m e^{-a^2e^2Bp^m/(4v_*)}.
+ \label{eq:response-tail}
+\end{equation}
+This estimator attains the region of Theorem~\ref{thm:main}.
+\end{theorem}
+\begin{proof}
+On success, $Y_{b,k}=aS_{b,0}b_{k,\beta_0}+P^0_{b,k}+\xi_{b,k}$.
+Conditional on starting history, success and the other signs, the intercept
+is independent of $S_{b,0}$ and bounded by $B_*$. Removing the first signed
+pulse leaves an input still bounded by $U_*$. Hence the centered product
+$S_{b,0}Y_{b,k}-ab_{k,\beta_0}$ is sub-Gaussian with proxy $v_*$.
+For each lag,
+\[
+ \exp\left\{\lambda\sum_{b\le B}\mathbf1_{E_b}
+ (S_{b,0}Y_{b,k}-ab_{k,\beta_0})-\lambda^2v_*M_B/2\right\}
+\]
+is a nonnegative block supermartingale. Use both signs of $\lambda=ae/v_*$
+on $M_B\ge Bp^m/2$, and use the Chernoff count bound $e^{-Bp^m/8}$.
+Union over lags proves \eqref{eq:response-tail}; the lag estimates need not
+be independent. No conditional Gaussianity at a terminal success count is
+asserted. At $e=\eta=\delta/(6L\mathcal A)$, $p^me^2=\kappa/9$.
+Since $n\kappa/m$ dominates $\log n$ in the stated region, both failure
+terms vanish. The posterior, unlike this auxiliary estimator, uses every block.
+\end{proof}
+
+\begin{proposition}[Dimension-uniform approximation]
+\label{prop:finite-section}
+Cut the chain at site $K\ge1$, retaining the same interior coefficients.
+Let $S=N\Delta+t_0$. The cut pulse responses satisfy
+\begin{align}
+ \max_{k\le N}|b_{k,\beta}-b^{[K]}_{k,\beta}|
+ &\le 2t_0e^{\Lambda S}(\Lambda S)^{K+1}/(K+1)!=:\epsilon_K,
+ \label{eq:finite-bias}\\
+ \sum_{k\ge0}|b^{[K]}_{k,\beta}|
+ &\le\frac{C_*t_0e^{\Lambda t_0}}{1-e^{-\lambda_*\Delta}}.
+ \label{eq:finite-uniform}
+\end{align}
+Both bounds are uniform in the unspecified tail and cut size. A sufficient
+condition for $\epsilon_K\le\epsilon$ is
+\[
+ K+1\ge\max\left\{2,2e\Lambda S,
+ \frac{\log(2t_0/\epsilon)+\Lambda S}{\log2}\right\}.
+\]
+In particular $K=O(\log n)$ suffices at logarithmic lag horizon and polynomial
+response tolerance.
+\end{proposition}
+\begin{proof}
+Boundary generator words agree through order $K$. Their exponential-series
+difference is bounded by $2e^{\Lambda S}(\Lambda S)^{K+1}/(K+1)!$.
+Integrate over the short pulse. Principal cuts have the same positive form
+bounds and hence the same energy-based stability constants. Apply stability
+to $U_K^kH_KB$ and sum the geometric series to obtain
+\eqref{eq:finite-uniform}. The last assertion follows from
+$q!\ge(q/e)^q$ and $(\Lambda S)^q/q!\le2^{-q}$ for $q\ge2e\Lambda S$.
+\end{proof}
+
+\subsection{A theorem-level comparison with finite-time LTI identification}
+\label{sec:comparison}
+Sarkar--Rakhlin--Dahleh \cite{SRD2020} genuinely allow isotropic sub-Gaussian
+inputs in Assumption 1 and in the Section 11 error proof. Their Algorithm 1
+uses Gaussian inputs, but that pseudocode is not the input scope of the
+analysis. A scalar Rademacher sign has mean zero, variance one and
+$\E e^{\lambda S}=\cosh\lambda\le e^{\lambda^2/2}$. It is therefore a
+bounded input satisfying the relevant sub-Gaussian requirement.
+
+To compare the experiments, specialize to regular durations and zero baseline.
+Let $z_i$ be the state at a readout endpoint. Then
+\[
+ z_{i+1}=U_\beta z_i+aH_\beta B S_{i+1},\qquad
+ Y_i=\ell z_i+\xi_i.
+\]
+The finite section is a stable discrete LTI system with input operator $aH_KB$.
+Its transition powers have the common bound $C_*e^{-\lambda_*\Delta k}$;
+\eqref{eq:finite-uniform} bounds its response sum independently of dimension.
+Thus a response-level comparison cannot be blocked merely by the adjective
+``infinite'' or by the boundedness of the signs.
+
+In the cited input-Gram argument, independent isotropic sub-Gaussian inputs
+supply the excitation. Its error decomposition separates response-tail,
+measurement-noise and process-noise terms. Setting process noise to zero
+removes those latter upper-bound terms; it does not remove input excitation.
+This is a proof-level zero-process-noise specialization, not a claim that a
+zero covariance satisfies a printed unit-covariance normalization. A nonzero
+initial state adds a stable transient rather than an unbounded new forcing.
+An applicable response estimate, plus the separately charged bias
+\eqref{eq:finite-bias}, can therefore be inserted into
+Theorem~\ref{thm:transfer}. An $\ell^2$ response error also bounds its maximum
+norm. Physical realization by a similarity transform is unnecessary at that
+interface.
+
+What remains outside this direct regular-duration comparison is the irregular
+duration mixture and history-dependent block baselines, the explicit
+uniform-in-tail labeled physical inverse, and contraction of the complete
+nonlinear working posterior, now with the energy budget
+\eqref{eq:energy-posterior}. The auxiliary estimator above supplies a compatible
+front end directly. None of these statements asserts that prior FIR methods
+fail, or that a frequentist FIR bound by itself contracts an arbitrary posterior.
+The cut chain is only an approximation; its removed edge is not treated as an
+admissible positive infinite tail.
+
+\section{Observable-bound rational outer certificates}
+\label{sec:enclosures}
+For an observable $y_q(\beta)=\sum_l\lambda_{ql}h_\beta(t_{ql})$, let the
+statistical reference interval be $I_q=[\widehat y_q-R_q,\widehat y_q+R_q]$.
+The rational representation must satisfy, with a separately declared
+$\epsilon_q\ge0$,
+\begin{equation}
+ I_q\subset I_q^{\rm rat}\subset
+ [\widehat y_q-R_q-\epsilon_q,\widehat y_q+R_q+\epsilon_q].
+ \label{eq:representation}
+\end{equation}
+Rational arithmetic does not certify the coverage probability of arbitrary
+supplied statistical bands. When that probability is at least $1-\alpha$,
+the coverage theorem below inherits it. A nonrational band first requires a
+certified rational reference enclosure, with its error explicitly charged.
+
+Canonicalize each observable by summing rational coefficients at equal times,
+dropping zero coefficients and all terms at zero time, since $h_\beta(0)=0$.
+All other times must be nonnegative rational numbers. For a clock/depth
+certificate, the canonical rows must be \emph{exactly} the complete set
+\begin{equation}
+ \bigl\{h_\beta(k\Delta+t_0)-h_\beta(k\Delta):0\le k\le N\bigr\},
+ \label{eq:bound-grid}
+\end{equation}
+with no missing or duplicated lag. A row permutation is permitted only together
+with the corresponding band permutation. Canonicalization allows algebraically
+equivalent splitting of terms and arbitrary terms multiplying $h(0)$.
+A count alone, or small radii alone, is not this condition.
+
+For general rational observables, take $K\ge J+1$, mesh half-width at most
+$r>0$, and Taylor order $P\ge0$. The full box variables are
+$c,b_0,\ldots,b_K,a_0,\ldots,a_{K-1}$, including $a_J$. At each center,
+evaluate
+\[
+ H_q=\sum_l\lambda_{ql}\ell\sum_{k=0}^P A_K^kB\,
+                         t_{ql}^{k+1}/(k+1)!.
+\]
+Let $T_c$ be the largest time, $d_q=\sum_l|\lambda_{ql}|$ and
+$E_0=3^{\lceil\Lambda T_c\rceil}$. Use five separate error accounts:
+statistical radius, representation radius, and the following three deterministic
+errors:
+\begin{equation}
+ \begin{split}
+ E_{\rm tail}&=2T_cE_0(\Lambda T_c)^K/K!,\qquad
+ E_{\rm mesh}=2rT_c^2E_0,\\
+ E_{\rm num}&=T_cE_0(\Lambda T_c)^{P+1}/(P+1)!,\qquad
+ E_q=d_q(E_{\rm tail}+E_{\rm mesh}+E_{\rm num}).
+ \end{split}\label{eq:outer-errors}
+\end{equation}
+Retain a full box exactly when each $[H_q-E_q,H_q+E_q]$ intersects
+$I_q^{\rm rat}$. Return both full boxes and their prefix projections.
+
+\begin{theorem}[Bound enclosure contract]
+\label{thm:outer}
+The exhaustive outer union contains every originally feasible prefix.
+Every admissible completion of a retained full box satisfies
+\[
+ |y_q(\beta)-\widehat y_q|\le r_q^{\rm out}:=R_q+\epsilon_q+2E_q.
+\]
+Suppose, in addition, that the model box, physical depth, target $\delta$,
+clock and all recomputed certificate fields agree, that \eqref{eq:bound-grid}
+is validated, and that the complete enumeration has finished. Then the returned
+prefix union has diameter at most
+\begin{equation}
+ D_{\rm cert}=L\{2\mathcal A\max_q r_q^{\rm out}+\mathcal E\}.
+ \label{eq:diameter-contract}
+\end{equation}
+A nonempty union with $D_{\rm cert}\le\delta$ is a certified diameter result.
+An empty union is reported separately and is not a recovery assertion.
+A projected prefix has an existential full-box witness; the completion claim
+does not quantify over arbitrary tails attached to that projection alone.
+\end{theorem}
+\begin{proof}
+Agreement of the full chain and cut center on boundary words through degree
+$K-1$ gives the stated spatial bound. Coordinate perturbations at most $r$
+change the generator by at most $4r$. Stable finite-time Duhamel and integration
+give $2rT_c^2e^{\Lambda T_c}$, bounded by $E_{\rm mesh}$. Taylor remainder
+gives $E_{\rm num}$, and absolute observable weights give $E_q$ uniformly over
+all completions of each full box. A feasible parameter's box is retained.
+At an interval intersection, one $E_q$ reaches the center and another reaches
+any completion, giving $r_q^{\rm out}$. Choose full witnesses for any two
+retained prefixes. The validated rows are their sampled pulse responses, so
+\eqref{eq:sampled-infty} and the jet inverse give
+\eqref{eq:diameter-contract}. Every step uses the bound observable identity,
+not just the lengths of vectors or the magnitudes of radii.
+\end{proof}
+
+The active implementation, \texttt{tools/round53\_certificates.py}, exposes
+\texttt{certify\_outer}. It recomputes its immutable model/clock certificate,
+validates and orders the complete observable map with its bands, and constructs
+the outer set internally. It accepts neither an external outer-set result nor
+an externally supplied list of alleged outer radii. Its immutable return records
+the grid, bands, model certificate, full witnesses, enumeration counts, all
+five budgets and the upper bound. The arithmetic-only helper is explicitly
+named \texttt{radius\_budget\_satisfied}; its return is not a grid certificate.
+These statements concern outputs of the stated entry point, not authenticity
+of arbitrary user-created Python objects or monkey-patched code.
+
+Resources are checked before enumeration; exceeding them raises
+\texttt{ResourceLimit}, never a successful partial certificate. Increasing
+$K,P$ and then refining the mesh makes the deterministic errors small at finite
+unrestricted resources. This is an exhaustive algorithm, not a claim of practical
+large-depth efficiency. The statistical bands and their advertised confidence
+remain a separate input premise even when a diameter certificate succeeds.
+
+\section{All-policy depth comparison and elapsed time}
+\label{sec:optimality}
+Choose two admissible parameters differing only in $b_J$ by
+$\delta\in(0,b_+-b_-)$, with zero initial state. Let
+$q_k=(e_k,0)$, $v_k=(0,e_k)$ and $m_0=2J+1$.
+
+\begin{lemma}[Two-way boundary propagation]
+\label{lem:two-way}
+For all $t\ge0$,
+\[
+ |g_\beta(t)-g_\eta(t)|\le
+ \delta e^{\Lambda t}\Lambda^{4J+2}t^{4J+3}/(4J+3)!.
+\]
+The step-response bound has $t^{4J+4}/(4J+4)!$ in place of the last factor.
+\end{lemma}
+\begin{proof}
+A generator word from $v_0$ to $q_J$ or from $v_J$ to $q_0$ needs one
+velocity-to-position step and two steps per edge; its first possible degree
+is $m_0$. Damping cannot shorten this. Each leg is bounded by
+$e^{\Lambda t}(\Lambda t)^{m_0}/m_0!$.
+The generator difference is $\pm\delta v_Jq_J^*$, so Duhamel convolves the
+two legs. The beta integral
+$\int_0^t(t-u)^{m_0}u^{m_0}\,du=(m_0!)^2t^{2m_0+1}/(2m_0+1)!$
+gives the first inequality. Integrating in time gives the second.
+\end{proof}
+
+\begin{theorem}[All-time information bound in readout count]
+\label{thm:global}
+Put $\vartheta=\min\{\log2,\lambda_* /(8e\Lambda)\}$ and
+$D_0=(8e\Lambda)^{-1}+C_*/\lambda_*$. For every parameter-independent
+chronological policy of force at most $U$ and $n$ Gaussian boundary readouts
+at selected finite times,
+\[
+ \KL(P_\beta^{\pi,n},P_\eta^{\pi,n})
+ \le\frac{nU^2\delta^2D_0^4}{2\sigma^2}e^{-4\vartheta(2J+1)}=:K_n.
+\]
+Every estimator has maximal two-point probability of $d_J$ error at least
+$\delta/2$ at least $\max\{0,(1-\sqrt{K_n/2})/2\}$.
+\end{theorem}
+\begin{proof}
+Split the $L^1$ norm of each off-boundary leg at $S=m_0/(8e\Lambda)$.
+The factorial short part is bounded by
+$[m_0/(8e\Lambda)]4^{-m_0}\le(8e\Lambda)^{-1}2^{-m_0}$;
+the stable long part by $(C_*/\lambda_*)e^{-\lambda_*S}$.
+Each norm is thus at most $D_0e^{-\vartheta m_0}$.
+Duhamel gives $\|g_\beta-g_\eta\|_1\le\delta D_0^2e^{-2\vartheta m_0}$.
+At a common history the policy kernels coincide, and the conditional mean
+difference is at most $U$ times this response norm. The chronological Gaussian
+KL chain rule proves the bound. Testing the disjoint strict error balls and
+using Pinsker proves the risk assertion.
+\end{proof}
+
+For fixed accuracy, $K_n\to0$ when $J_n/\log n\to\infty$, proving the
+matching logarithmic depth order. With separation $4n^{-s}$ and
+$J_n=\lfloor r\log n\rfloor$, the obstruction is $8\vartheta r+2s>1$;
+the sufficient region is $C_\tau r+p_\tau s<1$. These are not asserted to be
+the same sharp frontier. The larger lower-bound policy class and smaller
+attaining committed class are compatible with this order comparison.
+
+\begin{corollary}[Elapsed-time order with a sampling-rate restriction]
+\label{cor:time}
+Restrict comparison policies to interreadout gaps at least a fixed $g>0$.
+At elapsed time $t$, their count is at most $1+\lfloor t/g\rfloor$.
+The preceding KL bound with this count gives the logarithmic-depth obstruction
+in $t$. The experiment of Theorem~\ref{thm:main}, whose stages have lengths
+between $t_0$ and $t_0+T$, attains the logarithmic order under such a restriction
+with $g=t_0$.
+\end{corollary}
+\begin{proof}
+The gap bounds the number of conditional observation factors; summing the
+same uniform conditional KL bound gives the claim even for a stopped record.
+The deterministic two-sided stage-time bound transfers the attaining order.
+\end{proof}
+Without a bound on sampling rate, a fixed elapsed interval need not bound the
+number of independent noisy readouts. The unrestricted policy theorem is
+therefore a readout-count theorem, not an unrestricted elapsed-time theorem.
+
+\begin{thebibliography}{99}
+\bibitem{Teschl} G. Teschl, \emph{Jacobi Operators and Completely Integrable
+Nonlinear Lattices}, Mathematical Surveys and Monographs 72, AMS, 2000.
+\bibitem{MM2019} A. S. Mikhaylov and V. S. Mikhaylov,
+Dynamic inverse problem for Jacobi matrices,
+\emph{Inverse Problems and Imaging} 13 (2019), 431--447.
+\href{https://doi.org/10.3934/ipi.2019021}{doi:10.3934/ipi.2019021}.
+\bibitem{SRD2020} T. Sarkar, A. Rakhlin and M. A. Dahleh,
+Nonparametric Finite Time LTI System Identification,
+\href{https://arxiv.org/abs/1902.01848v6}{arXiv:1902.01848v6}, 8 April 2020.
+Section numbering in the comparison refers to this preprint.
+Journal version: \emph{Finite Time LTI System Identification},
+JMLR 22(26) (2021), 1--61.
+\bibitem{SS2026} F. Seizilles and M. Siebel,
+Posterior contraction under misspecification and heteroscedasticity in
+non-linear inverse problems,
+\href{https://arxiv.org/abs/2603.28177v1}{arXiv:2603.28177v1}, 30 March 2026.
+\end{thebibliography}
+\end{document}

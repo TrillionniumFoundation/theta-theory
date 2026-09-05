@@ -1,11 +1,17 @@
-# theta-theory — Round 51 revision
+# Theta theory — active Round 53 revision
 
-The active submission is **Single-Atom Boundary Identification with Retained State and Logarithmic Physical Depth**, responding to the frozen Round 50 referee report.
+**Boundary Identification from Recurring Fast Probes: Energy-Robust Posteriors and Bound Observable Certificates**
 
-Start with [ROUND51_REVIEW_INDEX.md](ROUND51_REVIEW_INDEX.md), the [main manuscript source](ROUND51_REVISION.tex), and the [point-by-point response](AUTHOR_RESPONSE_ROUND50.md).
+Author: Qian Qi. Revision date: 5 September 2026.
 
-The revision generalizes the retained-state bounded-probe theorem to any sufficiently short positive-mass atom, enlarges the successful-block event, uses all-sign weighted energy and a sharper sampled-channel remainder, and proves an explicit finite-response-to-physical reduction with a compatible estimator and dimension-uniform truncation bounds. The complete working posterior and logarithmic depth-order conclusion are retained and strengthened.
+Start with [the review index](ROUND53_REVIEW_INDEX.md), [the article source](ROUND53_REVISION.tex), and [the response to Round 52](AUTHOR_RESPONSE_ROUND52.md).
 
-Current executable source is supplied directly in `tools/round51_certificates.py`, `tests/test_round51.py` and `tools/verify_round51.py`. Run `python tools/verify_round51.py --build` to verify the frozen active-source closure, execute the new finite tests and build the article. The review index specifies dependencies and distinguishes actual execution receipts from analytic proofs.
+The new revision retains logarithmic labeled physical depth, strengthens the complete posterior to a controlled cumulative-energy discrepancy class, allows atomless exploration when short probes recur outside exploration, uses the actual clock remainder, and binds executable diameter decisions to the complete observable grid and model identity.
 
-All previous manuscript roots, referee reports and historical derivations remain on this full-history revision branch. No prior branch is rewritten or merged. The new code is not represented as a recovered copy of the missing Round 49 programs. No journal acceptance or formal proof certification is claimed.
+```sh
+python tools/verify_round53.py --pdf
+```
+
+This checks the immutable source manifest, runs the historical and new regression suites, and performs three TeX passes. The active implementation is `tools/round53_certificates.py`; its certifying entry point is `certify_outer`. Supplied statistical bands still require their own coverage guarantee. Tests and builds do not constitute formal proof certification or journal acceptance.
+
+All historical manuscript roots, derivations, referee reports and programs are preserved on this full-history revision branch. The new root explicitly inputs the unchanged moment/inverse and likelihood sources in `round51/`; they are part of its manifest, not optional external files.
