@@ -1,0 +1,92 @@
+\section{Certified outer sets with an explicit input-representation budget}
+\label{sec:enclosures}
+A statistical band and its represented input interval are separate objects.
+Let $I_q=[\widehat y_q-R_q,\widehat y_q+R_q]$ and suppose a certified rational
+input satisfies
+\begin{equation}
+ I_q\subset I_q^{\rm rat}\subset
+ [\widehat y_q-R_q-\epsilon_q,\widehat y_q+R_q+\epsilon_q].
+ \label{eq:representation}
+\end{equation}
+Here $\epsilon_q\ge0$ includes outward rounding of the center and endpoints;
+it is not a tail or Taylor error. The implementation accepts exact rational
+reference bands and verifies \eqref{eq:representation} against a separately
+supplied rational budget. For nonrational original bands, first form a certified
+reference band enclosing them and carry that first enclosure error as part of
+$\epsilon_q$. It must not be silently declared zero.
+
+We allow an observable
+$y_q(\beta)=\sum_l\lambda_{ql}h_\beta(t_{ql})$ with rational coefficients and
+nonnegative rational times. A step cell has one coefficient $1$; a lagged pulse
+has coefficients $1,-1$ at $k\Delta+t_0,k\Delta$. Let
+$d_q=\sum_l|\lambda_{ql}|$ and $T_c=\max_{q,l}t_{ql}>0$.
+For rational box endpoints choose $K\ge J+1$, a finite coordinate mesh of
+half-width at most $r$, and Taylor order $P$. Cut the chain at site $K$.
+Its variables are $c,b_0,\ldots,b_K,a_0,\ldots,a_{K-1}$; the edge out is removed.
+At each mesh center compute exactly
+\[
+ H_q=\sum_l\lambda_{ql}\ell\sum_{k=0}^P A_K^kB\,
+                         t_{ql}^{k+1}/(k+1)!.
+\]
+With $E_0=3^{\lceil\Lambda T_c\rceil}$ set the rational component bounds
+\begin{equation}
+ \begin{aligned}
+ E_{\rm tail}&=2T_cE_0(\Lambda T_c)^K/K!,&
+ E_{\rm mesh}&=2rT_c^2E_0,\\
+ E_{\rm num}&=T_cE_0(\Lambda T_c)^{P+1}/(P+1)!,&
+ E_q&=d_q(E_{\rm tail}+E_{\rm mesh}+E_{\rm num}).
+ \end{aligned}
+ \label{eq:outer-errors}
+\end{equation}
+Retain a full mesh box when every computed interval $[H_q-E_q,H_q+E_q]$
+intersects $I_q^{\rm rat}$. Return its requested prefix projection together
+with the retained full boxes and the separate error components.
+
+\begin{theorem}[Coverage-preserving outer construction and corrected diameter]
+\label{thm:outer}
+The returned union contains the prefix projection of the original feasible
+confidence set. Every admissible completion of a retained \emph{full} $K$-box
+satisfies
+\begin{equation}
+ |y_q(\beta)-\widehat y_q|\le R_q+\epsilon_q+2E_q.
+ \label{eq:outer-radius}
+\end{equation}
+On a step certificate grid, the condition
+$\max_q(R_q+\epsilon_q+2E_q)\le\delta/(4LA)$ certifies $d_J$ diameter at most
+$\delta$; on the sampled-pulse grid replace $A$ by $\mathcal A_{N,R}$.
+The statement about projected prefixes is existential: each retained prefix
+has a witnessing retained full box. Arbitrarily appending a different tail
+to that prefix need not preserve the bands and is not claimed to do so.
+\end{theorem}
+\begin{proof}
+The cut chain and a full completion agree on boundary words through order
+$K-1$; exponential tails give $E_{\rm tail}$. Finite-coordinate error at most
+$r$ changes the generator by at most $4r$; integrating
+$4rt e^{\Lambda t}$ gives $E_{\rm mesh}$. The exponential-series remainder
+gives $E_{\rm num}$. All generators have norm at most $\Lambda$, including the
+cut chain, and $e^{\Lambda T_c}\le E_0$. The triangle inequality for the
+observable coefficients gives the error $E_q$ uniformly on each full box.
+Every originally feasible parameter therefore has its box retained.
+If the two input intervals intersect, a point in the intersection is within
+$E_q$ of $H_q$ and within $R_q+\epsilon_q$ of $\widehat y_q$. Another $E_q$
+reaches any full completion, proving \eqref{eq:outer-radius}.
+For each pair of projected prefixes choose their witnessing full boxes and
+admissible infinite completions, then apply the step or pulse diameter argument.
+The bound concerns only the prefix and so is independent of the witnesses.
+\end{proof}
+
+For every positive target error, increasing $K,P$ makes both factorial tails
+small, and a sufficiently fine finite mesh makes the remaining error small.
+The finite enumeration terminates with unrestricted finite resources. The
+implementation checks the total box count before enumeration and raises
+\texttt{ResourceLimit} rather than returning a partial union as complete.
+There is no polynomial-time or practical large-depth claim. The original
+statistical, representation, tail, mesh, and numerical budgets are reported
+separately, including when the sufficient diameter test fails.
+
+For example, the Round 48 witness uses the reference band
+$[-10^{-7},10^{-7}]$ and represented interval $[-1,1]$. It requires
+$\epsilon\ge1-10^{-7}$; declaring $\epsilon=0$ is rejected by the new input
+validator. The coarse interval can legitimately retain a box, but no diameter
+claim based only on $10^{-7}+2E_q$ is then issued. Refining the parameter mesh
+cannot eliminate this independently specified input error.
