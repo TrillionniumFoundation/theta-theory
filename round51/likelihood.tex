@@ -1,0 +1,188 @@
+\section{The complete working likelihood and variance-sensitive transfer}
+\label{sec:likelihood}
+Let $U_*=U_0+a$. Each readout noise $\xi_i$ is a fresh $N(0,\sigma^2)$
+variable, observed after the current actions. All policy kernels are
+parameter-independent functions of the recorded past. Write $m_i^\beta$ for
+the zero-state response to the \emph{entire} realized input,
+$b_i^\beta(z)=\ell e^{\mathsf T_iA_\beta}z$, and
+\begin{equation}
+ L_n^{\zeta_n}(\beta)=\int\prod_{i\le n}
+ \varphi_\sigma(Y_i-m_i^\beta-b_i^\beta(z))\,\zeta_n(dz),\qquad
+ \Pi_n^{\zeta_n}(d\beta)\propto L_n^{\zeta_n}(\beta)\Pi(d\beta).
+ \label{eq:likelihood}
+\end{equation}
+Here $\zeta_n$ is any probability on $\|z\|\le R_0$; its support need not
+contain the true external initial state. This is the exact \emph{working}
+likelihood, not a correct-specification assertion. Action kernels cancel at
+a common history in a chronological likelihood ratio; one never conditions
+on the terminal, response-dependent design as though it were fixed.
+
+Let $f_i(\beta)=m_i^\beta-m_i^{\beta_0}$ and put
+\[
+ d(\beta,\gamma)=(U_*+a)\|g_\beta-g_\gamma\|_1,\qquad
+ M=\max(1,2U_*C_*/\lambda_*).
+\]
+The compact metric space follows from Lemma~\ref{lem:stability} and
+Theorem~\ref{thm:jet}. Uniformly over all histories,
+$|f_i|\le M$ and $|f_i(\beta)-f_i(\gamma)|\le d(\beta,\gamma)$.
+Since $\mathsf T_i\ge t_0i$, the initial-state envelope is
+$r_i=C_*R_0e^{-\lambda_*t_0i}$. Define
+\[
+ R_1=\frac{C_*R_0}{e^{\lambda_*t_0}-1},\quad
+ R_2=\frac{C_*^2R_0^2}{e^{2\lambda_*t_0}-1},\quad
+ b_0=3(MR_1+R_2)/\sigma^2,\quad b_1=2R_1/\sigma.
+\]
+
+\subsection{Deterministic covers and prior balls}
+Suppose every coordinate density of the product prior is at least $p_->0$.
+Let $w_->0$ be the smallest coordinate interval width and let $W\ge1$ bound
+the largest width. Put $C_d=\max(1,4(U_*+a)C_*^2/\lambda_*^2)$.
+For $0<\epsilon<1$ set
+\begin{align}
+ S(\epsilon)&=\max\{1,\lambda_*^{-1}
+ \log(16(U_*+a)C_*/(\lambda_*\epsilon))\},\notag\\
+ K(\epsilon)&=\min\{K\ge0:2(U_*+a)S e^{\Lambda S}
+ (\Lambda S)^{K+1}/(K+1)!\le\epsilon/8\},\notag\\
+ r(\epsilon)&=\min(w_-,1,\epsilon/(4C_d)),\notag\\
+ \overline{\mathcal H}(\epsilon)&=(2K+3)\log(2+W/r(\epsilon)),\qquad
+ \mathcal P(\epsilon)=(2K+3)\log(1/(p_-r(\epsilon))).
+ \label{eq:entropy}
+\end{align}
+For $\epsilon\ge1$ use the bounds at $1/2$.
+
+\begin{lemma}[Entropy and thickness]
+\label{lem:entropy}
+The log covering number in $d$ is at most $\overline{\mathcal H}(\epsilon)$;
+every open $d$-ball of radius $\epsilon$ has prior mass at least
+$e^{-\mathcal P(\epsilon)}$. Both bounds are $O((1+|\log\epsilon|)^2)$.
+\end{lemma}
+\begin{proof}
+Agreement through $c,a_0,b_0,\ldots,a_K,b_K$ implies agreement of boundary
+powers through order $K$. Local exponential series and the common stable tail give
+\[
+ \|g_\beta-g_\gamma\|_1\le
+ 2S e^{\Lambda S}(\Lambda S)^{K+1}/(K+1)!+
+ 2C_*e^{-\lambda_*S}/\lambda_*.
+\]
+This costs at most $\epsilon/4$ in $d$. A prefix coordinate change of maximum
+size $r$ with the same tail changes the generator by at most $4r$; stable
+Duhamel factors bound its $L^1$ response change by $4rC_*^2/\lambda_*^2$.
+Insert an admissible hybrid to combine the estimates. A finite prefix mesh
+of radius $r(\epsilon)$ with a fixed admissible tail is an $\epsilon/2$ cover
+with at most $(2+W/r)^{2K+3}$ points. Each coordinate interval about a truth,
+including a boundary truth, has length at least $r$; the unrestricted tail has
+prior mass one. This proves the mass bound. Finally $S=O(1+|\log\epsilon|)$,
+and the factorial condition follows by taking $K+1$ at least
+\[
+ \max\{2e\Lambda S,
+ [\log(16(U_*+a)S/\epsilon)+\Lambda S]/\log2,1\}.
+\]
+Thus $K=O(1+|\log\epsilon|)$.
+\end{proof}
+
+Partition the $n$ readouts into consecutive deterministic groups $G_b$, each
+of size at most $m$, and let $\mathcal F_{b,-}$ be its starting history. Set
+\[
+ A_n=\sum_{i\le n}f_i^2,\qquad S_n=\sum_{i\le n}\xi_i f_i,\qquad
+ V_n=\sum_b\E[\sum_{i\in G_b}f_i^2\mid\mathcal F_{b,-}].
+\]
+These are functions of $\beta$; the groups need not be independent. Define
+\begin{equation}
+ \begin{split}
+ z&=3\sigma+1,\quad e_q=\min\{1,q/[256(M+z)]\},\quad
+ C_m=1024\max\{1,\sigma^2,mM^2\},\\
+ \Phi_{n,m}(q)&=3\exp\{\overline{\mathcal H}(e_q)-nq/C_m\}+e^{-n}.
+ \end{split}\label{eq:variance-tail}
+\end{equation}
+
+\begin{theorem}[Score and grouped-square control]
+\label{thm:variance}
+Except with probability at most $\Phi_{n,m}(q)$, simultaneously for all $\beta$,
+\begin{equation}
+ |S_n|\le A_n/16+nq/64,\qquad A_n\ge V_n/2-nq/32.
+ \label{eq:variance-event}
+\end{equation}
+\end{theorem}
+\begin{proof}
+At a deterministic net point, Gaussian chronology makes
+$\exp\{\lambda S_n-\lambda^2\sigma^2A_n/2\}$ a nonnegative martingale.
+Using $\lambda=1/(8\sigma^2)$ with either sign yields
+$\Pp\{|S_n|>A_n/16+8\sigma^2x\}\le2e^{-x}$.
+For $X_b=\sum_{i\in G_b}f_i^2\in[0,mM^2]$ and $\alpha_0=1-e^{-1}$,
+the chord bound $e^{-u}\le1-\alpha_0u$ on $[0,1]$ gives
+\[
+ \E\left[\exp\left\{-\frac{X_b}{mM^2}
+ +\frac{\alpha_0\E[X_b\mid\mathcal F_{b,-}]}{mM^2}\right\}
+ \middle|\mathcal F_{b,-}\right]\le1.
+\]
+Hence $\Pp\{A_n<\alpha_0 V_n-mM^2x\}\le e^{-x}$.
+Choose $x_s=nq/(1024\sigma^2)$ and $x_v=nq/(64mM^2)$.
+The event $n^{-1}\sum|\xi_i|\le z$ fails with probability at most $e^{-n}$,
+using $\E e^{|\xi_i|/\sigma}\le2e^{1/2}$.
+On an $e_q$ net, score interpolation costs at most
+$ne_qz+ne_qM/8\le nq/256$; adding $8\sigma^2x_s=nq/128$ is less than
+$nq/64$. Interpolating $A_n-\alpha_0V_n$, including its conditional
+expectations, costs at most $4Mne_q\le nq/64$. Adding $mM^2x_v=nq/64$
+and using $\alpha_0>1/2$ proves the second bound. Union-bound the deterministic
+net. Compact continuous fields have measurable suprema on a countable dense
+set, so no terminal-design conditioning or independence of groups is used.
+\end{proof}
+
+\begin{lemma}[Uniform initial-state integral]
+\label{lem:nuisance}
+The exact working log ratio is
+\[
+ \log\frac{L_n^{\zeta_n}(\beta)}{L_n^{\zeta_n}(\beta_0)}
+ =\sigma^{-2}(S_n-A_n/2)+\mathcal R_n(\beta),\qquad
+ \sup_\beta|\mathcal R_n(\beta)|\le B_n,
+\]
+where $B_n=\sigma^{-2}(2\sum r_i|\xi_i|+3MR_1+3R_2)$ and
+$\Pp\{B_n>b_0+b_1\sqrt{2x}\}\le2e^{-x}$ for $x>0$.
+\end{lemma}
+\begin{proof}
+Completing Gaussian squares relative to the zero-state likelihood gives an
+integral of
+$\exp\{\sigma^{-2}\sum[b_i^\beta(z)(Y_i-m_i^\beta)-b_i^\beta(z)^2/2]\}$.
+Its exponent has absolute value at most
+$\sigma^{-2}(\sum r_i|\xi_i|+MR_1+3R_2/2)$ uniformly in $z$ and $\beta$.
+The log of an integral against a probability lies between the exponent's
+infimum and supremum. Apply this at candidate and truth, and bound the true
+transient cross term by $MR_1/\sigma^2$.
+Jensen with weights $r_i/R_1$ gives
+$\E e^{\lambda\sum r_i|\xi_i|}\le2e^{\lambda^2\sigma^2R_1^2/2}$.
+Optimize exponential Markov; for $R_1=0$ the remainder vanishes.
+\end{proof}
+
+\begin{theorem}[Complete-posterior information transfer]
+\label{thm:posterior}
+For a measurable set $F$ with $\inf_F V_n\ge nq>0$ pathwise,
+\begin{equation}
+ \Pi_n^{\zeta_n}(F)\le
+ \exp\{\mathcal P(\sqrt q/4)-nq/(16\sigma^2)\}
+ \label{eq:posterior-bound}
+\end{equation}
+except with probability at most
+$\Phi_{n,m}(q)+\Pp\{B_n>nq/(64\sigma^2)\}$.
+\end{theorem}
+\begin{proof}
+On \eqref{eq:variance-event}, $A_n\ge15nq/32$ on $F$, so its numerator
+log ratio is at most $-97nq/(512\sigma^2)+B_n$.
+On the $d$-ball of radius $\sqrt q/4$, $A_n\le nq/16$ deterministically,
+and the log ratio is at least $-13nq/(256\sigma^2)-B_n$.
+Integrating that ball gives the denominator lower bound from
+Lemma~\ref{lem:entropy}. The remainder condition leaves coefficient
+$-97/512+13/256+1/32=-55/512\le-1/16$, proving the claim.
+\end{proof}
+
+For posterior error $\epsilon_p\in(0,1)$ and failure $\alpha\in(0,1)$,
+a sufficient readout budget is the next multiple of $m$ above
+\begin{equation}
+ \left\lceil\max\left\{\begin{aligned}
+ &1,\quad\frac{C_m}{q}
+ [\overline{\mathcal H}(e_q)+\log(9/\alpha)],\quad\log(3/\alpha),\\
+ &\frac{64\sigma^2}{q}[b_0+b_1\sqrt{2\log(6/\alpha)}],\\
+ &\frac{16\sigma^2}{q}[\mathcal P(\sqrt q/4)+\log(1/\epsilon_p)]
+ \end{aligned}\right\}\right\rceil.
+ \label{eq:posterior-budget}
+\end{equation}
+Every probability estimate is uniform in the declared model and policy class.

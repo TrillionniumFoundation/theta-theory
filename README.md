@@ -1,11 +1,11 @@
-# theta-theory — Round 49 active revision
+# theta-theory — Round 51 revision
 
-The current submission is **Logarithmic-Depth Boundary Identification with Bounded Probes and Retained State**, responding to the Round 48 referee report.
+The active submission is **Single-Atom Boundary Identification with Retained State and Logarithmic Physical Depth**, responding to the frozen Round 50 referee report.
 
-Start with [`ROUND49_REVIEW_INDEX.md`](ROUND49_REVIEW_INDEX.md), the [main manuscript source](ROUND49_REVISION.tex), and the [point-by-point response](AUTHOR_RESPONSE_ROUND48.md). The [retained-results supplement](ROUND49_RETAINED_RESULTS.tex) preserves the earlier homogeneous inference results. Source identities, actual verification scope, and PDF hashes are recorded in `ROUND49_PUBLICATION.json` and the verifier-generated `ROUND49_VERIFICATION.json`.
+Start with [ROUND51_REVIEW_INDEX.md](ROUND51_REVIEW_INDEX.md), the [main manuscript source](ROUND51_REVISION.tex), and the [point-by-point response](AUTHOR_RESPONSE_ROUND50.md).
 
-The new attainable result uses the original bounded-duration exploration law, an explicit fast clock, and bounded baseline profiles committed within diagnostic blocks, with feedback between blocks. It uses retained state and the exact likelihood of all completed readouts to attain logarithmic depth with deterministically linear elapsed time. It also strengthens the unrestricted-feedback posterior bounds and repairs the two confidence guarantees identified in Round 48.
+The revision generalizes the retained-state bounded-probe theorem to any sufficiently short positive-mass atom, enlarges the successful-block event, uses all-sign weighted energy and a sharper sampled-channel remainder, and proves an explicit finite-response-to-physical reduction with a compatible estimator and dimension-uniform truncation bounds. The complete working posterior and logarithmic depth-order conclusion are retained and strengthened.
 
-All historical manuscripts, reports, and their provenance remain in the full revision branch. The new main article does not rely on historical verification JSON files as mathematical proofs. The source-capsule commit is a reproducible complete active-source closure, not a deletion of historical materials from this branch. No journal acceptance or formal proof certification is claimed.
+Current executable source is supplied directly in `tools/round51_certificates.py`, `tests/test_round51.py` and `tools/verify_round51.py`. Run `python tools/verify_round51.py --build` to verify the frozen active-source closure, execute the new finite tests and build the article. The review index specifies dependencies and distinguishes actual execution receipts from analytic proofs.
 
-The new implementation, test suite, and source verifier are supplied in the accompanying review bundle because the GitHub tool blocked their upload. Their SHA256 hashes are pinned in the committed manifest, and the actual execution receipt distinguishes them from Git-bound mathematical sources. The new program files are not claimed to exist on this branch until separately supplied from that bundle.
+All previous manuscript roots, referee reports and historical derivations remain on this full-history revision branch. No prior branch is rewritten or merged. The new code is not represented as a recovered copy of the missing Round 49 programs. No journal acceptance or formal proof certification is claimed.

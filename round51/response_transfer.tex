@@ -1,0 +1,156 @@
+\section{Finite-response reduction, a bounded-input estimator, and truncation}
+\label{sec:transfer}
+This section gives the explicit interface with nonparametric FIR estimation.
+Let $\mathbf b_N(\beta)=(b_{0,\beta},\ldots,b_{N,\beta})$ and use the
+maximum norm. The following deterministic assertion is independent of how
+an estimated response vector was obtained.
+
+\begin{theorem}[Response-to-physical-coefficient reduction]
+\label{thm:transfer}
+Suppose $\|\widehat{\mathbf b}-\mathbf b_N(\beta_0)\|_\infty\le e$ on an
+event of probability at least $1-\alpha$. Let $\mathcal N_\eta$ be any
+finite deterministic $\eta$-net of the compact image $\mathbf b_N(\Bcal)$,
+with each net point assigned an admissible preimage. Minimize the residual
+$\|\mathbf b_N(\beta)-\widehat{\mathbf b}\|_\infty$ on these finitely many
+preimages, breaking ties by their fixed ordering. Then on the same event,
+\begin{equation}
+ d_J(\widehat\beta,\beta_0)
+ \le L\{\mathcal A(2e+\eta)+\mathcal E\}.
+ \label{eq:FIR-transfer}
+\end{equation}
+The response confidence set
+$\{\beta:\|\mathbf b_N(\beta)-\widehat{\mathbf b}\|_\infty\le e\}$
+is nonempty and has $d_J$ diameter at most $L(2\mathcal A e+\mathcal E)$.
+Thus $\eta=e=\delta/(6L\mathcal A)$ suffices for estimation error at most
+$\delta$, while $e\le\delta/(4L\mathcal A)$ suffices for confidence diameter
+at most $\delta$.
+\end{theorem}
+\begin{proof}
+Compactness and continuity give a finite net; a preimage approximating the
+truth has residual at most $e+\eta$. The selected residual is no larger.
+The triangle inequality bounds its response distance from the truth by
+$2e+\eta$. Apply \eqref{eq:sampled-infty} and \eqref{eq:jet}. For the
+confidence set use the triangle inequality between two of its elements.
+The chosen $N$ ensures $L\mathcal E\le\delta/2$.
+\end{proof}
+
+\begin{theorem}[Nonreset response estimation with bounded signs]
+\label{thm:response-estimator}
+Fix a block count $B$, and let $M_B$ count successful blocks. For $M_B>0$ put
+\[
+ \widehat b_k=\frac1{aM_B}\sum_{b\le B:\,E_b}S_{b,0}Y_{b,k},\qquad
+ 0\le k<m,\quad
+ B_*=C_*(R_0+U_*/\lambda_*),\quad v_*=\sigma^2+B_*^2.
+\]
+An arbitrary output may be assigned when $M_B=0$. For every $e>0$,
+\begin{equation}
+ \Pp\{M_B<Bp_*^m/2\text{ or }
+       \|\widehat{\mathbf b}-\mathbf b_N(\beta_0)\|_\infty>e\}
+ \le e^{-Bp_*^m/8}+2m\exp\{-a^2e^2Bp_*^m/(4v_*)\}.
+ \label{eq:response-tail}
+\end{equation}
+In particular a sufficient block budget for failure at most $\alpha$ is
+\begin{equation}
+ B\ge\left\lceil\frac1{p_*^m}
+ \max\left\{8\log\frac2\alpha,
+ \frac{4v_*}{a^2e^2}\log\frac{4m}\alpha\right\}\right\rceil.
+ \label{eq:response-budget}
+\end{equation}
+With the choice of $e,\eta$ in Theorem~\ref{thm:transfer}, this estimator
+attains the same sufficient region $C_b r+p_b s<1$ as the posterior.
+\end{theorem}
+\begin{proof}
+On a successful block, linearity gives
+$Y_{b,k}=aS_{b,0}b_{k,\beta_0}+P^0_{b,k}+\xi_{b,k}$.
+Condition on the starting history, success and the other block signs.
+The intercept is independent of $S_{b,0}$ and has magnitude at most $B_*$:
+removing the first pulse leaves a force still bounded by $U_*$. The centered
+quantity $S_{b,0}Y_{b,k}-ab_{k,\beta_0}$ is conditionally sub-Gaussian with
+variance proxy $v_*$. In the block filtration, therefore,
+\[
+ \exp\left\{\lambda\sum_{b\le B}\mathbf1_{E_b}
+ (S_{b,0}Y_{b,k}-ab_{k,\beta_0})-\lambda^2v_*M_B/2\right\}
+\]
+is a nonnegative supermartingale. With either sign and
+$\lambda=ae/v_*$, exponential Markov bounds the deviation on
+$M_B\ge Bp_*^m/2$ by $2\exp\{-a^2e^2Bp_*^m/(4v_*)\}$.
+The independent action patterns have success probability $p_*^m$, so the
+multiplicative Chernoff count bound is $e^{-Bp_*^m/8}$. Union-bound the lags;
+they are not asserted independent. This proves \eqref{eq:response-tail}
+without claiming Gaussianity conditional on a terminal visit count.
+For $e=\delta/(6L\mathcal A)$, $p_*^me^2=\kappa/9$. At $B\asymp n/m$
+and $\alpha=n^{-u}$ for any fixed $u>0$, the sufficient budget follows from
+$n\kappa/m\gg\log n$. Proposition~\ref{prop:envelope} supplies this when
+$C_b r+p_b s<1$.
+\end{proof}
+
+For time-uniform bands one may instead allocate arbitrary $\eta_k>0$ summing
+to one and stop each exponential supermartingale at its $l$th success. The
+radii
+\[
+ r_{k,l}=a^{-1}\sqrt{2v_*\log(2l(l+1)/(\alpha\eta_k))/l}
+\]
+hold jointly for all $k$ and $l\ge1$ with probability at least $1-\alpha$.
+The error allocation is $\alpha\eta_k/[l(l+1)]$. The sampling mass $w$ and
+confidence allocation $\eta_k$ have different roles and are never equated.
+All lags share the same success count.
+
+\begin{proposition}[Dimension-uniform finite-section bias]
+\label{prop:finite-section}
+Cut the chain at site $K$ with the same diagonal, damping and interior edges,
+removing only its outgoing edge. Write $b^{[K]}_{k,\beta}$ for its responses,
+and $S=N\Delta+t_0$. For $K\ge1$,
+\begin{equation}
+ \max_{k\le N}|b_{k,\beta}-b^{[K]}_{k,\beta}|
+ \le 2t_0 e^{\Lambda S}\frac{(\Lambda S)^{K+1}}{(K+1)!}
+ =:\epsilon_K.\label{eq:finite-bias}
+\end{equation}
+The same stability constants work for every cut chain, and
+\begin{equation}
+ \sum_{k\ge0}|b^{[K]}_{k,\beta}|
+ \le\frac{C_*t_0e^{\Lambda t_0}}{1-e^{-\lambda_*\Delta}}
+ \label{eq:finite-uniform}
+\end{equation}
+is independent of $K$. To make $\epsilon_K\le\epsilon$, it suffices that
+\[
+ K+1\ge\max\left\{2,2e\Lambda S,
+  \frac{\log(2t_0/\epsilon)+\Lambda S}{\log2}\right\}.
+\]
+Hence at $N=O(\log n)$ and a polynomially small response error budget,
+$K=O(\log n)$ suffices uniformly in the infinite tail.
+\end{proposition}
+\begin{proof}
+Boundary generator words agree through order $K$; a path leaving the cut and
+returning cannot be shorter. The difference of exponential series at time
+$k\Delta+u$ is bounded by
+$2e^{\Lambda S}(\Lambda S)^{K+1}/(K+1)!$. Integrate over $0\le u\le t_0$.
+The quadratic-form bounds on the Jacobi matrix and the energy proof of
+Lemma~\ref{lem:stability} are unchanged by the cut. Applying stability to
+$U_K^kH_KB$ and summing the geometric series proves
+\eqref{eq:finite-uniform}. Finally $q!\ge(q/e)^q$ and $q\ge2e\Lambda S$
+give $(\Lambda S)^q/q!\le2^{-q}$.
+\end{proof}
+
+\subsection{What a finite-response theorem supplies, and what remains to prove}
+The uniform envelope \eqref{eq:finite-uniform} shows why latent dimension need
+not force a loss in a response-level system norm. Equation~\eqref{eq:finite-bias}
+quantifies the separate truncation bias instead of setting it to zero.
+For example, at fixed $r,s$, the tolerance
+$e=\delta/(6L\mathcal A)$ has $\log(1/e)=O(\log n)$, so a logarithmic-size
+finite section resolves the required response accuracy. If an FIR theorem
+under a compatible experiment supplies $\ell^2$ error $e$, it also supplies
+the maximum-norm error used in Theorem~\ref{thm:transfer}; no realization or
+similarity-coordinate recovery is required at this stage.
+
+Compatibility is substantive. The Gaussian inputs of Algorithm 1 in
+\cite{SRD2020} are not uniformly bounded, and its printed initial-state and
+process-noise hypotheses are not the present experiment. Simply citing that
+algorithm would not prove our bounded-input, retained-nuisance claim.
+Theorem~\ref{thm:response-estimator} supplies the needed front end directly.
+Conversely, there is no claim that this front end replaces the broader
+nonparametric results of \cite{Gold1998,SRD2020}. The transfer theorem exposes
+exactly how such an estimate can be reused when its hypotheses are verified.
+The sampled-channel inverse, the tail-uniform physical conditioning, and the
+complete-posterior transfer are the additional mathematical steps. A cut-chain
+calculation is only a computational approximation: its removed edge is not
+silently treated as an admissible positive infinite tail.

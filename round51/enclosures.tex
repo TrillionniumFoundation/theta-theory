@@ -1,0 +1,77 @@
+\section{Exact-rational outer certificates with five separate budgets}
+\label{sec:enclosures}
+Let the statistical reference band be
+$I_q=[\widehat y_q-R_q,\widehat y_q+R_q]$. Its supplied rational representation
+must obey, for a separately supplied $\epsilon_q\ge0$,
+\begin{equation}
+ I_q\subset I_q^{\rm rat}\subset
+ [\widehat y_q-R_q-\epsilon_q,\widehat y_q+R_q+\epsilon_q].
+ \label{eq:representation}
+\end{equation}
+A nonrational original band must first be enclosed by a certified rational
+reference band, with that first error included in the declared representation
+budget. Exact arithmetic on a subsequently supplied band cannot retrospectively
+certify a rounding step that was not recorded.
+
+An observable has the form $y_q(\beta)=\sum_l\lambda_{ql}h_\beta(t_{ql})$
+with rational coefficients and nonnegative rational times. This includes a
+pulse difference with coefficients $1,-1$. Put $d_q=\sum_l|\lambda_{ql}|$
+and $T_c=\max_{q,l}t_{ql}>0$. Take a rational mesh through site $K\ge J+1$,
+of maximum coordinate half-width $r$, and Taylor order $P\ge0$. For each full
+mesh box, evaluate its cut-chain center exactly:
+\[
+ H_q=\sum_l\lambda_{ql}\ell\sum_{k=0}^P A_K^kB\,
+                  t_{ql}^{k+1}/(k+1)!.
+\]
+The full variables are $c,b_0,\ldots,b_K,a_0,\ldots,a_{K-1}$, including
+$a_J$. With $E_0=3^{\lceil\Lambda T_c\rceil}$, use rational bounds
+\begin{equation}
+ \begin{split}
+ E_{\rm tail}&=2T_cE_0(\Lambda T_c)^K/K!,\qquad
+ E_{\rm mesh}=2rT_c^2E_0,\\
+ E_{\rm num}&=T_cE_0(\Lambda T_c)^{P+1}/(P+1)!,\qquad
+ E_q=d_q(E_{\rm tail}+E_{\rm mesh}+E_{\rm num}).
+ \end{split}\label{eq:outer-errors}
+\end{equation}
+Retain a full box when every interval $[H_q-E_q,H_q+E_q]$ intersects
+$I_q^{\rm rat}$. Return its prefix projection \emph{and} its full witness box.
+
+\begin{theorem}[Outer coverage and diameter]
+\label{thm:outer}
+The returned union contains every originally feasible prefix. Every admissible
+completion of a retained full box satisfies
+\begin{equation}
+ |y_q(\beta)-\widehat y_q|\le R_q+\epsilon_q+2E_q.
+ \label{eq:outer-radius}
+\end{equation}
+On the sampled-pulse grid, if
+$\max_q(R_q+\epsilon_q+2E_q)\le\delta/(4L\mathcal A)$, its prefix diameter
+is at most $\delta$. A projected prefix has an existential witnessing full
+box; the assertion does not quantify over arbitrary tails attached only to
+that projection.
+\end{theorem}
+\begin{proof}
+The full chain and cut center agree on boundary words through order $K-1$,
+so their tail contribution is bounded by $E_{\rm tail}$. A coordinate change
+at most $r$ changes the generator by at most $4r$. Integrating the Duhamel
+bound $4rt e^{\Lambda t}$ gives $E_{\rm mesh}$. The exponential Taylor
+remainder gives $E_{\rm num}$; $e^{\Lambda T_c}\le E_0$.
+Summing with absolute observable weights gives $E_q$ uniformly in all
+admissible completions of that full box. Any feasible parameter therefore
+has its box retained. At an intersection point, its distance from $H_q$ is
+at most $E_q$ and from $\widehat y_q$ at most $R_q+\epsilon_q$; another
+$E_q$ reaches any completion, proving \eqref{eq:outer-radius}.
+For two retained prefixes choose their full witnesses and apply
+Theorem~\ref{thm:transfer}; the distance uses only the prefix.
+\end{proof}
+
+Increasing $K,P$ makes the factorial errors small; subsequently refining the
+finite mesh controls $E_{\rm mesh}$. The algorithm terminates for finite
+unrestricted resources. It checks the complete box count before enumeration
+and raises \texttt{ResourceLimit} rather than returning a partial union as a
+complete result. This is a finite exhaustive certificate, not a polynomial-time
+claim. For example, replacing $[-10^{-7},10^{-7}]$ by $[-1,1]$ requires
+$\epsilon\ge1-10^{-7}$, independently of every other error term. The executable
+validator rejects zero-budget declarations for this input. The statistical,
+representation, spatial-tail, mesh and Taylor errors are always reported
+separately, even when the sufficient diameter condition fails.
