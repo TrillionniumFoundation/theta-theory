@@ -78,7 +78,7 @@ jobs:
           fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -- papers/A1-english-v7/main.pdf papers/A1-english-v7/DIAGNOSTICS.json papers/A1-english-v7/BUILD_REPORT.json
+          git add -f -- papers/A1-english-v7/main.pdf papers/A1-english-v7/DIAGNOSTICS.json papers/A1-english-v7/BUILD_REPORT.json
           if git diff --cached --name-only | grep -v '^papers/A1-english-v7/'; then
             echo 'Refusing publication outside the new revision directory' >&2
             exit 1
@@ -86,7 +86,9 @@ jobs:
           git commit -m 'build(A1 v7): publish verified principal PDF and fresh CI receipts'
           git push origin "HEAD:$REVISION_BRANCH"
       - name: Assemble review artifacts
+        if: always()
         run: |
+          [[ -f papers/A1-english-v7/main.pdf ]] || exit 0
           cp papers/A1-english-v7/main.pdf review-artifacts/A1-English-v7.pdf
           cp papers/A1-english-v7/main.log review-artifacts/
           cp papers/A1-english-v7/DIAGNOSTICS.json papers/A1-english-v7/BUILD_REPORT.json papers/A1-english-v7/SOURCE_MANIFEST.json review-artifacts/
