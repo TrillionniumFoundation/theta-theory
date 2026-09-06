@@ -1,0 +1,350 @@
+\section{Shared memory for independent experiments}\label{sec:shared-memory}
+The scalar classification is stable under taking independent products,
+although the corresponding future query space is a tensor product. The
+persistent resource is one joint index. In particular, the converse below
+does not assume a separate encoder, a product codebook, or a separate
+memory budget for each experiment.
+
+\subsection{The product experiment}
+Fix $B\ge1$. For each $b\in\{1,\ldots,B\}$ take an experiment satisfying
+Section~\ref{sec:collision-geometry}, with exponent set $A_b$, number of
+one-step exponents $r_b$, compact calibration set $K_b$, coefficient
+matrix $C_b$, command cube, full-support prior $\mu_b$, and horizon
+$N_b\ge2$. These data, including $B$, are fixed. The hidden parameter is
+$t=(t_1,\ldots,t_B)\in[0,1]^B$ with prior
+$\mu=\bigotimes_{b=1}^B\mu_b$. Conditional on $t$, all raw trials are
+independent. A trial assigned to block $b$ uses only that block's detector
+and current command. The known calibration is
+$a=(a^{(1)},\ldots,a^{(B)})\in\prod_bK_b$.
+
+A deterministic schedule $\omega$ is a word of length
+$T=\sum_bN_b$ containing $N_b$ copies of $b$. After $s$ acquisition
+trials let $n_b(s)$ be the number assigned to $b$ and put
+$m_b(s)=N_b-n_b(s)$. At that checkpoint sample independently and uniformly
+one member of each block's ordered $m_b$-fold product probe menu. A block
+with $m_b=0$ contributes the constant factor one. The selected probe
+executes all $T-s$ remaining trials, in the residual schedule order. Its
+target $Y$ is the indicator that every one of those reports is a failure.
+All trials are consumed, including after a nonfailure. Thus $s$ acquisition
+trials and the selected query together always use exactly $T$ trials.
+There is one selected checkpoint per run, not simultaneous execution of
+all the counterfactual queries.
+
+We use the squared-loss excess relative to the full-history Bayes
+predictor. The decoder receives the query tuple only after the acquisition
+index has been formed. Its persistent memory has at most $M$ values in
+total, with the resource convention of Definition~\ref{def:finite-state}.
+The schedule and clock are read-only; previous commands and reports are
+not. For the unconditional criterion all acquisition commands, in every
+block and at every time, are independent and uniform on their respective
+cubes, independently of the hidden parameter and coding randomization.
+This is a single acquisition law whose prefixes serve all checkpoints.
+
+Write $\overline R^a_{M;s,\omega}$ and $R^{a,\max}_{M;s,\omega}$ for
+the optimal unconditional and maximum-history checkpoint regrets.
+Write $\mathfrak R^{a,\mathrm{av}}_{M,\omega}$ and
+$\mathfrak R^{a,\max}_{M,\omega}$ for the infima over one stage-compatible
+filter of, respectively, its maximum unconditional checkpoint regret and
+its maximum regret over checkpoints and histories. A checkpoint encoder
+may inspect its full prefix once; a streaming transition may not.
+
+For $n,m>0$, let $q_{b,m}$ and $\mathcal V_{b,m,\ell}$ be the positive
+formal label count and determinant volumes of block $b$. Put
+\[
+ p_b(n,m)=\min\{n(r_b-1),q_{b,m}\}.
+\]
+Set $p_b(n,m)=0$ when $n=0$ or $m=0$. At a fixed checkpoint abbreviate
+$p_b=p_b(n_b,m_b)$ and define
+\begin{equation}\label{eq:block-volumes}
+ V_{b,0}=1,\qquad
+ V_{b,\ell}=\mathcal V_{b,m_b,\ell}(a^{(b)})
+       \quad(1\le\ell\le p_b),\qquad P_s=\sum_b p_b.
+\end{equation}
+A block not yet observed, as well as a completed block, has one reachable
+future state and contributes only $V_{b,0}$. Formal positive labels are
+not discarded at collisions; zero volumes are allowed. Define
+\begin{equation}\label{eq:composition-volumes}
+ \begin{split}
+ A_{s,k}(a)&=
+ \max_{\substack{0\le\ell_b\le p_b\\\sum_b\ell_b=k}}
+              \prod_{b=1}^B V_{b,\ell_b},\qquad A_{s,0}=1,\\
+ \Theta_{s,\omega}(M,a)&=
+       \max_{1\le k\le P_s}(A_{s,k}(a)/M)^{2/k},\\
+ \Theta_\omega(M,a)&=\max_{0\le s\le T}\Theta_{s,\omega}(M,a).
+ \end{split}
+\end{equation}
+An empty maximum for the checkpoint profile is zero. The dependence of
+$A_{s,k}$ on the schedule is through the count vector $(n_b(s))$.
+The operation in the first line is associative: grouping several blocks
+only groups the same finite maximization over allocations. We shall need
+its full finite-error form, not just its largest nonzero index.
+
+\subsection{Tensor queries retain the component metric}
+For block $b$, let $v_b$ be its formal raw moment vector indexed by
+$\Lambda_{b,m_b}$, including the constant entry $v_{b,m_be_0}=1$.
+For $m_b=0$ this vector is $(1)$. Let $\mathcal S_b$ be its complete
+reachable image at the checkpoint. If $n_b=0$, it is the singleton given
+by the known prior. All its entries lie in $[0,1]$.
+
+\begin{lemma}[Product attainment and the tensor metric]\label{lem:product-metric}
+The joint posterior after an admitted history is the product of its block
+posteriors, and the set of attainable raw tuples is exactly
+$\prod_b\mathcal S_b$. If $Q(v)$ is the vector of probabilities of the
+full tensor query menu, then uniformly in calibration,
+\begin{equation}\label{eq:tensor-metric}
+ c\sum_b\|v_b-\widetilde v_b\|^2
+ \le \|Q(v)-Q(\widetilde v)\|^2
+ \le C\sum_b\|v_b-\widetilde v_b\|^2.
+\end{equation}
+There is, moreover, a bounded linear map on the entire query-coordinate
+space that takes $Q(v)$ to the concatenated vector $(v_b)_b$.
+The bound for this map is independent of exponent gaps.
+\end{lemma}
+\begin{proof}
+Group the likelihood factors of a realized history by block, writing
+$F_b$ for their product. Its evidence is
+$\int\prod_bF_b(t_b)\,\bigotimes_b\mu_b(\dd t_b)
+=\prod_b\mu_bF_b$. Bayes normalization consequently gives the product
+posterior. Every tuple of admitted block histories can be interleaved in
+the prescribed schedule; every report word has positive evidence.
+This proves the statement about the whole attainable image, not only a
+local family. The argument also applies to commands chosen using past
+reports: for each fixed realized history the chosen likelihood factors
+are known. The lower law, however, uses the independent commands already
+specified, not an adaptive command law.
+
+Let $G_b$ be the fixed, full-column-rank formal coefficient matrix for the
+block's product probes, and take $G_b=(1)$ for $m_b=0$. Independence gives
+\[
+ Q(v)=G\bigotimes_bv_b,\qquad G=\bigotimes_bG_b.
+\]
+Each $G_b$ is independent of calibration, hence $G$ has a bounded fixed
+left inverse $G^\dagger$. In the tensor $\bigotimes_bv_b$, selecting
+entries in which only the $b$th index varies and every other index is the
+constant label gives precisely $v_b$. Let $E$ be the concatenation of
+these coordinate-selection maps. Then
+$E G^\dagger Q(v)=(v_b)_b$, proving the last assertion and the lower
+inequality. The repeated constant entries cause no difficulty.
+For the upper inequality expand the difference of the two tensor products
+as a telescoping sum, changing one factor at a time. Every other factor
+has norm bounded by the square root of its fixed coordinate count.
+Cauchy--Schwarz and the fixed bound on $G$ give the upper inequality.
+All constants are finite-dimensional; none contains a reciprocal
+exponent separation.
+\end{proof}
+
+Although $Q(\prod_b\mathcal S_b)$ lies in a nonlinear tensor-product
+image, its metric is thus the component product metric. In particular,
+its tensor ambient dimension is not the attainable information dimension.
+The existence of the linear map on arbitrary query centers will also be
+needed for a converse against unrestricted joint encoders.
+
+\begin{theorem}[Exact information dimension under composition]\label{thm:product-dimension}
+At checkpoint $s$, the smallest Euclidean dimension of a sufficient
+history encoding continuous on each report stratum is
+\begin{equation}\label{eq:product-dimension}
+ d_\omega(s,a)=\sum_{b=1}^B
+       \min\{n_b(s)(r_b-1),\ |m_b(s)A_b|-1\}.
+\end{equation}
+Sufficiency is for every common future-only continuation in the prescribed
+remaining block schedule. These dimensions are attained simultaneously
+by a causal exact-real state. Its least possible peak size is
+$D_\omega(a)=\max_s d_\omega(s,a)$.
+\end{theorem}
+\begin{proof}
+Each realized future word has a likelihood in the tensor product of the
+block future observation spaces. Equality of the block future moments
+therefore implies equality of every such word probability under a common
+feedback continuation; integrating independent feedback randomization
+preserves that assertion. Conversely equality for the tensor probe menu
+recovers each block future vector by Lemma~\ref{lem:product-metric}.
+Thus the quotient on attainable histories is the product of the scalar
+operational quotients.
+
+For each active block, Theorem~\ref{thm:rank} supplies a smooth attainable
+patch of dimension $d_b=\min\{n_b(r_b-1),|m_bA_b|-1\}$ and a continuous
+section to all-failure histories. The product of these sections, interleaved
+by $\omega$, is a continuous section of a $\sum_b d_b$-dimensional patch.
+A sufficient continuous encoding is injective on this patch. Invariance
+of domain, applied after embedding a smaller target Euclidean space in
+$\R^{\sum_b d_b}$, excludes a smaller dimension. Singleton factors
+contribute zero.
+
+For the upper bound run the exact causal construction of
+Theorem~\ref{thm:causal} separately in each block at its own local clock,
+concatenating its coordinates in the single state. On a trial of block
+$b$, update only that component. Before its first observation its state
+is known, and after its last trial it has no remaining future task.
+Each component changes from normalized factors to future moments at
+most once. Its coordinate count at every checkpoint is exactly $d_b$,
+so the concatenated count is \eqref{eq:product-dimension}. All needed
+block prior moments have exponents in $N_bA_b$. The lower bound holds
+at every checkpoint of any exact causal encoder, and hence also at the
+checkpoint maximizing the sum. This proves the peak assertion. As in
+the scalar theorem, an encoding of histories is not asserted to be a
+global coordinate chart of a singular quotient.
+\end{proof}
+
+\subsection{A joint converse and a globally attainable cover}
+\begin{theorem}[Shared-state composition law]\label{thm:shared-state}
+For the fixed block experiments there exist $0<c\le C<\infty$ such
+that, for every calibration $a\in\prod_bK_b$, every deterministic
+schedule $\omega$, every checkpoint $s$ and integer $M\ge1$,
+\begin{equation}\label{eq:shared-checkpoint}
+ c\Theta_{s,\omega}(M,a)
+ \le\overline R^a_{M;s,\omega}
+ \le R^{a,\max}_{M;s,\omega}
+ \le C\Theta_{s,\omega}(M,a).
+\end{equation}
+Furthermore,
+\begin{equation}\label{eq:shared-streaming}
+ c\Theta_\omega(M,a)
+ \le\mathfrak R^{a,\mathrm{av}}_{M,\omega}
+ \le\mathfrak R^{a,\max}_{M,\omega}
+ \le C\Theta_\omega(M,a).
+\end{equation}
+The upper bound is attained by one deterministic transducer with at most
+$M$ joint labels after every report. The lower bound permits arbitrary
+joint encoding and decoding, including the independent coding randomness
+of Definition~\ref{def:finite-state}. Constants may depend on the fixed
+block data and horizons, but not on $a$, $M$ or $\omega$. The filter
+may depend on all three. No product-code restriction is imposed on the
+optimum, and no extra persistent block indices are supplied.
+\end{theorem}
+\begin{proof}
+Fix a checkpoint with at least one active block. For each active $b$,
+write $d_{b,1}\ge\cdots\ge d_{b,q_{b,m_b}}\ge0$ for its Leja
+scales, and put
+\[
+ D_{b,0}=1,\qquad D_{b,\ell}=\prod_{j=1}^{\ell}d_{b,j}
+       \quad(1\le\ell\le p_b).
+\]
+Lemma~\ref{lem:leja-scales} gives
+$D_{b,\ell}\le V_{b,\ell}\le\ell!D_{b,\ell}$, including zero
+values. Every active block has $D_{b,1}=1$.
+
+\emph{Upper bound on the entire product image.}
+The bounded-format image and dimension argument in the proof of
+Theorem~\ref{thm:intrinsic-checkpoint}, followed by
+Lemma~\ref{lem:tame-rectangle}, gives at every radius $e>0$ a cover
+of the block raw image with at most
+\[
+ C_b\sum_{\ell=0}^{p_b}D_{b,\ell}e^{-\ell}
+\]
+balls of radius $e$, after changing a uniform constant for the raw metric.
+A singleton block needs only one ball. Taking products of these covers
+at radius $e/\sqrt B$ gives, in the concatenated metric, a cover bounded
+by
+\begin{equation}\label{eq:product-cover-polynomial}
+ \mathcal N\left(\prod_b\mathcal S_b,e\right)
+ \le C_0\sum_{k=0}^{P_s} A_{s,k}(a)e^{-k}.
+\end{equation}
+Indeed expansion of the product sums over all bounded allocations
+$(\ell_b)$; there are only finitely many of them, and each product is
+bounded by its maximizing allocation in \eqref{eq:composition-volumes}.
+The factors $B^{k/2}$ and the factorial comparisons are absorbed into
+$C_0$. This argument keeps \emph{each} past cap $p_b$. Applying a
+single total-dimensional rectangle estimate to the concatenated ambient
+box instead could wrongly allocate more than $p_b$ axes to a block.
+
+Set $e_* =\max_{1\le k\le P_s}(A_{s,k}/M)^{1/k}$.
+For $M\ge2C_0$, choose a constant $L$ so large that
+$C_0\sum_{k=1}^{P_s}L^{-k}\le1/2$. Substituting $Le_*$ in
+\eqref{eq:product-cover-polynomial} yields at most $M$ balls.
+Discard empty balls and replace each remaining center by a reachable
+tuple in that ball, increasing radii by at most two. For $M<2C_0$,
+a single reachable tuple covers the bounded product image at a fixed
+radius; since $A_{s,1}=1$, $e_*\ge1/M\ge1/(2C_0)$, so a larger
+uniform constant suffices. The finite code thus respects the integer
+budget for every $M$. Lemma~\ref{lem:product-metric} transfers the
+cover to all tensor query predictions. Squaring its radius and dividing
+by the fixed menu size gives the checkpoint upper bound. A fixed
+nearest-center tie rule makes the encoder Borel.
+
+\emph{Lower bound against joint centers.}
+Take any allocation $(\ell_b)$ with $k=\sum_b\ell_b\ge1$ and
+$\prod_bV_{b,\ell_b}>0$. Under the common exploration law the block
+histories are independent. For each block with $\ell_b>0$, project the
+minorized $p_b$-cube of Lemma~\ref{lem:newton-attainment} onto its first
+$\ell_b$ coordinates and scale them by
+$d_{b,1},\ldots,d_{b,\ell_b}$. The product of the corresponding
+all-failure subprobability laws dominates a fixed positive multiple of
+uniform probability on a translated $k$-rectangle of volume
+\[
+ c_1\prod_bD_{b,\ell_b}.
+\]
+Blocks with $\ell_b=0$ are integrated out; no density assumption on any
+$\mu_b$ is used. The positive multiplier includes the actual acquisition
+evidence in all selected blocks. Constants can be chosen uniformly over
+all allocations and count vectors because these are finite in number.
+
+For an arbitrary decoder, average its private randomness conditional on
+the index and query. This leaves at most $M$ centers in the entire query
+vector space and cannot increase squared loss. Apply to those centers
+the linear map $E G^\dagger$ of Lemma~\ref{lem:product-metric}, then
+the inverse of each active Leja block and the selected-coordinate
+projections. These maps recover exactly the scaled Newton coordinates
+of a true query vector, and have bounded operator norms uniformly in
+calibration. They are defined on arbitrary centers, not only on product
+posteriors or reachable representatives. In particular this reduction
+does not assume a factored decoder.
+
+At most a constant times
+$M u^k/\prod_bD_{b,\ell_b}$ of the minorized uniform rectangle can be
+covered by $M$ balls of radius $u$. Taking
+$u=c_2(M^{-1}\prod_bD_{b,\ell_b})^{1/k}$ with $c_2$ small enough
+leaves at least half of that uniform mass uncovered. Mean squared
+prediction regret is therefore at least
+$c_3(M^{-1}\prod_bD_{b,\ell_b})^{2/k}$.
+Randomized assignment to centers cannot improve upon the closest center.
+Independent public coding randomness may be fixed first and averaged
+last, since it does not generate the acquisition history. Maximizing
+first over allocations and then over $k$ proves the checkpoint lower
+bound by the factorial comparisons. Zero-volume allocations contribute
+zero and require no division. The unconditional optimum cannot exceed
+the maximum-history optimum. When no block is active, the true query
+vector is known in advance and all three regrets are zero.
+
+\emph{One persistent index through the whole schedule.}
+At every stage choose the preceding reachable joint codebook with at most
+$M$ representatives. The initial codebook is the exact product prior.
+A representative is a tuple of block raw vectors stored in the read-only
+program; its index is the entire persistent state. When the next trial
+belongs to $b$, apply \eqref{eq:formal-multiindex-update} only to its
+component, leave all other components unchanged, and quantize the updated
+tuple into the next joint codebook. The denominator in that block update
+is at least its report margin on a segment of posterior mixtures.
+Consequently the joint raw update is uniformly Lipschitz, including at
+all exponent collisions. An updated representative is reachable, so it
+is always inside the domain of the next covering quantizer. A previously
+unobserved block starts from its known exact prior, and a completed block
+is replaced by $(1)$.
+
+If $e_s$ is the concatenated raw error, then
+\[
+ e_0=0,\qquad e_{s+1}\le L_s e_s+
+       C_s\Theta_{s+1,\omega}(M,a)^{1/2}.
+\]
+There are $T$ stages and finitely many block updates, so iteration gives
+$e_s\le C_T\Theta_\omega(M,a)^{1/2}$ for every $s$.
+This recurrence includes all errors from earlier joint re-encodings,
+including changes in inactive components. It never resets them by
+rereading a prefix. Lemma~\ref{lem:product-metric} yields the upper
+bound in \eqref{eq:shared-streaming}.
+
+Conversely, the index of any streaming filter is an $M$-message encoding
+at each checkpoint. All the checkpoint lower laws just proved are
+prefixes of the same uniform exploration experiment. Every filter
+therefore satisfies each such lower bound before an infimum is taken.
+Taking their maximum proves the streaming converse. Finally there are
+only finitely many count vectors and schedules for the fixed horizons;
+taking the largest upper and smallest positive lower constants makes
+all comparisons uniform in $\omega$ as asserted.
+\end{proof}
+
+The tensor query algebra, the attainable posterior image, and the charged
+memory thus have different composition rules. The first is a tensor
+product, the second is a product embedded by a multilinear map, and the
+last is controlled by the maximum over allocations in
+\eqref{eq:composition-volumes}. Only after that allocation is resolved
+can one take the maximum over causal checkpoints.

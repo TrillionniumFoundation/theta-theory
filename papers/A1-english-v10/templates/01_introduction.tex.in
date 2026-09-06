@@ -1,0 +1,213 @@
+\section{Introduction}
+A finite experiment creates information at one rate and uses it at
+another. The information that must persist is determined by the tests
+that remain available, not by the full accumulated likelihood alone.
+For positive sparse monomial experiments we compute this persistent
+information, both exactly and at prescribed accuracy. We then determine
+how the answer composes when several independent experiments share one
+memory and their observations are interleaved.
+
+There are two different sources of variation. Additive coincidences among
+future exponents change which directions can be tested. Near a coincidence,
+a direction can be exactly observable but have arbitrarily small
+statistical amplitude. Independently, the order in which several
+experiments are observed changes how many of their attained directions
+must be retained at the same time. The first phenomenon requires a
+collision-uniform resolution law. The second requires a joint coding
+converse, not merely the construction of separate block quantizers.
+
+\subsection{The scalar resolution law}
+Let
+\[
+ A=\{0=a_0<a_1<\cdots<a_{r-1}=D\},\quad r\ge2,
+ \qquad W_A=\spanop\{t^a:a\in A\}.
+\]
+Write $mA$ for sums of exactly $m$ elements of $A$, including zero
+padding, and $h_A(m)=|mA|$, with $0A=\{0\}$. A positive finite
+detector has cells spanning $W_A$. Its commands are independent lookup
+entries in a fixed cube $[\eta,1-\eta]^J$, $0<\eta<1/2$; the
+accepted cell label or the failure symbol is reported. The full experiment
+is defined in Section~\ref{sec:experiment}.
+
+For the uniform assertion the hidden scalar lies in $[0,1]$ with one
+fixed full-support prior $\mu$. The known nonzero exponents range over
+a compact set $K$ inside $0<a_1<\cdots<a_{r-1}$. A fixed coefficient
+matrix of column rank $r$ realizes the cells throughout $K$; their sum
+is one and their common lower bound is positive. Fix a horizon $N$ and
+$H\ge\max\{1,N\max_Ka_{r-1}\}$. At a checkpoint with $n$ past and
+$m=N-n$ remaining trials, the positive formal homogeneous labels
+$\alpha\in\N_0^r$, $|\alpha|=m$, $\alpha\ne me_0$, give nodes
+$x_\alpha=H^{-1}\sum_i\alpha_i a_i$. Their number is $q_m$.
+They are retained as formal labels when their values coincide. Put
+\[
+ \mathcal V_{m,\ell}(a)=
+ \max_{|J|=\ell}\prod_{\{\alpha,\beta\}\subset J}|x_\alpha-x_\beta|,
+ \qquad \mathcal V_{m,1}=1,
+ \qquad p_{n,m}=\min\{n(r-1),q_m\},
+\]
+where $J$ ranges over positive formal labels. A volume is zero if fewer
+than $\ell$ distinct sites remain. Define
+\[
+ \Psi_{n,m}(M,a)=\max_{1\le\ell\le p_{n,m}}
+                  (\mathcal V_{m,\ell}(a)/M)^{2/\ell},
+ \qquad \Xi_N(M,a)=\max_{1\le n<N}\Psi_{n,N-n}(M,a),
+\]
+with zero checkpoint profile when $n=0$ or $m=0$.
+
+@@SCALAR_STATEMENT@@
+
+The proof has three parts. At a common interior product of binomials,
+the tangent pairs at full rank with every initial Newton--Hermite flag,
+including at repeated nodes. Actual exploration histories therefore
+minorize a uniformly sized resolved cube, with their acquisition evidence
+retained. A bounded-format covering estimate controls the entire reachable
+image, with the products of scales truncated at the past capacity.
+Finally, raw moment updates have no inverse exponent gaps, so one
+persistent index realizes these covers through all stages. These parts
+are proved in that order in Sections~\ref{sec:rank}--\ref{sec:collision-geometry}.
+
+The determinant profile has classical finite spectral content. If $W_m$
+is the square ordinary Vandermonde matrix on the positive formal nodes,
+then $\mathcal V_{m,\ell}\asymp\|\bigwedge^\ell W_m\|$,
+uniformly even at coincidences; Proposition~\ref{prop:ordinary-spectrum}
+records the precise comparison. It does not prove attainable posterior
+geometry or compatibility with causal compression. The arbitrary-prefix
+Hermite fact is likewise isolated as Lemma~\ref{lem:hermite-prefix}
+before it is used in that geometry.
+
+\subsection{Composition with one shared memory}
+Take $B$ independent scalar experiments of this class, with possibly
+different detectors, exponent sets, priors and horizons $N_b$. Their
+joint hidden parameter is a vector with the product prior. A deterministic
+schedule $\omega$ specifies which block is observed on each of
+$T=\sum_bN_b$ trials. At time $s$ its count vector is $(n_b(s))$,
+with $m_b(s)=N_b-n_b(s)$. A future query chooses a product probe in
+every block and predicts the all-failure event of the resulting tensor
+query. All $T-s$ remaining trials are executed. There is one shared
+memory index, not an uncharged tuple of separate block memories.
+
+At a block checkpoint put $V_{b,0}=1$ and
+$V_{b,\ell}=\mathcal V_{b,m_b,\ell}(a^{(b)})$ for
+$1\le\ell\le p_b=\min\{n_b(r_b-1),q_{b,m_b}\}$. When $n_b=0$
+or $m_b=0$ put $p_b=0$. Define the real bit profile
+\[
+ b_b(n_b,\varepsilon,a^{(b)})=
+ \max_{0\le\ell\le p_b}
+ \left\{\frac{\ell}{2}\log_2\frac1\varepsilon+\log_2V_{b,\ell}\right\}.
+\]
+The zero-index term is zero and zero positive-index volumes are omitted.
+
+\begin{theorem}[Shared-memory information law]\label{thm:composition-main}
+For these fixed block experiments, the least integer persistent bit budget
+for maximum-checkpoint squared-prediction regret at most $\varepsilon$
+is
+\begin{equation}\label{eq:intro-shared-bits}
+ B_\omega^*(\varepsilon,a)=
+ \max_s\sum_b b_b(n_b(s),\varepsilon,a^{(b)})+O(1),
+ \qquad 0<\varepsilon\le1.
+\end{equation}
+This holds both for maximum-history regret and for unconditional regret
+under one common independent uniform exploration law. The bounded
+remainder is uniform in accuracy, calibration and schedule. The lower
+bound permits arbitrary joint randomized encoders; the upper bound is
+realized by one stage-compatible index-only transducer.
+
+Writing $L_b=\max_n b_b(n,\varepsilon,a^{(b)})$, the smallest
+possible budget over schedules is $\max_bL_b+O(1)$, attained by every
+serial schedule. The largest is $\sum_bL_b+O(1)$, attained in order
+by a schedule that brings all blocks to their respective maximizing
+counts. A fixed serial schedule is optimal in this comparison sense
+simultaneously for every calibration and accuracy.
+\end{theorem}
+
+The all-budget regret form and complete proof are
+Theorem~\ref{thm:shared-state}; its logarithmic inversion and scheduling
+consequences are Theorems~\ref{thm:shared-bits} and
+\ref{thm:schedule-extrema}. The joint attainable image is a product
+embedded by a multilinear map, not a full tensor-dimensional body.
+Its metric is recovered from the full tensor query menu by a bounded
+linear map defined even on arbitrary decoded centers. A product of
+blockwise dimension-truncated covers yields the upper bound, while a
+product of attained subprobability rectangles yields a converse against
+unrestricted joint coding. The raw updates then prove causal compatibility.
+Thus \eqref{eq:intro-shared-bits} is not obtained by defining the optimum
+to be a product code.
+
+This gives an observation-order effect with a sharp change of exponent.
+For $B$ independent two-exponent blocks, each with horizon $2h$, a serial
+schedule has streaming regret $\asymp M^{-2/h}$; a schedule bringing
+all blocks to their middle checkpoint has regret
+$\asymp M^{-2/(Bh)}$. The number of raw trials is $2Bh$ in both
+cases and the query protocol is the same full tensor construction
+(Corollary~\ref{cor:concurrency-exponent}). The saving uses the specified
+future-only task: it does not erase an externally requested past payoff.
+
+\subsection{Exact sufficiency and the proof structure}
+The exact scalar law also holds on a fixed interval $I=[l,u]$,
+$0\le l<u<\infty$, with a full-support prior. Its role is to identify
+the attained tangent before any finite-error comparison is made.
+
+@@EXACT_STATEMENT@@
+
+For independent blocks the exact dimensions add at a checkpoint and their
+sum is then maximized over the schedule
+(Theorem~\ref{thm:product-dimension}). Continuous encodings here are
+encodings of known-command histories on each report stratum. They need
+not identify different factorizations of the same posterior, and no
+global chart of a singular quotient is assumed.
+
+The principal proof proceeds from the observation experiment and memory
+model to the product tangent, complete Hermite flags, the global covering
+estimate, the collision-uniform law, and finally the shared-state law.
+The observation-algebra calculations and the full affine, five-trial,
+seven-trial, control, decision and mechanical arguments are given in
+Appendices~\ref{sec:algebra}--\ref{sec:tree-convexity}. Their distinct
+operational hypotheses are not replaced by the product experiment.
+In particular, the binary ticket identity transfers prediction loss to
+one specified common payoff; it is not a universal optimal-control lower
+bound. The separate control upper bound retains its weaker exponent.
+
+\subsection{Relation to the classical ingredients}
+Predictive state representations, approximate recursively updated
+information states and squared-error quantization are established subjects
+\cite{LittmanSutton,Subramanian,KaraYuksel,GrafLuschgy}. The mixed and
+confluent determinant arguments use classical total positivity
+\cite{Pinkus}. The sumset interpretation of a homogeneous observation
+algebra is also classical \cite{EliahouMazumdar,Elias}. The Newton--Hermite
+prefix principle is explicitly stated in \cite[Proposition 7, p.~48]{deBoor};
+finite Leja orderings and their linear-algebraic implementations are
+classical \cite{Leja,BosEtAl}. The real covering input is separated in
+Lemma~\ref{lem:tame-rectangle}, using
+\cite{YomdinComte,ComteHalupczok,ZhangKileel}.
+
+Clustered Fourier Vandermonde spectra are studied in
+\cite[Theorems 2.2--2.3]{BatenkovEtAl}; the matrix comparison used here
+concerns an ordinary finite real Vandermonde matrix and is proved directly.
+Neither comparison supplies the attained history distribution or the
+persistent-index converse. Functional product quantization
+\cite[Sections 1.1--1.2 and 5.5]{GuoKaragodinStepanov} optimizes output
+error when input components are separately quantized. In the present
+problem the histories are generated sequentially, the future menu spans
+a tensor observation algebra, and the converse permits an arbitrary
+joint $M$-message code. Its uniform constants include exponent
+coincidences, while its one-index upper bound accumulates all preceding
+compression errors. The elementary multiplication of covering estimates
+is used as such, rather than presented as a new general quantization
+principle.
+
+The finite spectral comparison and the convex allocation argument in
+Appendix~\ref{sec:tree-convexity} were made explicit in the source-pinned
+technical note \cite{A1v9note}; they are not reassigned as independent
+contributions of the composition theorem. The specific attainable
+pairing, the global image bound, the joint coding converse and their
+causal compatibility are the mathematical assertions proved here.
+The full earlier mechanical and likelihood derivations remain separate
+sources \cite{A1v5,A1v6,A1round33}; no long-time conclusion is imported
+from their historical labels into a fixed-horizon proof.
+
+All uniform constants in the resolved theorems are for fixed priors,
+detectors, command cubes and finite horizons. Each known calibration and
+budget may have its own read-only exact-real program. The product theorem
+requires a product prior. Neither prior-uniform conditioning, effective
+codebook synthesis, calibration-blind filtering nor arbitrary hidden-
+parameter terminal losses are implicit in these statements.
