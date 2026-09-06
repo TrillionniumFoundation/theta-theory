@@ -4,29 +4,131 @@ on:
     branches: ['revision/a1-english-v11-referee-response-2026-09-06']
     paths:
       - '.github/workflows/a1-v11-revision.yml'
+      - '.github/revision-sources/a1-v11-source.part-*.b64'
       - 'papers/A1-english-v11/**'
 permissions:
   contents: read
+concurrency:
+  group: a1-v11-referee-response-publication
+  cancel-in-progress: false
 jobs:
-  source:
+  revision:
+    if: github.ref == 'refs/heads/revision/a1-english-v11-referee-response-2026-09-06'
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    env:
+      REVISION_BRANCH: revision/a1-english-v11-referee-response-2026-09-06
+      PAPER: papers/A1-english-v11
     steps:
       - uses: actions/checkout@v4
         with:
-          persist-credentials: false
-      - name: Export exact source and historical index
+          fetch-depth: 20
+      - name: Restore the exact locally verified source
         shell: bash
         run: |
           set -euo pipefail
+          git merge-base --is-ancestor 1aa4599eedca650d34c3778a00f3ad854c2bc9d7 HEAD
+          python3 - <<'PY'
+          import base64, hashlib, json, lzma, subprocess
+          from pathlib import Path, PurePosixPath
+          root=Path.cwd()
+          pieces=[root/f'.github/revision-sources/a1-v11-source.part-{i:02}.b64' for i in range(4)]
+          data=base64.b64decode(''.join(p.read_text().strip() for p in pieces),validate=True)
+          assert hashlib.sha256(data).hexdigest()=='5408f839fa62fc0d13db438833d9fe9d7fb6d077fc1e965b05f14061b0d5ebd8','transport mismatch'
+          raw=lzma.decompress(data)
+          assert hashlib.sha256(raw).hexdigest()=='0f936457a027d8a0580f32a8928ff6ce38adad5d147b7422a502821ddf0cd564','source package mismatch'
+          pack=json.loads(raw)
+          assert pack['base_review']=='1aa4599eedca650d34c3778a00f3ad854c2bc9d7'
+          assert pack['source_template']=='papers/A1-english-v10'
+          assert pack['destination']=='papers/A1-english-v11'
+          base=root/pack['source_template']; dest=root/pack['destination']
+          def safe(name):
+              p=PurePosixPath(name)
+              assert not p.is_absolute() and '..' not in p.parts
+              return p
+          if not (dest/'SOURCE_MANIFEST.json').exists():
+              assert not dest.exists(), 'refuse to replace an unrecognized revision directory'
+              changed={}
+              for name,op in pack['changes'].items():
+                  safe(name)
+                  if 'text' in op: text=op['text']
+                  else:
+                      old=(base/safe(op['from'])).read_bytes()
+                      assert hashlib.sha256(old).hexdigest()==op['sha256'],name
+                      text=old.decode('utf-8')
+                      for a,b,value in reversed(op['edits']): text=text[:a]+value+text[b:]
+                  changed[name]=text
+              manifest=json.loads(changed['SOURCE_MANIFEST.json'])
+              assert manifest['review_commit']==pack['base_review']
+              for name,expected in manifest['sha256'].items():
+                  safe(name)
+                  value=changed[name].encode('utf-8') if name in changed else (base/name).read_bytes()
+                  assert hashlib.sha256(value).hexdigest()==expected,name
+                  target=dest/name; target.parent.mkdir(parents=True,exist_ok=True); target.write_bytes(value)
+              (dest/'SOURCE_MANIFEST.json').write_text(changed['SOURCE_MANIFEST.json'])
+          else:
+              manifest=json.loads((dest/'SOURCE_MANIFEST.json').read_text())
+              for name,expected in manifest['sha256'].items():
+                  safe(name)
+                  assert hashlib.sha256((dest/name).read_bytes()).hexdigest()==expected,name
+          paths=[str(dest.relative_to(root)/safe(n)) for n in manifest['sha256']]+['papers/A1-english-v11/SOURCE_MANIFEST.json']
+          subprocess.run(['git','add','--force','--',*paths],check=True)
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          if ! git diff --cached --quiet; then
+            git commit -m 'A1 v11: full English revision, certified adaptive compiler and referee response'
+          fi
+          echo "VERIFIED_SOURCE_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - name: Install the fixed manuscript build dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+      - name: Independently rerun all diagnostics and three-pass TeX build
+        run: GITHUB_SHA="$VERIFIED_SOURCE_SHA" python3 "$PAPER/validate.py"
+      - name: Commit the PDF and execution receipts to the revision branch only
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = "refs/heads/$REVISION_BRANCH"
+          python3 - <<'PY'
+          from pathlib import Path
+          import subprocess
+          root=Path('papers/A1-english-v11')
+          paths=[root/n for n in ['main.pdf','BUILD_REPORT.json','PRESERVATION_REPORT.json']]
+          paths += sorted(p for p in (root/'validation').rglob('*') if p.is_file() and p.suffix in {'.json','.txt'})
+          subprocess.run(['git','add','--force','--',*[str(p) for p in paths]],check=True)
+          changed=subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines()
+          assert all(n.startswith('papers/A1-english-v11/') for n in changed),changed
+          PY
+          if ! git diff --cached --quiet; then
+            git commit -m 'A1 v11: publish compiled manuscript and independently executed validation receipts [skip ci]'
+          fi
+          remote_sha=$(git ls-remote --heads origin "refs/heads/$REVISION_BRANCH" | cut -f1)
+          test "$remote_sha" = "$GITHUB_SHA"
+          git push origin "HEAD:refs/heads/$REVISION_BRANCH"
           mkdir -p evidence
-          git rev-parse HEAD > evidence/SOURCE_COMMIT.txt
-          git ls-tree -r HEAD > evidence/SOURCE_TREE.tsv
-          git archive --format=tar HEAD papers/A1-english-v10 reviews/a1-english-v10-effective-finite-memory-2026-09-06 > evidence/controlling-source.tar
-          sha256sum evidence/controlling-source.tar > evidence/SHA256SUMS.txt
+          python3 - <<'PY'
+          import json,os,subprocess
+          from pathlib import Path
+          d={'review_commit':'1aa4599eedca650d34c3778a00f3ad854c2bc9d7','workflow_input_commit':os.environ['GITHUB_SHA'],'verified_source_commit':os.environ['VERIFIED_SOURCE_SHA'],'publication_commit':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),'branch':os.environ['REVISION_BRANCH'],'run_id':os.environ['GITHUB_RUN_ID']}
+          Path('evidence/a1-v11-publication.json').write_text(json.dumps(d,indent=2)+'\n')
+          print(json.dumps(d,indent=2))
+          PY
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: A1-v11-controlling-source
-          path: evidence/
+          name: A1-v11-referee-ready
+          path: |
+            papers/A1-english-v11/
+            evidence/a1-v11-publication.json
+            !papers/A1-english-v11/build/
+            !papers/A1-english-v11/**/__pycache__/
+            !papers/A1-english-v11/*.aux
+            !papers/A1-english-v11/*.log
+            !papers/A1-english-v11/*.out
+          include-hidden-files: true
           if-no-files-found: error
-          retention-days: 30
+          retention-days: 90
