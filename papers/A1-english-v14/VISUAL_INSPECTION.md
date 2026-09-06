@@ -12,5 +12,9 @@ and no overfull boxes. The final bibliography page contains only the last
 reference; it has not been removed or typeset with artificially compressed
 body text merely to reduce the page count.
 
+After the final notation audit restored the definitions of $h_A(m)$ and
+the interval $I$, pages 1 and 2 were rendered and inspected again at readable
+resolution. The page count and the cited theorem locators are unchanged.
+
 This is a rendered-layout check, not an independent proof review of all
 72 pages. The build and execution receipts separately describe their scope.
