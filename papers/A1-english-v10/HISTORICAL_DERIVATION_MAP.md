@@ -1,0 +1,11 @@
+# Historical sources used in v10
+
+The controlling review is `7a499e3cb32396b18eda869342ec8e9c70d8d028`, reviewing submission `e3e5ba14de94eb3ff37a46ef6ed76c16929f98a5`. Its main report, technical note and 42-result claim audit were read. The initial mistaken Legendre/Neumann identification was discarded after immutable commit inspection; no such unrelated argument enters this revision.
+
+The v9 main source and its experiment, transversality, confluence, streaming, attainable-filtration and complete collision-geometry sections were read. Their exact body files are retained via the v9 sections tree `ec90bdd89964db07fb2cab26e973ee93fd4c610c`. In particular the attained tangent and positive normalization are not replaced by a generic-rank assumption; the full-image cover is not replaced by a local patch; and the lower law retains the actual failure evidence.
+
+The earlier files `papers/A1-english-v6/legacy/sections/12_calibrated_rank.tex`, `13_decision_horizon.tex` and `14_memory_risk.tex` were consulted directly for the finite right-inverse realization, common future-only continuation, counted probes, state-resource discipline and command-density/evidence minorization. Their saturated-polynomial affine-image argument is not used for a sparse curved image. Their finite prior-moment computation motivates the new effective input interface, whose additional approximation estimates are proved in v10.
+
+For local processing, authenticated GitHub Actions artifact 9982031590 supplied the complete v8 source archive. Its body files were compared against the immutable v9 Git blob hashes. Eight body files matched directly; the v9 attainable-filtration clarification and the new collision-geometry file were obtained from the repository and separately hash-verified. The v9 bibliography was also reconstructed and verified against blob `8bab36ef02df6af551c3a000213ce17114108c86` before adding the new references.
+
+Only the mathematical lineage needed for this revision has been audited. The full eleven-paper program and every historical branch have not been independently rederived. All existing material is preserved by ancestry, and no old execution receipt is described as a fresh result.
