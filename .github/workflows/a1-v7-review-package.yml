@@ -26,63 +26,26 @@ jobs:
           mkdir -p review-artifacts
           git archive --format=tar 414f8c43a6236586362c1532c00aa9b9da01fe64 papers/A1-english-v6 reviews/a1-english-v6-2026-09-06 | gzip -n > review-artifacts/reviewed-v6-source.tar.gz
           git rev-parse HEAD > review-artifacts/BUILD_INPUT_COMMIT.txt
-      - name: Materialize sealed source once
-        id: materialize
-        shell: bash
-        run: |
-          set -euo pipefail
-          if [[ -f papers/A1-english-v7/main.tex || ! -f papers/A1-english-v7/SOURCE_PACKAGE.json.gz ]]; then
-            echo 'needed=false' >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          python3 - <<'PY'
-          import gzip, hashlib, json, os
-          from pathlib import Path, PurePosixPath
-          root = Path('papers/A1-english-v7')
-          raw = gzip.decompress((root/'SOURCE_PACKAGE.json.gz').read_bytes())
-          if len(raw) > 5000000:
-              raise ValueError('Unexpected source package size')
-          package = json.loads(raw)
-          assert package['format'] == 'a1-v7-source-1'
-          paths = []
-          for item in package['files']:
-              rel = PurePosixPath(item['path'])
-              if rel.is_absolute() or '..' in rel.parts or any(part.startswith('.') for part in rel.parts):
-                  raise ValueError('Unsafe member path')
-              if any(ord(ch) < 32 for ch in str(rel)) or rel.suffix not in {'.tex','.md','.py','.sh','.json','.txt'}:
-                  raise ValueError('Unexpected member name')
-              data = item['content'].encode('utf-8')
-              assert hashlib.sha256(data).hexdigest() == item['sha256']
-              target = root / str(rel)
-              target.parent.mkdir(parents=True, exist_ok=True)
-              with target.open('xb') as out:
-                  out.write(data)
-              paths.append(str(target))
-          Path(os.environ['RUNNER_TEMP'],'v7-materialized-paths').write_text('\n'.join(paths)+'\n')
-          print('Verified and materialized', len(paths), 'UTF-8 source members')
-          PY
-          echo 'needed=true' >> "$GITHUB_OUTPUT"
       - name: Install manuscript tools
-        if: ${{ hashFiles('papers/A1-english-v7/main.tex') != '' }}
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended lmodern python3-numpy python3-sympy poppler-utils
       - name: Verify source manifest and build revision
-        if: ${{ hashFiles('papers/A1-english-v7/main.tex') != '' }}
         run: |
-          python3 - <<'PY'
+          /usr/bin/python3 - <<'PY'
           import hashlib, json
           from pathlib import Path
           root=Path('papers/A1-english-v7')
           manifest=json.loads((root/'SOURCE_MANIFEST.json').read_text())
           for name, info in manifest['files'].items():
               data=(root/name).read_bytes()
+              assert len(data)==info['bytes'], name
               assert hashlib.sha256(data).hexdigest()==info['sha256'], name
               assert hashlib.sha1(('blob '+str(len(data))+'\0').encode()+data).hexdigest()==info['git_blob'], name
           print('Verified',len(manifest['files']),'immutable source/receipt entries')
           PY
-          bash papers/A1-english-v7/build.sh
-          python3 - <<'PY'
+          PATH="/usr/bin:$PATH" bash papers/A1-english-v7/build.sh
+          /usr/bin/python3 - <<'PY'
           import hashlib,json,os,platform,re,subprocess
           from pathlib import Path
           root=Path('papers/A1-english-v7')
@@ -103,25 +66,26 @@ jobs:
           (root/'BUILD_REPORT.json').write_text(json.dumps(report,indent=2)+'\n')
           print(json.dumps(report,indent=2))
           PY
-      - name: Publish expanded manuscript and principal PDF
-        if: steps.materialize.outputs.needed == 'true'
+      - name: Publish principal PDF and fresh execution evidence
         env:
           REVISION_BRANCH: revision/a1-english-v7-confluent-resolution-2026-09-06
         run: |
           set -euo pipefail
           [[ "$GITHUB_REF" == "refs/heads/$REVISION_BRANCH" ]]
+          if git ls-files --error-unmatch papers/A1-english-v7/main.pdf >/dev/null 2>&1; then
+            echo 'Principal PDF already tracked; fresh outputs remain in this run artifact.'
+            exit 0
+          fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add --pathspec-from-file="$RUNNER_TEMP/v7-materialized-paths"
           git add -- papers/A1-english-v7/main.pdf papers/A1-english-v7/DIAGNOSTICS.json papers/A1-english-v7/BUILD_REPORT.json
           if git diff --cached --name-only | grep -v '^papers/A1-english-v7/'; then
             echo 'Refusing publication outside the new revision directory' >&2
             exit 1
           fi
-          git commit -m 'revision(A1 v7): publish complete confluent-resolution manuscript, response and validation'
+          git commit -m 'build(A1 v7): publish verified principal PDF and fresh CI receipts'
           git push origin "HEAD:$REVISION_BRANCH"
       - name: Assemble review artifacts
-        if: ${{ hashFiles('papers/A1-english-v7/main.tex') != '' }}
         run: |
           cp papers/A1-english-v7/main.pdf review-artifacts/A1-English-v7.pdf
           cp papers/A1-english-v7/main.log review-artifacts/
