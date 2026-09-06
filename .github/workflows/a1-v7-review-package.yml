@@ -1,0 +1,44 @@
+name: A1 v7 review package
+on:
+  push:
+    branches: ['revision/a1-english-v7-*']
+    paths: ['papers/A1-english-v7/**', '.github/workflows/a1-v7-review-package.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  package:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Export immutable reviewed source
+        run: |
+          mkdir -p review-artifacts
+          git archive --format=tar 414f8c43a6236586362c1532c00aa9b9da01fe64 papers/A1-english-v6 reviews/a1-english-v6-2026-09-06 | gzip -n > review-artifacts/reviewed-v6-source.tar.gz
+          git rev-parse HEAD > review-artifacts/REVISION_COMMIT.txt
+          sha256sum review-artifacts/reviewed-v6-source.tar.gz > review-artifacts/SHA256SUMS
+      - name: Install manuscript tools
+        if: ${{ hashFiles('papers/A1-english-v7/main.tex') != '' }}
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended lmodern python3-numpy python3-sympy
+      - name: Build and check revision
+        if: ${{ hashFiles('papers/A1-english-v7/main.tex') != '' }}
+        run: |
+          bash papers/A1-english-v7/build.sh
+          cp papers/A1-english-v7/main.pdf review-artifacts/A1-English-v7.pdf
+          cp papers/A1-english-v7/main.log review-artifacts/
+          cp papers/A1-english-v7/DIAGNOSTICS.json review-artifacts/
+          git archive --format=tar HEAD papers/A1-english-v7 papers/A1-english-v6 | gzip -n > review-artifacts/revision-source.tar.gz
+      - name: Preserve review evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: a1-v7-review-${{ github.sha }}
+          path: review-artifacts/
+          if-no-files-found: error
+          retention-days: 30
