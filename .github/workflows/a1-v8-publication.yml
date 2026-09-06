@@ -1,0 +1,62 @@
+name: A1 v8 source-pinned publication
+on:
+  push:
+    branches: [revision/a1-english-v8-attainable-filtration-2026-09-06]
+    paths:
+      - papers/A1-english-v8/**
+      - scripts/materialize_a1_v8.py
+      - scripts/a1_v8_receipts.py
+      - .github/workflows/a1-v8-publication.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: a1-v8-publication-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/revision/a1-english-v8-attainable-filtration-2026-09-06'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install build requirements
+        run: |
+          python -m pip install sympy==1.14.0 numpy==2.2.6
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq texlive-latex-base texlive-latex-recommended texlive-fonts-recommended lmodern
+      - name: Materialize, test and compile
+        run: |
+          test "$(git rev-parse HEAD:papers/A1-english-v7)" = 2a499f613db54f9966d553ddb727562fe71a537d
+          python scripts/materialize_a1_v8.py
+          bash papers/A1-english-v8/build.sh
+          python scripts/a1_v8_receipts.py
+      - name: Commit the complete revision and fresh PDF on this branch only
+        run: |
+          find papers/A1-english-v8 -type f \( -name '*.tex' -o -name '*.md' -o -name '*.py' -o -name '*.sh' -o -name '*.json' \) -print0 | xargs -0 git add -f --
+          git add -f papers/A1-english-v8/main.pdf
+          if ! git diff --cached --quiet; then
+            git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'publish(A1 v8): complete manuscript, fresh PDF, tests and source-pinned receipts'
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
+          git rev-parse HEAD > A1_V8_PUBLISHED_COMMIT.txt
+          tar -czf A1-v8-review-bundle.tar.gz papers/A1-english-v8 scripts/materialize_a1_v8.py scripts/a1_v8_receipts.py .github/workflows/a1-v8-publication.yml A1_V8_PUBLISHED_COMMIT.txt
+      - name: Export source and build evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: A1-v8-review-bundle
+          path: |
+            A1-v8-review-bundle.tar.gz
+            A1_V8_PUBLISHED_COMMIT.txt
+            papers/A1-english-v8/main.pdf
+            papers/A1-english-v8/main.log
+            papers/A1-english-v8/BUILD_REPORT.json
+            papers/A1-english-v8/SOURCE_MANIFEST.json
+            papers/A1-english-v8/DIAGNOSTICS.json
+            papers/A1-english-v8/V8_DIAGNOSTICS.json
