@@ -1,0 +1,153 @@
+name: A1 v12 revision verification
+on:
+  push:
+    branches: ['revision/a1-english-v12-referee-response-2026-09-06']
+    paths:
+      - '.github/workflows/a1-v12-revision.yml'
+      - '.github/revision-sources/a1-v12-source.part-*.b64'
+      - 'papers/A1-english-v12/**'
+permissions:
+  contents: read
+concurrency:
+  group: a1-v12-referee-response-publication
+  cancel-in-progress: false
+jobs:
+  revision:
+    if: github.ref == 'refs/heads/revision/a1-english-v12-referee-response-2026-09-06'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: write
+    env:
+      REVISION_BRANCH: revision/a1-english-v12-referee-response-2026-09-06
+      PAPER: papers/A1-english-v12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 20
+      - name: Restore and verify the complete pinned English revision
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = "refs/heads/$REVISION_BRANCH"
+          git merge-base --is-ancestor 7492bf0d74236e866048ef9e5e5b28e4ea9a7f56 HEAD
+          python3 - <<'PY'
+          import base64, hashlib, json, lzma, subprocess
+          from pathlib import Path, PurePosixPath
+          root=Path.cwd()
+          pieces=[root/f'.github/revision-sources/a1-v12-source.part-{i:02}.b64' for i in range(5)]
+          data=base64.b64decode(''.join(p.read_text().strip() for p in pieces),validate=True)
+          assert hashlib.sha256(data).hexdigest()=='18496e72c8ccf308be0bf535f406cb9da848cbfde4bc1512c29c16820f4b76a4','transport mismatch'
+          raw=lzma.decompress(data)
+          assert hashlib.sha256(raw).hexdigest()=='058069213c9ad56c7f20073b76d07aa334194282e1bc001b3972b224f122cf22','source package mismatch'
+          pack=json.loads(raw)
+          assert pack['base_review']=='7492bf0d74236e866048ef9e5e5b28e4ea9a7f56'
+          assert pack['source_template']=='papers/A1-english-v11'
+          assert pack['destination']=='papers/A1-english-v12'
+          base=root/pack['source_template']; dest=root/pack['destination']
+          def safe(name):
+              p=PurePosixPath(name)
+              assert not p.is_absolute() and '..' not in p.parts and p.parts,name
+              return p
+          changed={}
+          for name,op in pack['changes'].items():
+              safe(name)
+              if 'text' in op:
+                  text=op['text']
+              else:
+                  source=base/safe(op['from'])
+                  assert not source.is_symlink(),name
+                  old=source.read_bytes()
+                  assert hashlib.sha256(old).hexdigest()==op['sha256'],name
+                  text=old.decode('utf-8')
+                  for a,b,value in reversed(op['edits']):
+                      assert 0 <= a <= b <= len(text),name
+                      text=text[:a]+value+text[b:]
+              changed[name]=text.encode('utf-8')
+          manifest=json.loads(changed['SOURCE_MANIFEST.json'])
+          values={}
+          for name,expected in manifest['sha256'].items():
+              safe(name)
+              value=changed[name] if name in changed else (base/name).read_bytes()
+              assert hashlib.sha256(value).hexdigest()==expected,name
+              values[name]=value
+          values['SOURCE_MANIFEST.json']=changed['SOURCE_MANIFEST.json']
+          assert len(manifest['sha256'])==47
+          if dest.exists():
+              assert not dest.is_symlink(),'revision directory must not be a symlink'
+              for name,value in values.items():
+                  target=dest/safe(name)
+                  assert not target.is_symlink() and target.read_bytes()==value,name
+          else:
+              for name,value in values.items():
+                  target=dest/safe(name)
+                  target.parent.mkdir(parents=True,exist_ok=True)
+                  target.write_bytes(value)
+          paths=[str(dest.relative_to(root)/safe(n)) for n in values]
+          subprocess.run(['git','add','--force','--',*paths],check=True)
+          staged=subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines()
+          assert all(n.startswith('papers/A1-english-v12/') for n in staged),staged
+          print('Verified and materialized',len(values),'complete source files including the manifest.')
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          if ! git diff --cached --quiet; then
+            git commit -m 'A1 v12: complete English revision, construction certificates, robust advice theorem and referee response'
+          fi
+          echo "VERIFIED_SOURCE_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - name: Install manuscript build dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+      - name: Rerun diagnostics, mutation controls, preservation checks and three-pass TeX build
+        run: GITHUB_SHA="$VERIFIED_SOURCE_SHA" python3 "$PAPER/validate.py"
+      - name: Publish the verified manuscript and receipts to the new revision branch only
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = "refs/heads/$REVISION_BRANCH"
+          python3 - <<'PY'
+          import json, subprocess
+          from pathlib import Path
+          root=Path('papers/A1-english-v12')
+          result=json.loads((root/'validation/REVISION_VALIDATION.json').read_text())
+          assert result['status']=='passed'
+          assert result['pages']==62
+          assert result['diagnostic_counts']=={'V10_AUTHOR_RERUN.json':7904,'V11_AUTHOR_RERUN.json':8207,'V12_DIAGNOSTICS.json':26158}
+          assert result['new_gate_rejects_historical_mutation']['mutation_rejected']
+          assert result['preservation']['no_unapproved_proof_deletions']
+          paths=[root/n for n in ['main.pdf','BUILD_REPORT.json','PRESERVATION_REPORT.json']]
+          paths += sorted(p for p in (root/'validation').rglob('*') if p.is_file() and p.suffix in {'.json','.txt'})
+          subprocess.run(['git','add','--force','--',*[str(p) for p in paths]],check=True)
+          staged=subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines()
+          assert all(n.startswith('papers/A1-english-v12/') for n in staged),staged
+          PY
+          if ! git diff --cached --quiet; then
+            git commit -m 'A1 v12: publish 62-page manuscript and executed validation receipts [skip ci]'
+          fi
+          remote_sha=$(git ls-remote --heads origin "refs/heads/$REVISION_BRANCH" | cut -f1)
+          test "$remote_sha" = "$GITHUB_SHA"
+          git push origin "HEAD:refs/heads/$REVISION_BRANCH"
+          mkdir -p evidence
+          python3 - <<'PY'
+          import json, os, subprocess
+          from pathlib import Path
+          receipt={'review_commit':'7492bf0d74236e866048ef9e5e5b28e4ea9a7f56','workflow_input_commit':os.environ['GITHUB_SHA'],'verified_source_commit':os.environ['VERIFIED_SOURCE_SHA'],'publication_commit':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),'branch':os.environ['REVISION_BRANCH'],'run_id':os.environ['GITHUB_RUN_ID']}
+          Path('evidence/a1-v12-publication.json').write_text(json.dumps(receipt,indent=2)+'\n')
+          print(json.dumps(receipt,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: A1-v12-referee-ready
+          path: |
+            papers/A1-english-v12/
+            evidence/a1-v12-publication.json
+            !papers/A1-english-v12/build/
+            !papers/A1-english-v12/**/__pycache__/
+            !papers/A1-english-v12/*.aux
+            !papers/A1-english-v12/*.log
+            !papers/A1-english-v12/*.out
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 90
