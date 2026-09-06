@@ -6,22 +6,80 @@ on:
       - .github/workflows/a1-v10-source-and-publication.yml
       - papers/A1-english-v10/**
       - scripts/materialize_a1_v10.py
+      - scripts/restore_a1_v10_overlay.py
+      - scripts/a1-v10-overlay/**
 permissions:
-  contents: read
+  contents: write
+concurrency:
+  group: a1-v10-publication-${{ github.ref }}
+  cancel-in-progress: false
 jobs:
-  source:
+  publication:
+    if: github.ref == 'refs/heads/revision/a1-english-v10-shared-memory-composition-2026-09-06'
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Export immutable review inputs
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check immutable parent and restore source overlay
         run: |
-          mkdir -p export
-          git archive 7a499e3cb32396b18eda869342ec8e9c70d8d028 papers/A1-english-v9 papers/A1-english-v8 papers/A1-english-v7 papers/A1-english-v6 reviews/a1-english-v9-2026-09-06 reviews/a1-english-v8-2026-09-06 > export/inputs.tar
-          sha256sum export/inputs.tar > export/SHA256SUMS
-          git rev-parse HEAD > export/EXPORT_COMMIT.txt
+          git merge-base --is-ancestor 7a499e3cb32396b18eda869342ec8e9c70d8d028 HEAD
+          python scripts/restore_a1_v10_overlay.py > /tmp/a1-v10-transport.json
+          mkdir -p papers/A1-english-v10/validation/ci
+          cp /tmp/a1-v10-transport.json papers/A1-english-v10/validation/ci/TRANSPORT.json
+          cat > papers/A1-english-v10/validation/local/EXPORT_NOTE.md <<'EOF'
+          # Local receipt export
+          This directory exports the original local BUILD_REPORT.json and SOURCE_MANIFEST.json.
+          Its operation log paths describe that original execution environment; local per-test
+          JSON and log files are not included in this compact source transfer. The complete
+          fresh runner-side per-test outputs and logs are in ../ci/. A standalone rebuild
+          writes its own complete outputs to ../standalone/. Contexts are not interchangeable.
+          EOF
+      - name: Install pinned test dependencies and TeX
+        run: |
+          python -m pip install --disable-pip-version-check sympy==1.14.0 numpy==2.2.6
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-fonts-recommended lmodern
+      - name: Execute all suites and compile the English principal
+        run: python papers/A1-english-v10/build.py --context ci
+      - name: Publish readable source, PDF and fresh execution receipts
+        env:
+          TARGET_BRANCH: revision/a1-english-v10-shared-memory-composition-2026-09-06
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          p=Path('papers/A1-english-v10')
+          receipt={'input_commit':os.environ['GITHUB_SHA'],'workflow_run_id':os.environ['GITHUB_RUN_ID'],
+                   'review_parent':'7a499e3cb32396b18eda869342ec8e9c70d8d028',
+                   'target_branch':os.environ['TARGET_BRANCH'],
+                   'scope':'Publication of the author revision and executable checks; not an independent referee approval.'}
+          (p/'validation/ci/PUBLICATION_INPUT.json').write_text(json.dumps(receipt,indent=2)+'\n')
+          for name in ('main.aux','main.log','main.out','main.toc'):
+              (p/name).unlink(missing_ok=True)
+          PY
+          git diff --exit-code -- papers/A1-english-v9 papers/A1-english-v8 papers/A1-english-v7 papers/A1-english-v6 reviews
+          git add -f papers/A1-english-v10 scripts/materialize_a1_v10.py
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          if ! git diff --cached --quiet; then
+            git commit -m 'A1 v10: publish 52-page shared-memory revision with preserved proofs and verified execution'
+            git push origin "HEAD:refs/heads/$TARGET_BRANCH"
+          fi
+      - name: Package the exact publication commit
+        run: |
+          mkdir -p review-artifact
+          git rev-parse HEAD > review-artifact/PUBLICATION_COMMIT.txt
+          git archive HEAD papers/A1-english-v10 papers/A1-english-v9 papers/A1-english-v7 reviews/a1-english-v9-2026-09-06 scripts/materialize_a1_v10.py scripts/restore_a1_v10_overlay.py scripts/a1-v10-overlay .github/workflows/a1-v10-source-and-publication.yml | gzip -n > review-artifact/A1-v10-review-bundle.tar.gz
+          cp papers/A1-english-v10/main.pdf review-artifact/A1-v10.pdf
+          cp papers/A1-english-v10/validation/ci/BUILD_REPORT.json review-artifact/CI_BUILD_REPORT.json
+          (cd review-artifact && sha256sum A1-v10.pdf A1-v10-review-bundle.tar.gz CI_BUILD_REPORT.json PUBLICATION_COMMIT.txt > SHA256SUMS)
       - uses: actions/upload-artifact@v4
         with:
-          name: A1-v10-pinned-inputs
-          path: export/
+          name: A1-v10-referee-ready
+          path: review-artifact/
+          if-no-files-found: error
