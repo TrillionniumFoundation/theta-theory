@@ -1,0 +1,29 @@
+# Proof dependencies — A1 English v9
+
+The source-pinned predecessor is v8 submission `5d3d7e04b172f98bddfd037c488d93d516d20a98`; the controlling review is `5f52bf456272b53bcb4df8d949effd2ab59bb79f`. All 34 predecessor result labels and all 33 complete proof blocks survive in the new principal. `validation/V8_PREDECESSOR.json` records their labels and exact SHA-256 hashes; `tests/test_v9.py` checks them without requiring sibling sources.
+
+## New results
+
+| Label | Decisive argument and dependencies | Quantitative scope |
+|---|---|---|
+| `thm:resolution-main` | Introductory statement of the two intrinsic classification theorems below. | Fixed prior, horizon and compact one-step chamber; all additive collision strata; for each known calibration and budget one filter for all stages. |
+| `lem:leja-scales` | Greedy finite-node Newton interpolation; bounded triangular coefficients; exact zero columns; monic-polynomial determinant and Leibniz bound. | Product of the first l scales is between V_l/l! and V_l, including zero pivots. Classical Leja machinery is credited. |
+| `lem:newton-attainment` | Hermite–Genocchi continuity; arbitrary initial multiset spans a complete Hermite space; inherited binomial tangent and strict confluent pairing; normalization loses exactly one; compactness over all finite permutations; quantitative local inverse and integration of kernel coordinates. | Uniform surjectivity and an actual all-failure subprobability cube of dimension min(n(r−1),q_m), even for artificial desingularized coordinates at an exact collision. Physically zero axes are later omitted. |
+| `thm:intrinsic-checkpoint` | Prior integrals are coefficients of polynomial command maps; normalize factors separately to obtain the past-dimension cap; inherited tame-rectangle lemma for a global cover; fixed physical query matrix and bounded leading Newton inverse for the lower rectangle. | All histories for the upper bound; unconditional acquisition law for the lower; integer M; arbitrary independent coding randomization. No flatness or prior-density assumption. |
+| `thm:intrinsic-streaming` | Homogeneous multiindex raw update; report probability ≥kappa on posterior-mixture segments; reachable stage codebooks; complete repeated-error recurrence; common exploration law for all checkpoint lower bounds. | Only an M-label persistent index. No exponent-gap inverse, stored exact prefix, effective synthesis, calibration-blindness, horizon-uniform or prior-uniform constant. |
+| `cor:intrinsic-bits` | Invert every determinant-volume term and round M to a power of two. | Additive O(1) uniform over the fixed K and fixed horizon; zero volumes omitted; exact slope D_A(N)/2 at a fixed calibration. |
+| `thm:collision-tree` | Finite maximum of subset products; pairwise collision orders satisfy the ultrametric inequality; pair energy equals sum of cluster-height increments times binomial occupancies; min-convolution over children. | Pairwise power-comparable gaps, including every analytic germ after identical sums are identified and the interval is shortened. Path constants need not be uniform across unrelated leading coefficients. |
+| `cor:two-parameter` | A fixed positive four-cell realization; six separated two-fold clusters and three internal gaps; two largest gaps comparable to rho; whole-horizon maximum and exact stratum counts; tangent-path substitution. | Uniform on the closed square abs(u),abs(v)≤1/16, including three intersecting lines. Crossover orders, not exact integer thresholds. |
+
+## Checks against possible shortcuts
+
+1. A full-rank moment matrix at a generic calibration is not used to infer uniform conditioning at a collision. Complete Hermite blocks give rank there first; continuity and compactness are used only afterwards. Nonadjacent repetitions in the Newton ordering are included.
+2. The three geometric objects are kept distinct: the desingularized attainable flag, the entire scaled reachable image, and the raw moment state used by the online machine. A cube in the first does not imply the second is flat, and the third does not require division by a small Newton pivot.
+3. Formal duplicates are retained in the raw update, so every right-hand index remains in the preceding homogeneous label set. Duplicate numerical values agree and never enter a denominator as a difference. At exact collision, zero determinant-volume terms contribute zero rather than a fictional dimension.
+4. The lower law includes the command density and the probability of the all-failure word. The random query is generated after the memory index; the number of trials includes acquisition and the entire future product probe. Coding randomness is independent of acquisition.
+5. The collision-tree theorem does not suppose that every pair order equals one. Its affine specialization is proved by minimizing within-cluster binomial occupancy costs. Different higher contact orders can therefore have the same limiting multiplicities and different laws.
+6. The manuscript retains the v8 distinction between matched scoring regret, transferred decision value, and the weaker separate general control bound. No new arbitrary-decision lower theorem is claimed.
+
+## Classical inputs and proof status
+
+The real Vitushkin–Ivanov entropy inequality, bounded-format component bounds and real quantifier elimination are imported with attribution, as in v8. The relevant anisotropic consequence and its hypotheses for the experiment are proved in the manuscript. Finite Leja ordering, Newton–Hermite interpolation and its simplex formula are classical and are not claimed as original. The all-prior attainable pairing, intrinsic collision-uniform classification and causal realization are the proposed arguments for review. Finite diagnostics, source preservation and a successful TeX build do not certify their correctness or their editorial significance.
