@@ -1,0 +1,27 @@
+name: A1 v10 source and publication
+on:
+  push:
+    branches: [revision/a1-english-v10-shared-memory-composition-2026-09-06]
+    paths:
+      - .github/workflows/a1-v10-source-and-publication.yml
+      - papers/A1-english-v10/**
+      - scripts/materialize_a1_v10.py
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Export immutable review inputs
+        run: |
+          mkdir -p export
+          git archive 7a499e3cb32396b18eda869342ec8e9c70d8d028 papers/A1-english-v9 papers/A1-english-v8 papers/A1-english-v7 papers/A1-english-v6 reviews/a1-english-v9-2026-09-06 reviews/a1-english-v8-2026-09-06 > export/inputs.tar
+          sha256sum export/inputs.tar > export/SHA256SUMS
+          git rev-parse HEAD > export/EXPORT_COMMIT.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: A1-v10-pinned-inputs
+          path: export/
