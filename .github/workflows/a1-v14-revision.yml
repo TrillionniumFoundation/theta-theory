@@ -1,0 +1,59 @@
+name: A1 v14 geometric referee response
+on:
+  push:
+    branches:
+      - revision/a1-english-v14-geometric-response-2026-09-06
+    paths:
+      - .github/workflows/a1-v14-revision.yml
+      - .github/scripts/prepare-a1-v14.py
+permissions:
+  contents: write
+concurrency:
+  group: a1-v14-geometric-response
+  cancel-in-progress: false
+jobs:
+  verify-and-publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install mathematical typesetting tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra lmodern poppler-utils
+      - name: Anchor historical sources and compare transmitted source bytes
+        run: python .github/scripts/prepare-a1-v14.py
+      - name: Execute all author diagnostics, the pinned prior review, and three-pass build
+        working-directory: papers/A1-english-v14
+        run: python validate.py --prior-review
+      - name: Publish the complete reviewed-source revision and execution receipts
+        run: |
+          git diff --exit-code -- papers/A1-english-v13 reviews
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A -- papers/A1-english-v14
+          git diff --cached --stat
+          if ! git diff --cached --quiet; then
+            git commit -m 'Publish A1 v14: complete geometric revision, preserved proofs, PDF and executed checks'
+            git push origin HEAD:revision/a1-english-v14-geometric-response-2026-09-06
+          fi
+          git rev-parse HEAD
+      - name: Deposit reproducible referee package
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: A1-v14-geometric-referee-ready
+          include-hidden-files: true
+          path: |
+            papers/A1-english-v14/
+            !papers/A1-english-v14/build/
+            !papers/A1-english-v14/**/__pycache__/
+            !papers/A1-english-v14/*.aux
+            !papers/A1-english-v14/*.log
+            !papers/A1-english-v14/*.out
+          if-no-files-found: error
