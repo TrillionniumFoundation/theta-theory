@@ -1,0 +1,69 @@
+\section{Fixed-horizon bridges and dynamic consistency}\label{sec:chronology}
+\subsection{A density process for one terminal experiment}
+Fix a bounded $V\in\cF_N$ and one chronological reference law $P$. Then
+\[
+ L_n=\frac{E_P[e^V\mid\cF_n]}{E_Pe^V}
+\]
+is a strictly positive mean-one martingale and represents $Q^V$ on $\cF_n$. If $\cF_0$ is nontrivial, $L_0$ need not be identically one. Testing against $A\in\cF_n$ proves the restriction formula; the tower property proves the martingale statement.
+
+Let $x$ now denote the full next recorded item, including an action if necessary. With a fixed policy absorbed in a history kernel $K_n(h,\dd x)$ and
+$V=\sum_{n<N}c_n(H_n,X_{n+1})+B(H_N)$, put
+\[
+ h_N=e^B,\qquad h_n(h)=\int e^{c_n(h,x)}h_{n+1}(hx)K_n(h,\dd x).
+\]
+
+\begin{theorem}[Exact history Doob transform]\label{thm:history-doob}
+The kernels
+\[
+ K_n^V(h,\dd x)=\frac{e^{c_n(h,x)}h_{n+1}(hx)}{h_n(h)}K_n(h,\dd x)
+\]
+are normalized. Started from the original initial history law reweighted by $h_0$, they generate exactly $Q^V$.
+\end{theorem}
+\begin{proof}
+Their total mass is one by the recursion. Multiplying the density factors along a path cancels $h_1,\ldots,h_{N-1}$ and leaves $e^{\sum c}e^B/h_0$. The initial factor cancels $h_0$ and supplies the global normalization. Bounded sources make all denominators positive. This proof allows the transform to alter the action distribution when actions are among the recorded items. Retaining the original policy while changing only readout kernels would require a separate construction; it is not asserted here.
+\end{proof}
+
+The transform is a mathematical bridge. Real-time implementation is governed by Section~\ref{sec:realizability}. Knowledge of a terminal evidence function is not an allowed instantaneous force merely because it appears in a conditional law.
+
+\subsection{Two exact tests of time consistency}
+\begin{example}[Terminally tilted constant bit]\label{ex:terminal}
+Let $Z=0,1$ each have probability $1/2$ and $Z_n=Z$. For $A_n=nZ$ and $e^\xi=2$, the separately normalized laws satisfy
+$Q_1(Z=1)=2/3$ and $Q_2(Z=1)=4/5$. The restriction of the latter to the first record remains $4/5$. Thus separate finite-horizon normalizations do not define one infinite law.
+\end{example}
+
+\begin{example}[A fixed phase is not resampled]\label{ex:phase}
+On a two-state space choose once between identity $I$ and flip $S$, each with probability $1/2$. The one-step marginal operator is $M_1=(I+S)/2$, while the true two-step operator is $M_2=(I^2+S^2)/2=I$. Since $M_1^2=M_1\ne I$, a state-only semigroup is obtained incorrectly if the hidden phase is resampled each step. Retaining the phase or its posterior restores the correct recursion.
+\end{example}
+
+\subsection{Conditional entropic evaluation}
+For a fixed probability $Q$, fixed $\eta\ne0$, and bounded $F\in\cF_t$, define
+\[
+ \mathcal E_{s,t}^{\eta,Q}F
+ =\eta^{-1}\log E_Q[e^{\eta F}\mid\cF_s].
+\]
+
+\begin{proposition}[Tower, stability, and shape]\label{prop:entropic}
+This evaluation is monotone, preserves $\cF_s$-measurable constants, is cash additive, and satisfies
+\[
+ \mathcal E_{r,s}^{\eta,Q}(\mathcal E_{s,t}^{\eta,Q}F)
+ =\mathcal E_{r,t}^{\eta,Q}F.
+\]
+It is $1$-Lipschitz in the supremum norm, convex for $\eta>0$, concave for $\eta<0$, and converges uniformly to conditional expectation as $\eta\to0$ on any fixed bounded payoff ball.
+\end{proposition}
+\begin{proof}
+For negative $\eta$, the exponential reverses order and division by $\eta$ reverses it again, so monotonicity holds for both signs. An $\cF_s$-measurable shift factors out of the exponential. For the tower identity substitute $e^{\eta\mathcal E_{s,t}F}=E(e^{\eta F}\mid\cF_s)$ and apply conditional expectation again. Cash additivity and monotonicity applied to $G\pm\norm{F-G}_\infty$ give stability. Conditional Holder gives convexity before division by $\eta$ and concavity after negative division. Bounded conditional Taylor expansion gives the small-$\eta$ limit with an $O(|\eta|\norm F_\infty^2)$ bound on a fixed ball.
+\end{proof}
+
+\begin{proposition}[Deterministic complete-state reduction]\label{prop:dirac-linear}
+For a fixed complete state and deterministic protocol,
+\[
+ \eta^{-1}\log\int e^{\eta f(z')}\delta_{\Phi_tz}(\dd z')=f(\Phi_tz).
+\]
+A nonlinear evaluation on unresolved preparations does not, by itself, establish a Markov semigroup on a selected macroscopic coordinate.
+\end{proposition}
+\begin{proof}
+The Dirac integral is $e^{\eta f(\Phi_tz)}$. For a coarse coordinate $O(z)=x$, the corresponding integral averages over $\mu(dz\mid O=x)$, so it can be nonlinear. After time $s$, however, the hidden conditional preparation depends on the earlier record and need not equal a fresh draw from the original $\mu(dz\mid O=x_s)$. Example~\ref{ex:phase} gives an exact failure of the semigroup implication.
+\end{proof}
+
+A mechanically conjugate source and the evaluation parameter $\eta$ are therefore kept separate. Identifying them requires an explicit same-coupling protocol. In particular, negative $\eta$ gives a concave, time-consistent evaluation, but that fact does not mechanically realize an arbitrarily prescribed nonconvex Hamiltonian.
+\par
