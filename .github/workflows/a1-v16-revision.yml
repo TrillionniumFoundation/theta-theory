@@ -1,0 +1,65 @@
+name: A1 v16 complete referee response
+on:
+  push:
+    branches:
+      - revision/a1-english-v16-referee-response-2026-09-07
+    paths:
+      - .github/workflows/a1-v16-revision.yml
+      - .github/scripts/prepare-a1-v16.py
+      - .github/scripts/a1-v16-inputs-*.b64
+permissions:
+  contents: write
+concurrency:
+  group: a1-v16-referee-response
+  cancel-in-progress: false
+jobs:
+  verify-and-publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install mathematical typesetting tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra lmodern poppler-utils
+      - name: Materialize and verify the complete anchored revision
+        run: |
+          cat .github/scripts/a1-v16-inputs-0?.b64 > .github/scripts/a1-v16-inputs.json.xz.b64
+          python .github/scripts/prepare-a1-v16.py
+      - name: Execute all six author suites, the pinned v15 referee probe, and the full build
+        working-directory: papers/A1-english-v16
+        run: python validate.py --prior-review
+      - name: Commit complete source, PDF and actual execution receipts
+        run: |
+          git diff --exit-code d89bc35dc5d50240c8ae3c82aa251437dcc2165a -- papers/A1-english-v15 reviews
+          test -s papers/A1-english-v16/main.pdf
+          test -s papers/A1-english-v16/validation/EXECUTION_REPORT.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A -- papers/A1-english-v16
+          git add -f -- papers/A1-english-v16/main.pdf
+          git diff --cached --stat
+          if ! git diff --cached --quiet; then
+            git commit -m 'Publish A1 v16: full referee response, Bayesian Fourier comparison, retained proofs and verified PDF'
+            git push origin HEAD:revision/a1-english-v16-referee-response-2026-09-07
+          fi
+          git rev-parse HEAD
+      - name: Deposit complete referee package
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: A1-v16-complete-referee-ready
+          include-hidden-files: true
+          path: |
+            papers/A1-english-v16/
+            !papers/A1-english-v16/build/
+            !papers/A1-english-v16/**/__pycache__/
+            !papers/A1-english-v16/*.aux
+            !papers/A1-english-v16/*.log
+            !papers/A1-english-v16/*.out
+          if-no-files-found: error
