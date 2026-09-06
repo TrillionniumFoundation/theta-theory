@@ -1,0 +1,117 @@
+\section{Causal experiments and instruments with back-action}\label{sec:instruments}
+\subsection{The joint operation is the primitive observed step}
+Let $E,U,Y$ be standard Borel state, action, and readout spaces. At step $n$, an instrument is a probability kernel
+\[
+ I_{n,a}(\dd e',\dd y\mid e,u)
+\]
+from $E\times U$ to $E\times Y$. It specifies the \emph{joint} post-operation state and readout. The complete record before the step is
+$h_n=(u_0,y_1,\ldots,u_{n-1},y_n)$, including a physical clock when durations vary. A policy $\pi_n(\dd u\mid h_n)$ uses only this record. Mechanical resources may be included in $e$ or in a separately observed coordinate introduced in Section~\ref{sec:resources}.
+
+For a finite positive measure $\nu$ define the unnormalized operation
+\[
+ \cI_{n,a,u}(B)\nu(A)
+ =\int I_{n,a}(A\times B\mid e,u)\nu(\dd e).
+\]
+Countable additivity in $B$ follows from that of the kernel. The total operation $\cI_{n,a,u}(Y)$ preserves total mass. Normalization after an observed $B$ is meaningful only when its evidence is positive.
+
+A completely deterministic apparatus has measurable maps $(F_{n,a}^u,O_{n,a}^u)$ and
+\[
+ I_{n,a}(\dd e',\dd y\mid e,u)
+ =\delta_{F_{n,a}^u(e)}(\dd e')\delta_{O_{n,a}^u(e)}(\dd y).
+\]
+A probability kernel arises after integrating explicitly prepared, unobserved apparatus coordinates. Reusing an apparatus generally produces correlations; integrating out its memory after every step is a different experiment unless justified.
+
+\begin{theorem}[Chronological path construction]\label{thm:instrument-path}
+For an initial probability $\mu_a$ and a measurable policy, the finite joint laws are uniquely determined by
+\begin{equation}
+ \mu_a(\dd e_0)\prod_{n=0}^{N-1}
+ \pi_n(\dd u_n\mid h_n)
+ I_{n,a}(\dd e_{n+1},\dd y_{n+1}\mid e_n,u_n).
+ \label{eq:instrument-path}
+\end{equation}
+They have mass one and are consistent under deletion of the last step. There is a unique countable-record law with these marginals. When preparation is a point mass, operations and policy are deterministic, the law is one trajectory.
+\end{theorem}
+\begin{proof}
+For a nonnegative cylinder function perform the indicated integrals in reverse chronological order. Each instrument and policy kernel integrates the constant one to one. Measurability is preserved under kernel integration. Start with indicator rectangles, extend by linearity and monotone convergence, and obtain a probability on each finite product. Integrating the final instrument and action yields the preceding finite law. Uniqueness on rectangles extends to the generated sigma-field by the monotone-class theorem. The countable extension is the standard measurable-kernel extension theorem \cite{Kallenberg}; its hypotheses are precisely the measurable probability kernels just constructed. In the deterministic case each Dirac integration substitutes one prescribed value, leaving one recursively determined record.
+\end{proof}
+
+The measure $\mu_a$ may be specified by $\nu_a/\nu_a(E)$ for a finite nonzero positive preparation weight. Scaling $\nu_a$ by a constant changes no probability. Fixing a zero-probability constraint requires a disintegration or geometric surface measure, not normalization of its indicator.
+
+\subsection{Beliefs and likelihoods}
+Let $\mu_{n,a}(\dd e\mid h)$ be a posterior version. The joint predictive measure is
+\[
+ M_{n,a}^{h,u}(\dd e',\dd y)
+ =\int I_{n,a}(\dd e',\dd y\mid e,u)\mu_{n,a}(\dd e\mid h),
+\]
+with readout marginal $K_{n,a}(\dd y\mid h,u)$. Disintegrating $M$ with respect to its readout gives the next belief. This is a belief update with back-action, not merely a likelihood multiplication applied to an unchanged hidden state.
+
+\begin{proposition}[Chronological likelihood cancellation]\label{prop:likelihood}
+Suppose two models have predictive readout densities $k_{n,a}$ and $k_{n,a_0}$ on the same history space and satisfy the needed absolute continuity. Under the same parameter-independent policy, their length-$N$ record likelihood ratio is
+\[
+ \prod_{n<N}\frac{k_{n,a}(Y_{n+1}\mid H_n,U_n)}
+ {k_{n,a_0}(Y_{n+1}\mid H_n,U_n)}.
+\]
+If the policy kernels themselves differ, their conditional Radon--Nikodym factors must also be included.
+\end{proposition}
+\begin{proof}
+Disintegrate in the order $U_0,Y_1,U_1,Y_2,\ldots$. At a common realized history the same policy factor appears in numerator and denominator, so it cancels. The predictive factors remain. Candidate and reference beliefs have already evolved differently, so each predictive density uses its own belief. Conditional integration of each ratio under the reference gives one; hence the product is a nonnegative likelihood martingale. Conditioning instead on the entire final action sequence is not this factorization, because later actions can reveal earlier observations.
+\end{proof}
+
+\subsection{An explicit Hamiltonian measurement port}
+Take a system pair $(q,p)$ and a pointer pair $(d,\pi)$, all real, with canonical form $dq\wedge dp+dd\wedge d\pi$. During a prescribed interaction interval use
+\[
+ H_{\rm int}(t,q,p,d,\pi)=g(t)q\pi,
+ \qquad \kappa=\int g(t)\dd t.
+\]
+This is the \emph{specified interaction Hamiltonian}; free dynamics have either been suspended or included separately. It is not derived by neglecting unbounded terms in a pre-existing total Hamiltonian.
+
+\begin{proposition}[Pointer readout and mechanical back-action]\label{prop:pointer}
+The interaction map is
+\begin{equation}
+ q^+=q,\quad p^+=p-\kappa\pi,\quad
+ d^+=d+\kappa q,\quad \pi^+=\pi.
+ \label{eq:pointer}
+\end{equation}
+It is symplectic. A readout $Y=d^+$ and post-state $(q^+,p^+)$ therefore arise from one mechanical operation. If the initial pointer is prepared independently of the system with law $\nu(dd,d\pi)$, the reduced instrument is
+\[
+ I(A\times B\mid q,p)
+ =\int\one_A(q,p-\kappa\pi)\one_B(d+\kappa q)\nu(\dd d,\dd\pi).
+\]
+Correlation between $d$ and $\pi$ correlates readout noise and disturbance.
+\end{proposition}
+\begin{proof}
+Hamilton's equations are $\dot q=0$, $\dot p=-g(t)\pi$, $\dot d=g(t)q$, $\dot\pi=0$, which integrate to \eqref{eq:pointer}. Directly,
+\[
+ dq^+\wedge dp^++dd^+\wedge d\pi^+
+ =dq\wedge(dp-\kappa d\pi)+(dd+\kappa dq)\wedge d\pi
+ =dq\wedge dp+dd\wedge d\pi.
+\]
+The instrument is the push-forward of the declared pointer preparation; its mass is one. If the same pointer is reused, its conditional post-operation distribution must be retained. Independence of initial pointer coordinates from the system is a preparation condition, not a consequence of symplecticity.
+\end{proof}
+
+The time-dependent interaction can be autonomized on a finite clock interval by adding $(t,E_t)$ and $H_{\mathrm{ext}}=E_t+g(t)q\pi$. Then $\dot t=1$ and the same shear is obtained. This does not assign a universal energetic price to measurement. Relative to a chosen system kinetic energy $p^2/(2m)$, its change is
+\[
+ \Delta K=-\frac{\kappa p\pi}{m}+\frac{\kappa^2\pi^2}{2m},
+\]
+which is not a relative entropy. Compact preparations and bounded $\kappa$ give a finite bound; a different baseline Hamiltonian has a different energy account.
+
+\subsection{Evidence-weighted stability for general instruments}
+Suppose $M(\dd e',\dd y)=N_y(\dd e')\lambda(\dd y)$ and
+$\widetilde M=\widetilde N_y\lambda(\dd y)$ are finite joint predictive measures with probability total mass. Put $r(y)=N_y(E)$ and let $b_y=N_y/r(y)$ where $r>0$; use arbitrary probability versions elsewhere. Define tilded quantities similarly.
+
+\begin{lemma}[Integrated belief stability]\label{lem:instrument-stability}
+If $\int\norm{\widetilde N_y-N_y}_{\rm var}\lambda(\dd y)\le\epsilon$, then
+\[
+ \int\widetilde r(y)d_{\TV}(\widetilde b_y,b_y)\lambda(\dd y)\le\epsilon,
+ \qquad \int|\widetilde r-r|\dd\lambda\le\epsilon.
+\]
+\end{lemma}
+\begin{proof}
+The identities $N_y=r(y)b_y$ and $\widetilde N_y=\widetilde r(y)\widetilde b_y$ hold even at zero evidence. Thus
+$\widetilde r\norm{\widetilde b-b}_{\rm var}
+\le\norm{\widetilde N-N}_{\rm var}+|\widetilde r-r|$.
+Since the mass difference is bounded by the variation norm, division by two and integration prove both assertions. No pointwise lower bound on evidence is used.
+\end{proof}
+
+This lemma is a sufficient continuity interface, not a claim that nearby deterministic post-states are close in variation. Observable-dependent replacements are developed in Section~\ref{sec:approximation}.
+\par

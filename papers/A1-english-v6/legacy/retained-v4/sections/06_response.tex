@@ -1,0 +1,146 @@
+\section{Response and information for the same detector}\label{sec:response}
+\subsection{Fixed adaptive controllers}
+A fixed controller means a parameter-independent Borel function of the
+observed past, with its mode and gate commands known to the controller.
+When differentiating the unknown physical radius, this function is held
+fixed. Its thresholds need not be differentiable as functions of the past.
+There is no conditioning on a final adaptively chosen design as though it
+had been fixed in advance.
+
+For $0\le j\le3$ set
+\[
+ \beta_j=\sup_{R,a,x}\frac{|\partial_R^jk_R^a(x)|}{k_R^a(x)},
+ \qquad \beta_0=1,
+\]
+and put $\beta_j=0$ for $j>3$. These constants are finite by
+Proposition~\ref{prop:raw}. They are explicit: differentiate the three
+polynomials \eqref{eq:raw-kernel} and divide a coefficient upper bound by
+$h_*$. No derivative of a grazing collision time occurs in this estimate.
+For an accepted density, the factor $g(x)$ cancels in its derivative ratio.
+For failure, positivity gives
+\[
+ |\partial_R^jf_R^{a,g}|
+ \le\int (1-g)|\partial_R^jk_R^a|\,d\nu\le\beta_j f_R^{a,g}.
+\]
+
+\begin{theorem}[Polynomial path response for every fixed controller]\label{thm:response}
+For a length-$N$ fixed adaptive controller, the density of its readout
+history with respect to $\mu^N$ is a polynomial in $R$ of degree at most
+$3N$. Its path law $P_R$ is strongly $C^r$ in signed-measure variation for
+every finite $r$. With the variation norm $\|\sigma\|_{\rm var}=\int|d\sigma|$,
+\begin{equation}
+ \norm{\partial_R^r P_R}_{\rm var}
+ \le r!\sum_{j_1+\cdots+j_N=r}\prod_{i=1}^N\frac{\beta_{j_i}}{j_i!}.
+ \label{eq:response-bound}
+\end{equation}
+The derivatives above order $3N$ vanish. At interior radii the family is
+differentiable in quadratic mean. Its score is the sum of the conditional
+one-cartridge scores and its Fisher information is
+\begin{equation}
+ I_N(R)=\sum_{i=1}^N\E_R\bigl[I(R;a_{H_{i-1}},g_{H_{i-1}})\bigr].
+ \label{eq:adaptive-info}
+\end{equation}
+All statements include both placement failure and censoring.
+\end{theorem}
+\begin{proof}
+At a fixed realized report history, each command is a fixed value, the same
+for every possible radius. The chronological density is the product of the
+corresponding polynomial conditional densities. Coefficients of these
+polynomials are measurable in the history and uniformly bounded over all
+commands, since the modes are compact and the gates bounded. The reference
+measure $\mu^N$ has finite mass $4^N$. The density is thus a polynomial with
+$L^1$ coefficient functions, proving strong differentiability and exact
+vanishing at high order. Applying the product rule pointwise and dividing
+by the positive path density bounds each term by the product of its
+$\beta$ ratios. Integration proves \eqref{eq:response-bound}.
+
+The conditional densities, and hence the path densities, have common
+support independent of the radius, even for gates taking values zero or one
+as in Theorem~\ref{thm:boundary}. On that support their likelihood ratios
+between any two radii are uniformly bounded. Their first two relative
+derivatives are bounded by the product-rule estimates above. Thus
+$\partial_R^2\sqrt{p_R}=\sqrt{p_R}
+\{p_R''/(2p_R)-(p_R'/p_R)^2/4\}$ is bounded in absolute value by a
+constant times $\sqrt{p_{R_0}}$ for a fixed reference radius $R_0$.
+Off the common support all derivatives are zero. Taylor's integral
+remainder then gives an $L^2(\mu^N)$ error $O(h^2)$ after the first-order
+square-root term. This proves quadratic-mean differentiability with score
+$\partial_R\log p_R$ on the common support. Differentiating the logarithm of the chronological
+product gives the sum of conditional scores. Each has conditional mean
+zero, because its positive conditional density integrates to one and has
+an integrable derivative. Earlier scores are measurable with respect to
+the preceding history, so distinct increments are orthogonal in $L^2$.
+Taking their squared sum proves \eqref{eq:adaptive-info}.
+\end{proof}
+
+A policy optimized for one nominal specification can be held fixed and
+analyzed by this theorem. A pointwise maximum of policy values need not be
+differentiable when maximizing policies exchange. We prove continuity and
+attainment of that maximum in Section~\ref{sec:control}; we do not apply
+the fixed-controller derivative to a changing optimizer.
+
+\subsection{A strictly informative collision-coordinate mark}
+The raw cartridge report has a placement flag with probability
+$s_R=\pi R^2/a_0$. Conditional on placement success it has the equilibrium
+collision probability $p_R=2TR/A(R)$. Conditional on a collision the mark
+density with respect to $dy/(2\pi)$ is $1+c_R\cos(y-\theta)$, where
+$c_R=\epsilon R^2$. For $|c|<1$,
+\[
+ \int\frac{dy}{2\pi(1+c\cos y)}=\frac1{\sqrt{1-c^2}}.
+\]
+For example the substitution $t=\tan(y/2)$, splitting at $y=\pi$, reduces
+the integral to the integral of
+$\{(1+c)+(1-c)t^2\}^{-1}$ over the real line, divided by $\pi$.
+The identity
+$c^2\cos^2y/(1+c\cos y)=c\cos y-1+(1+c\cos y)^{-1}$ then gives the
+conditional mark information
+\begin{equation}
+ J_R=\frac4{R^2}\left(\frac1{\sqrt{1-\epsilon^2R^4}}-1\right),
+ \qquad J_R=0\text{ when }\epsilon=0.
+ \label{eq:mark-info}
+\end{equation}
+The two conditional normalization identities center the corresponding
+scores. Thus direct differentiation, or orthogonality of the conditional
+scores, yields
+\begin{equation}
+ I_{\rm raw}(R)
+ =\frac{(s_R')^2}{s_R(1-s_R)}
+ +(1-s_R)\left\{\frac{(p_R')^2}{p_R(1-p_R)}+p_R J_R\right\}.
+ \label{eq:raw-info}
+\end{equation}
+In particular, when $\epsilon>0$ the mark adds strictly positive information
+over observing the same placement and collision flags without the mark.
+The comparison uses the same counted experiment; it is not a comparison
+between an uncharged equilibrium trial and an ambient placement attempt.
+
+For a gated report, the accepted score equals the raw score, whereas the
+censoring score is $f_R'/f_R$ whenever $f_R>0$. If $f_R=0$, the
+common-null censoring branch is omitted and its information contribution is
+zero. More explicitly, on the positive-failure branch,
+\[
+ \frac{f_R'}{f_R}=\frac{\int(1-g)k_R^a\,\partial_R\log k_R^a\,d\nu}
+                       {\int(1-g)k_R^a\,d\nu}.
+\]
+It is the conditional mean of the raw score given censoring. Jensen's
+inequality, or expanding the conditional variance, proves
+$I(R;a,g)\le I_{\rm raw}(R;a)$. The information on the failure atom has not
+been set to zero. Since their likelihood ratios on the common support are uniformly bounded
+above and below, their relative entropies are finite
+for all radii in $I$. This conclusion holds for this detector, in contrast
+to the ideal geometric record analyzed in Section~\ref{sec:lab}.
+
+\subsection{Sources and observables}
+For bounded parameter-independent path tests $F,V$ and a fixed controller,
+$P_R(e^VF)$ and $P_R(e^V)$ are polynomials of degree at most $3N$ with
+explicit derivative integrals. The normalized tilted expectation is their
+ratio, with a positive denominator. At order $r$ its derivatives are given
+recursively from $ZU=J$ by
+\[
+ U^{(r)}=Z^{-1}\left[J^{(r)}-
+          \sum_{j=1}^r\binom rj Z^{(j)}U^{(r-j)}\right].
+\]
+If the tests also depend smoothly on $R$ in supremum norm, retain their
+ordinary product derivatives. These formulas apply to the actual readout
+law; they do not manufacture a score for a moving singular mechanical
+record. A measurable threshold of the noisy readout remains an admissible
+bounded test, even when it is not a smooth test of the ideal collision path.

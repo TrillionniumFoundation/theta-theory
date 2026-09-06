@@ -1,0 +1,199 @@
+\section{Endpoint policies, explicit boundaries, and lookup complexity}\label{sec:policy}
+\subsection{A homogeneous continuation functional}
+For a nonnegative finite parameter measure $\zeta$ and $b$ remaining
+cartridges, define
+\[
+ \mathcal W_b(\zeta)=\sup_\Pi\int L_\Pi(R)\,\zeta(dR),
+ \qquad 0\le L_\Pi(R)\le M_b:=G_+e^{b|\lambda|B}.
+\]
+Here $\Pi$ ranges over the common admissible remaining policies and terminal
+decisions, and $L_\Pi$ is their conditional expected multiplicative payoff.
+The policy class is specified before choosing $\zeta$. Thus $\mathcal W_b$
+is convex and positively homogeneous, equals zero at zero, and satisfies
+\begin{equation}
+ |\mathcal W_b(\zeta)-\mathcal W_b(\widetilde\zeta)|
+ \le M_b\|\zeta-\widetilde\zeta\|_{\rm var}. \label{eq:homogeneous-Lipschitz}
+\end{equation}
+Indeed every fixed-policy integral has these bounds, and taking suprema
+preserves the difference bound. At positive mass,
+$\mathcal W_b(\zeta)=\zeta(I)V_b(\zeta/\zeta(I))$. This formula replaces a
+normalized posterior precisely where its evidence might vanish.
+
+\begin{theorem}[Optimal Borel endpoint-gate controllers]\label{thm:endpoint}
+Under the reward and terminal-payoff hypotheses of Section~\ref{sec:control},
+an optimal finite-budget Borel feedback controller can be chosen with
+$g(x)\in\{\eta,1-\eta\}$ everywhere. For $\eta=0$ its comparator is a
+deterministic accept/reject decision. This conclusion does not add a
+nonlinear cost depending on the gate value itself.
+\end{theorem}
+\begin{proof}
+At a fixed posterior, mode, and remaining budget, the command objective is
+\[
+ Q(g)=\int g(x)e^{\lambda r_a(x)}
+               \mathcal W_{b-1}(k_R^a(x)\pi(dR))\,\nu(dx)
+       +e^{\lambda r_a^\dagger}\mathcal W_{b-1}(f_R^{a,g}\pi(dR)).
+\]
+The first term is linear in $g$. The failure measure is affine in $g$, so
+the second is convex. Theorems~\ref{thm:control} and \ref{thm:boundary}
+prove weak-star continuity, including the null-failure boundary. Let $g^*$
+be optimal for this fixed mode and put $h=(g^*-\eta)/(1-2\eta)$.
+For $0\le t<1$ define $g_t=\eta+(1-2\eta)\one_{\{h>t\}}$.
+The layer-cake identity gives $g^*=\int_0^1g_tdt$ weak-star. Convexity
+implies $Q(g^*)\le\int_0^1Q(g_t)dt$. One can also see this without an
+abstract integral Jensen theorem by applying the supremum-of-linear
+representation of $\mathcal W$ to each term and interchanging bounded
+integrals. Every $Q(g_t)$ is at most $Q(g^*)$, so equality holds almost
+everywhere in $t$.
+
+If $t_j\downarrow t$, dominated convergence of $\one_{\{h>t_j\}}$ against
+every $L^1$ test gives $g_{t_j}\to g_t$ weak-star. Thus $Q(g_t)$ is
+right-continuous. A value strictly below the maximum at any $t<1$ would
+remain below it on a right interval of positive length, contradicting the
+almost-everywhere equality. Every such threshold is therefore optimal.
+In particular $t=1/2$ gives
+$\eta+(1-2\eta)\one_{\{g^*>1/2\}}$.
+
+The original compact selection theorem gives an optimal mode and a jointly
+Borel representative $g^*(c,x)$. Thresholding this representative is jointly
+Borel, respects the bounds on every point, and retains its fixed-mode
+optimum. Backward induction gives an endpoint feedback controller at every
+budget. Its pasting uses exactly the original prepared cartridges.
+\end{proof}
+
+The endpoint argument was proposed in Section 7 of the current referee
+report and is included here with attribution, not as a claim of priority.
+It does not give a finite boundary count at every budget. The next result
+supplies an explicit boundary theorem for the last cartridge.
+
+\begin{theorem}[Exact last-cartridge formula and at most two hit arcs]\label{thm:two-arcs}
+Fix a posterior $\pi$, a mode $a$, and one remaining cartridge. Suppose the
+accepted reward is constant on each raw tag $\partial,0,1$ (it may depend on
+the mode); retain the compact decision space and continuous positive $G$.
+Set
+\[
+ \begin{aligned}
+ A_d(x)&=e^{\lambda r_a(x)}\int G(R,d)k_R^a(x)\pi(dR),
+ &A(x)&=\max_d A_d(x),\\
+ C_d(x)&=e^{\lambda r_a^\dagger}\int G(R,d)k_R^a(x)\pi(dR).
+ \end{aligned}
+\]
+Then the exact fixed-mode optimum is
+\begin{equation}
+ V_1(\pi,a)=\max_{d_\dagger\in D_0}\int_X
+ \left[\eta\{A(x)+C_{d_\dagger}(x)\}
+ +(1-2\eta)\max\{A(x),C_{d_\dagger}(x)\}\right]\nu(dx).
+ \label{eq:last-step-explicit}
+\end{equation}
+For a maximizing $d_\dagger$, accept at level $1-\eta$ exactly where
+$A>C_{d_\dagger}$ and at level $\eta$ otherwise. An accepted terminal
+decision maximizes $A_d(x)$, while the censoring decision is $d_\dagger$.
+The collision-component high-acceptance set can be chosen as the union of
+at most two connected arcs of the circle. The no-collision gate is constant
+in its angle, and the placement atom requires one binary choice.
+\end{theorem}
+\begin{proof}
+For a fixed censoring decision, an accepted terminal decision can be
+optimized separately at each $x$. Compactness and continuity give the
+maximum and a Borel selector, by the same compact selection argument used
+in Section~\ref{sec:control}. The total objective is
+$\int\{gA+(1-g)C_{d_\dagger}\}d\nu$. Maximizing a linear function of
+$g(x)\in[\eta,1-\eta]$ gives the integrand in
+\eqref{eq:last-step-explicit} and the asserted gate. Maximizing over the
+compact $D_0$ is legitimate because this integrated function is continuous
+in $d_\dagger$. This proves the formula and its attainment.
+
+On a collision tag, put $z=\cos(y-\theta)$. For every $d$,
+\[
+ A_d(1,y)=\frac{2T e^{\lambda r_a(1)}}{a_0}
+       \left\{\int R G(R,d)\pi(dR)
+                  +\epsilon z\int R^3G(R,d)\pi(dR)\right\}.
+\]
+This is affine in $z$, as is $C_{d_\dagger}(1,y)$. Consequently
+$A(1,y)-C_{d_\dagger}(1,y)$, viewed as a function of $z$, is a supremum of
+affine functions minus an affine function, hence continuous and convex on
+$[-1,1]$. Its nonpositive set is an interval, possibly empty or the entire
+interval. Its positive set is therefore at most two end intervals. The
+inverse image of each end interval under the cosine map is a connected arc
+of the circle, with empty and whole-circle cases allowed. Assigning equality
+to the lower acceptance level gives the stated at-most-two-arc gate. On the
+no-collision component all these functions are independent of $y$; the
+placement component is an atom. The argument does not require a finite
+terminal-decision space or differentiability of the convex envelope.
+\end{proof}
+
+\subsection{A quantitative finite endpoint lookup}
+Assume, in addition, that on either circle component, uniformly in $R,a$,
+\[
+ |k_R^a(y)-k_R^a(z)|\le L_k d_{\mathbb S^1}(y,z),\qquad
+ |r_a(y)-r_a(z)|\le L_r d_{\mathbb S^1}(y,z),\qquad k_R^a\le K.
+\]
+The explicit Lorentz kernel permits $L_k=2T_+Eu^3/a_0$; the no-collision
+angular constant is zero. The extra reward regularity gives a rate; the
+original continuity-only approximation theorem remains unchanged.
+
+\begin{theorem}[Finite endpoint lookup with an explicit value error]\label{thm:lookup-rate}
+Divide each circle into $J$ equal arcs, leave the placement atom intact,
+and restrict the gate on each cell to an endpoint. Keep the original compact
+mode set and terminal decisions. Let $V_N^{(J)}$ be the optimum in this
+restricted feedback class. With $c=|\lambda|B$ and $h=2\pi/J$,
+\begin{equation}
+ 0\le V_N-V_N^{(J)}
+ \le 2N G_+e^{Nc}(2L_k+K|\lambda|L_r)h. \label{eq:lookup-rate}
+\end{equation}
+This bound is uniform over the prior and reachable state. Each commanded
+gate uses $2J+1$ endpoint choices. It does not assert that global policy
+optimization takes polynomial time or that the posterior arithmetic uses
+only a finite number of bits.
+\end{theorem}
+\begin{proof}
+At $b$ remaining steps write the accepted integrand as
+$w(x)=e^{\lambda r_a(x)}\mathcal W_{b-1}(k_R^a(x)\pi(dR))$.
+Equation~\eqref{eq:homogeneous-Lipschitz} and the exponential mean-value
+bound give the uniform angular Lipschitz constant
+\[
+ L_w\le e^c M_{b-1}(L_k+K|\lambda|L_r).
+\]
+For any gate let $g_J$ be its cell average. Conditional averaging is
+self-adjoint under each uniform circle measure, so
+$\int(g-g_J)w=\int g(w-E_Jw)$. The two circle components have total
+reference mass two and the atom is unchanged. Hence the absolute accepted
+error is at most $2L_wh$.
+
+For the failure parameter measures the same cancellation, now applied to
+$k_R^a$ at each $R$, gives
+\[
+ \|f_R^{a,g}\pi(dR)-f_R^{a,g_J}\pi(dR)\|_{\rm var}
+ \le 2L_kh.
+\]
+Their continuation error is at most $2e^cM_{b-1}L_kh$ by
+\eqref{eq:homogeneous-Lipschitz}. This remains true when one failure
+measure is zero and does not assume a continuous null-branch posterior.
+The combined one-step error is at most
+$e_b=2G_+e^{bc}(2L_k+K|\lambda|L_r)h$.
+
+For a fixed mode the objective is convex in the finitely many values of
+$g_J$, by Theorem~\ref{thm:endpoint}'s homogeneous argument. Every point
+of this finite cube is a convex combination of its vertices. At least one
+vertex therefore has objective no smaller than that of $g_J$. Thus an
+endpoint lookup gate loses at most $e_b$ against the ideal one-step choice.
+The restricted finite-gate optimization with compact modes is attained and
+has a Borel selector. Comparing the two Bellman recursions gives
+$E_b\le e_b+e^cE_{b-1}$, $E_0=0$, since their predictive probabilities sum
+to one. Summation gives \eqref{eq:lookup-rate}.
+\end{proof}
+
+For completeness a finite mode net also has a rate under explicit mode
+moduli. Suppose $\int|k_R^a-k_R^{a'}|d\nu\le L_A d(a,a')$ uniformly in $R$
+and all accepted and censored rewards differ by at most
+$L_{r,A}d(a,a')$. Replacing the mode by a point of a $\rho$-net adds at most
+\[
+ N G_+e^{Nc}(2L_A+|\lambda|L_{r,A})\rho
+\]
+to \eqref{eq:lookup-rate}. To verify the one-step bound, apply
+\eqref{eq:homogeneous-Lipschitz} to the accepted and failure measures;
+their separate changes are each at most $L_A\rho$. For the reward change,
+the accepted and failure predictive masses together are one, so the
+exponential mean-value bound contributes only
+$e^cM_{b-1}|\lambda|L_{r,A}\rho$. The same backward sum proves the formula.
+The resulting menu contains at most $2^{2J+1}$ gates per mode. This explicit
+exponential menu size is not hidden inside the filter's linear storage count.

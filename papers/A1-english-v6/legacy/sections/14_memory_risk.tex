@@ -1,0 +1,292 @@
+\section{A sharp finite-memory law for an observable decision}\label{sec:memory-risk}
+Fix $n,m\ge1$, the apparatus, the prior, and a probe list from
+Lemma~\ref{lem:probe-span}. The following single decision problem is fixed
+before any history is compressed. After $n$ reports the controller stores
+its state. An independent public index $J$, uniform on $\{1,\ldots,s\}$,
+is then revealed. The forecaster announces $a\in[0,1]$. The $m$ cartridges
+of probe $J$ are executed and $Y$ records whether all $m$ reports are
+$\dagger$. The terminal reward is $1-(a-Y)^2$. There is no acceptance
+cost and no direct reward on the unobserved parameter. Exactly $n+m$
+cartridges are consumed, including failed placement and censored records.
+
+Immutable apparatus data, $n,m$ and the newly revealed index $J$ are known
+to the decoder. Past commands, past reports and arbitrary history-dependent
+real parameters may not be kept outside the charged state. The index is
+revealed after encoding; otherwise a single predicted scalar would answer
+a different, easier question. This is a one-checkpoint memory problem,
+not an unproved assertion about repeated lossy quantization at every time.
+The common code is selected before the past command program is supplied.
+That program is an input stream, not part of immutable calibration. The
+worst-history assertion is uniform over its admitted realizations. Below
+we also prove an unconditional version for one fixed randomized prefix
+experiment, so a different code for each past program is never used.
+
+\begin{lemma}[The score identifies the operational quotient]\label{lem:score-metric}
+Let $p=(p_j)_{j=1}^s$ be a history's probe prediction vector. With full
+history the unique Bayes forecast for query $j$ is $p_j$. For any decoded
+vector $a=(a_j)$ the excess conditional squared loss is
+\begin{equation}\label{eq:score-risk}
+ \mathcal R(a,p)=s^{-1}\|a-p\|_2^2.
+\end{equation}
+The same formula holds with expectation over randomized decoded forecasts.
+There exist $p_*$, an isometric linear map $E:\mathbb R^d\to\mathbb R^s$,
+and $\rho>0$, $d=q\min(n,m)$, such that all predictions
+\begin{equation}\label{eq:prediction-ball}
+ p_*+\rho E u,\qquad \|u\|_2\le1,
+\end{equation}
+are attainable on a compact family of all-failure histories, with a
+continuous section. Every point of this ball lies in $[0,1]^s$.
+\end{lemma}
+\begin{proof}
+For $Y\sim\operatorname{Bernoulli}(p_j)$,
+$\mathbb E(a_j-Y)^2=p_j(1-p_j)+(a_j-p_j)^2$. Average over $J$.
+The closed ball and section follow by shrinking the relatively open
+prediction patch in Theorem~\ref{thm:decision-quotient}. Choose an
+orthonormal basis of its tangent space to obtain $E$. The ball consists
+of actual event probabilities, so its inclusion in the cube is automatic.
+\end{proof}
+
+\paragraph{A quantitative choice of the prediction ball.}
+The radius can be bounded using finite calibration data, rather than
+regarded as an unspecified geometric constant. Choose an interior coprime
+factor tuple and a $d$-dimensional linear slice of its gate coordinates on
+which the prediction derivative has rank $d$. Let $u=0$ denote that tuple,
+choose orthonormal coordinates in the prediction affine space, and write
+$\phi(u)=E^\top(p(u)-p(0))$. Set $A=D\phi(0)$ and
+$\sigma=\sigma_{\min}(A)>0$. Choose $r>0$ so the closed gate slice
+$\|u\|\le r$ stays strictly within the allowed cube and
+\[
+ \sup_{\|u\|\le r}\|D\phi(u)-A\|\le\sigma/2.
+\]
+Then one may take $\rho=\sigma r/2$. Indeed for every $\|y\|\le\rho$ the
+map $u\mapsto A^{-1}\{y-\phi(u)+Au\}$ sends the radius-$r$ ball into
+itself and is a contraction with constant at most $1/2$. Its unique fixed
+point satisfies $\phi(u)=y$ and depends continuously on $y$. Since all
+predictions lie in the same affine plane, this proves
+\eqref{eq:prediction-ball} with a continuous section. A sufficient choice
+is $r<r_{\rm gate}$ and $Lr\le\sigma/2$, where $L$ bounds the Hessian of
+$\phi$ on that gate slice. The map $p(u)$ is a ratio of finite polynomial
+moment expressions; the prefix evidence is at least $\eta^n$ there.
+Consequently its derivatives and such an $L$ are bounded directly by
+finite differentiation using the calibration matrix and prior moments
+through degree $q(n+m)$. This supplies checkable, generally nonoptimal
+constants. It does not assert a uniform radius as $n,m$ grow.
+
+\begin{theorem}[Attainable sharp memory--risk rate]\label{thm:memory-rate}
+Let $\mathcal R_M^*$ be the infimum over all encoders with at most $M\ge1$
+stored symbols and all decoders of their worst-case conditional regret in
+the preceding fixed score problem, over attainable histories after $n$
+reports. Encoders need not be continuous. Fresh private randomness is permitted. A shared public seed may be drawn
+at the checkpoint independently of the entire past, the parameter and the
+cartridges; it carries no historical information other than the $M$-symbol
+message. Any retained seed that generated past commands counts as part of
+that message. The query $J$ is independent of all these seeds and of the past. Then
+\begin{equation}\label{eq:sharp-memory-rate}
+ \frac{d}{d+2}\frac{\rho^2}{s}M^{-2/d}
+ \ \le\ \mathcal R_M^*
+ \ \le\ 4d\,M^{-2/d},\qquad d=q\min(n,m).
+\end{equation}
+In particular, with $B$ mutable bits, the optimal regret has order
+$2^{-2B/d}$, with positive constants for the fixed apparatus, prior,
+probe list and checkpoint. The smallest $B$ guaranteeing regret at most
+$\varepsilon$ is
+\begin{equation}\label{eq:bits-law}
+ B_*(\varepsilon)=\frac d2\log_2(1/\varepsilon)+O(1)
+ \quad (\varepsilon\downarrow0).
+\end{equation}
+No uniform lower constant over vanishing detector amplitude or all
+full-support priors is asserted.
+\end{theorem}
+\begin{proof}
+For the upper bound the whole prediction set lies in a $d$-dimensional
+affine space and in $[0,1]^s$. Choose one point in it and orthonormal
+coordinates in that affine space. Every coordinate then has absolute value
+at most $\sqrt s$. Put $k=\lfloor M^{1/d}\rfloor$, and partition each
+coordinate interval $[-\sqrt s,\sqrt s]$ into $k$ equal intervals. Encode
+the nearest product-grid center. There are at most $k^d\le M$ centers,
+and squared error in the ambient Euclidean norm is at most $ds/k^2$.
+Clip the decoded probability coordinates to $[0,1]$; this cannot increase
+the error to a true probability vector. Since $k\ge M^{1/d}/2$, the
+regret is at most $4dM^{-2/d}$. This is an actual finite lookup encoder and
+decoder on the exact moment or coefficient state, not an existence claim
+about discontinuous real encodings.
+
+For the lower bound use the uniform volume distribution on the radius-$\rho$
+ball \eqref{eq:prediction-ball}, transported to histories by its section.
+First fix any realization of public randomness. Conditional on a message
+and $J$, averaging any decoder randomness can only reduce squared error.
+Its at most $M$ conditional-mean output vectors are therefore code centers.
+An encoder's private randomization cannot beat the closest center at a
+fixed $p$. Orthogonally project the centers to the affine $d$-plane;
+projection cannot increase distance to points of the ball. For a uniform
+point $X$ of that ball and any such centers $z_1,\ldots,z_M$,
+\[
+ \Pr\{\min_i\|X-z_i\|\le r\}
+ \le\min\{1,M(r/\rho)^d\}.
+\]
+This is the volume bound for a union of $M$ radius-$r$ balls, allowing
+centers outside the attainable set. Integration of the complementary tail
+from $0$ to $\rho^2M^{-2/d}$ gives
+\[
+ \mathbb E\min_i\|X-z_i\|^2
+ \ge\int_0^{\rho^2M^{-2/d}}
+       \left(1-\frac{M t^{d/2}}{\rho^d}\right)dt
+ =\frac d{d+2}\rho^2M^{-2/d}.
+\]
+The bound is uniform in the fixed public seed, so averaging that seed
+preserves it. Worst-case regret is at least this integrated regret divided
+by $s$. This proves the lower bound for all declared randomized codes.
+Putting $M=2^B$ and solving the two inequalities proves
+\eqref{eq:bits-law}. These elementary covering arguments use the classical
+squared-error quantization mechanism \cite{GrafLuschgy}; the content
+specific to this experiment is the proven attainable decision dimension
+and the common physically executed score task.
+\end{proof}
+
+\begin{theorem}[The same exponent in one fixed randomized experiment]\label{thm:average-memory-rate}
+Fix the apparatus and the score query protocol above. Before each of the
+first $n$ cartridges draw the finite command vector independently and
+uniformly from its lookup cube, independently of the radius and all
+cartridges. The commanded values and reports are known to the encoder.
+At the checkpoint their randomization seed, commands and reports are
+available to the decoder only through the $M$-symbol message. The
+exploration rule itself is fixed and known. Let $\overline{\mathcal R}_M^*$
+be the smallest unconditional expected regret, compared with the
+full-history Bayes forecaster, over all such codes. Then for fixed $n,m$
+there are $c_*>0$ and $C_*<\infty$ such that
+\begin{equation}\label{eq:average-memory-law}
+ c_*M^{-2/d}\le\overline{\mathcal R}_M^*\le C_*M^{-2/d},
+ \qquad d=q\min(n,m).
+\end{equation}
+One may take $C_*=4d$. The identical independent uniform four-entry
+exploration rule, followed by the shared query menu, gives this law in
+both sign experiments, with $d=3\min(n,m)$ and $d=2\min(n,m)$ respectively.
+Redundant command entries in the erased device are averaged as before.
+\end{theorem}
+\begin{proof}
+Let $K$ be the number of scalar command entries in the complete prefix,
+and write $g$ for that vector. Its fixed distribution has constant density
+$(1-2\eta)^{-K}$ on its cube. On the all-failure event the evidence is
+$Z(g)=\pi_0\prod_iF_{g_i}\ge\eta^n$, and its prediction vector is the
+smooth map
+\[
+ p(g)=\left(\frac{\pi_0(H_j\prod_iF_{g_i})}{Z(g)}\right)_{j=1}^s.
+\]
+The product and Gram arguments give an interior $g_0$ at which this map
+has rank $d$. Choose an orthonormal basis $E$ for its affine tangent
+space and $K-d$ complementary command coordinates $w$. The map
+\[
+ g\longmapsto\bigl(E^\top(p(g)-p(g_0)),w(g)\bigr)
+\]
+has invertible derivative at $g_0$. By the inverse function theorem it has
+a smooth inverse $\Phi(y,w)$ on a neighborhood. Choose a closed product
+$B_\rho^d\times W$ inside that neighborhood, with $W$ a positive-volume
+box in the complementary coordinates, such that its inverse image remains
+strictly inside the command cube. Compactness gives
+$|\det D\Phi|\ge j_0>0$ there. With the usual unit volume convention in
+zero complementary dimensions, the same formula covers $K=d$.
+
+The joint measure of $g$ and an all-failure prefix has density
+$(1-2\eta)^{-K}Z(g)$. Changing coordinates and integrating over $W$ shows
+that the subprobability distribution of $p$ on this prefix dominates
+$\beta$ times uniform volume on $p(g_0)+EB_\rho^d$, where one can take
+\[
+ \beta=\frac{\eta^n j_0\,|W|\,|B_\rho^d|}{(1-2\eta)^K}>0.
+\]
+This is an unconditional subprobability minorization, not a posterior
+bound obtained by ignoring the probability of failure. It also shows
+$\beta\le1$. At most $M$ conditional-mean decoded vectors are available
+after fixing any fresh public coding seed. No encoder, even one that uses
+the complementary coordinates or private randomness, can beat distance
+to the nearest of these centers. The volume calculation from
+Theorem~\ref{thm:memory-rate} therefore gives expected regret at least
+\[
+ \beta\frac{d}{d+2}\frac{\rho^2}{s}M^{-2/d}.
+\]
+Regret is nonnegative on all other histories. Averaging the fresh coding
+seed preserves this lower bound. The same universal grid code as before
+has regret at most $4dM^{-2/d}$ on every history, proving the upper bound.
+
+For the two apparatuses use exactly the same uniform four-entry commands.
+The erased map has redundant coordinates, but its attainable coefficient
+map still has rank three, so its prediction differential has rank
+$2\min(n,m)$. The same argument with its own complementary coordinates
+applies to that identical command law. The collision-sign device has rank
+$3\min(n,m)$. The query and cartridge counts are unchanged.
+\end{proof}
+
+Here the randomness that generated past commands is part of the prefix,
+not the fresh public coding seed. The continuous command distribution is
+an explicit part of this fixed experiment. With a fixed finite command
+alphabet and a finite report alphabet there are only finitely many
+prefixes, and an exact finite code eventually suffices; no contrary
+asymptotic law is asserted for that different input protocol. The result
+above supplies a single fixed randomized experiment with a nondegenerate
+attainable prediction distribution, rather than relying only on a
+worst-command conditional family.
+
+\begin{theorem}[Continuous real memory and a positive regret threshold]\label{thm:continuous-regret}
+A deterministic state that is continuous in known command histories and
+has $k<d$ real coordinates cannot obtain worst-case regret below
+$\rho^2/s$ in the same score task, regardless of the decoder's measurability
+or its private randomization. A continuous $d$-coordinate state obtains
+zero regret. This assertion is separate from the finite-alphabet result;
+it does not impose continuity on finite-bit encoders or allow a
+history-dependent uncharged public seed.
+\end{theorem}
+\begin{proof}
+Restrict the section in \eqref{eq:prediction-ball} to its boundary sphere.
+The encoder composed with it is a continuous map $S^{d-1}\to\mathbb R^k$.
+The Borsuk--Ulam theorem gives antipodal points with the same state
+\cite{Matousek}. For $d=1$ the target is a point and this conclusion is
+immediate. Their predictions are $p_*\pm\rho Eu$. For any common decoded
+vector $a$, the average of its two squared distances is
+$\|a-p_*\|^2+\rho^2\ge\rho^2$. The same identity holds after averaging
+private decoder randomness. At least one regret is therefore at least
+$\rho^2/s$. The exact $d$-coordinate prediction state gives the matching
+zero-regret construction.
+\end{proof}
+
+\subsection{Identical-budget sign erasure changes the sharp law}
+Use the same prior, the same $n,m$, the same four-entry command convention,
+the same $4^m$ public query words, and the same observable score for the two
+apparatuses in Section~\ref{sec:calibrated}. With the sign available,
+\[
+ d=3\min(n,m),\qquad
+ B_*(\varepsilon)=\tfrac32\min(n,m)\log_2(1/\varepsilon)+O(1).
+\]
+With the sign erased before command evaluation and reporting,
+\[
+ d=2\min(n,m),\qquad
+ B_*(\varepsilon)=\min(n,m)\log_2(1/\varepsilon)+O(1).
+\]
+Both statements hold for worst-history regret and, by
+Theorem~\ref{thm:average-memory-rate}, unconditional regret under the same
+fixed random exploration. They follow from the explicitly computed
+attainable spans. Unlike a report-cost-saving example, removing the
+structural feature changes the sharp exponent for the very same score
+protocol. This is a law of attainable forecasting accuracy versus memory;
+it is not a claim that a richer observation is worse when memory is free.
+The next section supplies its positive information-value counterpart.
+
+The lower bounds concern retained histories of positive probability. For
+any fixed commanded all-failure prefix the probability of that event is at
+least $\eta^n$. Comparing a code with the full-history Bayes forecaster,
+Brier regret is nonnegative on every other history. Hence the corresponding
+worst-command unconditional expected regret is at least $\eta^n$ times the
+conditional lower bound. This makes explicit the price of the checkpoint
+conditioning; it neither charges failed cartridges zero nor asserts a
+horizon-uniform constant. The minimax upper bound holds on all histories.
+
+\paragraph{Perturbations and computation.}
+Invertibility of the finite calibration matrix is open: if its smallest
+singular value is $\sigma>0$ and a same-degree perturbation has operator
+norm below $\sigma$, its rank persists. Positivity and normalization must
+also be retained. Under these hypotheses the attainable-ball and Gram
+arguments apply anew and give the same exponents, with new constants.
+For a nonpolynomial perturbation no exact rank conclusion follows from
+small total variation; Section~\ref{sec:robust} instead controls common-policy
+values. No rare-history posterior estimate or asymptotically zero error
+floor is inferred from that value comparison. The finite-memory theorem
+charges only history storage at the checkpoint, not the computation of an
+optimal codebook, the query table size, or global control optimization.

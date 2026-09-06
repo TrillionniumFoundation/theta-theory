@@ -1,0 +1,14 @@
+# Historical derivations actually used in v5
+
+The controlling report and its complete claim audit were read against the exact v4 source. The full principal mathematical source, including the previously truncated report passage on the binary ablation, was inspected. This is a focused A1 revision, not a new audit of every historical branch or all eleven papers.
+
+| Source | Pinned identity | Reuse and boundary |
+|---|---|---|
+| A1 English v4 principal source | commit `e4b10bf7acebf38dbcfb466b3ee4cf30bb77b381`, directory tree `6f02757c8db44826ceeb9de097999cd60e4470ce` | The full laboratory-to-filter-to-control-to-response and approximation chain is retained. The cost witness is preserved with its distinct binary mechanism. |
+| Latest referee report and claim audit | review commit `58796c768d14c280020d05916feb946db8fb25ab` | Controls this revision. Its binary ablation is accepted; its fixed-space rank and all-stage arc arguments are explicitly credited. The diagnostic program was read, not claimed as freshly rerun. |
+| `foundations/sections/16_lorentz_global.tex` in v4 | blob `0e72a76c27e22280aa73f582660f4820db194bce` | Freshly read: complete incoming-tube coverage, Jacobian, subtract-and-replace identity, whole-preparation normalization, strong negative-Sobolev response, and retained decoding derivatives. The conditional equilibrium probability is not substituted for a counted ambient attempt. |
+| `foundations/sections/13_hybrid.tex` in v4 | blob `8856633c9390ac4c808f65216af3cccb196e3bec` | Freshly read: event-time signs, fixed-comparison-time saltation term, higher jets, transported/weighted preparation and normalizer. Smooth dynamics do not imply smooth arbitrary Borel reports. |
+| `round33/chapters/A1.tex` | commit `7f1bc9a42ba27615aea61afb9a417ef076e2c6e1`, blob `7a370a834c1381a461d2c51e38dead79f3340dd4` | Freshly read: fixed reporting Hilbert space, uniform derivative summability of finite cylinders, exact projection ancestry, martingale remainder and trace-norm covariance differentiation. Used as methodological discipline, not as an imported proof for unweighted geometric seams or the new detector. Its explicitly weighted example and its separate unweighted identification obligation remain distinct. |
+| v4 `HISTORICAL_DERIVATION_MAP.md` and provenance appendix | preserved in `retained-v4/` | Read as provenance for earlier v2/v3, round-twelve and round-seventeen work. Their old consultation and execution claims are not reissued as new v5 execution claims. |
+
+The complete foundation tree `833389dfccd571f989f6143ac44b7de0d0626e69` remains present. The current corrected bias, two-trace shape, and smooth-readout/preparation statements remain in Appendix A. No spectral, renewal, long-orbit, global quotient or unweighted-seam assertion is inferred from historical status labels.

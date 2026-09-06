@@ -1,0 +1,183 @@
+\section{Smooth detector classes and complete-policy approximation}\label{sec:robust}
+A polynomial mark is a design choice, not a consequence of collision
+geometry alone. The geometry fixes the placement and collision masses.
+For any specified smooth positive normalized circle density $q_a(t,y)$,
+$t=(R-l)/(u-l)$, the same measured-coordinate apparatus can instead use
+\[
+ F_{r,a}(y)=\int_0^y q_a((r-l)/(u-l),v)\frac{dv}{2\pi},
+ \qquad Y=F_{|z|,a}^{-1}(U).
+\]
+The known firmware evaluates its physical input $|z|$; the controller is
+not given $R$. Positivity makes the CDF strictly increasing. This produces
+the hit density $(2TR/a_0)q_a(t,y)$ while leaving the placement and no-hit
+laws unchanged. Smooth positive firmware fits the same ideal local pointer
+interpretation as Section~\ref{sec:lab}. The following results concern this
+specified class, not all physically conceivable interventions.
+
+\begin{theorem}[Uniform model error, optimal values, and transferred policies]\label{thm:model-stability}
+Consider two apparatus families on the same report space and with the same
+command and policy classes. Suppose their conditional next-report laws,
+for every radius and command, differ in total variation by at most
+$0\le e_0\le1$. Then for every common parameter-independent adaptive policy
+and any common prior, the joint radius and length-$N$ report laws differ
+by at most
+\begin{equation}
+ e_N=1-(1-e_0)^N\le\min\{1,Ne_0\}. \label{eq:coupled-model-error}
+\end{equation}
+If the common realized payoff lies in $[m_N,M_N]$, put
+$\Omega_N=M_N-m_N$. Uniformly over any common policy subclass,
+\begin{equation}
+ |V_N-\widetilde V_N|\le\Omega_N e_N. \label{eq:model-value-error}
+\end{equation}
+A policy optimal for the second apparatus has regret at most
+$2\Omega_N e_N$ in the first; an $\varepsilon$-optimal policy has regret
+at most $2\Omega_N e_N+\varepsilon$. Applying a common raw-report censoring
+channel does not increase $e_0$. No uniform posterior bound conditional
+on an arbitrarily rare history is needed or asserted.
+\end{theorem}
+\begin{proof}
+Fix the radius. While the two observed histories agree, the common policy
+chooses the same command. Couple its next reports by their common part,
+so their conditional agreement probability is at least $1-e_0$.
+For the dominated families used here, the common part is explicitly the
+minimum of the two densities, and the residual densities define a measurable
+coupling. Use any coupling after the first mismatch. Induction bounds the
+probability of agreement of all $N$ reports below by $(1-e_0)^N$, and the
+coupling inequality proves \eqref{eq:coupled-model-error}. A common prior
+is coupled identically at the start, giving the joint-law assertion.
+A policy's independent random seed, if any, is coupled identically too.
+
+A common censoring map and comparator seed take equal raw reports to equal
+censored reports, proving contraction. For each fixed policy the payoff
+is the same bounded measurable function of radius, report history, and
+its induced commands and terminal decision in both experiments. Its
+expectation changes by at most its oscillation times total variation.
+Taking suprema over the same policy set proves \eqref{eq:model-value-error}.
+Add and subtract the transferred policy's value in the second model to
+obtain the factor-two regret bound, with the stated optimization error.
+\end{proof}
+
+For Section~\ref{sec:control} one may take
+$m_N=G_-e^{-N|\lambda|B}$ and $M_N=G_+e^{N|\lambda|B}$; tighter
+realized-payoff bounds are preferable when available. The linear telescoping
+bound and the sinusoidal diagnostic below were proposed in the current
+referee report. The next theorem supplies a positive implementable surrogate
+for an entire smooth mark class, with a degree and regret certificate.
+
+\begin{theorem}[Positive physical surrogates with degree--regret rates]\label{thm:smooth-surrogate}
+Let the mode set be compact and let $q_a(t,y)$ be jointly continuous,
+uniformly bounded above and below by positive constants, and normalized
+by $\int q_a(t,y)dy/(2\pi)=1$. Assume smoothness of the firmware when a
+smooth local pointer realization is invoked. For every integer $m\ge1$ define
+\begin{equation}
+ q_{a,m}(t,y)=\sum_{i=0}^m q_a(i/m,y)B_i^m(t). \label{eq:physical-Bernstein}
+\end{equation}
+This is a positive normalized mark family, implemented by the same
+measured-coordinate inverse-CDF construction. Its complete raw kernel has
+positive Bernstein coefficients at degree $d=m+1$; it keeps both physical
+flag masses exactly. Every common-gate length-$N$ likelihood therefore
+has an exact positive state with $dN+1$ coefficients, including failures.
+
+Write $\|\cdot\|_1$ for integration in $y$ against $dy/(2\pi)$ and put
+$p_{\max}=2T_+u/a_0$. If
+$\|q_a(t,\cdot)-q_a(s,\cdot)\|_1\le L_1|t-s|$ uniformly, the raw
+one-step model error is at most
+\begin{equation}
+ e_0\le p_{\max}\frac{L_1}{4\sqrt m}. \label{eq:Lipschitz-surrogate}
+\end{equation}
+If instead $q_a$ is twice continuously differentiable as an $L^1$-valued
+map with $\sup_{a,t}\|\partial_t^2q_a(t,\cdot)\|_1\le L_2$, it is at most
+\begin{equation}
+ e_0\le p_{\max}\frac{L_2}{16m}. \label{eq:C2-surrogate}
+\end{equation}
+The right sides may be truncated at one. These bounds are uniform over
+all gates, including endpoints, and all adaptive choices of mode.
+An optimal surrogate policy has true-model regret at most
+$2\Omega_N\{1-(1-e_0)^N\}$. In particular sufficient degrees for regret
+at most $\delta>0$ are, respectively,
+\begin{equation}
+ m\ge\max\left\{1,\left(\frac{\Omega_N Np_{\max}L_1}{2\delta}\right)^2\right\},
+ \qquad
+ m\ge\max\left\{1,\frac{\Omega_N Np_{\max}L_2}{8\delta}\right\},
+ \label{eq:degree-for-regret}
+\end{equation}
+with integer ceilings understood. These are sufficient implementation
+bounds, not optimal approximation-dimension lower bounds.
+\end{theorem}
+\begin{proof}
+The Bernstein basis is nonnegative and sums to one. Thus
+\eqref{eq:physical-Bernstein} inherits the positive lower and upper bounds,
+and integration in $y$ gives one exactly. Its samples are known firmware
+values at prescribed radii, not measurements of the unknown radius.
+Evaluating the polynomial at $(|z|-l)/(u-l)$ and applying its inverse CDF
+implements it with the original prepared uniform seed.
+
+The collision numerator is $2TR q_{a,m}$. Multiplication by the positive
+linear polynomial $R=l+(u-l)t$ gives strictly positive degree-$(m+1)$
+Bernstein coefficients by the product identity. The placement numerator
+has positive degree-two coefficients $\pi(l^2,lu,u^2)$. The no-hit
+numerator has degree-two coefficients bounded below by
+$a_0-\pi u^2-2T_+u>0$. Elevation from degree two to $m+1\ge2$ preserves
+positivity. Compactness gives uniform margins for every fixed $m$.
+Their integrals normalize to $a_0$, so the whole raw kernel, its gate,
+and its failure atom form an actual experiment. Normalizing every nonzero
+failure factor as in Theorem~\ref{thm:boundary} includes gates with arbitrarily
+rare failure. Positive convolution now gives the $dN+1$ coefficient state
+and an attained finite-budget surrogate controller by the same compact
+argument as in Section~\ref{sec:control} (with $d+1$ failure coefficients
+in place of four).
+
+For the approximation, let $S_m\sim\mathrm{Binomial}(m,t)$. Equation
+\eqref{eq:physical-Bernstein} is $\E q_a(S_m/m,\cdot)$ in $L^1$.
+The Lipschitz assumption and Cauchy--Schwarz give
+\[
+ \|q_{a,m}(t,\cdot)-q_a(t,\cdot)\|_1
+ \le L_1\E|S_m/m-t|
+ \le L_1\sqrt{t(1-t)/m}\le L_1/(2\sqrt m).
+\]
+For the second bound apply the Banach-valued Taylor formula with integral
+remainder. Its linear term has zero expectation since $\E(S_m/m)=t$.
+The remainder norm is bounded by $(L_2/2)|S_m/m-t|^2$, giving
+\[
+ \|q_{a,m}-q_a\|_1\le\frac{L_2 t(1-t)}{2m}\le\frac{L_2}{8m}.
+\]
+Total variation is half the $L^1$ norm. Only the hit component changes,
+with probability $2TR/a_0\le p_{\max}$. This proves
+\eqref{eq:Lipschitz-surrogate}--\eqref{eq:C2-surrogate}. Common censoring
+contracts it. Theorem~\ref{thm:model-stability} supplies the policy and
+regret statements. Its weaker $e_N\le Ne_0$ yields the sufficient degrees
+\eqref{eq:degree-for-regret}.
+\end{proof}
+
+Given the one-step degree-$d$ coefficients and precomputed combinatorial
+weights, multiplication at step $n$ uses $O(nd^2)$ positive arithmetic
+operations; total filtering uses $O(N^2d^2)$ such operations and $dN+1$
+stored coefficients. These counts exclude the computation of gate integrals,
+firmware calibration, and global Bellman optimization. Combining the
+surrogate regret with a separately certified optimization or lookup error
+adds that error, rather than assuming it is zero in a numerical solver.
+The payoff oscillation $\Omega_N$ in \eqref{eq:degree-for-regret} is explicit
+and may grow exponentially with $N$ for a general multiplicative reward;
+there is no hidden claim of a horizon-uniform $O(N/m)$ bound.
+
+\subsection{A smooth physical perturbation that is not coefficient roundoff}
+For $q_a=1+(\epsilon R^2+\delta\sin R)\cos(y-\theta)$, take $\delta$ small
+enough to preserve strict positivity on $I$. The added hit numerator is
+$2T\delta R\sin R\cos(y-\theta)$, whose fourth radius derivative is
+\[
+ 2T\delta\{R\sin R-4\cos R\}\cos(y-\theta).
+\]
+It is not identically zero. The original exact degree-three cutoff does not
+extend to this changed firmware. Nevertheless the exact raw one-step
+variation distance is
+\[
+ \frac{2TR|\delta\sin R|}{a_0\pi},
+\]
+since the circle mean of $|\cos y|$ is $2/\pi$. This quantity controls
+complete-policy value and regret by Theorem~\ref{thm:model-stability}.
+Theorem~\ref{thm:smooth-surrogate} additionally constructs a positive
+finite-degree approximation of the changed detector itself. None of these
+value bounds asserts convergence of radius derivatives from total variation
+alone; jet approximation would require its own derivative estimates.
+The strong polynomial response theorem remains exact for each surrogate,
+and for the original specified cubic detector.

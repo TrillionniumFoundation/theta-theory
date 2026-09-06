@@ -1,0 +1,77 @@
+\section{Predictive states for an entire parameter experiment}\label{sec:predictors}
+\subsection{Finite alphabets: the exact construction}
+First let $U,Y$ be finite and nonempty. For a history $h$ at time $n$ and an open-loop test
+$w=(u_1,y_1,\ldots,u_k,y_k)$, let $p_h(w)$ be the probability of those readouts when the actions are prescribed. A test is an intervention, not conditioning on the terminal action sequence of an adaptive experiment. Let $\cW$ contain all finite tests, including the empty test.
+
+The consistency space is
+\[
+ \mathsf C=\left\{p\in[0,1]^{\cW}:p(\varnothing)=1,\quad
+ \sum_{y\in Y}p(wuy)=p(w)\right\}.
+\]
+It is compact metrizable, since the countable product is compact metrizable and the displayed finite-sum equalities are closed. Consistency alone does not say that every element comes from a given Hamiltonian model.
+
+For $p(uy)>0$, define
+\begin{equation}
+ (T_{u,y}p)(w)=\frac{p(uyw)}{p(uy)}.
+ \label{eq:prediction-update}
+\end{equation}
+At $p(uy)=0$ choose a fixed $p_\circ\in\mathsf C$.
+
+\begin{theorem}[Complete predictor and adaptive sufficiency]\label{thm:finite-state}
+The state $S_n(h)=(n,p_h)$ has the following properties.
+The update \eqref{eq:prediction-update} is Borel, preserves $\mathsf C$, and agrees with $p_{huy}$ on positive-evidence outcomes. The state--readout kernel is
+\[
+ \sum_{y\in Y}p(uy)\delta_{(y,n+1,T_{u,y}p)}.
+\]
+Two histories at the same time have identical predictors if and only if they induce identical future observation laws under every common finite-horizon adaptive continuation protocol.
+\end{theorem}
+\begin{proof}
+Conditional probability gives the update. Apply consistency to the prefix $uyw$ and divide by $p(uy)$ to obtain the updated consistency equations. Repeated marginalization gives $p(uyw)\le p(uy)$, so coordinates remain in $[0,1]$. Each coordinate of the update is Borel on a Borel positive-denominator set; the prescribed null branch is Borel. The kernel has mass $\sum_yp(uy)=1$.
+
+For any realized future string, its joint probability under a policy is its open-loop test probability multiplied by the chronological action probabilities of that same policy. Equal predictors make these products equal term by term. Summing over strings gives equal adaptive laws. Conversely, deterministic open-loop protocols are among the continuations, so adaptive equality implies equality of every test probability. The two starting histories must use the same continuation rule; a policy is not permitted to consult a discarded starting-history label to choose a different rule.
+\end{proof}
+
+\begin{proposition}[Measurable minimality]\label{prop:minimal}
+If a standard Borel statistic $\sigma(h)$ makes every test probability a measurable function $f_w(\sigma(h))$, then $p_h=F(\sigma(h))$ for a measurable map $F$ into $[0,1]^{\cW}$. Thus the all-tests predictor is minimal relative to measurable sufficient statistics in this stated sense.
+\end{proposition}
+\begin{proof}
+Define $F(s)=(f_w(s))_w$. A map into a countable measurable product is measurable exactly when its coordinates are. The factorization is immediate, and sufficiency is Theorem~\ref{thm:finite-state}. Fiberwise constancy without measurable coordinate factors is not substituted for this hypothesis.
+\end{proof}
+
+\subsection{Response information can be lost by nominal prediction}
+At $a=0$, the experiments $P_a(Y=1\mid h_1)=1/2+a$ and
+$P_a(Y=1\mid h_2)=1/2+2a$ have the same nominal prediction, but different derivatives. A state sufficient for a fixed model need not retain sensitivity of a parameter family.
+
+Let $a\in K\subset\R$ range over a compact interval. Suppose all relevant $p_h^a(w)$ are $C^r$ on a neighborhood of $K$, using common positive-evidence histories for the updates. One family descriptor is $(p_h^a(w))_{a,w}$. Because the functions are continuous, values on a countable dense subset $K_*\subset K$ determine them. Their derivatives on the interior are measurable limits of finite differences of those values.
+
+\begin{theorem}[Response-qualified prediction and update jets]\label{thm:response-state}
+Equality of all test functions $a\mapsto p_h^a(w)$ for two histories implies equality of every parameter-independent adaptive finite-horizon observation experiment and all its derivatives through order $r$. At a fixed $a_0$, equality of the jets of all test probabilities through order $r$ implies equality of those adaptive jets.
+
+Write $p_{h,j}(w)=\partial_a^jp_h^a(w)|_{a_0}$. On $p_{h,0}(uy)>0$, the update is
+\begin{equation}
+ p_{huy,j}(w)=\frac{p_{h,j}(uyw)-
+ \sum_{k=1}^j\binom jk p_{h,k}(uy)p_{huy,j-k}(w)}{p_{h,0}(uy)}.
+ \label{eq:prediction-jets}
+\end{equation}
+\end{theorem}
+\begin{proof}
+The chronological probability of each future string is $p_h^a(w)$ times policy factors independent of $a$ at a fixed record. The sum over a finite alphabet and finite horizon is finite, so it and its parameter derivatives preserve equality. For the update, differentiate
+$p_h^a(uy)p_{huy}^a(w)=p_h^a(uyw)$ $j$ times and isolate the highest derivative of the second factor. The denominator condition provides a parameter neighborhood with positive evidence. Uniform derivative bounds require its positive margin to be charged explicitly.
+\end{proof}
+
+This descriptor is a representation of the experiment family, not a claim that a learning algorithm knows the true parameter. For a fixed prior on $a$, posterior weights also require the parameter likelihood of the \emph{past}. Candidate-specific future predictors alone need not retain that likelihood.
+
+Let $a_*\in K$ be a reference with positive record probabilities and define
+$e_h(a)=P_a(h)/P_{a_*}(h)$ after cancellation of common policy factors. Include the curve $e_h$ in the state. Then
+\[
+ \pi_h(da)=\frac{e_h(a)\pi(da)}{\int e_h\dd\pi},\qquad
+ e_{huy}(a)=e_h(a)\frac{p_h^a(uy)}{p_h^{a_*}(uy)}.
+\]
+Thus this enlarged state predicts correctly under any fixed prior for which the denominator is positive. It does not silently replace an experiment family by a prior mixture.
+
+\subsection{Operational sufficiency}
+Two prediction-equivalent histories may have different remaining battery, different accessible controls, or different actuator states. A control-sufficient state must also preserve admissible continuation rules and their resource updates. For example, with $\sum_n|u_n|^2\le B$, retain
+$b_n=B-\sum_{j<n}|u_j|^2$ and restrict $|u_n|^2\le b_n$. Nominal prediction does not encode this constraint.
+
+Accordingly, an operational state consists of a predictor, any required past-likelihood coordinates, and a resource/device descriptor such that the feasible action correspondence and next resource are functions of the retained variables. This is an explicit sufficiency requirement. If it fails, the state must be enlarged rather than applying a Bellman operator to an infeasible collection of continuations.
+\par

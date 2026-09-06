@@ -1,0 +1,62 @@
+\section{Residual resources, legal pasting, and dynamic programming}\label{sec:resources}
+\subsection{A resource is part of the continuation state}
+Let $s$ be a proved predictive state and $b\in[0,B]$ a remaining resource. After action $u$ and readout $y$, let the next state be $T_n(s,u,y)$, cost $c_n(s,u,y)\ge0$, and remaining resource $b-c_n$. An action is feasible only if the resource condition holds on its possible outcomes. The exact condition may be almost sure; for continuous full-support observations and continuous costs, the condition $c_n\le b$ can be checked on the full support.
+
+A feasible family has the pasting property if cutting a feasible policy leaves feasible continuations from the actual remaining resource, and measurable choices of feasible continuations can be concatenated with a feasible first action. This property is proved from the resource recursion in the model below. It is not deduced from the mere existence of separate conditional laws.
+
+\begin{theorem}[Resource-aware finite-horizon entropic control]\label{thm:budget-dpp}
+For finite actions and observations, assume feasible action sets $A_n(s,b)$ are nonempty measurable subsets of the finite action set, $c_n\le b$ on possible outcomes of every feasible action, and reward $r_n$ and terminal payoff $f$ depend only on retained state, resource, action, and readout. Let $\eta>0$ and all rewards be bounded. Then
+\begin{align}
+ v_N(s,b)&=f(s,b),\\
+ v_n(s,b)&=\max_{u\in A_n(s,b)}\frac1\eta\log
+ \sum_y k_n(y\mid s,u)e^{\eta g_n(s,b,u,y)},
+ \label{eq:resource-dpp}\\
+ g_n(s,b,u,y)&=r_n(s,b,u,y)\notag\\
+ &\quad+v_{n+1}\bigl(T_n(s,u,y),b-c_n(s,u,y)\bigr).\notag
+\end{align}
+This equals the optimum over feasible history-adapted policies. A measurable deterministic optimizer exists. Randomizing an action cannot improve the value.
+\end{theorem}
+\begin{proof}
+Set $W_n=e^{\eta v_n}$. The resource recursion proves by induction that a policy using only feasible actions remains within budget on every positive-probability branch. Conversely the continuation of a feasible policy starts with its actual residual budget, not with $B$ again. At the last step, conditioning on the first action and readout gives the displayed exponential sum. Assume the statement one step later. Each readout permits a feasible optimizing continuation at its new state and budget. There are finitely many readouts, so these continuations can be pasted into a policy. This gives the lower inequality. Every feasible continuation is bounded by the next-step optimum, giving the upper inequality. A randomized first action is a convex combination of nonnegative exponential values and cannot exceed their maximum. Choosing the first maximizing feasible action in a fixed ordering is measurable. This proves the recursion, attainment, and equality with the full history problem.
+\end{proof}
+
+For example, a two-step force budget $u_0^2+u_1^2\le1$ cannot be replaced by $u_0^2\le1$ and $u_1^2\le1$ independently. The latter permits $(1,1)$, which is not a feasible original experiment. Retaining $b_1=1-u_0^2$ prevents this enlargement.
+
+\subsection{Continuous compact actions under explicit continuity}
+\begin{proposition}[Continuous resource Bellman theorem]\label{prop:continuous-dpp}
+Use the continuous state and readout kernel of Theorem~\ref{thm:continuous-state}, compact resource interval, continuous bounded $r_n,f,c_n,T_n$, and a nonempty compact-valued feasible-action correspondence $A_n(s,b)$ that is both upper and lower hemicontinuous. Assume its graph is closed and every feasible outcome has nonnegative remaining resource. Then the integral version of \eqref{eq:resource-dpp} has continuous value functions and a Borel deterministic optimal selector.
+\end{proposition}
+\begin{proof}
+If $v_{n+1}$ is continuous, the integrand is continuous on the compact state--resource--action--readout domain, and integration against the continuous density preserves continuity. The positive integral is bounded away from zero, so its logarithm is continuous. For a convergent sequence of states, compactness and upper hemicontinuity give a subsequential limit of maximizing actions that is feasible; this proves the upper limit inequality. Lower hemicontinuity approximates any feasible action at the limit by feasible actions at nearby states, proving the lower inequality. Hence the maximum is continuous. The argmax has a compact nonempty closed graph.
+
+For completeness, a Borel selector can be constructed using successive finite covers of the compact action space by closed balls of radii tending to zero. At each stage choose the first ball whose intersection with the previous chosen balls and the argmax fiber is nonempty. The sets of states passing each test are projections of compact sets and hence closed; finite first-choice operations preserve Borel measurability. The nested nonempty compact intersections have diameters tending to zero and determine a Borel selected action. Backward induction gives the result. The same conditional-expectation and pasting proof as Theorem~\ref{thm:budget-dpp} identifies it with the policy optimum.
+\end{proof}
+
+The correspondence condition is real. Closed feasible graphs alone need not imply continuous values. On a scalar force budget, $A(b)=[-\sqrt b,\sqrt b]$ is a continuous correspondence, so this part can be checked directly. A device with discontinuous availability requires a measurable-control theorem or an explicit finite action model instead.
+
+\subsection{A different objective: information-priced attainable kernels}
+Fix $\eta>0$, finite readouts, an operational state $x=(s,b)$, a baseline kernel $k_n(\cdot\mid x)$, and an explicitly available set $\mathcal Q_n(x)$ of probability vectors supported where $k_n>0$. Each $q\in\mathcal Q_n(x)$ must have a declared physical implementation. In this theorem all implemented selections use the same recorded update $T_n(x,y)$, including its residual resource, as the baseline; the notation itself does not supply an implementation. An implementation changing that update must be represented by an additional action or an enlarged next-state record and is outside this fixed-update statement. Suppose the available sets are nonempty compact, continuation choices admit measurable selectors, and all path entropies used are finite. For bounded rewards $r_n$ define
+\begin{equation}
+ w_n(x)=\sup_{q\in\mathcal Q_n(x)}
+ \left\{\sum_yq_y[r_n(x,y)+w_{n+1}(T_n(x,y))]
+ -\eta^{-1}D(q\Vert k_n(x))\right\}.
+ \label{eq:entropy-dpp}
+\end{equation}
+
+\begin{theorem}[Path entropy and attainable-kernel recursion]\label{thm:info-dpp}
+Under legal pasting of these kernel selections, \eqref{eq:entropy-dpp} is the optimum of expected total reward minus $\eta^{-1}$ times the relative entropy of the selected path law against the fixed baseline path law. Its one-step loss from the unrestricted entropic value, using the same continuation $g(y)=r_n(x,y)+w_{n+1}(T_n(x,y))$, is
+\[
+ \eta^{-1}\inf_{q\in\mathcal Q_n(x)}D(q\Vert k_n^{\eta g}(x)),
+ \quad k_n^{\eta g}(y)=\frac{k_n(y)e^{\eta g(y)}}{\sum_zk_n(z)e^{\eta g(z)}}.
+\]
+\end{theorem}
+\begin{proof}
+For a selected chronological kernel family, the path likelihood is $\prod_nq_n(Y_{n+1}\mid H_n)/k_n(Y_{n+1}\mid H_n)$. Taking its logarithm and then conditional expectation gives
+\[
+ D(Q_{0:N}\Vert P_{0:N})=E_Q\sum_{n<N}D(q_n(H_n)\Vert k_n(H_n)).
+\]
+The reward and entropy costs are therefore additive along selected histories. Cutting and legally pasting policies gives the Bellman recursion by backward induction. For the displayed loss, apply \eqref{eq:gibbs-gap} to the finite reference vector $k_n$ and source $\eta g$, then divide by $\eta$ and optimize over $\mathcal Q_n$. No claim is made that arbitrary $q$ can be implemented by an online force.
+\end{proof}
+
+This additive information-priced problem is distinct from the risk-sensitive physical-control problem \eqref{eq:resource-dpp}. The former changes a probability kernel and prices its density ratio; the latter optimizes actual actions under physical constraints. They coincide only after an implementation theorem identifies their feasible laws and costs. Stagewise rejection with resetting, for instance, must retain the resets and trial costs; it is not free kernel replacement.
+\par
