@@ -6,34 +6,130 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: a1-v7-review-${{ github.ref }}
+  cancel-in-progress: false
 jobs:
   package:
+    if: github.ref == 'refs/heads/revision/a1-english-v7-confluent-resolution-2026-09-06'
+    permissions:
+      contents: write
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           fetch-depth: 0
-          persist-credentials: false
+          persist-credentials: true
       - name: Export immutable reviewed source
         run: |
           mkdir -p review-artifacts
           git archive --format=tar 414f8c43a6236586362c1532c00aa9b9da01fe64 papers/A1-english-v6 reviews/a1-english-v6-2026-09-06 | gzip -n > review-artifacts/reviewed-v6-source.tar.gz
-          git rev-parse HEAD > review-artifacts/REVISION_COMMIT.txt
-          sha256sum review-artifacts/reviewed-v6-source.tar.gz > review-artifacts/SHA256SUMS
+          git rev-parse HEAD > review-artifacts/BUILD_INPUT_COMMIT.txt
+      - name: Materialize sealed source once
+        id: materialize
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -f papers/A1-english-v7/main.tex || ! -f papers/A1-english-v7/SOURCE_PACKAGE.json.gz ]]; then
+            echo 'needed=false' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          python3 - <<'PY'
+          import gzip, hashlib, json, os
+          from pathlib import Path, PurePosixPath
+          root = Path('papers/A1-english-v7')
+          raw = gzip.decompress((root/'SOURCE_PACKAGE.json.gz').read_bytes())
+          if len(raw) > 5000000:
+              raise ValueError('Unexpected source package size')
+          package = json.loads(raw)
+          assert package['format'] == 'a1-v7-source-1'
+          paths = []
+          for item in package['files']:
+              rel = PurePosixPath(item['path'])
+              if rel.is_absolute() or '..' in rel.parts or any(part.startswith('.') for part in rel.parts):
+                  raise ValueError('Unsafe member path')
+              if any(ord(ch) < 32 for ch in str(rel)) or rel.suffix not in {'.tex','.md','.py','.sh','.json','.txt'}:
+                  raise ValueError('Unexpected member name')
+              data = item['content'].encode('utf-8')
+              assert hashlib.sha256(data).hexdigest() == item['sha256']
+              target = root / str(rel)
+              target.parent.mkdir(parents=True, exist_ok=True)
+              with target.open('xb') as out:
+                  out.write(data)
+              paths.append(str(target))
+          Path(os.environ['RUNNER_TEMP'],'v7-materialized-paths').write_text('\n'.join(paths)+'\n')
+          print('Verified and materialized', len(paths), 'UTF-8 source members')
+          PY
+          echo 'needed=true' >> "$GITHUB_OUTPUT"
       - name: Install manuscript tools
         if: ${{ hashFiles('papers/A1-english-v7/main.tex') != '' }}
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended lmodern python3-numpy python3-sympy
-      - name: Build and check revision
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended lmodern python3-numpy python3-sympy poppler-utils
+      - name: Verify source manifest and build revision
         if: ${{ hashFiles('papers/A1-english-v7/main.tex') != '' }}
         run: |
+          python3 - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          root=Path('papers/A1-english-v7')
+          manifest=json.loads((root/'SOURCE_MANIFEST.json').read_text())
+          for name, info in manifest['files'].items():
+              data=(root/name).read_bytes()
+              assert hashlib.sha256(data).hexdigest()==info['sha256'], name
+              assert hashlib.sha1(('blob '+str(len(data))+'\0').encode()+data).hexdigest()==info['git_blob'], name
+          print('Verified',len(manifest['files']),'immutable source/receipt entries')
+          PY
           bash papers/A1-english-v7/build.sh
+          python3 - <<'PY'
+          import hashlib,json,os,platform,re,subprocess
+          from pathlib import Path
+          root=Path('papers/A1-english-v7')
+          log=(root/'main.log').read_text()
+          diag=json.loads((root/'DIAGNOSTICS.json').read_text())
+          pdfinfo=subprocess.check_output(['pdfinfo',str(root/'main.pdf')],text=True)
+          report={'revision':'A1 English v7','execution_environment':'GitHub Actions ubuntu-24.04',
+            'build_input_commit':os.environ['GITHUB_SHA'],'workflow_run_id':os.environ['GITHUB_RUN_ID'],
+            'python':platform.python_version(),'pages':int(re.search(r'^Pages:\s+(\d+)',pdfinfo,re.M).group(1)),
+            'passes':3,'shell_escape':False,'checks_passed':diag['checks_passed'],'checks_total':diag['checks_total'],
+            'source_manifest_sha256':hashlib.sha256((root/'SOURCE_MANIFEST.json').read_bytes()).hexdigest(),
+            'pdf_sha256':hashlib.sha256((root/'main.pdf').read_bytes()).hexdigest(),
+            'log_sha256':hashlib.sha256((root/'main.log').read_bytes()).hexdigest(),
+            'undefined_references':len(re.findall(r'Reference .* undefined',log)),
+            'undefined_citations':len(re.findall(r'Citation .* undefined',log)),
+            'overfull_boxes':len(re.findall(r'Overfull \\[hv]box',log)),
+            'scope':'Fresh principal build and v7 finite diagnostics; not formal verification or independent referee approval.'}
+          (root/'BUILD_REPORT.json').write_text(json.dumps(report,indent=2)+'\n')
+          print(json.dumps(report,indent=2))
+          PY
+      - name: Publish expanded manuscript and principal PDF
+        if: steps.materialize.outputs.needed == 'true'
+        env:
+          REVISION_BRANCH: revision/a1-english-v7-confluent-resolution-2026-09-06
+        run: |
+          set -euo pipefail
+          [[ "$GITHUB_REF" == "refs/heads/$REVISION_BRANCH" ]]
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add --pathspec-from-file="$RUNNER_TEMP/v7-materialized-paths"
+          git add -- papers/A1-english-v7/main.pdf papers/A1-english-v7/DIAGNOSTICS.json papers/A1-english-v7/BUILD_REPORT.json
+          if git diff --cached --name-only | grep -v '^papers/A1-english-v7/'; then
+            echo 'Refusing publication outside the new revision directory' >&2
+            exit 1
+          fi
+          git commit -m 'revision(A1 v7): publish complete confluent-resolution manuscript, response and validation'
+          git push origin "HEAD:$REVISION_BRANCH"
+      - name: Assemble review artifacts
+        if: ${{ hashFiles('papers/A1-english-v7/main.tex') != '' }}
+        run: |
           cp papers/A1-english-v7/main.pdf review-artifacts/A1-English-v7.pdf
           cp papers/A1-english-v7/main.log review-artifacts/
-          cp papers/A1-english-v7/DIAGNOSTICS.json review-artifacts/
+          cp papers/A1-english-v7/DIAGNOSTICS.json papers/A1-english-v7/BUILD_REPORT.json papers/A1-english-v7/SOURCE_MANIFEST.json review-artifacts/
+          git rev-parse HEAD > review-artifacts/REVISION_COMMIT.txt
+          git diff --name-status 414f8c43a6236586362c1532c00aa9b9da01fe64 HEAD > review-artifacts/REVIEW_RELATIVE_CHANGES.txt
           git archive --format=tar HEAD papers/A1-english-v7 papers/A1-english-v6 | gzip -n > review-artifacts/revision-source.tar.gz
+          (cd review-artifacts && sha256sum A1-English-v7.pdf revision-source.tar.gz reviewed-v6-source.tar.gz > SHA256SUMS)
       - name: Preserve review evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
