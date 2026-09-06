@@ -2,9 +2,9 @@
 """Anchor v14 historical snapshots and preservation records to the reviewed v13.
 
 The complete new mathematical sources are already committed, not generated
-by this script. Only source snapshots, classical opening prose and manifests
-are prepared here. Publication fails unless all source bytes match the
-locally built and tested revision's predeclared manifest digest.
+by this script. Source snapshots, opening prose/notation and manifests are
+prepared here. Publication fails unless all source bytes match the locally
+built and tested revision's predeclared manifest digest.
 """
 from pathlib import Path
 import hashlib
@@ -18,7 +18,7 @@ import tempfile
 REPO = Path(__file__).resolve().parents[2]
 BASE = REPO/'papers/A1-english-v13'
 ROOT = REPO/'papers/A1-english-v14'
-SOURCE_DIGEST = '73e5e3974a40828996df9c8cd509086cada18081d05745b2f3ffbf6a2c565af5'
+SOURCE_DIGEST = '1fe2a9fa1f304664889baf1ba3d6f60112e01e484d0613e7c015812630a1a682'
 PRESERVATION_DIGEST = '643e5f7c50942b98acd5a47f80e0fdecbc2149e29638771b0911b6c6ade13dcd'
 
 def sha(data):
@@ -69,6 +69,27 @@ def main():
         'statistical attainment. The independent repository derivation of the\n'
         'finite spectral comparison is acknowledged in \\cite{A1v9note}.\n\n')
     (ROOT/'sections/classical.tex').write_text(opening+classical[classical.index('\\begin{lemma}'):])
+    # Restore definitions used by the unchanged exact-information statements.
+    intro_path = ROOT/'sections/introduction.tex'
+    intro = intro_path.read_text()
+    anchor = 'and let $mA$ denote sums of exactly $m$ members of $A$, with $0A=\\{0\\}$.\n'
+    addition = ('Write $h_A(m)=|mA|$. For the exact information statements let\n'
+        '$I=[l,u]$, where $0\\le l<u<\\infty$, and let the prior have full support\n'
+        'on $I$. The collision-uniform results below specialize to $I=[0,1]$.\n')
+    if addition not in intro:
+        if intro.count(anchor) != 1:
+            raise ValueError('Exact setup notation anchor is not unique')
+        intro_path.write_text(intro.replace(anchor,anchor+addition))
+    visual_path = ROOT/'VISUAL_INSPECTION.md'
+    visual = visual_path.read_text()
+    note = ('After the final notation audit restored the definitions of $h_A(m)$ and\n'
+        'the interval $I$, pages 1 and 2 were rendered and inspected again at readable\n'
+        'resolution. The page count and the cited theorem locators are unchanged.\n\n')
+    if note not in visual:
+        anchor = 'This is a rendered-layout check, not an independent proof review of all\n72 pages.'
+        if visual.count(anchor) != 1:
+            raise ValueError('Visual-inspection note anchor is not unique')
+        visual_path.write_text(visual.replace(anchor,note+anchor))
     # Remove stale generated receipts only in the new directory, never its baseline.
     shutil.rmtree(ROOT/'validation',ignore_errors=True)
     for name in ['main.pdf','BUILD_REPORT.json','PRESERVATION_REPORT.json']:
