@@ -1,0 +1,32 @@
+name: A1 v11 revision verification
+on:
+  push:
+    branches: ['revision/a1-english-v11-referee-response-2026-09-06']
+    paths:
+      - '.github/workflows/a1-v11-revision.yml'
+      - 'papers/A1-english-v11/**'
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Export exact source and historical index
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p evidence
+          git rev-parse HEAD > evidence/SOURCE_COMMIT.txt
+          git ls-tree -r HEAD > evidence/SOURCE_TREE.tsv
+          git archive --format=tar HEAD papers/A1-english-v10 reviews/a1-english-v10-effective-finite-memory-2026-09-06 > evidence/controlling-source.tar
+          sha256sum evidence/controlling-source.tar > evidence/SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: A1-v11-controlling-source
+          path: evidence/
+          if-no-files-found: error
+          retention-days: 30
