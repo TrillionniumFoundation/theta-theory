@@ -25,6 +25,10 @@ old='\n'.join(p.read_text() for p in sorted((BASE/'sections').glob('*.tex')))
 new='\n'.join(p.read_text() for p in sorted((P/'sections').glob('*.tex')))
 proofs=re.findall(r'\\begin\{proof\}.*?\\end\{proof\}',old,re.S)
 if not all(p in new for p in proofs):raise RuntimeError('An inherited proof block changed')
+label_pattern=r'\\label\{((?:thm|lem|prop|cor):[^}]+)\}'
+old_labels=set(re.findall(label_pattern,old))
+new_labels=set(re.findall(label_pattern,new))
+if not old_labels<=new_labels:raise RuntimeError('An inherited result label was removed')
 changes=git('diff','--name-status',REVIEW,'--')
 for line in changes.splitlines():
     status,path=line.split('\t',1)
@@ -44,15 +48,19 @@ if re.search(r'There were undefined references|Citation .* undefined|Reference .
     raise RuntimeError('Unresolved references/citations or overfull boxes')
 pages=int(re.search(r'Output written on main.pdf \((\d+) pages?',log).group(1))
 v7=json.loads((P/'DIAGNOSTICS.json').read_text());v8=json.loads((P/'V8_DIAGNOSTICS.json').read_text())
+if not v7['all_passed'] or v7['checks_passed']!=v7['checks_total']:
+    raise RuntimeError('Inherited suite did not pass')
+if v8['passed']!=v8['total'] or not all(c['passed'] for c in v8['checks']):
+    raise RuntimeError('New suite did not pass')
 report={'revision':'A1 English v8','build_input_commit':manifest['build_input_commit'],
         'workflow_run_id':os.environ.get('GITHUB_RUN_ID'),'python':platform.python_version(),
         'tex_engine':subprocess.check_output(['pdflatex','--version'],text=True).splitlines()[0],
         'pages':pages,'passes':3,'shell_escape':False,'undefined_references':0,'undefined_citations':0,
         'overfull_boxes':0,'underfull_notices':len(re.findall(r'Underfull \\[hv]box',log)),
-        'v7_inherited_suite':{'passed':v7['passed'],'total':v7['total']},
+        'v7_inherited_suite':{'passed':v7['checks_passed'],'total':v7['checks_total']},
         'v8_new_suite':{k:v8[k] for k in ('passed','total','new_seven_trial_index_only_fixtures','new_exact_raw_updates')},
         'preservation':{'pre_existing_paths_modified':0,'inherited_proof_blocks_unchanged':len(proofs),
-                        'inherited_result_labels':25,'current_result_labels':34},
+                        'inherited_result_labels':len(old_labels),'current_result_labels':len(new_labels)},
         'pdf_sha256':sha((P/'main.pdf').read_bytes()),'log_sha256':sha((P/'main.log').read_bytes()),
         'manifest_sha256':sha((P/'SOURCE_MANIFEST.json').read_bytes()),
         'scope':'Fresh finite diagnostics and source build; not formal verification, independent referee approval, or journal acceptance.'}
