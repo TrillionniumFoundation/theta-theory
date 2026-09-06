@@ -1,0 +1,161 @@
+\section{Introduction}
+The number of exactly distinguishable posterior directions can jump when
+an additive relation between observation exponents disappears. The
+persistent memory needed at a fixed prediction accuracy need not jump:
+new directions may have arbitrarily small amplitude. We study this
+question for positive sparse monomial experiments, and determine how their sharp memory order is realized by finite
+numerical programs. The numerical scale can itself be selected from
+finite data, without first identifying an additive collision stratum.
+
+Let $A=\{0=a_0<a_1<\cdots<a_{r-1}=D\}$, let
+$W_A=\operatorname{span}\{t^a:a\in A\}$, and let $mA$ be the
+set of sums of exactly $m$ members of $A$, with $0A=\{0\}$.
+Write $h_A(m)=|mA|$. For the exact information statements the parameter
+interval is $I=[l,u]$, $0\le l<u<\infty$, and the prior $\mu$ has
+full support. For collision-uniform statements we take $I=[0,1]$.
+A positive finite detector spans $W_A$, and a command in
+$[\eta,1-\eta]^J$ retains or rejects each detector symbol. Every
+reported symbol, including rejection, is counted as a trial. Its
+likelihood is bounded below by a fixed positive number $\kappa$.
+The precise experiment and common future-only equivalence are defined
+in Section~\ref{sec:experiment}.
+
+The one-step exponents range over a fixed compact subset $K$ of the
+strictly ordered positive chamber. One fixed full-column-rank coefficient
+matrix specifies the detector on $K$, with uniform positivity. Neither
+semialgebraicity of $K$ nor a density for $\mu$ is assumed. The horizon
+$N\ge2$ and prior are fixed. Choose a fixed
+$H\ge\max\{1,N\max_Ka_{r-1}\}$. For each future length $m$, retain
+all nonconstant formal homogeneous labels $\alpha\in\mathbb N_0^r$,
+$|\alpha|=m$, including labels that have the same exponent. Their
+normalized nodes are $x_\alpha=H^{-1}\alpha\cdot a$ and their number
+is $q_m=\binom{m+r-1}{r-1}-1$. Set
+\[
+ \mathcal V_{m,\ell}(a)=\max_{|F|=\ell}
+         \prod_{\{\alpha,\beta\}\subset F}|x_\alpha-x_\beta|,
+ \qquad \mathcal V_{m,1}=1,
+\]
+where $F$ ranges over subsets of formal labels. Zero volumes remain
+zero. Put $p_{n,m}=\min\{n(r-1),q_m\}$ and
+\[
+ \Psi_{n,m}(M,a)=\max_{1\le\ell\le p_{n,m}}
+           (\mathcal V_{m,\ell}(a)/M)^{2/\ell},\qquad
+ \Xi_N(M,a)=\max_{1\le n<N}\Psi_{n,N-n}(M,a).
+\]
+The checkpoint profile is zero at an endpoint. At each checkpoint the
+query is selected independently after compression from a fixed finite
+spanning menu of $m$-trial product probes. The excess squared loss is
+the average squared error of its conditional event probabilities.
+The notation $\overline R_{M;n,m}^a$ denotes optimal unconditional
+checkpoint regret under independent uniform acquisition commands;
+$R_{M;n,m}^{a,\max}$ denotes optimal worst-history regret.
+Their causal counterparts $\mathfrak R^{a,\mathrm{av}}_{M,N}$ and
+$\mathfrak R^{a,\max}_{M,N}$ minimize the maximum checkpoint criterion
+over one stage-compatible filter. Only one checkpoint and its remaining
+query trials are executed in a run.
+
+\begin{theorem}[Sharp causal memory and certified numerical realization]
+\label{thm:effective-main}
+Under the preceding fixed-experiment hypotheses, with $r\ge2$, the
+checkpoint and causal regret laws have orders $\Psi_{n,m}$ and $\Xi_N$,
+respectively, uniformly in $a\in K$ and integers $M\ge1$.
+Suppose the command cube is rationally specified and certified finite
+approximations to the cell coefficients and prior moments through formal
+degree $N$ are available at requested tolerances, together with coefficient and
+positivity bounds.
+An algorithm constructs integer transition tables and dyadic output
+tables with at most $M$ persistent labels at each stage and maximum
+worst-history regret at most $C\Xi_N(M,a)$. For every such filter with
+a fixed memoryless command-coding rule, the maximum unconditional
+checkpoint regret under the common exploration law is at least
+$c\Xi_N(M,a)$.
+
+The algorithm requires no collision stratum, additive-gap lower bound,
+or value of $\Xi_N$ as input. Its selected numerical precision satisfies
+\[
+ b(M,a)=\tfrac12\log_2(1/\Xi_N(M,a))+O(1),
+\]
+and a sufficient read-only program size is
+$O(M\Xi_N(M,a)^{-J/2}\log(M+1))$ bits. In particular, setting
+$d_0=(r-1)\lfloor N/2\rfloor$, one may uniformly use
+\[
+ b(M)\le d_0^{-1}\log_2(M+1)+O(1),\qquad
+ P(M)=O(M^{1+J/d_0}\log(M+1)).
+\]
+These numerical bounds are sufficient; no precision or program-length
+converse is asserted. The running filter retains only its index, not a
+posterior vector, historical tape, or numerical oracle. For computable
+numerical inputs the synthesis is uniform and terminating. All constants
+may depend on the fixed prior and horizon, but not on $a$ or $M$.
+\end{theorem}
+
+For $r=1$, all report factors are constant in the hidden parameter; the
+posterior-dependent state is a singleton and one label suffices. The
+exact information classification below includes this case.
+
+The geometric assertions are proved in
+Theorems~\ref{thm:intrinsic-checkpoint} and
+\ref{thm:intrinsic-streaming}. The finite-table construction is given
+in Section~\ref{sec:effective}; its stronger resource conclusions and
+adaptive stopping rule are proved in
+Theorem~\ref{thm:profile-adaptive} and
+Corollary~\ref{cor:uniform-resources}. The earlier fine-mesh bounds
+remain valid consequences and are recorded with their proofs. For an
+arbitrary, possibly noncomputable full-support prior, the intrinsic
+classification is unchanged. The effective statement uses supplied
+numerical advice, rather than an algorithm for obtaining unsupplied
+noncomputable moments. With an external clock the changing state has
+$M$ values; storing the clock costs a factor depending only on $N$.
+The program and temporary workspace are accounted for separately.
+
+\subsection{Structure of the proof}
+The first step is a pairing between the attainable product tangent and
+the complete future test flag. At an interior binomial tuple, the product
+tangent contains $n(r-1)+1$ distinct monomials. Strict mixed-moment
+positivity holds for every full-support prior. Complete Hermite blocks
+retain this positivity at exact collisions; normalization removes exactly
+one rank. The local image carries an unconditional volume minorization
+which includes the probability of acquiring the failure prefix. A
+separate bounded-format argument covers the entire reachable image with
+the attainable dimension truncated at $p_{n,m}$.
+
+The determinant profile has a classical finite spectral meaning:
+Proposition~\ref{prop:exterior-profile} identifies it, up to fixed
+constants, with the exterior singular-value profile of a Vandermonde
+matrix. That statement alone does not imply statistical attainment.
+The arbitrary-prefix Hermite statement in
+Lemma~\ref{lem:prefix-hermite} is likewise classical
+\cite[Proposition 7]{deBoor}. The normalized product, acquired-history
+probability, and compatible transitions provide the additional
+statistical structure.
+
+The numerical construction never uses singular coordinates. It forms
+finite lists of feasible histories, evaluates their raw states to a
+certified accuracy, and applies classical farthest-first selection
+\cite{Gonzalez}. Every transition is evaluated by appending a report and
+command to an actual representative history. Approximate vectors outside
+the reachable set are not passed to a posterior update. Positive evidence
+certifies evaluation from a finite moment table even when coincident
+formal labels receive different approximate values.
+
+The final step makes the numerical scale observable. If $r$ is the
+computed covering radius of an approximate history list with mesh and
+evaluation tolerance $h$, and $e$ is the largest true $M$-centre covering
+radius, then
+\[
+ \max\{0,r/2-h\}\le e\le r+(A+2)h.
+\]
+The rule $r\ge4(A+2)h$ therefore stops at $h\asymp e$ without knowing
+$e$. Attainable geometry identifies $e^2\asymp\Xi_N$. This gives a
+finite-data interpretation of the full profile, not only of one of its
+power-law floors. A separated future chain gives the uniform precision
+bound. Transition and decoder residuals provide separate finite checks
+on the program actually returned.
+
+For the intersecting two-parameter family, the resulting program-size
+phases track the full three-term regret profile. High-order contact may
+place a nonzero exponent gap far below the chosen mesh, without changing
+the guarantee. The algorithm does not identify the contact order or
+collision tree. The principal argument then ends; complete observation
+algebra, affine, five- and seven-trial, decision, and mechanical proofs
+are given in the appendices. Their separate assumptions are retained.
