@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run inherited author suites, v19 exact diagnostics, and the complete build."""
+"""Run inherited author suites, v20 exact diagnostics, and the complete build."""
 from __future__ import annotations
 import hashlib
 import json
@@ -28,16 +28,16 @@ def run(command,log):
 def main():
     out=ROOT/'validation';out.mkdir(exist_ok=True)
     receipt=out/'EXECUTION_REPORT.json';receipt.unlink(missing_ok=True)
-    report={'version':19,'python':platform.python_version(),
-            'submission_basis':'be8effe038608bef255fa97318a9ee3b4434af2d',
-            'controlling_review':'e5fff530c95a4f3aa1163a2087838ff2795f052b',
+    report={'version':20,'python':platform.python_version(),
+            'submission_basis':'01abeb689b203ea871b88495d16a826bb4942e16',
+            'controlling_review':'59018a3231abb551d93947929f7e9bf0e3ddcd9e',
             'workflow_run_id':os.environ.get('GITHUB_RUN_ID'),
             'workflow_input_commit':os.environ.get('GITHUB_SHA'),
             'verified_source_files_before':verify(),
             'suites':[],
             'scope':'Actual finite author diagnostics and full source/build checks; not an independent referee report or a formal proof certificate.'}
     report['historical_source_checks']=verify_history()
-    for version in (*range(10,16),17,18,19):
+    for version in (*range(10,16),17,18,19,20):
         script=f'tests/test_v{version}.py' if version<18 else f'tests/verify_v{version}.py'
         target=out/f'V{version}_AUTHOR_RERUN.json'
         elapsed=run([sys.executable,script,str(target)],out/f'v{version}-stdout.txt')

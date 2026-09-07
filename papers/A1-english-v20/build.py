@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the complete v19 manuscript with independently anchored preservation.
+"""Build the complete v20 manuscript with independently anchored preservation.
 
 Both standalone --prepare-only and validate.py use the same historical
 source checks. Identity checks are not certificates of mathematical truth.
@@ -17,9 +17,9 @@ import sys
 import tempfile
 
 ROOT = Path(__file__).resolve().parent
-BASE = 'be8effe038608bef255fa97318a9ee3b4434af2d'
-REVIEW = 'e5fff530c95a4f3aa1163a2087838ff2795f052b'
-MANIFEST_BLOB = 'f4245151593153b5e8ec77e30449588cdd478dc4'
+BASE = '01abeb689b203ea871b88495d16a826bb4942e16'
+REVIEW = '59018a3231abb551d93947929f7e9bf0e3ddcd9e'
+MANIFEST_BLOB = 'eb846da7fe3e036ebe31c91ecac7b39c52cb3900'
 V17_MANIFEST_BLOB = 'e8870117088145c9db0f71fc38e9be0ff0d27de2'
 
 def sha(data: bytes) -> str:
@@ -28,36 +28,51 @@ def sha(data: bytes) -> str:
 def git_blob(data: bytes) -> str:
     return hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()
 
+# Only front matter, documented prose corrections and revision tooling change.
+# The complete original tree is preserved under history/v19.
+CHANGED = {'main.tex','sections/introduction.tex',
+           'sections/rectangular_attainment.tex',
+           'sections/covariance_degenerations.tex',
+           'README.md','RESPONSE_TO_REFEREE.md','build.py','manifest.py','validate.py'}
+PROSE_ONLY = {'sections/rectangular_attainment.tex',
+              'sections/covariance_degenerations.tex'}
+
+def formal_blocks(text: str):
+    proof = Counter(sha(m.encode()) for m in
+                    re.findall(r'\\begin\{proof\}.*?\\end\{proof\}',text,re.S))
+    pat = r'\\begin\{(theorem|lemma|proposition|corollary)\}.*?\\end\{\1\}'
+    statements = Counter(sha(m[0].encode()) for m in re.finditer(pat,text,re.S))
+    return proof, statements
+
 def verify_history() -> dict:
-    archive = ROOT/'history/v18'
+    archive = ROOT/'history/v19'
     data = (archive/'SOURCE_MANIFEST.json').read_bytes()
     if git_blob(data) != MANIFEST_BLOB:
-        raise ValueError('Pinned v18 manifest changed')
+        raise ValueError('Pinned v19 manifest changed')
     sources = json.loads(data)['files']
     for name, digest in sources.items():
         if sha((archive/name).read_bytes()) != digest:
-            raise ValueError('Archived v18 source changed: '+name)
-    active = [name for name in sources
-              if (name.startswith(('core/','sections/','tests/'))
-                  and name != 'sections/introduction.tex')
-              or name in {'finite_compiler.py','certified_compiler.py',
-                          'construction_contracts.py','references.tex',
-                          'references-v9.tex','references-v16.tex','references-v18.tex'}]
+            raise ValueError('Archived v19 source changed: '+name)
+    active = [name for name in sources if name not in CHANGED]
     for name in active:
         if sha((ROOT/name).read_bytes()) != sources[name]:
             raise ValueError('Inherited source changed: '+name)
-    # This specifically anchors v17's inverse proof, independently of either
-    # reconstructed compilation. It closes the standalone-mode observation.
+    for name in PROSE_ONLY:
+        if formal_blocks((ROOT/name).read_text()) != formal_blocks((archive/name).read_text()):
+            raise ValueError('Formal blocks changed in prose-only source: '+name)
+    # The original v17 manifest anchors the inverse independently of the new
+    # manifest and of either reconstructed expanded compilation.
     v17_data = (ROOT/'history/V17_SOURCE_MANIFEST.json').read_bytes()
     if git_blob(v17_data) != V17_MANIFEST_BLOB:
         raise ValueError('Pinned v17 manifest changed')
     inverse = 'sections/operational_reconstruction.tex'
     if sha((ROOT/inverse).read_bytes()) != json.loads(v17_data)['files'][inverse]:
         raise ValueError('Pinned v17 operational inverse changed')
-    return {'archived_v18_source_files':len(sources),
+    return {'archived_v19_source_files':len(sources),
             'active_inherited_source_files':len(active),
-            'v18_manifest_git_blob':MANIFEST_BLOB,
+            'v19_manifest_git_blob':MANIFEST_BLOB,
             'v17_manifest_git_blob':V17_MANIFEST_BLOB,
+            'formal_blocks_in_prose_only_files_unchanged':True,
             'inverse_checked_against_original_v17':True}
 
 def expand(path: Path, root: Path, stack: tuple[Path,...]=()) -> str:
@@ -84,34 +99,34 @@ def blocks(text: str):
 def prepare() -> dict:
     history=verify_history()  # before copying or running any preparer
     out=ROOT/'build';out.mkdir(exist_ok=True)
-    with tempfile.TemporaryDirectory(prefix='a1-v18-pinned-') as tmp:
+    with tempfile.TemporaryDirectory(prefix='a1-v19-pinned-') as tmp:
         baseline=Path(tmp)/'manuscript'
-        shutil.copytree(ROOT/'history/v18',baseline,
+        shutil.copytree(ROOT/'history/v19',baseline,
                         ignore=shutil.ignore_patterns('__pycache__'))
         run=subprocess.run([sys.executable,'build.py','--prepare-only'],cwd=baseline,
                            capture_output=True,text=True,timeout=180)
         (out/'baseline-stdout.txt').write_text(run.stdout+run.stderr)
         if run.returncode:
-            raise RuntimeError('Pinned v18 preparer failed; see baseline-stdout.txt')
+            raise RuntimeError('Pinned v19 preparer failed; see baseline-stdout.txt')
         baseline_text=(baseline/'build/expanded.tex').read_text()
         old_report=json.loads((baseline/'PRESERVATION_REPORT.json').read_text())
         for path in (baseline/'build').glob('*.tex'):
             if path.name!='expanded.tex':
                 shutil.copy2(path,out/path.name)
     old_p,old_s,old_l=blocks(baseline_text)
-    if (sum(old_p.values()),sum(old_s.values()))!=(99,102):
-        raise ValueError('Pinned v18 compiled block count mismatch')
+    if (sum(old_p.values()),sum(old_s.values()))!=(109,112):
+        raise ValueError('Pinned v19 compiled block count mismatch')
     text=expand(ROOT/'main.tex',ROOT)
     new_p,new_s,new_l=blocks(text)
     if old_p-new_p or old_s-new_s or old_l-new_l:
         raise ValueError('Inherited compiled proof, statement, or label changed')
-    if (sum(new_p.values()),sum(new_s.values()))!=(109,112):
-        raise ValueError('Expected ten additional complete results and proofs')
-    report={'version':19,'submission_basis':BASE,'controlling_review':REVIEW,
+    if (sum(new_p.values()),sum(new_s.values()))!=(114,117):
+        raise ValueError('Expected five additional complete results and proofs')
+    report={'version':20,'submission_basis':BASE,'controlling_review':REVIEW,
             'historical_source_checks':history,
-            'retained_v18_proofs_byte_identical':99,
-            'retained_v18_statements_byte_identical':102,
-            'retained_v18_labels':len(old_l),
+            'retained_v19_proofs_byte_identical':109,
+            'retained_v19_statements_byte_identical':112,
+            'retained_v19_labels':len(old_l),
             'compiled_proof_blocks':sum(new_p.values()),
             'compiled_statement_blocks':sum(new_s.values()),
             'new_complete_proof_blocks':sum((new_p-old_p).values()),
@@ -121,7 +136,7 @@ def prepare() -> dict:
             'inherited_preservation_report':old_report,
             'scope':'Executed source checks, not mathematical proof verification.'}
     (out/'expanded.tex').write_text(text)
-    (out/'v18-baseline-expanded.tex').write_text(baseline_text)
+    (out/'v19-baseline-expanded.tex').write_text(baseline_text)
     (ROOT/'PRESERVATION_REPORT.json').write_text(json.dumps(report,indent=2)+'\n')
     return report
 

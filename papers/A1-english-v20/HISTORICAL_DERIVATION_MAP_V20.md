@@ -1,0 +1,15 @@
+# Historical derivations used in v20
+
+This revision responds to the v19 independent report at `59018a3231abb551d93947929f7e9bf0e3ddcd9e`, not to an earlier review. The reviewed v19 submission is `01abeb689b203ea871b88495d16a826bb4942e16`.
+
+The source was recovered from the completed v19 referee-package workflow and its source manifest was checked against Git blob `eb846da7fe3e036ebe31c91ecac7b39c52cb3900` at the pinned submission. The whole snapshot remains in `history/v19/`. Earlier histories and derivation maps remain unchanged inside it and in the inherited active tree.
+
+The v19 moment-image, rectangular alternative, and simultaneous-annihilation arguments in `sections/rectangular_attainment.tex` are the starting point for the exact-kernel refinement. They supply the positive feasibility condition, but not the missing maximal-minor condition. The new local constrained moment chart is proved independently by orthogonal projection and bounded continuous density perturbations. The block construction develops the report's counterexample into an explicit classification, not an unqualified repetition of the relative-interior argument.
+
+The augmented evidence calculation in `sections/structural_classification.tex` and the complete inverse-chart argument in `sections/positive_history.tex` provide the physical normalization and mass mechanism used by the new history corollary. The derivative rank is computed after adjoining evidence; the evidence direction is not assumed to be an actual command derivative. The mass proof retains the word probability and integrates over all kernel coordinates.
+
+The monomial history setup in `core/02_experiments.tex`, actual product transversality in `core/03_transversality.tex`, and the principal Leja/Newton–Hermite, whole-image, and raw-update chain in `core/06b_collision_geometry.tex` determine the reorganization. Their proofs remain intact. The relevant historical attainable-filtration and streaming sources are still input with their full arguments; the introduction now explains their roles rather than treating every appended consequence as a separate principal advance.
+
+The projective acquisition law and covariance classification in `sections/affine_geometry.tex` are retained to interpret the block witnesses' actual prediction ranks. The v19 covariance realization and analytic-order law are preserved, with added explicit Fourier attribution in explanatory prose. The inverse in `sections/operational_reconstruction.tex` retains its original v17 proof and is independently checked against that original manifest, not merely against a newly generated v20 digest.
+
+The circular, directional, prior-uncertainty, sequential-decision, observation-algebra, confluent, and numerical-resource sources remain in the complete compilation. Their preservation is not a claim that every inherited dependency has received a new exhaustive manual referee audit in this revision. The current mathematical work targets the latest report's exact-kernel issue and the paper's central proof architecture.

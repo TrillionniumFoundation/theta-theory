@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deterministic v19 source manifest; not a certificate of correctness."""
+"""Deterministic v20 source manifest; not a certificate of correctness."""
 from pathlib import Path
 import hashlib
 import json
@@ -18,8 +18,8 @@ def generate():
         if path.suffix not in {'.tex','.py','.md','.json'} and rel.name!='.gitignore':
             continue
         files[rel.as_posix()]=hashlib.sha256(path.read_bytes()).hexdigest()
-    return {'version':19,'submission_basis':'be8effe038608bef255fa97318a9ee3b4434af2d',
-            'controlling_review':'e5fff530c95a4f3aa1163a2087838ff2795f052b',
+    return {'version':20,'submission_basis':'01abeb689b203ea871b88495d16a826bb4942e16',
+            'controlling_review':'59018a3231abb551d93947929f7e9bf0e3ddcd9e',
             'scope':'Current and archived source; excludes generated PDF, build files and current execution receipts.',
             'files':files}
 def verify():

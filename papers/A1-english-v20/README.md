@@ -1,36 +1,38 @@
-# A1 English v19 — complete referee revision
+# A1 English v20 — exact kernels and collision-uniform causal geometry
 
-**Attainable information geometry in positive experiments**, Qian Qi.
+**Manuscript:** *Attainable information geometry in positive experiments*, Qian Qi.
 
-Controlling report: `reviews/a1-english-v18-independent-2026-09-07/REFEREE_REPORT.md` at `e5fff530c95a4f3aa1163a2087838ff2795f052b`.
-Reviewed submission: `be8effe038608bef255fa97318a9ee3b4434af2d`.
-Revision branch: `revision/a1-english-v19-rectangular-and-degeneration-2026-09-07`.
+**Controlling report:** `reviews/a1-english-v19-independent-2026-09-07/REFEREE_REPORT.md` at `59018a3231abb551d93947929f7e9bf0e3ddcd9e`.
 
-The entry point is `main.tex`; the compiled manuscript is `main.pdf`.
-This is the complete English manuscript, not an addendum or a replacement of the collision results. All 99 v18 proof blocks, 102 theorem/lemma/proposition/corollary statements, and their labels remain in the compiled text with identical bytes. Ten additional results have complete proofs. The historical v18 source snapshot is independently pinned by its original Git manifest blob.
+**Reviewed source:** `01abeb689b203ea871b88495d16a826bb4942e16`, `papers/A1-english-v19/`.
 
-## Mathematical revision
+**Revision branch:** `revision/a1-english-v20-exact-kernels-and-causal-geometry-2026-09-07`.
 
-`sections/rectangular_attainment.tex` proves a compact-space product-cone criterion for all-full-support rectangular pairing rank, a kernel/rank alternative with actual full-support witnesses, an exact dominated-prior singular margin, and a posterior-history consequence. The five-point physical example is genuinely rectangular: no fixed evidence-preserving square subpairing has the same universal property.
+## Reading the submission
 
-`sections/covariance_degenerations.tex` realizes every sufficiently small rectangular covariance matrix, and every scaled analytic matrix germ, by priors in one fixed positive experiment with fixed queries and density between 1/2 and 3/2 of a fixed full-support probability. Determinantal orders yield the joint integer-budget/analytic-arc law, all its phase transitions, and the operational recovery of its orders. Every ordered nonnegative integral list of allowed length is realized.
+`main.pdf` is the complete English manuscript, not a supplement. `main.tex` is its source entry point. The introduction now begins with the collision-uniform checkpoint and causal memory law. Its next subsection separates actual acquisition mass, the whole-image anisotropic cover, and causal compatibility. Table `tab:scope` compares the hypotheses, uniformities, and resource conventions of the theorem families. The body follows that mathematical order rather than the chronology of revisions.
 
-The finite matrix/sign criteria of Banaji–Pantea and Müller et al., and the classical Smith/singular-value orders discussed by Kaveh–Makhnatch, are explicitly attributed in the introduction, main sections, bibliography and `sections/pairing_comparison.tex`. The mathematical claims separate those inputs from the physical realization and memory conclusions. The square theorem and its full proof are retained.
+The exact-kernel section, `sections/exact_kernels.tex`, answers E19.1 by proving the stronger assertion rather than changing the name of the old containment theorem. Annihilation feasibility is a positive-cone condition on the product space. Exact realization is equivalent to full column rank of its quotient multiplication pencil. Full-support witnesses can be chosen by arbitrarily small continuous positive density perturbations. A multiplication closure identifies forced directions, and a positive balanced-block family gives an explicit polynomial-root classification, including the referee's eight-point counterexample and exact positive alternatives.
 
-`RESPONSE_TO_REFEREE.md` gives the point-by-point response. `PROOF_LEDGER_V19.md` identifies every added result and its dependencies. `HISTORICAL_DERIVATION_MAP_V19.md` records the historical arguments actually used. The existing historical records remain available unchanged in `history/v18/` and in the prior manuscript directory.
+The abstract and contribution statement distinguish these experiment-level conclusions from the elementary separation, Fourier, and determinantal inputs. The significance of the combined conclusions remains for independent mathematical assessment; neither test counts nor the number of statements is offered as a criterion for journal acceptance.
+
+## Response and provenance
+
+`RESPONSE_TO_REFEREE.md` addresses E19.1, E19.2, and the report's organizational obligations. `PROOF_LEDGER_V20.md` records the new dependencies. `HISTORICAL_DERIVATION_MAP_V20.md` identifies the historical arguments used. `LITERATURE_VERIFICATION_V20.md` records the primary-source comparisons. Older maps and response letters are historical documents, not current assertions of scope.
+
+The complete v19 snapshot is retained under `history/v19/`, anchored by source-manifest Git blob `eb846da7fe3e036ebe31c91ecac7b39c52cb3900`. Every one of its 109 compiled proof blocks and 112 theorem/lemma/proposition/corollary blocks remains byte-identical in the new compilation. Five new statement/proof pairs are added. The two documented inherited prose edits leave every formal block unchanged. All other inherited mathematical sources are unchanged. The original v17 manifest additionally anchors the inverse theorem independently of the new manifest.
 
 ## Reproduction
 
-Use Python 3.13, SymPy 1.14.0, pdfLaTeX with the standard AMS/LaTeX packages and Latin Modern, and `pdfinfo` from Poppler. Install the symbolic dependency with `python -m pip install sympy==1.14.0`.
+Use Python 3.13, SymPy 1.14.0, pdfLaTeX with AMS/Latin Modern/microtype/booktabs/hyperref, and `pdfinfo`.
 
 ```sh
+python -m pip install sympy==1.14.0
 python manifest.py
 python build.py --prepare-only
 python validate.py
 ```
 
-The full validator runs the inherited v10–v15, v17 and v18 suites, the new exact v19 suite, an actual inverse-proof mutation against standalone preparation, and the three-pass full PDF build. `validation/EXECUTION_REPORT.json` and `BUILD_REPORT.json` are execution receipts, not promises about a later build. A source author deliberately updating files can regenerate the deterministic current-source manifest with `python manifest.py --write`; this does not alter either pinned historical manifest.
+`validate.py` runs ten inherited/current diagnostic suites, actually corrupts and restores the inherited inverse proof to test standalone rejection, and builds the full PDF in three passes. `validation/EXECUTION_REPORT.json`, `PRESERVATION_REPORT.json`, and `BUILD_REPORT.json` are execution receipts. They report what ran, not formal proof verification or an independent referee endorsement. The v20 suite checks quotient identities, local density charts, forced kernels, the eight-point regression, exact block witnesses, physical prediction ranks, and edge cases.
 
-The advertised standalone mode now calls the same historical source checker as the full validator **before** reconstructing a baseline. It anchors `sections/operational_reconstruction.tex` independently to the original v17 manifest as well as to v18. A change to a proof in that source is rejected rather than being copied into both sides of a preservation comparison.
-
-All diagnostics are finite identity/source/build checks. They do not constitute formal proof verification, an independent referee endorsement, or a guarantee of acceptance at any journal. The new results are submitted for renewed scrutiny; no acceptance decision is represented as a mathematical conclusion.
+This revision is owner-requested and AI-assisted. It does not assert that a journal has commissioned or accepted the manuscript or this response.
