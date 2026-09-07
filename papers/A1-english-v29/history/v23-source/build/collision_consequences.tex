@@ -1,0 +1,203 @@
+\begin{corollary}[Intrinsic bit law]\label{cor:intrinsic-bits}
+Let $B_*(\varepsilon,a)$ be the least integer persistent bit budget
+for maximum-history streaming regret at most $\varepsilon$ in this
+experiment. Uniformly for $0<\varepsilon\le1$ and $a\in K$,
+\begin{equation}\label{eq:intrinsic-bits}
+ B_*(\varepsilon,a)=
+ \max_{\substack{1\le n<N\\1\le\ell\le p_{n,N-n}}}
+ \left[\frac{\ell}{2}\log_2\frac1\varepsilon+
+       \log_2\mathcal V_{N-n,\ell}(a)\right]_++O(1).
+\end{equation}
+A zero determinant volume contributes zero to this maximum, by interpreting
+its logarithm as $-\infty$ before taking the positive part. The same law
+holds for the unconditional maximum-checkpoint criterion. At each fixed
+calibration the small-error slope is $D_A(N)/2$.
+\end{corollary}
+\begin{proof}
+With $M=2^B$, solving each inequality
+$(\mathcal V_{m,\ell}/M)^{2/\ell}\le\varepsilon$ gives the displayed
+lower bound on $B$. Constants in Theorem~\ref{thm:resolution-main} change
+it by at most a bounded amount, since $\ell$ is bounded. Integer rounding
+costs at most one further bit. For fixed $a$, the largest nonzero index
+at checkpoint $(n,m)$ is
+$\min\{n(r-1),|mA|-1\}=d_A(n,m)$, proving the slope assertion.
+\end{proof}
+
+\subsection{Collision orders and a finite tree formula}
+The determinant form has a consequence not requiring interpolation
+coordinates: it classifies arbitrary orders of tangency to a collision.
+It also gives a finite optimization rule for all resolution phases.
+
+\begin{theorem}[Collision-tree determination of memory phases]\label{thm:collision-tree}
+Let $a(\theta)\in K$, $0\le\theta\le\theta_0$, be a known path.
+For a fixed $m$, identify formal sums that are identical along the path.
+Suppose that for every remaining pair of labels
+\[
+ |x_\alpha(\theta)-x_\beta(\theta)|
+       \asymp\theta^{w_{\alpha\beta}},\qquad
+ w_{\alpha\beta}\in[0,\infty),\quad 0<\theta\le\theta_0.
+\]
+After decreasing $\theta_0$ this hypothesis holds for every real analytic
+path whose nonidentical sums are analytic at zero. Define
+\begin{equation}\label{eq:tree-energy}
+ \beta_{m,\ell}=
+   \min_{\substack{J\text{ a set of remaining labels}\\|J|=\ell}}
+         \sum_{\{\alpha,\beta\}\subset J}w_{\alpha\beta},
+ \qquad \beta_{m,1}=0.
+\end{equation}
+Then $\mathcal V_{m,\ell}(a(\theta))\asymp
+\theta^{\beta_{m,\ell}}$. For unavailable cardinalities the volume is
+zero. Consequently the checkpoint law is
+\begin{equation}\label{eq:tree-law}
+ \overline R_{M;n,m}^{a(\theta)}\asymp
+ \max_{\ell\le p_{n,m}}
+       \theta^{2\beta_{m,\ell}/\ell}M^{-2/\ell},
+\end{equation}
+with zero-volume terms omitted; the streaming law is its maximum over
+checkpoints. The exponents $\beta_{m,\ell}$ depend only on the pairwise
+collision orders, and can be computed by a finite tree allocation rule.
+\end{theorem}
+\begin{proof}
+Each fixed subset product has order equal to the sum of its pair orders.
+There are finitely many subsets, so their maximum has the smallest such
+order. This proves the determinant assertion and then
+\eqref{eq:tree-law} by Theorem~\ref{thm:resolution-main}.
+Constants may depend on the path's
+nonzero leading coefficients; the intrinsic determinant theorem, in
+contrast, is already uniform on $K$.
+
+For completeness we give the allocation rule and its justification. The
+triangle inequality for node differences implies
+\[
+ w_{\alpha\gamma}\ge
+       \min\{w_{\alpha\beta},w_{\beta\gamma}\}.
+\]
+Indeed a smaller order on the left would contradict the upper bound by
+the sum of the two differences on the right as $\theta\downarrow0$.
+Thus thresholds on $w$ define nested equivalence classes. Make a rooted
+tree from these classes, with root height zero; an internal cluster $C$
+has height $h_C=\min_{\alpha\ne\beta\in C}w_{\alpha\beta}$,
+and its children are the equivalence classes for orders strictly greater
+than $h_C$. Split the root at orders greater than zero. Singleton
+children are leaves. Redundant equal-height vertices can be omitted.
+For an internal nonroot vertex put
+$\Delta_C=h_C-h_{\operatorname{parent}(C)}$. The sum of these increments
+on the common ancestor chain of two leaves is exactly their pair order.
+Hence, for a selected leaf set $J$,
+\begin{equation}\label{eq:tree-decomposition}
+ \sum_{\{\alpha,\beta\}\subset J}w_{\alpha\beta}
+   =\sum_{C\text{ internal},\ C\ne\mathrm{root}}
+               \Delta_C\binom{|J\cap C|}{2}.
+\end{equation}
+Set $F_C(0)=F_C(1)=0$ for a leaf and $F_C(k)=+\infty$ for $k>1$.
+For an internal vertex, including the root with $\Delta_{\rm root}=0$,
+compute
+\begin{equation}\label{eq:tree-dp}
+ F_C(k)=\Delta_C\binom{k}{2}+
+   \min_{\substack{\sum_{D\text{ child of }C}k_D=k}}
+                 \sum_{D\text{ child of }C}F_D(k_D).
+\end{equation}
+Equation~\eqref{eq:tree-decomposition} proves this recurrence by induction.
+It gives $F_{\rm root}(\ell)=\beta_{m,\ell}$. Successive finite
+min-convolutions compute the table; no optimization over measures,
+posterior encoders or codebooks is involved. For analytic paths the pair
+orders are the finite orders of their first nonzero Taylor coefficients,
+after identical sums have been identified. This proves the assertion.
+\end{proof}
+
+For the affine family of Section~\ref{sec:confluence}, different limiting
+clusters have pair order zero, and distinct members of a cluster have pair
+order one. Thus a choice of $k$ nodes from that cluster costs
+$\binom{k}{2}$; its successive costs are $0,1,\ldots,s-1$.
+Minimizing their sum picks the smallest costs from all clusters. Therefore
+$\beta_{m,\ell}=\nu_{m,1}+\cdots+\nu_{m,\ell}$. This recovers
+Theorem~\ref{thm:attainable-checkpoint}, while its separate proof remains
+available. Higher orders of contact between distinct branches require the
+pair orders above and are not encoded by the affine multiplicity list.
+
+\subsection{Intersecting collision loci and arbitrary tangency order}
+Here is a two-parameter consequence with different ranks on intersecting
+loci and arbitrarily deep resolution phases along tangent approaches.
+It illustrates the geometry of the determinant theorem rather than
+requiring a separate asymptotic analysis for each path.
+
+\begin{corollary}[A two-parameter collision arrangement]\label{cor:two-parameter}
+Let $A_{u,v}=\{0,1,2+u,3+v\}$, with
+$|u|,|v|\le1/16$, and take the four cells
+\[
+ k_0(t)=\tfrac14+\tfrac1{16}(t+t^{2+u}+t^{3+v}),\qquad
+ k_i(t)=\tfrac14-\tfrac1{16}t^{a_i},\quad 1\le i\le3.
+\]
+Use any fixed admitted command cube and a fixed full-support prior.
+For total horizon five set
+$\rho=\max\{|u|,|v|\}$ and
+$\tau=\min\{|u|,|v-u|,|v-2u|\}$. Then, uniformly on the square,
+\begin{equation}\label{eq:two-parameter-law}
+ \mathfrak R_{M,5}^{u,v}\asymp
+ \max\left\{M^{-1/3},\ \rho^{1/2}M^{-1/4},\
+           (\rho^2\tau)^{2/9}M^{-2/9}\right\}
+\end{equation}
+for either streaming criterion. The exact peak dimension is nine off the
+three collision lines, eight on any such line away from their intersection,
+and six at $(0,0)$.
+
+Along $u=\theta$, $v=\theta+\theta^k$ with an integer $k\ge2$,
+the three regimes have respective orders
+\[
+ M^{-1/3},\qquad \theta^{1/2}M^{-1/4},\qquad
+       \theta^{(4+2k)/9}M^{-2/9}.
+\]
+Their crossover budgets have orders $\theta^{-6}$ and
+$\theta^{-(8k-2)}$, with regrets of orders $\theta^2$ and
+$\theta^{2k}$, respectively. These are comparison orders, not exact
+integer thresholds.
+\end{corollary}
+\begin{proof}
+The cells sum to one, lie between $3/16$ and $7/16$, and their coefficient
+matrix has rank four: its last three rows separate the three nonconstant
+coefficients and the sum of its rows gives the constant. They therefore
+satisfy the compact-chamber hypotheses.
+
+At checkpoint $n=3,m=2$ the nine positive formal exponents are
+\[
+ 1,\quad 2,\ 2+u,\quad 3+u,\ 3+v,\quad
+ 4+2u,\ 4+v,\quad 5+u+v,\quad 6+2v.
+\]
+They form six uniformly separated groups, with three within-group gaps
+$|u|,|v-u|,|v-2u|$. Denote these gaps in decreasing order by
+$g_1\ge g_2\ge g_3$. For $\ell\le6$ the determinant volumes
+are comparable to one. For $\ell=6+j$, $1\le j\le3$, they are
+comparable to $g_1\cdots g_j$: choose one exponent from every group
+and a second from the $j$ groups with largest gaps for the lower bound.
+Any selection of $6+j$ exponents must double at least $j$ groups;
+all other factors are bounded, proving the upper bound. Fixed powers of
+$H$ only change constants. Since $p_{3,2}=9$, its profile is
+\[
+ \max\{M^{-1/3},\ g_1^{2/7}M^{-2/7},\
+              (g_1g_2)^{1/4}M^{-1/4},\
+              (g_1g_2g_3)^{2/9}M^{-2/9}\}.
+\]
+The signed differences satisfy $(v-u)-(v-2u)=u$, so the largest
+absolute gap is at most twice the second largest. Moreover
+$g_1\asymp\rho$, hence $g_2\asymp\rho$ and $g_3=\tau$.
+The seven-dimensional term is the geometric interpolation, with weights
+$3/7$ and $4/7$, of the six- and eight-dimensional terms, up to uniform
+constants. This proves the expression in \eqref{eq:two-parameter-law}
+for the checkpoint, also on the collision lines.
+
+At the other checkpoints, the attainable dimensions are bounded by three,
+six and three, respectively. Since every normalized gap is at most one,
+their squared covering errors are at most $CM^{-1/3}$. The causal
+classification therefore gives the same entire-horizon profile and the
+checkpoint-three lower bound supplies its converse. Counting distinct
+two-fold exponents gives the three exact peak dimensions asserted.
+
+Finally, on the stated path $\rho\asymp\theta$ and
+$\tau\asymp\theta^k$. Substitution gives the three displayed terms.
+Equality in order of the first two gives $M=\theta^{-6}$, at regret
+$\theta^2$; equality in order of the last two gives
+$M=\theta^{-(8k-2)}$, at regret $\theta^{2k}$. As $k>1$, these
+budgets are strictly separated as $\theta\downarrow0$ and all three
+regimes occur. The exponent $k$ records contact with a collision locus,
+not an additional assumed observable jet.
+\end{proof}

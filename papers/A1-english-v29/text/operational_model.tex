@@ -1,0 +1,35 @@
+\subsection{Persistent state and prediction loss}
+\begin{definition}[Finite-state filter]\label{def:finite-state}
+An $M$-state filter has transitions
+\[
+ i_{n+1}=U_n(i_n,g_{n+1},x_{n+1}),\qquad i_n\in\{1,\ldots,M\}.
+\]
+It reads only its previous index, the current command and current report.
+Past commands, past reports and retained command-generation or update seeds
+are unavailable outside the index. Fresh private coins may be used and
+then discarded. At a checkpoint the decoder reads only $i_n$ and a newly
+revealed independent query. The known clock permits stage-dependent
+transition and output tables. Real command inputs and read-only real
+calibration constants are allowed; arithmetic workspace, execution time and
+finite-precision implementation of these fixed functions are not the memory
+resource of this definition. In particular, this is a finite-state
+transducer, not an algorithm that repeatedly rereads an exact prefix.
+\end{definition}
+
+For each $1\le n<N$ fix a finite spanning probe list
+$H_{n,1},\ldots,H_{n,s_n^{\rm q}}$ as in
+Proposition~\ref{prop:tests}, using $m=N-n$ trials. To avoid confusion,
+$s_n^{\rm q}$ is the number of queries, not the exact state $s_n$.
+After the checkpoint state is formed, choose an independent uniform query
+$J$. Announce $a\in[0,1]$, execute that probe using its $m$ fresh trials,
+and let $Y$ be its all-failure indicator. All $N$ trials are counted.
+The conditional squared-loss excess over the full-history predictor is
+\begin{equation}\label{eq:brier}
+ \mathcal R(a,p)=\frac1{s_n^{\rm q}}\sum_j(a_j-p_j)^2,
+ \qquad p_j=\mu(P_hH_{n,j}).
+\end{equation}
+This follows by expanding $\E[(a-Y)^2\mid h,J]$; decoder randomization
+is averaged on the right. Only one selected checkpoint and one probe are
+executed in a run. Simultaneous bounds over checkpoints do not count the
+unexecuted probes as physical trials.
+
