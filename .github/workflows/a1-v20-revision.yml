@@ -1,0 +1,71 @@
+name: A1 v20 exact kernels and collision-uniform causal geometry
+on:
+  push:
+    branches:
+      - revision/a1-english-v20-exact-kernels-and-causal-geometry-2026-09-07
+    paths:
+      - .github/workflows/a1-v20-revision.yml
+      - papers/A1-english-v20/**
+permissions:
+  contents: write
+concurrency:
+  group: a1-v20-exact-kernels-and-causal-geometry
+  cancel-in-progress: false
+jobs:
+  verify-and-publish:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install exact diagnostics and mathematical typesetting
+        run: |
+          python -m pip install sympy==1.14.0
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+      - name: Reproduce the exact locally validated readable source from pinned history
+        working-directory: papers/A1-english-v20
+        run: |
+          python materialize_revision.py
+          python manifest.py --write
+          echo '67f978e7f1a34f841fc6262f4ef6d151f2f052cb7519549fade62ce2a0280de2  SOURCE_MANIFEST.json' | sha256sum --check
+          python build.py --prepare-only
+      - name: Run all ten suites, the actual inverse mutation test, and the complete PDF build
+        working-directory: papers/A1-english-v20
+        run: python validate.py
+      - name: Publish readable source, complete PDF, and actual receipts on this revision branch only
+        env:
+          EXPECTED_HEAD: ${{ github.sha }}
+        run: |
+          git diff --exit-code 59018a3231abb551d93947929f7e9bf0e3ddcd9e -- . ':(exclude)papers/A1-english-v20/**' ':(exclude).github/workflows/a1-v20-revision.yml'
+          test -s papers/A1-english-v20/main.pdf
+          test -s papers/A1-english-v20/validation/EXECUTION_REPORT.json
+          REMOTE_HEAD=$(git ls-remote origin refs/heads/revision/a1-english-v20-exact-kernels-and-causal-geometry-2026-09-07 | cut -f1)
+          test "$REMOTE_HEAD" = "$EXPECTED_HEAD" || { echo 'Branch changed; refusing to overwrite concurrent work.'; exit 1; }
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A -- papers/A1-english-v20
+          git add -f -- papers/A1-english-v20/main.pdf
+          git diff --cached --stat
+          if ! git diff --cached --quiet; then
+            git commit -m 'Publish A1 v20 complete revision: exact-kernel classification, collision-centered narrative, full manuscript and executed validation'
+            git push origin HEAD:revision/a1-english-v20-exact-kernels-and-causal-geometry-2026-09-07
+          fi
+          git rev-parse HEAD
+      - name: Deposit the complete referee package and execution logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: A1-v20-complete-referee-package
+          include-hidden-files: true
+          path: |
+            papers/A1-english-v20/
+            !papers/A1-english-v20/**/__pycache__/
+            !papers/A1-english-v20/*.aux
+            !papers/A1-english-v20/*.out
+          if-no-files-found: error
