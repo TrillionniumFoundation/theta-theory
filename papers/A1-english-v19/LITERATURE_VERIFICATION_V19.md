@@ -1,0 +1,11 @@
+# Primary-source comparisons — v19
+
+This file records the passages consulted, their relevance, and the boundary of the novelty comparison. It is not an exhaustive priority survey.
+
+**Banaji–Pantea.** M. Banaji and C. Pantea, *Some results on injectivity and multistationarity in chemical reaction networks*, SIAM J. Appl. Dyn. Syst. 15 (2016), 807–869, DOI 10.1137/15M1034441. Primary preprint: https://arxiv.org/abs/1309.6771v6 . Definition 2.24 and Lemma 2.36 were checked in text and rendered PDF pages 7 and 13. The finite square-pairing criterion is explicitly treated as inherited; the manuscript prints the positive-diagonal specialization. This does not identify the whole memory theory with chemical-reaction injectivity.
+
+**Müller et al.** S. Müller, E. Feliu, G. Regensburger, C. Conradi, A. Shiu and A. Dickenstein, *Sign conditions for injectivity of generalized polynomial maps with applications to chemical reaction networks and real algebraic geometry*, Found. Comput. Math. 16 (2016), 69–97, DOI 10.1007/s10208-014-9239-3. Primary text: https://arxiv.org/html/1311.5493v2 . Lemma 2.1 and its positive-diagonal/sign-vector alternative were inspected. The finite rectangular kernel formulation is credited to this mechanism. The new compact-space statement separately addresses actual full-support witnesses and positive histories.
+
+**Kaveh–Makhnatch.** K. Kaveh and P. Makhnatch, *Invariant factors as limit of singular values of a matrix*, arXiv:1811.07706v2 (2022), https://arxiv.org/abs/1811.07706v2 . Theorem 1.1, the Smith-form background and Section 6 were read, including rendered pages 2 and 7. The matrix invariant-order/singular-value input is classical and explicitly attributed. The manuscript includes the rectangular analytic argument to control constants in its physical memory application. Neither the Smith form nor the matrix logarithmic limit is presented as a new discovery.
+
+The independent additions are stated at the experiment level: full-support rectangular history consequences and rank witnesses, an arbitrary small covariance-germ realization in one fixed positive physical experiment, and the resulting joint integer-budget degeneration laws. No assertion is made that these sources contain all those conclusions, or that not locating them in these passages establishes absolute novelty.
