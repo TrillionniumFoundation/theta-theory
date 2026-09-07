@@ -1,0 +1,66 @@
+name: A1 v23 complete revision and validation
+on:
+  push:
+    branches:
+      - revision/a1-english-v23-collision-spine-saturated-proof-2026-09-07
+    paths:
+      - revision/a1-v23-2026-09-07/**
+      - .github/workflows/a1-v23-revision.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: a1-v23-revision-publication
+  cancel-in-progress: false
+jobs:
+  publish-v23:
+    if: github.repository == 'TrillionniumFoundation/theta-theory' && github.ref == 'refs/heads/revision/a1-english-v23-collision-spine-saturated-proof-2026-09-07'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.5'
+      - name: Install mathematical build dependencies
+        run: |
+          python -m pip install sympy==1.14.0
+          sudo apt-get update
+          sudo apt-get install -y texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+      - name: Materialize exact locally validated revision
+        run: python revision/a1-v23-2026-09-07/materialize.py
+      - name: Execute complete author validation and compile
+        working-directory: papers/A1-english-v23
+        run: python validate.py
+      - name: Rerun pinned v22 referee checks and publish readable manuscript
+        run: python revision/a1-v23-2026-09-07/publish.py
+      - name: Assemble complete referee package
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import zipfile
+          folders=('papers/A1-english-v20','papers/A1-english-v21','papers/A1-english-v22','papers/A1-english-v23','reviews/a1-english-v21-independent-2026-09-07','reviews/a1-english-v22-harsh-independent-2026-09-07','revision/a1-v23-2026-09-07')
+          with zipfile.ZipFile('A1-v23-complete-referee-package.zip','w',zipfile.ZIP_DEFLATED) as z:
+              for folder in folders:
+                  for p in sorted(Path(folder).rglob('*')):
+                      if p.is_file() and '__pycache__' not in p.parts and p.suffix not in ('.pyc','.aux','.out','.toc'):
+                          z.write(p,p.as_posix())
+          PY
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: A1-v23-complete-referee-package
+          path: A1-v23-complete-referee-package.zip
+          retention-days: 90
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: A1-v23-failure-diagnostics
+          path: |
+            papers/A1-english-v23/validation
+            papers/A1-english-v23/build
+            papers/A1-english-v23/main.log
+          if-no-files-found: ignore
