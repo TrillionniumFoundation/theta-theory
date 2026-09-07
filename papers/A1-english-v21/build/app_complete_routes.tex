@@ -1,0 +1,1160 @@
+\subsection{The global attainable law}
+\begin{theorem}[Collision-uniform checkpoint classification]\label{thm:intrinsic-checkpoint}
+Under the assumptions of this section there are $0<c\le C<\infty$
+such that, for every $a\in K$ and integer $M\ge1$,
+\begin{equation}\label{eq:intrinsic-checkpoint}
+ c\Psi_{n,m}(M,a)\le\overline R_{M;n,m}^{a}
+ \le R_{M;n,m}^{a,\max}\le C\Psi_{n,m}(M,a).
+\end{equation}
+The unconditional lower law uses independent uniform acquisition commands.
+The upper code is deterministic, has at most $M$ reachable representatives,
+and works on every admitted history. The lower law permits the independent
+coding randomization of Definition~\ref{def:finite-state}. Constants may
+depend on $K,C,\eta,\mu,n,m$, but not on $a$ or $M$.
+\end{theorem}
+\begin{proof}
+Let $D_a=\operatorname{diag}(d_j)$. For one report word each coordinate
+of $z_a(h)$ has the form $N_j(u)/Z(u)$, with numerator and evidence
+polynomials of degree at most $n$ in the command variables and
+$Z(u)\ge\kappa^n$. Thus
+\[
+ S_a=\{D_az_a(h):|h|=n\}
+\]
+is compact and has coefficient-independent bounded semialgebraic format:
+it is a finite union of projections of the formulas
+$Z(u)y_j=d_jN_j(u)$ on the command cube. Prior integrals and node
+values are real coefficients in these formulas. They need not depend
+semialgebraically on $a$.
+
+Individually normalizing the $n$ report factors puts them in affine
+hyperplanes of dimension $r-1$. The moment map is rational in those
+coordinates. Hence $\dim S_a\le p$. Lemma~\ref{lem:newton-attainment}
+also gives $|z_{a,j}|\le B$, so $S_a$ lies in the rectangle with
+half-widths $Bd_1\ge\cdots\ge Bd_{q_m}$. By
+Lemma~\ref{lem:tame-rectangle}, it has at most $M$ reachable
+representatives with covering radius bounded by
+\[
+ C\max_{\ell\le p}
+       \left(M^{-1}\prod_{j\le\ell}d_j\right)^{1/\ell}.
+\]
+The physical metric equivalence follows from \eqref{eq:leja-metric}
+and the full-column-rank product-probe matrix $G_m$. A fixed tie rule
+makes nearest-representative encoding Borel. Squaring and applying
+\eqref{eq:leja-volume} gives the upper bound in
+\eqref{eq:intrinsic-checkpoint}, with the integer budget already enforced
+by Lemma~\ref{lem:tame-rectangle}.
+
+For the lower bound, first average any randomized decoder conditional on
+its label; squared loss cannot increase. Orthogonally project its query
+centers onto the affine physical query span, apply a fixed left inverse
+of $G_m$, and then the inverse of the leading nonzero block of $L_a$.
+These maps have uniformly bounded norms. Projection onto any first
+$\ell\le\min(p,s)$ coordinates reduces the squared-error problem to
+the marginal of the cube in Lemma~\ref{lem:newton-attainment}, scaled
+by $d_1,\ldots,d_\ell$. The probability that $M$ radius-$b$ balls
+cover this uniform rectangle is at most
+\[
+ C_\ell M b^\ell/(d_1\cdots d_\ell).
+\]
+Choose $b=c_\ell(d_1\cdots d_\ell/M)^{1/\ell}$ with the
+constant small enough that at least half the minorized mass remains.
+Its mean squared error is at least a fixed multiple of $b^2$.
+An encoder's randomized assignment cannot improve upon the distance to
+the nearest of its centers. Independent public coding randomness can be
+fixed and then averaged, since it does not generate the acquisition law.
+Maximize over $\ell$. For $\ell>s$ the determinant volume is zero,
+so no additional term is needed. Equation~\eqref{eq:leja-volume}
+now gives the lower bound. The unconditional optimum is bounded above
+by the minimax optimum, completing the proof.
+\end{proof}
+
+\begin{theorem}[Causal classification across all collision strata]\label{thm:intrinsic-streaming}
+For the same fixed experiment and horizon, there exist $c,C>0$ such that
+for every known $a\in K$ and every integer $M\ge1$ there exists a
+\emph{single, stage-compatible} deterministic $M$-state transducer with
+maximum-history, maximum-checkpoint regret at most $C\Xi_N(M,a)$.
+Every $M$-state transducer has maximum unconditional checkpoint regret at
+least $c\Xi_N(M,a)$ under one common independent uniform exploration law.
+Equivalently,
+\begin{equation}\label{eq:intrinsic-streaming}
+ c\Xi_N(M,a)\le\mathfrak R_{M,N}^{a,\mathrm{av}}
+ \le\mathfrak R_{M,N}^{a,\max}\le C\Xi_N(M,a).
+\end{equation}
+The transducer may depend on $a$ and $M$. Constants are uniform in both;
+codebooks are not asserted to be calibration-blind. It stores only its
+representative index. The clock, known calibration and fixed real-valued
+program are read-only, as in Definition~\ref{def:finite-state}.
+\end{theorem}
+\begin{proof}
+At stage $n$ let $m=N-n$ and store a representative in the reachable
+\emph{raw} moment image indexed by $\Lambda_m$, including the constant
+coordinate $v_{me_0}=1$. For a new factor
+$f(t)=\sum_i f_i(g,x)t^{a_i}$, the exact update is
+\begin{equation}\label{eq:formal-multiindex-update}
+ v'_\alpha=
+ \frac{\sum_i f_i(g,x)v_{\alpha+e_i}}
+      {\sum_i f_i(g,x)v_{e_i+(m-1)e_0}},
+ \qquad \alpha\in\Lambda_{m-1}.
+\end{equation}
+Every index on the right belongs to $\Lambda_m$. Coincident labels
+have equal moment values and cause no ambiguity. On the segment joining
+any two reachable moment vectors, the denominator is a report probability
+under a posterior mixture and is at least $\kappa$. Coefficients are
+uniformly bounded and raw moments belong to $[0,1]$. Differentiating the
+quotient gives a Lipschitz constant independent of all exponent gaps.
+
+At every stage Theorem~\ref{thm:intrinsic-checkpoint} provides a raw
+reachable codebook of cardinality at most $M$ and covering radius at most
+$C_n\Psi_{n,N-n}(M,a)^{1/2}$. Update a representative by
+\eqref{eq:formal-multiindex-update}, then quantize in the next reachable
+codebook. Updating a reachable representative produces a reachable next
+state, so this quantizer is always evaluated on its domain. If $e_n$
+is the raw error, then
+\[
+ e_0=0,\qquad e_{n+1}\le L_ne_n+
+        C_{n+1}\Psi_{n+1,N-n-1}(M,a)^{1/2}.
+\]
+The finite recurrence bounds every $e_n$ by
+$C_N\Xi_N(M,a)^{1/2}$. The query matrix converts this to the
+asserted squared-regret bound. The exact prefix appears only in this
+error analysis, not in the transducer. No divided-difference coordinate,
+reciprocal pivot or stored command tape is used in a transition.
+
+Conversely, at each checkpoint the streaming index is an $M$-message
+encoder of the prefix. All command laws used in
+Theorem~\ref{thm:intrinsic-checkpoint} are prefixes of one common
+exploration law. Each transducer therefore satisfies every checkpoint
+lower bound; taking their maximum and then the infimum proves the lower
+bound in \eqref{eq:intrinsic-streaming}. Finitely many checkpoint
+constants can be replaced by their positive minimum. One checkpoint
+and its remaining query trials are executed in a run, as before.
+\end{proof}
+
+
+
+\subsection{Confluent observation algebras and resolved directions}\label{sec:confluence}
+The cardinality of a sumset is discontinuous when two of its elements
+coalesce. The corresponding experiment need not be discontinuous. We now
+identify the scales of the directions lost at such a collision. The
+parameter $\theta$ below indexes a \emph{known calibration}; the unknown
+parameter of each experiment is still $t$.
+
+\subsubsection{Affine exponent families}
+Fix $0=a_0<a_1<\cdots<a_{r-1}$ and real numbers $b_i$, with $b_0=0$.
+On a sufficiently small compact interval $0\le\theta\le\theta_0\le1$ put
+\[
+ A_\theta=\{a_i+\theta b_i:0\le i<r\}.
+\]
+The order of these exponents is assumed unchanged. Take $I=[0,1]$ and
+one fixed full-support prior $\mu$. A fixed coefficient matrix specifies
+positive detector cells
+\begin{equation}\label{eq:affine-calibration}
+ k_j^\theta(t)=\sum_{i=0}^{r-1}c_{ji}t^{a_i+\theta b_i},
+ \qquad \sum_jk_j^\theta=1.
+\end{equation}
+It has column rank $r$, and the cells have a common positive lower bound.
+The comparator cube is fixed. These hypotheses include any sufficiently
+small affine perturbation of a strictly positive calibration of full rank.
+No continuity of an unknown prior density is assumed.
+
+For a fixed positive future length $m\ge1$, let
+\[
+ \mathcal B_m=\left\{\left(\sum_{\nu=1}^m a_{i_\nu},
+                              \sum_{\nu=1}^m b_{i_\nu}\right):
+                              0\le i_\nu<r\right\}.
+\]
+Repeated \emph{pairs} are identified. Distinct pairs give distinct
+exponents $\lambda+\theta\gamma$ for $0<\theta\le\theta_0$; shrink
+$\theta_0$ to exclude crossings if necessary. For each first coordinate
+$\lambda$, order its second coordinates as
+$\gamma_{\lambda,0}<\cdots<\gamma_{\lambda,s_\lambda-1}$.
+Set $K_m=\sum_\lambda s_\lambda$. The cluster at $\lambda=0$ consists
+only of $(0,0)$.
+
+Define the divided-difference functions
+\begin{equation}\label{eq:divided-tests}
+ \psi_{\lambda,k}^\theta(t)
+  =[\lambda+\theta\gamma_{\lambda,0},\ldots,
+       \lambda+\theta\gamma_{\lambda,k}]\,(x\mapsto t^x),
+ \quad 0\le k<s_\lambda.
+\end{equation}
+At $\theta=0$ their continuous values are
+\begin{equation}\label{eq:jet-tests}
+ \psi_{\lambda,k}^0(t)=t^\lambda(\log t)^k/k!.
+\end{equation}
+For $\lambda>0$ these functions have value zero at $t=0$; the sole
+zero-exponent function is the constant one. The bracket in
+\eqref{eq:divided-tests} is a divided difference in the exponent, not a
+new apparatus output. For a history $h$ let $z_\theta(h)$ be its posterior
+expectations of these functions, omitting the constant coordinate.
+
+List the orders $k$ of the nonconstant functions in nondecreasing order:
+\[
+ 0=\nu_1\le\cdots\le\nu_d,\qquad d=K_m-1.
+\]
+There are $|mA_0|-1$ zero orders. The associated resolution function is
+\begin{equation}\label{eq:resolution-function}
+ \Phi_\theta(M)=\max_{1\le\ell\le d}
+       \theta^{\,2(\nu_1+\cdots+\nu_\ell)/\ell}M^{-2/\ell},
+       \qquad M\ge1.
+\end{equation}
+We set $0^0=1$ and $0^a=0$ for $a>0$ in this formula. In particular
+$\Phi_0(M)=M^{-2/(|mA_0|-1)}$.
+
+Choose $r$ attainable failure factors which form a basis in the formal
+monomials $t^{a_i+\theta b_i}$, with coefficients independent of $\theta$.
+For example use $1/2$ and $1/2+\delta t^{a_i+\theta b_i}$, $i>0$,
+with $\delta$ sufficiently small. The fixed right inverse of the
+calibration matrix realizes these by fixed command labels. All ordered
+$m$-fold products form a common finite probe menu. Any other such fixed
+basis, and its full product menu, gives equivalent bounds below.
+
+\begin{theorem}[Uniform resolved checkpoint law]\label{thm:confluent-law}
+Suppose
+\begin{equation}\label{eq:full-future-condition}
+ K_m-1\le n(r-1).
+\end{equation}
+Supply independent uniform commands for the first $n$ trials, then reveal
+an independent uniform query from the preceding product menu. Let
+$\overline R_{M;n,m}^\theta$ be the optimal unconditional squared-prediction
+regret of an arbitrary $M$-message checkpoint encoder. Let
+$R_{M;n,m}^{\theta,\max}$ be its minimax counterpart over admitted histories.
+There are constants $0<c\le C<\infty$, independent of $M$ and $\theta$,
+such that
+\begin{equation}\label{eq:confluent-law}
+ c\Phi_\theta(M)\le\overline R_{M;n,m}^\theta
+       \le R_{M;n,m}^{\theta,\max}\le C\Phi_\theta(M),
+ \qquad 0\le\theta\le\theta_0.
+\end{equation}
+The encoders may be Borel and randomized as in
+Definition~\ref{def:finite-state}. At the common interior binomial command
+tuple the normalized map $h\mapsto z_\theta(h)$ is a submersion of rank
+$d$, including at $\theta=0$. Its local inverse bounds and an unconditional
+minorization can be chosen uniformly in $\theta$.
+\end{theorem}
+
+The upper bound in this theorem is a checkpoint bound. It does not assume
+that access to an exact prefix is free during repeated compression. Every
+streaming filter is a checkpoint encoder, so the lower bound applies to
+such filters as well. Section~\ref{sec:uniform} proves a matching genuinely
+streaming bound across an entire singular family. Theorem~\ref{thm:attainable-checkpoint}
+below removes the full-future restriction by truncating the resolution flag,
+and Theorem~\ref{thm:general-uniform-streaming} proves the fixed-horizon
+causal version for the affine class. When $m=0$ there is no nonconstant
+future query and the prediction regret is zero; formula
+\eqref{eq:resolution-function} is not used in that case.
+
+\subsubsection{Confluent positivity and the physical prediction metric}
+We give the details of the analytic and geometric steps in
+Theorem~\ref{thm:confluent-law}.
+
+The proof of Lemma~\ref{lem:confluent-positive} appears in the principal analytic inputs.
+
+\begin{lemma}[Desingularization and observable scales]\label{lem:observable-scales}
+The functions in \eqref{eq:divided-tests}, and the needed derivatives in
+$\theta$, are uniformly bounded on $[0,1]\times[0,\theta_0]$.
+The posterior vectors $z_\theta(h)$ therefore lie in a fixed box.
+For the common product probe menu let $p_\theta(h)$ be its probability
+vector. There is a fixed matrix $G$ of full column rank such that
+\begin{equation}\label{eq:physical-metric}
+ p_\theta(h)-p_\theta(\widetilde h)
+    =G\operatorname{diag}(\theta^{\nu_i})
+          (z_\theta(h)-z_\theta(\widetilde h)).
+\end{equation}
+In particular the squared norm on the left is bounded above and below
+by positive constants times
+$\sum_i\theta^{2\nu_i}|z_i(h)-z_i(\widetilde h)|^2$,
+with constants independent of $\theta$.
+\end{lemma}
+\begin{proof}
+The divided difference of order $k$ is the integral of
+$f^{(k)}(\sum_jw_jx_j)$ over the standard $k$-simplex, whose volume is
+$1/k!$. This identity follows by iterating the fundamental theorem of
+calculus, starting with $(f(y)-f(x))/(y-x)=\int_0^1f'(x+s(y-x))\dd s$.
+It also gives the repeated-node value. Here $f(x)=t^x$, so every
+integrand is $t^x(\log t)^k$. At a positive cluster the exponent is
+bounded below by some $a>0$ uniformly on the fixed parameter interval.
+For every fixed $j$, $\sup_{0<t\le1}t^a|\log t|^j<\infty$.
+The same domination applies after finitely many $\theta$ derivatives.
+There are no higher divided differences at zero. Posterior expectations
+of bounded functions are bounded independently of the history.
+
+Newton's interpolation identity, proved by successive subtraction of
+the interpolating polynomials, is exact at each node:
+\begin{equation}\label{eq:newton-exponents}
+ t^{\lambda+\theta\gamma_{\lambda,j}}
+   =\sum_{k=0}^j\theta^k
+      \left(\prod_{v<k}(\gamma_{\lambda,j}-\gamma_{\lambda,v})\right)
+                  \psi_{\lambda,k}^\theta(t).
+\end{equation}
+The matrix multiplying $\operatorname{diag}(\theta^k)$ is fixed,
+triangular within each cluster, and has nonzero diagonal. The standard
+identities used here are classical divided-difference calculus
+\cite{deBoor}; the integral proof makes the uniformity at coalescence
+explicit.
+
+The expansion matrix from the formal pair monomials in $\mathcal B_m$
+to the probe products has full column rank. To see this, invert the fixed
+one-step basis change and multiply it $m$ times. Every formal monomial
+product is a linear combination of the probe products. Identifying equal
+pairs is a surjective linear quotient, so the spanning statement survives
+that identification. Both this expansion matrix and the triangular
+matrix in \eqref{eq:newton-exponents} are independent of $\theta$.
+Their product has full column rank. Subtracting two normalized posterior
+vectors removes its constant column and gives \eqref{eq:physical-metric}.
+The remaining columns are still independent. Their extreme singular
+values give the two constants. The equality extends to $\theta=0$ by
+continuity; vanishing weights then remove precisely the unresolved jets.
+\end{proof}
+
+\begin{lemma}[Uniform attainable patch with its evidence]\label{lem:uniform-patch}
+Under \eqref{eq:full-future-condition}, there are $\rho,\beta>0$,
+independent of $\theta$, such that the subprobability distribution of
+$z_\theta$ on all-failure prefixes dominates $\beta$ times uniform
+probability on a translate of $[-\rho,\rho]^d$.
+\end{lemma}
+\begin{proof}
+Use the binomial factors $(1+c_it^{D_\theta})/2$ of
+Lemma~\ref{lem:binomial-tangent}, with distinct small $c_i$ and
+$D_\theta=a_{r-1}+\theta b_{r-1}$. Since the coefficient calibration is
+fixed, one common interior command tuple implements this family for every
+$\theta$. Its unnormalized tangent has $n(r-1)+1$ distinct monomials,
+also at zero. At positive $\theta$, pairing with the $K_m$ distinct
+future exponents has rank $K_m$ by Lemma~\ref{lem:mixed-moment}.
+The divided-difference basis change is invertible there. At zero,
+Lemma~\ref{lem:confluent-positive} gives the same rank directly, without
+passing a rank assertion through a singular limit. The product itself
+lies in the tangent. The normalization map
+$v\mapsto v-p e_0v$ has kernel exactly $\spanop\{p\}$ on this full
+image, as in \eqref{eq:normalized-derivative}. Thus the normalized jet
+map has rank $d$ at every $\theta$, including zero.
+
+Here are uniform local details. Let $q$ be the total number of command
+coordinates and $g_*$ the common interior tuple. The matrices
+$J_\theta=D_gz_\theta(g_*)$ are continuous in $\theta$ and surjective.
+Their least row singular value has a positive minimum $\sigma$ on the
+compact parameter interval. Choose an orthonormal basis $E_\theta$ of
+the row space and a complementary orthonormal basis $F_\theta$ of its
+kernel, and use coordinates $g=g_*+E_\theta u+F_\theta w$.
+The derivative at zero of
+\[
+ (u,w)\longmapsto
+       (z_\theta(g_*+E_\theta u+F_\theta w)-z_\theta(g_*),w)
+\]
+is block diagonal with invertible upper block, least singular value at
+least $\sigma$, and lower block the identity. Its derivative norm and
+its second derivative have common finite bounds on a fixed neighborhood.
+This follows from Lemma~\ref{lem:observable-scales}, finite product
+rules, and the prefix evidence lower bound $\kappa^n$.
+
+Choose a ball inside the command cube on which the derivative differs
+from its central value by at most half its least singular value. This
+radius can be chosen uniformly. For a sufficiently small target ball,
+the map obtained by subtracting the nonlinear remainder and applying the
+inverse central derivative is a contraction of that command ball into
+itself. The contraction theorem gives a differentiable inverse. Hence a
+product of a $d$-cube and a $(q-d)$-cube of common positive side length
+lies in its image, uniformly in $\theta$. All inverse Jacobian
+determinants are bounded below by a positive constant: the forward
+derivative is uniformly bounded, so its determinant is uniformly bounded
+above. The orthogonal command-coordinate change has determinant of
+absolute value one. No continuity of the chosen orthonormal frames in
+$\theta$ is needed for these uniform bounds.
+
+Uniform commands have density $(1-2\eta)^{-q}$. Their joint law with the
+all-failure word has density
+\[
+ (1-2\eta)^{-q}\mu\!\left(\prod_{i=1}^nF_{g_i}\right)
+       \ge (1-2\eta)^{-q}\eta^n.
+\]
+Change variables using the inverse just constructed and integrate over
+the complementary cube. This gives the asserted minorization, with
+$\beta>0$ the product of this density bound, the inverse-Jacobian bound,
+and the two cube volumes. The convention for a zero-dimensional
+complement is volume one. This is a subprobability bound retaining the
+failure evidence, not conditioning away a rare prefix.
+\end{proof}
+
+\subsubsection{A scale-sensitive finite-state calculation}
+\begin{lemma}[Rectangular quantization at every budget]\label{lem:rectangle}
+For $a_1\ge\cdots\ge a_d>0$ set
+\[
+ e_M(a)=\max_{1\le\ell\le d}
+                  \left(\frac{a_1\cdots a_\ell}{M}\right)^{1/\ell}.
+\]
+A box with these side lengths has an at-most-$M$-cell rectangular
+partition of diameter at most $2\sqrt d\,e_M(a)$ in every cell.
+The optimal mean squared distortion of its uniform distribution using
+$M$ arbitrary centers is at least $c_d e_M(a)^2$, with $c_d>0$
+depending only on $d$. Zero side lengths may be omitted.
+\end{lemma}
+\begin{proof}
+Put $e=e_M(a)$ and take $N_i=\max\{1,\lfloor a_i/e\rfloor\}$
+equal intervals in coordinate $i$. If $\ell$ coordinates satisfy
+$a_i\ge e$, then
+$\prod_iN_i\le\prod_{i\le\ell}a_i/e^\ell\le M$.
+Every side length in a cell is at most $2e$: for $a_i/e\ge1$ use
+$\lfloor a_i/e\rfloor\ge a_i/(2e)$, and otherwise use $a_i<e$.
+Choose an actual reachable representative in each nonempty cell when
+covering a reachable subset of the box. The diameter bound remains valid.
+
+For the lower bound project onto the first $\ell$ coordinates. The
+projected uniform density is $(a_1\cdots a_\ell)^{-1}$ on its box.
+The union of $M$ balls of radius $r$ has probability at most
+$M v_\ell r^\ell/(a_1\cdots a_\ell)$, where $v_\ell$ is the volume of
+the unit ball. Taking
+$r=(a_1\cdots a_\ell/(2Mv_\ell))^{1/\ell}$ shows that mean squared
+distance is at least $r^2/2$. Projection cannot increase distance.
+Apply this for every $\ell$ and take the smallest of the finitely many
+positive dimensional constants. Centers need not lie in the box.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:confluent-law}]
+Let $D_\theta=\operatorname{diag}(\theta^{\nu_i})$; this temporary
+matrix notation is unrelated to the peak dimension $D_A(N)$.
+By Lemma~\ref{lem:observable-scales}, $D_\theta z_\theta(h)$ lies in
+a translated box of side lengths at most $2B\theta^{\nu_i}$ for a fixed
+$B$. Lemma~\ref{lem:rectangle} partitions this box into at most $M$
+cells with squared diameter at most $C\Phi_\theta(M)$. Choose a
+reachable representative in each nonempty cell. At the checkpoint,
+encode the cell of the exact history and decode its representative's
+probe probabilities. These are probabilities in $[0,1]$. Equation
+\eqref{eq:physical-metric} gives the uniform upper regret bound.
+Finite cells with deterministic boundary conventions give Borel encoders.
+
+For the lower bound first average private decoder coins conditional on
+the message and query. Squared loss cannot increase, leaving at most
+$M$ centers in probe space. Orthogonally project these centers onto the
+affine space $p_*+\operatorname{range}(G)$; projection cannot increase
+distance to a true prediction. Invert $G$ on its range. Its lower singular
+bound reduces the problem to distance from at most $M$ arbitrary centers
+in the scaled $z$ coordinates. The law there dominates $\beta$ times
+the image of the cube from Lemma~\ref{lem:uniform-patch}; its side lengths
+are $2\rho\theta^{\nu_i}$. The lower half of
+Lemma~\ref{lem:rectangle} gives $c\Phi_\theta(M)$ after division by
+the fixed number of queries. Encoder randomization cannot beat distance
+to the closest center at a fixed history. Fresh public randomness can be
+fixed and then averaged because it is independent of the entire prefix.
+At zero, omit zero-weight coordinates in this argument. The same constants,
+reduced if necessary over the finitely many possible dimensions, work
+throughout the compact parameter interval. This proves both criteria and
+the claimed submersion statement.
+\end{proof}
+
+Thus the relevant finite-resolution data are the multiplicities of additive
+collisions and their confluent orders, not only the cardinality of the
+nearby sumset. The result is a uniform comparison up to constants. It
+neither asserts a new general quantization principle nor identifies a
+universal leading distortion constant.
+
+
+\subsection{Finite-state filtering after every report}\label{sec:streaming}
+Fix $N\ge2$ and abbreviate $d_n=d_A(n,N-n)$ and $D_*=D_A(N)>0$.
+The exact state from Theorem~\ref{thm:causal} will be denoted $s_n$.
+A clock $n$, calibration, prior moments and a precomputed finite program
+are read-only data. The charged resource is the persistent state between
+successive input symbols.
+
+The resource model and loss are defined in Section~\ref{sec:experiment}.
+
+\begin{lemma}[Uniform finite-horizon transition bounds]\label{lem:lipschitz}
+On the compact exact state sets there are constants $L_n<\infty$ such
+that the update $T_n(s,g,x)$ satisfies
+\[
+ \norm{T_n(s,g,x)-T_n(\widetilde s,g,x)}
+ \le L_n\norm{s-\widetilde s}
+\]
+for every admitted $g,x$ and $s,\widetilde s\in\cS_n$.
+Every fixed finite probe prediction vector is likewise Lipschitz in the
+state, with a finite constant independent of the history.
+\end{lemma}
+\begin{proof}
+In factor coordinates an update before changeover appends the new factor
+$f/\mu f$. The old factor coordinates are unchanged. All unnormalized
+report probabilities lie in $[\kappa,1]$; consequently the normalized
+factors lie pointwise in $[\kappa,1/\kappa]$. Their coordinates are bounded,
+since they are continuous images of a compact cube and finite alphabet.
+At changeover each needed moment is a ratio of polynomial expressions in
+these coordinates and the fixed prior moments, with denominator the
+integral of a product of normalized factors, bounded below by $\kappa^{n+1}$.
+The same lower bound holds on line segments between factor tuples,
+because each individual interpolated normalized factor is still at least
+$\kappa$. Finite differentiation and the mean value theorem give a
+uniform derivative bound there.
+
+In moment coordinates the update is \eqref{eq:sparse-update}. Its
+denominator is at least $\kappa$ at every state; on a line segment between
+two such moment vectors the corresponding posterior mixture has the same
+lower bound. Numerators, coefficients and moment coordinates range over
+compact sets. The quotient rule therefore gives a uniform bound. Probe
+predictions are linear in the relevant moment coordinates, or normalized
+polynomial expressions in the factor coordinates with the same positive
+denominator control. The argument gives their claimed Lipschitz constants.
+All constants use only finite algebra and the supplied moments; they may
+grow with $N$ or deteriorate with $\kappa$.
+\end{proof}
+
+\begin{theorem}[Finite-state streaming upper bound]\label{thm:stream-upper}
+For every $M\ge1$ there is a deterministic $M$-state filter, updated after
+every report, whose prediction regret at every checkpoint and every
+admitted command-report history is at most
+\begin{equation}\label{eq:stream-upper}
+ C_N M^{-2/D_*},
+\end{equation}
+where $C_N<\infty$ depends on the fixed experiment, prior, probe lists
+and total horizon, but not on $M$ or the input history. The representatives
+and read-only transition functions are supplied existentially from the exact
+model; this is not an effective synthesis theorem from finite-precision data.
+\end{theorem}
+\begin{proof}
+Enclose $\cS_n\subset\R^{d_n}$ in $[-B_n,B_n]^{d_n}$. For $d_n>0$
+partition each coordinate interval into
+$k_n=\lfloor M^{1/d_n}\rfloor$ intervals. In each nonempty cell choose
+one representative \emph{in} $\cS_n$. There are at most $k_n^{d_n}\le M$
+representatives, and assigning a state to its cell representative has
+error at most
+\[
+ \delta_n\le 2B_n\sqrt{d_n}/k_n
+ \le4B_n\sqrt{d_n}\,M^{-1/d_n}
+ \le C M^{-1/D_*}.
+\]
+Here $C$ is the maximum of the finite prefactors. Empty cells need no
+representative. For $d_n=0$ use the unique state. Deterministic boundary
+and tie conventions give Borel quantizers $Q_n$.
+
+The filter stores only the index of a representative $\widehat s_n$.
+Its transition is exactly
+\begin{equation}\label{eq:transducer}
+ \widehat s_{n+1}
+   =Q_{n+1}\bigl(T_n(\widehat s_n,g_{n+1},x_{n+1})\bigr).
+\end{equation}
+Since each representative is reachable and every report has positive
+probability, its exact image lies in $\cS_{n+1}$. Thus the quantizer is
+always applied inside its domain and no infeasible moment update is used.
+The finite representative choices and the functions in
+\eqref{eq:transducer} are read-only program data. They may be obtained by
+selecting points in nonempty cells of the compact state sets; no efficient global synthesis
+or computability of unsupplied real prior moments is asserted.
+
+Let $e_n=\norm{s_n-\widehat s_n}$. On the actual command-report stream,
+Lemma~\ref{lem:lipschitz} gives
+\[
+ e_0=0,\qquad e_{n+1}\le L_ne_n+C M^{-1/D_*}.
+\]
+Set $b_0=0$ and $b_{n+1}=L_nb_n+C$. Induction proves
+$e_n\le b_nM^{-1/D_*}$. This explicitly accumulates the errors from
+\emph{all} previous lossy updates. At a query use the probe predictions
+of $\widehat s_n$, which are actual probabilities. If the vector prediction
+map has Lipschitz constant $K_n$, \eqref{eq:brier} bounds regret by
+$(K_n^2/s_n^{\rm q})b_n^2 M^{-2/D_*}$. The maximum of these finitely
+many constants proves \eqref{eq:stream-upper}. No exact prefix was kept
+for the changeover: the factor-to-moment computation uses the representative
+factors already encoded by $i_n$.
+\end{proof}
+
+\begin{theorem}[Matching exponent in one fixed streaming experiment]\label{thm:stream-lower}
+Choose $n_*$ attaining $D_*=d_A(n_*,N-n_*)$. For the first $n_*$ trials
+supply independent uniform commands from $\cG$, independent of the
+parameter, cartridges and filtering coins. The realized command is read
+once by the filter. At $n_*$ reveal the independent probe query and execute
+its remaining trials. This is one fixed experiment, known before the
+filter is chosen. Its optimal unconditional regret over $M$-state filters
+satisfies
+\begin{equation}\label{eq:stream-match}
+ 0<c_NM^{-2/D_*}\le\overline{\mathcal R}_{M,N}^{\rm stream}
+                  \le C_NM^{-2/D_*}.
+\end{equation}
+The same power is sharp for the minimax streaming criterion taking the
+maximum conditional regret over checkpoints and input histories. Fresh
+private update and decoder randomization does not defeat the lower bound;
+a fresh public coding seed independent of the complete prefix may also be
+allowed. Thus for fixed $N$, the required persistent bits for this prediction
+task satisfy
+$B_*(\varepsilon)=\tfrac{D_*}{2}\log_2(1/\varepsilon)+O_N(1)$.
+\end{theorem}
+\begin{proof}
+Write $n=n_*$, $d=D_*$, and $s=s_n^{\rm q}$. Theorem~\ref{thm:rank}
+gives an interior command tuple $g_0$ where the probe map $p(g)$ on
+all-failure prefixes has rank $d$. Select $d$ independent probe coordinates,
+and let $E$ denote their coordinate projection, of operator norm one.
+Choose complementary command coordinates $w$ so that
+$g\mapsto(Ep(g),w(g))$ has an invertible derivative at $g_0$.
+Let $\Phi$ be its local inverse. There is a compact product
+$B_\rho^d\times W$ inside its domain, centered at the projected
+prediction point, such that $\Phi$ stays in the command interior and
+$|\det D\Phi|\ge j_0>0$. The complementary box $W$ has positive
+volume, with unit-volume convention in zero dimensions.
+
+If $k=Kn$ is the number of real command entries, their density is
+$(1-2\eta)^{-k}$. The joint density of commands and an all-failure
+prefix is this density times
+$Z(g)=\mu\prod_iF_{g_i}\ge\eta^n$. Change variables with $\Phi$ and
+integrate over $W$. The subprobability law of the projected predictions
+on this prefix dominates $\beta$ times uniform probability on
+$B_\rho^d$, with
+\[
+ \beta=\frac{\eta^n j_0|W|\,|B_\rho^d|}{(1-2\eta)^k}>0.
+\]
+In particular the lower bound retains the probability of the failure
+prefix. It does not assign an atom to an exact real command or assume
+a flat ball in the entire curved prediction image.
+
+Every streaming filter is in particular an $M$-message encoder at this
+checkpoint. Given any message, average decoder coins conditional on each
+query; squared loss can only decrease. This gives at most $M$ prediction
+vectors. Randomizing the encoder cannot beat the closest of these vectors
+at a fixed history. Projecting their centers by $E$ cannot increase squared
+distance. For a uniform point $X$ in a $d$-ball of radius $\rho$ and any
+$M$ centers, the union-of-balls estimate gives
+\[
+ \Pr\{\min_i\norm{X-z_i}\le r\}\le
+                    \min\{1,M(r/\rho)^d\}.
+\]
+Integrating its complementary tail yields
+\[
+ \E\min_i\norm{X-z_i}^2
+ \ge\int_0^{\rho^2 M^{-2/d}}
+          (1-Mt^{d/2}/\rho^d)\dd t
+ =\frac d{d+2}\rho^2 M^{-2/d}.
+\]
+Multiply by $\beta/s$ to obtain $c_N>0$. Fresh public randomness can be
+fixed and then averaged because it is independent of the prefix. Private
+online coins may equivalently be drawn on an independent tape for this
+proof; fixing them makes a deterministic transducer and the same bound
+holds uniformly. That proof device supplies no tape to the implemented
+filter. The prescribed exploration is independent of that tape, a condition
+that is essential to this particular argument. An old command-generation
+seed is not fresh coding randomness and remains charged.
+
+Theorem~\ref{thm:stream-upper} gives the upper bound in the same experiment.
+The minimax conditional criterion is at least its unconditional regret,
+while the universal upper filter works at all checkpoints. Finally put
+$M=2^B$ and solve the two inequalities. The Euclidean covering mechanism
+is classical \cite{GrafLuschgy}; the identified sparse dimension and the
+actual repeated-update construction are the experiment-specific inputs.
+\end{proof}
+
+\begin{theorem}[A separate finite-state control bound]\label{thm:control-bound}
+For the same finite detector and horizon, suppose stage rewards
+$r_n(g,x)\in[0,1]$ are continuous in $g$ for each report, and the objective
+is their expected sum. There is an $M$-state feedback controller whose
+loss relative to the full-history optimum is at most
+\begin{equation}\label{eq:control-bound}
+ C'_N M^{-1/D_*}.
+\end{equation}
+No matching lower power for arbitrary control tasks is asserted. An
+additional finite payoff automaton must be counted as task state, multiplying
+the number of states if it is included.
+\end{theorem}
+\begin{proof}
+Exact dynamic programming on $\cS_n$ is valid by
+Proposition~\ref{prop:tests}. With terminal value zero, its recursion is
+\[
+ V_n(s)=\max_{g\in\cG}\sum_{x\in\cX}p_x(s,g)
+       \{r_{n+1}(g,x)+V_{n+1}(T_n(s,g,x))\}.
+\]
+Here $p_x$ is a linear moment functional or a normalized factor expression.
+The positive denominator bounds, compact action set and continuous rewards
+make the displayed objective continuous, and the maximum is attained.
+By backward induction it is uniformly Lipschitz in $s$, since finite sums,
+products of bounded Lipschitz functions, and the updates in
+Lemma~\ref{lem:lipschitz} preserve that property. The maximum of functions
+with a common Lipschitz constant is again Lipschitz. Denote by $H_n$ a
+uniform Lipschitz constant of the action objective, before its maximization.
+
+At each representative choose an exact maximizing action and store that
+action in the finite output table. At the true state $s_n$, the loss from
+using the action optimal at $\widehat s_n$ is at most $2H_ne_n$.
+Update the representative by \eqref{eq:transducer}. The true exact state
+is computed only for analysis along the controller's actual observations;
+the implemented controller still stores only its index. Bellman telescoping
+and conditional expectation give total loss at most
+$2\sum_{n<N}H_ne_n\le2\sum_{n<N}H_nb_n M^{-1/D_*}$.
+This proves \eqref{eq:control-bound}. It uses no continuity of the optimizing
+action as a function of state, and it does not differentiate an optimizer.
+Its approximation principle is related to \cite{Subramanian}; it is not
+claimed as a new general dynamic-programming principle.
+\end{proof}
+
+\subsubsection{Horizon and calibration remain part of the constants}
+If every factor in a probe menu satisfies $0<F\le v<1$, then
+$H_{n,j}\le v^{N-n}$ and every posterior prediction satisfies the same
+bound. The one-state decoder that always announces zero therefore has
+\begin{equation}\label{eq:zero-memory}
+ \mathcal R\le v^{2(N-n)}.
+\end{equation}
+For the shared physical menu $F=c+\delta k_j$ one may take $v=c+\delta$.
+Thus a checkpoint implementation may choose, in advance, between the
+streaming filter and the one-state decoder and obtain
+\[
+ \mathcal R\le\min\{C_N M^{-2/D_*},(c+\delta)^{2(N-n)}\}.
+\]
+At $c=1/2$, $\delta=1/8$, $N-n=20$, the second bound is
+$(5/8)^{40}<10^{-8}$. This does not contradict a fixed-$N$ high-resolution
+exponent. Neither the new sparse rank theorem nor the streaming construction
+turns it into a horizon-uniform useful-memory law. We have not rescaled
+the loss or discarded rare histories to avoid this bound.
+
+The upper constants involve state bounds, transition Lipschitz constants
+and repeated error propagation. The lower constants involve an attainable
+Jacobian, a chart radius, evidence and the prior pairing. They are not
+uniform over vanishing detector amplitudes, all full-support priors or
+increasing horizons. With a finite fixed command alphabet and finite $N$
+there are finitely many histories and an exact finite code eventually
+suffices; the matching asymptotic lower bound above expressly uses the
+fixed continuous-command exploration protocol.
+
+
+\subsection{Attainable resolution flags and uniform causal memory}\label{sec:attainable-flag}
+The full-future hypothesis in Section~\ref{sec:confluence} makes every
+nonconstant future jet attainable. It is not needed for a resolution law,
+but it cannot simply be omitted from the formula there. When the past is
+shorter, the relevant list is an initial part of the future resolution
+flag. The lower bound requires transversality to this flag; the upper
+bound requires an estimate on the whole, generally curved, attainable
+image. We establish both and then prove their compatibility with every
+successive report update.
+
+\subsubsection{Statement of the attainable law}
+Retain the affine calibration and positivity assumptions of
+Section~\ref{sec:confluence}, but do not impose
+\eqref{eq:full-future-condition}. Fix $n,m\ge1$. There are $K_m$ formal
+sum pairs in $\mathcal B_m$; the zero pair is the constant, and the other
+$q_m=K_m-1$ divided-difference coordinates have orders
+\[
+ \nu_{m,1}\le\cdots\le\nu_{m,q_m}.
+\]
+Order equal orders by increasing limiting exponent, once and for all.
+Thus every initial part of the list includes, within each cluster, all
+jets preceding any jet that it contains. Set
+\begin{equation}\label{eq:attainable-orders}
+ p_{n,m}=\min\{n(r-1),q_m\},\qquad
+ S_{m,\ell}=\sum_{i=1}^{\ell}\nu_{m,i},\qquad
+ \Phi^{\rm att}_{n,m}(M,\theta)
+ =\max_{1\le\ell\le p_{n,m}}
+       \theta^{2S_{m,\ell}/\ell}M^{-2/\ell}.
+\end{equation}
+Here $0^0=1$ and $0^s=0$ for $s>0$. If $n=0$ or $m=0$, define
+$\Phi^{\rm att}_{n,m}=0$ separately. No division by a zero dimension is
+then involved. Throughout, constants may depend on the fixed experiment,
+prior, horizon and calibration interval, but not on $M$ or $\theta$.
+
+\begin{theorem}[Attainable confluent checkpoint law]\label{thm:attainable-checkpoint}
+For every integer $M\ge1$ and every calibration in the compact interval
+of Section~\ref{sec:confluence}, the unconditional optimal $M$-message
+checkpoint regret under independent uniform commands and the minimax
+checkpoint regret both have order
+$\Phi^{\rm att}_{n,m}(M,\theta)$, with positive uniform comparison
+constants. The upper code has at most $M$ reachable representatives
+and works on every admitted history. The lower bound permits the
+independent encoder and decoder randomization specified in
+Definition~\ref{def:finite-state}.
+
+In particular, past limitation truncates the ordered ambient list at
+$p_{n,m}$; it does not introduce the remaining ambient orders into the
+rate. At zero the exponent is
+$2/\min\{n(r-1),|mA_0|-1\}$, and at each fixed positive calibration it
+is $2/p_{n,m}$.
+\end{theorem}
+
+For the sequential assertion fix $N\ge2$ and choose the compact
+calibration interval so that distinct formal pairs in
+$\mathcal B_m$, $1\le m<N$, do not meet at a positive calibration.
+Such an interval always exists after decreasing its positive endpoint:
+there are finitely many pairs and their exponent differences are affine.
+Put
+\begin{equation}\label{eq:general-stream-profile}
+ \Omega_N(M,\theta)
+   =\max_{1\le n<N}\Phi^{\rm att}_{n,N-n}(M,\theta).
+\end{equation}
+Use the same independent uniform command law at every acquisition time.
+For each selected checkpoint reveal its independent product query only
+after the index has been formed. As in Section~\ref{sec:streaming}, only
+one checkpoint and its remaining query trials are executed in a run.
+Let $\mathfrak R^{\rm av}_{M,N}$ be the infimum, over one streaming
+filter, of the maximum of its unconditional checkpoint regrets. Let
+$\mathfrak R^{\rm max}_{M,N}$ be the corresponding infimum of the
+maximum conditional regret over checkpoints and histories.
+
+\begin{theorem}[Uniform causal realization of the resolution flag]\label{thm:general-uniform-streaming}
+In this fixed-horizon experiment there are $0<c\le C<\infty$ such that
+\begin{equation}\label{eq:general-stream-law}
+ c\Omega_N(M,\theta)\le\mathfrak R^{\rm av}_{M,N}(\theta)
+ \le\mathfrak R^{\rm max}_{M,N}(\theta)
+ \le C\Omega_N(M,\theta)
+\end{equation}
+for every $M\ge1$ and every admitted $\theta$, including zero. For each known $\theta$ and each $M$, there exists a
+single deterministic $M$-state transducer attaining the upper bound after
+every report. Its codebooks and transitions may depend on $\theta$ and
+$M$; the comparison constants do not. No joint-in-calibration measurable
+or computable selection of codebooks is asserted. It stores only a representative index; its transitions use
+physical moments, never division by a collision parameter. Read-only
+prior moments at the formal exponents in $\mathcal B_N$ suffice.
+The lower bound holds in the stated common exploration experiment,
+including for the independent randomized filters of
+Definition~\ref{def:finite-state}.
+\end{theorem}
+
+These are statements about finite persistent memory in the exact-real
+program model already defined, not about finite-precision synthesis.
+In particular the number of real coordinates used to describe a
+representative is not the persistent state count: the latter is the
+number of representative labels, at most $M$.
+
+\subsubsection{A global covering estimate}
+We first record the real-geometric input with its anisotropic consequence.
+A bounded semialgebraic format means a bound on the number of variables,
+polynomial relations and their degrees in a defining formula; arbitrary
+real coefficients are allowed. Quantified formulas of fixed format can
+also be used, since real quantifier elimination gives a bound depending
+only on this format. Neither a coefficient norm nor a lower bound on a
+nonzero coefficient is part of the definition.
+
+The proof of Lemma~\ref{lem:tame-rectangle} appears in the principal analytic inputs.
+
+The bounded-format hypothesis is essential to a uniform statement of
+this kind. An unrestricted smooth image could develop arbitrarily many
+sheets. In the present experiment this hypothesis is a consequence of
+the finite product likelihood, not an extra regularity assumption on the
+prior or on an unknown attainable variety.
+
+\begin{lemma}[The whole attainable image has bounded format]\label{lem:attainable-format}
+Let $z_\theta(h)\in\R^{q_m}$ be the nonconstant divided-difference
+moment vector, in the ordered coordinates of
+\eqref{eq:attainable-orders}, and put
+\[
+ D_{m,\theta}=\operatorname{diag}(\theta^{\nu_{m,i}}),\qquad
+ S_{n,m}^\theta=\{D_{m,\theta}z_\theta(h):|h|=n\}.
+\]
+The set $S_{n,m}^\theta$ is compact, has semialgebraic format bounded
+independently of $\theta$, and has dimension at most $p_{n,m}$.
+It is contained in a rectangle with sides
+$[-B\theta^{\nu_{m,i}},B\theta^{\nu_{m,i}}]$, with $B$ uniform.
+At zero all positive-order coordinates are zero.
+\end{lemma}
+\begin{proof}
+Fix the finite report word $x_1,\ldots,x_n$ and write $u$ for its
+command entries. Every report factor is affine in its current command.
+Thus the evidence
+$Z(u)=\mu\prod_{i=1}^n f_{x_i,g_i}^\theta$ and each numerator
+\[
+ N_j(u)=\mu\left(\psi_j^\theta
+                   \prod_{i=1}^n f_{x_i,g_i}^\theta\right)
+\]
+are polynomials of degree at most $n$ in $u$. Their coefficients are
+real prior integrals, well defined also at zero. The moment image is
+specified by the existence of $u$ in its fixed cube with
+$Z(u)y_j=\theta^{\nu_{m,j}}N_j(u)$ for every $j$.
+Moreover $Z(u)\ge\kappa^n>0$. This is a semialgebraic formula of
+fixed format, uniformly in its real coefficients. Finite union over the
+report words preserves a format bound, and continuity on compact command
+cubes proves compactness. There is no requirement that these real
+coefficients, as functions of $\theta$, be semialgebraic.
+
+For the dimension bound, divide each report factor by its prior
+integral. Its coefficient vector lies in the affine hyperplane
+$\mu f=1$ of the $r$-dimensional one-step space. The constant monomial
+allows its constant coefficient to be eliminated, leaving at most $r-1$
+coordinates. The product posterior and all displayed moments are rational
+functions of these $n(r-1)$ coordinates. A rational map cannot increase
+semialgebraic dimension. Multiplication by $D_{m,\theta}$ cannot increase
+it either; the ambient dimension is $q_m$. Finally the uniform bounds
+for $\psi_j^\theta$ in Lemma~\ref{lem:observable-scales} give
+$|z_j|\le B$ before any command integration: they are expectations under
+probability measures. This proves the rectangle assertion without an
+inverse power of the prefix evidence.
+\end{proof}
+
+\subsubsection{Transversality to every initial resolution flag}
+\begin{lemma}[Attainment of the truncated flag]\label{lem:attained-flag}
+At one common interior binomial command tuple, projection of
+$z_\theta(h)$ onto its first $p_{n,m}$ coordinates has full row rank
+for every calibration, including zero. Under independent uniform commands,
+the all-failure subprobability distribution of this projection dominates
+$\beta$ times uniform probability on a translated cube of side $2\rho$,
+where $\beta,\rho>0$ are independent of the calibration.
+\end{lemma}
+\begin{proof}
+Choose distinct sufficiently small $c_1,\ldots,c_n$ and realize the
+factors $(1+c_it^{D_\theta})/2$ by the fixed right inverse of the
+calibration matrix, as in Lemma~\ref{lem:interior}. Their commands stay
+in a common interior neighborhood. Lemma~\ref{lem:binomial-tangent}
+identifies their unnormalized tangent with a monomial space of dimension
+$n(r-1)+1$, for every calibration, including zero.
+
+Adjoin the constant to the selected $p=p_{n,m}$ future tests. Within
+each limiting exponent cluster, the selected tests are exactly an initial
+block of its divided differences. At a positive calibration this block
+is an invertible linear transformation of the monomials at its first
+nodes. Their union consists of distinct monomials. The mixed pairing
+with the binomial tangent therefore has column rank $p+1$, by
+Lemma~\ref{lem:mixed-moment}. At zero these same blocks become complete
+initial logarithmic-jet blocks. Lemma~\ref{lem:confluent-positive}
+gives column rank $p+1$ directly at zero. This is not an inference of
+rank at zero from rank on a punctured interval.
+
+Let $L$ be this pairing, let $F$ be the product at the witness, and
+write $v=LF/\mu F$, with constant coordinate $e_0v=1$.
+The normalized differential has image
+\[
+ (\mu F)^{-1}\{LQ-v\,e_0LQ:Q\hbox{ in the product tangent}\}.
+\]
+Since $L$ is onto $\R^{p+1}$, the bracket is precisely the
+$p$-dimensional hyperplane $e_0=0$. Deleting the constant proves the
+asserted row rank. The remaining, unselected future coordinates need not
+be independent and are not included in this submersion assertion.
+
+For clarity we give the uniformity and probability argument. On the
+compact calibration interval, the least row singular value of the
+selected derivative has a positive minimum, by the rank just proved
+and continuity of all divided-difference derivatives. The second command
+derivatives have a common bound, since the factors stay positive and
+the test functions are uniformly bounded. Complete the row coordinates
+with orthonormal kernel coordinates. On a fixed small command ball the
+resulting square derivative differs from its value at the center by at
+most half its uniformly positive least singular value. The contraction
+proof of the inverse theorem gives a common product box in the selected
+output and complementary coordinates. Shrink it so its inverse stays
+in the command interior. Uniform forward derivative bounds give a
+positive lower bound for the absolute inverse Jacobian. These estimates
+use only orthogonality of the chosen frames; a continuous choice of
+frames is unnecessary.
+
+If $k$ is the number of command entries, their joint density is
+$(1-2\eta)^{-k}$. The density of commands together with the all-failure
+word is this density multiplied by its evidence, at least $\eta^n$.
+Change variables using the local inverse and integrate over the common
+complementary box. The resulting measure dominates a fixed positive
+multiple of Lebesgue measure on the selected $p$-cube. Absorb the cube
+volume into $\beta$. This proves the stated subprobability minorization;
+it does not condition away the probability of the failure word. A
+full-support prior without a density is permitted throughout, since the
+continuous density used here is that of the commands.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:attainable-checkpoint}]
+The physical prediction identity of Lemma~\ref{lem:observable-scales}
+reads, after the fixed coordinate permutation,
+\begin{equation}\label{eq:flag-query-metric}
+ p_\theta(h)-p_\theta(\widetilde h)
+ =G_mD_{m,\theta}\bigl(z_\theta(h)-z_\theta(\widetilde h)\bigr),
+\end{equation}
+where $G_m$ has full column rank and is independent of $\theta$.
+Apply Lemmas~\ref{lem:tame-rectangle} and
+\ref{lem:attainable-format} to the complete attainable image. Since
+$0\le\theta\le1$, its ordered side lengths are
+$B\theta^{\nu_{m,i}}$. Equation~\eqref{eq:tame-cover-radius} supplies
+at most $M$ reachable representatives with squared covering radius
+at most $C\Phi^{\rm att}_{n,m}$. The fixed norm of $G_m$ and the
+finite query average convert this into the required uniform prediction
+upper bound. This is a cover of all report strata, not just the local
+patch used in the lower bound.
+
+For that lower bound, first average decoder randomization for each
+message and query. The outputs form at most $M$ centers. Orthogonally
+project them to the affine span $p_*+\operatorname{im}G_m$ and apply
+the fixed left inverse of $G_m$. Distances can decrease only by a
+fixed factor. Project further onto the first $p_{n,m}$ coordinates.
+Lemma~\ref{lem:attained-flag} then gives a subprobability multiple of
+uniform measure on a translated rectangle of side lengths
+$2\rho\theta^{\nu_{m,i}}$, $i\le p_{n,m}$. The lower half of
+Lemma~\ref{lem:rectangle}, projecting onto each first $\ell$ axes,
+gives $c\Phi^{\rm att}_{n,m}$. Centers may be outside the image;
+randomized assignment cannot improve on the nearest center. Fixing and
+averaging an independent public coding seed gives the same bound.
+At zero, omit the zero-width axes. There are
+$\min\{n(r-1),|mA_0|-1\}$ surviving axes, which also proves the
+stated limiting exponent. For positive calibration the last power
+$M^{-2/p_{n,m}}$ dominates as $M\to\infty$. The unconditional lower
+bound is also a minimax lower bound, completing the proof.
+\end{proof}
+
+\subsubsection{Physical moments and successive updates}
+For $b=(\lambda,\gamma)\in\mathcal B_m$, write
+\[
+ v_b(h)=\mu(P_h t^{\lambda+\theta\gamma}),\qquad v_{(0,0)}=1.
+\]
+We keep the formal labels even if the functions coincide at zero.
+Let $v^{(m)}$ denote the nonconstant vector. Newton interpolation within
+each cluster, as in Lemma~\ref{lem:observable-scales}, gives a fixed
+invertible matrix $T_m$ with
+\begin{equation}\label{eq:raw-versus-scaled}
+ v^{(m)}=T_mD_{m,\theta}z_\theta.
+\end{equation}
+The constant cluster has no other member, so no deleted constant mixes
+with this equation. Both $T_m$ and its inverse have fixed finite norms.
+At zero the equation still holds with the appropriate repeated raw
+moments. It is the analysis of this equation, not inversion of its
+vanishing diagonal, that identifies the metric scales.
+
+\begin{lemma}[Uniform updates in the physical metric]\label{lem:raw-uniform-update}
+The map from reachable raw moments at remaining length $m$ to those at
+length $m-1$, after a command and a report, is uniformly Lipschitz in
+the raw Euclidean metric, independently of calibration. Every reachable
+representative maps to a reachable next vector.
+\end{lemma}
+\begin{proof}
+Write $e_i=(a_i,b_i)$ and the current report factor as
+$f=\sum_i f_i(g,x)t^{a_i+\theta b_i}$. Its coefficients are uniformly
+bounded, and $f\ge\kappa>0$. Addition of formal pairs gives
+$b+e_i\in\mathcal B_m$ whenever $b\in\mathcal B_{m-1}$.
+Consequently the exact update is
+\begin{equation}\label{eq:raw-causal-update}
+ v'_b=\frac{\sum_i f_i(g,x)v_{b+e_i}}
+                  {\sum_i f_i(g,x)v_{e_i}},
+       \qquad b\in\mathcal B_{m-1}.
+\end{equation}
+Every denominator is the posterior expectation of $f$, hence at least
+$\kappa$. A line segment between reachable raw vectors represents a
+mixture of their posterior probability measures, so the same bound holds
+along the segment. All numerators, coefficients and coordinates have
+uniform bounds. The quotient rule and the mean value theorem prove the
+Lipschitz assertion. No exponent separation occurs in a denominator.
+The formula is valid also when formal labels have equal values. Finally
+a history realizing the representative, followed by the specified input,
+realizes its updated vector; positivity admits every report.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:general-uniform-streaming}]
+For each $1\le n<N$, Lemmas~\ref{lem:tame-rectangle} and
+\ref{lem:attainable-format}, followed by the fixed matrix $T_{N-n}$,
+give a raw-moment quantizer $Q_n$ with at most $M$ reachable
+representatives and radius
+\[
+ \delta_n\le C_n\sqrt{\Phi^{\rm att}_{n,N-n}(M,\theta)}
+             \le C_0\sqrt{\Omega_N(M,\theta)}.
+\]
+The maximum $C_0$ is over finitely many stages. At time zero the prior
+moment vector is one fixed state; at time $N$ the remaining state is
+constant. Initialize at the prior vector and implement
+\[
+ \widehat v_{n+1}=Q_{n+1}
+       \bigl(U_n(\widehat v_n,g_{n+1},x_{n+1})\bigr),
+\]
+where $U_n$ is \eqref{eq:raw-causal-update}. The transition reads the
+old representative index and the current input only. Reachability makes
+its argument an element of the next quantizer's domain. The finite
+codebooks and these real-valued functions are read-only program data.
+
+Let $e_n=\|v_n-\widehat v_n\|$. With $e_0=0$,
+Lemma~\ref{lem:raw-uniform-update} yields
+\[
+ e_{n+1}\le L_ne_n+C_0\sqrt{\Omega_N(M,\theta)}.
+\]
+Set $b_0=0$ and $b_{n+1}=L_nb_n+C_0$. Induction gives
+$e_n\le b_n\sqrt{\Omega_N(M,\theta)}$ after every update.
+Each query prediction is a linear form with fixed coefficients in the
+raw formal moments. Its Lipschitz constant is therefore uniform, and
+\eqref{eq:brier} proves the last inequality in
+\eqref{eq:general-stream-law}. There is no exact-prefix recomputation:
+all intermediate vectors in this implementation are functions of a finite
+representative label and the current command-report pair.
+
+For every streaming filter, its index at checkpoint $n$ is an
+$M$-message encoder of the prefix. Theorem~\ref{thm:attainable-checkpoint}
+therefore bounds that checkpoint's unconditional regret below by
+$c_n\Phi^{\rm att}_{n,N-n}$. The commands in all these assertions
+are prefixes of the same independent uniform acquisition rule. Taking
+the maximum over $n$, and then the infimum over filters, gives the
+first inequality with $c=\min_n c_n>0$. Independent filtering coins
+can be fixed for this argument because they do not generate the
+acquisition commands; averaging restores the randomized statement.
+Finally a maximum conditional risk dominates its unconditional average,
+which proves the middle inequality.
+\end{proof}
+
+\begin{corollary}[A uniform bit profile]\label{cor:general-bit-profile}
+Let $B_N(\varepsilon,\theta)$ be the least number of persistent bits
+needed to make the minimax streaming regret at most $\varepsilon$.
+For $0<\varepsilon<1$, uniformly in the admitted calibration,
+\begin{equation}\label{eq:general-bit-profile}
+ B_N(\varepsilon,\theta)=
+ \max\left\{0,\max_{\substack{1\le n<N\\1\le\ell\le p_{n,N-n}}}
+ \left(\frac\ell2\log_2\frac1\varepsilon
+       -S_{N-n,\ell}\log_2\frac1\theta\right)\right\}+O(1).
+\end{equation}
+At zero retain only terms with $S_{N-n,\ell}=0$. The same formula
+holds for the maximum unconditional criterion.
+\end{corollary}
+\begin{proof}
+For positive $\theta$, the condition
+$\Omega_N(M,\theta)\le\varepsilon$ is equivalent to all inequalities
+$M\ge\theta^{S_{N-n,\ell}}\varepsilon^{-\ell/2}$.
+Taking the largest right-hand side, adjoining $M\ge1$, and then taking
+base-two logarithms gives the expression. The two fixed comparison
+constants in \eqref{eq:general-stream-law} change it by a bounded
+amount, since the possible $\ell$ are bounded by the fixed horizon.
+Rounding to a power of two changes it by at most one further bit.
+The zero-calibration statement follows by omitting vanishing terms.
+\end{proof}
+
+\subsubsection{A past-limited peak with two weak directions}
+The next consequence answers the concrete seven-trial boundary in the
+source-pinned v7 technical note \cite{A1v7note}. It is a consequence
+of the attainable-image argument, rather than an extrapolation of the
+full-future formula.
+
+\begin{corollary}[Seven-trial resolved memory]\label{cor:seven-trial}
+For the cells \eqref{eq:near-collision-cells}, their fixed command cube
+and the product probes \eqref{eq:common-near-probes}, take total horizon
+seven. For the two streaming criteria above, uniformly for
+$0\le\theta\le1/2$ and $M\ge1$,
+\begin{equation}\label{eq:seven-law}
+ \mathfrak R_{M,7}(\theta)\asymp
+    \max\{M^{-1/3},\theta^{1/2}M^{-1/4}\}.
+\end{equation}
+The lower bound already holds at checkpoint four under the same uniform
+exploration. The crossover budget has order $\theta^{-6}$ and the
+crossover regret has order $\theta^2$.
+\end{corollary}
+\begin{proof}
+Put $D=2+\theta$. For positive $\theta\le1/2$, the ten distinct
+three-fold exponents are
+\[
+ 0,\ 1,\ 2,\ D,\ 3,\ D+1,\ D+2,\ 2D,\ 2D+1,\ 3D.
+\]
+At zero their limiting clusters have multiplicities
+$1,1,2,2,2,1,1$ at exponents $0,1,2,3,4,5,6$.
+Thus the nonconstant order list has six zeros and three ones.
+At $n=4,m=3$, however, $p_{4,3}=8$, and the selected list has six
+zeros and only two ones. Theorem~\ref{thm:attainable-checkpoint} gives
+\[
+ \Phi^{\rm att}_{4,3}
+ =\max\{M^{-1/3},\theta^{2/7}M^{-2/7},
+                         \theta^{1/2}M^{-1/4}\}
+ =\max\{M^{-1/3},\theta^{1/2}M^{-1/4}\}.
+\]
+The middle term is the product of the first term to power $3/7$ and
+the last to power $4/7$, so cannot exceed their maximum. The minorized
+eight-dimensional flag uses, at zero, the tests
+\[
+ 1,t,t^2,t^2\log t,t^3,t^3\log t,t^4,t^5,t^6
+\]
+paired with the binomial tangent $\mathcal P_8$. Strict confluent
+positivity proves its rank for every full-support prior. The third
+ambient weak jet is not counted as an additional attainable dimension.
+
+For completeness the extension of the upper bound to the whole stated
+calibration interval does not require excluding positive collisions in
+longer, unused sumsets. At stages $n=1,2,3$, the raw reachable images
+have dimension at most $2n\le6$ and bounded format, and all raw
+coordinates lie in $[0,1]$. Lemma~\ref{lem:tame-rectangle} gives
+squared covering errors at most $CM^{-1/3}$ uniformly, whether or not
+some formal raw coordinates coincide. At stage four use the preceding
+anisotropic cover, valid throughout $[0,1/2]$ because its ten exponents
+are distinct at every positive calibration in that interval. At stage
+five, $m=2$ and the full-future cover has squared radius at most
+$C\max\{M^{-1/2},\theta^{2/5}M^{-2/5}\}\le CM^{-1/3}$.
+Stage six has two coordinates and squared covering radius at most
+$CM^{-1}$. Formula~\eqref{eq:raw-causal-update} remains valid with
+all formal labels at every stage, even when values coincide. Its uniform
+Lipschitz estimate and the repeated-quantization argument prove the upper
+bound in \eqref{eq:seven-law} on the entire interval. The stage-four
+checkpoint lower bound proves the other direction.
+
+Equating the two terms in \eqref{eq:seven-law} gives
+$M=\theta^{-6}$ and common order $\theta^2$. These are comparison
+orders, not a numerical integer threshold. At fixed positive calibration
+the rate is $M^{-1/4}$, consistently with eight attainable dimensions;
+the ambient nine-dimensional rate $M^{-2/9}$ does not occur.
+\end{proof}
