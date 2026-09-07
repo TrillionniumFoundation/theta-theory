@@ -1,0 +1,83 @@
+\section{Conformance to a finite synthesis request}
+\label{sec:request-conformance}
+The construction theorem assumes a specified horizon and a specified
+total numerical error. A table cannot certify these assumptions by
+choosing its own horizon or its own rounding scale. We record the finite
+interface that connects the mathematical implication to the returned
+program. This interface does not certify the accuracy of an arbitrary
+external moment oracle.
+
+\begin{definition}[Bound synthesis specification]
+\label{def:bound-request}
+A synthesis specification consists of the requested horizon $T$, command
+and report alphabets with their fixed orders, state budget $M$, stage
+coordinate dimensions $d_0,\ldots,d_T$, ordered query interfaces of
+sizes $b_0,\ldots,b_T$, rounding precision $v$, raw evaluation error
+bound $\sigma$, and total error allowance $\tau$, with
+\begin{equation}\label{eq:bound-rounding-budget}
+ \sigma+2^{-v-1}\le\tau.
+\end{equation}
+It also fixes the numerical state and query vectors on every grid history
+through $T$. All these objects are fixed from the caller's task and
+numerical input before synthesis is invoked. Their dimensions may be
+specified directly by the application, or read from that external input
+interface and checked on every history. They are never inferred from a
+returned transition table. Repeated evaluations use this same frozen
+name, with the same coordinate and query orders.
+\end{definition}
+
+An independently enumerated check first compares a returned program's
+precision and all stage lengths with this specification. It then checks
+the complete numerical lists, the farthest-first representatives, every
+nearest-centre transition with the fixed tie rule, and every clipped
+rounded output as in Definition~\ref{def:construction-contract}.
+State and query dimensions are checked against the specification, not
+merely against one another. The structural check precedes every use of
+a program radius in a stopping certificate. Input fingerprints record
+identity and provenance; they are not proofs of numerical accuracy.
+
+\begin{proposition}[Request-bound construction implication]
+\label{prop:request-conformance}
+Suppose the numerical input fixed in Definition~\ref{def:bound-request}
+has state and query error at most $\sigma$ on its specified histories,
+and the grid is an $h$-net. If the preceding check accepts, then the
+returned program implements all $T$ requested stages, uses at most $M$
+labels per stage, and satisfies Theorem~\ref{thm:construction-contract}
+with the caller's allowance $\tau$. Its independently recomputed radii
+satisfy
+\[
+ \max\{0,r_n/2-\tau\}\le e_n(M)
+      \le r_n+A_nh+2\tau.
+\]
+A returned object with a different precision or fewer stages is rejected
+before these inequalities are issued. Changing a precision field without
+changing its numerical tables does not avoid the entrywise checks.
+\end{proposition}
+\begin{proof}
+The preliminary comparisons force the requested precision, stage lengths,
+and interface dimensions. Rounding a real number to the nearest
+$v$-place dyadic, with either prescribed rule at ties, changes it by at
+most $2^{-v-1}$. The triangle inequality and
+\eqref{eq:bound-rounding-budget} therefore give state and query errors
+at most $\tau$; clipping query outputs to $[0,1]$ cannot increase
+error to a true probability. The remaining finite checks are precisely
+the hypotheses of Definition~\ref{def:construction-contract} on those
+fixed numerical lists. Its theorem gives the recurrence and the label
+budget. Lemma~\ref{lem:radius-certificate} gives the displayed bracket.
+A mismatch of precision or of any stage length fails a preliminary
+comparison. With correct metadata but different tables, acceptance still
+requires every output and transition to equal the independently rebuilt
+entry; if all entries agree, the program does implement the requested
+finite construction. None of these implications uses a residual bound
+increased after a faulty transition has been observed.
+\end{proof}
+
+For the ordinary and common-name adaptive constructions take $v=b+2$
+and $\sigma=\tau_b/2$. Since $2^{-v-1}=h_b/8\le\tau_b/8$,
+\eqref{eq:bound-rounding-budget} holds with the prescribed $\tau_b$.
+The stopping bracket therefore uses an error allowance bound to the
+request before synthesis. Freezing these finite inputs and checking them
+is offline work. It adds no field to the running state, which remains
+one integer index. The earlier residual certificate for an arbitrary
+table remains valid, but does not assert conformance to a different
+synthesis request.

@@ -1,0 +1,119 @@
+\section{Selection and separating sets}\label{sec:v26-selection}
+The loss incurred by a selected experiment cannot in general be bounded
+by conditioning on that selection. We instead keep a common
+subprobability measure and bound its mass on small-loss events. The
+following elementary form records the dependence on dimension and on
+the number of choices.
+
+\begin{lemma}[Finite selection]\label{lem:v26-finite-selection}
+Let $L_1,\ldots,L_q$ be nonnegative random variables, $q\ge1$, and
+let $\mathcal A$ have probability $\beta>0$. Suppose the measurable
+sets $E_i$, $1\le i\le K$, cover $\mathcal A$, and that, for $t\ge0$,
+\[
+ \Prob\{\mathcal A\cap E_i,\ \max_jL_j\le t\}
+       \le a_i t^{k_i/2},\qquad a_i>0,\quad k_i\ge1.
+\]
+Then
+\begin{equation}\label{eq:v26-finite-tail}
+ \max_j\E L_j\ \ge\ \frac1q\int_0^\infty
+              \left[\beta-\sum_{i=1}^K a_i t^{k_i/2}\right]_+\,dt.
+\end{equation}
+In particular, if all $k_i=k$ and $A=\sum_i a_i$, the right side is
+\begin{equation}\label{eq:v26-homogeneous-selection}
+ \frac{k}{q(k+2)}\,\beta^{1+2/k}A^{-2/k}.
+\end{equation}
+No regularity or independence of the sets $E_i$ is assumed.
+\end{lemma}
+\begin{proof}
+Put $Z=\max_jL_j$. The union bound gives
+$\Prob(\mathcal A,Z\le t)\le\sum_i a_i t^{k_i/2}$, hence
+$\Prob(Z>t)\ge[\beta-\sum_i a_i t^{k_i/2}]_+$.
+Integrate this inequality using Tonelli's theorem and use
+$q\max_j\E L_j\ge\E\sum_jL_j\ge\E Z$.
+For the last assertion the positive integrand is supported on
+$0\le t\le(\beta/A)^{2/k}$; its integral is
+$\beta(\beta/A)^{2/k}-A(\beta/A)^{1+2/k}/(1+k/2)$.
+This equals the expression in \eqref{eq:v26-homogeneous-selection}
+after division by $q$.
+\end{proof}
+
+A path need not be distinguished by its complete trace when its
+prediction centres are already determined by a smaller state of the
+observation protocol. Separating sets express this distinction.
+
+Let $\mathscr D$ be a finite directed graph with levels
+$0,1,\ldots,q+1$, where $q\ge1$, a unique source $o$ at level zero and a unique sink
+$z$ at level $q+1$. Every arc joins consecutive levels. Assume that
+there is an $o$--$z$ path and that every vertex belongs to such a path.
+An \emph{internal separator} is a set of internal vertices meeting
+every $o$--$z$ path. Denote the family of these sets by
+$\operatorname{Sep}(\mathscr D)$.
+
+\begin{theorem}[A separator bound for adaptive selection]
+\label{thm:v26-network-selection}
+On one probability space let a measurable rule select an $o$--$z$
+path and nonnegative losses $L_1,\ldots,L_q$. Let
+$\Prob(\mathcal A)=\beta>0$. For each internal vertex $x$ at level
+$j(x)$ suppose a nondecreasing function $c_x:[0,\infty)\to[0,1]$
+satisfies
+\begin{equation}\label{eq:v26-node-smallball}
+ \Prob\{\mathcal A,\ x\text{ is visited},\ L_{j(x)}\le t\}
+                  \le\beta c_x(t).
+\end{equation}
+Set
+\begin{equation}\label{eq:v26-separator-function}
+ H_{\mathscr D}(t)=\min_{C\in\operatorname{Sep}(\mathscr D)}
+                                  \sum_{x\in C}c_x(t).
+\end{equation}
+Then
+\begin{equation}\label{eq:v26-separator-tail}
+ \max_{1\le j\le q}\E L_j\ \ge\
+       \frac{\beta}{q}\int_0^\infty[1-H_{\mathscr D}(t)]_+\,dt.
+\end{equation}
+The conclusion holds with the same right side after averaging
+independent coding seeds whenever \eqref{eq:v26-node-smallball}
+holds with these functions for every fixed seed.
+\end{theorem}
+\begin{proof}
+Fix $C\in\operatorname{Sep}(\mathscr D)$. Every selected path visits
+some $x\in C$. On the event $\mathcal A\cap\{\max_jL_j\le t\}$
+that vertex also satisfies $L_{j(x)}\le t$. Thus the probability of
+this event is at most $\beta\sum_{x\in C}c_x(t)$ by
+\eqref{eq:v26-node-smallball}. Minimize over the finite family of
+separators. The resulting tail bound for $\max_jL_j$, followed by the
+same integration and averaging as in Lemma~\ref{lem:v26-finite-selection},
+proves \eqref{eq:v26-separator-tail}. For independent seeds, apply the
+bound to the sum of the losses with each seed fixed, and then integrate
+the seeds before dividing by $q$. Independence leaves the probability
+of $\mathcal A$ unchanged. Neither step conditions the acquisition law
+on the selected path.
+\end{proof}
+
+\begin{proposition}[A flow certificate]\label{prop:v26-flow}
+For fixed $t$, $H_{\mathscr D}(t)$ is the value of a finite
+maximum-flow problem with internal vertex capacities $c_x(t)$.
+In particular it can be certified without listing all paths.
+\end{proposition}
+\begin{proof}
+Split each internal vertex into an entrance and an exit, joined by an
+arc of capacity $c_x(t)$. Replace every original arc by an arc between
+the appropriate exits and entrances, of capacity
+$\Lambda=1+\sum_xc_x(t)$. Source and sink are not split.
+A separator gives a cut of capacity at most the sum of its vertex
+capacities. Conversely, a minimum cut cannot use a $\Lambda$-arc:
+cutting all vertices at any one internal level costs less than
+$\Lambda$. Its split arcs therefore specify an internal separator.
+The minimum cut value is consequently \eqref{eq:v26-separator-function}.
+
+For completeness, the flow--cut equality here holds also for real
+capacities. The feasible flow set is a nonempty compact polytope, so a
+maximum exists. Its residual network has no source--sink path, since
+augmenting by the least positive residual capacity along such a path
+would increase the flow. The vertices reachable from the source in the
+residual network define a cut. Every forward cut arc is saturated and
+every reverse cut arc carries zero flow. Conservation therefore equates
+the cut capacity to the flow value. The opposite inequality follows by
+summing conservation on the source side of any cut. This is the
+classical flow--cut argument \cite{FordFulkerson1956}; the statistical
+input is \eqref{eq:v26-node-smallball}, not a new flow theorem.
+\end{proof}
