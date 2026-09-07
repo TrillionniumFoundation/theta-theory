@@ -1,0 +1,1288 @@
+\subsection{A circular experiment with vanishing contrast}
+\label{sec:circular}
+We now give a second application in which the one-step detector itself
+loses contrast. The hidden parameter lies on a circle, the posterior
+pairing is Fourier rather than ordered Chebyshev, and acquisition and
+future observation each contribute a small factor. Consequently its
+resolution scales are not obtained by attaching a new observation
+matrix to a fixed, nondegenerate attainable posterior cube.
+
+\subsubsection{The physical experiment}
+Write $w=e^{i\theta}$, $0\le\theta<2\pi$, and take normalized Haar
+measure $d\theta/(2\pi)$ as prior. Fix $0<\eta<1/2$. The known
+contrast is $0\le\tau\le1/2$. Four detector cells are
+\begin{equation}\label{eq:circle-cells}
+ k_{1,\pm}(\theta)=\tfrac14(1\pm\tau\cos\theta),\qquad
+ k_{2,\pm}(\theta)=\tfrac14(1\pm\tau\sin\theta).
+\end{equation}
+The controller specifies four real acceptance probabilities varying
+continuously over $[\eta,1-\eta]^4$. Thus the command alphabet is
+continuous, although the detector and report alphabets are finite. Reports and failures are as in
+\eqref{eq:channel}. All five report likelihoods are bounded below by
+$\eta/8$. The prior and calibration in this section are known exactly;
+no prior-uncertainty assertion is included in the result.
+
+Every report factor has a unique representation, for $\tau>0$,
+\begin{equation}\label{eq:circle-factor}
+ f(\theta)=a\{1+\tau(z w+\bar z w^{-1})\},
+ \qquad a>0,\quad |z|\le\tfrac12.
+\end{equation}
+The coefficients $a,z$ extend continuously to $\tau=0$ using the
+specified command and report. For accepted cells, $z$ is respectively
+$1/2,-1/2,-i/2,i/2$. For failures, with rejection probabilities $u$,
+\begin{equation}\label{eq:circle-command-coordinates}
+ a=\tfrac14\sum_j u_j,\qquad
+ z=\frac{u_{1,+}-u_{1,-}-i(u_{2,+}-u_{2,-})}{8a}.
+\end{equation}
+The bound on $|z|$ follows by the triangle inequality and $u_j\ge0$.
+Near the central command, $z$ ranges over a fixed complex neighborhood
+of zero, independently of $\tau$. More explicitly, the rejection vector
+\begin{equation}\label{eq:circle-right-inverse}
+ (u_{1,+},u_{1,-},u_{2,+},u_{2,-})
+ =\bigl(\tfrac12+2\Re z,\tfrac12-2\Re z,
+        \tfrac12-2\Im z,\tfrac12+2\Im z\bigr)
+\end{equation}
+realizes $a=1/2$ whenever all entries are in the command cube.
+Thus the construction uses a fixed finite interface, not a gate that
+reads the hidden angle.
+
+Fix $0<\rho<(1/2-\eta)/8$. For an $m$-trial query put
+$L_m=2m+1$ and $\varphi_l=2\pi l/L_m$, $0\le l<L_m$.
+Query $l$ repeats the attainable failure factor with
+$a=1/2$, $z=\rho e^{-i\varphi_l}$ exactly $m$ times, and asks for
+the probability of all failures. Only the selected query is executed;
+it is selected uniformly and independently after the memory index has
+been formed. Independent uniform acquisition commands define the
+unconditional experiment. Worst-history and causal losses have the same
+meaning as in Definition~\ref{def:finite-state}, with this query menu.
+
+\begin{theorem}[Harmonic resolution from acquisition and observation]
+\label{thm:circle-resolution}
+Fix $N\ge2$ and the interface above. There is $\tau_*>0$, depending
+only on $N,\eta,\rho$, such that the following holds uniformly for
+$0\le\tau\le\tau_*$ and all integers $M\ge1$. At a checkpoint
+$n+m\le N$, $n,m\ge1$, put $k=\min(n,m)$ and
+\begin{equation}\label{eq:circle-profile}
+ \mathcal H_{n,m}(M,\tau)
+ =\max_{1\le j\le k}\tau^{2(j+1)}M^{-1/j}.
+\end{equation}
+Then
+\begin{equation}\label{eq:circle-checkpoint-law}
+ c\mathcal H_{n,m}\le\overline R^{\tau}_{M;n,m}
+ \le R^{\tau,\max}_{M;n,m}\le C\mathcal H_{n,m}.
+\end{equation}
+For horizon $N$, one deterministic, stage-compatible $M$-state transducer
+has worst-history loss at every checkpoint bounded by
+\begin{equation}\label{eq:circle-causal-profile}
+ C\max_{1\le j\le\lfloor N/2\rfloor}
+          \tau^{2(j+1)}M^{-1/j}.
+\end{equation}
+Every such transducer has maximum unconditional checkpoint loss at least
+a fixed positive multiple of the same expression. The lower laws permit
+independent coding randomization. For $\tau>0$ in this interval the
+minimal continuous sufficient checkpoint dimension is $2\min(n,m)$;
+for $\tau=0$ it is zero.
+\end{theorem}
+
+\paragraph{Information convention and comparison.}
+The Fourier representation used below is the established Bayesian
+representation discussed in Section~\ref{sec:fourier-filtering-comparison}.
+The resource restriction is instead a persistent index in an alphabet
+of size at most $M$. The prior, contrast, horizon, and interface may
+enter a read-only program; a transition receives only its preceding
+index and the current command and report. In particular, an exact
+Fourier vector is not charged as one label. The causal assertion of
+Theorem~\ref{thm:circle-resolution} uses this convention, at fixed
+$N$ and known contrast; it is not an effective numerical compiler.
+
+For orientation, consider one past trial and one future trial. If the
+past factor is $a\{1+\tau(zw+\bar z w^{-1})\}$, Haar normalization
+gives $c_1=\tau z$. With the query parameter $\rho$ and phases
+$\varphi_l$ defined above, direct multiplication gives
+\[
+ q_l(z)=\tfrac12+\rho\tau^2\Re(ze^{i\varphi_l}),\qquad
+ \frac13\sum_{l=0}^{2}|q_l(z)-q_l(z')|^2
+       =\tfrac12\rho^2\tau^4|z-z'|^2.
+\]
+The two contrast factors are already visible in this elementary case.
+The higher-dimensional result requires more: the normalized flags must
+be excited by a set of acquisition histories with uniformly positive
+subprobability, the global image must admit a matching cover, and the
+successive covers must be compatible with the weighted Bayesian update.
+The next two lemmas and the proof of the theorem establish these
+properties with the actual evidence retained. This computation is an
+illustration of the theorem, not a separate improvement of its law.
+
+
+\subsubsection{Acquisition: a symmetric-polynomial submersion}
+Remove the positive scalar factors $a_i$, which cancel from the posterior,
+and expand the Laurent polynomial
+\begin{equation}\label{eq:circle-laurent}
+ P(w)=\prod_{i=1}^n\{1+\tau(z_iw+\bar z_iw^{-1})\}
+     =\sum_{j=-n}^{n}p_jw^j,
+ \qquad p_{-j}=\bar p_j.
+\end{equation}
+Haar integration extracts $p_0$, and $p_0\ge(1-\tau)^n$.
+For $j\ge0$, each term contributing to $p_j$ chooses $j+h$ positive
+and $h$ negative powers from distinct factors. Hence
+\begin{equation}\label{eq:circle-coefficient-factorization}
+ p_j=\tau^j P_{n,j}(z,\bar z;\tau^2),\qquad
+ P_{n,j}(z,\bar z;0)=e_j(z_1,\ldots,z_n),
+\end{equation}
+where $e_j$ is the elementary symmetric polynomial and $e_0=1$.
+This is an exact polynomial identity. Define
+\[
+ S_j=\frac{P_{n,j}(z,\bar z;\tau^2)}{P_{n,0}(z,\bar z;\tau^2)},
+ \qquad c_j=\frac{p_j}{p_0}=\tau^jS_j,
+ \qquad Y_j=\tau^jc_j=\tau^{2j}S_j.
+\]
+Set these coordinates to zero for $j>n$. The $c_j$ are the posterior
+Fourier coefficients, or equivalently the posterior expectations of
+$w^{-j}$. The $S_j$ and their first two command derivatives are uniformly
+bounded on the command cube and $0\le\tau\le1/2$, for $n\le N$.
+Indeed the numerator polynomials have finitely many bounded coefficients,
+while their common denominator is at least $2^{-N}$; also $a\ge\eta$
+for failures. These observations justify the assertion even at zero
+contrast without division by $\tau$.
+
+\begin{lemma}[Attainment of the normalized harmonic flag]
+\label{lem:circle-attainment}
+There are $\tau_*>0$ and, for every $n\le N$, one interior
+all-failure command tuple independent of $\tau$, at which
+$(S_1,\ldots,S_k):\R^{4n}\to\C^k$ has real rank $2k$ for all
+$k\le n$ and $0\le\tau\le\tau_*$. The least row singular values
+are uniformly positive. Under independent uniform commands the
+all-failure subprobability law of these $2k$ real coordinates minorizes
+uniform probability on a translated cube of fixed side and fixed mass.
+\end{lemma}
+\begin{proof}
+Choose distinct small positive real numbers $\zeta_1,\ldots,\zeta_N$
+within the interior neighborhood in \eqref{eq:circle-right-inverse}.
+Use the first $n$ as the $z_i$ at length $n$. At $\tau=0$ the map
+$(S_1,\ldots,S_n)$ is $(e_1,\ldots,e_n)$. Its complex differential
+is invertible at a tuple of distinct numbers. To verify this directly,
+if all differential coefficients of $\prod_i(\lambda+z_i)$ vanish,
+then
+\[
+ \sum_i \dot z_i\prod_{h\ne i}(\lambda+\zeta_h)=0.
+\]
+Evaluating at $\lambda=-\zeta_i$ gives $\dot z_i=0$ for every $i$.
+The corresponding real differential on $\C^n$ is therefore invertible.
+Every initial collection of $k$ complex rows has real rank $2k$.
+The command map onto $z$ is a submersion at the implementing tuples by
+\eqref{eq:circle-command-coordinates}--\eqref{eq:circle-right-inverse}.
+
+Continuity in $s=\tau^2$ now preserves all these lower singular-value
+bounds on one interval $[0,\tau_*]$: there are only finitely many
+$n,k\le N$. For precision about this choice, let $\sigma_0$ be the
+minimum of the finitely many positive central row singular values at
+zero. The rational formulas give a finite $C_*$ with
+$\|D S(\tau)-D S(0)\|\le C_*\tau^2$ at the chosen tuples.
+One can take the minimum of $1/2$ and
+$\sqrt{\sigma_0/(2\max\{C_*,1\})}$. No assertion of a large-contrast
+uniform interval is needed for this small-contrast theorem.
+The first two derivative bounds established above, the fixed interior
+margin, and $f\ge\eta/8$ verify the quantitative hypotheses of
+Proposition~\ref{prop:product-criterion}. Its change-of-variables
+argument applies directly to the maps $S$, including their continuous
+extension at zero, and proves the stated minorization. The actual
+failure evidence is $p_0\prod_i a_i$; it has not been replaced by one.
+\end{proof}
+
+\subsubsection{Observation: a finite Fourier menu}
+\begin{lemma}[The physical query metric]\label{lem:circle-query-metric}
+For histories $h,h'$ at the same checkpoint, let $q_l(h)$ denote the
+probability of query $l$. Then
+\begin{equation}\label{eq:circle-parseval}
+ \frac1{2m+1}\sum_{l=0}^{2m}|q_l(h)-q_l(h')|^2
+ =2^{1-2m}\sum_{j=1}^{m} B_{m,j}(\tau^2)^2
+                       |Y_j(h)-Y_j(h')|^2,
+\end{equation}
+where
+\begin{equation}\label{eq:circle-B}
+ B_{m,j}(s)=\sum_{h=0}^{\lfloor(m-j)/2\rfloor}
+ \frac{m!\,\rho^{j+2h}s^h}{(j+h)!h!(m-j-2h)!},\qquad 0\le j\le m.
+\end{equation}
+For $j\ge1$ these factors are bounded above and away from zero uniformly
+on $0\le\tau\le1/2$. Thus the physical loss metric is uniformly
+equivalent to Euclidean distance in $(Y_1,\ldots,Y_m)$.
+\end{lemma}
+\begin{proof}
+Expanding the repeated query factor, its coefficient of $w^j$ is
+$2^{-m}\tau^jB_{m,j}(\tau^2)e^{-ij\varphi_l}$. Multiplication by
+the posterior density and Haar integration therefore give
+\[
+ q_l(h)=2^{-m}B_{m,0}(\tau^2)+
+       2^{1-m}\Re\sum_{j=1}^{m}B_{m,j}(\tau^2)Y_j(h)e^{ij\varphi_l}.
+\]
+The discrete identity
+$(2m+1)^{-1}\sum_l e^{ia\varphi_l}=0$ for
+$0<|a|\le2m$ makes the distinct sine and cosine columns orthogonal,
+with squared norm $1/2$. This proves \eqref{eq:circle-parseval}.
+All coefficients in \eqref{eq:circle-B} are nonnegative, and its
+constant term is $\binom mj\rho^j>0$. Compactness gives the other
+bound. Orthogonal projection of an arbitrary prediction vector onto
+this affine Fourier span cannot increase loss, so the same metric
+comparison is available for lower bounds with unrestricted decoders.
+\end{proof}
+
+\subsubsection{Proof of the resolution and causal laws}
+\begin{proof}[Proof of Theorem~\ref{thm:circle-resolution}]
+At a checkpoint only the first $k=\min(n,m)$ complex coordinates $Y_j$
+can be nonzero. Their real and imaginary parts lie in a rectangle with
+paired half-widths
+\[
+ C_N\tau^2,C_N\tau^2,C_N\tau^4,C_N\tau^4,
+             \ldots,C_N\tau^{2k},C_N\tau^{2k}.
+\]
+For ordered half-widths $a_1\ge\cdots\ge a_d$, a rectangular grid
+has covering number at most
+$C_d\sum_{l=0}^d r^{-l}\prod_{i\le l}a_i$ at radius $r$.
+Indeed the product of the $d$ one-dimensional counts expands into
+subset products, each bounded by the corresponding initial product.
+Put $r=A\max_{l\ge1}(M^{-1}\prod_{i\le l}a_i)^{1/l}$ with a
+fixed large $A$. For $M\ge2C_d$, choose $A$ so the nonconstant
+terms are at most $M/2$; the constant term is also at most $M/2$.
+For the finitely many smaller budgets one point and a larger fixed
+constant suffice, since $r\ge a_1/M$. Replace every grid point whose
+ball meets the reachable set by a point of that set, doubling the radius.
+This enforces at most $M$ reachable representatives for every integer
+budget, not only asymptotically.
+
+For the lower bound, Lemma~\ref{lem:circle-attainment} minorizes a
+$2k$-cube in the normalized real coordinates. Its first $l$-coordinate
+projection, scaled by the first $l$ half-widths without the harmless
+constant $C_N$, is a rectangle with volume comparable to
+$\prod_{i\le l}a_i$. The union of $M$ radius-$b$ balls covers at
+most $C_lMb^l/\prod_{i\le l}a_i$ of this minorized probability.
+Taking $b$ a small multiple of $(\prod_{i\le l}a_i/M)^{1/l}$
+leaves a fixed positive mass and gives a squared-error lower bound of
+order $b^2$. Lemma~\ref{lem:circle-query-metric} transfers it to the
+actual query loss. Conditional averaging removes decoder randomization;
+randomized label assignment cannot beat the nearest of its $M$ centers.
+Independent public coding randomness may be fixed and then averaged.
+The minorization retains the acquisition probability throughout.
+
+For $l=2j$ the squared radius just obtained is
+$\tau^{2(j+1)}M^{-1/j}$. No odd index increases their maximum.
+For $l=1$ its term is at most the $l=2$ term since $M\ge1$.
+For $l=2j-1$, $j\ge2$, its logarithm is a convex combination of
+the logarithms for $l=2j-2$ and $l=2j$; this follows by inserting
+the equal last two half-widths into
+$2l^{-1}(\sum_{i\le l}\log a_i-\log M)$.
+This proves \eqref{eq:circle-checkpoint-law} for $\tau>0$.
+At $\tau=0$ every report is independent of the hidden angle and every
+query probability is known; both sides of the asserted law are zero.
+
+It remains to construct one causal filter. Use the raw weighted Fourier
+moments $Y_j$, not $S_j$. Extend by $Y_0=1$ and
+$Y_{-j}=\overline{Y_j}$. Multiplication by a new factor
+\eqref{eq:circle-factor} gives, for $j\ge1$,
+\begin{equation}\label{eq:circle-update}
+ Y'_j=\frac{Y_j+\tau^2zY_{j-1}+\bar zY_{j+1}}
+                 {1+z\overline{Y_1}+\bar zY_1}.
+\end{equation}
+Only $j\le m-1$ is needed after the report. The denominator is the
+posterior expectation of $f/a$ and is at least $1-\tau\ge1/2$;
+this also holds on the segment between any two reachable posterior
+states. The numerator and denominator have uniformly bounded coefficients
+and states have bounded norm. Direct subtraction of the two fractions
+therefore gives a Lipschitz constant independent of $\tau$. In
+particular no reciprocal contrast occurs.
+
+At each stage take the reachable representative codebook constructed
+above. Update its current representative by \eqref{eq:circle-update}
+with the current command and report, then select a nearest representative
+in the next codebook with a fixed tie rule. An updated representative is
+reachable. If $e_n$ is its error from the true state, then
+$e_{n+1}\le L e_n+r_{n+1}$, $e_0=0$, where $r_{n+1}$ is the
+next covering radius. Finite iteration gives
+$e_n\le C_N\max_s r_s$ and the asserted maximum-checkpoint upper
+law by \eqref{eq:circle-parseval}. Missing harmonics above degree $n$
+are exactly zero before the changeover; after it, the shrinking future
+state contains every index used in \eqref{eq:circle-update}.
+The stage is public, while the persistent state is one of $M$ labels.
+The lower bounds use prefixes of the same independent uniform acquisition
+law and so apply to this same causal resource model. The maximum of
+$\min(n,N-n)$ is $\lfloor N/2\rfloor$, proving
+\eqref{eq:circle-causal-profile} with matching lower order.
+
+Finally, for positive contrast the local submersion and the invertible
+physical Fourier menu give an open $2k$-dimensional prediction patch.
+A continuous sufficient encoding restricted to a local section is
+injective, so invariance of domain forbids fewer than $2k$ real
+coordinates. Every $m$-trial continuation likelihood is a trigonometric polynomial
+of order at most $m$, so these Fourier moments determine all such future
+laws, not merely the displayed menu. The Fourier state with its identically
+zero high harmonics uses exactly $2k$, and \eqref{eq:circle-update} realizes it causally.
+This proves the exact dimension assertion.
+\end{proof}
+
+\begin{corollary}[Resolved harmonic phases]\label{cor:circle-phases}
+For $0<\tau<\min(\tau_*,1)$, adjacent terms $j,j+1$ in the circular
+causal profile exchange dominance at
+\[
+ M=\tau^{-2j(j+1)}.
+\]
+Every harmonic pair occurs in this ordered sequence. For $N=4$ and $N=6$
+the respective laws are
+\[
+ \max\{\tau^4M^{-1},\tau^6M^{-1/2}\},\qquad
+ \max\{\tau^4M^{-1},\tau^6M^{-1/2},\tau^8M^{-1/3}\}.
+\]
+\end{corollary}
+\begin{proof}
+Equating the two displayed adjacent powers yields the asserted value of
+$M$. These values increase strictly with $j$ for $\tau<1$. Moreover
+the logarithms of the terms are lines in $\log M$ with strictly
+increasing slopes $-1/j$. Each line is maximal between its crossings
+with its two neighbors; successive comparison also excludes every
+nonadjacent line on that interval. The two examples substitute
+$\lfloor N/2\rfloor=2,3$.
+\end{proof}
+
+The exact dimension agrees with that of a saturated three-dimensional
+polynomial detector, but the resolved law does not follow from that
+agreement. Here each $j$th harmonic is $O(\tau^j)$ in the acquired
+posterior and another $O(\tau^j)$ in the future query. The physical
+width is therefore $\tau^{2j}$. Keeping only the future attenuation
+would already give the wrong $\tau$ power at $n=m=1$. Haar orthogonality
+and the symmetric-polynomial submersion are explicit hypotheses and
+mechanisms of this application; an arbitrary prior on the circle is not
+silently substituted. The original full-support-prior monomial theorem
+retains its separate scope.
+
+
+\subsection{Reconstruction of the attainable volume profile}
+\label{sec:operational-reconstruction}
+The preceding theorems determine a prediction law from an attainable
+flag. There is a converse: the entire integer-budget regret curve
+recovers every product in that flag, up to uniform constants. Thus the
+truncated volume profile is also necessary for uniform comparison of
+prediction laws. We first prove the elementary envelope identity on
+which this converse rests. Its role is to extract the invariant from
+the two experiment-specific classifications; it is not a replacement
+for their attainment, global covering, or causal arguments.
+
+\subsubsection{An envelope identity with integer budgets}
+For an ordered list $s_1\ge\cdots\ge s_p\ge0$, put
+\[
+ V_0(s)=1,\qquad V_\ell(s)=\prod_{i=1}^{\ell}s_i,
+ \qquad
+ e_s(b)=\max_{1\le j\le p}\left(\frac{V_j(s)}b\right)^{1/j}
+ \quad(b\ge1).
+\]
+Zero entries and their products are retained. The extension to real
+$b$ is an analytic device; an actual state alphabet always has an
+integer cardinality.
+
+\begin{lemma}[Recovery of all initial products]
+\label{lem:integer-envelope-duality}
+For every $1\le\ell\le p$,
+\begin{equation}\label{eq:continuous-envelope-recovery}
+ V_\ell(s)=\inf_{b\ge1}b\,e_s(b)^\ell.
+\end{equation}
+For integer budgets one has
+\begin{equation}\label{eq:integer-envelope-recovery}
+ V_\ell(s)\le
+ \inf_{M\in\N,\,M\ge1}M e_s(M)^\ell
+ \le2V_\ell(s).
+\end{equation}
+Both assertions include zero products. If $s_\ell>0$, equality in
+\eqref{eq:continuous-envelope-recovery} holds at
+$b_\ell=V_\ell(s)/s_\ell^\ell\ge1$.
+\end{lemma}
+\begin{proof}
+The $\ell$th term in the maximum gives
+$b e_s(b)^\ell\ge V_\ell(s)$. Suppose first that $s_\ell>0$.
+For $j<\ell$, monotonicity of the list gives
+\[
+ \frac{V_\ell}{V_j}=\prod_{i=j+1}^{\ell}s_i
+       \ge s_\ell^{\ell-j},
+\]
+and hence $V_j/b_\ell\le s_\ell^j$. For $j>\ell$, the reverse
+product estimate $V_j/V_\ell\le s_\ell^{j-\ell}$ gives the same
+inequality. The $\ell$th term is equal to $s_\ell$, so
+$e_s(b_\ell)=s_\ell$. Taking $M_\ell=\lceil b_\ell\rceil$ and
+using that $e_s$ is nonincreasing, we obtain
+\[
+ M_\ell e_s(M_\ell)^\ell
+ \le\lceil b_\ell\rceil s_\ell^\ell
+ \le2b_\ell s_\ell^\ell=2V_\ell.
+\]
+This proves both assertions for positive products without rounding a
+real budget down to an inadmissible alphabet size.
+
+Let $r$ be the number of positive entries. If $r=0$, every quantity
+in the assertions is zero. If $0<r<\ell$, then for
+$b\ge b_r=V_r/s_r^r$ the last positive term is maximal. Indeed,
+with $t=(V_r/b)^{1/r}\le s_r$, the inequality
+$V_r/V_j\ge s_r^{r-j}\ge t^{r-j}$ gives $V_j/b\le t^j$ for
+$j<r$. Consequently
+\[
+ b e_s(b)^\ell=V_r^{\ell/r}b^{1-\ell/r}\longrightarrow0.
+\]
+The same limit holds along the integers. Since $V_\ell=0$, this
+settles every remaining case.
+\end{proof}
+
+The equality uses the ordered-product structure. It would be incorrect
+to apply it to an arbitrary list of coefficients in a maximum of power
+laws: some such coefficients can lie strictly below the envelope. Here
+$\log V_\ell$ is concave on the positive indices, and each product
+has the supporting budget exhibited in the proof. Repeated scales may
+share that budget; their products are still recovered.
+
+\subsubsection{A complete invariant for uniform regret comparison}
+For any nonnegative curve $R:\N\to[0,\infty)$ define
+\begin{equation}\label{eq:operational-volume-transform}
+ \mathcal I_0(R)=1,\qquad
+ \mathcal I_\ell(R)=\inf_{M\in\N,\,M\ge1}
+                       M R(M)^{\ell/2}\quad(\ell\ge1).
+\end{equation}
+The infimum refers to the whole optimal-regret curve, not to finitely
+many observations of an implemented filter. No numerical inversion
+procedure or finite-budget estimator is implicit in this definition.
+
+\begin{theorem}[Operational reconstruction and comparison]
+\label{thm:operational-reconstruction}
+Suppose a family of checkpoint regret curves satisfies
+\begin{equation}\label{eq:reconstruction-hypothesis}
+ c e_s(M)^2\le R_s(M)\le C e_s(M)^2
+ \qquad(M\in\N,\ M\ge1)
+\end{equation}
+with $c,C>0$ uniform in the family and ordered lists of a fixed
+maximum length $p$, padded with zeros when necessary. Then
+\begin{equation}\label{eq:risk-recovers-products}
+ c^{\ell/2}V_\ell(s)\le\mathcal I_\ell(R_s)
+             \le2C^{\ell/2}V_\ell(s),\qquad 1\le\ell\le p.
+\end{equation}
+In particular the positive products, the scale orders of their successive
+ratios, and their uniform orders of degeneration are
+invariants of the regret curve up to comparison constants.
+
+For two such families, their curves are uniformly comparable for all
+integer $M\ge1$ if and only if all their corresponding products
+$V_\ell$ are uniformly comparable, including their zero sets.
+The comparison concerns finite-resolution prediction laws, not an
+isomorphism of experiments or a reconstruction of their hidden parameters.
+\end{theorem}
+\begin{proof}
+Raise \eqref{eq:reconstruction-hypothesis} to the power $\ell/2$,
+multiply by $M$, and take the infimum. Lemma~\ref{lem:integer-envelope-duality}
+gives \eqref{eq:risk-recovers-products}. For a positive product the
+ratio $\mathcal I_\ell/\mathcal I_{\ell-1}$ is comparable to
+$V_\ell/V_{\ell-1}=s_\ell$, with $\mathcal I_0=V_0=1$.
+The first zero product and all its successors are detected as exact
+zeros of the transform; no quotient $0/0$ is formed.
+
+Suppose $A^{-1}R_s(M)\le\widetilde R_t(M)\le A R_s(M)$ uniformly.
+The transform preserves these inequalities with constants $A^{\ell/2}$.
+Applying \eqref{eq:risk-recovers-products} to both curves proves uniform
+comparison of their products. Conversely, if
+$B^{-1}V_\ell(s)\le V_\ell(t)\le B V_\ell(s)$ for all $\ell$,
+with $B\ge1$, then
+\[
+ B^{-2}e_s(M)^2\le e_t(M)^2\le B^2e_s(M)^2.
+\]
+Indeed each branch has comparison factor $B^{2/\ell}\le B^2$;
+taking maxima preserves the bounds. The two instances of
+\eqref{eq:reconstruction-hypothesis} give the asserted comparison of
+curves. Every constant depends only on the stated uniform constants
+and the fixed maximum length, not on a positive lower bound for any
+individual scale.
+\end{proof}
+
+For positive rank $r$, the proof of the lemma also gives
+\[
+ \lim_{M\to\infty}\frac{\log R_s(M)}{\log M}=-\frac2r.
+\]
+Thus the usual dimension slope is one consequence of the curve; the
+products recovered in \eqref{eq:risk-recovers-products} give its
+additional finite-resolution information. Uniformly equivalent norms
+on the same prediction vector change every loss, and hence every
+optimal curve, by uniform constants. The recovered product orders are
+therefore independent of a uniformly conditioned choice of prediction
+coordinates. Parameter-dependent changes with unbounded condition
+number are not covered by this observation.
+
+\subsubsection{The collision and contrast invariants}
+For a monomial checkpoint define the past-truncated products
+\[
+ \widehat{\mathcal V}_{n,m;\ell}(a)=
+ \begin{cases}
+  \mathcal V_{m,\ell}(a),&1\le\ell\le p_{n,m},\\
+  0,&\ell>p_{n,m}.
+ \end{cases}
+\]
+The truncation is part of the invariant, not a convention for suppressing
+unattained directions.
+
+\begin{corollary}[Recovery at every additive collision]
+\label{cor:monomial-operational-recovery}
+Under the hypotheses of Theorem~\ref{thm:intrinsic-checkpoint}, let
+$R^a(M)$ be either $\overline R^a_{M;n,m}$ or
+$R^{a,\max}_{M;n,m}$. For each fixed finite maximum index,
+\begin{equation}\label{eq:monomial-operational-recovery}
+ \mathcal I_\ell(R^a)\asymp
+       \widehat{\mathcal V}_{n,m;\ell}(a),\qquad \ell\ge1,
+\end{equation}
+uniformly on $K$, including all additive collision strata. Consequently
+these truncated volumes are a complete invariant for uniform comparison
+of the corresponding checkpoint regret curves.
+\end{corollary}
+\begin{proof}
+Take $s_j=d_j$ for $1\le j\le p_{n,m}$ from
+Lemma~\ref{lem:leja-scales} and pad by zeros. The same lemma gives
+$V_\ell(s)\le\mathcal V_{m,\ell}\le\ell!V_\ell(s)$ through the
+truncation. These factors are uniform at fixed horizon, including when
+both sides vanish. Theorem~\ref{thm:intrinsic-checkpoint} therefore
+verifies \eqref{eq:reconstruction-hypothesis} for either regret curve.
+Theorem~\ref{thm:operational-reconstruction} proves the assertion,
+including zero products beyond the truncation.
+\end{proof}
+
+The conclusion recovers the observable volume orders, not the complete
+arrangement of the future exponents. In particular it does not recover
+directions inaccessible to this past. The latter may still occur in the
+prior-ambiguity body of Section~\ref{sec:directional-geometry}, whose
+information convention is different.
+
+\begin{corollary}[Recovery of paired acquisition--observation scales]
+\label{cor:circular-operational-recovery}
+For either checkpoint regret curve in
+Theorem~\ref{thm:circle-resolution}, with $k=\min(n,m)$, uniformly on
+its fixed-horizon contrast interval,
+\begin{equation}\label{eq:circle-operational-recovery}
+ \begin{split}
+ \mathcal I_{2j-1}(R^\tau)&\asymp\tau^{2j^2},\\
+ \mathcal I_{2j}(R^\tau)&\asymp\tau^{2j(j+1)},
+             \qquad 1\le j\le k.
+ \end{split}
+\end{equation}
+The transforms vanish at every higher index. For $\tau>0$ the
+successive nonzero ratios recover both copies of each scale
+$\tau^{2j}$; at $\tau=0$ all positive-order transforms vanish.
+\end{corollary}
+\begin{proof}
+Use the real list
+$(\tau^2,\tau^2,\tau^4,\tau^4,\ldots,\tau^{2k},\tau^{2k})$.
+Its products of lengths $2j-1$ and $2j$ have respectively the exponents
+$2j^2$ and $2j(j+1)$. The proof of
+Theorem~\ref{thm:circle-resolution} identifies its full envelope with
+$\mathcal H_{n,m}$, including the odd products even though they add no
+larger branch. Theorem~\ref{thm:operational-reconstruction} now applies.
+Ratios of consecutive products have exponent $2j$ on both members of
+the $j$th pair. Zero contrast and indices above $2k$ are the zero-product
+cases of Lemma~\ref{lem:integer-envelope-duality}.
+\end{proof}
+
+These reconstructions concern checkpoint curves with the experiment
+known. Taking the maximum over checkpoints produces the causal laws
+already proved, but need not retain the individual checkpoint curves.
+Nor is a curve with a positive common-name input-error floor an instance
+of \eqref{eq:reconstruction-hypothesis}. The distinct uncertainty law in
+Theorem~\ref{thm:sharp-common-moments} and all of its hypotheses remain
+in force.
+
+
+\subsection{The geometry of unresolved prior information}
+\label{sec:directional-geometry}
+The acquired-history image and uncertainty about the prior are different
+geometric objects. The first has its dimension bounded by $n(r-1)$.
+The second can occupy every future direction, even after a fixed history.
+We describe the second object here. This also identifies the directions
+which are suppressed when an uncertainty problem is summarized by a
+single squared-error floor.
+
+\subsubsection{The bounded-test principle}
+The finite-radius mechanism in this section is independent of monomials.
+We state it before its confluent specialization. This formulation and the
+normalization below were isolated in the preceding mathematical audit
+\cite{A1v14audit}; we retain that attribution. The result is a bounded
+right-inverse principle, not a second positive-history attainment theorem.
+
+\begin{proposition}[Relative prior perturbations under an observation map]
+\label{prop:general-bounded-dual}
+Let $\mu$ be a probability, $0<c\le\ell\le C<\infty$, and
+$\nu=\ell\mu/(\mu\ell)$. Let $\phi=(\phi_1,\ldots,\phi_q)$ be
+bounded real tests with $\|\phi_j\|_\infty\le B$ and
+$\operatorname{Cov}_\nu(\phi,\phi)\ge\lambda I_q$, $\lambda>0$.
+For $0<\varepsilon\le1/2$, vary $\mu'$ over
+\[
+ \{(1+u)\mu:\mu u=0,\ \|u\|_\infty\le\varepsilon\},
+ \qquad \nu'=\ell\mu'/(\mu'\ell).
+\]
+For every linear map $A:\R^q\to\R^d$ the displacement set satisfies
+\[
+ c_0\varepsilon A[-1,1]^q
+ \ \subset\ \{A(\nu'\phi-\nu\phi)\}
+ \ \subset\ C_0\varepsilon A[-1,1]^q,
+\]
+where $c_0,C_0>0$ depend only on $q,B,\lambda$, not on the singular
+values or rank of $A$.
+\end{proposition}
+\begin{proof}
+For $\mu'=(1+u)\mu$, the exact identity
+\[
+ \nu'\phi-\nu\phi
+ =\frac{\nu\{u(\phi-\nu\phi)\}}{1+\nu u}
+\]
+bounds each coordinate by $4B\varepsilon$. For the other inclusion put
+$\Gamma=\operatorname{Cov}_\nu(\phi,\phi)$ and, for
+$v\in[-1,1]^q$, set
+\[
+ f_v=v^{\mathsf T}\Gamma^{-1}(\phi-\nu\phi),\qquad
+ K=\max\{1,2qB/\lambda\},\qquad s=\varepsilon/(4K).
+\]
+Then $\nu f_v=0$, $\nu(\phi f_v)=v$, and $\|f_v\|_\infty\le K$.
+Define a prior, rather than only a posterior perturbation, by
+\[
+ \frac{d\mu'}{d\mu}=\frac{1+s f_v}{1+s\mu f_v}.
+\]
+It has total mass one, is positive, and obeys
+\[
+ \left\|\frac{d\mu'}{d\mu}-1\right\|_\infty
+ \le\frac{2sK}{1-sK}
+ =\frac{\varepsilon/2}{1-\varepsilon/4}\le\varepsilon.
+\]
+The evidence is $\mu\ell/(1+s\mu f_v)$, so Bayes normalization gives
+exactly $\nu'=(1+s f_v)\nu$ and hence displacement $sv$. This realizes
+one common cube, not merely separate directional alternatives. Applying
+$A$ to both inclusions completes the proof, also when $A$ has a kernel.
+\end{proof}
+
+\subsubsection{Complete confluent flags and all width orders}
+
+
+Throughout this section the calibration is known. Write $q=q_m$ and use
+one of the Leja orders in Lemma~\ref{lem:leja-scales}. Put
+\[
+ \phi_a=(g_1^a,\ldots,g_q^a),\qquad
+ D_a=\operatorname{diag}(d_1,\ldots,d_q),\qquad
+ B_\infty^q=[-1,1]^q,
+\]
+and let $L_a$ be the matrix in \eqref{eq:leja-physical}. All repeated
+formal labels are retained. The convention $d_{q+1}=0$ will be useful.
+For a probability $\nu$, let
+\[
+ X_a(\nu)=(\nu(t^{Hx_i}))_{i=1}^q=L_aD_a\nu\phi_a.
+\]
+The norm of a difference of physical query vectors is equivalent to the
+Euclidean norm of the corresponding difference of $X_a$, with the fixed
+constants already established for $G_m$.
+
+Fix a full-support prior $\mu$ and a history $h$ of length $n$, where
+$n+m\le N$. Its likelihood is denoted by $\ell_h$, and its posterior
+by $\nu_h=\ell_h\mu/\mu\ell_h$. For $0<\varepsilon\le1/2$ set
+\begin{equation}\label{eq:relative-prior-ball}
+ \mathcal B_\varepsilon(\mu)=
+ \{(1+u)\mu:\ \mu u=0,\ \|u\|_{L^\infty(\mu)}\le\varepsilon\}.
+\end{equation}
+Every member is a full-support probability. Let $\nu_h'$ denote the
+posterior obtained from $\mu'\in\mathcal B_\varepsilon(\mu)$ using
+\emph{the same} likelihood, and define the centered ambiguity set
+\begin{equation}\label{eq:ambiguity-body}
+ \mathcal A_h(a,\varepsilon)=
+ \{X_a(\nu_h')-X_a(\nu_h):\mu'\in\mathcal B_\varepsilon(\mu)\}.
+\end{equation}
+This is a set at a specified history; choosing a point in it does not
+select a different prior after each realized history in a statistical
+experiment. A separate common-prior decision statement is given below.
+
+\begin{lemma}[A uniformly bounded dual for the complete test flag]
+\label{lem:flag-covariance}
+The covariance matrix
+\[
+ \Gamma_{a,h}=\operatorname{Cov}_{\nu_h}(\phi_a,\phi_a)
+\]
+has least eigenvalue bounded below by a positive constant, uniformly in
+$a\in K$, histories of length at most $N-m$, and all orders of the
+formal nodes, including their repeated-node limits. Moreover there is
+$C_0\ge1$ such that, for every $v\in B_\infty^q$, the function
+\begin{equation}\label{eq:bounded-flag-dual}
+ f_v(t)=v^{\mathsf T}\Gamma_{a,h}^{-1}
+                 (\phi_a(t)-\nu_h\phi_a)
+\end{equation}
+satisfies $\nu_h f_v=0$, $\nu_h(\phi_a f_v)=v$, and
+$\|f_v\|_\infty\le C_0$. The constants can be chosen uniformly for
+centers in any fixed dominated prior family
+$c_-\mu_0\le\mu\le c_+\mu_0$ with $c_->0$ and full-support $\mu_0$.
+\end{lemma}
+\begin{proof}
+For every ordered multiset of $q$ positive nodes, the functions
+$1,g_1^a,\ldots,g_q^a$ are linearly independent. Indeed,
+Lemma~\ref{lem:prefix-hermite} identifies their span with the constant
+and complete positive-exponent Hermite blocks. Linear independence of
+these exponential-polynomial functions on $(0,1)$ follows from the
+confluent Chebyshev argument in Lemma~\ref{lem:confluent-positive}.
+A nonzero linear combination of the $g_j^a$ cannot therefore be constant
+on the support of a full-support measure. Consequently its variance is
+positive, and the covariance matrix under $\mu_0$ is positive definite.
+
+The uniform bounds and continuity in the proof of
+Lemma~\ref{lem:newton-attainment} apply to the full prefix of length
+$q$, regardless of the number of distinct node values. They show that
+this covariance matrix is continuous on $K$ for each fixed permutation.
+Compactness, and the finite number of permutations, give
+$\operatorname{Cov}_{\mu_0}(\phi_a,\phi_a)\ge\lambda_0 I_q$
+for some $\lambda_0>0$. This statement concerns the normalized functions,
+not physically observable coordinates divided by a zero pivot.
+
+Since $\kappa^n\le\ell_h\le1$, one has
+$\nu_h\ge\kappa^n c_-\mu_0$. For any $w\in\R^q$, the variational
+formula for variance gives
+\[
+ \inf_b\nu_h((w^{\mathsf T}\phi_a-b)^2)
+ \ge\kappa^n c_-\inf_b\mu_0((w^{\mathsf T}\phi_a-b)^2)
+ \ge\kappa^N c_-\lambda_0\|w\|^2.
+\]
+For a single fixed prior use $\mu_0=\mu$ and $c_-=c_+=1$.
+This proves the eigenvalue assertion without any compactness assumption
+on the family of priors. Formula~\eqref{eq:bounded-flag-dual} now has
+zero mean, and multiplication by the centered test vector gives $v$.
+The uniform bound on $\phi_a$ and the just obtained bound on
+$\Gamma_{a,h}^{-1}$ give $C_0$, after increasing it to at least one.
+\end{proof}
+
+\begin{proposition}[All collision scales of the prior ambiguity body]
+\label{prop:ambiguity-ellipsoid}
+There are constants $c,C>0$, with the uniformity of
+Lemma~\ref{lem:flag-covariance}, such that
+\begin{equation}\label{eq:ambiguity-sandwich}
+ c\varepsilon L_aD_aB_\infty^q
+ \ \subset\ \mathcal A_h(a,\varepsilon)
+ \ \subset\ C\varepsilon L_aD_aB_\infty^q.
+\end{equation}
+If
+\[
+ w_k(\mathcal A)=\inf_{\dim V\le k}\sup_{z\in\mathcal A}
+                        \operatorname{dist}(z,V),\qquad 0\le k\le q,
+\]
+then
+\begin{equation}\label{eq:ambiguity-widths}
+ c\varepsilon d_{k+1}\le w_k(\mathcal A_h(a,\varepsilon))
+                         \le C\varepsilon d_{k+1}.
+\end{equation}
+In particular all widths past the number of distinct positive future
+exponents are zero. No past-dimension truncation occurs in this assertion.
+\end{proposition}
+\begin{proof}
+Write $\nu=\nu_h$. For $\mu'=(1+u)\mu$ in
+\eqref{eq:relative-prior-ball}, direct normalization yields
+\[
+ \nu'\phi_a-\nu\phi_a
+ =\frac{\nu\bigl(u(\phi_a-\nu\phi_a)\bigr)}{1+\nu u}.
+\]
+If every $g_j^a$ is bounded by $B$, the right side has coordinatewise
+absolute value at most $2B\varepsilon/(1-\varepsilon)\le4B\varepsilon$.
+Multiplication by $L_aD_a$ proves the upper inclusion.
+
+For the lower inclusion take any $v\in B_\infty^q$, let $f=f_v$ be
+\eqref{eq:bounded-flag-dual}, and put $s=\varepsilon/(4C_0)$. Define
+\begin{equation}\label{eq:pullback-posterior-tilt}
+ d\mu' =\frac{1+s f}{1+s\mu f}\,d\mu.
+\end{equation}
+This is a positive probability, and
+\[
+ \left\|\frac{d\mu'}{d\mu}-1\right\|_\infty
+ \le\frac{2s C_0}{1-s C_0}
+ =\frac{\varepsilon/2}{1-\varepsilon/4}\le\varepsilon.
+\]
+Because $\nu f=0$, its posterior at the same history is exactly
+$d\nu'=(1+s f)\,d\nu$. Hence
+$\nu'\phi_a-\nu\phi_a=s v$, proving the lower inclusion with
+$c=1/(4C_0)$. Formula~\eqref{eq:pullback-posterior-tilt} enforces prior
+normalization; simply using $(1+s f)\mu$ here would not do so.
+
+Let $s_a$ be the number of distinct positive future exponents. The active
+$q$ by $s_a$ block of $L_a$ is bounded above and below as an operator,
+by its leading triangular block in Lemma~\ref{lem:leja-scales}.
+Thus the nonzero singular values of
+$L_a\operatorname{diag}(d_1,\ldots,d_{s_a})$ are comparable, in order,
+to $d_1,\ldots,d_{s_a}$. The comparison follows directly by applying
+the min--max formula to the two quadratic forms, bounded above and below
+by fixed multiples of $\sum_jd_j^2v_j^2$.
+The Euclidean unit ball lies in the cube, which lies in the ball of
+radius $\sqrt q$. An ellipsoid with ordered semiaxes $b_j$ has $k$th
+linear width $b_{k+1}$: projection on its first $k$ principal axes gives
+the upper bound, while any $k$-dimensional space has a nonzero
+orthogonal direction in the span of its first $k+1$ axes, giving the
+lower bound. Apply this fact to the two inclusions in
+\eqref{eq:ambiguity-sandwich}. If $k\ge s_a$, all vectors lie in a
+space of dimension $s_a$, and both sides of
+\eqref{eq:ambiguity-widths} are zero.
+\end{proof}
+
+\subsubsection{Exact lower moments and a vanishing uncertainty direction}
+The preceding proposition resolves every direction, rather than only
+the longest one. An equivalent formulation specifies which moments have
+already been supplied. Let $s_a$ again denote the number of distinct
+positive nodes. For $0\le k\le q$, restrict
+\eqref{eq:relative-prior-ball} by the finite conditions
+\begin{equation}\label{eq:prefix-advice}
+ \nu_h'(t^{Hx_i})=\nu_h(t^{Hx_i}),
+                 \qquad 1\le i\le\min\{k,s_a\},
+\end{equation}
+and call the restricted class $\mathcal B_{h,k}$. Denote by
+$Q_m^a(\nu)$ the vector of probabilities of the ordered physical
+$m$-trial queries, with its normalized Euclidean norm $\|\cdot\|_{\rm av}$.
+Define its squared minimax radius by
+\[
+ \mathfrak a_{h,k}(a,\varepsilon)=
+ \inf_z\sup_{\mu'\in\mathcal B_{h,k}}
+       \|z-Q_m^a(\nu_h')\|_{\rm av}^2.
+\]
+The center $\mu$, the relative envelope, the calibration and the values
+in \eqref{eq:prefix-advice} specify this local problem. These are exact
+conditional-moment constraints at $h$, not the pre-acquisition,
+absolute-error moment name of Section~\ref{sec:uncertainty-geometry}.
+
+\begin{corollary}[Sharp residual uncertainty after a moment prefix]
+\label{cor:prefix-ambiguity}
+With uniform constants as above,
+\begin{equation}\label{eq:prefix-ambiguity-risk}
+ c\varepsilon^2d_{k+1}^2
+ \le\mathfrak a_{h,k}(a,\varepsilon)
+ \le C\varepsilon^2d_{k+1}^2.
+\end{equation}
+For a constant-failure history, the same order is realized as an
+unconditional, event-weighted physical prediction problem with exact
+prior-moment advice. In particular, for
+$A_\theta=\{0,1,2+\theta\}$, $N=3$, $n=1$, $m=2$ and sufficiently
+small $|\theta|$, one has
+\begin{equation}\label{eq:invisible-memory-visible-ambiguity}
+ \Xi_3(M,A_\theta)\asymp M^{-1},\qquad
+ \mathfrak a_{h,4}(A_\theta,\varepsilon)
+                            \asymp\varepsilon^2\theta^2.
+\end{equation}
+The latter is zero at $\theta=0$.
+\end{corollary}
+\begin{proof}
+For $k<s_a$, the first $k$ raw constraints in
+\eqref{eq:prefix-advice} are equivalent to equality of the first $k$
+normalized moments. This follows by triangular back substitution in
+the leading block of $L_aD_a$, whose first $k$ pivots are nonzero.
+This equivalence is an exact identity, not a stability assertion for
+approximate constraints. The upper-inclusion proof in
+Proposition~\ref{prop:ambiguity-ellipsoid} therefore has its first $k$
+coordinates zero. Its remaining scaled coordinates are bounded by
+$C\varepsilon d_{k+1}$. The central prediction gives the upper bound.
+For the lower bound use the construction
+\eqref{eq:pullback-posterior-tilt} with $v=e_{k+1}$ and $v=-e_{k+1}$.
+Both priors satisfy the constraints and their query vectors differ by
+at least $c\varepsilon d_{k+1}$. For any proposed output, one of its
+two distances is at least half this separation. Query-norm equivalence
+proves the lower bound. If $k\ge s_a$, all distinct raw future moments
+are fixed, and Proposition~\ref{prop:tests} gives radius zero.
+
+For the physical assertion issue $n$ constant commands whose failure
+factor is $1/2$, and consider the event $E$ of $n$ failures. Its
+likelihood is the constant $2^{-n}$, and its probability is $2^{-n}$
+under every prior in the class. On $E$ the posterior is the prior, so
+\eqref{eq:prefix-advice} is now exact \emph{prior}-moment advice fixed
+before acquisition. Score the squared prediction loss for the selected
+$m$-trial query on $E$, and assign zero loss off $E$. Every trial and
+the probability of $E$ remain counted. A single rule has the same
+prediction kernel on $E$ for all compatible priors. The preceding
+two-point argument, multiplied by $2^{-n}$, gives the unconditional
+lower bound; the central prediction gives the upper bound. This is a
+specific event-weighted decision problem, not a claim about the risk
+on all other report histories under a different payoff.
+
+For the displayed family, the five nonconstant formal two-trial nodes,
+before the fixed normalization by $H$, are
+\[
+ 1,\quad 2,\quad 2+\theta,\quad 3+\theta,\quad4+2\theta.
+\]
+They form four uniformly separated groups, with the only merging pair
+$2,2+\theta$. Thus $\mathcal V_{2,j}\asymp1$ for $1\le j\le4$ and
+$\mathcal V_{2,5}\asymp|\theta|$. Lemma~\ref{lem:leja-scales}
+gives $d_1,\ldots,d_4\asymp1$ and $d_5\asymp|\theta|$,
+including $d_5=0$ at the collision. Formula~\eqref{eq:prefix-ambiguity-risk}
+proves the second assertion. At checkpoint $(1,2)$ the attainable
+truncation is $p_{1,2}=2$, so its regret profile is $\asymp M^{-1}$.
+At checkpoint $(2,1)$ there are two uniformly separated positive
+one-trial nodes, and the same profile results. Taking the maximum proves
+the first assertion in \eqref{eq:invisible-memory-visible-ambiguity}.
+\end{proof}
+
+The example separates a collision which is invisible to the acquired
+memory exponent at this horizon from a vanishing direction of unresolved
+prior information. More generally, \eqref{eq:ambiguity-widths} uses
+all future scales, whereas \eqref{eq:intrinsic-profile} uses only those
+which the past can excite. The isotropic common-name law in the next
+section allows uncertainty in a uniformly visible direction; its
+$\delta^2$ term is therefore not, by itself, a classification of the
+weaker directions. No calibration-only converse is inferred from the
+prior perturbations constructed here.
+
+
+\subsection{Sharp memory under a common moment name}
+\label{sec:uncertainty-geometry}
+We now determine the joint effect of persistent memory and uncertainty in
+the finite moment data. The upper construction in
+Corollary~\ref{cor:uncertain-monomial} serves every experiment consistent
+with the same name. A converse requires the consistency class to contain
+actual alternatives; an arbitrary boundary name may determine a singleton.
+The following formulation makes the necessary interior condition explicit.
+It applies at every additive collision stratum, without changing the
+fixed-prior classification.
+
+\subsubsection{The consistency class}
+Fix the detector, $K$, $N\ge2$, and $r\ge2$ as in the introduction.
+Choose the attainable failure basis to be
+\begin{equation}\label{eq:uncertainty-probe-basis}
+ F_0=\tfrac12,\qquad F_j=\tfrac12+\beta t^{a_j},\quad 1\le j<r,
+\end{equation}
+where $\beta>0$ is fixed and sufficiently small. The right inverse in
+Lemma~\ref{lem:interior} supplies one command for each formal coefficient
+vector, independent of the calibration. Thus this is one of the fixed
+physical bases already allowed in the intrinsic theorem, not an extra
+observation channel. At future length $m$, use its ordered $m$-fold
+products, selected uniformly after the checkpoint index is formed.
+
+Let $\mu_0$ be a fixed full-support probability on $[0,1]$, and take
+$0<c_-<1<c_+<\infty$. For a fixed
+$0<\lambda<\min\{1-c_-,c_+-1\}$, set
+\[
+ \mathcal D=\{\nu:c_-\mu_0\le\nu\le c_+\mu_0\},\qquad
+ \mathcal D_\lambda=
+ \{\nu:(c_-+\lambda)\mu_0\le\nu\le(c_+-\lambda)\mu_0\}.
+\]
+All members are probability measures. These inequalities are inequalities
+of measures; no Lebesgue density is assumed. Let $\mathbf m_N(a,\mu)$
+denote the vector of all formal moments of degrees $0,\ldots,N$,
+with repeated exponent labels retained. For a rational vector $y$ of the
+same format and $\delta>0$, write
+\begin{equation}\label{eq:moment-consistency-class}
+ \mathcal U(y,\delta)=\{(a',\nu)\in K\times\mathcal D:
+       \|\mathbf m_N(a',\nu)-y\|_\infty\le\delta\}.
+\end{equation}
+The detector is fixed; certified approximations to its coefficients may
+be supplied separately. The vector $y$ need not itself be a moment vector.
+
+A common-name program is chosen from $y,\delta$ and the fixed task data,
+without consulting the unknown member of $\mathcal U(y,\delta)$.
+It retains at most $M$ labels at every stage. Let
+$\mathcal R_{M,N}^{\rm av}(y,\delta)$ be the infimum over such programs
+of the supremum, over this class, of maximum unconditional checkpoint
+regret under the common independent command exploration.
+Define $\mathcal R_{M,N}^{\max}(y,\delta)$ by using worst-history
+checkpoint regret instead. At each checkpoint the query is the fresh
+random choice specified above. The admissible programs include the
+integer/dyadic programs with memoryless command coding. The lower bounds
+below hold even for randomized programs with unrestricted offline advice
+that is the same in all members of the consistency class.
+
+\begin{theorem}[Joint memory and moment-uncertainty law]
+\label{thm:sharp-common-moments}
+There are constants $c,C,\delta_0>0$, depending only on the fixed data
+and $\lambda$, such that the following holds. Suppose
+$(a,\mu)\in K\times\mathcal D_\lambda$, $M\ge1$ is an integer,
+$0<\delta\le\delta_0$, and
+\begin{equation}\label{eq:interior-moment-name}
+ \|y-\mathbf m_N(a,\mu)\|_\infty\le\delta/2.
+\end{equation}
+Then
+\begin{equation}\label{eq:sharp-common-moments}
+ c\bigl(\Xi_N(M,a)+\delta^2\bigr)
+ \le \mathcal R_{M,N}^{\rm av}(y,\delta)
+ \le \mathcal R_{M,N}^{\max}(y,\delta)
+ \le C\bigl(\Xi_N(M,a)+\delta^2\bigr).
+\end{equation}
+The upper bound is attained in order by one finite integer/dyadic
+program constructed from $y$, not from $(a,\mu)$. Its selected numerical
+scale is comparable to
+$\min\{1,\sqrt{\Xi_N(M,a)}+\delta\}$.
+The constants are uniform on every additive collision stratum of $K$
+and across their intersections.
+\end{theorem}
+
+The interior point in this statement is used to describe the order of the
+risk and to prove a lower bound. It is not supplied to the algorithm.
+In particular the theorem does not replace the consistency class by
+alternatives selected after the true model has been revealed. The
+hypothesis \eqref{eq:interior-moment-name} leaves room for a two-sided
+physical perturbation. Omitting this hypothesis, or replacing
+$\mathcal D_\lambda$ by an arbitrary boundary point of $\mathcal D$,
+would not be justified by the argument.
+
+\subsubsection{Uniform ambiguity after positive histories}
+The converse rests on the following elementary identity. It records why
+acquisition does not resolve the local ambiguity at a fixed horizon.
+
+\begin{lemma}[Posterior separation with overlapping history laws]
+\label{lem:overlap-tilt}
+Let $\mu$ be a probability, let $\mu f=0$ and $|f|\le1$, and put
+$\mu_\pm=(1\pm\varepsilon f)\mu$ for $0<\varepsilon\le1/2$.
+For a positive likelihood $\ell_w$, let
+$\nu_w=\ell_w\mu/\mu\ell_w$. For every bounded query $q$,
+\begin{equation}\label{eq:tilt-posterior-gap}
+ \nu_{w,+}q-\nu_{w,-}q
+ =\frac{2\varepsilon\operatorname{Cov}_{\nu_w}(q,f)}
+        {1-\varepsilon^2(\nu_w f)^2}.
+\end{equation}
+Under the same parameter-independent acquisition rule, the history laws
+satisfy $P_\pm\ge(1-\varepsilon)P_0$. If one prediction kernel $Y$
+is used in both experiments and $q_\pm(w)=\nu_{w,\pm}q$, then
+\begin{equation}\label{eq:overlap-squared-loss}
+ \frac12\sum_{\sigma\in\{-,+\}}\E_{P_\sigma}(Y-q_\sigma)^2
+ \ge\frac{1-\varepsilon}{4}
+       \int(q_+(w)-q_-(w))^2\,P_0(\dd w).
+\end{equation}
+The expectation includes any common independent coding randomization.
+\end{lemma}
+\begin{proof}
+Both perturbations have mass one and are positive. Direct normalization
+gives
+\[
+ \nu_{w,\pm}q=
+ \frac{\nu_w q\pm\varepsilon\nu_w(qf)}{1\pm\varepsilon\nu_w f}.
+\]
+Subtract these fractions to obtain \eqref{eq:tilt-posterior-gap}.
+The density of $P_\pm$ relative to $P_0$ is
+$1\pm\varepsilon\nu_w f$, by integration of the same likelihood
+against the two priors. It lies between $1-\varepsilon$ and
+$1+\varepsilon$. Conditional on a given history, the prediction kernel
+is identical because the data supplied to the program are identical.
+For every real $Y$ and real $u,v$,
+\[
+ \tfrac12\{(Y-u)^2+(Y-v)^2\}
+ =\bigl(Y-(u+v)/2\bigr)^2+(u-v)^2/4.
+\]
+Dominate both history measures by $(1-\varepsilon)P_0$, integrate
+this identity, and discard its nonnegative first term. This proves
+\eqref{eq:overlap-squared-loss}. The same calculation integrates
+randomized predictions. No equality of the two history laws is required.
+\end{proof}
+
+\begin{lemma}[A uniform physical moment ambiguity]
+\label{lem:uniform-collision-ambiguity}
+Under the hypotheses of Theorem~\ref{thm:sharp-common-moments}, the
+class $\mathcal U(y,\delta)$ contains two experiments with the same
+calibration $a$ such that, at every checkpoint $1\le n<N$, every
+common prediction rule has maximum unconditional regret at least
+$c_0\delta^2$. The rule may retain the entire acquired history.
+The constant $c_0>0$ is uniform in $(a,\mu),y,\delta$ in the stated
+ranges. Both alternatives are positive experiments in $\mathcal D$.
+\end{lemma}
+\begin{proof}
+Put $z_a(t)=t^{a_1}$ and
+\[
+ v_0=\min_{a\in K}\operatorname{Var}_{\mu_0}(z_a)>0.
+\]
+The variance is positive for each $a$: full support gives positive mass
+to two separated intervals on which the strictly increasing function
+$z_a$ has disjoint ranges. Its dependence on $a$ is continuous in the
+uniform norm, including at $t=0$, because $a_1$ has a positive lower
+bound on $K$. Compactness therefore gives the displayed positive minimum.
+
+Set $f=z_a-\mu z_a$ and $\varepsilon=\delta/2$. Then $\mu f=0$
+and $|f|\le1$. If $\varepsilon\le\lambda/c_+$, the measure bounds
+for $\mu\in\mathcal D_\lambda$ imply
+\[
+ c_-\mu_0\le(1\pm\varepsilon f)\mu\le c_+\mu_0.
+\]
+Indeed, the absolute change of the measure is bounded by
+$\varepsilon\mu\le\varepsilon c_+\mu_0\le\lambda\mu_0$.
+For every formal label through degree $N$, its monomial $v$ lies in
+$[0,1]$, and hence
+\[
+ |\mu_\pm v-\mu v|=\varepsilon|\mu(vf)|\le\varepsilon.
+\]
+Together with \eqref{eq:interior-moment-name} this puts both
+$(a,\mu_\pm)$ in \eqref{eq:moment-consistency-class}. This uses the
+same $y$ in both experiments; none of its entries is changed.
+
+Let $w$ be any length-$n$ history and $\nu_w$ its reference posterior.
+Its likelihood satisfies $\kappa^n\le\ell_w\le1$, so
+$\nu_w\ge\kappa^n\mu$. The variational formula for variance gives
+\begin{equation}\label{eq:positive-posterior-variance}
+ \operatorname{Var}_{\nu_w}(z_a)
+ =\inf_{b\in\R}\nu_w((z_a-b)^2)
+ \ge\kappa^n\operatorname{Var}_{\mu}(z_a)
+ \ge\kappa^n c_- v_0.
+\end{equation}
+This bound is uniform over commands and report words, including failures.
+Let $m=N-n$ and take the actually executable ordered product probe
+$F_1F_0^{m-1}$. Its event function is
+\[
+ q(t)=2^{-m}+\beta 2^{-(m-1)}z_a(t).
+\]
+It is selected with probability $r^{-m}$ by the prescribed menu and
+uses exactly its $m$ trials. Since subtracting the constant $\mu z_a$
+from $z_a$ does not change covariance under $\nu_w$,
+\[
+ \operatorname{Cov}_{\nu_w}(q,f)
+ =\beta 2^{-(m-1)}\operatorname{Var}_{\nu_w}(z_a).
+\]
+Equation~\eqref{eq:tilt-posterior-gap}, whose denominator is in
+$(0,1]$, therefore bounds the two conditional query means apart by
+\[
+ 2\varepsilon\beta 2^{-(m-1)}\kappa^n c_-v_0.
+\]
+Apply \eqref{eq:overlap-squared-loss} and multiply by $r^{-m}$.
+Taking the minimum of the resulting positive constants over the finitely
+many $n$ gives $c_0\delta^2$. For example, the coefficient for a given
+$n$ may be taken as
+$r^{-m}\beta^2 2^{-2(m-1)}\kappa^{2n}c_-^2v_0^2/8$.
+Here $\varepsilon=\delta/2$ and $1-\varepsilon\ge1/2$ were used.
+The argument applies to every rule on the complete history, and hence
+also to every finite-label rule. It neither resolves nor divides by any
+additive exponent difference.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:sharp-common-moments}]
+For every $(a',\nu)\in\mathcal U(y,\delta)$, the same finite table
+is $\delta$-accurate. Corollary~\ref{cor:uncertain-monomial} supplies
+one program with worst-history regret at most
+$C(\Xi_N(M,a')+\delta^2)$ in each such experiment. Its finite input
+and prior-family hypotheses hold uniformly by
+Lemma~\ref{lem:prior-envelope}. The moment vectors of $(a',\nu)$
+and $(a,\mu)$ differ by at most $3\delta/2$. Consequently
+Corollary~\ref{cor:profile-stability}, applied with this bound, gives
+\[
+ \Xi_N(M,a')\le C'(\Xi_N(M,a)+\delta^2).
+\]
+Increasing the fixed constant proves the upper inequality in
+\eqref{eq:sharp-common-moments}; no point of the consistency class has
+been selected in the construction. The stated numerical scale follows
+by applying the same corollary to the center, which belongs to the class.
+An unconditional risk is bounded by its worst-history counterpart.
+
+For the memory lower bound, the center itself is an admissible member
+of $\mathcal U(y,\delta)$. Every common-name $M$-label program is an
+admissible $M$-label program for that fixed experiment. The intrinsic
+causal lower theorem and Lemma~\ref{lem:prior-envelope} imply a
+uniform lower bound $c_1\Xi_N(M,a)$, including independent coding
+randomization. Lemma~\ref{lem:uniform-collision-ambiguity} supplies
+the independent lower bound $c_0\delta^2$ for every such program.
+Use $\max\{u,v\}\ge(u+v)/2$ and take the infimum over programs.
+Finally choose $\delta_0$ to satisfy the positive-evidence restrictions
+in the upper construction, $\delta_0\le1$, and
+$\delta_0/2\le\lambda/c_+$. All restrictions depend only on the fixed
+data. This proves the theorem.
+\end{proof}
+
+The two-point method in these lemmas is elementary. The collision-sensitive
+content of \eqref{eq:sharp-common-moments} is the full attained profile
+$\Xi_N$, in both its memory converse and its common-program realization.
+The uncertainty converse is now valid uniformly at colliding calibrations
+rather than only in a noncolliding example. It uses prior ambiguity;
+it is not a calibration-only converse for a known exact prior, nor a
+lower bound for arbitrary degenerate consistency classes.
+
+\subsubsection{The anisotropic saturation threshold}
+The full profile gives a more precise resource threshold than its
+separated-chain floor. Define
+\begin{equation}\label{eq:advice-saturation-index}
+ \mathcal M_\delta(a)=
+ \max_{\substack{1\le n<N\\1\le\ell\le p_{n,N-n}}}
+       \mathcal V_{N-n,\ell}(a)\delta^{-\ell}.
+\end{equation}
+Terms with zero volume are zero, not omitted by a numerical rank decision.
+
+\begin{corollary}[Collision-sensitive saturation]
+\label{cor:advice-saturation}
+For every $a\in K$, $0<\delta\le1$, and integer $M\ge1$,
+\begin{equation}\label{eq:exact-saturation}
+ \Xi_N(M,a)\le\delta^2
+       \quad\Longleftrightarrow\quad M\ge\mathcal M_\delta(a).
+\end{equation}
+Thus the least integer satisfying the profile inequality is
+$\lceil\mathcal M_\delta(a)\rceil$. Under the hypotheses of
+Theorem~\ref{thm:sharp-common-moments}, the minimax order is $\delta^2$
+above this threshold and is $\Xi_N(M,a)$ below it, with the same fixed
+comparison constants. This is an order statement about risk, not an
+exact numerical value of the minimax risk.
+
+Suppose along a positive one-parameter path $a(\theta)$ each nonzero
+volume satisfies
+$\mathcal V_{m,\ell}(a(\theta))\asymp\theta^{\beta_{m,\ell}}$,
+with constants uniform for sufficiently small $\theta>0$.
+Then, uniformly also in $0<\delta\le1$,
+\begin{equation}\label{eq:valuation-saturation}
+ \mathcal M_\delta(a(\theta))\asymp
+ \max_{n,\ell}\theta^{\beta_{N-n,\ell}}\delta^{-\ell}.
+\end{equation}
+Identically zero volumes contribute no term. In particular all contact
+orders in the collision-tree law enter the advice saturation threshold.
+\end{corollary}
+\begin{proof}
+Each term $(\mathcal V_{m,\ell}/M)^{2/\ell}$ is at most
+$\delta^2$ if and only if $M\ge\mathcal V_{m,\ell}\delta^{-\ell}$.
+Take the maximum over all checkpoints and active formal indices.
+This proves \eqref{eq:exact-saturation}, including exact zero volumes.
+The term $\ell=1$ gives $\mathcal M_\delta\ge\delta^{-1}$, so the
+integer statement has no small-budget exception. On each side of the
+threshold the sum $\Xi_N+\delta^2$ is between its larger term and
+twice that term; apply \eqref{eq:sharp-common-moments}.
+Finally there are only finitely many volume terms. Substitute their
+uniform two-sided estimates into \eqref{eq:advice-saturation-index}
+and take the smallest and largest of their positive constants.
+This proves \eqref{eq:valuation-saturation}. The contact exponents
+are those already determined by the collision-tree argument; the
+corollary introduces no new equality test.
+\end{proof}
+
+\begin{corollary}[Uncertain moments at intersecting collision strata]
+\label{cor:uncertain-intersections}
+Consider the fixed four-cell detector and square of calibrations in
+Corollary~\ref{cor:two-parameter}. Put
+$\rho=\max\{|u|,|v|\}$ and
+$\tau=\min\{|u|,|v-u|,|v-2u|\}$, as in that corollary.
+Under the prior-interior and common-name hypotheses of
+Theorem~\ref{thm:sharp-common-moments}, both common-name minimax
+criteria at $N=5$ have order
+\begin{equation}\label{eq:noisy-intersection-risk}
+ \max\left\{M^{-1/3},\ \rho^{1/2}M^{-1/4},\
+              (\rho^2\tau)^{2/9}M^{-2/9},\ \delta^2\right\}.
+\end{equation}
+The profile saturation threshold satisfies, uniformly on the entire square,
+\begin{equation}\label{eq:noisy-intersection-threshold}
+ \mathcal M_\delta(u,v)\asymp
+ \max\{\delta^{-6},\ \rho^2\delta^{-8},\ \rho^2\tau\delta^{-9}\}.
+\end{equation}
+In particular, on $u=\theta$, $v=\theta+\theta^k$, $k\ge2$ fixed,
+and for sufficiently small $\theta>0$,
+\begin{equation}\label{eq:noisy-tangency-phases}
+ \mathcal M_\delta\asymp
+ \begin{cases}
+   \delta^{-6},&\delta\ge\theta,\\
+   \theta^2\delta^{-8},&\theta^k\le\delta\le\theta,\\
+   \theta^{k+2}\delta^{-9},&0<\delta\le\theta^k.
+ \end{cases}
+\end{equation}
+These are uniform comparison orders, including their boundary scales.
+Thus a fixed moment accuracy can obscure one collision scale while
+resolving another; the same common-name program attains the appropriate
+risk order without being told the stratum or the contact order.
+\end{corollary}
+\begin{proof}
+Theorem~\ref{thm:sharp-common-moments} and
+Corollary~\ref{cor:two-parameter} give
+\eqref{eq:noisy-intersection-risk}, since the sum of a nonnegative
+profile and $\delta^2$ is comparable to their maximum.
+For the threshold, the determinant calculation in that corollary gives,
+at $(n,m)=(3,2)$, volumes comparable to one through order six, to
+$\rho$ at order seven, to $\rho^2$ at order eight, and to
+$\rho^2\tau$ at order nine. Other checkpoints contribute at most
+$C\delta^{-6}$ to \eqref{eq:advice-saturation-index}, since their
+attainable dimensions are at most six and their normalized volumes are
+bounded. The seven-dimensional term introduces no further order:
+\[
+ \rho\delta^{-7}
+   =\sqrt{\delta^{-6}\,\rho^2\delta^{-8}}
+   \le\max\{\delta^{-6},\rho^2\delta^{-8}\}.
+\]
+This proves \eqref{eq:noisy-intersection-threshold}, also when a volume
+is exactly zero. Along the stated path, $\rho\asymp\theta$ and
+$\tau\asymp\theta^k$. The ratios of the middle threshold term to
+the first, and of the last to the middle, have orders
+$\theta^2/\delta^2$ and $\theta^k/\delta$, respectively.
+The ordering $\theta^k\le\theta$ gives the three cases in
+\eqref{eq:noisy-tangency-phases}. The implementation assertion is the
+common-program conclusion of Theorem~\ref{thm:sharp-common-moments},
+not a separate procedure that decides which case holds.
+\end{proof}

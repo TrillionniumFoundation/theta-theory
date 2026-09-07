@@ -1,0 +1,659 @@
+\subsection{A structural classification of positive polynomial experiments}
+\label{sec:v18-structure}
+We first treat finite detectors without an ordered latent space or a
+prescribed resolution flag. Polynomial dependence below is on the commands,
+not on the latent variable. In particular, the class includes every finite
+detector with affine retention commands and arbitrary continuous cells.
+
+\subsubsection{Experiments, queries, and the augmented moment matrix}
+Let $X$ be a compact metric space and let $\mu$ be a probability on $X$.
+Fix $2\le N<\infty$. At time $i$, a command belongs to
+$U_i=[-1,1]^{b_i}$, where $b_i\ge1$, and the report belongs to a finite set $\mathcal Y_i$.
+The likelihoods have the form
+\begin{equation}\label{eq:v18-polynomial-detector}
+ L_{i,y}(u,x)=\sum_{\alpha\in F_{i,y}}u^\alpha c_{i,y,\alpha}(x),
+ \qquad c_{i,y,\alpha}\in C(X),\qquad
+ L_{i,y}\ge\kappa>0,\qquad \sum_yL_{i,y}=1.
+\end{equation}
+Each $F_{i,y}$ is finite. The commands in the exploration experiment are
+independent uniform random variables, independent of the latent variable
+and of coding randomness. A command is read once. The persistent resource
+is one of $M$ labels; the clock and the known experiment are read-only.
+The meaning of this resource is exactly that of
+Definition~\ref{def:finite-state}. In particular, a command-generation
+seed that remembers the prefix is not free side information.
+
+For $0\le n<N$, let $\mathscr V_n$ be the span in $C(X)$ of the
+likelihoods of all specified report words in the remaining times
+$n+1,\ldots,N$, with arbitrary fixed future commands. It is finite
+dimensional, by \eqref{eq:v18-polynomial-detector}, and contains $1$:
+summing over all future report words at any fixed future commands gives
+$1$. Choose a finite list of such physical queries
+$H_{n,1},\ldots,H_{n,q_n}$ spanning $\mathscr V_n$, and fixed weights
+$w_{n,j}>0$ with sum one. A query is chosen independently after the
+checkpoint label is formed. Only that query and its remaining trials
+are executed. Its binary outcome is the indicator of its specified
+report word. Thus squared-loss excess is the squared Euclidean error in
+\[
+ p_n(h)=\left(\sqrt{w_{n,j}}\,
+             \frac{\mu(P_hH_{n,j})}{\mu P_h}\right)_{j=1}^{q_n}.
+\]
+Open-loop word queries suffice for this span; an adaptive future tree
+only forms finite sums of the same products.
+
+For a fixed past report word $a=(a_1,\ldots,a_n)$ set
+\[
+ P_a(\boldsymbol u,x)=\prod_{i=1}^nL_{i,a_i}(u_i,x),\qquad
+ Z_a=\mu P_a,\qquad D_n=\sum_{i=1}^nb_i,
+\]
+and form the polynomial vector and its augmented matrix
+\begin{equation}\label{eq:v18-augmented-matrix}
+ \begin{split}
+ Y_a(\boldsymbol u)&=
+ \left(Z_a,\bigl(\sqrt{w_{n,j}}\,\mu(P_aH_{n,j})\bigr)_{j=1}^{q_n}\right)^t,\\
+ \mathcal A_a(\boldsymbol u)&=
+ [\,Y_a\mid\partial_1Y_a\mid\cdots\mid\partial_{D_n}Y_a\,],\\
+ d_n(\mu)&=\max_{a\in\prod_{i\le n}\mathcal Y_i}
+       \rank_{\R(\boldsymbol u)}\mathcal A_a-1.
+ \end{split}
+\end{equation}
+The rank is over the rational-function field with the actual prior
+moments as real coefficients. No genericity of the prior is implicit.
+The initial state is a singleton; set $d_0=0$.
+
+\begin{lemma}[Augmentation and normalization]\label{lem:v18-normalized-rank}
+Let $Y=(Z,Zp)^t$ be a differentiable vector with $Z>0$. Then
+\begin{equation}\label{eq:v18-normalized-rank}
+ \rank[\,Y\mid DY\,]=1+\rank Dp.
+\end{equation}
+Consequently $d_n(\mu)$ is the maximum rank of the actual checkpoint
+prediction map over interior command tuples and report words. It is
+independent of the chosen spanning query coordinates, provided their
+weights are positive.
+\end{lemma}
+\begin{proof}
+Subtract $p_j$ times the first row from row $j+1$. The first column
+becomes $(Z,0)^t$, and each derivative column becomes
+$(\partial_iZ,Z\partial_ip)^t$. Subtracting
+$(\partial_iZ/Z)$ times the first column removes its top entry.
+These invertible operations prove \eqref{eq:v18-normalized-rank}.
+A polynomial minor is either identically zero or nonzero on a dense
+open subset of the interior command cube. Thus rational-function rank
+is the maximum attained rank there. A different spanning query list
+gives linear maps in both directions on the vector augmented by its
+constant coordinate. After differentiation these maps identify the
+ranks. Notice that no assertion $P\in\operatorname{im}DP$ was needed:
+the added evidence column is removed by normalization, not treated as
+an additional acquired direction.
+\end{proof}
+
+Write $R^{\mathrm{av}}_{M,n}$ for the optimal unconditional checkpoint
+excess when an arbitrary encoder of the complete prefix may retain
+$M$ labels, and $R^{\mathrm{max}}_{M,n}$ for its worst-history analogue.
+Write $\mathfrak R^{\mathrm{av}}_{M,N}$ and
+$\mathfrak R^{\mathrm{max}}_{M,N}$ for the infima of the corresponding
+maximum over checkpoints when \emph{one} causal filter is used.
+Independent encoder and decoder randomness is allowed in all infima.
+
+\begin{theorem}[Product-rank classification]\label{thm:v18-rank-classification}
+In every experiment \eqref{eq:v18-polynomial-detector}, for every fixed
+prior $\mu$, the whole reachable prediction set at checkpoint $n$ is
+compact semialgebraic of dimension $d_n(\mu)$. If $d_n(\mu)>0$, then
+for all integers $M\ge1$
+\begin{equation}\label{eq:v18-checkpoint-rank-law}
+ c_nM^{-2/d_n}\le R^{\mathrm{av}}_{M,n}
+ \le R^{\mathrm{max}}_{M,n}\le C_nM^{-2/d_n}.
+\end{equation}
+If $d_n=0$, the reachable set is finite, with at most
+$\prod_{i\le n}|\mathcal Y_i|$ points; its checkpoint risk is zero once
+that many labels are available.
+
+Set $d_* =\max_{1\le n<N}d_n$. If $d_*>0$, then
+\begin{equation}\label{eq:v18-causal-rank-law}
+ cM^{-2/d_*}\le\mathfrak R^{\mathrm{av}}_{M,N}
+ \le\mathfrak R^{\mathrm{max}}_{M,N}\le CM^{-2/d_*}.
+\end{equation}
+The upper bound is attained by one deterministic stage-compatible
+filter with reachable representatives. If $d_*=0$, one finite filter is
+exact at every checkpoint. These conclusions require no full-support
+assumption on $\mu$, no Chebyshev system, and no nondegeneracy
+hypothesis besides the rank computed in \eqref{eq:v18-augmented-matrix}.
+For fixed detector and query lists, all positive-rank comparison
+constants can be chosen uniformly on a compact set of prior moment
+vectors on which the relevant ranks are constant.
+\end{theorem}
+
+\subsubsection{Whole images and actual history mass}
+\begin{lemma}[Image dimension and a minorized chart]\label{lem:v18-image-mass}
+For a fixed checkpoint, let $S_n$ be the union of all reachable vectors
+$p_n(h)$. Its semialgebraic format is bounded in terms of the finite
+polynomial data and horizon. Its dimension is $d_n$. If $d_n>0$, some
+coordinate projection $\pi:\R^{q_n}\to\R^{d_n}$ and some cube $Q$
+of positive side length satisfy
+\begin{equation}\label{eq:v18-image-minorization}
+ \pi_*\operatorname{Law}(p_n(h))\ \ge\ \beta\operatorname{Unif}(Q),
+ \qquad \beta>0,
+\end{equation}
+under the stated exploration law, with reports included rather than
+conditioned away.
+\end{lemma}
+\begin{proof}
+For each word, the graph is specified by its command cube and the
+polynomial equations $Z_ap_j=Y_{a,j+1}$. Here
+$Z_a\ge\kappa^n$ on that cube. Projection gives a semialgebraic set of
+bounded format. Its compactness follows from the continuous rational
+map on a compact cube. The finite union over words has the same
+properties. Prior integrals are simply real coefficients in these
+equations; neither $X$ nor the prior has been assumed semialgebraic.
+
+For clarity, the real-geometric dimension fact used here is the
+following standard consequence of semialgebraic constant-rank
+stratification \cite{BochnakCosteRoy}: a rational map with nonvanishing
+denominator on a cube has image dimension equal to its largest
+interior differential rank. Indeed, stratify its domain, including the
+boundary faces, into finitely many smooth semialgebraic pieces on which
+the restricted map has constant rank. The constant-rank theorem bounds
+each image dimension by that rank. Every restricted rank is at most
+the maximum ambient rank, which is also the maximum interior rank:
+a nonzero minor at a boundary point stays nonzero at nearby interior
+points. Conversely, a point of maximum interior rank has a neighborhood
+whose image contains a submanifold of that dimension. Applying this
+fact and Lemma~\ref{lem:v18-normalized-rank} proves $\dim S_n=d_n$.
+
+Choose a word and an interior tuple $u_*$ where the rank is $d_n$, and
+choose $d_n$ output rows with independent differentials. Put $z=\pi p_n$
+and $J=Dz(u_*)$. Let the rows of $K$ be an orthonormal basis of
+$\ker J$. The square map
+\[
+ F(u)=(z(u),K(u-u_*))
+\]
+has an invertible derivative at $u_*$. The inverse-function theorem
+provides a diffeomorphism over a product of a $d_n$-cube and a
+$(D_n-d_n)$-cube. Shrinking these cubes makes the forward Jacobian
+bounded, say by $B$ in operator norm. Thus its inverse determinant is
+at least $B^{-D_n}$. In command coordinates the subprobability density
+of this very report word is $Z_a/\operatorname{vol}(\prod U_i)$,
+bounded below by $\kappa^n/\operatorname{vol}(\prod U_i)$.
+Changing variables and integrating over the entire kernel-coordinate
+cube gives a positive lower density on the first cube. This proves
+\eqref{eq:v18-image-minorization}. Restricting to a local section instead
+would discard its ambient command mass; we have not done so.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:v18-rank-classification}]
+First let $d=d_n>0$. The vector $p_n$ lies in a fixed unit box.
+Lemma~\ref{lem:tame-rectangle}, applied to the whole set of
+Lemma~\ref{lem:v18-image-mass}, gives
+$\mathcal N(S_n,\varepsilon)\le A\varepsilon^{-d}$ for
+$0<\varepsilon\le1$. The constant depends only on its bounded format
+and ambient dimension. Replacing every nonempty covering center by a
+point of $S_n$ at most doubles its radius. Consequently $M$ reachable
+representatives give error at most $C_nM^{-1/d}$; for the finitely many
+small budgets in this deduction increase $C_n$ and use one point.
+Encoding a nearest representative proves the checkpoint upper bound.
+
+For the lower bound, project the $M$ arbitrary prediction centers to
+the coordinates in \eqref{eq:v18-image-minorization}. If the cube has
+volume $v$ and $\omega_d$ is the volume of the unit $d$-ball, the union
+of their radius-$r$ balls occupies at most $M\omega_dr^d$ of the cube.
+Take $r=(v/(2M\omega_d))^{1/d}$. At least half the uniform mass remains
+at distance at least $r$, so the unconditional squared error is at
+least $\beta r^2/2$. Conditional averaging first makes each randomized
+decoder a deterministic vector for each label. A randomized assignment
+to these vectors cannot improve their pointwise minimum distance.
+An independent public coding seed can be fixed and then averaged;
+its conditioning does not change the exploration law. This proves the
+lower bound with exactly the permitted randomization. Worst-history
+risk is at least unconditional risk.
+
+When $d_n=0$, every fixed-word prediction map has derivative zero on
+the connected interior cube, and is therefore constant there and on
+its closure. There is at most one point per word. This conclusion
+allows several distinct points; zero differential rank does not assert
+that one label suffices in a general finite-report experiment.
+
+We next construct one causal filter. For fixed $u,y$, multiplication
+by $L_{n+1,y}(u,\cdot)$ maps $\mathscr V_{n+1}$ into $\mathscr V_n$.
+Since $1\in\mathscr V_{n+1}$, it also puts the next likelihood in
+$\mathscr V_n$. Choose expansions in the fixed spanning list at time
+$n$. Their coefficients are polynomial in $u$ and bounded on $U_{n+1}$:
+this follows by choosing a fixed linear right inverse to that spanning
+list on the finite-dimensional coefficient space. Hence the next
+prediction vector is a well-defined rational function
+\begin{equation}\label{eq:v18-update}
+ T_n(p,u,y)_j=\sqrt{w_{n+1,j}}\,
+ \frac{\nu_p(L_{n+1,y}(u,\cdot)H_{n+1,j})}
+      {\nu_p L_{n+1,y}(u,\cdot)}.
+\end{equation}
+Here $\nu_p$ denotes any posterior realizing $p$; its action on
+$\mathscr V_n$ is determined by $p$ and $\nu_p1=1$, so the expression
+is independent of the realization.
+
+The denominator in \eqref{eq:v18-update} is at least $\kappa$, not only
+on $S_n$ but also on line segments between its points: such a segment
+is represented on $\mathscr V_n$ by the corresponding mixture of
+posteriors. Bounded coefficients and the quotient rule therefore give
+\[
+ \|T_n(p,u,y)-T_n(p',u,y)\|\le L_n\|p-p'\|
+ \quad(p,p'\in S_n),
+\]
+with $L_n<\infty$ independent of histories and commands. If $p$ is
+reachable, so is $T_n(p,u,y)$, since the appended report has strictly
+positive probability.
+
+For $M$ large enough, choose at stage $n$ a reachable quantizer $Q_n$
+of radius at most $A_nM^{-1/d_n}$ when $d_n>0$, and store every point
+when $d_n=0$. With $d_* >0$ all these radii are at most
+$AM^{-1/d_*}$. Store only the representative index and use
+\[
+ \widehat p_{n+1}=Q_{n+1}(T_n(\widehat p_n,u_{n+1},y_{n+1})).
+\]
+This is an admitted transition using only the preceding index and the
+current input. Starting with the known exact initial vector, its errors
+satisfy
+\[
+ e_0=0,\qquad e_{n+1}\le L_ne_n+AM^{-1/d_*}.
+\]
+Finite iteration gives $e_n\le B_NM^{-1/d_*}$ at every checkpoint.
+For the finitely many excluded budgets, the squared prediction loss is
+at most one, so increasing the constant supplies the same assertion.
+The decoder uses the actual probabilities of the representative. This
+proves the simultaneous upper bound without retaining or reconstructing
+an exact discarded prefix. Every causal filter is in particular an
+$M$-message prefix encoder at a checkpoint attaining $d_*$; the lower
+bound already proved there gives \eqref{eq:v18-causal-rank-law}.
+If every $d_n=0$, retain all finitely many reachable states at each
+stage instead; the same exact updates give a finite exact filter.
+
+Finally fix the detector and queries and vary their finite prior moment
+vector in a compact constant-rank set. All first and second command
+derivatives of the normalized maps are uniformly bounded, because
+evidence is bounded below by $\kappa^n$. At each parameter choose a
+nonzero $d_n$-minor and an interior tuple. Continuity preserves a
+positive minor on a parameter neighborhood. A finite subcover gives
+uniform chart radii and lower mass by the preceding inverse-function
+argument. The whole-image format bound was already coefficient
+independent. The update coefficients are fixed by the detector and
+queries, and the denominator is still at least $\kappa$. These
+observations give all asserted uniform constants.
+\end{proof}
+
+The theorem identifies the exponent directly from the experiment, not
+from a postulated scale representation of its risk. It makes no claim
+that the integer $d_n$ determines a uniform profile when ranks change.
+The covariance classification in Section~\ref{sec:v18-affine}, and the
+collision and contrast classifications later, supply that additional
+information in their respective classes. The results also distinguish
+semialgebraic image dimension from the dimension of a Euclidean space
+into which the entire exact state set might embed.
+
+\subsubsection{Algebraic rank strata in the moment body}
+Choose a basis $1,g_1,\ldots,g_s$ of the finite-dimensional space
+generated by all coefficient functions needed to form all vectors
+$Y_a$ at the fixed horizon. Write
+\[
+ m(\mu)=(\mu g_1,\ldots,\mu g_s),\qquad
+ K=\operatorname{conv}\{(g_1(x),\ldots,g_s(x)):x\in X\}.
+\]
+This convex hull is compact. Linear independence with $1$ means that
+$K$ has nonempty interior in $\R^s$; the case $s=0$ is read in its
+zero-dimensional affine space. Entries of every $\mathcal A_a$ are
+polynomials in commands whose coefficients are affine functions of $m$.
+
+\begin{theorem}[Exact moment strata and generic maximal acquisition]
+\label{thm:v18-moment-strata}
+For every checkpoint $n$ and integer $k\ge0$ there is an explicit finite
+list of polynomials $\mathcal F_{n,k}$ in $m$ such that
+\begin{equation}\label{eq:v18-stratum}
+ d_n(\mu)\le k\quad\Longleftrightarrow\quad
+ f(m(\mu))=0\ \hbox{for every }f\in\mathcal F_{n,k}.
+\end{equation}
+The list consists of the command coefficients of all $(k+2)$-minors
+of the matrices \eqref{eq:v18-augmented-matrix}, over all report words.
+Thus the complete checkpoint and causal memory exponents are determined
+by finitely many polynomial equalities in the actual prior moments.
+
+The moments of full-support probabilities are precisely $\operatorname{int}K$.
+On this set there is a relatively open dense complement of a proper
+algebraic set on which all checkpoint ranks simultaneously take their
+maximum values. These generic ranks can be reached by arbitrarily small
+bounded-density perturbations of any full-support prior. Lower-rank
+loci, when present, are exactly the algebraic loci in
+\eqref{eq:v18-stratum}, intersected with the moment body.
+\end{theorem}
+\begin{proof}
+The equivalence is the polynomial rank criterion: a command polynomial
+vanishes on the interior cube exactly when every one of its coefficients
+vanishes. The normalization rank is one smaller by
+Lemma~\ref{lem:v18-normalized-rank}. An empty list of minors has its
+usual vacuous meaning when $k$ exceeds the possible rank. This gives a
+finite algebraic test using exact moments, not an equality test from
+inexact numerical moment names.
+
+Suppose $\mu$ has full support and $m(\mu)$ were on a proper supporting
+hyperplane of $K$. Its defining affine function would give a continuous
+nonnegative function on $X$, with integral zero under $\mu$, but not
+identically zero. Positivity on a nonempty open set contradicts full
+support. Hence $m(\mu)\in\operatorname{int}K$. Conversely, take an
+interior $m$ and any fixed full-support $\mu_0$. Such a probability
+exists on a compact metric space, for example by assigning positive
+summable masses to a countable dense set. For sufficiently small
+$\epsilon>0$,
+\[
+ m'=\frac{m-\epsilon m(\mu_0)}{1-\epsilon}\in K.
+\]
+By the definition of $K$ and finite-dimensional convexity, $m'$ is a
+finite convex combination of points $g(x)$ and hence is the moment of
+a probability $\nu$. The probability
+$\epsilon\mu_0+(1-\epsilon)\nu$ has full support and moment $m$.
+
+For each checkpoint of positive maximal rank choose one nonzero
+coefficient of a maximal nonzero minor. Its polynomial is not
+identically zero on $\R^s$: $K$ has interior. The product of the
+finitely many chosen polynomials is nonzero. Away from its zero set
+all maximal ranks are attained simultaneously. Checkpoints whose
+maximal rank is zero impose no condition. A nonzero real polynomial
+has a zero set of empty interior and Lebesgue measure zero, giving the
+claimed dense open set. No semialgebraicity of $K$ itself is asserted.
+
+For the final assertion fix a full-support $\mu$ and put $m=m(\mu)$.
+The covariance matrix $G=\mu[(g-m)(g-m)^t]$ is positive definite:
+zero variance of a linear combination would make it constant on $X$,
+contrary to the independence of $1,g_1,\ldots,g_s$. For sufficiently
+small $t\in\R^s$ the probability
+\[
+ d\mu_t=(1+t^t(g-m))\,d\mu
+\]
+is positive, has total mass one, has full support, and has moment
+$m+Gt$. These moments fill a neighborhood of $m$, while the densities
+tend uniformly to one. Every such neighborhood meets the generic
+maximal-rank set just constructed.
+\end{proof}
+
+Together, Theorems~\ref{thm:v18-rank-classification} and
+\ref{thm:v18-moment-strata} give a necessity-and-sufficiency description
+of the memory exponent throughout this class, including exceptional
+priors. The algebraic test does not presuppose a Chebyshev minorization,
+a rectangular risk curve, or a known attainable geometry. What it does
+not encode is a sharp anisotropic profile near an exceptional locus.
+We now obtain such a profile, uniformly through all rank losses, for a
+whole class of affine acquisitions.
+
+
+\subsection{The complete resolution profile of positive affine acquisition}
+\label{sec:v18-affine}
+The rank classification does not prescribe how acquired directions
+vanish. For a general affine acquisition, that question has an exact
+answer in terms of a cross-covariance operator. Unlike a future-test
+spectrum alone, this operator contains both acquisition and observation.
+No assumption on the dimension, ordering, or density of the latent
+space is required.
+
+\subsubsection{The experiment-level invariant}
+Let $b,q\ge1$, let $f=(f_1,\ldots,f_b)^t\in C(X)^b$, and suppose
+\begin{equation}\label{eq:v18-affine-bound}
+ \sup_{x\in X}\sum_{i=1}^b|f_i(x)|\le a<1.
+\end{equation}
+The acquisition command is uniform on $U=[-1,1]^b$. The two report
+likelihoods are
+\begin{equation}\label{eq:v18-affine-likelihood}
+ L_y(u,x)=\tfrac12(1+y\,u^tf(x)),\qquad y\in\{-1,1\}.
+\end{equation}
+Both are at least $(1-a)/2$. Let $H_1,\ldots,H_q\in C(X)$ be the
+success probabilities of any fixed finite list of subsequent physical
+queries, with $0\le H_j\le1$, and let $w_j>0$, $\sum_jw_j=1$.
+The chosen query is revealed independently after the label is stored.
+Put
+\begin{equation}\label{eq:v18-covariance}
+ h=(\sqrt{w_j}H_j)_{j=1}^q,\quad \bar h=\mu h,\quad m=\mu f,
+ \qquad C_\mu=\mu[(h-\bar h)(f-m)^t]:\R^b\longrightarrow\R^q.
+\end{equation}
+The command cube fixes the units of $f$. We do not whiten either side
+of this matrix by a possibly singular covariance. Such a whitening
+would change the physical scale being classified.
+
+Let $d=\min(b,q)$, let $s_1\ge\cdots\ge s_d\ge0$ be the singular
+values of $C_\mu$, and set
+\begin{equation}\label{eq:v18-affine-profile}
+ V_\ell(C_\mu)=\prod_{i=1}^\ell s_i
+             =\|\mathop{\bigwedge}\nolimits^\ell C_\mu\|_{\mathrm{op}},
+ \qquad
+ E_{C_\mu}(M)=\max_{1\le\ell\le d}
+           \left(\frac{V_\ell(C_\mu)}{M}\right)^{2/\ell}.
+\end{equation}
+Zero products remain zero. Write $R^{\mathrm{av}}_M$ and
+$R^{\mathrm{max}}_M$ for the unconditional and worst-history checkpoint
+risks, with the same finite-label and randomization conventions as above.
+
+\begin{theorem}[Uniform affine covariance classification]
+\label{thm:v18-affine-classification}
+There are $0<c\le C<\infty$, depending only on $a,b,q$, such that every
+experiment \eqref{eq:v18-affine-likelihood}, every prior $\mu$, every
+query list as above, and every integer $M\ge1$ satisfy
+\begin{equation}\label{eq:v18-affine-law}
+ cE_{C_\mu}(M)\le R^{\mathrm{av}}_M
+ \le R^{\mathrm{max}}_M\le CE_{C_\mu}(M).
+\end{equation}
+The upper code can use only reachable prediction vectors. The constants
+are independent of the nonzero singular values, their multiplicities,
+the prior, and the query weights. In particular, the assertion is
+uniform through every rank loss in $C_\mu$. If $C_\mu=0$, a single
+label is exact for the prescribed query task.
+\end{theorem}
+
+\subsubsection{Exact acquisition geometry, including evidence}
+\begin{lemma}[Projective acquisition coordinates]\label{lem:v18-projective-law}
+Set $v=yu$ and $\theta=v/(1+m^tv)$. The acquired prediction vector is
+exactly
+\begin{equation}\label{eq:v18-projective-prediction}
+ p(u,y)=\bar h+C_\mu\theta.
+\end{equation}
+The law of $v$ has density $(1+m^tv)/2^b$ on $U$. The image
+$\Theta=\{v/(1+m^tv):v\in U\}$ satisfies
+\begin{equation}\label{eq:v18-projective-sandwich}
+ rB_b\subset\Theta\subset RB_b,
+ \qquad r=\frac1{2(1+a)},\quad R=\frac{\sqrt b}{1-a},
+\end{equation}
+where $B_b$ is the Euclidean unit ball. On $\Theta$ the density of
+$\theta$ is
+\begin{equation}\label{eq:v18-projective-density}
+ \frac{(1-m^t\theta)^{-(b+2)}}{2^b},
+\end{equation}
+and lies between $(1-a)^{b+2}/2^b$ and $(1+a)^{b+2}/2^b$.
+\end{lemma}
+\begin{proof}
+Bayes' formula and the definition of covariance give
+\[
+ p(u,y)=\frac{\bar h+\mu(hf^t)v}{1+m^tv}
+       =\bar h+\frac{C_\mu v}{1+m^tv}.
+\]
+For each sign $y$, the change $u\mapsto v=yu$ preserves volume and
+$U$. The joint density of this branch is
+$(1+m^tv)/(2\,2^b)$. Adding the two branches gives the stated density
+of $v$. This calculation includes the probability of the observed
+report; it is not a distribution obtained by conditioning away evidence.
+
+Write $F(v)=v/(1+m^tv)$. Since $|m^tv|\le a$ on $U$, its inverse is
+$F^{-1}(\theta)=\theta/(1-m^t\theta)$ on its image. Direct
+differentiation and the rank-one determinant identity give
+\[
+ DF(v)=\frac{I}{1+m^tv}-\frac{vm^t}{(1+m^tv)^2},\qquad
+ \det DF(v)=(1+m^tv)^{-(b+1)}.
+\]
+Multiplying the density of $v$ by the inverse Jacobian gives
+\eqref{eq:v18-projective-density}. Its bounds follow from
+$1-a\le1+m^tv\le1+a$.
+
+The outer inclusion in \eqref{eq:v18-projective-sandwich} follows from
+$\|v\|\le\sqrt b$. For the inner inclusion, $\|m\|\le\|m\|_1\le a$.
+If $\|\theta\|\le r$, then $|m^t\theta|<1/2$ and
+$\|\theta/(1-m^t\theta)\|\le2r\le1$. This inverse point belongs
+to $B_b\subset U$, and substitution verifies that its image is
+$\theta$. Thus the full ball is contained in $\Theta$.
+\end{proof}
+
+\begin{lemma}[Quantization of a linearly observed thick set]
+\label{lem:v18-thick-linear}
+Let $A:\R^b\to\R^q$ be linear. Suppose a random vector $\theta$ is
+supported in $RB_b$, and its law dominates $\gamma$ times Lebesgue
+measure on $rB_b$, where $r,R,\gamma>0$. Let $s_1\ge\cdots\ge s_d\ge0$
+be the singular values of $A$, $d=\min(b,q)$. For all $M\ge1$, the
+optimal mean squared $M$-center error is bounded below by a constant
+times
+\[
+ \max_{1\le\ell\le d}(s_1\cdots s_\ell/M)^{2/\ell}.
+\]
+The whole image of the support has an $M$-center covering of squared
+radius bounded above by another constant times the same quantity.
+If that image is compact, its centers can be chosen in the image.
+The constants depend only on $b,q,r,R,\gamma$ and not on $A$.
+\end{lemma}
+\begin{proof}
+Choose orthogonal singular coordinates. Fix an index $\ell$ with
+$s_\ell>0$. Project the first $\ell$ input coordinates. For every
+$z\in(r/2)B_\ell$, the fiber of $rB_b$ has
+$(b-\ell)$-dimensional volume at least
+\[
+ \omega_{b-\ell}(\sqrt3r/2)^{b-\ell},
+\]
+where the zero-dimensional volume is one. Consequently the law of
+the first $\ell$ coordinates dominates a positive constant times
+Lebesgue measure on $(r/2)B_\ell$. After multiplication by
+$\operatorname{diag}(s_1,\ldots,s_\ell)$ it dominates a fixed positive
+mass times the uniform measure of an ellipsoid of volume
+$\omega_\ell(r/2)^\ell s_1\cdots s_\ell$. The union of $M$
+projected radius-$t$ balls has volume at most $M\omega_\ell t^\ell$.
+Taking $t=(r/2)(s_1\cdots s_\ell/(2M))^{1/\ell}$ leaves at least
+half that uniform mass outside. This proves the lower bound for the
+chosen index and hence for their maximum. It remains valid when $t$
+exceeds a short ellipsoid axis: the ball-volume estimate is an upper
+bound on the volume of its intersection with the ellipsoid, not an
+assumption that the ball fits inside. The argument also allows arbitrary
+centers and randomized encoders and decoders by conditional averaging.
+
+For the upper bound, the image lies in the rectangle with active
+half-sides $Rs_i$. A grid of mesh $\varepsilon/\sqrt d$ on each active
+axis covers that rectangle by at most
+\[
+ \prod_{i=1}^d(1+B_ds_i/\varepsilon)
+ \le A_d\sum_{j=0}^d\varepsilon^{-j}s_1\cdots s_j
+\]
+balls of radius $\varepsilon$, after increasing constants depending
+on $d,R$. The inequality follows by expanding the product: each
+$j$-fold product is at most the product of the largest $j$ singular
+values. Zero axes need a single coordinate and cause no division.
+Let $e=\max_j(s_1\cdots s_j/M)^{1/j}$. If $e>0$, then
+$s_1\cdots s_j\le Me^j$. Choose $L$ large enough that
+$A_d\sum_{j=1}^dL^{-j}\le1/2$. For $M\ge2A_d$, radius $Le$
+therefore suffices with at most $M$ centers. Empty balls are discarded;
+replacing a remaining center by an image point in that ball at most
+doubles the radius. For $M<2A_d$, one image point has covering radius
+at most $2Rs_1$, while $e\ge s_1/M$. Increasing the constant handles
+these budgets. If $A=0$, the image is a singleton and every assertion
+has zero error. No rank-dependent lower bound on a singular value
+entered either argument.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:v18-affine-classification}]
+Apply Lemma~\ref{lem:v18-thick-linear} to $A=C_\mu$ and the exact law
+in Lemma~\ref{lem:v18-projective-law}. The constants $r,R,\gamma$ in
+that application depend only on $a,b$. Translation by $\bar h$ changes
+neither coding nor error. Weighted query probabilities identify physical
+squared-loss excess with the Euclidean norm used in those lemmas, so no
+inverse query weight is paid in the constants. Every representative
+belongs to $\bar h+C_\mu\Theta$ and hence is a posterior prediction
+vector of an admitted history. Its unweighted entries are valid query
+probabilities. This proves the upper bound for every history, while
+the exact unconditional law proves the lower bound. If $C_\mu=0$,
+\eqref{eq:v18-projective-prediction} is independent of the history and
+its known constant prediction requires one label.
+\end{proof}
+
+\subsubsection{Operational completeness and an interior degeneration}
+\begin{corollary}[Complete invariant in the affine class]
+\label{cor:v18-affine-invariant}
+In any family with fixed bounds on $a<1$, $b$, and $q$, the products
+$V_\ell(C_\mu)$ characterize uniform comparison of entire integer-budget
+checkpoint-risk curves. More precisely, after padding to a fixed maximum
+dimension, two such families have uniformly comparable curves if and
+only if their corresponding products are uniformly comparable,
+including matching zero products. Moreover
+\begin{equation}\label{eq:v18-affine-inverse}
+ \inf_{M\in\N,\ M\ge1}M\bigl(R^{\mathrm{av}}_M\bigr)^{\ell/2}
+ \asymp V_\ell(C_\mu).
+\end{equation}
+For positive rank $r_\mu$, the eventual logarithmic slope is $-2/r_\mu$.
+\end{corollary}
+\begin{proof}
+The singular values are ordered and Theorem~\ref{thm:v18-affine-classification}
+provides the forward representation uniformly for this entire experiment
+class. Lemma~\ref{lem:integer-envelope-duality} gives, for
+$e(M)=E_{C_\mu}(M)^{1/2}$,
+\[
+ V_\ell\le\inf_{M\ge1}Me(M)^\ell\le2V_\ell.
+\]
+Combining it with \eqref{eq:v18-affine-law} proves
+\eqref{eq:v18-affine-inverse}. Comparison of risks therefore implies
+comparison of products; conversely compare each term in
+\eqref{eq:v18-affine-profile} and take their finite maximum.
+The argument includes zero products by the same envelope identity.
+For fixed positive rank, the last positive branch dominates for all
+sufficiently large budgets and yields the slope. The all-zero case is
+handled by the one-label assertion of the theorem, not by taking a
+logarithm of zero.
+\end{proof}
+
+This is an experiment-level classification: the covariance is computed
+from likelihood features and physical future tests before the coding
+problem is solved. It does not posit an ordered-envelope law and then
+use that law to discover the forward geometry. The inverse still uses
+the full unbounded sequence of integer budgets; it is not reconstruction
+of an unknown experiment from a finite sample of observed errors.
+
+\begin{proposition}[Rank change among full-support priors]
+\label{prop:v18-interior-example}
+Let $X=[-1,1]$, use $f(x)=\alpha x$ with $0<\alpha<1$, and let the
+future query be a Bernoulli experiment with success probability
+$H(x)=1/2+\beta x^2$, where $0<\beta<1/2$. For the full-support priors
+\[
+ d\mu_t(x)=(1+tx)\,dx/2,\qquad |t|\le t_0<1,
+\]
+the sharp acquisition-checkpoint law is
+\begin{equation}\label{eq:v18-interior-law}
+ R^{\mathrm{av}}_M\asymp R^{\mathrm{max}}_M
+ \asymp (\alpha\beta)^2t^2M^{-2},\qquad M\ge1,
+\end{equation}
+uniformly in $t$, including zero. At $t=0$ one label is exact for the
+specified future query; at every $t\ne0$ the attainable rank is one.
+\end{proposition}
+\begin{proof}
+Direct integration gives
+\[
+ \mu_tx=t/3,\qquad \mu_tx^2=1/3,\qquad \mu_tx^3=t/5,
+ \qquad \Cov_{\mu_t}(x^2,x)=4t/45.
+\]
+Thus the sole singular value of \eqref{eq:v18-covariance} is
+$4\alpha\beta|t|/45$. Theorem~\ref{thm:v18-affine-classification}
+proves \eqref{eq:v18-interior-law}. Equivalently, with $v=yu$, the
+posterior query probability is exactly
+\[
+ \frac12+\beta\,
+ \frac{1/3+\alpha vt/5}{1+\alpha vt/3},
+\]
+whose derivative in $v$ is
+$4\alpha\beta t/[45(1+\alpha vt/3)^2]$.
+It is zero throughout the command interval precisely at $t=0$.
+Both acquisition reports and both future outcomes have uniformly
+positive likelihoods. Thus the degeneration occurs inside a dominated
+full-support prior family; it is not loss of support or vanishing
+evidence. The centered moment equation $\mu x^3-\mu x\,\mu x^2=0$
+is exactly its rank stratum.
+\end{proof}
+
+The example exhibits a degeneration governed by the interaction of
+acquisition and observation rather than a collision of future exponents.
+Its role is to make the structural invariant concrete; the uniform
+classification applies to arbitrary dimensions and arbitrary latent
+spaces in \eqref{eq:v18-affine-bound}, not only to this example. The
+multi-step collision and contrast laws are retained below and are not
+replaced by a one-step assertion.
