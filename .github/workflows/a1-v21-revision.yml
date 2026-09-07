@@ -1,0 +1,64 @@
+name: A1 v21 complete revision and validation
+on:
+  push:
+    branches:
+      - revision/a1-english-v21-causal-transfer-and-proof-hierarchy-2026-09-07
+    paths:
+      - revision/a1-v21-2026-09-07/**
+      - .github/workflows/a1-v21-revision.yml
+permissions:
+  contents: write
+concurrency:
+  group: a1-v21-revision-publication
+  cancel-in-progress: false
+jobs:
+  publish-v21:
+    if: github.repository == 'TrillionniumFoundation/theta-theory' && github.ref == 'refs/heads/revision/a1-english-v21-causal-transfer-and-proof-hierarchy-2026-09-07'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.5'
+      - name: Install mathematical build dependencies
+        run: |
+          python -m pip install sympy==1.14.0
+          sudo apt-get update
+          sudo apt-get install -y texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+      - name: Materialize exact locally validated source
+        run: python revision/a1-v21-2026-09-07/materialize.py
+      - name: Rerun all author diagnostics and compile the complete manuscript
+        working-directory: papers/A1-english-v21
+        run: python validate.py
+      - name: Commit readable source, PDF and execution receipts to this revision only
+        run: python revision/a1-v21-2026-09-07/publish.py
+      - name: Assemble complete referee package
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import zipfile
+          with zipfile.ZipFile('A1-v21-complete-referee-package.zip', 'w', zipfile.ZIP_DEFLATED) as z:
+              for folder in ('papers/A1-english-v20', 'papers/A1-english-v21', 'revision/a1-v21-2026-09-07'):
+                  for p in sorted(Path(folder).rglob('*')):
+                      if p.is_file() and '__pycache__' not in p.parts and p.suffix not in ('.pyc', '.aux', '.out', '.toc'):
+                          z.write(p, p.as_posix())
+          PY
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: A1-v21-complete-referee-package
+          path: A1-v21-complete-referee-package.zip
+          retention-days: 90
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: A1-v21-failure-diagnostics
+          path: |
+            papers/A1-english-v21/validation
+            papers/A1-english-v21/build
+            papers/A1-english-v21/main.log
+          if-no-files-found: ignore
