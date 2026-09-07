@@ -1,0 +1,70 @@
+name: A1 v19 rectangular attainment and realizable degeneration
+on:
+  push:
+    branches:
+      - revision/a1-english-v19-rectangular-and-degeneration-2026-09-07
+    paths:
+      - .github/workflows/a1-v19-revision.yml
+      - papers/A1-english-v19/**
+permissions:
+  contents: write
+concurrency:
+  group: a1-v19-rectangular-and-degeneration
+  cancel-in-progress: false
+jobs:
+  verify-and-publish:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install exact diagnostics and mathematical typesetting
+        run: |
+          python -m pip install sympy==1.14.0
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+      - name: Verify the exact locally validated source and pinned historical material
+        working-directory: papers/A1-english-v19
+        run: |
+          python manifest.py --write
+          echo '48b618aa18d0eb1a39d6b9dfeae53398028beca78e28d81e0f1c986ab4a35d15  SOURCE_MANIFEST.json' | sha256sum --check
+          python build.py --prepare-only
+      - name: Execute all nine author suites, the standalone mutation test and the complete PDF build
+        working-directory: papers/A1-english-v19
+        run: python validate.py
+      - name: Publish the complete readable revision and actual execution receipts to its own branch
+        env:
+          EXPECTED_HEAD: ${{ github.sha }}
+        run: |
+          git diff --exit-code e5fff530c95a4f3aa1163a2087838ff2795f052b -- . ':(exclude)papers/A1-english-v19/**' ':(exclude).github/workflows/a1-v19-revision.yml'
+          test -s papers/A1-english-v19/main.pdf
+          test -s papers/A1-english-v19/validation/EXECUTION_REPORT.json
+          REMOTE_HEAD=$(git ls-remote origin refs/heads/revision/a1-english-v19-rectangular-and-degeneration-2026-09-07 | cut -f1)
+          test "$REMOTE_HEAD" = "$EXPECTED_HEAD" || { echo 'Branch changed; refusing to overwrite concurrent work.'; exit 1; }
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A -- papers/A1-english-v19
+          git add -f -- papers/A1-english-v19/main.pdf
+          git diff --cached --stat
+          if ! git diff --cached --quiet; then
+            git commit -m 'Publish A1 v19 complete revision: verified 105-page manuscript, rectangular attainment, realizable covariance degenerations and execution receipts'
+            git push origin HEAD:revision/a1-english-v19-rectangular-and-degeneration-2026-09-07
+          fi
+          git rev-parse HEAD
+      - name: Deposit the complete referee package and execution logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: A1-v19-complete-referee-package
+          include-hidden-files: true
+          path: |
+            papers/A1-english-v19/
+            !papers/A1-english-v19/**/__pycache__/
+            !papers/A1-english-v19/*.aux
+            !papers/A1-english-v19/*.out
+          if-no-files-found: error
