@@ -1,0 +1,27 @@
+name: A1 v28 source validation
+on:
+  push:
+    branches:
+      - revision/a1-english-v28-localized-acquisition-2026-09-08
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Package pinned manuscript inputs
+        run: |
+          tar -czf a1-v28-source-inputs.tar.gz papers/A1-english-v26 papers/A1-english-v27 reviews/a1-english-v26-harsh-independent-2026-09-07
+          sha256sum a1-v28-source-inputs.tar.gz > a1-v28-source-inputs.sha256
+      - uses: actions/upload-artifact@v7
+        with:
+          name: a1-v28-source-inputs
+          path: |
+            a1-v28-source-inputs.tar.gz
+            a1-v28-source-inputs.sha256
+          if-no-files-found: error
+          retention-days: 7
