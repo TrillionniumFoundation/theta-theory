@@ -1,0 +1,106 @@
+#!/usr/bin/env python3
+"""Execute all six inherited author suites and the complete v17 build.
+
+The optional pinned v16 referee diagnostic is a regression execution,
+not a fresh independent review. No previous execution receipt is reused.
+"""
+from __future__ import annotations
+import argparse
+import hashlib
+import json
+import os
+from pathlib import Path
+import platform
+import subprocess
+import sys
+import time
+from manifest import verify
+
+ROOT = Path(__file__).resolve().parent
+EXPECTED = {10: 7904, 11: 8207, 12: 26158, 13: 12944, 14: 7400, 15: 5868}
+
+def digest(path):
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+def run(command, log):
+    start = time.monotonic()
+    with log.open('w') as stream:
+        completed = subprocess.run(command, cwd=ROOT, stdout=stream,
+                                   stderr=subprocess.STDOUT, text=True, timeout=900)
+    if completed.returncode:
+        raise RuntimeError(f'Command failed ({completed.returncode}); see {log}')
+    return round(time.monotonic() - start, 3)
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--prior-review', action='store_true')
+    args = parser.parse_args()
+    out = ROOT / 'validation'; out.mkdir(exist_ok=True)
+    (out/'EXECUTION_REPORT.json').unlink(missing_ok=True)
+    report = {'version': 17, 'python': platform.python_version(),
+              'source_files_verified': verify(),
+              'controlling_review': '0ef7e8bd90c0767b7fdc0f2bd175548242e39cec',
+              'submission_basis': '9f6875ebf1473b84dcde2ccabcb1556202233276',
+              'workflow_run_id': os.environ.get('GITHUB_RUN_ID'),
+              'workflow_input_commit': os.environ.get('GITHUB_SHA'),
+              'author_suites': [], 'prior_review_probe': None,
+              'scope': 'Executed finite diagnostics and source preservation; not formal proof verification or a journal recommendation.'}
+    old = json.loads((ROOT/'history/V16_SOURCE_MANIFEST.json').read_text())
+    old_files = old['files']
+    unchanged = ['finite_compiler.py','certified_compiler.py','construction_contracts.py']
+    unchanged += [f'tests/test_v{n}.py' for n in range(10,16)]
+    for name in unchanged:
+        if digest(ROOT/name) != old_files[name]:
+            raise ValueError('An inherited compiler/test source changed: '+name)
+    report['unchanged_compiler_and_test_files'] = unchanged
+    for version,count in EXPECTED.items():
+        name = (f'V{version}_AUTHOR_RERUN.json' if version < 14 else
+                'V14_DIRECTIONAL_DIAGNOSTICS.json' if version == 14 else 'V15_CIRCULAR_DIAGNOSTICS.json')
+        target = out/name
+        elapsed = run([sys.executable, f'tests/test_v{version}.py', str(target)],
+                      out/f'v{version}-stdout.txt')
+        data = json.loads(target.read_text())
+        if data['assertions'] != count or not (data.get('passed') is True or data.get('status') == 'passed'):
+            raise ValueError('Unexpected author suite result: '+str(version))
+        report['author_suites'].append({'version':version, 'assertions':count,
+            'passed':True,'seconds':elapsed,'source_sha256':digest(ROOT/f'tests/test_v{version}.py'),
+            'result_sha256':digest(target)})
+        (out/'EXECUTION_PROGRESS.json').write_text(json.dumps(report,indent=2)+'\n')
+    report['unchanged_author_suite_total'] = sum(EXPECTED[n] for n in range(10,16))
+    target = out/'V17_OPERATIONAL_RECONSTRUCTION.json'
+    elapsed = run([sys.executable,'tests/test_v17.py',str(target)],out/'v17-stdout.txt')
+    data = json.loads(target.read_text())
+    if data.get('passed') is not True or data['assertions'] <= 0:
+        raise ValueError('The new exact diagnostics failed')
+    report['new_author_diagnostic_total'] = data['assertions']
+    report['new_author_diagnostics'] = {'version':17,'assertions':data['assertions'],
+        'passed':True,'seconds':elapsed,'source_sha256':digest(ROOT/'tests/test_v17.py'),
+        'result_sha256':digest(target),'arithmetic':'exact rational and integer'}
+    report['author_assertion_total'] = sum(EXPECTED.values())+data['assertions']
+    if args.prior_review:
+        repo = ROOT.parents[1]
+        script = repo/'reviews/a1-english-v16-independent-2026-09-07/reproduce_review.py'
+        expected_sha = '30fe64358cb8b51458f9f84ef802bd283e166b18043f0f66e9f717e2420fa985'
+        if not script.is_file() or digest(script) != expected_sha:
+            raise ValueError('The original pinned v16 referee diagnostic is unavailable or changed')
+        target = out/'PRIOR_REVIEW_RERUN.json'
+        elapsed = run([sys.executable,str(script),'--output',str(target)],out/'prior-review-stdout.txt')
+        data = json.loads(target.read_text())
+        if data['total_assertions'] != 2206 or data.get('status') != 'PASS_WITH_STATED_SCOPE':
+            raise ValueError('Unexpected original v16 referee diagnostic outcome')
+        report['prior_review_probe'] = {'source_version':16,'assertions':2206,
+            'passed':True,'seconds':elapsed,'source_sha256':digest(script),
+            'result_sha256':digest(target),
+            'scope':'Regression execution of the pinned v16 referee diagnostic; not a new independent review of v17.'}
+    report['build_seconds'] = run([sys.executable,'build.py'],out/'build-stdout.txt')
+    report['build'] = json.loads((ROOT/'BUILD_REPORT.json').read_text())
+    pdfinfo = subprocess.run(['pdfinfo',str(ROOT/'main.pdf')],check=True,capture_output=True,text=True)
+    report['pdf_pages'] = int(next(x.split(':',1)[1] for x in pdfinfo.stdout.splitlines() if x.startswith('Pages:')))
+    report['pdf_sha256'] = digest(ROOT/'main.pdf')
+    report['source_files_verified_after_execution'] = verify()
+    report['passed'] = True
+    (out/'EXECUTION_REPORT.json').write_text(json.dumps(report,indent=2)+'\n')
+    print(json.dumps(report,indent=2))
+
+if __name__ == '__main__':
+    main()

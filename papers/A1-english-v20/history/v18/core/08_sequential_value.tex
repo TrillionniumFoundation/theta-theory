@@ -1,0 +1,214 @@
+\section{The value of a resolved direction in one sequential decision}\label{sec:resolved-value}
+We next use the same exploration histories, the same two-step query menu
+and the same eventual Bernoulli event as in Section~\ref{sec:uniform}.
+Only the terminal decision is changed. This gives a common-payoff
+comparison between keeping and erasing the newly resolved direction,
+rather than comparing two separately normalized prediction tasks.
+
+\subsection{An independently priced observable ticket}
+After the time-three state has been formed, reveal the query $J$ and a
+price $U$, independent and uniform on $[0,1]$. The controller chooses a
+binary action $A\in\{0,1\}$. Execute the two query trials and let $Y$
+be the same all-failure indicator as before. The payoff is
+\begin{equation}\label{eq:ticket-payoff}
+ A(Y-U).
+\end{equation}
+The price and the query are new inputs, not historical storage. The
+payoff belongs to $[-1,1]$ and depends only on observable apparatus
+outcomes and the chosen action. Accepting the ticket changes the payoff,
+not the detector law or the five-trial budget. The exploration command
+program is prescribed; it is not optimized by the controller.
+
+Let $p_j(h)=\Prob(Y=1\mid h,J=j)$. Write $V_*^\theta$ for the
+full-history optimal expected payoff and $V_M^\theta$ for the supremum
+over all $M$-state streaming policies, including randomized transitions
+and terminal actions. At the terminal decision the policy reads only its
+index, the new query and the new price.
+
+\begin{proposition}[Exact decision--prediction identity]\label{prop:ticket-identity}
+For every fixed streaming encoder with index $I$, its optimal terminal
+rule accepts exactly when $U\le\E[p_J(h)\mid I,J]$. Its value gap is
+\begin{equation}\label{eq:ticket-identity}
+ V_*^\theta-V^\theta(I)
+   =\frac1{2s}\sum_{j=1}^s
+        \E\left[(p_j(h)-\E[p_j(h)\mid I])^2\right],\qquad s=9.
+\end{equation}
+Consequently
+\begin{equation}\label{eq:ticket-streaming-law}
+ c\Psi_\theta(M)\le V_*^\theta-V_M^\theta\le C\Psi_\theta(M)
+\end{equation}
+with positive constants independent of $M$ and $\theta\in[0,1/2]$.
+\end{proposition}
+\begin{proof}
+Conditional on the full history and $J=j,U=u$, action one has expected
+payoff $p_j-u$ and action zero has payoff zero. The optimum is the
+threshold rule and its average over price is
+$\int_0^{p_j}(p_j-u)\dd u=p_j^2/2$. Given only an index, replace
+$p_j$ by $\bar p_{I,j}=\E[p_j\mid I]$, since price and query are
+independent of the prefix and encoder. A randomized action is a convex
+combination of the two payoffs and cannot improve the threshold optimum.
+Thus
+\[
+ V_*^\theta=\frac1{2s}\sum_j\E p_j^2,
+ \qquad V^\theta(I)=\frac1{2s}\sum_j\E\bar p_{I,j}^2.
+\]
+Conditional-variance decomposition gives \eqref{eq:ticket-identity}.
+Conditional expectation is also the optimal squared-loss decoder for
+the same encoder. Taking the infimum over the same streaming encoders
+therefore makes the optimal value gap exactly one half the optimal
+prediction regret. Theorem~\ref{thm:uniform-streaming} proves
+\eqref{eq:ticket-streaming-law}. The upper implementation may also
+threshold the representative's prediction directly: conditional on a
+history, integrating the mistaken decisions over the interval between
+that prediction and $p_j$ gives half their squared difference.
+\end{proof}
+
+This proposition is a decision identity, not a new general comparison
+principle. Its use here is to retain the entire resolved streaming law
+in a bounded, binary-action task and then compare a specific erased
+observation in that \emph{same} task.
+
+\subsection{Erasing the weak coordinate}
+Let
+\begin{equation}\label{eq:jet-erasure}
+ T_\theta(h)=(M_1,M_2,M_{3+\theta},M_{4+2\theta})
+\end{equation}
+be the first four coordinates of \eqref{eq:five-physical-coordinates}.
+This is a deterministic, calibration-dependent postprocessing of the
+history. It is not a coarsening of a raw one-step detector symbol, and it
+is not claimed to be the best possible four-dimensional encoding.
+Let $V_T^\theta$ be the optimal payoff of a terminal policy given the
+\emph{entire exact} statistic $T_\theta$, with no memory restriction,
+and then the same $J,U$. This comparison gives the erased controller
+more computational and storage power than any $M$-message compression
+of $T_\theta$.
+
+\begin{theorem}[Uniform value of the weak direction]\label{thm:resolved-value}
+There are constants $c_e,C_e,K>0$, depending on the fixed prior and
+protocol but independent of $0<\theta\le1/2$, such that
+\begin{equation}\label{eq:erasure-value}
+ c_e\theta^2\le V_*^\theta-V_T^\theta\le C_e\theta^2.
+\end{equation}
+Moreover, whenever $M\ge K\theta^{-4}$,
+\begin{equation}\label{eq:finite-state-advantage}
+ V_M^\theta-V_T^\theta\ge\tfrac12c_e\theta^2>0.
+\end{equation}
+In particular an $M$-state streaming policy beats every policy whose only
+historical input is an $M$-message compression of $T_\theta$, even though
+$V_T^\theta$ allows that comparator uncompressed access to the four
+coordinates. Both values concern the same actual calibration, exploration
+law, query, price, target, payoff and five-trial budget. At $\theta=0$ the
+statistic $T_0$ is sufficient and $V_*^0=V_T^0$.
+\end{theorem}
+\begin{proof}
+Put $Z_\theta=w_5/\theta$ for positive $\theta$, with its continuous
+value at zero as in \eqref{eq:five-desingularized}. The common product
+query expansion has the form
+\begin{equation}\label{eq:query-linear-weak}
+ p_j(h)=a_j+\ell_j(T_\theta(h))+\theta b_jZ_\theta(h),
+\end{equation}
+where $a_j,b_j$ and the linear forms $\ell_j$ are independent of
+$\theta$. They are obtained by expanding the two factors in
+\eqref{eq:common-near-probes} into the six formal monomials and replacing
+$M_{2+\theta}$ by $M_2+\theta Z_\theta$. The full coefficient matrix
+has rank six, as proved in Lemma~\ref{lem:observable-scales}. Hence
+$\sum_jb_j^2>0$; otherwise its weak column would be zero.
+
+Apply the conditional-variance identity from
+Proposition~\ref{prop:ticket-identity} to the sigma-algebra generated by
+$T_\theta$. With $b_*=(2s)^{-1}\sum_jb_j^2>0$ one obtains the exact
+formula
+\begin{equation}\label{eq:erasure-exact}
+ V_*^\theta-V_T^\theta
+       =b_*\theta^2\E\Var(Z_\theta\mid T_\theta).
+\end{equation}
+The random variable $Z_\theta$ is bounded uniformly, since
+$|(t^{2+\theta}-t^2)/\theta|\le t^2|\log t|\le1$ before taking
+any posterior expectation. Thus the conditional variance is uniformly
+bounded above.
+
+For the lower bound, Lemma~\ref{lem:five-patch} gives a fixed positive
+subprobability multiple $\beta$ of uniform measure on a translated cube
+of side $2\rho$ in the coordinates $(T_\theta,Z_\theta)$. For every
+Borel function $v$ of the first four coordinates,
+\[
+ \E|Z_\theta-v(T_\theta)|^2
+ \ge\beta\int|z-v(t)|^2\dd\operatorname{Unif}_{\text{cube}}(t,z)
+ \ge\beta\rho^2/3.
+\]
+The last inequality integrates the variance of the independent uniform
+last coordinate; it is unaffected by the translation. Taking the infimum
+over $v$ proves
+$\E\Var(Z_\theta\mid T_\theta)\ge\beta\rho^2/3$.
+This argument uses domination of an actual distribution, not an assumed
+uniform posterior on a formal tangent space. Equation
+\eqref{eq:erasure-exact} proves \eqref{eq:erasure-value} with uniform
+positive constants.
+
+By \eqref{eq:ticket-streaming-law},
+\[
+ V_M^\theta-V_T^\theta
+ \ge c_e\theta^2-C\max\{M^{-1/2},\theta^{2/5}M^{-2/5}\}.
+\]
+For $M\ge K\theta^{-4}$ the maximum on the right is at most
+$\theta^2\max\{K^{-1/2},K^{-2/5}\}$. Choose $K\ge1$ large enough
+that $C\max\{K^{-1/2},K^{-2/5}\}\le c_e/2$. This proves
+\eqref{eq:finite-state-advantage}. A policy observing only a compression
+of $T_\theta$ cannot outperform the one observing all of $T_\theta$:
+conditional on that statistic its randomization is independent of the
+latent history, and averaging produces an admissible randomized
+$T_\theta$-policy. Finally at zero the weak column in
+\eqref{eq:query-linear-weak} vanishes, proving sufficiency and equality
+of the full and erased values.
+\end{proof}
+
+The absolute advantage vanishes quadratically as the exponents collide.
+What remains nondegenerate is the advantage after normalization by the
+actual weak-direction scale $\theta^2$, once the state budget resolves
+that scale. The theorem is not a lower bound for arbitrary exploration
+objectives. It is an optimal-policy comparison in one prescribed
+sequential acquisition experiment, with no change of Bayes baseline and
+no substitution of the separate mechanical sign experiment.
+
+
+\begin{corollary}[Necessary and sufficient budget order]\label{cor:necessary-budget}
+Define
+\[
+ M_{\rm beat}(\theta)=\min\{M\in\N:V_M^\theta>V_T^\theta\}.
+\]
+For $0<\theta\le1/2$ this minimum exists and
+$M_{\rm beat}(\theta)\asymp\theta^{-4}$, with uniform constants.
+More explicitly, for some $0<k<K<\infty$,
+\[
+ \begin{aligned}
+ 1\le M\le k\theta^{-4}&\quad\Longrightarrow\quad
+ V_M^\theta-V_T^\theta\le-C_e\theta^2<0,\\
+ M\ge K\theta^{-4}&\quad\Longrightarrow\quad
+ V_M^\theta-V_T^\theta\ge\tfrac12c_e\theta^2>0.
+ \end{aligned}
+\]
+The first assertion is vacuous if its integer range is empty.
+\end{corollary}
+\begin{proof}
+Write $E_\theta=V_*^\theta-V_T^\theta$ and
+$L_M^\theta=V_*^\theta-V_M^\theta$. Theorems already proved give
+$E_\theta\le C_e\theta^2$ and $L_M^\theta\ge c_sM^{-1/2}$.
+Their exact difference uses the same experiment and baseline, hence
+\[
+ V_M^\theta-V_T^\theta=E_\theta-L_M^\theta
+             \le C_e\theta^2-c_sM^{-1/2}.
+\]
+Choose $k=(c_s/(2C_e))^2$, decreasing it if necessary so that $k<K$.
+The first inequality follows. The second is
+Theorem~\ref{thm:resolved-value}, with $K$ increased if needed.
+The admissible filter classes are nested as $M$ increases because extra
+states can be unused. Thus the first-crossing budget exists; the two
+bounds and integer rounding give its stated order.
+\end{proof}
+
+This consequence was extracted in the source-pinned v7 referee technical
+note \cite{A1v7note}. It concerns beating the exact, uncompressed
+$T_\theta$ comparator. It does not locate an exact integer transition,
+and it does not assert equality of the full and erased experiments at
+smaller \emph{equal compressed} budgets. At zero $T_0$ is sufficient,
+so no finite-state policy has value exceeding $V_T^0=V_*^0$.
