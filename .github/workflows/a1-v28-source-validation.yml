@@ -1,27 +1,44 @@
 name: A1 v28 source validation
 on:
-  push:
-    branches:
-      - revision/a1-english-v28-localized-acquisition-2026-09-08
   workflow_dispatch:
+    inputs:
+      build_pdf:
+        description: Compile both complete native volumes after source validation
+        required: false
+        type: boolean
+        default: false
 permissions:
   contents: read
 jobs:
-  source:
+  validate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
         with:
           persist-credentials: false
-      - name: Package pinned manuscript inputs
+      - name: Install TeX only for an explicitly requested full build
+        if: inputs.build_pdf
         run: |
-          tar -czf a1-v28-source-inputs.tar.gz papers/A1-english-v26 papers/A1-english-v27 reviews/a1-english-v26-harsh-independent-2026-09-07
-          sha256sum a1-v28-source-inputs.tar.gz > a1-v28-source-inputs.sha256
+          sudo apt-get update
+          sudo apt-get install -y texlive-latex-extra texlive-fonts-recommended lmodern
+      - name: Validate the native revision
+        env:
+          BUILD_PDF: ${{ inputs.build_pdf }}
+        run: |
+          cd papers/A1-english-v28
+          if [ "$BUILD_PDF" = "true" ]; then
+            python3 build.py
+          else
+            python3 build.py --prepare-only
+          fi
       - uses: actions/upload-artifact@v7
+        if: always()
         with:
-          name: a1-v28-source-inputs
+          name: a1-v28-executed-validation
           path: |
-            a1-v28-source-inputs.tar.gz
-            a1-v28-source-inputs.sha256
-          if-no-files-found: error
-          retention-days: 7
+            papers/A1-english-v28/build-v28/BUILD_RECORD_V28.json
+            papers/A1-english-v28/build-v28/*-pass-*.txt
+            papers/A1-english-v28/build-v28/native/main.pdf
+            papers/A1-english-v28/build-v28/native/companions.pdf
+          if-no-files-found: warn
+          retention-days: 14
