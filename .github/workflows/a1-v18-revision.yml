@@ -1,0 +1,72 @@
+name: A1 v18 structural classification and complete referee package
+on:
+  push:
+    branches:
+      - revision/a1-english-v18-structural-classification-2026-09-07
+    paths:
+      - .github/workflows/a1-v18-revision.yml
+      - .github/scripts/prepare-a1-v18.py
+      - .github/scripts/a1-v18-inputs-*.b64
+permissions:
+  contents: write
+concurrency:
+  group: a1-v18-structural-classification
+  cancel-in-progress: false
+jobs:
+  verify-and-publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install mathematical typesetting tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+      - name: Materialize the complete anchored revision
+        run: |
+          if test -d papers/A1-english-v18; then
+            echo 'Validating the already materialized revision without overwriting it.'
+          else
+            python .github/scripts/prepare-a1-v18.py
+          fi
+      - name: Execute all retained suites, new exact diagnostics, preservation checks and full build
+        working-directory: papers/A1-english-v18
+        run: |
+          python manifest.py --write
+          python validate.py
+      - name: Publish readable manuscript, PDF and actual receipts to the revision branch only
+        env:
+          EXPECTED_HEAD: ${{ github.sha }}
+        run: |
+          git diff --exit-code a2adb648c08b3c9e803e916f533605203963ee35 -- papers/A1-english-v17 reviews
+          test -s papers/A1-english-v18/main.pdf
+          test -s papers/A1-english-v18/validation/EXECUTION_REPORT.json
+          REMOTE_HEAD=$(git ls-remote origin refs/heads/revision/a1-english-v18-structural-classification-2026-09-07 | cut -f1)
+          test "$REMOTE_HEAD" = "$EXPECTED_HEAD" || { echo 'Branch changed; refusing to overwrite concurrent work.'; exit 1; }
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A -- papers/A1-english-v18
+          git add -f -- papers/A1-english-v18/main.pdf papers/A1-english-v18/history/V17_main.pdf
+          git diff --cached --stat
+          if ! git diff --cached --quiet; then
+            git commit -m 'Publish A1 v18: structural rank and prior strata, covariance resolution, universal attainment, complete retained proofs and verified PDF'
+            git push origin HEAD:revision/a1-english-v18-structural-classification-2026-09-07
+          fi
+          git rev-parse HEAD
+      - name: Deposit the complete current referee package and execution logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: A1-v18-complete-referee-package
+          include-hidden-files: true
+          path: |
+            papers/A1-english-v18/
+            !papers/A1-english-v18/**/__pycache__/
+            !papers/A1-english-v18/*.aux
+            !papers/A1-english-v18/*.out
+          if-no-files-found: error
