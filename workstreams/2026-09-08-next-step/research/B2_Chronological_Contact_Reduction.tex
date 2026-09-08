@@ -1,0 +1,234 @@
+\documentclass[11pt,reqno]{amsart}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern,amsmath,amssymb,amsthm,mathtools,microtype}
+\usepackage[margin=1.1in]{geometry}
+\usepackage[hidelinks]{hyperref}
+\allowdisplaybreaks[2]
+\setlength{\emergencystretch}{2em}
+\numberwithin{equation}{section}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{remark}\newtheorem{remark}[theorem]{Remark}
+\newcommand{\R}{\mathbb R}\newcommand{\dd}{\,\mathrm d}
+\newcommand{\norm}[1]{\left\lVert #1\right\rVert}
+\newcommand{\rank}{\operatorname{rank}}\newcommand{\diag}{\operatorname{diag}}
+\title[Chronological contact reduction]{Chronological contact reduction and surplus Jacobians for finite hard-sphere histories}
+\author{Qian Qi}
+\date{September 8, 2026}
+\subjclass[2020]{70F35, 82C40, 28A75}
+\keywords{hard spheres, collision history, contact constraints, coarea, surplus rank}
+\begin{document}
+\begin{abstract}
+We give a local calculus for a fixed regular finite hard-sphere collision history. Chronology makes the event-time derivative triangular. Eliminating event times produces an explicit derivative for additional contact constraints, and an exact factorization of their intrinsic coarea Jacobian. The factorization distinguishes event transversality, surplus rank, and the induced metric on the event manifold. A quantitative inverse bound, a forest-contact estimate, a two-impact rod calculation, and a conditional source-response formula are proved. These are finite-history tools: no uniform all-genealogy rank statement, Boltzmann--Grad limit, or path large-deviation theorem is inferred. The resulting formulas isolate the geometric quantities that must be controlled before summing collision histories.
+\end{abstract}
+\maketitle
+
+\section{A regular history and the problem of additional contacts}
+For $N$ equal hard spheres of diameter $\varepsilon>0$, the configuration region is
+\[
+ \mathcal Q_{N,\varepsilon}=\{q\in(\R^d)^N:|q_i-q_j|>\varepsilon\ (i\ne j)\}.
+\]
+One may restrict to a bounded chart in a periodic box instead. Between collisions $\dot q_i=v_i$ and $\dot v_i=0$. At a binary collision with unit contact normal $n=(q_i-q_j)/\varepsilon$, elastic reflection is
+\[
+ v_i^+=v_i^- -[(v_i^--v_j^-)\cdot n]n,
+ \qquad v_j^+=v_j^- +[(v_i^--v_j^-)\cdot n]n.
+\]
+These equations conserve total momentum and kinetic energy. Expanding the two squares proves energy conservation; the impulses are opposite, proving momentum conservation.
+
+Fix an ordered collision program $e_1,\ldots,e_m$ and a regular trajectory on a bounded time interval. Assume binary non-tangent impacts, strict ordering of their times, and separation from all unintended contacts in the local chart. These are local hypotheses, not assertions about every history. Let $z\in U\subset\R^p$ parameterize initial data and any retained mechanical parameters. Introduce independent event-time coordinates $t=(t_1,\ldots,t_m)$ near the nominal values. Successive flights and algebraic resets define smooth candidate trajectories, even before the contact equations are imposed, after shrinking the chart so that the normals used by the reset remain defined.
+
+Let $F_j(t_1,\ldots,t_j,z)=0$ be the $j$th contact equation. For example, use half the squared distance minus $\varepsilon^2/2$. At a genuine contact,
+\begin{equation}\label{eq:diagonal}
+ \partial_{t_j}F_j
+ =(q_{i_j}-q_{j_j})\cdot(v_{i_j}^--v_{j_j}^-).
+\end{equation}
+This is nonzero by transversality. The formula fixes earlier times while varying the last flight duration. Earlier equations contain no future event times.
+
+Additional closures are a smooth map $G(t,z)\in\R^s$. They can express further contacts, terminal constraints, or other geometric conditions. Their nature must be specified in an application. It is not enough to call them ``surplus edges'': repeated labels and redundant constraints can make their derivative lose rank.
+
+\section{Eliminating the event times}
+Write
+\[
+ A=D_tF\in\R^{m\times m},\qquad B=D_zF\in\R^{m\times p}.
+\]
+Chronology makes $A$ lower triangular and \eqref{eq:diagonal} makes its diagonal nonzero.
+\begin{theorem}[Chronological reduction]\label{thm:reduction}
+Suppose $F,G$ are $C^{r+1}$ on a neighborhood of $(t_0,z_0)$, $F(t_0,z_0)=0$, and $A(t_0,z_0)$ is invertible. There is a local $C^{r+1}$ map $t=\tau(z)$ solving $F=0$, uniquely in that neighborhood. At any point on its graph set
+\begin{equation}\label{eq:Schur}
+ K=A^{-1}B,\qquad S=G_z-G_tK,\qquad H=I_p+K^TK.
+\end{equation}
+Then
+\begin{equation}\label{eq:derivative-rank}
+ D\tau=-K,\qquad D_z[G(\tau(z),z)]=S,\qquad
+ \rank D(F,G)=m+\rank S.
+\end{equation}
+In particular, all $s$ additional constraints are independent on the event manifold exactly when $S$ has row rank $s$.
+\end{theorem}
+\begin{proof}
+The implicit function theorem applies to $F$ in the $t$ variables. Differentiating $F(\tau(z),z)=0$ gives $AD\tau+B=0$. Applying the chain rule to $G$ proves the middle identity. The derivative of $(F,G)$ is
+\[
+ \begin{pmatrix}A&B\\G_t&G_z\end{pmatrix}.
+\]
+Subtract $G_tA^{-1}$ times the upper block row from the lower block row. This invertible row operation leaves $[0\ S]$ below $[A\ B]$, proving the rank identity. No lower bound for $S$ follows solely from invertibility of $A$.
+\end{proof}
+
+\begin{lemma}[A finite chronological inverse bound]\label{lem:inverse}
+If $|A_{jj}|\ge\gamma>0$ and $|A_{ji}|\le L$ for $i<j$, then
+\begin{equation}\label{eq:Ainverse}
+ \norm{A^{-1}}_\infty\le\gamma^{-1}(1+L/\gamma)^{m-1}.
+\end{equation}
+The infinity norm is the induced row-sum matrix norm. Hence bounds on $B$ give an explicit bound on $K$ on the same chart.
+\end{lemma}
+\begin{proof}
+Solve $Ax=b$ with $\norm b_\infty\le1$. Put $c=L/\gamma$. Forward substitution gives
+$|x_j|\le\gamma^{-1}+c\sum_{i<j}|x_i|$.
+Induction bounds the right side by $\gamma^{-1}(1+c)^{j-1}$; for $c=0$ the conclusion is immediate, and for $c>0$ use the finite geometric sum. Taking the largest component and the supremum over $b$ proves \eqref{eq:Ainverse}. The estimate explicitly deteriorates with $m$ and with small impact speeds. It is not a uniform long-history bound.
+\end{proof}
+
+\subsection{All finite parameter derivatives}
+For a scalar parameter $a$, the first event derivative solves
+\[
+ A\tau'=-F_a.
+\]
+At order $j$, insert the already known polynomial
+$t(a_0+h)=\tau_0+\sum_{k<j}\tau^{(k)}h^k/k!$
+into the order-$j$ Taylor polynomial of $F(a_0+h,t)$. If its $h^j$ coefficient is $b_j$, the missing coefficient is $A\tau^{(j)}/j!$; therefore
+\begin{equation}\label{eq:jet}
+ A\tau^{(j)}=-j!b_j.
+\end{equation}
+The solution is obtained by chronological forward substitution. Finite Taylor composition proves this formula inductively. All coefficients are ordinary finite sums of derivatives of the flights and resets. On a compact regular chart, bounds through order $r+1$, together with \eqref{eq:Ainverse}, give recursively computable bounds through that order. Multivariate derivatives allocate their multi-indices among these same factors. This algorithm does not assume commutativity of different impact maps.
+
+\section{Intrinsic rank and the exact coarea factors}
+For a full-row-rank derivative $DL$, write $J_L=\sqrt{\det(DL\,DL^T)}$. This is its Euclidean normal Jacobian. The event manifold $\mathcal M=\{F=0\}$ has the graph parameterization $z\mapsto(\tau(z),z)$, whose tangent matrix is
+\[
+ T_0=\begin{pmatrix}-K\\I_p\end{pmatrix},\qquad T_0^TT_0=H.
+\]
+The ambient metric matters: $S$ is a derivative in initial-data coordinates, not in an orthonormal basis of $T\mathcal M$.
+
+\begin{theorem}[Metric-correct surplus Jacobian]\label{thm:coarea}
+At points where $S$ has row rank $s$,
+\begin{align}
+ J_F&=|\det A|\sqrt{\det H},\label{eq:JF}\\
+ J_{G|\mathcal M}&=\sqrt{\det(SH^{-1}S^T)},\label{eq:JG}\\
+ J_{(F,G)}&=J_FJ_{G|\mathcal M}.\label{eq:factor}
+\end{align}
+If $\sigma_{\min}(S)\ge\kappa>0$ and $\norm K_2\le L_0$, then
+\begin{equation}\label{eq:intrinsic-bound}
+ \sigma_{\min}(SH^{-1/2})\ge\kappa(1+L_0^2)^{-1/2},
+ \qquad J_{G|\mathcal M}\ge\kappa^s(1+L_0^2)^{-s/2}.
+\end{equation}
+Here the least singular value refers to the $s$ nonzero row singular values.
+\end{theorem}
+\begin{proof}
+Since $B=AK$, $DF\,DF^T=A(I_m+KK^T)A^T$. Sylvester's determinant identity gives $\det(I_m+KK^T)=\det(I_p+K^TK)$, proving \eqref{eq:JF}. The columns of $T_0H^{-1/2}$ form an orthonormal basis of the tangent space. Restriction of $DG$ to that basis is $SH^{-1/2}$, proving \eqref{eq:JG}.
+
+For \eqref{eq:factor}, take the Gram matrix of the rows of $D(F,G)$ and its Schur complement in the upper positive block $DF\,DF^T$. The lower complement is
+\[
+ DG\left[I-DF^T(DF\,DF^T)^{-1}DF\right]DG^T.
+\]
+The bracket is the orthogonal projection onto $\ker DF$, equal to $T_0H^{-1}T_0^T$. Its compression is therefore $SH^{-1}S^T$. The block determinant identity proves \eqref{eq:factor}. Finally $H\le(1+L_0^2)I$ and thus
+$SH^{-1}S^T\ge(1+L_0^2)^{-1}SS^T\ge\kappa^2(1+L_0^2)^{-1}I_s$.
+Taking eigenvalues and determinants gives \eqref{eq:intrinsic-bound}.
+\end{proof}
+
+\subsection{Integration without fictitious independent pivots}
+Let $f$ have compact support within a single regular chart. The coarea formula applied to $F$ and the graph parameterization give
+\begin{equation}\label{eq:graph-measure}
+ \int_{\mathcal M}\frac{f}{J_F}\dd\mathcal H^p
+ =\int\frac{f(\tau(z),z)}{|\det A(\tau(z),z)|}\dd z.
+\end{equation}
+Indeed graph area is $\sqrt{\det H}\dd z$, which cancels the metric factor in \eqref{eq:JF}. This cancellation, rather than an assertion that the event coordinates are orthogonal, is the reason for the chronological product $|\det A|^{-1}$.
+
+Put $\widehat G(z)=G(\tau(z),z)$. If $S=D\widehat G$ has full row rank, applying coarea once more yields the precise double-constraint formula
+\begin{equation}\label{eq:double-coarea}
+ \int_{\{F=0,G=0\}}\frac{f}{J_{(F,G)}}\dd\mathcal H^{p-s}
+ =\int_{\{\widehat G=0\}}
+ \frac{f(\tau(z),z)}{|\det A|\sqrt{\det(SS^T)}}\dd\mathcal H^{p-s}(z).
+\end{equation}
+The left and right level measures are defined by these regular coarea disintegrations; equivalently the identity follows by approximating delta functions in the value variables in a submersion chart. The smooth compact support avoids other branches and critical values. To verify the formula directly, first integrate a test $h(F,G)$ in the ambient variables, change $(t,z)$ to $(F,z)$, and then apply coarea to $\widehat G$ on the fiber $F=0$. The determinant of the first change is $|\det A|$. Smoothness makes the resulting densities continuous at the selected regular value, so evaluating there gives \eqref{eq:double-coarea}.
+
+This argument provides no common Lebesgue density for all deterministic trajectories. It concerns local level constraints in their stated Euclidean parameterization. In particular it does not replace a sequence of noncommuting geometric pivot flows by a rectangular coordinate box.
+
+\section{A quantitative forest calculation and its limit}
+Let a finite forest have $m\ge1$ edges, with vertices carrying vectors $x_i\in\R^d$. For each oriented edge $e=(i,j)$ fix a unit normal $n_e$ and set
+\[
+ (\mathcal R x)_e=n_e\cdot(x_j-x_i).
+\]
+This is the differential of a snapshot contact map after choosing the normals. It is not yet a derivative of a chronological recollision condition.
+\begin{proposition}[Forest row independence]\label{prop:forest}
+The rows of $\mathcal R$ are independent and
+\begin{equation}\label{eq:forest}
+ \norm{\mathcal R^T\lambda}_2\ge\frac{\norm\lambda_2}{\sqrt{m(m+1)}}.
+\end{equation}
+The bound holds for arbitrary choices of unit edge normals.
+\end{proposition}
+\begin{proof}
+Set $b=\mathcal R^T\lambda$. Remove an edge $e$ from its tree component and sum the vectors $b_i$ over one of the two resulting vertex sets $U_e$. Contributions from internal edges cancel and the sole crossing term is $\pm\lambda_e n_e$. Thus
+$|\lambda_e|\le\sqrt{|U_e|}(\sum_{i\in U_e}|b_i|^2)^{1/2}\le\sqrt{m+1}\norm b_2$.
+Squaring and summing over $m$ edges gives \eqref{eq:forest}. A vector in the row kernel must therefore vanish.
+\end{proof}
+
+The estimate is uniform in the normals for this forest problem. Adding a graph edge changes the question. A cycle may carry a nonzero equilibrium stress for some normal configurations, and repeated identical constraints are redundant. For the actual chronological problem, even a good forest inverse leaves the Schur derivative $S$ to be computed. For example $G=CF$ for a fixed nonzero matrix $C$ gives $S=0$ identically, regardless of the quality of $A^{-1}$. This is a logical redundancy test, not a claim that a genuinely new binary collision always has this form.
+
+\section{Two successive contacts computed exactly}
+Consider three equal hard rods on the line, with center positions $q_1<q_2<q_3$, rod diameter $\varepsilon$, positive initial gaps $q_2-q_1-\varepsilon$ and $q_3-q_2-\varepsilon$, and initial velocities $(1,0,0)$. Equal-mass collisions exchange velocities. The first event is $(1,2)$ and the next is $(2,3)$, with no simultaneous collision. Candidate equations are
+\begin{align*}
+ F_1&=q_2-q_1-\varepsilon-t_1,\\
+ F_2&=q_3-q_2-\varepsilon-t_2+t_1.
+\end{align*}
+Thus
+\[
+ A=\begin{pmatrix}-1&0\\1&-1\end{pmatrix},\qquad
+ B=\begin{pmatrix}-1&1&0\\0&-1&1\end{pmatrix}.
+\]
+Solving gives
+\[
+ \tau_1=q_2-q_1-\varepsilon,
+ \qquad \tau_2=q_3-q_1-2\varepsilon,
+ \qquad D_q\tau=\begin{pmatrix}-1&1&0\\-1&0&1\end{pmatrix}=-A^{-1}B.
+\]
+The dependence on $q_2$ cancels from the second event time only after chronological elimination. Independent treatment of the two free-flight times would miss that cancellation.
+
+For the terminal scalar constraint $G=t_2-s_*$, one has $G_z=0$ and $G_t=(0,1)$, hence $S=(-1,0,1)$ and $SS^T=2$. The graph metric is
+\[
+ H=\begin{pmatrix}3&-1&-1\\-1&2&0\\-1&0&2\end{pmatrix},
+ \quad \det H=8,
+ \quad SH^{-1}S^T=5/8.
+\]
+Consequently $J_F=\sqrt8$, $J_{G|\mathcal M}=\sqrt{5/8}$, and $J_{(F,G)}=\sqrt5$. The coordinate derivative norm $\sqrt2$ is not the intrinsic normal Jacobian. These values follow by direct matrix multiplication, or by the Gram matrix of the three rows of $D(F,G)$, whose determinant is five. This terminal constraint illustrates the metric distinction; it is not advertised as an extra physical recollision.
+
+\section{Source differentiation on a regular constrained family}
+After event-time elimination, suppose a fixed compact initial-data chart has a smooth density $\rho_a$ and the retained path functional is $W_a(z)$. For a fixed scalar source $\xi$ define
+\[
+ Z_a(\xi)=\int \rho_a(z)e^{\xi W_a(z)}\dd z.
+\]
+All derivatives are ordinary finite integrals if support and coefficient derivatives are controlled. If the event constraints themselves were imposed by coarea, the integrand instead includes $|\det A_a|^{-1}$ as in \eqref{eq:graph-measure}; additional constraints use \eqref{eq:double-coarea} and their own chart transport. On a fixed event chart define $\widetilde\rho_a=\rho_a/|\det A_a|$ and assume it is positive. Then
+\begin{proposition}[Chronological source-response identity]\label{prop:source}
+For a smooth observable $O_a$ with bounded derivatives on the compact support, its normalized selected average satisfies
+\begin{equation}\label{eq:source}
+ \partial_a E_a^\xi O_a
+ =E_a^\xi\partial_a O_a+
+ \operatorname{Cov}_{a,\xi}\left(O_a,
+ \partial_a\log\rho_a-\operatorname{tr}(A_a^{-1}\partial_a A_a)+\xi\partial_aW_a\right).
+\end{equation}
+Derivatives of $A_a,W_a$ here are total derivatives after the chronological substitution, not derivatives with the event times artificially fixed.
+\end{proposition}
+\begin{proof}
+Differentiate numerator and denominator of the normalized integral. The logarithmic derivative of $|\det A_a|$ is $\operatorname{tr}(A_a^{-1}\partial_a A_a)$ because the determinant is nonzero and has fixed sign on the chart. Subtracting the derivative of the normalizer produces the covariance in \eqref{eq:source}. If $\rho_a$ can vanish, use the unnormalized derivative and quotient formula rather than an undefined logarithmic score. Moving support contributes its boundary terms. The compact fixed-chart hypotheses ensure integrable domination; no infinite-path likelihood derivative is asserted.
+\end{proof}
+
+\section{The remaining hard-sphere theorem and the current literature}
+The preceding statements separate three quantities: the product of the nonzero chronological impact speeds, the additional derivative $S$, and the intrinsic factor $H$. An actual joint history theorem must estimate these quantities on the relevant families, sum their signed contributions, and control complements and source derivatives. None of these global estimates follows from the local determinant identity. A useful next proof object is the complete assembled contribution of a fixed genealogy, with explicitly specified source and cutoff, before any summation over genealogies.
+
+The relevant literature is not confined to short-time propagation of chaos. Bodineau, Gallagher, Saint-Raymond, and Simonella prove short-time fluctuating Boltzmann and large-deviation results with specified cumulant control \cite{BGSS}. Deng, Hani, and Ma derive the Boltzmann equation for arbitrarily long times within the lifespan of a regular Boltzmann solution \cite{DHM}. The Annals journal record lists the latter as accepted on October 31, 2025. A next B2 contribution must therefore be formulated as a specific source-dependent, response, conditional-history, or fluctuation statement beyond the inputs actually available; it cannot claim novelty merely for extending the basic derivation beyond Lanford's short time. The scopes of these external works were checked from primary-source abstracts and the journal record, not re-proved here.
+
+The B2--GC to B1 to B2--MC ordering remains necessary whenever dynamic conditioning uses an already established grand-canonical source estimate. A1's finite-dimensional response or information theorem is not a substitute for that estimate. The local formulas above do not provide these uniform source estimates; they identify the derivatives and Jacobians to which such estimates must apply.
+
+\begin{thebibliography}{9}
+\bibitem{BGSS} T. Bodineau, I. Gallagher, L. Saint-Raymond, and S. Simonella, \emph{Statistical dynamics of a hard sphere gas: fluctuating Boltzmann equation and large deviations}, Annals of Mathematics 198 (2023), 1047--1201.\par\url{https://annals.math.princeton.edu/2023/198-3/p03}
+\bibitem{DHM} Y. Deng, Z. Hani, and X. Ma, \emph{Long time derivation of the Boltzmann equation from hard sphere dynamics}, arXiv:2408.07818; accepted for Annals of Mathematics, October 31, 2025, according to the journal's primary record consulted September 8, 2026.\par\url{https://annals.math.princeton.edu/articles/22284}
+\bibitem{Ledger} Theta-Theory repository, \texttt{round33/chapters/B2.tex}, commit \texttt{7f1bc9a42ba27615aea61afb9a417ef076e2c6e1}, blob \texttt{9490633fe7f98214a7e9767903b0e8e0386e2f36}. The present note retains its rank distinction and gives chronological and metric factors rather than assuming all-surplus rank.
+\end{thebibliography}
+\end{document}
