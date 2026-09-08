@@ -58,7 +58,7 @@ def main() -> None:
         'complete_native_build':False,'complete_native_references_checked':False,
         'external_test_stub_labels':external,'tex_passes':3,
         'overfull_boxes':warnings,'pdf_sha256':hashlib.sha256((out/'smoke.pdf').read_bytes()).hexdigest(),
-        'source_sha256':{p:hashlib.sha256((root/p).read_bytes()).hexdigest() for p in rels},
+        'source_sha256':{p:hashlib.sha256((root/p).read_bytes()).hexdigest() for p in (*rels, 'main.tex', 'preamble.tex')},
         'status':'CHANGED_MODULE_SMOKE_PASS'}
     (root/'v34'/'SMOKE_RECEIPT.json').write_text(json.dumps(receipt,indent=2)+'\n')
     print(json.dumps(receipt,indent=2))
