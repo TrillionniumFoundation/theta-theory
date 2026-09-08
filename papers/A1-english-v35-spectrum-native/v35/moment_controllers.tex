@@ -1,0 +1,619 @@
+\section{Finite-cell realization and comparison of experiments}
+\label{sec:v33-moments}
+
+The realization algebra has a wider scope than the collision theorem.
+It is useful to state it at that scope before returning to the monomial
+geometry. The static coefficient set is a finite-output postprocessing
+region in the sense of Blackwell \cite{Blackwell1953}. Its iteration
+records the joint law of the retained label and the latent parameter.
+Neither this postprocessing interpretation nor polynomial propagation
+asserts the attainable rank or the collision profile proved above.
+
+Let $\Theta$ be a standard Borel space, let $\mu$ be any probability
+on $\Theta$, and let $k_1^a,\ldots,k_J^a:\Theta\to[0,1]$ be Borel
+functions with $\sum_k k_k^a=1$. Here $a$ denotes a fixed known
+specification of the cells. No monomial structure, density of $\mu$,
+or strict positivity of the cells is required in this section until
+we explicitly return to collision limits. Conditional on $t\in\Theta$,
+the raw cells on successive trials are independent with law $k^a(t)$.
+The command lies
+in $G=[\eta,1-\eta]^J$, where $0<\eta<1/2$; raw cell $k$ is
+reported as $k$ with probability $g_k$ and otherwise as $\dagger$.
+The command at time $n$ has prescribed law $\nu_n$, independently of
+the latent parameter, all previous variables and the fresh private coins.
+The controller reads only its preceding label, current command and
+current report, and retains one of $M$ labels after each report.
+
+At checkpoint $n<N$ there is a finite query menu with fixed
+nonnegative weights $\omega_{nq}$ summing to one. Each future
+likelihood $H^a_{nq}\in[0,1]$ is the product of at most $N-n$
+cell-linear likelihood factors. In particular it is a polynomial of
+degree at most $N-n$ in the cells. The query is selected independently
+after retention. Mean regret is the squared difference from the
+full-history prediction, averaged over this prescribed experiment,
+and the common-controller criterion is the maximum of these means.
+The notation of Definition~\ref{def:monomial-risks-v24} is extended
+to this finite-cell model with exactly those quantifiers. The positive
+monomial model and its uniform command laws are a specialization.
+A history of zero evidence contributes zero to every integral; its
+posterior prediction can be assigned any value in $[0,1]$.
+
+\subsection{The implementability body}
+For a command law $\nu$, put $m_k=\int_G g_k\,\nu(\mathrm dg)$ and define
+\begin{equation}\label{eq:v33-allocation}
+ \mathscr Z_M(\nu)=\left\{z\in\R^{J\times M}:
+ z_{kj}=\int_G(1-g_k)u_j(g)\,\nu(\mathrm dg),\quad
+ u:G\longrightarrow\Delta_M\ \hbox{Borel}\right\},
+\end{equation}
+where $\Delta_M$ is the probability simplex. Define the one-state
+implementability body by
+\begin{equation}\label{eq:v33-body}
+ \mathscr A_M(\nu)=
+ \left\{ A\in\R^{J\times M}: A_{kj}=m_k r_{kj}+z_{kj},\quad
+       r_k\in\Delta_M\ (1\le k\le J),\quad z\in\mathscr Z_M(\nu)\right\}.
+\end{equation}
+Every row of $A$ sums to one. The shared array $z$ is essential: all
+raw cells that produce failure must use the same failure update.
+
+
+\begin{proposition}[The finite-output Blackwell region]
+\label{prop:v34-blackwell}
+On $\Omega=G\times\{1,\ldots,J,\dagger\}$ define the experiment
+with auxiliary index $k\in\{1,\ldots,J\}$ by
+\begin{equation}\label{eq:v34-experiment}
+ \mathsf E_k(\mathrm dg,\mathrm dx)=\nu(\mathrm dg)
+       \{g_k\delta_k(\mathrm dx)+(1-g_k)\delta_\dagger(\mathrm dx)\}.
+\end{equation}
+Then, exactly,
+\begin{equation}\label{eq:v34-blackwell}
+ \mathscr A_M(\nu)=\{\mathsf E U:
+       U\text{ is a Borel Markov kernel from }\Omega\text{ to }[M]\}.
+\end{equation}
+The actual observation law given $t$ is the mixture
+$\sum_k k_k^a(t)\mathsf E_k$. The index of this auxiliary experiment
+is not an additional observation supplied to the controller.
+
+For a prior $\pi$ on the auxiliary indices and a reward table
+$r(k,j)$, its optimal finite-action Bayes reward is the support function
+of $\mathscr A_M(\nu)$ at $C_{kj}=\pi_k r(k,j)$. Moreover, for
+$k\ne l$ the measure
+\[
+ \lambda_{kl}(\mathrm dg,\mathrm dx)
+ =\min(1-g_k,1-g_l)\nu(\mathrm dg)\delta_\dagger(\mathrm dx)
+\]
+is a common submeasure of $\mathsf E_k$ and $\mathsf E_l$.
+Its mass is preserved by every postprocessing, and hence
+\begin{equation}\label{eq:v34-blackwell-overlap}
+ \operatorname{TV}(A_k,A_l)
+ \le 1-\lambda_{kl}(\Omega)\qquad(A\in\mathscr A_M(\nu)),
+\end{equation}
+where total variation between probability rows is half their
+$\ell^1$ distance.
+\end{proposition}
+\begin{proof}
+Direct integration gives
+\[
+ (\mathsf E U)_{kj}
+   =\int_G\{g_k U(j\mid g,k)
+                  +(1-g_k)U(j\mid g,\dagger)\}\,\mathrm d\nu.
+\]
+The accepted term is $m_k r_{kj}$ for the probability row obtained
+by $g_k$-weighted averaging of the accepted kernel. The failure terms
+all use the same simplex-valued function $U(\cdot\mid g,\dagger)$,
+so belong to $\mathscr Z_M(\nu)$. Conversely, realize any
+$m_k r_{kj}+z_{kj}$ by the constant accepted kernel $r_k$ and a
+common failure kernel representing $z$. This proves
+\eqref{eq:v34-blackwell}. Mixing the conditional raw-cell laws gives
+the asserted physical observation law.
+
+For any postprocessing the Bayes reward is
+$\sum_{k,j}\pi_k r(k,j)(\mathsf E U)_{kj}$; taking the supremum
+proves the support interpretation. Finally $\lambda_{kl}\le\mathsf E_k$
+and $\lambda_{kl}\le\mathsf E_l$, so the row vector $\lambda_{kl}U$
+is dominated by both output rows. Its entries sum to
+$\lambda_{kl}(\Omega)$ because $U$ is a Markov kernel. Thus
+$\sum_j\min(A_{kj},A_{lj})\ge\lambda_{kl}(\Omega)$, which is
+\eqref{eq:v34-blackwell-overlap}.
+\end{proof}
+
+The proposition identifies the postprocessing region. The next lemma
+supplies its compactness and explicit support function; the corollary
+then excludes arbitrary stochastic rows from the controller domain.
+
+\begin{lemma}[One-step implementability]\label{lem:v33-body}
+The set $\mathscr A_M(\nu)$ is compact and convex. A matrix $A$ belongs
+to it if and only if there are Borel transition probabilities
+$U(j\mid g,x)$ such that
+\begin{equation}\label{eq:v33-realize-row}
+ A_{kj}=\int_G\bigl[g_k U(j\mid g,k)
+                 +(1-g_k)U(j\mid g,\dagger)\bigr]\,\nu(\mathrm dg).
+\end{equation}
+For every $C\in\R^{J\times M}$ its support function is
+\begin{equation}\label{eq:v33-support}
+ \begin{split}
+ \sup_{A\in\mathscr A_M(\nu)}\sum_{k,j}C_{kj}A_{kj}
+ &=\sum_k m_k\max_j C_{kj}\\
+ &\quad+\int_G\max_j\sum_k(1-g_k)C_{kj}\,\nu(\mathrm dg).
+ \end{split}
+\end{equation}
+The body and this formula do not involve the calibration or the prior.
+\end{lemma}
+\begin{proof}
+The measurable simplex-valued functions form a weak-star compact convex
+subset of $L^\infty(\nu)^M$. Indeed, nonnegativity and the equation that
+the coordinates sum to one are weak-star closed, and the coordinates
+are bounded by one. Integration against the finitely many functions
+$1-g_k$ is weak-star continuous. Consequently $\mathscr Z_M(\nu)$,
+and hence $\mathscr A_M(\nu)$, are compact and convex. Equivalence
+classes have Borel representatives on the command cube; null-set
+values can be chosen in the simplex.
+
+The equivalence in \eqref{eq:v33-realize-row} is the integral
+identity proved in Proposition~\ref{prop:v34-blackwell}. For the
+support function, the accepted terms are maximized
+at simplex vertices. For the failure term choose the smallest index
+maximizing the finitely many functions
+$\sum_k(1-g_k)C_{kj}$. This is a Borel rule, attains the pointwise
+maximum, and proves \eqref{eq:v33-support}.
+\end{proof}
+
+\begin{corollary}[A constraint imposed by the common failure report]
+\label{cor:v33-overlap}
+For every $A\in\mathscr A_M(\nu)$ and any raw cells $k,l$,
+\[
+ \sum_j\min(A_{kj},A_{lj})
+ \ge\int_G\min(1-g_k,1-g_l)\,\nu(\mathrm dg)\ge\eta.
+\]
+When $J,M\ge2$, the implementability body is a proper subset of the
+product of stochastic row simplices.
+\end{corollary}
+\begin{proof}
+For distinct rows, Proposition~\ref{prop:v34-blackwell} gives the
+first inequality by preservation of the common submeasure
+$\lambda_{kl}$. For equal rows the left side is one. Since
+$1-g_k\ge\eta$, the lower bound is at least $\eta$ in both cases.
+Two disjoint point-mass rows violate this bound when $J,M\ge2$,
+which proves proper inclusion.
+\end{proof}
+
+\subsection{Occupancy polynomials and exact mean risk}
+Write $T=N-1$. The initial label is fixed: independent private
+randomization of it can be averaged into the first transition, since
+no prediction is made before the first report. For each time $n\le T$ and each preceding state $i$, take
+one matrix $A_n(i)\in\mathscr A_M(\nu_n)$. Starting from
+$q_{0,i}=\mathbf1_{\{i=1\}}$, define
+\begin{equation}\label{eq:v33-q-recursion}
+ q_{n,j}(t)=\sum_{i=1}^M\sum_{k=1}^J
+        q_{n-1,i}(t)k_k^a(t)A_{n,kj}(i).
+\end{equation}
+Let $H^a_{nq}$ be the future likelihood of query $q$, with weight
+$\omega_{nq}$, and set
+\begin{equation}\label{eq:v33-coefficients}
+ \begin{split}
+ w_{ni}&=\mu(q_{n,i}),\qquad
+ b_{niq}=\mu(q_{n,i}H^a_{nq}),\\
+ B_n(a)&=\int_{\mathcal H_n}\sum_q\omega_{nq}
+                    p^a_{nq}(h)^2\,\mathbb P_n^a(\mathrm dh).
+ \end{split}
+\end{equation}
+The offset $B_n$ is determined by the prescribed experiment, not by
+the controller. In the principal uniform menu
+$\omega_{nq}=1/s_n^{\rm q}$.
+
+\begin{theorem}[Finite-cell realization of a common controller]
+\label{thm:v33-moment-program}
+For the finite-cell model just specified, with arbitrary $\mu$ and
+prescribed independent command laws,
+\begin{equation}\label{eq:v33-exact-value}
+ \mathfrak R_{M,N}^{a,\mathrm{av}}
+  =\min_{\substack{A_n(i)\in\mathscr A_M(\nu_n)\\1\le n<N,\ 1\le i\le M}}
+       \max_{1\le n<N}
+       \left\{B_n(a)-\sum_{i,q}\omega_{nq}
+                        \frac{b_{niq}^2}{w_{ni}}\right\}.
+\end{equation}
+A quotient with $w_{ni}=0$ is defined to be zero. The minimum is
+attained and is realized by one common $M$-label controller. Its decoder
+is $d_{nq}(i)=b_{niq}/w_{ni}$ whenever $w_{ni}>0$.
+
+More precisely, the polynomials in \eqref{eq:v33-q-recursion} are
+exactly the functions
+$\mathbb P(S_n=i\mid t)$ attainable by permitted controllers. They
+admit the formal nonnegative representation
+\begin{equation}\label{eq:v33-formal-recursion}
+ \begin{split}
+ q_{n,i}(t)&=\sum_{|\alpha|=n}c_{n,i,\alpha}\,(k^a(t))^\alpha,\\
+ c_{n,j,\alpha}
+    &=\sum_{i,k:\,\alpha_k>0}
+          c_{n-1,i,\alpha-e_k}A_{n,kj}(i),\qquad
+ \sum_i c_{n,i,\alpha}=\binom n\alpha.
+ \end{split}
+\end{equation}
+Thus there are $TM^2J$ one-step entries and at most
+$M\binom{n+J-1}{J-1}$ formal occupancy coefficients at time $n$.
+No variable is indexed by a complete history or by a command grid.
+All prior-dependent coefficients are determined by cell moments
+$\mu((k^a)^\alpha)$ with $|\alpha|\le N$.
+\end{theorem}
+\begin{proof}
+For an actual controller let $U_n(j\mid i,g,x)$ be its transition
+probabilities, after averaging its fresh private randomization.
+Conditional on the latent parameter and the preceding state, the
+current command has law $\nu_n$. Integrating first over this command
+and then over its report gives \eqref{eq:v33-q-recursion}, with
+$A_n(i)$ defined by \eqref{eq:v33-realize-row}. Each such matrix
+belongs to the body in Lemma~\ref{lem:v33-body}.
+Conversely, that lemma supplies an admissible transition kernel for
+each of the finitely many rows in \eqref{eq:v33-q-recursion}. Use
+these kernels at their prescribed stages. Induction proves that their
+conditional state probabilities are exactly $q_{n,i}$. These
+probabilities are an offline description of a controller's law; the
+controller retains only its label, not the functions $q_{n,i}$.
+
+Multiplication by one detector cell proves the first two identities
+in \eqref{eq:v33-formal-recursion}. All coefficients are nonnegative.
+Summing over the new label and using $\sum_j A_{n,kj}(i)=1$ gives
+$\sum_i c_{n,i,\alpha}=\sum_{k:\alpha_k>0}\binom{n-1}{\alpha-e_k}
+=\binom n\alpha$. In particular $0\le q_{n,i}\le1$ and
+$\sum_i q_{n,i}=1$.
+
+Conditional on a full command-report history of positive evidence,
+the latent parameter and the retained state are independent; histories
+of zero evidence contribute nothing to the following expectations. To check this directly, the
+joint density with respect to $\mu$, for a fixed history, is its
+likelihood product multiplied by the probability of the state path
+under the transition kernels. The latter factor depends on the
+history and the private coins, not on the latent parameter. Summing
+state paths preserves this factorization. It follows that, for every
+decoder table,
+\[
+ \mathbb E\bigl[p^a_{nq}(H_n^{\rm hist})\,d_{nq}(S_n)\bigr]
+       =\mathbb E\bigl[H^a_{nq}(t)\,d_{nq}(S_n)\bigr]
+       =\sum_i b_{niq}d_{nq}(i).
+\]
+Here $H_n^{\rm hist}$ denotes the random history;
+it does not enter the decoder. Expanding the square therefore yields
+\begin{equation}\label{eq:v33-fixed-decoder}
+ R_n=B_n(a)+\sum_{i,q}\omega_{nq}
+          \bigl(w_{ni}d_{nq}(i)^2-2b_{niq}d_{nq}(i)\bigr).
+\end{equation}
+Completing each square gives the displayed centroids and
+\eqref{eq:v33-exact-value}. A separate decoder coordinate is used
+at each checkpoint, so these minimizations are simultaneous. The
+transition matrices, in contrast, are common to every checkpoint.
+
+The product of the finitely many implementability bodies is compact.
+The quantities $w$ and $b$ are polynomial functions of its entries.
+Since $0\le b_{niq}\le w_{ni}$, the ratio $b_{niq}^2/w_{ni}$ lies
+between zero and $w_{ni}$ and extends continuously at $w_{ni}=0$.
+Thus the objective in \eqref{eq:v33-exact-value} is continuous and
+attains its minimum. The constructive converse for the matrices and
+the centroid tables realize this minimum.
+
+A future product $H^a_{nq}$ has degree at most $N-n$ in the cells. Hence $w$
+and $b$ involve cell moments of degree at most $N$. For completeness,
+if $L_h$ is a history likelihood of degree $n$, then
+\begin{equation}\label{eq:v33-baseline}
+ B_n(a)=\sum_{x_1,\ldots,x_n}\int_{G^n}\sum_q\omega_{nq}
+       \frac{\mu(L_hH^a_{nq})^2}{\mu(L_h)}
+               \prod_{s=1}^n\nu_s(\mathrm dg_s).
+\end{equation}
+Its evaluated moments have degree at most $N$. In the general
+finite-cell model, set its integrand to zero whenever $\mu(L_h)=0$.
+This is well defined because
+\[
+ 0\le\mu(L_hH^a_{nq})\le\mu(L_h),\qquad
+ 0\le\frac{\mu(L_hH^a_{nq})^2}{\mu(L_h)}\le\mu(L_h)
+\]
+with that convention. These bounds justify integrability, including
+impossible histories, and prove the finite-moment assertion. In the
+positive monomial specialization the stronger denominator bound
+$\mu(L_h)\ge\kappa^n$ is available, as used in the geometric and
+approximation theorems.
+The integral in \eqref{eq:v33-baseline} is a controller-independent
+coefficient evaluation; the theorem does not assert a polynomial-time
+procedure for evaluating it or solving the nonconvex minimum.
+\end{proof}
+
+\begin{remark}[Which tree has been removed]\label{rem:v33-tree}
+The history-state variables in \eqref{eq:v32-compatible} have been
+removed from the controller optimization, not hidden in an additional
+retained state. The body \eqref{eq:v33-body} also integrates the
+continuous command exactly. Formula~\eqref{eq:v33-baseline} can still
+be costly to evaluate. The distinction matters: representation size,
+coefficient evaluation and global optimization are different questions.
+For fixed $J$ the number of formal occupancy coefficients grows
+polynomially with the horizon, while the stated nonlinear optimization
+need not be efficiently solvable. The formula concerns prescribed
+acquisition and mean regret. It does not replace the worst-history
+criterion by a centroid objective, nor the state-controlled criterion
+by an experiment-independent offset $B_n$.
+\end{remark}
+
+\subsection{The evaluation algebra and attainable geometry}
+\begin{proposition}[Formal closure and its evaluation]
+\label{prop:v34-evaluation}
+For fixed cells define
+\[
+ \mathcal F_m(k^a)=\operatorname{span}
+       \{(k^a)^\alpha:|\alpha|\le m\},\qquad \mathcal F_0=\R\one.
+\]
+Then $\mathcal F_m\mathcal F_s\subset\mathcal F_{m+s}$, and the
+same space is spanned by the products of exactly $m$ cells. Every
+conditional occupancy at time $n$ belongs to $\mathcal F_n$.
+If the cells span $W_A$, then
+\begin{equation}\label{eq:v34-evaluation}
+                 \mathcal F_m(k^a)=W_{mA}.
+\end{equation}
+The formal coefficients in \eqref{eq:v33-formal-recursion} are
+therefore propagated before evaluation in a function space whose
+linear relations may depend on the experiment.
+\end{proposition}
+\begin{proof}
+Multiplication adds degrees. Multiplying a product of degree $d<m$
+by $(\sum_k k_k^a)^{m-d}=1$ writes it as a sum of degree-$m$
+products. The occupancy assertion follows by induction in
+\eqref{eq:v33-q-recursion}. If the cells span $W_A$, each cell
+product is a linear combination of monomials in $mA$. Conversely,
+write each factor $t^{a_i}$ as a linear combination of cells and
+multiply $m$ such identities. Padding by constants covers shorter
+products. This proves both inclusions in \eqref{eq:v34-evaluation}.
+\end{proof}
+
+The equality identifies the future test space, not the dimension or
+the measure of its attained prediction image. The differential of the
+normalized product must still be paired with this space. In the
+monomial experiment, Lemma~\ref{lem:binomial-tangent} and the positive
+pairing give the acquired dimension, and
+Lemma~\ref{lem:newton-attainment} supplies its collision-uniform
+lower mass. None of those conclusions is inferred from the number
+of formal occupancy coefficients.
+
+\begin{proposition}[A two-cell realization]
+\label{prop:v34-two-cell}
+Let $B$ be a Borel subset of $\Theta$ with $p=\mu(B)\in(0,1)$ and
+put $k_1=\tfrac14+\tfrac12\one_B$, $k_2=1-k_1$. Use independent
+uniform acquisition commands on $G$. For every $m\ge1$,
+\[
+            \mathcal F_m=\operatorname{span}\{\one,\one_B\}.
+\]
+Every acquired future prediction is determined by the single posterior
+weight of $B$. For every $n\ge1$, the all-failure prediction image
+contains a nondegenerate interval of these weights. A future failure
+query with unequal command coordinates distinguishes them. Thus this
+positive finite-cell experiment has one-dimensional attained
+prediction geometry at every nontrivial checkpoint whose menu contains
+such a distinguishing query, although its
+formal degree-$n$ two-cell representation has $n+1$ coefficients
+per label. Taking $\Theta=[0,1]$ and $B=[0,1/2]$ gives a
+nonmonomial example.
+\end{proposition}
+\begin{proof}
+Every cell and cell product is constant on each of $B$ and $B^c$,
+while $\one_B=2k_1-\tfrac12$, proving the space assertion. Write
+$z$ for the posterior weight of $B$. Every future test in this space
+has posterior expectation $zH|_B+(1-z)H|_{B^c}$.
+
+Take all but one of the $n$ commands on the interior diagonal
+$g_1=g_2=c$, $\eta<c<1-\eta$, and consider the all-failure word.
+Those other factors are constant. At the remaining command the
+failure likelihoods on $B$ and $B^c$ are, respectively,
+\[
+ L_B=1-\frac{3g_1+g_2}{4},\qquad
+ L_{B^c}=1-\frac{g_1+3g_2}{4}.
+\]
+Consequently
+\[
+ z=\frac{pL_B}{pL_B+(1-p)L_{B^c}},\qquad
+ \left.\frac{\partial z}{\partial g_1}\right|_{g_1=g_2=c}
+       =-\frac{p(1-p)}{2(1-c)}\ne0.
+\]
+An interval of weights is attained by interior commands. A future
+failure factor with $g_1\ne g_2$ has different values on $B$ and
+$B^c$, so distinguishes them. Additional required future trials can
+use constant diagonal failure factors. This also proves the claim
+when the horizon counts every one of those trials.
+\end{proof}
+
+\subsection{Exact removal of private transition randomization}
+We record the finite-action purification argument to specify its use
+here. Its abstract mechanism is classical \cite{DWW1951}; the relevant
+atomless measure in this application is the command law, not the prior.
+
+\begin{lemma}[Finite-moment purification]\label{lem:v33-purification}
+Let $\nu$ be an atomless Borel probability on $G$, let
+$\phi_1,\ldots,\phi_d\in L^1(\nu)$, and let
+$u:G\to\Delta_M$ be Borel. There is a Borel partition
+$E_1,\ldots,E_M$ such that
+\[
+ \int_{E_j}\phi_\ell\,\mathrm d\nu
+       =\int_G\phi_\ell u_j\,\mathrm d\nu
+              \qquad(1\le j\le M,\ 1\le\ell\le d).
+\]
+\end{lemma}
+\begin{proof}
+In the weak-star compact set of simplex-valued elements of
+$L^\infty(\nu)^M$, impose the finitely many displayed equalities.
+The resulting nonempty compact convex set has an extreme point.
+Suppose two coordinates of that point are both at least $\epsilon>0$
+on a measurable set $E$ of positive measure. Such an $E$, pair of
+coordinates and $\epsilon$ exist if the point fails to be a simplex
+vertex on a set of positive measure. Atomlessness splits $E$ into
+$d+1$ disjoint sets $E_s$ of positive measure. The $d+1$ vectors
+$(\int_{E_s}\phi_\ell\,\mathrm d\nu)_{\ell=1}^d$ are linearly
+dependent. A nonzero linear combination of their indicators gives
+a bounded function $h$, supported in $E$, with
+$\int h\phi_\ell\,\mathrm d\nu=0$ for every $\ell$. Rescale so
+$|h|\le\epsilon$. Add $h$ to the first of the two coordinates and
+subtract it from the second, or make the opposite changes. Both
+resulting functions are simplex-valued and satisfy every constraint;
+they are distinct and have the proposed extreme point as their mean.
+This contradiction proves that the extreme point is a vertex almost
+everywhere. Its coordinate sets, modified on a null set, give a Borel
+partition with the required integrals.
+\end{proof}
+
+\begin{theorem}[Deterministic realization of the entire mean-risk vector]
+\label{thm:v33-pure}
+Suppose every prescribed command law $\nu_n$ is atomless. Every
+$M$-label controller using fresh private transition coins has a
+$M$-label deterministic Borel replacement with the same decoder
+and the same conditional state probabilities $q_{n,i}(t)$ at every
+time and every latent parameter. For fixed transition kernels, the replacement is independent of the
+calibration and preserves these laws at every calibration with the
+cell index set and observation channel fixed. For calibration-indexed kernels the assertion
+is pointwise in calibration. In particular,
+it has exactly the same vector of unconditional checkpoint regrets.
+Consequently the minimum in \eqref{eq:v33-exact-value} is attained
+without transition randomization.
+\end{theorem}
+\begin{proof}
+For a fixed time and preceding state, apply
+Lemma~\ref{lem:v33-purification} to the accepted-report kernel for
+report $k$ with weight $g_k$, separately for each $k$. Apply it to
+the failure kernel with the $J$ weights $1-g_k$. The resulting
+deterministic rules preserve every entry in
+\eqref{eq:v33-realize-row}. Repeat for the finitely many times and
+preceding states. Recursion~\eqref{eq:v33-q-recursion} then preserves
+all the conditional state probabilities. The weights used in
+purification contain neither $a$ nor $t$, so the same replacement
+preserves those probabilities at every calibration when both programs
+use the same fixed kernels. This asserts no jointly measurable
+purification of an arbitrary calibration-indexed family. Formula
+\eqref{eq:v33-fixed-decoder} proves equality of the mean-risk
+vectors for the original decoder tables. Apply this replacement to
+a minimizer in Theorem~\ref{thm:v33-moment-program}.
+\end{proof}
+
+This theorem does not purify the risk at each individual history. The
+replacement can assign different labels to a particular command-report
+prefix. It therefore implies no equality of the two worst-history
+optima. Nor does it remove a persistent public seed that also indexes
+a decoder program; that is a different resource. A singular full-support
+latent prior is allowed because the atomlessness used in the proof
+belongs entirely to acquisition.
+
+\subsection{Polyhedral transition rules for scalarized regret}
+A more explicit description is available for a weighted sum of mean
+regrets. It is important not to infer a convex minimax identity for
+\eqref{eq:v33-exact-value} from this description.
+
+\begin{theorem}[Polyhedral rows]\label{thm:v33-polyhedral}
+Fix nonnegative weights $\lambda_1,\ldots,\lambda_T$. In the
+prescribed-command model there is a globally optimal deterministic
+controller for $\sum_n\lambda_n R_n$ with the following form at each
+time and preceding state. After an accepted report $k$ its new label
+is independent of the command. After failure its new label minimizes
+one of $M$ affine functions of $g$. Thus its failure regions are intersections of the command cube with
+at most $M$ Borel polyhedral regions, using the half-open tie
+convention specified in the proof.
+The assertion holds for arbitrary prescribed command laws, including
+atomic ones.
+\end{theorem}
+\begin{proof}
+Compactness of the implementability bodies and decoder cube gives a
+global minimizer of the fixed-decoder expression
+\eqref{eq:v33-fixed-decoder}, summed with weights $\lambda_n$.
+Freeze its decoder tables. Freeze all transition matrices except
+$A_s(i)$, for one time $s$ and preceding state $i$. The resulting
+objective is affine in this matrix. Indeed, a path uses time $s$
+only once, so induction in \eqref{eq:v33-q-recursion} makes every
+later occupancy linear in these entries. Write its nonconstant part
+as $\sum_{k,j}C_{kj}A_{s,kj}(i)$.
+
+The minimum support formula in Lemma~\ref{lem:v33-body}, obtained
+by replacing $C$ by $-C$, is attained as follows: after report $k$
+choose a fixed index minimizing $C_{kj}$; after failure choose the
+smallest index minimizing $\sum_k(1-g_k)C_{kj}$. These are permitted
+deterministic rules. Writing these affine functions as $F_j$, the precise region for
+label $j$ is
+\begin{equation}\label{eq:v34-ties}
+ P_j=G\cap\bigcap_{l<j}\{F_j<F_l\}
+         \cap\bigcap_{l>j}\{F_j\le F_l\}.
+\end{equation}
+These regions form a Borel partition, possibly with half-open faces.
+The tie convention is retained even when $\nu$ gives a boundary
+positive mass. Replacing the one row by this
+minimizer cannot increase the objective. Since the original value
+was already globally minimal, its value remains unchanged.
+
+Perform this replacement successively for all time-state pairs.
+At each step the full controller and the frozen decoders remain
+globally optimal, and previously replaced rules retain the asserted
+form. After finitely many replacements the required controller has
+been obtained. No atomlessness, minimax exchange or convexity of the
+joint risk set was used.
+\end{proof}
+
+The theorem identifies the geometry of an optimal transition rule,
+not its numerical coefficients. The coefficient matrices depend on
+the other transitions and the decoder. In particular, the theorem
+does not assert that a weighted optimum solves the maximum-checkpoint
+problem for some weights. That problem is given exactly by
+\eqref{eq:v33-exact-value} and, for atomless commands, by
+Theorem~\ref{thm:v33-pure}.
+
+\subsection{Collision limits in the same controller space}
+We now return to the positive monomial experiment on $[0,1]$ and
+the compact exponent chamber of Theorem~\ref{thm:resolution-main}.
+The general finite-cell theorem identifies its controller domain;
+the following continuity assertion additionally uses this compact,
+uniformly positive calibration family.
+\begin{theorem}[Compact collision transfer]\label{thm:v33-collision}
+Fix the detector matrix, prior, horizon and prescribed command laws.
+Let the known calibration vary in the compact chamber $K$, and use
+the fixed attainable failure-factor query basis of
+Theorem~\ref{thm:resolution-main}. The implementability domain in
+\eqref{eq:v33-exact-value} is independent of $a$, and its objective
+is jointly continuous in $a$ and the one-step matrices. Its value
+is continuous on $K$.
+
+If $a_s\to a_0$ and $A^{(s)}$ are optimal matrices, a subsequence
+converges to optimal matrices at $a_0$. Along that subsequence their
+conditional state probabilities converge uniformly in $t\in[0,1]$
+at every stage. These assertions include all additive collisions.
+For uniform commands the exact value in this same domain satisfies
+\[
+ c\Xi_N(M,a)\le
+    \min_A\max_n\left(B_n-\sum_{i,q}\omega_{nq}b_{niq}^2/w_{ni}\right)
+           \le C\Xi_N(M,a)
+\]
+with the constants and all-budget collision profile of
+Theorem~\ref{thm:resolution-main}.
+\end{theorem}
+\begin{proof}
+The monomials defining the cells are jointly continuous in $(a,t)$
+on $K\times[0,1]$; positive one-step exponents are bounded away
+from zero there. Consequently all cell products and fixed future
+queries are uniformly continuous on this compact set. Their moments
+are continuous for the fixed prior, without a density hypothesis.
+The finite polynomial recursion proves joint continuity of $q,w,b$.
+The positive denominator in \eqref{eq:v33-baseline} proves continuity
+of $B_n$ by bounded convergence, uniformly on the finite-dimensional
+compact domain. At zero occupancy the bound $b^2/w\le w$ again
+proves continuity of the perspective term. Thus the entire objective
+is continuous on $K$ times one compact, calibration-independent set.
+
+Let $A_0$ minimize the objective at $a_0$. Substitution of $A_0$
+at $a_s$ gives the upper limit inequality for the values. For the
+lower limit inequality, take convergent subsequences of minimizers
+in the fixed compact domain and use joint continuity. The same
+argument proves optimality of every such limit. Uniform convergence
+of the state probabilities follows from the finite polynomial
+recursion and uniform convergence of the cells.
+
+The last assertion is Theorem~\ref{thm:resolution-main} applied to
+the exact equality in Theorem~\ref{thm:v33-moment-program}. It uses
+the complete acquired collision profile, rather than only its
+one-dimensional floor.
+\end{proof}
+
+At an additive collision, equal exponent sums in the evaluation of
+$(k^a)^\alpha$ are simply collected. Formula
+\eqref{eq:v33-formal-recursion} is used before this quotient and
+never divides by an exponent gap. Thus the changing dimension of the
+posterior test space does not require a changing space of controller
+coefficients. The continuity conclusion is at fixed $M$; the displayed
+classification is the separate statement uniform in $M$ and $a$.
+Neither conclusion specifies a sharp leading constant for arbitrary
+$M$, and neither is inferred from the precision chosen for a
+certificate.

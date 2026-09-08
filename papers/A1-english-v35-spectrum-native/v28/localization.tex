@@ -1,0 +1,153 @@
+\section{Localization on independently acquired blocks}
+\label{sec:v28-localization}
+The common-event arguments above impose a regularity event on every
+edge. For a sequence of graphs, its mass can decrease exponentially.
+We instead require enough regular coordinates at one boundary which
+every acquisition order must cross. The regular edges may differ from
+one realized tape to another. The estimate is made before conditioning
+on the visited set.
+
+\subsection{A finite family of witnesses}
+Retain the independent edge experiments and complete-tape construction
+of Section~\ref{sec:v25-graph}. Fix a boundary $j$, $1\le j<v$, and
+write $\mathscr S_j=\{S\subset V:|S|=j\}$. For each edge use the
+first-block event $A_e=\mathcal A_e$ of
+\eqref{eq:v26-first-block-mass}. More generally, the argument applies
+to any first-block events with the following two properties. First,
+for every positive acquired prefix of length $\ell$, its potential
+scaled coordinate $X_{e,\ell}$ satisfies
+\begin{equation}\label{eq:v28-edge-density}
+ \Prob\{A_e,X_{e,\ell}\in U\}
+       \le \frac{h_{e,\ell}}{D_{e,\ell}}
+                          \operatorname{vol}_{\ell}(U).
+\end{equation}
+Second, when $e$ is active, that potential coordinate is its actual
+posterior coordinate on $A_e$, irrespective of the reports on other
+edges. The first-block construction has both properties by
+Lemma~\ref{lem:v26-first-block}. In particular, $h_{e,\ell}$ can be
+chosen independently of exponent separation. Only positive
+$D_{e,\ell}$ are used. No event is imposed on an unselected edge.
+
+For $S\in\mathscr S_j$, let $\mathscr W_S$ be a nonempty finite
+family of witnesses. A witness $w$ consists of a nonempty set
+$F_w\subseteq\delta(S)$ and, for each $e\in F_w$, a positive
+prefix length $\ell_{w,e}$ with $D_{e,\ell_{w,e}}>0$. Put
+\[
+ k_w=\sum_{e\in F_w}\ell_{w,e},\qquad
+ d_w=\prod_{e\in F_w}D_{e,\ell_{w,e}},\qquad
+ h_w=\prod_{e\in F_w}h_{e,\ell_{w,e}}.
+\]
+Let $q_S(h)$ be the finite query-probability vector, equipped with
+its actual query-weighted Euclidean norm. Suppose that an affine map
+$T_w$, defined on all prediction vectors, recovers
+$(X_{e,\ell_{w,e}})_{e\in F_w}$ from $q_S(h)$ on
+$\bigcap_{e\in F_w}A_e$ whenever $S$ is visited. Denote a bound on
+the norm of its linear part by $L_w$. The tensor-probe recovery in
+Section~\ref{sec:v25-graph} supplies such maps for the original
+query menu. The next section supplies maps with controlled norms for
+an enlarged menu containing those same probes.
+
+The decoder receives its $M$-valued label and the visited-set query
+descriptor. To record explicitly the cost of additional finite side
+information, allow at most $J_S$ further descriptor values at $S$.
+This is one side-information value determined at the boundary, before
+the independent query is selected; it may depend on the history.
+The original convention is
+$J_S=1$. Independent coding seeds are not counted in $J_S$, since they
+will be fixed before the tape is sampled. An unrecorded continuous
+scheduler state is not among the admitted inputs.
+
+Define the event
+\begin{equation}\label{eq:v28-robust-event}
+ E_j=\bigcap_{S\in\mathscr S_j}
+          \ \bigcup_{w\in\mathscr W_S}\ \bigcap_{e\in F_w}A_e,
+       \qquad \rho_j=\Prob(E_j).
+\end{equation}
+Thus every set at level $j$ has a witness consisting of regular edges.
+The same tape need not supply the same witness at different sets.
+Both $E_j$ and $\rho_j$ are defined without a scheduler or a coding
+seed. Let $\omega_k$ denote the volume of the unit ball in $\R^k$.
+
+\begin{theorem}[Localized acquisition bound]\label{thm:v28-localized}
+Under the preceding hypotheses put
+\begin{equation}\label{eq:v28-witness-sum}
+ Z_j(t)=M\sum_{S\in\mathscr S_j}J_S
+              \sum_{w\in\mathscr W_S}
+                   \frac{h_w\omega_{k_w}L_w^{k_w}}{d_w}
+                                     t^{k_w/2}.
+\end{equation}
+Every admitted controller, including one whose scheduler reads its
+entire revealed past, satisfies
+\begin{equation}\label{eq:v28-localized-risk}
+ \max_i\E\mathcal L_i\ \ge\ \E\mathcal L_j
+       \ \ge\ \int_0^\infty[\rho_j-Z_j(t)]_+\,dt.
+\end{equation}
+The assertion permits arbitrary measurable scheduling regions and
+independent randomized encoders and decoders. The bound holds before
+the infimum over a common controller is taken. All losses and event
+masses refer to the unconditional acquisition law.
+\end{theorem}
+\begin{proof}
+For one witness, independence of the complete edge tapes and
+\eqref{eq:v28-edge-density} give
+\begin{equation}\label{eq:v28-local-product}
+ \Prob\{\bigcap_{e\in F_w}A_e,
+                   (X_{e,\ell_{w,e}})_{e\in F_w}\in U\}
+          \le (h_w/d_w)\operatorname{vol}_{k_w}(U).
+\end{equation}
+Indeed the selected subprobability measures have a product density
+bounded by $h_w/d_w$. Every other edge, every completion command and
+every completion report is integrated over its full law and contributes
+one. This proves the assertion for Borel sets by domination of the
+product measure, not by independence conditional on a visited set.
+
+Fix all independent seeds. At $S$ the decoder has at most $MJ_S$
+query-prediction vectors. Loss at most $t$ puts the true vector within
+distance $\sqrt t$ of one of them. On the selected first-block events,
+applying $T_w$ therefore puts the selected coordinates in at most
+$MJ_S$ balls of radius $L_w\sqrt t$. Equation
+\eqref{eq:v28-local-product} bounds the mass of these balls by
+$MJ_Sh_w\omega_{k_w}L_w^{k_w}t^{k_w/2}/d_w$. Intersecting afterwards
+with the event that $S$ is the visited set can only decrease this mass.
+The side descriptor is dealt with by counting all its possible centres;
+no independence of that descriptor is required.
+
+On $E_j$, the actual visited set has at least one witness whose edges
+all satisfy their first-block events. Taking a union over sets and
+witnesses consequently gives
+\[
+        \Prob\{E_j,\mathcal L_j\le t\}\le Z_j(t).
+\]
+Thus $\Prob\{\mathcal L_j>t\}\ge[\rho_j-Z_j(t)]_+$. The bound
+is uniform in the fixed seeds. Average them and apply Tonelli's theorem
+to the nonnegative tail integral. This proves
+\eqref{eq:v28-localized-risk}. A finite query menu permits all private
+decoder seeds, for all labels and finite descriptors, to be fixed in
+advance. Their law is independent of the tapes. The first inequality
+concerns one fixed boundary and involves no exchange of expectation
+and maximization.
+\end{proof}
+
+\begin{corollary}[Equal-dimensional witnesses]\label{cor:v28-power-tail}
+If every witness has dimension $k>0$ and $Z_j(t)=AMt^{k/2}$, where
+$A>0$, then
+\begin{equation}\label{eq:v28-power-tail}
+       \E\mathcal L_j\ge
+       \frac{k}{k+2}\rho_j^{1+2/k}(AM)^{-2/k}.
+\end{equation}
+\end{corollary}
+\begin{proof}
+If $\rho_j=0$ the statement is immediate. Otherwise the positive
+integrand in \eqref{eq:v28-localized-risk} is supported on
+$[0,(\rho_j/(AM))^{2/k}]$. Its elementary integral is the right
+side of \eqref{eq:v28-power-tail}.
+\end{proof}
+
+Theorem~\ref{thm:v28-localized} applies to the original tensor query
+without changing that experiment. In that application its recovery
+norms remain explicit; they are not asserted to be uniform in graph
+size. The new feature is the event \eqref{eq:v28-robust-event}, not a
+claim that finite-dimensional norm equivalence has size-independent
+constants. Similarly, supplying an order prefix can give
+$J_S\le j!$; its logarithmic cost then remains in the bound. Removing
+this factor would silently change the decoder model.

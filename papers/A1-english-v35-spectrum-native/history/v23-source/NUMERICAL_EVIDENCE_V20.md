@@ -1,0 +1,9 @@
+# Execution evidence for v20
+
+The source manifest anchors the exact current and archived text. `build.py --prepare-only` verifies the pinned v19 manifest, all of its archived source digests, every unchanged active inherited source, and equality of formal blocks in the two prose-edited inherited files. It also checks the original v17 inverse proof independently. All 109 inherited proof blocks, 112 formal statement blocks, and 330 labels remain in the compiled source; five complete statement/proof pairs are added.
+
+`tests/verify_v20.py` uses exact rational and symbolic calculations for the new quotient kernel criterion. The initial local run passed 987 explicit checks, including 37 exact positive block families. Counts measure check calls, not the number of independent theorems. Finite feasibility examples do not replace the continuous full-support proof, the local positive chart, polynomial nonvanishing on an open set, or the unconditional mass argument.
+
+`validate.py` runs ten suites (v10–v15, v17–v20), records script and receipt hashes, and actually inserts a mutation into the preserved inverse proof. Standalone preparation must reject that mutation. The original bytes are restored before source verification and the complete three-pass PDF build. Undefined references, multiply defined labels, and overfull boxes fail the build.
+
+The authoritative execution outcome is the generated `validation/EXECUTION_REPORT.json`. It distinguishes local and workflow executions through the environment fields. `BUILD_REPORT.json` and `PRESERVATION_REPORT.json` are author-side build and identity checks. No theorem prover, independent referee assessment, or numerical optimization over all finite-state encoders was run. The report's earlier independent 2,445 checks are not included in our rerun totals.

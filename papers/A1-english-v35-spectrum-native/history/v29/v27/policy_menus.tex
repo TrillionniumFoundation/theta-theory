@@ -1,0 +1,138 @@
+\section{Finite menus of acquisition rules}
+\label{sec:v27-menus}
+A finite collection of reusable acquisition rules is more flexible than one rule chosen for every resolution. We now identify its cost, allowing the members of the collection to be randomized and history dependent.
+
+\begin{definition}[An acquisition menu]\label{def:v27-menu}
+A menu $\mathcal M=(\sigma_1,\ldots,\sigma_q)$, $1\le q\le K$, consists of resolution-blind rules in the sense of Definition~\ref{def:v27-blind}. The menu is fixed across all resolutions under consideration. After the calibration, resolution and predictive budget have been specified, but before any tape is observed, an index is selected. Its distribution may depend on those specified quantities. Conditional on the index, the selected rule and the law of its acquisition seed are fixed. The selector is independent of the tapes and cannot subsequently change the index. Predictive encoders may be redesigned at every resolution.
+\end{definition}
+
+We first supply the index to the encoder and decoder as a read-only finite configuration. Charging it instead requires at most $\lceil\log_2K\rceil$ additional persistent bits. This convention does not supply continuous history information. In particular, an accuracy-dependent conditional seed law is not hidden inside a purportedly fixed menu member.
+
+Let $B^{\mathrm{o,av}}_{\mathcal M}(\varepsilon,a)$ be the least predictive bit budget in the oracle model of Section~\ref{sec:v27-policy}, optimizing both the pre-tape selector and the predictive encoder. For a finite set $\Pi$ of deterministic orders put
+\[
+             W_\Pi(\varepsilon,a)=\min_{\pi\in\Pi}W_\pi(\varepsilon,a).
+\]
+
+\begin{theorem}[Deterministic completeness of finite menus]
+\label{thm:v27-menu}
+For each fixed $K$ there is a uniform constant $C_K$ with the following properties. Every menu of at most $K$ resolution-blind rules admits a set $\Pi$ of at most $K$ deterministic orders, independent of the resolution and predictive codebooks, such that
+\begin{equation}\label{eq:v27-menu-lower}
+       B^{\mathrm{o,av}}_{\mathcal M}(\varepsilon,a)
+                   \ge W_\Pi(\varepsilon,a)-C_K
+                       \qquad(0<\varepsilon\le1).
+\end{equation}
+Conversely, every such deterministic set is a menu in the original charged model, with one causal predictive filter at each chosen configuration and budget, and
+\begin{equation}\label{eq:v27-menu-upper}
+       B^{*,\mathrm{max}}_\Pi(\varepsilon,a)
+                   \le W_\Pi(\varepsilon,a)+C_K.
+\end{equation}
+Thus randomization in the pre-tape selector and history dependence within menu members do not improve the entire bit curve beyond a bounded additive term relative to some equally large deterministic menu.
+\end{theorem}
+\begin{proof}
+Apply Theorem~\ref{thm:v27-curve} separately to the fixed acquisition laws, obtaining orders $\pi_1,\ldots,\pi_q$. These selections are made before a budget or a selector distribution is specified. At a given budget let $\rho_i$ be the probability of selecting member $i$, and let $r_{ij}$ be its conditional expected boundary loss, including its predictive randomness. Since the selector precedes the tapes, each conditional experiment is exactly the one governed by the fixed rule $\sigma_i$. For every $i$,
+\[
+       \max_j\sum_l\rho_l r_{lj}\ge\rho_i\max_jr_{ij}.
+\]
+Choose $i$ with $\rho_i\ge1/q\ge1/K$. Theorem~\ref{thm:v27-curve}, which holds for every predictive encoder, gives
+\[
+       \max_j\E\mathcal L_j
+          \ge(c_*/K)Q_{\pi_i}(M,a)
+          \ge(c_*/K)\min_{1\le l\le q}Q_{\pi_l}(M,a).
+\]
+Although the index $i$ selected in this estimate may vary with the budget, its order belongs to the same fixed set $\Pi$. Inverting the last inequality uses the exact capped inversion in the proof of Corollary~\ref{cor:v25-graph-bits}. Multiplying the target error by a fixed constant changes each cut bit sum by at most that constant's absolute base-two logarithm times $\sum_ep_e/2$. Integer rounding changes it by at most one more bit. This proves \eqref{eq:v27-menu-lower}, also for an infimum not attained.
+
+For the upper bound, choose before acquisition an order minimizing $W_\pi(\varepsilon,a)$ among $\Pi$, and use its deterministic causal construction from Proposition~\ref{prop:v25-fixed-order}. The fixed-order bit bounds are simultaneous over the finite family of orders. They give \eqref{eq:v27-menu-upper}. If the selected index must occupy persistent storage, include its at most $\lceil\log_2K\rceil$ bits in the constant. No predictor learns an unrecorded continuous scheduler state.
+\end{proof}
+
+\subsection{Uniform-resolution excess}
+Let $\mathcal E\subset(0,1]$ be nonempty. Define the deterministic comparison functional
+\begin{equation}\label{eq:v27-menu-functional}
+ r_K(\mathcal E,a)=
+ \min_{\substack{\Pi\subseteq\mathfrak S_V\\1\le|\Pi|\le K}}
+ \sup_{\varepsilon\in\mathcal E}
+       \{W_\Pi(\varepsilon,a)-W_G(\varepsilon,a)\}.
+\end{equation}
+Here $\mathfrak S_V$ is the finite set of vertex permutations; the minimum allows fewer than $K$ orders. The expression is nonnegative, and may be infinite when the accuracy set approaches zero. Let
+\[
+ \mathfrak R_K^{\mathrm{o,av}}(\mathcal E,a)
+ =\inf_{|\mathcal M|\le K}\sup_{\varepsilon\in\mathcal E}
+ \bigl[B^{\mathrm{o,av}}_{\mathcal M}(\varepsilon,a)
+                   -B_G^{*,\mathrm{av}}(\varepsilon,a)\bigr]_+.
+\]
+The menu in this infimum is fixed across $\mathcal E$, although its predictive encoders are not. Define $\mathfrak R_K^{\mathrm{ch,max}}$ in the same way using admissible charged menus, the maximum-tape criterion and $B_G^{*,\mathrm{max}}$.
+
+\begin{corollary}[The optimal excess of a reusable menu]
+\label{cor:v27-menu-regret}
+For either of these two operational criteria,
+\begin{equation}\label{eq:v27-menu-regret}
+                  \mathfrak R_K(\mathcal E,a)
+                            =r_K(\mathcal E,a)+O_K(1).
+\end{equation}
+The remainder is uniform in calibration and in the nonempty accuracy set. When the right side is infinite, the assertion means that the operational quantity is infinite as well. The upper comparison is attained, up to the stated constant, by a deterministic menu in the original charged model.
+\end{corollary}
+\begin{proof}
+For every oracle menu, Theorem~\ref{thm:v27-menu} supplies one fixed order set $\Pi$ and a simultaneous lower bound $B_{\mathcal M}\ge W_\Pi-C_K$. The graph bit theorem gives $B_G=W_G+O(1)$. Taking the positive part, the supremum over $\mathcal E$, and then the infimum over menus proves the lower comparison with \eqref{eq:v27-menu-functional}. The same lower comparison applies to charged menus: their average loss is bounded by their maximum-tape loss and their admitted information is no larger than in the oracle model. Conversely, the finite set of deterministic order sets has a minimizer in \eqref{eq:v27-menu-functional}. Its causal construction gives the upper comparison for the charged maximum criterion, and hence for the oracle average criterion. All additive constants are independent of $\mathcal E$.
+\end{proof}
+
+\subsection{Analytic collision paths}
+Suppose that $a(\theta)$ is an analytic calibration path, $\theta\downarrow0$, and that the finitely many determinant profiles have their contact-order expressions
+\[
+       V_{e,\ell}(a(\theta))\asymp\theta^{\eta_{e,\ell}}.
+\]
+Set $\eta_{e,0}=0$; an identically zero determinant term has $\eta_{e,\ell}=+\infty$ and is omitted. The scalar collision analysis supplies these exponents by minimizing the sums of the pairwise contact orders over the available subsets. The comparison constants are simultaneous over all the finitely many edge indices.
+
+For $s>0$ put
+\[
+ w_e(s)=\max_{0\le\ell\le p_e}(\ell s-\eta_{e,\ell}),\quad
+ \mathsf W_\pi(s)=\max_j\sum_{e\in\delta(S_j^\pi)}w_e(s),\quad
+ \mathsf W(s)=\min_\pi\mathsf W_\pi(s).
+\]
+For a nonempty compact interval $I\subset(0,\infty)$ define
+\begin{equation}\label{eq:v27-leading-menu}
+ \mathfrak r_K(I)=
+ \min_{\substack{\Pi\subseteq\mathfrak S_V\\1\le|\Pi|\le K}}
+ \max_{s\in I}
+       \left\{\min_{\pi\in\Pi}\mathsf W_\pi(s)-\mathsf W(s)\right\}.
+\end{equation}
+
+\begin{corollary}[Contact-order law for reusable policies]
+\label{cor:v27-contact-menu}
+Let $U=\log_2(1/\theta)$ and
+$\mathcal E_\theta(I)=\{\theta^{2s}:s\in I\}$. For either operational criterion of Corollary~\ref{cor:v27-menu-regret},
+\begin{equation}\label{eq:v27-contact-menu}
+ \mathfrak R_K(\mathcal E_\theta(I),a(\theta))
+                          =U\mathfrak r_K(I)+O_K(1).
+\end{equation}
+The menu may be selected anew as $\theta$ varies, but is fixed across all resolutions in $\mathcal E_\theta(I)$ at that calibration. Formula \eqref{eq:v27-leading-menu} is a finite exact characterization of the leading coefficient.
+\end{corollary}
+\begin{proof}
+The determinant comparisons imply, uniformly for $s\in I$,
+\[
+ b_e(\theta^{2s},a(\theta))=Uw_e(s)+O(1).
+\]
+Finite sums, maxima and minima preserve a uniform bounded remainder. Therefore $W_\pi=U\mathsf W_\pi+O(1)$ simultaneously for every order, and $W_G=U\mathsf W+O(1)$. The same is true after the minimum over an order set, the maximum over $I$ and the minimum over the finite family of sets of size at most $K$. Substitute in \eqref{eq:v27-menu-regret}.
+
+Each $w_e$ is a finite maximum of affine functions. All subsequent functions are finite continuous piecewise affine envelopes. One can evaluate \eqref{eq:v27-leading-menu} by refining their affine-intersection arrangement, checking its endpoints for each candidate menu, and enumerating the finite menus. This is not a polynomial-time assertion and does not identify exact finite-$\theta$ switching thresholds.
+\end{proof}
+
+\begin{corollary}[Two configurations for the three-edge experiment]
+\label{cor:v27-two-configurations}
+In the actual $24$-trial experiment of Corollary~\ref{cor:v25-star}, one resolution-blind acquisition rule has optimal uniform-resolution excess
+\[
+ \mathfrak R_1(\mathcal E_\theta([1/2,2]),\theta)
+                       =\log_2(1/\theta)+O(1),
+\]
+whereas restricting the resolution set to the two endpoints gives
+$\tfrac12\log_2(1/\theta)+O(1)$. These assertions allow randomized, full-history acquisition rules under Definition~\ref{def:v27-blind}, not only fixed orders. A menu of two deterministic orders has bounded excess on every fixed compact interval of positive resolution exponents. Its selection requires at most one binary configuration bit.
+\end{corollary}
+\begin{proof}
+The edge functions are $w_1=7s$, $w_2=\max(6s,9s-3)$ and $w_3=s$. A star order divides the leaves into those before and those after the centre. Isolating edge $1$ has cost
+\[
+ P_1(s)=\begin{cases}7s,&s\le1,\\10s-3,&s\ge1,\end{cases}
+\]
+and isolating edge $2$ has cost
+\[
+ P_2(s)=\begin{cases}8s,&s\le3,\\9s-3,&s\ge3.\end{cases}
+\]
+All other partition types are pointwise no better than one of these. Hence $\mathsf W=\min(P_1,P_2)$. On $[1/2,2]$, the maximum of $P_1-\mathsf W$ is $1$, attained at $2$, and that of $P_2-\mathsf W$ is $1$, attained at $1$. On the two endpoints these maxima are $1$ and $1/2$, respectively. The other partition types cannot improve either minimum. This gives $\mathfrak r_1([1/2,2])=1$ and its endpoint counterpart $1/2$. The set containing these two orders has zero leading excess for every $s>0$, so $\mathfrak r_2(I)=0$ on every indicated interval. Corollary~\ref{cor:v27-contact-menu} proves the assertions, including the lower bounds against the larger oracle class. The upper bounds use the original charged deterministic filters. Only the acquisition rule or the menu is reused; no simultaneous nested codebook across resolutions is claimed.
+\end{proof}
