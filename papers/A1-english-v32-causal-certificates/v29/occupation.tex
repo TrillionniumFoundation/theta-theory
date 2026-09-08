@@ -1,0 +1,200 @@
+\section{Occupation measures and local prediction bounds}
+\label{sec:v29-occupation}
+A separator records that a path must visit a costly state. It does not
+record the probability with which the other states are visited, and it
+permits a different separating set at each loss threshold. We retain the
+occupation measure of a single path law throughout the integration. This
+gives a convex variational bound adapted to the maximum of the expected
+checkpoint losses, rather than to the expectation of their maximum.
+
+\subsection{The finite path experiment}
+Let $\mathscr D$ be a finite directed acyclic graph with source $o$, sink
+$d$, and internal vertex levels $\mathscr V_1,\ldots,\mathscr V_J$.
+Every source--sink path visits exactly one vertex of each level, in that
+order. Vertices and arcs on no such path are discarded. Put
+$\mathscr V=\bigcup_{j=1}^J\mathscr V_j$ and let $j(w)$ denote the level
+of $w$. A random path $P$ is selected on a probability space carrying an
+event $A$ of probability $\beta>0$. At level $j$ there is a nonnegative
+loss $L_j\le1$. For the graph experiment above, $J=v-1$, $w$ is a visited
+set, and $L_j$ is the query-averaged squared-prediction excess. Predictions
+may be clipped to $[0,1]$ without increasing any of these losses.
+
+For each $w\in\mathscr V$ suppose that a nondecreasing right-continuous
+function $c_w:[0,1]\to[0,1]$ satisfies
+\begin{equation}\label{eq:v29-local}
+ \Pr\{A,\ w\in P,\ L_{j(w)}\le t\}\le\beta c_w(t)
+                         \qquad(0\le t\le1).
+\end{equation}
+No distribution conditional on the selected vertex is prescribed. In
+particular, \eqref{eq:v29-local} is not a conditional independence
+hypothesis. The node capacities in
+\upref{equation}{eq:v26-node-capacity} give precisely these inequalities.
+
+Write $\mathcal F(c)$ for the polytope of internal vertex occupations
+of unit nonnegative $o$--$d$ flows, with the additional constraints
+\begin{equation}\label{eq:v29-terminal-cap}
+                         0\le x_w\le c_w(1).
+\end{equation}
+Thus $x_w$ is the incoming, equivalently outgoing, flow at $w$;
+conservation is imposed at every internal vertex. The extra constraints
+use the bounded range of the loss and are part of the variational
+problem. Define
+\begin{equation}\label{eq:v29-phi}
+ \phi_w(x)=\int_0^1[x-c_w(t)]_+\,dt\quad(0\le x\le1),\qquad
+ \Gamma(c)=\min_{x\in\mathcal F(c)}
+             \max_{1\le j\le J}\sum_{w\in\mathscr V_j}\phi_w(x_w).
+\end{equation}
+Every $\phi_w$ is nonnegative, nondecreasing, convex, continuous, and
+$1$-Lipschitz. If a path experiment satisfying
+\eqref{eq:v29-local} exists, $\mathcal F(c)$ is nonempty. Since the
+network is finite, it is compact and the minimum in
+\eqref{eq:v29-phi} is attained. This is a finite convex optimization
+problem, not a minimization over separately chosen checkpoint encoders.
+
+\begin{theorem}[Occupation-measure converse]\label{thm:v29-occupation}
+Every path experiment satisfying \eqref{eq:v29-local} obeys
+\begin{equation}\label{eq:v29-occupation-risk}
+             \max_{1\le j\le J}\E L_j\ge\beta\Gamma(c).
+\end{equation}
+More precisely, its single conditional occupation measure
+$x_w=\Pr(w\in P\mid A)$ belongs to $\mathcal F(c)$ and satisfies,
+simultaneously at all levels,
+\begin{equation}\label{eq:v29-level-risk}
+ \E[\one_A L_j]\ge
+                  \beta\sum_{w\in\mathscr V_j}\phi_w(x_w).
+\end{equation}
+\end{theorem}
+\begin{proof}
+The conditional expected arc incidences of $P$ form a unit flow.
+At $t=1$, the loss bound and \eqref{eq:v29-local} give
+$x_w\le c_w(1)$, so its occupations belong to $\mathcal F(c)$.
+Put
+\[
+ G_w(t)=\beta^{-1}\Pr\{A,\ w\in P,\ L_{j(w)}\le t\}.
+\]
+Both $G_w(t)\le x_w$ and $G_w(t)\le c_w(t)$ hold. The layer-cake
+identity, applied to the subprobability of visiting $w$ on $A$, yields
+\[
+ \begin{split}
+ \E[\one_A\one_{\{w\in P\}}L_{j(w)}]
+   &=\beta\int_0^1(x_w-G_w(t))\,dt\\
+   &\ge\beta\int_0^1[x_w-c_w(t)]_+\,dt.
+ \end{split}
+\]
+At each level exactly one vertex is visited. Summing at that level
+proves \eqref{eq:v29-level-risk}; taking the maximum and then the
+minimum over the larger set $\mathcal F(c)$ proves
+\eqref{eq:v29-occupation-risk}. The same $x$ was used at every
+threshold and every level. No maximum has been moved through an
+expectation.
+\end{proof}
+
+\begin{proposition}[Comparison with the separator integral]
+\label{prop:v29-separator-dominance}
+Let
+\[
+ H(t)=\min_{C\in\operatorname{Sep}(\mathscr D)}
+                                      \sum_{w\in C}c_w(t).
+\]
+Then
+\begin{equation}\label{eq:v29-separator-dominance}
+                 \Gamma(c)\ge\frac1J\int_0^1[1-H(t)]_+\,dt.
+\end{equation}
+If the capacities are extended monotonically to $[0,\infty)$,
+$H(t)\ge1$ for $t\ge1$ and the upper integration limit may be
+replaced by infinity.
+\end{proposition}
+\begin{proof}
+A nonnegative flow in a finite acyclic graph is a convex combination
+of path flows: start with a positive source arc, follow positive arcs
+to the sink by conservation, subtract the smallest arc value on this
+path, and repeat. At least one positive arc is removed on each step.
+Consequently every $x\in\mathcal F(c)$ satisfies
+$\sum_{w\in C}x_w\ge1$ for every separator $C$; the inequality
+allows a path to meet $C$ more than once. Hence
+\[
+ \sum_{w\in\mathscr V}[x_w-c_w(t)]_+
+ \ge\left[1-\min_C\sum_{w\in C}c_w(t)\right]_+.
+\]
+Integrate, divide by $J$, and use the inequality between the maximum
+and the average of the $J$ level sums. Taking the minimum over $x$
+gives \eqref{eq:v29-separator-dominance}. At $t=1$, feasibility and
+\eqref{eq:v29-terminal-cap} imply $\sum_{w\in C}c_w(1)\ge1$ for
+every separator. Monotonicity proves the final assertion.
+\end{proof}
+
+\subsection{Power capacities and exactness of the relaxation}
+For one positive coordinate allocation of total dimension $k$, write
+$c(t)=\min\{1,a t^{k/2}\}$, where $a>0$ includes the label count,
+density, recovery norm and determinant product. For every
+$0\le x\le c(1)$, direct integration gives
+\begin{equation}\label{eq:v29-power-cost}
+ \phi(x)=\frac{k}{k+2}\,a^{-2/k}x^{1+2/k}.
+\end{equation}
+Indeed, the integrand is positive exactly for
+$0\le t<(x/a)^{2/k}\le1$. Its integral is
+$x(x/a)^{2/k}-a(x/a)^{1+2/k}/(1+k/2)$, which is
+\eqref{eq:v29-power-cost}. For a minimum of several positive-allocation
+capacities, the integrand is the maximum of their positive integrands;
+it is not in general permissible to exchange that maximum with the
+integral. Definition~\eqref{eq:v29-phi} retains the exact envelope.
+All zero determinant terms remain omitted, as in the preceding
+collision-uniform converse.
+
+For a chain with one internal vertex at each of $J$ levels and identical
+power capacities, feasibility forces every occupation to be one. If
+$a\ge1$, the occupation bound is
+\[
+              \beta\frac{k}{k+2}a^{-2/k},
+\]
+whereas the separator integral divided by $J$ is exactly $1/J$ times
+this number. This family exhibits an arbitrarily large loss caused
+solely by the conversion from a maximum loss to a maximum of expected
+losses. It is a statement about the path relaxation; it is not a
+size-uniform adaptivity theorem for the original graph experiments.
+
+The variational expression also identifies exactly what can follow
+from the local inequalities alone.
+
+\begin{theorem}[Sharp consequence of local path data]
+\label{thm:v29-relaxation-exact}
+Fix $\mathscr D$, $\beta\in(0,1]$ and the functions $c_w$. Suppose
+$\mathcal F(c)\ne\varnothing$. Among all random-path loss models with
+$\Pr(A)=\beta$, $0\le L_j\le1$, and
+\eqref{eq:v29-local}, the smallest possible value of
+$\max_j\E L_j$ is exactly $\beta\Gamma(c)$.
+\end{theorem}
+\begin{proof}
+The lower bound is Theorem~\ref{thm:v29-occupation}. For the opposite
+direction choose a minimizing occupation $x$ and decompose its flow
+into a distribution on paths. Sample that path independently of an
+event $A$ of probability $\beta$. At a vertex $w$ with $x_w>0$,
+independently sample $U_w$ uniformly on $[0,x_w]$ and set
+\[
+ T_w=\inf\{t\in[0,1]:c_w(t)\ge U_w\}.
+\]
+The set is nonempty almost surely by $x_w\le c_w(1)$.
+Monotonicity and right continuity imply
+\[
+ \Pr(T_w\le t)=\min\{1,c_w(t)/x_w\}.
+\]
+Put $L_j=T_w$ at the visited vertex of level $j$ on $A$, and put
+$L_j=0$ outside $A$. Vertices with $x_w=0$ are never visited and
+need no auxiliary variable. Then
+\[
+ \Pr\{A,w\in P,L_{j(w)}\le t\}
+                       =\beta\min\{x_w,c_w(t)\},
+\]
+and the layer-cake computation in the preceding proof is an equality
+at every level. Thus $\max_j\E L_j=\beta\Gamma(c)$.
+\end{proof}
+
+The class in Theorem~\ref{thm:v29-relaxation-exact} consists of path
+laws and losses satisfying specified local distribution bounds. It does
+not require those losses to arise from a common finite-label decoder,
+a Bayes experiment or a realizable posterior map. Accordingly, this
+exactness statement is not an assertion that the statistical risk in
+\upref{equation}{eq:v25-risk-definitions} equals $\beta\Gamma(c)$.
+It shows that a stronger consequence requires additional information
+not contained in \eqref{eq:v29-local}. The acquisition-time information
+constraint supplies such information in the next section.

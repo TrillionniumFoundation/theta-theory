@@ -1,0 +1,123 @@
+\documentclass[11pt]{amsart}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern,amsmath,amssymb,amsthm,mathtools,mathrsfs}
+\usepackage[margin=29mm]{geometry}
+\usepackage{microtype,booktabs}
+\usepackage[unicode,hidelinks]{hyperref}
+\setlength{\emergencystretch}{3em}
+\allowdisplaybreaks[2]
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}\newtheorem{remark}[theorem]{Remark}
+\newcommand{\R}{\mathbb R}\newcommand{\E}{\mathbb E}
+\newcommand{\Prob}{\mathbb P}\newcommand{\one}{\mathbf1}
+\newcommand{\upref}[2]{#1 in the retained manuscript (\nolinkurl{#2})}
+\title[Occupation measures and finite-memory prediction]{Occupation measures in finite-memory prediction}
+\author{Qian Qi}
+\date{September 8, 2026}
+\subjclass[2020]{62B05, 62C10, 90C25, 90C35}
+\keywords{attainable information, occupation measures, adaptive acquisition, finite-memory prediction, small-ball bounds, convex duality}
+\hypersetup{pdftitle={Occupation measures in finite-memory prediction: A1 v29 new proofs},pdfauthor={Qian Qi}}
+\begin{document}
+\begin{abstract}
+Local small-ball bounds for predictions along a finite acquisition path give a convex variational converse when the occupation law is retained at every loss threshold and checkpoint. We characterize the sharp consequence of those local random-path data. The requirement that the first acquisition precede all observations yields a stronger perspective-flow problem. Its dual provides certified lower values through capacitated minimum-cost flows. Both converses quantitatively dominate the visited-set separator integral without interchanging a maximum and an expectation. In a positive two-trial experiment the resulting all-budget coefficient is $1/8306688$; its gap from the sharp high-resolution average coefficient is less than $4.06$.
+\end{abstract}
+\maketitle
+
+\section{The revision and its mathematical setting}
+This document contains the new proof component of A1 v29. The repository entry point \texttt{main.tex} includes the complete retained scalar, collision, causal-memory, adaptive-graph, phase and policy-menu developments from A1 v26--v28, including the localized growing-graph results, and then incorporates the sections below. The companion manuscript remains a separate, unchanged source. This separately compiled component is not the complete two-volume manuscript.
+
+The controlling report is the independent A1 v26 assessment at commit \texttt{19fbf4fe0e74}. The integration base is the native localized v28 revision at \texttt{090f9875d71a}. The occupation-flow draft was recovered from earlier unpublished work and is integrated here without replacing that localized revision. References to retained source labels below identify dependencies in that manuscript, rather than inventing theorem numbers from an uncompiled volume. Appendix~\ref{app:v29-density} records the acquired-law calculation used in the explicit comparison.
+
+In the statistical application, a finite graph indexes independent positive experiments. At the first visited endpoint of an edge one acquires its first observation block; the other endpoint completes it. A vertex is an atomic input batch. Its commands are independent of the past and revealed only after the vertex is chosen. The persistent state at each boundary has at most $M$ labels. The query descriptor identifies the visited set and one member of a finite future-probe menu, but reveals no discarded continuous history. There is one queried checkpoint per physical run and every trial counts.
+
+For one common controller, write $\mathcal L_j$ for the squared-prediction excess at boundary $j$, averaged over the query menu. Independent coding coins are included in $\xi$ and the potential observation tapes in $\tau$. The average criterion is
+\[
+ \mathcal R^{\mathrm{av}}_{G,M}
+   =\inf_{\mathcal F}\max_{1\le j<|V|}
+                         \E_{\tau,\xi}\mathcal L_j.
+\]
+The maximum-tape criterion replaces $\E_\tau$ by $\sup_\tau$ after averaging $\xi$. Neither criterion chooses separate controllers at separate boundaries. Prediction clipping ensures $0\le\mathcal L_j\le1$. The quantitative local bounds hold after fixing independent seeds, before restricting to a selected visited set. This order of operations is the input to the new argument.
+
+\input{v29/occupation}
+\input{v29/initial_information}
+\input{v29/evaluated_refinement}
+
+\appendix
+\section{The acquired law in the evaluated experiment}
+\label{app:v29-density}
+For completeness we record the calculation from the retained v27 evaluated-model module. The prior is uniform on $[0,1]$, the cells are
+\[
+ k_0(t)=\frac12+\frac t4,\qquad k_1(t)=\frac12-\frac t4,
+\]
+and the acquisition command $(x,y)$ has density $4$ on $[1/4,3/4]^2$. The first-report likelihoods are $xk_0$, $yk_1$ and $1-xk_0-yk_1$. After an accepted report the command scalar cancels from Bayes' formula. The corresponding posterior means and unconditional masses are
+\[
+ (z_0,p_0)=(8/15,5/16),\qquad (z_1,p_1)=(4/9,3/16).
+\]
+On failure put
+\[
+ E(x,y)=1-\frac58x-\frac38y,
+ \qquad z=\frac12+\frac{y-x}{48E(x,y)},
+ \qquad u=48(z-1/2).
+\]
+The failure-weighted input density is $4E(x,y)$, not the unweighted command density. The inverse change of variables is
+\[
+ y=\frac{8u+(8-5u)x}{8+3u},\qquad
+ E=\frac{8(1-x)}{8+3u},\qquad
+ \frac{\partial y}{\partial u}=\frac{32(1-x)}{(8+3u)^2}.
+\]
+Thus the failure-weighted joint density in $(x,u)$ is $1024(1-x)^2/(8+3u)^3$. At fixed $u$ the admissible $x$ intervals are
+\[
+ \begin{cases}
+ [(2-29u/4)/(8-5u),\,3/4],&-8/7\le u\le0,\\
+ [1/4,\,(24-23u)/(4(8-5u))],&0\le u\le8/9.
+ \end{cases}
+\]
+Integrating in $x$ gives the unconditional subprobability density
+\begin{equation}\label{eq:v29-density}
+ f(z)=
+ \begin{cases}
+ 512\left(\dfrac{27}{(8-5u)^3}-\dfrac1{(8+3u)^3}\right),&-8/7\le u\le0,\\[6pt]
+ 512\left(\dfrac{27}{(8+3u)^3}-\dfrac1{(8-5u)^3}\right),&0\le u\le8/9,\\[6pt]
+ 0,&\text{otherwise},
+ \end{cases}
+ \qquad u=48(z-1/2).
+\end{equation}
+Its support is $[10/21,14/27]$, both endpoint values are zero, and its value at $u=0$ is $26$. On the negative interval its $u$ derivative is
+\[
+ 512\left(\frac{405}{(8-5u)^4}+\frac9{(8+3u)^4}\right)>0,
+\]
+whereas on the positive interval it is
+\[
+ -512\left(\frac{243}{(8+3u)^4}+\frac{15}{(8-5u)^4}\right)<0.
+\]
+The total failure mass is the integral of $4E$ on the command square, namely $1/2$. Consequently the full law is
+\[
+ \nu=\frac5{16}\delta_{8/15}+\frac3{16}\delta_{4/9}+f(z)\,dz.
+\]
+The four equiprobable corner queries have the vector $q(z)$ displayed in Section~\ref{sec:v29-evaluated}. Orthogonal projection of arbitrary prediction centres onto that affine line, and nearest-centre assignment, prove the exact reduction $\mathcal R^{\mathrm{av}}_{G,M}=D_M(\nu)/128$. Conversely, one transition computes $z$, stores the nearest-centre index and uses $q$ at decoding. The first vertex was chosen independently of the tape, so independent randomization cannot lower this scalar infimum.
+
+The sharp continuous-density quantization coefficient is classical \cite{GrafLuschgy2000}; its complete interval-partition proof, including finite atoms, is retained in v27. Briefly, for a fixed partition into intervals of lengths $l_i$, let $h_i$ and $H_i$ be the infimum and supremum of $f$. Intersecting $M$ Voronoi cells with $L$ partition intervals produces at most $M+L-1$ pieces. The error on an interval of length $d$ is at least $h_i d^3/12$. Convexity and H\"older's inequality give the lower bound
+\[
+ D_M(f\,dz)\ge
+       \frac{(\sum_i h_i^{1/3}l_i)^3}{12(M+L-1)^2}.
+\]
+For the upper bound, assign $m_i$ midpoint cells to interval $i$, with $m_i/M$ converging to $H_i^{1/3}l_i/\sum_r H_r^{1/3}l_r$. Their assigned error is at most $\sum_i H_i l_i^3/(12m_i^2)$. Let $M$ grow at fixed partition, then refine the partition; continuity of $f^{1/3}$ makes the bounds coincide. Zero-density intervals contribute nothing. Adding a centre for each of the two atoms uses only two labels and changes no leading coefficient. This yields \eqref{eq:v29-sharp-retained}.
+
+The rational enclosure in the accompanying diagnostic does not use numerical quadrature as a proof. On each of the two monotone intervals, take $8192$ subintervals in $u$, and use $dz=du/48$. At every rational endpoint the value of $f$ is rational. Bisection of integers bounds its cube root between consecutive multiples of $10^{-12}$. Lower and upper endpoint sums then enclose the integral. Cubing and dividing by $1536$ gives the bounds used in Section~\ref{sec:v29-evaluated}.
+
+\begin{thebibliography}{9}
+\bibitem{Rockafellar1964}
+R.~T.~Rockafellar,
+Minimax theorems and conjugate saddle-functions,
+\emph{Mathematica Scandinavica} \textbf{14} (1964), 151--173.
+\bibitem{GrafLuschgy2000}
+S.~Graf and H.~Luschgy,
+\emph{Foundations of Quantization for Probability Distributions},
+Lecture Notes in Mathematics \textbf{1730}, Springer-Verlag, Berlin, 2000.
+\end{thebibliography}
+\end{document}
