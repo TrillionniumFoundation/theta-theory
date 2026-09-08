@@ -1,0 +1,255 @@
+\section{Finite-state filtering after every report}\label{sec:streaming}
+Fix $N\ge2$ and abbreviate $d_n=d_A(n,N-n)$ and $D_*=D_A(N)>0$.
+The exact state from Theorem~\ref{thm:causal} will be denoted $s_n$.
+A clock $n$, calibration, prior moments and a precomputed finite program
+are read-only data. The charged resource is the persistent state between
+successive input symbols.
+
+The resource model and loss are defined in Section~\ref{sec:experiment}.
+
+\begin{lemma}[Uniform finite-horizon transition bounds]\label{lem:lipschitz}
+On the compact exact state sets there are constants $L_n<\infty$ such
+that the update $T_n(s,g,x)$ satisfies
+\[
+ \norm{T_n(s,g,x)-T_n(\widetilde s,g,x)}
+ \le L_n\norm{s-\widetilde s}
+\]
+for every admitted $g,x$ and $s,\widetilde s\in\cS_n$.
+Every fixed finite probe prediction vector is likewise Lipschitz in the
+state, with a finite constant independent of the history.
+\end{lemma}
+\begin{proof}
+In factor coordinates an update before changeover appends the new factor
+$f/\mu f$. The old factor coordinates are unchanged. All unnormalized
+report probabilities lie in $[\kappa,1]$; consequently the normalized
+factors lie pointwise in $[\kappa,1/\kappa]$. Their coordinates are bounded,
+since they are continuous images of a compact cube and finite alphabet.
+At changeover each needed moment is a ratio of polynomial expressions in
+these coordinates and the fixed prior moments, with denominator the
+integral of a product of normalized factors, bounded below by $\kappa^{n+1}$.
+The same lower bound holds on line segments between factor tuples,
+because each individual interpolated normalized factor is still at least
+$\kappa$. Finite differentiation and the mean value theorem give a
+uniform derivative bound there.
+
+In moment coordinates the update is \eqref{eq:sparse-update}. Its
+denominator is at least $\kappa$ at every state; on a line segment between
+two such moment vectors the corresponding posterior mixture has the same
+lower bound. Numerators, coefficients and moment coordinates range over
+compact sets. The quotient rule therefore gives a uniform bound. Probe
+predictions are linear in the relevant moment coordinates, or normalized
+polynomial expressions in the factor coordinates with the same positive
+denominator control. The argument gives their claimed Lipschitz constants.
+All constants use only finite algebra and the supplied moments; they may
+grow with $N$ or deteriorate with $\kappa$.
+\end{proof}
+
+\begin{theorem}[Finite-state streaming upper bound]\label{thm:stream-upper}
+For every $M\ge1$ there is a deterministic $M$-state filter, updated after
+every report, whose prediction regret at every checkpoint and every
+admitted command-report history is at most
+\begin{equation}\label{eq:stream-upper}
+ C_N M^{-2/D_*},
+\end{equation}
+where $C_N<\infty$ depends on the fixed experiment, prior, probe lists
+and total horizon, but not on $M$ or the input history. The representatives
+and read-only transition functions are supplied existentially from the exact
+model; this is not an effective synthesis theorem from finite-precision data.
+\end{theorem}
+\begin{proof}
+Enclose $\cS_n\subset\R^{d_n}$ in $[-B_n,B_n]^{d_n}$. For $d_n>0$
+partition each coordinate interval into
+$k_n=\lfloor M^{1/d_n}\rfloor$ intervals. In each nonempty cell choose
+one representative \emph{in} $\cS_n$. There are at most $k_n^{d_n}\le M$
+representatives, and assigning a state to its cell representative has
+error at most
+\[
+ \delta_n\le 2B_n\sqrt{d_n}/k_n
+ \le4B_n\sqrt{d_n}\,M^{-1/d_n}
+ \le C M^{-1/D_*}.
+\]
+Here $C$ is the maximum of the finite prefactors. Empty cells need no
+representative. For $d_n=0$ use the unique state. Deterministic boundary
+and tie conventions give Borel quantizers $Q_n$.
+
+The filter stores only the index of a representative $\widehat s_n$.
+Its transition is exactly
+\begin{equation}\label{eq:transducer}
+ \widehat s_{n+1}
+   =Q_{n+1}\bigl(T_n(\widehat s_n,g_{n+1},x_{n+1})\bigr).
+\end{equation}
+Since each representative is reachable and every report has positive
+probability, its exact image lies in $\cS_{n+1}$. Thus the quantizer is
+always applied inside its domain and no infeasible moment update is used.
+The finite representative choices and the functions in
+\eqref{eq:transducer} are read-only program data. They may be obtained by
+selecting points in nonempty cells of the compact state sets; no efficient global synthesis
+or computability of unsupplied real prior moments is asserted.
+
+Let $e_n=\norm{s_n-\widehat s_n}$. On the actual command-report stream,
+Lemma~\ref{lem:lipschitz} gives
+\[
+ e_0=0,\qquad e_{n+1}\le L_ne_n+C M^{-1/D_*}.
+\]
+Set $b_0=0$ and $b_{n+1}=L_nb_n+C$. Induction proves
+$e_n\le b_nM^{-1/D_*}$. This explicitly accumulates the errors from
+\emph{all} previous lossy updates. At a query use the probe predictions
+of $\widehat s_n$, which are actual probabilities. If the vector prediction
+map has Lipschitz constant $K_n$, \eqref{eq:brier} bounds regret by
+$(K_n^2/s_n^{\rm q})b_n^2 M^{-2/D_*}$. The maximum of these finitely
+many constants proves \eqref{eq:stream-upper}. No exact prefix was kept
+for the changeover: the factor-to-moment computation uses the representative
+factors already encoded by $i_n$.
+\end{proof}
+
+\begin{theorem}[Matching exponent in one fixed streaming experiment]\label{thm:stream-lower}
+Choose $n_*$ attaining $D_*=d_A(n_*,N-n_*)$. For the first $n_*$ trials
+supply independent uniform commands from $\cG$, independent of the
+parameter, cartridges and filtering coins. The realized command is read
+once by the filter. At $n_*$ reveal the independent probe query and execute
+its remaining trials. This is one fixed experiment, known before the
+filter is chosen. Its optimal unconditional regret over $M$-state filters
+satisfies
+\begin{equation}\label{eq:stream-match}
+ 0<c_NM^{-2/D_*}\le\overline{\mathcal R}_{M,N}^{\rm stream}
+                  \le C_NM^{-2/D_*}.
+\end{equation}
+The same power is sharp for the minimax streaming criterion taking the
+maximum conditional regret over checkpoints and input histories. Fresh
+private update and decoder randomization does not defeat the lower bound;
+a fresh public coding seed independent of the complete prefix may also be
+allowed. Thus for fixed $N$, the required persistent bits for this prediction
+task satisfy
+$B_*(\varepsilon)=\tfrac{D_*}{2}\log_2(1/\varepsilon)+O_N(1)$.
+\end{theorem}
+\begin{proof}
+Write $n=n_*$, $d=D_*$, and $s=s_n^{\rm q}$. Theorem~\ref{thm:rank}
+gives an interior command tuple $g_0$ where the probe map $p(g)$ on
+all-failure prefixes has rank $d$. Select $d$ independent probe coordinates,
+and let $E$ denote their coordinate projection, of operator norm one.
+Choose complementary command coordinates $w$ so that
+$g\mapsto(Ep(g),w(g))$ has an invertible derivative at $g_0$.
+Let $\Phi$ be its local inverse. There is a compact product
+$B_\rho^d\times W$ inside its domain, centered at the projected
+prediction point, such that $\Phi$ stays in the command interior and
+$|\det D\Phi|\ge j_0>0$. The complementary box $W$ has positive
+volume, with unit-volume convention in zero dimensions.
+
+If $k=Kn$ is the number of real command entries, their density is
+$(1-2\eta)^{-k}$. The joint density of commands and an all-failure
+prefix is this density times
+$Z(g)=\mu\prod_iF_{g_i}\ge\eta^n$. Change variables with $\Phi$ and
+integrate over $W$. The subprobability law of the projected predictions
+on this prefix dominates $\beta$ times uniform probability on
+$B_\rho^d$, with
+\[
+ \beta=\frac{\eta^n j_0|W|\,|B_\rho^d|}{(1-2\eta)^k}>0.
+\]
+In particular the lower bound retains the probability of the failure
+prefix. It does not assign an atom to an exact real command or assume
+a flat ball in the entire curved prediction image.
+
+Every streaming filter is in particular an $M$-message encoder at this
+checkpoint. Given any message, average decoder coins conditional on each
+query; squared loss can only decrease. This gives at most $M$ prediction
+vectors. Randomizing the encoder cannot beat the closest of these vectors
+at a fixed history. Projecting their centers by $E$ cannot increase squared
+distance. For a uniform point $X$ in a $d$-ball of radius $\rho$ and any
+$M$ centers, the union-of-balls estimate gives
+\[
+ \Pr\{\min_i\norm{X-z_i}\le r\}\le
+                    \min\{1,M(r/\rho)^d\}.
+\]
+Integrating its complementary tail yields
+\[
+ \E\min_i\norm{X-z_i}^2
+ \ge\int_0^{\rho^2 M^{-2/d}}
+          (1-Mt^{d/2}/\rho^d)\dd t
+ =\frac d{d+2}\rho^2 M^{-2/d}.
+\]
+Multiply by $\beta/s$ to obtain $c_N>0$. Fresh public randomness can be
+fixed and then averaged because it is independent of the prefix. Private
+online coins may equivalently be drawn on an independent tape for this
+proof; fixing them makes a deterministic transducer and the same bound
+holds uniformly. That proof device supplies no tape to the implemented
+filter. The prescribed exploration is independent of that tape, a condition
+that is essential to this particular argument. An old command-generation
+seed is not fresh coding randomness and remains charged.
+
+Theorem~\ref{thm:stream-upper} gives the upper bound in the same experiment.
+The minimax conditional criterion is at least its unconditional regret,
+while the universal upper filter works at all checkpoints. Finally put
+$M=2^B$ and solve the two inequalities. The Euclidean covering mechanism
+is classical \cite{GrafLuschgy}; the identified sparse dimension and the
+actual repeated-update construction are the experiment-specific inputs.
+\end{proof}
+
+\begin{theorem}[A separate finite-state control bound]\label{thm:control-bound}
+For the same finite detector and horizon, suppose stage rewards
+$r_n(g,x)\in[0,1]$ are continuous in $g$ for each report, and the objective
+is their expected sum. There is an $M$-state feedback controller whose
+loss relative to the full-history optimum is at most
+\begin{equation}\label{eq:control-bound}
+ C'_N M^{-1/D_*}.
+\end{equation}
+No matching lower power for arbitrary control tasks is asserted. An
+additional finite payoff automaton must be counted as task state, multiplying
+the number of states if it is included.
+\end{theorem}
+\begin{proof}
+Exact dynamic programming on $\cS_n$ is valid by
+Proposition~\ref{prop:tests}. With terminal value zero, its recursion is
+\[
+ V_n(s)=\max_{g\in\cG}\sum_{x\in\cX}p_x(s,g)
+       \{r_{n+1}(g,x)+V_{n+1}(T_n(s,g,x))\}.
+\]
+Here $p_x$ is a linear moment functional or a normalized factor expression.
+The positive denominator bounds, compact action set and continuous rewards
+make the displayed objective continuous, and the maximum is attained.
+By backward induction it is uniformly Lipschitz in $s$, since finite sums,
+products of bounded Lipschitz functions, and the updates in
+Lemma~\ref{lem:lipschitz} preserve that property. The maximum of functions
+with a common Lipschitz constant is again Lipschitz. Denote by $H_n$ a
+uniform Lipschitz constant of the action objective, before its maximization.
+
+At each representative choose an exact maximizing action and store that
+action in the finite output table. At the true state $s_n$, the loss from
+using the action optimal at $\widehat s_n$ is at most $2H_ne_n$.
+Update the representative by \eqref{eq:transducer}. The true exact state
+is computed only for analysis along the controller's actual observations;
+the implemented controller still stores only its index. Bellman telescoping
+and conditional expectation give total loss at most
+$2\sum_{n<N}H_ne_n\le2\sum_{n<N}H_nb_n M^{-1/D_*}$.
+This proves \eqref{eq:control-bound}. It uses no continuity of the optimizing
+action as a function of state, and it does not differentiate an optimizer.
+Its approximation principle is related to \cite{Subramanian}; it is not
+claimed as a new general dynamic-programming principle.
+\end{proof}
+
+\subsection{Horizon and calibration remain part of the constants}
+If every factor in a probe menu satisfies $0<F\le v<1$, then
+$H_{n,j}\le v^{N-n}$ and every posterior prediction satisfies the same
+bound. The one-state decoder that always announces zero therefore has
+\begin{equation}\label{eq:zero-memory}
+ \mathcal R\le v^{2(N-n)}.
+\end{equation}
+For the shared physical menu $F=c+\delta k_j$ one may take $v=c+\delta$.
+Thus a checkpoint implementation may choose, in advance, between the
+streaming filter and the one-state decoder and obtain
+\[
+ \mathcal R\le\min\{C_N M^{-2/D_*},(c+\delta)^{2(N-n)}\}.
+\]
+At $c=1/2$, $\delta=1/8$, $N-n=20$, the second bound is
+$(5/8)^{40}<10^{-8}$. This does not contradict a fixed-$N$ high-resolution
+exponent. Neither the new sparse rank theorem nor the streaming construction
+turns it into a horizon-uniform useful-memory law. We have not rescaled
+the loss or discarded rare histories to avoid this bound.
+
+The upper constants involve state bounds, transition Lipschitz constants
+and repeated error propagation. The lower constants involve an attainable
+Jacobian, a chart radius, evidence and the prior pairing. They are not
+uniform over vanishing detector amplitudes, all full-support priors or
+increasing horizons. With a finite fixed command alphabet and finite $N$
+there are finitely many histories and an exact finite code eventually
+suffices; the matching asymptotic lower bound above expressly uses the
+fixed continuous-command exploration protocol.

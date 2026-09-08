@@ -1,0 +1,325 @@
+\section{A circular experiment with vanishing contrast}
+\label{sec:circular}
+We now give a second application in which the one-step detector itself
+loses contrast. The hidden parameter lies on a circle, the posterior
+pairing is Fourier rather than ordered Chebyshev, and acquisition and
+future observation each contribute a small factor. Consequently its
+resolution scales are not obtained by attaching a new observation
+matrix to a fixed, nondegenerate attainable posterior cube.
+
+\subsection{The physical experiment}
+Write $w=e^{i\theta}$, $0\le\theta<2\pi$, and take normalized Haar
+measure $d\theta/(2\pi)$ as prior. Fix $0<\eta<1/2$. The known
+contrast is $0\le\tau\le1/2$. Four detector cells are
+\begin{equation}\label{eq:circle-cells}
+ k_{1,\pm}(\theta)=\tfrac14(1\pm\tau\cos\theta),\qquad
+ k_{2,\pm}(\theta)=\tfrac14(1\pm\tau\sin\theta).
+\end{equation}
+The controller specifies four real acceptance probabilities varying
+continuously over $[\eta,1-\eta]^4$. Thus the command alphabet is
+continuous, although the detector and report alphabets are finite. Reports and failures are as in
+\eqref{eq:channel}. All five report likelihoods are bounded below by
+$\eta/8$. The prior and calibration in this section are known exactly;
+no prior-uncertainty assertion is included in the result.
+
+Every report factor has a unique representation, for $\tau>0$,
+\begin{equation}\label{eq:circle-factor}
+ f(\theta)=a\{1+\tau(z w+\bar z w^{-1})\},
+ \qquad a>0,\quad |z|\le\tfrac12.
+\end{equation}
+The coefficients $a,z$ extend continuously to $\tau=0$ using the
+specified command and report. For accepted cells, $z$ is respectively
+$1/2,-1/2,-i/2,i/2$. For failures, with rejection probabilities $u$,
+\begin{equation}\label{eq:circle-command-coordinates}
+ a=\tfrac14\sum_j u_j,\qquad
+ z=\frac{u_{1,+}-u_{1,-}-i(u_{2,+}-u_{2,-})}{8a}.
+\end{equation}
+The bound on $|z|$ follows by the triangle inequality and $u_j\ge0$.
+Near the central command, $z$ ranges over a fixed complex neighborhood
+of zero, independently of $\tau$. More explicitly, the rejection vector
+\begin{equation}\label{eq:circle-right-inverse}
+ (u_{1,+},u_{1,-},u_{2,+},u_{2,-})
+ =\bigl(\tfrac12+2\Re z,\tfrac12-2\Re z,
+        \tfrac12-2\Im z,\tfrac12+2\Im z\bigr)
+\end{equation}
+realizes $a=1/2$ whenever all entries are in the command cube.
+Thus the construction uses a fixed finite interface, not a gate that
+reads the hidden angle.
+
+Fix $0<\rho<(1/2-\eta)/8$. For an $m$-trial query put
+$L_m=2m+1$ and $\varphi_l=2\pi l/L_m$, $0\le l<L_m$.
+Query $l$ repeats the attainable failure factor with
+$a=1/2$, $z=\rho e^{-i\varphi_l}$ exactly $m$ times, and asks for
+the probability of all failures. Only the selected query is executed;
+it is selected uniformly and independently after the memory index has
+been formed. Independent uniform acquisition commands define the
+unconditional experiment. Worst-history and causal losses have the same
+meaning as in Definition~\ref{def:finite-state}, with this query menu.
+
+\begin{theorem}[Harmonic resolution from acquisition and observation]
+\label{thm:circle-resolution}
+Fix $N\ge2$ and the interface above. There is $\tau_*>0$, depending
+only on $N,\eta,\rho$, such that the following holds uniformly for
+$0\le\tau\le\tau_*$ and all integers $M\ge1$. At a checkpoint
+$n+m\le N$, $n,m\ge1$, put $k=\min(n,m)$ and
+\begin{equation}\label{eq:circle-profile}
+ \mathcal H_{n,m}(M,\tau)
+ =\max_{1\le j\le k}\tau^{2(j+1)}M^{-1/j}.
+\end{equation}
+Then
+\begin{equation}\label{eq:circle-checkpoint-law}
+ c\mathcal H_{n,m}\le\overline R^{\tau}_{M;n,m}
+ \le R^{\tau,\max}_{M;n,m}\le C\mathcal H_{n,m}.
+\end{equation}
+For horizon $N$, one deterministic, stage-compatible $M$-state transducer
+has worst-history loss at every checkpoint bounded by
+\begin{equation}\label{eq:circle-causal-profile}
+ C\max_{1\le j\le\lfloor N/2\rfloor}
+          \tau^{2(j+1)}M^{-1/j}.
+\end{equation}
+Every such transducer has maximum unconditional checkpoint loss at least
+a fixed positive multiple of the same expression. The lower laws permit
+independent coding randomization. For $\tau>0$ in this interval the
+minimal continuous sufficient checkpoint dimension is $2\min(n,m)$;
+for $\tau=0$ it is zero.
+\end{theorem}
+
+\input{sections/circular_context}
+
+\subsection{Acquisition: a symmetric-polynomial submersion}
+Remove the positive scalar factors $a_i$, which cancel from the posterior,
+and expand the Laurent polynomial
+\begin{equation}\label{eq:circle-laurent}
+ P(w)=\prod_{i=1}^n\{1+\tau(z_iw+\bar z_iw^{-1})\}
+     =\sum_{j=-n}^{n}p_jw^j,
+ \qquad p_{-j}=\bar p_j.
+\end{equation}
+Haar integration extracts $p_0$, and $p_0\ge(1-\tau)^n$.
+For $j\ge0$, each term contributing to $p_j$ chooses $j+h$ positive
+and $h$ negative powers from distinct factors. Hence
+\begin{equation}\label{eq:circle-coefficient-factorization}
+ p_j=\tau^j P_{n,j}(z,\bar z;\tau^2),\qquad
+ P_{n,j}(z,\bar z;0)=e_j(z_1,\ldots,z_n),
+\end{equation}
+where $e_j$ is the elementary symmetric polynomial and $e_0=1$.
+This is an exact polynomial identity. Define
+\[
+ S_j=\frac{P_{n,j}(z,\bar z;\tau^2)}{P_{n,0}(z,\bar z;\tau^2)},
+ \qquad c_j=\frac{p_j}{p_0}=\tau^jS_j,
+ \qquad Y_j=\tau^jc_j=\tau^{2j}S_j.
+\]
+Set these coordinates to zero for $j>n$. The $c_j$ are the posterior
+Fourier coefficients, or equivalently the posterior expectations of
+$w^{-j}$. The $S_j$ and their first two command derivatives are uniformly
+bounded on the command cube and $0\le\tau\le1/2$, for $n\le N$.
+Indeed the numerator polynomials have finitely many bounded coefficients,
+while their common denominator is at least $2^{-N}$; also $a\ge\eta$
+for failures. These observations justify the assertion even at zero
+contrast without division by $\tau$.
+
+\begin{lemma}[Attainment of the normalized harmonic flag]
+\label{lem:circle-attainment}
+There are $\tau_*>0$ and, for every $n\le N$, one interior
+all-failure command tuple independent of $\tau$, at which
+$(S_1,\ldots,S_k):\R^{4n}\to\C^k$ has real rank $2k$ for all
+$k\le n$ and $0\le\tau\le\tau_*$. The least row singular values
+are uniformly positive. Under independent uniform commands the
+all-failure subprobability law of these $2k$ real coordinates minorizes
+uniform probability on a translated cube of fixed side and fixed mass.
+\end{lemma}
+\begin{proof}
+Choose distinct small positive real numbers $\zeta_1,\ldots,\zeta_N$
+within the interior neighborhood in \eqref{eq:circle-right-inverse}.
+Use the first $n$ as the $z_i$ at length $n$. At $\tau=0$ the map
+$(S_1,\ldots,S_n)$ is $(e_1,\ldots,e_n)$. Its complex differential
+is invertible at a tuple of distinct numbers. To verify this directly,
+if all differential coefficients of $\prod_i(\lambda+z_i)$ vanish,
+then
+\[
+ \sum_i \dot z_i\prod_{h\ne i}(\lambda+\zeta_h)=0.
+\]
+Evaluating at $\lambda=-\zeta_i$ gives $\dot z_i=0$ for every $i$.
+The corresponding real differential on $\C^n$ is therefore invertible.
+Every initial collection of $k$ complex rows has real rank $2k$.
+The command map onto $z$ is a submersion at the implementing tuples by
+\eqref{eq:circle-command-coordinates}--\eqref{eq:circle-right-inverse}.
+
+Continuity in $s=\tau^2$ now preserves all these lower singular-value
+bounds on one interval $[0,\tau_*]$: there are only finitely many
+$n,k\le N$. For precision about this choice, let $\sigma_0$ be the
+minimum of the finitely many positive central row singular values at
+zero. The rational formulas give a finite $C_*$ with
+$\|D S(\tau)-D S(0)\|\le C_*\tau^2$ at the chosen tuples.
+One can take the minimum of $1/2$ and
+$\sqrt{\sigma_0/(2\max\{C_*,1\})}$. No assertion of a large-contrast
+uniform interval is needed for this small-contrast theorem.
+The first two derivative bounds established above, the fixed interior
+margin, and $f\ge\eta/8$ verify the quantitative hypotheses of
+Proposition~\ref{prop:product-criterion}. Its change-of-variables
+argument applies directly to the maps $S$, including their continuous
+extension at zero, and proves the stated minorization. The actual
+failure evidence is $p_0\prod_i a_i$; it has not been replaced by one.
+\end{proof}
+
+\subsection{Observation: a finite Fourier menu}
+\begin{lemma}[The physical query metric]\label{lem:circle-query-metric}
+For histories $h,h'$ at the same checkpoint, let $q_l(h)$ denote the
+probability of query $l$. Then
+\begin{equation}\label{eq:circle-parseval}
+ \frac1{2m+1}\sum_{l=0}^{2m}|q_l(h)-q_l(h')|^2
+ =2^{1-2m}\sum_{j=1}^{m} B_{m,j}(\tau^2)^2
+                       |Y_j(h)-Y_j(h')|^2,
+\end{equation}
+where
+\begin{equation}\label{eq:circle-B}
+ B_{m,j}(s)=\sum_{h=0}^{\lfloor(m-j)/2\rfloor}
+ \frac{m!\,\rho^{j+2h}s^h}{(j+h)!h!(m-j-2h)!},\qquad 0\le j\le m.
+\end{equation}
+For $j\ge1$ these factors are bounded above and away from zero uniformly
+on $0\le\tau\le1/2$. Thus the physical loss metric is uniformly
+equivalent to Euclidean distance in $(Y_1,\ldots,Y_m)$.
+\end{lemma}
+\begin{proof}
+Expanding the repeated query factor, its coefficient of $w^j$ is
+$2^{-m}\tau^jB_{m,j}(\tau^2)e^{-ij\varphi_l}$. Multiplication by
+the posterior density and Haar integration therefore give
+\[
+ q_l(h)=2^{-m}B_{m,0}(\tau^2)+
+       2^{1-m}\Re\sum_{j=1}^{m}B_{m,j}(\tau^2)Y_j(h)e^{ij\varphi_l}.
+\]
+The discrete identity
+$(2m+1)^{-1}\sum_l e^{ia\varphi_l}=0$ for
+$0<|a|\le2m$ makes the distinct sine and cosine columns orthogonal,
+with squared norm $1/2$. This proves \eqref{eq:circle-parseval}.
+All coefficients in \eqref{eq:circle-B} are nonnegative, and its
+constant term is $\binom mj\rho^j>0$. Compactness gives the other
+bound. Orthogonal projection of an arbitrary prediction vector onto
+this affine Fourier span cannot increase loss, so the same metric
+comparison is available for lower bounds with unrestricted decoders.
+\end{proof}
+
+\subsection{Proof of the resolution and causal laws}
+\begin{proof}[Proof of Theorem~\ref{thm:circle-resolution}]
+At a checkpoint only the first $k=\min(n,m)$ complex coordinates $Y_j$
+can be nonzero. Their real and imaginary parts lie in a rectangle with
+paired half-widths
+\[
+ C_N\tau^2,C_N\tau^2,C_N\tau^4,C_N\tau^4,
+             \ldots,C_N\tau^{2k},C_N\tau^{2k}.
+\]
+For ordered half-widths $a_1\ge\cdots\ge a_d$, a rectangular grid
+has covering number at most
+$C_d\sum_{l=0}^d r^{-l}\prod_{i\le l}a_i$ at radius $r$.
+Indeed the product of the $d$ one-dimensional counts expands into
+subset products, each bounded by the corresponding initial product.
+Put $r=A\max_{l\ge1}(M^{-1}\prod_{i\le l}a_i)^{1/l}$ with a
+fixed large $A$. For $M\ge2C_d$, choose $A$ so the nonconstant
+terms are at most $M/2$; the constant term is also at most $M/2$.
+For the finitely many smaller budgets one point and a larger fixed
+constant suffice, since $r\ge a_1/M$. Replace every grid point whose
+ball meets the reachable set by a point of that set, doubling the radius.
+This enforces at most $M$ reachable representatives for every integer
+budget, not only asymptotically.
+
+For the lower bound, Lemma~\ref{lem:circle-attainment} minorizes a
+$2k$-cube in the normalized real coordinates. Its first $l$-coordinate
+projection, scaled by the first $l$ half-widths without the harmless
+constant $C_N$, is a rectangle with volume comparable to
+$\prod_{i\le l}a_i$. The union of $M$ radius-$b$ balls covers at
+most $C_lMb^l/\prod_{i\le l}a_i$ of this minorized probability.
+Taking $b$ a small multiple of $(\prod_{i\le l}a_i/M)^{1/l}$
+leaves a fixed positive mass and gives a squared-error lower bound of
+order $b^2$. Lemma~\ref{lem:circle-query-metric} transfers it to the
+actual query loss. Conditional averaging removes decoder randomization;
+randomized label assignment cannot beat the nearest of its $M$ centers.
+Independent public coding randomness may be fixed and then averaged.
+The minorization retains the acquisition probability throughout.
+
+For $l=2j$ the squared radius just obtained is
+$\tau^{2(j+1)}M^{-1/j}$. No odd index increases their maximum.
+For $l=1$ its term is at most the $l=2$ term since $M\ge1$.
+For $l=2j-1$, $j\ge2$, its logarithm is a convex combination of
+the logarithms for $l=2j-2$ and $l=2j$; this follows by inserting
+the equal last two half-widths into
+$2l^{-1}(\sum_{i\le l}\log a_i-\log M)$.
+This proves \eqref{eq:circle-checkpoint-law} for $\tau>0$.
+At $\tau=0$ every report is independent of the hidden angle and every
+query probability is known; both sides of the asserted law are zero.
+
+It remains to construct one causal filter. Use the raw weighted Fourier
+moments $Y_j$, not $S_j$. Extend by $Y_0=1$ and
+$Y_{-j}=\overline{Y_j}$. Multiplication by a new factor
+\eqref{eq:circle-factor} gives, for $j\ge1$,
+\begin{equation}\label{eq:circle-update}
+ Y'_j=\frac{Y_j+\tau^2zY_{j-1}+\bar zY_{j+1}}
+                 {1+z\overline{Y_1}+\bar zY_1}.
+\end{equation}
+Only $j\le m-1$ is needed after the report. The denominator is the
+posterior expectation of $f/a$ and is at least $1-\tau\ge1/2$;
+this also holds on the segment between any two reachable posterior
+states. The numerator and denominator have uniformly bounded coefficients
+and states have bounded norm. Direct subtraction of the two fractions
+therefore gives a Lipschitz constant independent of $\tau$. In
+particular no reciprocal contrast occurs.
+
+At each stage take the reachable representative codebook constructed
+above. Update its current representative by \eqref{eq:circle-update}
+with the current command and report, then select a nearest representative
+in the next codebook with a fixed tie rule. An updated representative is
+reachable. If $e_n$ is its error from the true state, then
+$e_{n+1}\le L e_n+r_{n+1}$, $e_0=0$, where $r_{n+1}$ is the
+next covering radius. Finite iteration gives
+$e_n\le C_N\max_s r_s$ and the asserted maximum-checkpoint upper
+law by \eqref{eq:circle-parseval}. Missing harmonics above degree $n$
+are exactly zero before the changeover; after it, the shrinking future
+state contains every index used in \eqref{eq:circle-update}.
+The stage is public, while the persistent state is one of $M$ labels.
+The lower bounds use prefixes of the same independent uniform acquisition
+law and so apply to this same causal resource model. The maximum of
+$\min(n,N-n)$ is $\lfloor N/2\rfloor$, proving
+\eqref{eq:circle-causal-profile} with matching lower order.
+
+Finally, for positive contrast the local submersion and the invertible
+physical Fourier menu give an open $2k$-dimensional prediction patch.
+A continuous sufficient encoding restricted to a local section is
+injective, so invariance of domain forbids fewer than $2k$ real
+coordinates. Every $m$-trial continuation likelihood is a trigonometric polynomial
+of order at most $m$, so these Fourier moments determine all such future
+laws, not merely the displayed menu. The Fourier state with its identically
+zero high harmonics uses exactly $2k$, and \eqref{eq:circle-update} realizes it causally.
+This proves the exact dimension assertion.
+\end{proof}
+
+\begin{corollary}[Resolved harmonic phases]\label{cor:circle-phases}
+For $0<\tau<\min(\tau_*,1)$, adjacent terms $j,j+1$ in the circular
+causal profile exchange dominance at
+\[
+ M=\tau^{-2j(j+1)}.
+\]
+Every harmonic pair occurs in this ordered sequence. For $N=4$ and $N=6$
+the respective laws are
+\[
+ \max\{\tau^4M^{-1},\tau^6M^{-1/2}\},\qquad
+ \max\{\tau^4M^{-1},\tau^6M^{-1/2},\tau^8M^{-1/3}\}.
+\]
+\end{corollary}
+\begin{proof}
+Equating the two displayed adjacent powers yields the asserted value of
+$M$. These values increase strictly with $j$ for $\tau<1$. Moreover
+the logarithms of the terms are lines in $\log M$ with strictly
+increasing slopes $-1/j$. Each line is maximal between its crossings
+with its two neighbors; successive comparison also excludes every
+nonadjacent line on that interval. The two examples substitute
+$\lfloor N/2\rfloor=2,3$.
+\end{proof}
+
+The exact dimension agrees with that of a saturated three-dimensional
+polynomial detector, but the resolved law does not follow from that
+agreement. Here each $j$th harmonic is $O(\tau^j)$ in the acquired
+posterior and another $O(\tau^j)$ in the future query. The physical
+width is therefore $\tau^{2j}$. Keeping only the future attenuation
+would already give the wrong $\tau$ power at $n=m=1$. Haar orthogonality
+and the symmetric-polynomial submersion are explicit hypotheses and
+mechanisms of this application; an arbitrary prior on the circle is not
+silently substituted. The original full-support-prior monomial theorem
+retains its separate scope.

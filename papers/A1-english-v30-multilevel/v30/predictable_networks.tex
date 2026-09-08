@@ -1,0 +1,223 @@
+\section{Predictable acquisition on regenerative networks}
+\label{sec:v30-predictable}
+The initial commitment in the preceding section can be removed when
+regeneration is imposed at every visited vertex. The appropriate
+additional information is then available before each acquisition, not
+only before the first one. We prove an exact statistical flow formula
+under this hypothesis, allowing the next vertex to be chosen from the
+revealed history. The public vertex descriptor and the charged label
+are kept separate throughout.
+
+\subsection{Protocol and the conditional acquired law}
+Let $\mathscr D$ be a finite layered directed acyclic graph as in
+Section~\ref{sec:v29-occupation}, with levels
+$\mathscr V_1,\ldots,\mathscr V_J$. Before acquiring the block at level
+$j$, the scheduler chooses the next vertex $w\in\mathscr V_j$ along
+an admitted arc. It may use all previously revealed blocks and query
+outcomes in a converse relaxation. It cannot inspect any part of the
+new block before this choice. Given the chosen vertex and the entire
+past, including the independent seed, the new acquisition block has a
+fixed prescribed law $P_w$. Its query-mean vector is $q_w(H_w)$,
+and its finite query distribution is $p_w$. In particular, the full
+history conditional mean of the scored outcome is this same vector.
+These are conditional regeneration hypotheses, not assumptions of
+independence after selecting on the current block.
+
+The query is selected after compression. The decoder receives the
+current vertex as its finite query descriptor, the query, the independent
+seed, and one of $M$ labels. It receives no further order prefix or
+history. An admissible upper construction must use one causal state
+transition system with that same label set. The graph and read-only
+clock are fixed programs. If the vertex descriptor is to be charged
+instead, it can be encoded together with the label at cost at most
+$M\max_j|\mathscr V_j|$ states at a boundary. The exact equality below
+uses the explicitly public-descriptor convention; it does not identify
+this different charged-descriptor optimum.
+
+Let $d_w(M)$ be the optimal $M$-center query distortion of $q_w(H_w)$
+under $P_w$, defined as in \eqref{eq:v30-one-block}. Let $\mathcal F$
+be the vertex occupations of unit source--sink flows, with no additional
+terminal restrictions. Put
+\begin{equation}\label{eq:v30-predictable-value}
+ T_M=\min_{x\in\mathcal F}\max_{1\le j\le J}
+                         \sum_{w\in\mathscr V_j}x_w d_w(M).
+\end{equation}
+
+\begin{theorem}[Exact causal flow formula under regeneration]
+\label{thm:v30-predictable-exact}
+For every integer $M\ge1$, the minimum of the maximum expected
+checkpoint excess in this protocol is exactly $T_M$. The same value
+is obtained if the converse scheduler is allowed its entire revealed
+history. Moreover,
+\begin{equation}\label{eq:v30-predictable-dual}
+ T_M=\max_{\lambda\in\Delta_J}
+       \min_{P:o\rightsquigarrow d}
+                \sum_{w\in P}\lambda_{j(w)}d_w(M).
+\end{equation}
+A distribution on at most $J+1$ deterministic paths, sampled before
+the first acquisition, and one causal reset quantizer attain $T_M$.
+All extrema are attained.
+\end{theorem}
+\begin{proof}
+Condition on the complete history just before the next block is
+acquired, including the independent seed and the chosen vertex $w$.
+The block still has law $P_w$ by hypothesis. At this fixed seed and
+vertex the decoder has at most $M$ possible vectors. The pointwise
+nearest-center inequality used in
+Theorem~\ref{thm:v30-regenerative} therefore gives conditional expected
+loss at least $d_w(M)$. The same assertion would remain true even if
+this finite codebook had been chosen predictably from the past; no
+such additional decoder information is required or granted in the
+upper construction.
+
+Let $x_w$ be the unconditional probability that $w$ is visited. The
+conditional bound, integrated over the histories choosing $w$, is
+$x_wd_w(M)$. Summing at a fixed level proves
+$\E L_j\ge\sum_{w\in\mathscr V_j}x_wd_w(M)$. The expected arc
+incidences of any adaptive schedule form a unit flow. Consequently
+$x\in\mathcal F$, and taking the maximum followed by the infimum
+proves the lower bound $T_M$, also for the full-history scheduler.
+
+Conversely, decompose a minimizing flow into a probability distribution
+on source--sink paths. Such a decomposition exists by the finite
+acyclic flow argument in Section~\ref{sec:v29-occupation}. Sample a
+path using the independent seed before any block is revealed. Follow
+it regardless of the data. At a visited vertex, replace the old label
+by the nearest-center index of a minimizing codebook for $P_w$.
+The decoder returns the corresponding query coordinate. This uses
+only the current acquisition block, a single label, the vertex and
+the independent seed. Conditional regeneration ensures that its loss
+at $w$ is exactly $d_w(M)$. It therefore attains every level cost
+of the minimizing flow. No full-history scheduling memory is needed.
+
+Each path has a risk vector in $\R^J$, with coordinate $j$ equal to
+$d_w(M)$ at its level-$j$ vertex. The flow risk vectors are exactly
+the convex hull of this finite family. The supporting-hyperplane
+argument in Theorem~\ref{thm:v30-regenerative} gives
+\eqref{eq:v30-predictable-dual}. Compactness of the flow polytope
+and the simplex gives attainment. Finally every vector in this
+convex hull is a combination of at most $J+1$ path vectors: if more
+vectors occur with positive coefficients, their augmented vectors
+$(v,1)\in\R^{J+1}$ are linearly dependent. Move their coefficients
+along a nonzero dependence until one becomes zero, keeping all
+nonnegative. Iterate. Applying this elementary reduction to an
+optimal risk vector proves the support bound.
+\end{proof}
+
+For fixed $\lambda$, the inner problem in
+\eqref{eq:v30-predictable-dual} is a shortest-path computation on the
+acyclic graph. A value from this dual is a risk lower bound. A
+nonoptimal feasible flow in \eqref{eq:v30-predictable-value} has the
+opposite direction. The shortest-path description here has no omitted
+node caps: $\mathcal F$ is precisely the unconstrained unit-flow
+polytope permitted by this regenerative protocol.
+
+\subsection{Predictable small-ball bounds}
+Suppose that before a visited block is revealed, for every admitted
+predictable $M$-center codebook its conditional loss satisfies
+\begin{equation}\label{eq:v30-predictable-capacity}
+ \Pr(L_j\le t\mid\mathcal H_j^-,w)\le c_w(t),
+                       \qquad 0\le t\le1,
+\end{equation}
+where $\mathcal H_j^-$ includes the entire preceding history and the
+independent seed. The nondecreasing right-continuous capacities have
+$c_w(1)=1$. The inequality is required only for histories of positive
+conditional relevance, in the usual almost-sure sense; no pointwise
+regular conditional density on a null history is asserted. Set
+\[
+ \ell_w=\int_0^1[1-c_w(t)]\,dt,\qquad
+ \Gamma_{\rm pred}=
+      \min_{x\in\mathcal F}\max_j\sum_{w\in\mathscr V_j}x_w\ell_w.
+\]
+
+\begin{proposition}[Predictable occupation refinement]
+\label{prop:v30-predictable-bound}
+Every common controller satisfying
+\eqref{eq:v30-predictable-capacity} obeys
+\begin{equation}\label{eq:v30-predictable-bound}
+       \max_j\E L_j\ge\Gamma_{\rm pred}
+                      \ge\Gamma_{\rm pre}(c)\ge\Gamma(c).
+\end{equation}
+The last two values use event mass one and the local functions $c_w$
+in the earlier occupation definitions. Thus information available
+before every acquisition can strengthen the first-acquisition
+refinement without changing the risk criterion.
+\end{proposition}
+\begin{proof}
+Conditional layer cake gives conditional expected loss at least
+$\ell_w$ at a chosen vertex. Averaging and using the actual common
+occupation flow proves the first inequality, as above. Since
+$c_w(1)=1$, every unit flow and every anchored path is feasible in
+the earlier local relaxation. Also $\phi_w(0)=0$ and convexity gives
+$\phi_w(z)\le z\phi_w(1)=z\ell_w$ for $0\le z\le1$.
+Given any $x\in\mathcal F$, decompose it into a path law and group
+the paths by their first vertex. This produces anchored flows $x^u$
+with masses $\alpha_u$ and $x=\sum_u\alpha_ux^u$. At each level,
+\[
+ \sum_u\alpha_u\sum_{w\in\mathscr V_j}\phi_w(x^u_w)
+       \le\sum_{w\in\mathscr V_j}x_w\ell_w.
+\]
+Taking the maximum and then minimizing the right side proves
+$\Gamma_{\rm pre}\le\Gamma_{\rm pred}$. The inequality
+$\Gamma_{\rm pre}\ge\Gamma$ was proved in
+Theorem~\ref{thm:v29-pre}. The conditional data in
+\eqref{eq:v30-predictable-capacity} are essential: the unconditional
+local inequalities alone do not imply the first linear cost.
+\end{proof}
+
+\begin{corollary}[A network-uniform statistical relaxation gap]
+\label{cor:v30-network-gap}
+At every vertex put an independent copy of the positive two-trial
+experiment \eqref{eq:v30-law}, with a fixed gain $s_w\in(0,1]$ as in
+\eqref{eq:v30-attenuation}. Require the next vertex to be selected
+before that new block is revealed, but allow data-dependent choices
+among admitted arcs. Define
+\[
+ V_{\mathscr D}(a)=\min_{x\in\mathcal F}\max_j
+                       \sum_{w\in\mathscr V_j}x_w a_w,
+                      \qquad a_w=s_w^2.
+\]
+Then for every $M\ge1$ the actual statistical optimum satisfies
+\begin{equation}\label{eq:v30-network-gap}
+ \mathcal R_{\mathscr D,M}^{\rm reg}
+      =\frac{D_M(\nu)}{128}V_{\mathscr D}(a),\qquad
+ \Gamma_{\rm pred}
+      =\frac{V_{\mathscr D}(a)}{8306688M^2}.
+\end{equation}
+Consequently
+\[
+ 1\le\frac{\mathcal R_{\mathscr D,M}^{\rm reg}}{\Gamma_{\rm pred}}
+     =\frac{8306688}{128}M^2D_M(\nu)
+     \le\frac{8306688}{64800}<129,
+\]
+and the ratio tends to $8306688\kappa_{\rm ex}\in(4.05,4.06)$,
+uniformly in the finite network, its horizon and its positive gains.
+One distribution on deterministic paths is optimal for all budgets,
+with the scalar predictive codebook reoptimized at each budget.
+\end{corollary}
+\begin{proof}
+The scalar projection argument gives
+$d_w(M)=a_wD_M(\nu)/128$. Substitution in
+Theorem~\ref{thm:v30-predictable-exact} proves the first formula.
+Given the preceding history and the selected vertex, the acquired
+law is still the full mixed law $\nu$. The proof of
+Lemma~\ref{lem:v30-atom-capacity} therefore applies conditionally,
+with $b_w=2HLM/s_w$ and the atom mass $1/2$ unchanged. Its integral
+at unit occupation is $\ell_w=a_w/(8306688M^2)$, proving the
+second formula and its converse direction by
+Proposition~\ref{prop:v30-predictable-bound}. The remaining bounds
+and uniform limit follow exactly as in
+Theorem~\ref{thm:v30-controlled-gap}; the ratio contains no network
+parameter. An optimal flow for $V_{\mathscr D}(a)$ and its path
+law do not depend on $M$.
+\end{proof}
+
+The disjoint-route family of
+Corollary~\ref{cor:v30-checkpoint-gap} is a special case and retains
+its unbounded separate-checkpoint penalty. The present theorem also
+permits branching and recombination and full-history adaptive
+scheduling in the converse. Its decisive hypothesis is conditional
+regeneration before each new block. Correlated latent edge experiments
+with an evolving shared posterior need not satisfy it. The network
+formula therefore complements, rather than replaces or weakens, the
+collision-uniform and nonregenerative graph classifications.

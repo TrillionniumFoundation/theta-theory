@@ -1,0 +1,206 @@
+\section{From attainable geometry to causal memory}
+\label{sec:causal-transfer}
+The argument separates a geometric question at one time from the
+compatibility of the answers at successive times. The following theorem
+makes that separation precise. Its hypotheses concern a set, a measure,
+and a family of maps; they do not presuppose a quantization law. In
+particular, a small singular value or a differential of maximal rank is
+not a substitute for the measure hypothesis.
+
+Fix a finite horizon $N$ and a parameter set $\mathcal K$. For each
+known $\lambda\in\mathcal K$, let $S_{n,\lambda}\subset\R^{q_n}$ be
+the nonempty compact set of states reachable after $n$ reports, and let
+$v_n(h)$ denote the exact state. The initial set is a singleton. At
+checkpoint $n$, the vector of conditional query probabilities, weighted
+by the square roots of their fixed selection probabilities, is
+\[
+ p_{n,\lambda}(v)=b_{n,\lambda}+G_{n,\lambda}v.
+\]
+The query is drawn after the label is formed. Thus squared prediction
+regret is the squared Euclidean error in this vector. Assume that $G$
+and a left inverse of $G$ have norms at most a common constant. The
+hypothesis concerns physical query coordinates, not a whitening by
+vanishing singular values.
+
+For $1\le n<N$, fix $1\le p_n\le q_n$ and an ordered scale list
+$s_{n,1}(\lambda)\ge\cdots\ge s_{n,q_n}(\lambda)\ge0$. The
+following requirements have constants independent of $n$ and $\lambda$.
+
+\smallskip\noindent\textup{(G) Global geometry.}
+There are invertible linear maps $T_{n,\lambda}$, with both $T$ and
+$T^{-1}$ uniformly bounded, and translations $c_{n,\lambda}$ such that
+\[
+ \widetilde S_{n,\lambda}=T_{n,\lambda}S_{n,\lambda}-c_{n,\lambda}
+ \subset\prod_{i=1}^{q_n}[-B s_{n,i},B s_{n,i}].
+\]
+These sets have uniformly bounded semialgebraic format and dimension
+at most $p_n$. Only the format of each set is bounded; its coefficients
+need not depend semialgebraically or continuously on $\lambda$.
+
+\smallskip\noindent\textup{(A) Acquired measure.}
+There is one law of command exploration, independent of all coding
+randomness. At every checkpoint and for each $\ell\le p_n$ with
+$s_{n,\ell}>0$, the first $\ell$ coordinates of
+$T_{n,\lambda}v_n-c_{n,\lambda}$ have a law dominating $\beta$
+times uniform probability on a translated rectangle with half-widths
+$\rho s_{n,1},\ldots,\rho s_{n,\ell}$. Here $\beta,\rho>0$ are
+uniform. A subprobability carried by one report word suffices, provided
+its probability is included. All these laws are marginals of the same
+exploration experiment.
+
+\smallskip\noindent\textup{(C) Causal compatibility.}
+For $0\le n<N-1$ and every admitted current command $u$ and report $y$, the exact update
+is a map, jointly Borel in its state and input arguments,
+\[
+ F_{n,u,y}^{\lambda}:S_{n,\lambda}\longrightarrow S_{n+1,\lambda}
+\]
+with Lipschitz constant at most $L_n$, uniformly in $u,y,\lambda$.
+It reads the current state, command and report only. The transformed
+coordinates in (G) are not required to have a well-conditioned update.
+
+Write
+\begin{equation}\label{eq:transfer-profile}
+ Q_n(M,\lambda)=\max_{1\le\ell\le p_n}
+       \left(\frac{\prod_{i=1}^{\ell}s_{n,i}(\lambda)}{M}
+       \right)^{2/\ell}.
+\end{equation}
+Zero products contribute zero. The clock and the known parameter are
+read-only; the persistent resource is the cardinality of the retained
+label, as in Definition~\ref{def:finite-state}.
+
+\begin{theorem}[Attainable-geometry transfer]
+\label{thm:causal-transfer}
+Under \textup{(G)}, \textup{(A)} and \textup{(C)}, the optimal
+checkpoint regret with $M$ labels is comparable to $Q_n(M,\lambda)$,
+both under the exploration law and in the worst-history criterion.
+The constants are uniform in $\lambda$ and every integer $M\ge1$.
+
+More generally, prescribe integers $M_1,\ldots,M_{N-1}\ge1$.
+There is one deterministic causal filter retaining at most $M_n$ labels
+at time $n$, for which the exact-state error satisfies
+\begin{equation}\label{eq:transfer-recurrence}
+ e_n\le C\sum_{j=1}^n
+    \left(\prod_{i=j}^{n-1}L_i\right)
+                     Q_j(M_j,\lambda)^{1/2}.
+\end{equation}
+The empty product is one. Consequently, if $\mathfrak R_{\boldsymbol M}$
+is the optimal maximum-checkpoint regret with these stage budgets, then
+\begin{equation}\label{eq:transfer-causal-law}
+ c\max_{1\le n<N}Q_n(M_n,\lambda)
+ \le\mathfrak R_{\boldsymbol M}^{\rm av}
+ \le\mathfrak R_{\boldsymbol M}^{\rm max}
+ \le C_N\max_{1\le n<N}Q_n(M_n,\lambda).
+\end{equation}
+Here the average criterion is the maximum of the expected checkpoint
+losses, and the worst-history criterion is the maximum of their suprema;
+one selected checkpoint query is executed in a run.
+The lower bound permits private or public coding randomness independent
+of the exploration law. The constants in this assertion belong to the
+fixed horizon and the stated uniform hypotheses.
+\end{theorem}
+\begin{proof}
+Apply Lemma~\ref{lem:tame-rectangle} to $\widetilde S_{n,\lambda}$.
+It supplies at most $M$ centers in that set with radius at most
+$C Q_n(M,\lambda)^{1/2}$, for the actual integer $M$, including
+small budgets and zero-width axes. Pulling the centers back by $T^{-1}$
+gives reachable states with the same bound up to a uniform factor.
+The bounded norm of $G$ gives the checkpoint upper bound. If all scales
+vanish, (G) makes the reachable set a singleton and one center is exact.
+
+For the converse, average a randomized decoder conditional on its label
+and any public seed. Squared loss cannot increase. There remain at most
+$M$ prediction centers. Apply a bounded left inverse of $G$, then $T$,
+to these centers, subtracting the fixed translations. Prediction error
+bounds below, up to a uniform factor, the distance in any first
+$\ell$ transformed coordinates to the corresponding $M$ centers.
+For a rectangle in (A), the fraction covered by $M$ balls of radius $r$
+is at most
+\[
+ C_\ell M r^\ell\left(\rho^\ell
+                              \prod_{i=1}^{\ell}s_{n,i}\right)^{-1}.
+\]
+Take $r=a_\ell(\prod_{i\le\ell}s_{n,i}/M)^{1/\ell}$ with a
+sufficiently small positive $a_\ell$. At least half of the dominated
+mass lies outside these balls. Its squared error is at least
+$\beta r^2/2$, up to the fixed metric factor. Maximizing over the
+positive products gives the lower bound. Products that vanish require
+no lower estimate. Randomized assignment to centers cannot beat the
+nearest-center distance. Conditioning on independent public coding
+randomness and integrating proves the same assertion for public seeds.
+The history law has not been conditioned on an event of probability one
+in place of the original report word.
+
+Choose the preceding reachable codebooks with budgets $M_n$.
+Starting from the exact initial state, update the retained representative
+by $F_{n,u,y}^{\lambda}$ and quantize in the next codebook, using a
+fixed nearest-center tie rule. The candidate state is reachable by (C);
+hence it belongs to the quantizer's domain. The resulting maps are
+Borel. Only the representative's label is retained. With $e_0=0$,
+\[
+ e_{n+1}\le L_n e_n+C Q_{n+1}(M_{n+1},\lambda)^{1/2}.
+\]
+Induction gives \eqref{eq:transfer-recurrence}. The bounded physical
+query map and the finite sum give the last inequality in
+\eqref{eq:transfer-causal-law}. At a fixed checkpoint, every causal
+label is also an encoder of the full prefix with at most $M_n$ labels.
+The checkpoint lower bounds therefore hold for every causal filter.
+They refer to marginals of one exploration law, so their maximum is a
+valid lower bound before taking the infimum over filters. This proves
+the first inequality. The average criterion is bounded by the
+worst-history criterion, giving the middle inequality.
+\end{proof}
+
+The set condition (G) controls every history, whereas (A) only needs
+one sufficiently rich positive-probability family of histories. These
+are different obligations. Condition (C) prevents a small codebook from
+being counted as an algorithm that recovers discarded inputs. The
+conclusion is a bounded-factor equivalence of checkpoint and causal
+resolution, not an equality of optimal constants or a bound uniform in
+an unbounded horizon.
+
+\subsection{Positive updates in remaining-test coordinates}
+The update hypothesis can be checked before any interpolation or
+quantization is undertaken. It is independent of an ordering of scales.
+
+\begin{lemma}[Remaining-test update]
+\label{lem:positive-remaining-update}
+Let $X$ be compact, and let
+$\psi_n=(1,\psi_{n,1},\ldots,\psi_{n,q_n})$ be bounded continuous
+tests, not necessarily linearly independent. Suppose that multiplication
+by each next report likelihood $L_{n,u,y}\ge\kappa>0$ maps every
+component of $\psi_{n+1}$ into $\operatorname{span}\psi_n$, with
+uniformly bounded coefficient representations, Borel in the current
+input. For posterior moment
+states $v=(\nu\psi_{n,i})_{i\ge1}$, the next moment state is a
+rational function of $(1,v)$ alone. It is uniformly Lipschitz on
+segments joining reachable states, and a reachable representative is
+mapped to a reachable next state. The constant depends on $\kappa$,
+the coefficient and test bounds, and the dimensions, but not on linear
+independence or a nonzero separation between tests.
+\end{lemma}
+\begin{proof}
+Write $L_{n,u,y}=b\psi_n$ and
+$L_{n,u,y}\psi_{n+1,i}=a_i\psi_n$ in the given representations.
+Bayes' formula gives
+\[
+ v'_i=\frac{a_i(1,v)^t}{b(1,v)^t}.
+\]
+A segment joining the moment states of $\nu_0$ and $\nu_1$ is the
+moment state of their convex mixture. Its denominator is the integral
+of $L_{n,u,y}$ under that mixture and is at least $\kappa$.
+Numerators, coefficient vectors and moment coordinates are uniformly
+bounded. The quotient rule therefore bounds the derivative on the
+segment by a constant of the stated kind. Integration along the
+segment gives the Lipschitz estimate. Updating the posterior that
+represents a reachable state by the admitted input and report is an
+actual extended history, proving reachability. Distinct coefficient
+representations give the same integrals on moment states and their
+mixture segments; independence of the tests was never used.
+\end{proof}
+
+This lemma covers remaining products of arbitrary continuous detector
+cells on an arbitrary compact latent space whenever the stated
+coefficient bounds hold. The monomial and circular experiments require
+additional, and different, proofs of (G) and (A). Neither the lemma nor
+Theorem~\ref{thm:causal-transfer} asserts that every positive detector
+possesses the same collision scales.

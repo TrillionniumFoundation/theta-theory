@@ -1,0 +1,229 @@
+\section{Experiments indexed by a graph}\label{sec:v25-graph}
+The collision profile also determines the order in which several
+experiments should be acquired. We study a batch protocol constrained
+by a finite graph. The deterministic product calculation was developed
+in the earlier shared-memory manuscript \cite{QiSharedMemory2026}; we
+reproduce the version needed here. The comparison with adaptive orders
+will require a further measure argument.
+
+\subsection{The observation protocol}
+Let $G=(V,E)$ be a fixed finite loopless undirected multigraph, with
+$v=|V|\ge2$ and labelled edges. For each edge $e$ fix an independent
+scalar experiment of Section~\ref{sec:collision-geometry}, a full-support
+prior $\mu_e$, and integers $n_e,m_e\ge1$. Write $N_e=n_e+m_e$.
+The joint prior is $\bigotimes_e\mu_e$; raw trials are conditionally
+independent given the latent vector. The graph, detectors, priors and
+horizons are fixed. The known calibration is
+$a\in\prod_eK_e$, where each $K_e$ is an admitted compact chamber.
+
+Visit each vertex once. At the first endpoint visited of edge $e$,
+execute its first $n_e$ trials; at its second endpoint, execute its
+last $m_e$ trials. Incident blocks at a vertex are processed in a fixed
+order. A vertex is one atomic observation batch. Its fresh commands
+are independent uniform commands in the admitted edge cubes and are
+revealed only after that vertex is selected. The scheduler may select
+a vertex, but cannot choose command values or inspect them beforehand.
+All reports, including failures, are observed, and all raw trials count.
+The total raw trial count is $T=\sum_eN_e$, independently of the order.
+
+Memory is charged at vertex boundaries. The current vertex batch is
+one input; temporary work while processing it is not retained. This is
+a specified batch experiment, not a statement about memory charged
+after each constituent raw report. The single-trial classification
+proved above remains unchanged. An admissible controller retains at
+most $M$ joint labels at every boundary. All history-dependent scheduler
+information belongs to this label. The graph, calibration, budget and
+clock are read-only. The next-vertex rule uses the previous label and
+independent coding randomness, visits an unvisited vertex, and finishes
+the graph. A fixed order stored in the program is admissible. The
+predictor cannot recover discarded commands or reports.
+
+After a boundary with visited set $S$, independently select one member
+of the full tensor product of the scalar future failure-product menus.
+An unopened edge has $N_e$ remaining trials, an edge in
+\[
+ \delta(S)=\{e\in E: \text{exactly one endpoint of }e\text{ belongs to }S\}
+\]
+has $m_e$, and a completed edge contributes the constant factor $1$.
+Execute only this selected query in a fixed canonical order of the
+remaining vertices. Its binary target is that every remaining report
+is a failure. Execute and count all remaining trials even after a
+nonfailure. Acquisition and query together thus use exactly $T$ trials.
+There is one queried checkpoint per run, not simultaneous execution of
+all counterfactual queries. The finite query descriptor identifies the
+visited set and menu, but contains no continuous history information.
+
+Here is a common sample space for the risk criteria. Sample a full
+command and report tape $\tau$ for each edge, with $N_e$ uniform
+commands and reports conditionally independent given its latent
+parameter. The first visit reveals its first block and the second
+reveals its last block. This construction gives the actual exploration
+law for every nonanticipatory controller; it does not give that
+controller access to unrevealed inputs. Let $\xi$ collect independent
+coding seeds. Write $h_j(\tau,\xi)$ for its revealed history at boundary
+$j$, and $\mathcal L_j(\tau,\xi)$ for squared-prediction excess,
+averaged over the independently selected query, with the coding seeds
+fixed. Equivalently, $\mathcal L_j$ is the weighted squared error of
+the query-probability vector relative to the full-history conditional
+predictor. Private decoder seeds may also be included in $\xi$.
+Define
+\begin{equation}\label{eq:v25-risk-definitions}
+ \begin{split}
+ \mathcal R^{\rm av}_{G,M}(a)
+   &=\inf_{\mathcal F}\max_{1\le j<v}
+                    \E_{\tau,\xi}\mathcal L_j(\tau,\xi),\\
+ \mathcal R^{\rm max}_{G,M}(a)
+   &=\inf_{\mathcal F}\max_{1\le j<v}
+                    \sup_{\tau}\E_\xi\mathcal L_j(\tau,\xi).
+ \end{split}
+\end{equation}
+The supremum ranges over admitted tapes. Every finite report word has
+positive likelihood. Coding randomness is averaged before the
+supremum; the infimum over one controller is outside the boundary
+maximum. The tape law is independent of $\xi$, so the average criterion
+is at most the maximum criterion. The tapes formalize this convention
+without providing a history-dependent random seed as free storage.
+
+\subsection{Cut profiles}
+At the active checkpoint of edge $e$ put
+\[
+ p_e=\min\{n_e(r_e-1),q_{e,m_e}\},\qquad V_{e,0}=1,\qquad
+ V_{e,\ell}=\mathcal V_{e,m_e,\ell}(a^{(e)})\quad(1\le\ell\le p_e).
+\]
+The notation for formal labels and determinant volumes is the scalar
+notation with an edge subscript. Coincident labels are retained.
+For an edge set $F$ set
+\begin{equation}\label{eq:v25-cut-profile}
+ \begin{split}
+ A_{F,k}&=\max_{\substack{0\le\ell_e\le p_e\ (e\in F)\\
+                              \sum_e\ell_e=k}}
+                         \prod_{e\in F}V_{e,\ell_e},\qquad A_{F,0}=1,\\
+ \Theta_F(M,a)&=\max_{1\le k\le\sum_{e\in F}p_e}
+                                    (A_{F,k}/M)^{2/k}.
+ \end{split}
+\end{equation}
+Set $\Theta_\varnothing=0$; zero products contribute zero. If $\pi$ is
+a vertex permutation and $S_j^\pi$ consists of its first $j$ vertices,
+put
+\begin{equation}\label{eq:v25-width-profile}
+ Q_G(M,a)=\min_\pi\max_{1\le j<v}
+                            \Theta_{\delta(S_j^\pi)}(M,a).
+\end{equation}
+Each edge has its own cap $p_e$. A truncation only by the total dimension
+of an ambient tensor rectangle would generally give a different answer.
+
+\begin{theorem}[Adaptive order and shared memory]\label{thm:v25-adaptive}
+For the fixed graph experiment there are $0<c\le C<\infty$ such that,
+for every known calibration and every integer $M\ge1$,
+\begin{equation}\label{eq:v25-adaptive-law}
+ cQ_G(M,a)\le\mathcal R^{\rm av}_{G,M}(a)
+ \le\mathcal R^{\rm max}_{G,M}(a)\le CQ_G(M,a).
+\end{equation}
+The upper bound is attained by a deterministic vertex order and one
+causal joint-label filter. The lower bound remains valid when the
+scheduler reads its full past and the predictor additionally receives
+the finite vertex-order prefix, but retains only $M$ labels for its
+command and report information. No regularity of the scheduler's
+decision regions is required. The constants may depend on the fixed
+graph, priors, detectors and horizons, but not on calibration, budget
+or scheduler. Exact exponent collisions are included. If $E$ is empty,
+all these risks are zero.
+\end{theorem}
+
+\subsection{The deterministic product calculation}
+For a fixed order, grouping likelihood factors by edge gives a product
+posterior and the entire product of active scalar reachable sets. Every
+tuple of admitted prefixes can be interleaved. For an adaptive realized
+history the posterior still factors: nonanticipatory choices have
+probabilities depending on the observed past, not on the latent
+parameter once that past is fixed. This posterior identity does not
+assert independence of histories after conditioning on a chosen order.
+
+Let $v_e$ be the formal raw remaining-moment vector, including its
+constant entry $1$. Unopened vectors are known from the prior and
+completed vectors are $(1)$. The full query vector is
+\[
+ q(v)=\left(\bigotimes_eG_e\right)\bigotimes_ev_e,
+\]
+where $G_e$ is the fixed full-column-rank coefficient matrix of its
+product probes. A left inverse of $\bigotimes_eG_e$, followed by
+selection of tensor entries with all but one index constant, recovers
+every $v_e$. This bounded linear map is defined on arbitrary prediction
+centres. Conversely, telescoping differences of tensor products with
+bounded factors proves
+\begin{equation}\label{eq:v25-tensor-metric}
+ c\sum_e\|v_e-w_e\|^2\le\|q(v)-q(w)\|^2
+                         \le C\sum_e\|v_e-w_e\|^2.
+\end{equation}
+Query-selection weights affect only fixed constants. No bound contains
+a reciprocal exponent gap.
+
+\begin{proposition}[A prescribed order]\label{prop:v25-fixed-order}
+For any prescribed deterministic order $\pi$, both optimal
+maximum-boundary risks are comparable to
+$\max_j\Theta_{\delta(S_j^\pi)}(M,a)$, uniformly in $M$, $a$ and
+$\pi$. The upper bound uses one causal joint $M$-label filter.
+\end{proposition}
+\begin{proof}
+Write $d_{e,1}\ge\cdots\ge d_{e,q}\ge0$ for the Newton scales and
+$D_{e,\ell}=\prod_{i\le\ell}d_{e,i}$, with $D_{e,0}=1$.
+Lemma~\ref{lem:leja-scales} gives
+$D_{e,\ell}\le V_{e,\ell}\le\ell!D_{e,\ell}$, including zeros.
+The whole-image argument of Theorem~\ref{thm:intrinsic-checkpoint}
+covers each active raw image at radius $r$ by at most
+$C_e\sum_{\ell=0}^{p_e}D_{e,\ell}r^{-\ell}$ balls, after a fixed
+change of radius. Taking product covers at radius $r/\sqrt{|F|}$
+and expanding their counts gives
+\begin{equation}\label{eq:v25-product-cover}
+ \mathcal N\left(\prod_{e\in F}\mathcal S_e,r\right)
+      \le C_0\sum_{k=0}^{\sum_ep_e} A_{F,k}r^{-k}.
+\end{equation}
+The finitely many allocations preserve every edge cap. Put
+$r_*^2=\Theta_F(M,a)$. For $M\ge2C_0$, choose fixed $L$ with
+$C_0\sum_{k\ge1}L^{-k}\le1/2$ and substitute $Lr_*$ to obtain at
+most $M$ balls. Discard empty balls and replace their centres by
+reachable tuples, at most doubling radii. For $M<2C_0$, one tuple
+suffices after increasing the constant: the image is bounded and
+$r_*\ge1/M$, since $A_{F,1}=1$ for nonempty $F$. Empty cuts are
+singletons. Equation~\eqref{eq:v25-tensor-metric} gives the checkpoint
+upper bound.
+
+For the checkpoint converse choose any positive allocation of total
+$k>0$. Under this deterministic exploration order the active edge
+histories are independent. The actual all-failure subprobability cubes
+of Lemma~\ref{lem:newton-attainment}, projected and scaled, give a
+product rectangle of side scales $d_{e,i}$, $i\le\ell_e$, carrying a
+fixed positive amount of history mass. Evidence has not been removed.
+The tensor left inverse and the leading nonzero Newton inverses recover
+these scaled coordinates from arbitrary query centres with uniformly
+bounded norms. The fraction of the uniform rectangle covered by $M$
+radius-$r$ balls is at most $CMr^k/\prod_eD_{e,\ell_e}$. Choose $r$
+to be a small multiple of
+$(\prod_eD_{e,\ell_e}/M)^{1/k}$; a fixed positive mass remains
+uncovered. Maximize over allocations and $k$. Randomized assignments
+cannot beat nearest-centre distance; averaging private decoder
+randomness and conditioning on independent public seeds gives the same
+bound.
+
+Choose reachable joint codebooks at successive boundaries. Within a
+vertex batch update the affected components in raw remaining moments,
+starting unopened components at their exact priors and discarding
+completed components. The positive-denominator update estimate in
+Theorem~\ref{thm:intrinsic-streaming}, composed finitely many times,
+is uniformly Lipschitz. Updated representatives remain reachable.
+Quantize only at the next vertex boundary. The concatenated errors obey
+\[
+ e_0=0,\qquad e_{j+1}\le L_j e_j+
+                 C_j\Theta_{\delta(S_{j+1}^\pi)}(M,a)^{1/2}.
+\]
+Finite iteration retains all preceding errors and proves the common
+filter bound. Only its representative index persists. Every fixed
+common filter satisfies the checkpoint lower bounds before its
+infimum is taken. There are finitely many boundaries and orders, so
+all constants are uniform in $\pi$.
+\end{proof}
+
+The proposition does not yet compare with adaptive orders. Conditioning
+on the order selected from a history can destroy the product
+minorization. The following proof instead uses a common positive-mass
+event and upper small-ball bounds before any trace is selected.

@@ -1,0 +1,38 @@
+name: A1 v30 multilevel native verification
+on:
+  push:
+    branches:
+      - revision/a1-english-v30-multilevel-minimax-2026-09-08
+    paths:
+      - papers/A1-english-v30-multilevel/**
+      - .github/workflows/a1-v30-multilevel-native.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Preserve complete native source for independent reproduction
+        run: tar -czf a1-v30-native-source.tgz papers/A1-english-v29 papers/A1-english-v30-multilevel
+      - name: Install TeX and PDF inspection tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern latexmk poppler-utils
+      - name: Audit and build both native volumes
+        working-directory: papers/A1-english-v30-multilevel
+        run: python3 build.py
+      - name: Retain execution evidence, including failures
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: a1-v30-multilevel-native-${{ github.run_id }}
+          path: |
+            a1-v30-native-source.tgz
+            papers/A1-english-v30-multilevel/build-v30/
+          if-no-files-found: warn
+          retention-days: 7
