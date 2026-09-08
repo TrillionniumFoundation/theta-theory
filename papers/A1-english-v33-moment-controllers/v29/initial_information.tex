@@ -1,0 +1,275 @@
+\section{Information available before the first acquisition}
+\label{sec:v29-initial}
+The first vertex is chosen before any command or report is revealed.
+Conditional on an independent coding seed, that vertex is therefore
+fixed. Averaging seeds before recording this fact enlarges the path
+relaxation: it allows visits to different first vertices to be selected
+as though they could already convey information about the tape. We
+retain the seedwise constraint without exchanging the checkpoint maximum
+and the expectation.
+
+\subsection{Anchored occupations and perspective costs}
+Assume that the underlying tape $\tau$ and a seed $\xi$ have product
+law, and that $A$ is a tape event of probability $\beta$. It is enough
+that \eqref{eq:v29-local} hold for almost every fixed $\xi$, with the
+same functions $c_w$ and the same $\beta$. Suppose also that the first
+internal vertex is a function $u(\xi)$, not a function of the tape.
+These hypotheses allow the scheduler its complete revealed history
+after that first vertex. They also allow coding randomness shared
+between scheduler and predictor, provided it was independent of the
+tape before acquisition.
+
+For a first-level vertex $u$, let $\mathcal F_u(c)$ be the subset of
+$\mathcal F(c)$ carried by paths whose first vertex is $u$.
+Discard empty such sets and call the remaining set of anchors $\mathcal U$.
+For nonnegative $\alpha_u$ summing to one, choose
+$x^u\in\mathcal F_u(c)$ whenever $\alpha_u>0$. Define
+\begin{equation}\label{eq:v29-seed-gamma}
+ \Gamma_{\rm pre}(c)=
+ \min_{\alpha,x^u}\max_{1\le j\le J}
+       \sum_{u\in\mathcal U}\alpha_u
+                      \sum_{w\in\mathscr V_j}\phi_w(x^u_w).
+\end{equation}
+This expression has a compact convex formulation. Replace $x^u$ by a
+flow $y^u=\alpha_u x^u$ of total mass $\alpha_u$, anchored at $u$, and
+impose $y^u_w\le\alpha_u c_w(1)$. Replace each summand by the
+perspective
+\begin{equation}\label{eq:v29-perspective}
+ \mathcal P_w(\alpha,y)=
+ \begin{cases}
+    \alpha\phi_w(y/\alpha),&\alpha>0,\\
+    0,&\alpha=0,\ y=0.
+ \end{cases}
+\end{equation}
+On this feasible domain, the perspective is continuous and convex;
+continuity at zero follows from $0\le\phi_w\le1$.
+The network conservation laws and the constraints on $(\alpha,y)$ are
+linear. Thus \eqref{eq:v29-seed-gamma} is a finite convex program and
+attains its minimum.
+
+\begin{theorem}[Pre-acquisition refinement]\label{thm:v29-pre}
+Under the seedwise hypotheses above,
+\begin{equation}\label{eq:v29-pre-risk}
+        \max_j\E_{\tau,\xi}L_j
+                \ge\beta\Gamma_{\rm pre}(c)
+                \ge\beta\Gamma(c).
+\end{equation}
+Both bounds apply to a single common controller. No stored command,
+report, order prefix or history-correlated random variable is supplied
+for free by conditioning on the independent seed.
+\end{theorem}
+\begin{proof}
+For a fixed seed let $x^\xi_w=\Pr_\tau(w\in P\mid A,\xi)$.
+Theorem~\ref{thm:v29-occupation}, applied before averaging seeds, gives
+at each fixed level
+\[
+ \E_\tau[\one_A L_j\mid\xi]
+                 \ge\beta\sum_{w\in\mathscr V_j}\phi_w(x^\xi_w).
+\]
+Moreover $x^\xi\in\mathcal F_{u(\xi)}(c)$. Set
+$\alpha_u=\Pr_\xi(u(\xi)=u)$ and, for positive $\alpha_u$, set
+$x^u=\E_\xi[x^\xi\mid u(\xi)=u]$. Convexity of the anchored flow
+polytope gives $x^u\in\mathcal F_u(c)$. Conditional Jensen gives,
+for each fixed $j$,
+\[
+ \E_{\tau,\xi}L_j
+ \ge\beta\sum_u\alpha_u\sum_{w\in\mathscr V_j}\phi_w(x^u_w).
+\]
+Take the maximum only now, and then minimize over the larger feasible
+set in \eqref{eq:v29-seed-gamma}. This proves the first inequality.
+For the second, $x=\sum_u\alpha_u x^u$ is in $\mathcal F(c)$ and
+\[
+ \sum_u\alpha_u\sum_{w\in\mathscr V_j}\phi_w(x^u_w)
+                   \ge\sum_{w\in\mathscr V_j}\phi_w(x_w)
+\]
+at every level. Take the maximum and the minimum.
+\end{proof}
+
+The refinement is exact for the correspondingly refined abstract path
+class. To see this, select a minimizing $(\alpha,x^u)$, let the seed
+choose $u$ with probabilities $\alpha_u$, and, conditional on it, use
+the construction of Theorem~\ref{thm:v29-relaxation-exact} with flow
+$x^u$. All the conditional constructions can be generated from one array of
+independent uniform tape variables, independent of the seed, with the
+anchor selecting which deterministic sampling map to use. Take $A$
+independent of those variables and of the seed with mass $\beta$. The first
+vertex is now fixed given the seed, every seedwise capacity holds, and
+the level risks are exactly the sums in \eqref{eq:v29-seed-gamma}.
+This establishes sharpness within that abstract class, not
+attainability by a prescribed statistical experiment.
+
+\subsection{Dual certificates}
+A feasible primal flow gives an upper bound on a convex minimum. It
+must not be reported as a certified risk lower bound. We give a dual
+formula whose feasible values have the required direction.
+For $0\le r\le1$ put
+\begin{equation}\label{eq:v29-conjugate}
+ \widehat\phi_w(r)=\max_{0\le z\le1}\{rz-\phi_w(z)\}.
+\end{equation}
+The bound on the slopes of $\phi_w$ implies
+\begin{equation}\label{eq:v29-support-representation}
+ \phi_w(z)=\max_{0\le r\le1}\{rz-\widehat\phi_w(r)\},
+                                              \quad 0\le z\le1.
+\end{equation}
+For a vector $q$ of nonnegative vertex costs define
+\[
+ d_u(q)=\min_{x\in\mathcal F_u(c)}\sum_w q_wx_w.
+\]
+This is a capacitated minimum-cost unit-flow problem. When all terminal
+capacities $c_w(1)$ equal one, it is the minimum cost of an anchored
+source--sink path and is computed by the ordinary acyclic shortest-path
+recursion. Otherwise the node capacities must be retained.
+
+Let $\Delta_J=\{\lambda_j\ge0:\sum_j\lambda_j=1\}$. For
+$0\le q_w\le\lambda_{j(w)}$ define
+\[
+ B(\lambda,q)=\sum_w\lambda_{j(w)}
+           \widehat\phi_w\bigl(q_w/\lambda_{j(w)}\bigr),
+\]
+where a term with $\lambda_{j(w)}=q_w=0$ is zero.
+
+\begin{theorem}[Convex-flow duality]\label{thm:v29-dual}
+The pre-acquisition variational bound has the exact representation
+\begin{equation}\label{eq:v29-dual}
+ \Gamma_{\rm pre}(c)=
+ \max_{\substack{\lambda\in\Delta_J\\
+              0\le q^u_w\le\lambda_{j(w)}\ (u\in\mathcal U)}}
+       \min_{u\in\mathcal U}\{d_u(q^u)-B(\lambda,q^u)\}.
+\end{equation}
+Every feasible choice on the right gives a valid lower certificate.
+With a single unanchored flow polytope, the same formula, without the
+minimum over $u$, represents $\Gamma(c)$.
+\end{theorem}
+\begin{proof}
+The functions in \eqref{eq:v29-support-representation} are affine in
+$z$ and concave in $r$. They are continuous on compact convex sets:
+\eqref{eq:v29-conjugate} is a maximum over $0\le z\le1$ and is
+Lipschitz in $r$. The classical finite-dimensional convex minimax principle
+\cite{Rockafellar1964} therefore gives,
+for each fixed $\lambda$ and anchor,
+\begin{equation}\label{eq:v29-inner-dual}
+ \begin{split}
+ m_u(\lambda)
+  &:=\min_{x\in\mathcal F_u(c)}\sum_w\lambda_{j(w)}\phi_w(x_w)\\
+  &=\max_{0\le q_w\le\lambda_{j(w)}}
+                          \{d_u(q)-B(\lambda,q)\}.
+ \end{split}
+\end{equation}
+One may also obtain the inequality from right to left directly by
+summing the supporting inequalities
+$\lambda_j\phi_w(x_w)\ge q_wx_w-
+\lambda_j\widehat\phi_w(q_w/\lambda_j)$ and minimizing over flows.
+It is this direction that certifies numerical or exact trial values.
+
+For completeness, the outer minimax step can be seen directly by
+separation. Let $K$ be the set of vectors $r\in\R^J$ which dominate
+the $J$ perspective cost sums of some feasible $(\alpha,y)$.
+It is convex and upward closed; its intersection with every bounded
+box is closed, by compactness of the feasible set and continuity of
+the costs. If $t<\Gamma_{\rm pre}$, the vector $t\one$ is not in
+$K$. A separating linear functional must have nonnegative coordinates,
+since $K$ is upward closed. Normalize them to sum to one, obtaining
+$\lambda\in\Delta_J$. Separation gives
+\[
+ t<\min_{\alpha,x^u}\sum_u\alpha_u
+                         \sum_w\lambda_{j(w)}\phi_w(x^u_w)
+       =\min_u m_u(\lambda).
+\]
+The reverse inequality holds for every $\lambda$, by the maximum
+bound for a convex combination of the level costs. Let $t$ increase
+to $\Gamma_{\rm pre}$ and use compactness of $\Delta_J$ to obtain
+\[
+             \Gamma_{\rm pre}=\max_{\lambda\in\Delta_J}
+                                             \min_u m_u(\lambda).
+\]
+The finite-dimensional convex minimax used in
+\eqref{eq:v29-inner-dual} is the same separating-hyperplane principle
+applied to affine supporting functions: separate the strict sublevel
+of the convex epigraph from a compact convex feasible set. Equivalently,
+approximate the compact set of supporting slopes by finite nets,
+apply finite convex minimax, and pass to the limit by uniform continuity.
+All sets here are finite dimensional and compact; no infinite-path or
+asymptotic interchange is involved.
+
+Finally the maximizations defining $m_u$ are over independent compact
+sets for the finitely many $u$. They can be chosen simultaneously,
+so $\min_u\max_{q^u}$ equals $\max_{(q^u)}\min_u$ in this particular
+separated situation. Substituting \eqref{eq:v29-inner-dual} proves
+\eqref{eq:v29-dual}. The zero-weight convention is continuous, since
+the bounded conjugate is multiplied by that weight. Thus the displayed
+maximum is attained.
+\end{proof}
+
+When $c(t)=\min\{1,a\sqrt t\}$ with $a\ge1$, the needed functions
+are particularly explicit:
+\begin{equation}\label{eq:v29-cubic-dual}
+ \phi(x)=\frac{x^3}{3a^2},\qquad
+ \widehat\phi(r)=
+ \begin{cases}
+  \dfrac{2a}{3}r^{3/2},&0\le r\le a^{-2},\\[3pt]
+  r-\dfrac1{3a^2},&a^{-2}\le r\le1.
+ \end{cases}
+\end{equation}
+These identities follow by maximizing $rx-x^3/(3a^2)$ on $[0,1]$.
+At a rational support point $z$, the tangent has slope $z^2/a^2$ and
+intercept $-2z^3/(3a^2)$. Rational $a^2$ therefore permits exact
+rational certificates, without floating-point convex optimization.
+
+\subsection{The decoder descriptor and graph specialization}
+Return to the positive graph experiment. For an internal visited set
+$S$ and a positive allocation $\ell$ let
+\[
+ a_{S,\ell}=M C_{S,\ell}(a)/D_{\delta(S),\ell},
+ \qquad
+ c_S(t)=\min\{1,\min_{\ell\ {\rm positive}}
+                                      a_{S,\ell}t^{k/2}\}.
+\]
+The empty cut has capacity one. The first-block event and all constants
+are those of \upref{Lemma}{lem:v26-first-block}; its proof supplies
+\eqref{eq:v29-local} for every fixed independent coding seed. The
+scheduler chooses its first vertex before receiving any tape entry.
+
+\begin{corollary}[A quantitative graph converse]
+\label{cor:v29-graph}
+For every fixed graph experiment, calibration and integer $M\ge1$,
+\begin{equation}\label{eq:v29-graph}
+ \mathcal R^{\rm max}_{G,M}(a)\ge\mathcal R^{\rm av}_{G,M}(a)
+ \ge\beta(a)\Gamma_{\rm pre}(c)
+ \ge\beta(a)\Gamma(c)
+ \ge\frac{\beta(a)}{v-1}\int_0^\infty[1-H_G(t;M,a)]_+\,dt.
+\end{equation}
+The scheduler may be given its full revealed past in the lower bounds.
+The original decoder sees only its label and the visited-set query
+descriptor. Every retained scalar and graph profile upper bound remains
+unchanged.
+\end{corollary}
+\begin{proof}
+Apply Theorem~\ref{thm:v29-pre} to every admissible controller with
+its independent seeds fixed, and then take the infimum over one common
+controller. The capacities and all three variational quantities are
+controller independent. Proposition~\ref{prop:v29-separator-dominance}
+and the terminal feasibility argument justify the last, infinite-integral
+form. The comparison of the two risks follows from their definitions.
+\end{proof}
+
+There is also a quantitative statement for a decoder receiving additional
+finite history information. Suppose that, at a fixed visited set $S$,
+its additional descriptor has at most $K_S$ possible values. After fixing
+independent seeds it has at most $M K_S$ prediction centres, even when
+the descriptor was selected measurably from the observed history.
+The same unconditioned density bound thus proves the corollary with
+\begin{equation}\label{eq:v29-descriptor}
+ c^{K}_S(t)=\min\{1,\min_{\ell\ {\rm positive}}
+                             K_S a_{S,\ell}t^{k/2}\}.
+\end{equation}
+For the full finite order prefix one may take $K_S=|S|!$. These are
+explicitly different capacities, not a transfer of the original
+constants to a stronger decoder. Alternatively, the state graph may
+be lifted to prefix vertices and one may retain $M$ centres at each
+lifted vertex. Both are legitimate lower bounds; neither grants any
+continuous history for free to the decoder.
+
+All dependence on graph size, query recovery, priors and acquisition
+charts remains visible through $\beta$, the capacities and the finite
+flow problems. The corollary makes no claim of graph-size-uniform
+constants or of sharp statistical constants for every experiment.

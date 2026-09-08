@@ -1,0 +1,189 @@
+\section{A quantitative converse on the subset lattice}
+\label{sec:v26-capacity}
+We now apply the separating-set bound to the actual memory convention
+of Section~\ref{sec:v25-graph}. The scheduler may even read its whole
+revealed past. The decoder receives the visited set, the query and its
+one $M$-valued label, but not an additional order prefix. This is the
+original decoder model, not the stronger oracle decoder allowed in
+Theorem~\ref{thm:v25-adaptive}. That stronger qualitative theorem
+remains in force.
+
+\subsection{An event using only acquired blocks}
+Write $\lambda_e$ for the uniform law of edge $e$'s first command
+block, and choose $\Omega_e$ by Lemma~\ref{lem:v25-regular-box}.
+Let $\mathcal A_e$ be the event that this block belongs to $\Omega_e$
+and its first $n_e$ reports are failures. Define
+\begin{equation}\label{eq:v26-first-block-mass}
+ \beta_e(a)=\int_{\Omega_e}\mu_e\!\left(
+       \prod_{i=1}^{n_e}L_{e,i,\mathrm{fail}}\right)d\lambda_e,
+ \qquad \mathcal A=\bigcap_{e\in E}\mathcal A_e,
+ \qquad \beta(a)=\prod_{e\in E}\beta_e(a).
+\end{equation}
+All completion commands and completion reports are unrestricted.
+If $\kappa_e$ is a positive report margin, then
+$\beta_e(a)\ge\kappa_e^{n_e}\lambda_e(\Omega_e)>0$, uniformly in
+calibration. Empty products are one.
+
+Choose constants $h_{e,\ell}$ so that the restricted command density
+in Lemma~\ref{lem:v25-regular-box}, pushed to the positive scaled
+prefix of length $\ell$, is at most $h_{e,\ell}/D_{e,\ell}$.
+These constants can be chosen uniformly in calibration.
+An allocation $\ell=(\ell_e)_{e\in F}$ is \emph{positive} if
+$0\le\ell_e\le p_e$, $k=\sum_e\ell_e>0$, and
+$D_{F,\ell}=\prod_{e\in F}D_{e,\ell_e}>0$.
+
+\begin{lemma}[Acquired-block subprobability]\label{lem:v26-first-block}
+The event $\mathcal A$ is independent of every coding seed and has
+probability $\beta(a)$. For a positive allocation on $F$ and every
+Borel set $U\subset\R^k$,
+\begin{equation}\label{eq:v26-first-block-density}
+ \Prob\{\mathcal A, X_{F,\ell}\in U\}
+ \le \frac{\beta(a)}{D_{F,\ell}}
+       \prod_{\substack{e\in F\\\ell_e>0}}
+              \frac{h_{e,\ell_e}}{\beta_e(a)}\,
+              \operatorname{vol}_k(U).
+\end{equation}
+When $F$ is active, $X_{F,\ell}$ equals its actual acquired
+posterior coordinate on $\mathcal A$, regardless of the observed
+completion reports on other edges.
+\end{lemma}
+\begin{proof}
+The complete edge tapes are independent under the product prior.
+Marginalizing each completion block sums its report probabilities and
+integrates its command law to one. Hence the first-block events have
+probabilities \eqref{eq:v26-first-block-mass} and are independent
+across edges. Their intersection does not involve a coding seed.
+For a selected edge coordinate, multiply the restricted command law
+by its actual first-word evidence. That evidence is at most one, so
+the upper density is still $h_{e,\ell_e}/D_{e,\ell_e}$. An edge
+without a selected coordinate contributes its mass $\beta_e(a)$.
+Taking products and integrating complementary coordinates proves
+\eqref{eq:v26-first-block-density}, first for rectangles and then for
+all Borel sets by domination of the product density.
+An active edge has revealed exactly its first block. Its posterior
+is unaffected by the reports on distinct edges. Nonanticipatory vertex
+choices introduce no further latent likelihood once the revealed
+history is fixed. Thus the displayed coordinates are the actual ones.
+No assertion about independence conditional on a visited set is used.
+\end{proof}
+
+\subsection{Capacities and the risk bound}
+The subset lattice $\mathscr B_G$ has vertices $S\subseteq V$ and
+arcs $S\to S\cup\{x\}$ for $x\notin S$. Its source is
+$\varnothing$, its sink is $V$, and its internal levels are
+$1,\ldots,v-1$. For $S$ internal and a positive allocation on
+$F=\delta(S)$, let $T_{S,\ell}$ be the affine recovery map from a
+query-probability vector to $X_{F,\ell}$. The tensor left inverse and
+the leading nonzero Newton inverse used in the proof of
+Theorem~\ref{thm:v25-adaptive} provide such a map. Choose $L_{S,\ell}$
+so that its linear part has norm at most $L_{S,\ell}$ from the
+query-weighted Euclidean norm to $\R^k$. The choice is uniform in
+calibration; a zero scaled coordinate is never inverted.
+Let $\omega_k$ be the volume of the Euclidean unit ball in $\R^k$ and put
+\begin{equation}\label{eq:v26-capacity-constant}
+ C_{S,\ell}(a)=\omega_kL_{S,\ell}^{\,k}
+       \prod_{\substack{e\in\delta(S)\\\ell_e>0}}
+                           \frac{h_{e,\ell_e}}{\beta_e(a)}.
+\end{equation}
+For $t\ge0$ define
+\begin{equation}\label{eq:v26-node-capacity}
+ c_S(t;M,a)=\min\left\{1,
+       M\min_{\ell\text{ positive on }\delta(S)}
+                   \frac{C_{S,\ell}(a)t^{k/2}}{D_{\delta(S),\ell}}
+                         \right\}.
+\end{equation}
+When $\delta(S)=\varnothing$, set $c_S(t;M,a)=1$.
+Every nonempty cut admits a positive allocation of total one.
+Finally set
+\[
+ H_G(t;M,a)=\min_{C\in\operatorname{Sep}(\mathscr B_G)}
+                                      \sum_{S\in C}c_S(t;M,a).
+\]
+
+\begin{theorem}[Separator-capacity converse]\label{thm:v26-separator}
+For every graph experiment of Section~\ref{sec:v25-graph}, every
+calibration and integer $M\ge1$,
+\begin{equation}\label{eq:v26-capacity-risk}
+ \mathcal R^{\rm max}_{G,M}(a)\ge
+ \mathcal R^{\rm av}_{G,M}(a)\ge
+ \frac{\beta(a)}{v-1}\int_0^\infty
+                             [1-H_G(t;M,a)]_+\,dt.
+\end{equation}
+The lower bound allows the scheduler its full revealed past, provided
+the decoder has only the label and the visited-set query descriptor.
+Its separator optimization has $2^v-2$ internal vertices rather than
+one vertex for each complete order. The common-event factor involves
+only first-block evidences, not completion-word evidences.
+\end{theorem}
+\begin{proof}
+Fix the independent coding seeds. For a fixed visited set $S$, the
+clock is $|S|$ and the decoder has at most $M$ query-prediction vectors.
+It cannot use an unrecorded order prefix. If the loss at this boundary
+is at most $t$, the true query vector is within weighted distance
+$\sqrt t$ of one of these centres. Applying $T_{S,\ell}$ places
+$X_{\delta(S),\ell}$ in a union of at most $M$ balls of radius
+$L_{S,\ell}\sqrt t$. The recovery map is defined on arbitrary
+centres, not merely on attainable predictions. Lemma~\ref{lem:v26-first-block}
+gives
+\[
+ \Prob\{\mathcal A,\ S\text{ is visited},\ \mathcal L_{|S|}\le t\}
+ \le\beta(a)M C_{S,\ell}(a)t^{k/2}/D_{\delta(S),\ell}.
+\]
+Indeed, intersecting with the visited-set event can only decrease the
+unconditioned restricted mass. Minimize over positive allocations and
+use the additional bound $\Prob(\mathcal A)=\beta(a)$.
+This proves \eqref{eq:v26-node-smallball} with
+\eqref{eq:v26-node-capacity}; the empty-cut bound is automatic.
+
+Each realized order traces a source--sink path in $\mathscr B_G$.
+Apply Theorem~\ref{thm:v26-network-selection}, integrate the seeds,
+and then take the infimum over a single common controller. The
+right side is independent of that controller. Pre-sampling the finite
+collection of decoder seeds for all labels, visited sets and queries
+is legitimate; no history-correlated randomness is supplied as memory.
+The comparison with the maximum-tape criterion is the one in
+\eqref{eq:v25-risk-definitions}. Proposition~\ref{prop:v26-flow}
+proves the assertion about the separator optimization. Formula
+\eqref{eq:v26-first-block-mass} proves the final assertion.
+\end{proof}
+
+The terms in \eqref{eq:v26-capacity-constant} display the local density
+and query-recovery costs. They can deteriorate with the graph and its
+menus; \eqref{eq:v26-capacity-risk} does not conceal this dependence
+in a graph-independent constant. In particular, reducing the separator
+index set is not an assertion of a size-uniform adaptivity gap.
+
+\begin{corollary}[Recovery of the collision profile]
+\label{cor:v26-profile-recovery}
+Suppose $E\ne\varnothing$, and put $Q=Q_G(M,a)>0$.
+Let $\mathcal C_Q$ be all internal subsets for which
+$\Theta_{\delta(S)}(M,a)\ge Q$. For each $S\in\mathcal C_Q$ choose
+an allocation attaining its cut profile and let $k_S$ be its total.
+Put $a_S=C_{S,\ell}(a)\prod_{e\in\delta(S)}\ell_e!$.
+Every $\sigma>0$ satisfying
+\begin{equation}\label{eq:v26-sigma}
+             \sum_{S\in\mathcal C_Q}a_S\sigma^{k_S/2}\le\tfrac12
+\end{equation}
+gives
+\begin{equation}\label{eq:v26-profile-recovery}
+       \mathcal R^{\rm av}_{G,M}(a)
+                     \ge\frac{\beta(a)\sigma}{2(v-1)}Q.
+\end{equation}
+A positive $\sigma$ can be chosen uniformly in calibration and budget
+for each fixed graph experiment.
+\end{corollary}
+\begin{proof}
+By the minimax definition of $Q$, every complete order encounters a cut
+whose profile is at least $Q$. Thus $\mathcal C_Q$ is a separator.
+For the selected allocation, writing $V_{F,\ell}=\prod_eV_{e,\ell_e}$,
+we have $MQ^{k_S/2}\le V_{F,\ell}$ and
+$V_{F,\ell}/D_{F,\ell}\le\prod_e\ell_e!$.
+Consequently $c_S(\sigma Q;M,a)\le a_S\sigma^{k_S/2}$.
+Equations \eqref{eq:v26-sigma} and \eqref{eq:v26-capacity-risk},
+and monotonicity of $H_G$, give \eqref{eq:v26-profile-recovery}
+by integrating over $[0,\sigma Q]$. There are finitely many subsets
+and allocations; all $a_S$ have a uniform finite upper bound and
+$k_S\ge1$. Taking $\sigma\le1$ sufficiently small proves the
+last assertion. Uniform positivity of $\beta(a)$ then recovers the
+qualitative lower profile without enumerating complete traces.
+\end{proof}

@@ -1,0 +1,710 @@
+\section{Causally compatible finite-state experiments}
+\label{sec:v32-compatibility}
+
+The collision classification determines the order of the optimal risk.
+We now characterize the optimum itself without replacing a common
+transducer by independently chosen checkpoint encoders. The characterization
+is finite for a finite command alphabet. Its approximation of the original
+command cube is uniform in the number of retained labels and across
+additive exponent collisions. The source of this uniformity is positivity
+of the report likelihoods, not regularity of an optimal encoding rule.
+
+\subsection{Information and the retained resource}
+Fix integers $T\ge1$ and $M\ge1$. At acquisition stage $t$, a command $g_t$ is
+chosen before a report $x_t$ is observed. Conditional on a latent variable
+$\vartheta$ with law $\mu$, the report has likelihood
+$f^a_{g_t,x_t}(\vartheta)$. The same latent variable is used at every stage.
+The calibration $a$ is fixed and known. The report alphabet $\mathcal X$ is
+finite, and
+\begin{equation}\label{eq:v32-positive}
+ \sum_{x\in\mathcal X} f^a_{g,x}(\vartheta)=1,
+ \qquad 1\ge f^a_{g,x}(\vartheta)\ge\kappa>0.
+\end{equation}
+At stage $t$, query $q$ has full-history conditional mean
+$p^a_{tq}(h)\in[0,1]$, and fixed weights
+$\omega_{tq}\ge0$ sum to one. For the monomial experiment these are the
+actual future failure-product queries; a query is revealed after
+compression and only the selected checkpoint and its selected continuation
+are executed. In particular, query outcomes are not an additional input
+stream for the transducer.
+
+The initial retained state is $S_0=1$, and $S_t\in[M]$ after every
+acquisition stage. A transition reads only $(S_{t-1},g_t,x_t)$ and the
+clock. It may use a fresh private random variable, which is then discarded.
+The decoder $d_{tq}(S_t)\in[0,1]$ reads the retained state and the newly
+announced query. There is no persistent public seed, no accessible record
+of earlier outputs, and no retained command tape outside $S_t$.
+Randomization of the decoder alone cannot improve squared loss, so it is
+not included in the optimization variables.
+
+There are two acquisition conventions. In the \emph{prescribed-command}
+problem, commands are independent with a prescribed law, independent of
+$\vartheta$ and the transducer. This is the convention of the scalar
+collision theorem. In the \emph{state-controlled} problem, the next
+command is selected using only $S_{t-1}$, the clock and a fresh private
+coin. This second convention is an additional decision problem. It does
+not supply a full-history scheduler for free. Neither convention assumes
+regeneration of the latent variable or sufficiency of the current report
+for later targets.
+
+For a common transducer $F$ put
+\begin{equation}\label{eq:v32-risk}
+ R_t(F)=\mathbb E_F\sum_q\omega_{tq}
+       \bigl(d_{tq}(S_t)-p^a_{tq}(H_t)\bigr)^2,
+ \qquad V_M=\inf_F\max_{1\le t\le T}R_t(F).
+\end{equation}
+The maximum is taken after expectation, and the infimum is outside the
+maximum. The law in the expectation is prescribed in the first convention
+and induced by the one common acquisition controller in the second.
+
+\subsection{The finite compatibility equations}
+Let the command alphabet $\mathcal C$ be finite. Write
+$h=(c_1,x_1,\ldots,c_t,x_t)$, and put
+\[
+ L_h(\vartheta)=\prod_{s=1}^t f^a_{c_s,x_s}(\vartheta),
+ \qquad Z_h=\mu(L_h),\qquad
+ r_x(h,c)=\frac{\mu(L_h f^a_{c,x})}{Z_h}.
+\]
+The empty product is one. Every denominator is positive by
+\eqref{eq:v32-positive}. If the query is a bounded future likelihood
+$H^a_{tq}$, then
+\begin{equation}\label{eq:v32-target}
+ p^a_{tq}(h)=\frac{\mu(L_h H^a_{tq})}{Z_h}.
+\end{equation}
+The quantities $r_x(h,c)$ and $p^a_{tq}(h)$ are data of the optimization,
+not fresh posterior states supplied to a memory-limited decoder.
+
+Use nonnegative variables $a_t(c\mid i)$ and $b_t(c,j\mid i,x)$ satisfying
+\begin{equation}\label{eq:v32-action-rows}
+ \sum_c a_t(c\mid i)=1,
+ \qquad \sum_j b_t(c,j\mid i,x)=a_t(c\mid i)
+       \quad\hbox{for every }x.
+\end{equation}
+The second equation enforces selection of the command before the report.
+A controller first draws $c$ with probabilities $a_t(c\mid i)$ and,
+after observing $x$, draws $j$ with probabilities
+$b_t(c,j\mid i,x)/a_t(c\mid i)$ when the denominator is nonzero.
+A zero command probability forces all its $b$ entries to be zero.
+In the prescribed-command case impose $a_t(c\mid i)=\nu(c)$ for every
+$i,t$, where $\nu$ is the prescribed command law.
+
+Let $\alpha_h(i)$ denote the joint probability of the history $h$ and
+retained state $i$. Its compatibility constraints are
+\begin{equation}\label{eq:v32-compatible}
+ \begin{split}
+ \alpha_{\varnothing}(i)&=\mathbf1_{\{i=1\}},\\
+ \alpha_{hcx}(j)&=r_x(h,c)
+              \sum_i\alpha_h(i)b_{t+1}(c,j\mid i,x),\qquad |h|=t.
+ \end{split}
+\end{equation}
+In particular, the same row $b_{t+1}(\cdot\mid i,x)$ must work for all
+histories reaching state $i$. Replacing that row by a history-dependent
+row gives a different memory resource.
+
+\begin{theorem}[Exact finite compatibility]\label{thm:v32-finite}
+For either acquisition convention, $V_M$ on a finite command alphabet is
+the minimum of $v$ over \eqref{eq:v32-action-rows},
+\eqref{eq:v32-compatible}, $0\le d_{tq}(i),v\le1$, and
+\begin{equation}\label{eq:v32-finite-program}
+ \sum_{h:\,|h|=t}\sum_{i,q}\alpha_h(i)\omega_{tq}
+       \bigl(d_{tq}(i)-p^a_{tq}(h)\bigr)^2\le v
+                   \quad(1\le t\le T).
+\end{equation}
+Every minimizer is realized by one $M$-state transducer with fresh private
+coins and no persistent seed. Conversely, every such transducer gives a
+feasible point with its actual checkpoint risks. All minima in this
+statement are attained. The optimization is a finite polynomial
+optimization with real coefficients, and is not asserted to be convex.
+\end{theorem}
+
+\begin{proof}
+We first verify the posterior used in the coefficients, since commands
+may be selected by the retained state. Conditional on an observed history
+$h$ with positive probability, the joint law of $\vartheta$ and $S_t$
+factors as
+\begin{equation}\label{eq:v32-posterior-factorization}
+ \frac{L_h(\vartheta)\mu(\mathrm d\vartheta)}{Z_h}\,K_h(i)
+\end{equation}
+for a probability vector $K_h$. At the empty history this is immediate.
+Selection of $c$ reweights $K_h(i)$ by $a_{t+1}(c\mid i)$ and does not
+change the first factor. The next report multiplies the first factor by
+$f^a_{c,x}$ and has normalizing probability $r_x(h,c)$. The private state
+update changes only the second factor. This proves the factorization by
+induction; it also proves that the report probability conditional on $h,c$
+and on any preceding state of positive conditional mass is $r_x(h,c)$.
+Thus multiplication by the command and update probabilities gives exactly
+\eqref{eq:v32-compatible}. Histories of zero probability have zero joint
+occupancies; their displayed coefficients remain well defined because
+$Z_h>0$.
+
+Any permitted controller consequently satisfies the displayed equations,
+and its actual risk is the left side of
+\eqref{eq:v32-finite-program}. Conversely, realize a feasible set of rows
+by the command selection and private update described after
+\eqref{eq:v32-action-rows}. Induction on history length proves that the
+joint occupancies of this controller are the specified $\alpha_h(i)$.
+The fixed decoder entries then realize the stated risks. No decoder reads
+$h$, $K_h$ or $\alpha_h$; these are variables of an offline construction.
+
+Every row lies in a compact simplex, and the decoder cube is compact.
+The compatibility equations recursively determine the occupancies and
+imply that the sum of all occupancies at each stage is one. Thus the
+feasible set, with $0\le\alpha_h(i)\le1$, is closed and bounded.
+It is nonempty, for example by a fixed command and state and a constant
+decoder (or by the prescribed command law). A continuous objective attains
+its minimum. The equations and inequalities are polynomial in the listed
+variables; their coefficients include the fixed ratios in
+\eqref{eq:v32-target}. The bilinear compatibility equations cannot be
+removed merely by invoking a flow decomposition.
+\end{proof}
+
+\begin{proposition}[Conditional centroids]\label{prop:v32-centroids}
+For fixed feasible acquisition and update rows, the mean-risk decoder can
+be chosen as
+\begin{equation}\label{eq:v32-centroid}
+ d_{tq}(i)=
+ \frac{\sum_{|h|=t}\alpha_h(i)p^a_{tq}(h)}
+      {\sum_{|h|=t}\alpha_h(i)}
+\end{equation}
+when the denominator is positive, with an arbitrary value otherwise.
+This choice minimizes every checkpoint risk simultaneously. Its risk is
+\[
+ \sum_{h,i,q}\alpha_h(i)\omega_{tq}p^a_{tq}(h)^2
+ -\sum_{i,q}\omega_{tq}
+  \frac{\bigl(\sum_h\alpha_h(i)p^a_{tq}(h)\bigr)^2}
+       {\sum_h\alpha_h(i)},
+\]
+where a zero-denominator summand is zero. This expression is continuous
+at zero occupancy. The proposition concerns mean risk, not a
+worst-history centroid rule.
+\end{proposition}
+\begin{proof}
+Complete the square in each decoder coordinate. The numerator in
+\eqref{eq:v32-centroid} is between zero and its denominator, so the
+centroid is an allowed prediction. If that denominator tends to zero,
+the corresponding quotient in the risk lies between zero and the
+denominator. This proves its continuous extension. Decoder coordinates
+belong to individual stages, so these minimizations are simultaneous.
+\end{proof}
+
+In the prescribed-command model there is an equivalent conditional
+formulation. Assume $\nu(c)>0$ on its finite alphabet. Its history probabilities $\pi(h)$ are then known and positive.
+Write $z_h(i)=\alpha_h(i)/\pi(h)$ and
+$b_t(c,j\mid i,x)=\nu(c)U_t(j\mid i,c,x)$. Then
+\begin{equation}\label{eq:v32-conditional}
+ z_{hcx}(j)=\sum_i z_h(i)U_{t+1}(j\mid i,c,x),\qquad
+ z_{\varnothing}(i)=\mathbf1_{\{i=1\}}.
+\end{equation}
+Replacing \eqref{eq:v32-finite-program} by the inequalities
+\begin{equation}\label{eq:v32-worst-program}
+ \sum_{i,q}z_h(i)\omega_{tq}
+    \bigl(d_{tq}(i)-p^a_{tq}(h)\bigr)^2\le v
+       \quad\hbox{for every }t,h
+\end{equation}
+gives exactly the common-filter worst-history optimum. This follows by
+the same realization argument. It does not average separately optimized
+checkpoint encoders.
+
+\begin{remark}[Why seed convexification is a different problem]
+An independently selected controller whose identity is retained by the
+encoder and decoder for the whole experiment uses a persistent public
+seed. Averaging its risk vectors gives a convexified experiment, but need
+not produce rows and decoders feasible in the unseeded problem above.
+The regenerative flow results retain their explicitly stated seed and
+public-descriptor conventions. They are not used to replace
+\eqref{eq:v32-compatible} in the nonregenerative problem.
+\end{remark}
+
+\section{Uniform finite approximation without collision denominators}
+\label{sec:v32-approximation}
+
+We return to the calibrated positive monomial experiment. Put $T=N-1$,
+$\mathcal G=[\eta,1-\eta]^{J_0}$, where $J_0$ is the number of detector cells, and use the fixed finite future probe menus.
+Let $\mathcal P_\delta$ be a finite Borel partition of the command cube
+with representatives $c(B)\in B$ and
+\[
+ \|g-c(B)\|_\infty\le\delta\quad(g\in B).
+\]
+Cells have positive volume and their boundaries are assigned by a fixed
+rule. Write $Q_\delta(g)=c(B)$ and let $\nu_\delta(c(B))$ be the
+normalized volume of $B$. The finite experiment uses these cell
+probabilities and the \emph{actual} report likelihoods at $c(B)$, with
+the original common latent parameter. Let
+$V^{\mathrm{av}}_{\delta,M}(a)$ and
+$V^{\max}_{\delta,M}(a)$ be the exact finite compatibility values from
+the preceding section.
+
+\begin{lemma}[Positive-likelihood perturbation]\label{lem:v32-perturbation}
+If two histories have the same report word and corresponding commands
+differ by at most $\delta$ in sup norm, then, at stage $t$,
+\begin{equation}\label{eq:v32-query-lipschitz}
+ \max_q|p^a_{tq}(h)-p^a_{tq}(\widetilde h)|
+                       \le t\delta/\kappa.
+\end{equation}
+The same bound holds for any one bounded future likelihood in $[0,1]$
+that does not read the discarded prefix. The total variation distance
+between the report laws at commands $g,\widetilde g$, conditional on
+any $\vartheta$, is at most $\delta$. All these bounds are uniform in
+$a$, including additive exponent coincidences.
+\end{lemma}
+\begin{proof}
+For an accepted detector cell,
+$f_{g,j}=g_jk_j^a$; for failure,
+$f_{g,\dagger}=\sum_j(1-g_j)k_j^a$. Since the detector probabilities
+are nonnegative and sum to one,
+\[
+ \frac12\sum_x|f_{g,x}-f_{\widetilde g,x}|
+ \le \sum_j|g_j-\widetilde g_j|k_j^a\le\delta.
+\]
+Along the line segment $g_s=\widetilde g+s(g-\widetilde g)$, each
+likelihood derivative has absolute value at most $\delta$. For the
+product of $t$ likelihoods let
+$A_s=\partial_s\log L_{h_s}$. Positivity gives
+$|A_s|\le t\delta/\kappa$. With $H\in[0,1]$ the chosen fixed future
+likelihood and $\mu_s=L_{h_s}\mu/\mu(L_{h_s})$,
+\[
+ \frac{\mathrm d}{\mathrm ds}\mu_s(H)
+       =\mu_s\bigl((H-\mu_s(H))A_s\bigr).
+\]
+The absolute value is at most $t\delta/\kappa$. Differentiation under
+the integral is justified by the finite product, the positive uniform
+lower bound and the displayed bounded score. Integration over $s\in[0,1]$
+proves \eqref{eq:v32-query-lipschitz}. No exponent difference was inverted
+and no derivative with respect to a colliding calibration was taken.
+\end{proof}
+
+\begin{theorem}[Uniform compatibility approximation]\label{thm:v32-grid}
+Under the hypotheses and the original retained-resource convention of
+Theorem~\ref{thm:resolution-main}, for every $a\in K$, $M\ge1$ and
+partition as above,
+\begin{align}
+ \left|V^{\mathrm{av}}_{\delta,M}(a)
+               -\mathfrak R_{M,N}^{a,\mathrm{av}}\right|
+       &\le T(1+2/\kappa)\delta,
+                  \label{eq:v32-grid-average}\\
+ 0\le\mathfrak R_{M,N}^{a,\max}
+               -V^{\max}_{\delta,M}(a)
+       &\le 2T\delta/\kappa.
+                  \label{eq:v32-grid-worst}
+\end{align}
+An optimizer of the finite program, implemented by rounding the current
+command and applying its one common transition table, attains the
+corresponding upper bound in the continuous experiment. The mean-risk
+optimizer is within $2T(1+2/\kappa)\delta$ of the continuous optimum.
+No continuity of the original transitions is assumed. In particular,
+the finite values converge uniformly over all calibrations and all
+integer budgets in the absolute-error sense of these inequalities.
+\end{theorem}
+
+\begin{proof}
+Introduce a lifted finite experiment. Draw each actual command $g$
+uniformly on the original cube, retain its representative $c=Q_\delta(g)$,
+and generate its report with likelihood $f^a_{c,x}$ instead of
+$f^a_{g,x}$. Keep the same latent parameter throughout. Conditional on
+that parameter and the commands, couple the two report sequences.
+Lemma~\ref{lem:v32-perturbation} and a union bound give probability at
+most $t\delta$ of a discrepancy up to stage $t$. Consequently expectations
+of any $[0,1]$-valued loss, including a loss using arbitrary measurable
+state kernels and their private coins, differ by at most $t\delta$
+when the target function is held fixed. Changing the target from
+$p^a_{tq}(h)$ to $p^a_{tq}(Q_\delta h)$ changes squared loss by at most
+$2t\delta/\kappa$, since
+\[
+ |(d-p)^2-(d-p')^2|\le2|p-p'|\quad(d,p,p'\in[0,1]).
+\]
+Thus the complete risk comparison at stage $t$ has error at most
+$t(1+2/\kappa)\delta$.
+
+A finite controller lifted by $g\mapsto Q_\delta(g)$ has exactly its
+finite risk in the lifted experiment. The preceding comparison gives
+the continuous upper bound. For the reverse comparison take any
+continuous controller $U_t(j\mid i,g,x)$, with its fixed decoder.
+In the lifted experiment the position of $g$ within its cell, conditional
+on that cell, is independent of the latent variable, the reports and the
+preceding retained state. Therefore its finite state law is realized by
+\begin{equation}\label{eq:v32-cell-average}
+ \overline U_t(j\mid i,c,x)=
+   \frac{1}{\nu(B)}\int_B U_t(j\mid i,g,x)\,\nu(\mathrm dg),
+                    \qquad c=c(B).
+\end{equation}
+These are stochastic rows. They are implemented with fresh private coins;
+the location within a cell is neither retained nor supplied to the decoder.
+The averaged controller has precisely the lifted risk with the finite
+query targets. Comparing with the original continuous controller and
+taking infima proves \eqref{eq:v32-grid-average}. The two applications
+of that inequality give the asserted $2T(1+2/\kappa)\delta$ optimality
+gap for a lifted finite mean-risk minimizer.
+
+For worst-history risk, restriction of a continuous controller to the
+finite set of representatives cannot increase its supremum, and hence
+$V^{\max}_{\delta,M}(a)\le\mathfrak R_{M,N}^{a,\max}$. Conversely, at
+a fixed actual history, the state distribution of a rounded finite
+controller equals its distribution at the representative history with
+the same report word. Only the target changes. Applying
+\eqref{eq:v32-query-lipschitz} gives the opposite bound in
+\eqref{eq:v32-grid-worst}. This argument neither averages histories nor
+moves a coding expectation outside the supremum.
+\end{proof}
+
+\begin{corollary}[Nonregenerative state-controlled acquisition]
+\label{cor:v32-controlled}
+Let $V^{\mathrm{ctrl}}_M(a)$ be the mean-risk value when each command is
+selected from the retained state before the report, with the same positive
+monomial likelihoods and the same future targets. Allow arbitrary Borel
+command kernels on the cube. Its finite-alphabet compatibility value
+satisfies
+\begin{equation}\label{eq:v32-controlled-grid}
+ 0\le V^{\mathrm{ctrl}}_{\delta,M}(a)
+                  -V^{\mathrm{ctrl}}_M(a)
+       \le T(1+2/\kappa)\delta.
+\end{equation}
+No regeneration is required. This corollary does not assert the collision
+profile lower bound for an acquisition law optimized jointly with the
+filter; that lower bound uses the prescribed common exploration law.
+\end{corollary}
+\begin{proof}
+A finite command is an allowed continuous command, proving the first
+inequality. For a continuous controller with command kernel
+$A_t(\mathrm dg\mid i)$ and update kernel $U_t(j\mid i,g,x)$, replace
+only the report likelihood at $g$ by its value at $Q_\delta(g)$. Define
+\[
+ a_t(c\mid i)=A_t(B\mid i),\qquad
+ b_t(c,j\mid i,x)=\int_B U_t(j\mid i,g,x)A_t(\mathrm dg\mid i).
+\]
+These satisfy \eqref{eq:v32-action-rows}. In the perturbed experiment,
+the within-cell command, conditional on the previous state and the cell,
+is independent of the latent parameter and of the new report. Integrating
+it therefore yields exactly these finite rows. This assertion can also
+be obtained by the induction in \eqref{eq:v32-posterior-factorization},
+now retaining only representative commands in the recorded history.
+
+Couple the original and perturbed experiments until their first report
+discrepancy. As long as their states agree, draw the same continuous
+command and use the same private update randomization. The probability
+of discrepancy through stage $t$ is at most $t\delta$. On coincident
+histories, the posterior targets at the actual and representative commands
+differ by at most $t\delta/\kappa$. The loss comparison used in
+Theorem~\ref{thm:v32-grid} applies and gives the upper bound after taking
+infima. Commands in the full-history benchmark disclose no hidden
+parameter beyond their report history: the action probabilities cancel
+from its posterior by the factorization proved above.
+\end{proof}
+
+\section{Finite global certificates and the collision law}
+\label{sec:v32-certificates}
+
+The finite compatibility program has a fixed compact parameter domain
+after its recursive variables are eliminated. This permits a global
+certificate that does not rely on a local numerical optimum. We state
+an elementary exhaustive construction to make its scope explicit.
+Its size is not asserted to be practical or polynomial.
+
+\begin{lemma}[Rational-controller nets]\label{lem:v32-controller-net}
+In a finite prescribed-command experiment, let $W_{\delta,M,b}$ be the
+minimum risk over controllers whose transition probabilities and decoder
+entries are integer multiples of $1/b$, where $b\ge1$ is an integer. For either the
+mean or worst-history criterion,
+\begin{equation}\label{eq:v32-controller-net}
+ 0\le W_{\delta,M,b}-V_{\delta,M}
+       \le E_{M,b}:=\frac{T(M-1)+2}{b}.
+\end{equation}
+The minimum defining $W_{\delta,M,b}$ is over a finite explicitly
+specified set of feasible common controllers.
+\end{lemma}
+\begin{proof}
+For each stochastic row, round its first $M-1$ entries down to multiples
+of $1/b$ and put the remaining mass in its last entry. The resulting row
+has total variation distance at most $(M-1)/b$ from the original row.
+Round each decoder entry to a multiple of $1/b$ within $1/b$.
+At a fixed history, couple original and rounded transitions while their
+states agree. Their final states disagree with probability at most
+$t(M-1)/b$. A squared loss is in $[0,1]$, and changing a decoder entry
+by at most $1/b$ changes that loss by at most $2/b$. Thus each conditional
+history risk changes by at most $E_{M,b}$. The same bound holds after
+expectation and after either prescribed maximum. Apply it to an exact
+finite optimizer. The opposite inequality follows because the net is a
+subset of the admissible controllers.
+\end{proof}
+
+Let $[\ell_F,u_F]$ be certified enclosures for the objective of every
+controller $F$ in this finite net, and put
+\[
+ \ell=\min_F\ell_F,\qquad u=\min_Fu_F.
+\]
+If each enclosure has width at most $\tau$, then $u-\ell\le\tau$:
+use in this inequality a controller attaining the smallest lower endpoint.
+Together with Theorem~\ref{thm:v32-grid}, this gives the following result.
+
+\begin{theorem}[Global risk certificates]\label{thm:v32-certificates}
+Write $E_\delta=T(1+2/\kappa)\delta$ and
+$E_\delta^{\max}=2T\delta/\kappa$. The original continuous risks satisfy
+\begin{align}
+ \max\{0,\ell-E_{M,b}-E_\delta\}
+ &\le\mathfrak R_{M,N}^{a,\mathrm{av}}
+       \le\min\{1,u+E_\delta\},\label{eq:v32-interval-av}\\
+ \max\{0,\ell-E_{M,b}\}
+ &\le\mathfrak R_{M,N}^{a,\max}
+       \le\min\{1,u+E_\delta^{\max}\},
+                         \label{eq:v32-interval-max}
+\end{align}
+where the net and its objective use the indicated criterion. A controller
+attaining $u$ gives the corresponding feasible upper certificate by
+rounding incoming commands. The widths before clipping are at most
+$\tau+E_{M,b}+2E_\delta$ and
+$\tau+E_{M,b}+E_\delta^{\max}$, respectively.
+
+For monomial experiments all finite coefficients are determined by the
+finite read-only moment list
+\begin{equation}\label{eq:v32-moment-list}
+ \left\{\mu(t^{\alpha\cdot a}):
+                 \alpha\in\mathbb N_0^r,\ |\alpha|\le N\right\},
+\end{equation}
+the detector matrix and the prescribed commands. Certified evaluation
+of that finite list and the fixed detector and command coefficients
+suffices for the enclosures. A mere full-support
+assumption is not an effective-access assumption on the prior.
+\end{theorem}
+\begin{proof}
+The exact finite value is between $\ell-E_{M,b}$ and $u$, by
+Lemma~\ref{lem:v32-controller-net}. Apply the two inequalities of
+Theorem~\ref{thm:v32-grid}. The risk of a particular feasible controller
+is bounded above by its own interval upper endpoint; this is the reason
+an upper certificate has an operational realization. Taking the minimum
+of lower endpoints over the \emph{complete} finite net and subtracting
+the net error is the lower certificate. Sampling a few controllers does
+not provide that lower bound.
+
+A product of $t$ report factors and one length-$(N-t)$ future probe is
+a linear combination of monomials indexed by $NA$. Report evidence uses
+only smaller sums. Division occurs only by positive evidences, not by
+exponent differences. The original lower bound $Z_h\ge\kappa^t$ makes
+interval evaluation of these ratios convergent once moments and the
+fixed coefficients are supplied with certified precision. The net is
+finite, so its finitely many objective enclosures can all be refined to
+the specified width. This is a finite-oracle statement. It makes no
+claim that an arbitrary abstract prior possesses a computable moment
+oracle. The exact variational and approximation theorems do not need
+such an oracle.
+\end{proof}
+
+\begin{corollary}[Collision-uniform relative certification]
+\label{cor:v32-relative}
+In the prescribed-command model of Theorem~\ref{thm:resolution-main},
+choose command partitions with radius at most $M^{-3}$, take
+$b=M^4$, and evaluate every controller in the corresponding finite net
+to objective-enclosure width at most $M^{-3}$. There is a constant $C_0$
+depending only on $T$ and $\kappa$ such that the enclosing intervals
+in Theorem~\ref{thm:v32-certificates} have width at most $C_0M^{-3}$.
+For either risk criterion, their width divided by the true risk is at
+most $C_0/(cM)$, uniformly in $a\in K$. Here $c$ is the positive lower
+constant in the inherited collision classification. The attaining
+controllers have exactly the original persistent-label resource.
+\end{corollary}
+\begin{proof}
+The displayed choices give $E_{M,b}=O(M^{-3})$ and the same bound for
+both command errors and the evaluation width. For every nontrivial
+checkpoint, $p_{n,N-n}\ge1$ and $\mathcal V_{N-n,1}=1$. Consequently
+\[
+ \Xi_N(M,a)\ge M^{-2},\qquad
+ \mathfrak R_{M,N}^{a,\mathrm{av}}
+       \ge c\Xi_N(M,a)\ge cM^{-2}.
+\]
+The worst-history risk is no smaller. Divide the certified absolute
+width by this uniform lower bound. No lower bound on a nonzero collision
+gap, and no constancy of the attained dimension, is required. The
+finite-state construction and approximation were proved without using
+this geometric lower bound; the final division is therefore not circular.
+\end{proof}
+
+The corollary converts the attained collision theorem into a relative
+certificate for the original nonregenerative common-filter decision
+problem, rather than only for separately optimized local blocks. The
+certificate is exhaustive, and its computational cost can be enormous.
+The fixed experiment, prior, horizon and read-only program convention
+are unchanged. In particular, this is not a graph-size-uniform claim,
+not a finite-bit arithmetic bound and not a calibration-blind code.
+
+\section{A positive delayed-use experiment with exact causal risk}
+\label{sec:v32-delayed}
+
+The compatibility equations have an elementary test in which two schedules
+are both admissible and local prediction costs are strictly positive.
+The calculation below also records the effect of \emph{not} supplying a
+persistent public seed. It is a separate finite positive experiment,
+not a substitute for the general collision theorem.
+
+Fix $0<\gamma\le1/8$ and $0<e\le \gamma/2$. Let
+$Z_1,Z_2,V_1,V_2$ be independent symmetric signs. The four acquisition
+reports $X_1,X_2,U_1,U_2$ are conditionally independent, with
+\[
+ \Pr(X_j=x\mid Z_j=z)=\tfrac12(1+xz/2),\qquad
+ \Pr(U_j=u\mid V_j=v)=\tfrac12(1+uv/2).
+\]
+All acquisition probabilities are at least $1/4$, and the reports are
+independent symmetric signs unconditionally. Query $j$ is a Bernoulli
+trial of latent success probability
+\[
+             \tfrac12+2\gamma Z_j+2eV_j.
+\]
+Its success and failure probabilities are at least $1/8$. Once its two
+reports have been acquired, the full-history conditional mean is
+\begin{equation}\label{eq:v32-delayed-target}
+              \tfrac12+\gamma X_j+eU_j.
+\end{equation}
+
+There are two public, deterministic admissible schedules. The
+\emph{early} schedule reads all four acquisition reports as one block
+before checkpoint 1; no informative acquisition occurs between the
+checkpoints. The \emph{just-in-time} schedule reads $(X_1,U_1)$ before
+checkpoint 1 and $(X_2,U_2)$ before checkpoint 2. In both schedules
+memory is charged after each acquisition block and at each checkpoint;
+there are two retained labels, the clock is free, no public seed is
+retained, and no score or past prediction is available for later updates.
+Each report is acquired exactly once. Only one independently selected
+checkpoint query is executed. All four scheduled acquisition trials are
+completed even when checkpoint 1 is scored, and the score is not fed back.
+Thus both schedules use four acquisition reports and one scored query.
+Queries at unselected checkpoints are not additional observations. The block-boundary charging
+rule is part of this example; it is not the per-report rule of the scalar
+monomial theorem.
+
+Let $V_{\rm early}(e)$ and $V_{\rm jit}(e)$ denote the infimum of the
+maximum of the two expected squared excesses over the full-history
+predictors. Private update randomization is allowed in both infima.
+
+\begin{theorem}[Exact unseeded delayed-use law]\label{thm:v32-delayed}
+For the experiment and resource convention just specified,
+\begin{equation}\label{eq:v32-delayed-exact}
+ \begin{split}
+ V_{\rm jit}(e)&=e^2,\\
+ V_{\rm early}(e)&=\gamma^2+e^2-
+       \max\left\{\frac{\gamma^2}{3},
+                       \frac{(2\gamma+e)^2}{15}\right\}.
+ \end{split}
+\end{equation}
+Both values are attained by deterministic two-label encoders and fixed
+stage-dependent decoders. In particular,
+\[
+ \frac{V_{\rm early}(e)}{V_{\rm jit}(e)}\longrightarrow\infty
+                         \quad\hbox{as }e\downarrow0.
+\]
+This comparison is between two admissible common-controller designs with
+the same total acquisition count, the same query protocol and the same
+retained-label and seed convention. It is not a comparison with
+incompatible checkpoint-specific initial designs.
+\end{theorem}
+
+\begin{proof}
+We work with the centered targets
+$Y_j=\gamma X_j+eU_j$, whose variances are $\gamma^2+e^2$.
+For a single current target the four values are
+$-\gamma-e,-\gamma+e,\gamma-e,\gamma+e$, all with probability $1/4$.
+For squared loss an optimum two-center scalar quantizer partitions an
+ordered set into contiguous cells: assigning each point to a nearest
+center cannot increase loss. The middle split has distortion $e^2$.
+The two extreme splits have explained variance $(\gamma+e)^2/3$, whereas
+the middle split has explained variance $\gamma^2$. Since
+$e\le \gamma/2$ implies $(\gamma+e)^2/3\le3\gamma^2/4$, the middle split is
+optimal. A fresh current pair is independent of all earlier retained
+information, which cannot enlarge the two available reconstruction
+values at that checkpoint. Resetting to the sign $X_j$ therefore attains
+$e^2$ at both checkpoints, and the one-block lower bound proves the
+just-in-time formula.
+
+For the early schedule, later private transitions without new information
+cannot improve on decoding directly from the first retained label.
+Indeed, conditional on that label, averaging any later random prediction
+cannot increase squared loss, and its conditional expectation is a
+function of that label alone. Thus every early controller is dominated
+by a stochastic binary encoder of the four-report word followed by two
+fixed decoders.
+
+Write $Q\in[0,1]$ for the conditional probability of label 1 given that
+word, let $p=\mathbb E Q$, and put $v_j=\mathbb E(Y_jQ)$. If
+$0<p<1$, centroid decoding makes checkpoint $j$'s risk
+\begin{equation}\label{eq:v32-binary-centroid}
+ \gamma^2+e^2-\frac{v_j^2}{p(1-p)}.
+\end{equation}
+A constant encoder explains no variance. Independent reflection of either
+coordinate pair $(X_j,U_j)$ changes the sign of $v_j$ without changing
+$p$ or the objective. We may therefore take $v_1,v_2\ge0$.
+Replacing $Q$ by the average of itself and its coordinate-swapped version
+preserves $p$ and changes both $v_j$ to $(v_1+v_2)/2$. This cannot
+decrease their smaller square. It is an allowed private randomized
+encoder, not a public mixture of decoders. We may consequently optimize
+over encoders with $v_1=v_2$.
+
+Put $S=Y_1+Y_2$. At a fixed $p$, the largest possible value of
+$\mathbb E(SQ)$ is obtained by taking an upper tail of $S$, randomizing
+only at a tied threshold. This follows by transferring any positive
+assignment mass from a smaller value of $S$ to a larger one. Symmetric
+assignment within ties gives equal coordinate correlations. Relabeling
+and joint reflection reduce the range to $0<p\le1/2$.
+On an interval between successive tail masses, write
+$\mathbb E(SQ)=A+sp$, where $s\ge0$ and $A\ge0$. Apart from a
+positive constant, the explained variance is
+\[
+                       \frac{(A+sp)^2}{p(1-p)}.
+\]
+Its derivative has the sign of $(s+2A)p-A$ whenever its numerator is
+nonzero. It therefore has no interior strict maximum. It is enough to
+consider the finite tail endpoints, including a half-mass endpoint.
+
+The sixteen values of $S$ are sums of
+$\gamma(X_1+X_2)+e(U_1+U_2)$. For $e\le \gamma/2$, the sums of the
+largest $n$ values, $1\le n\le8$, are the following $A_n$:
+\begin{center}
+\begin{tabular}{c c c}
+\toprule
+$n$ & $A_n$ & explained variance $A_n^2/[4n(16-n)]$\\
+\midrule
+1 & $2\gamma+2e$ & $(\gamma+e)^2/15$\\
+2 & $4\gamma+2e$ & $(2\gamma+e)^2/28$\\
+3 & $6\gamma+2e$ & $(3\gamma+e)^2/39$\\
+4 & $8\gamma$ & $\gamma^2/3$\\
+5 & $8\gamma+2e$ & $(4\gamma+e)^2/55$\\
+6 & $8\gamma+4e$ & $(2\gamma+e)^2/15$\\
+7 & $8\gamma+4e$ & $4(2\gamma+e)^2/63$\\
+8 & $8\gamma+4e$ & $(2\gamma+e)^2/16$\\
+\bottomrule
+\end{tabular}
+\end{center}
+Ties at $e=\gamma/2$ do not change these sums. Rows 1 and 2 are bounded
+by row 6, and rows 7 and 8 are also bounded by row 6. Row 3 is bounded
+by row 4, since
+$4\gamma^2-6\gamma e-e^2\ge3\gamma^2/4$.
+For row 5, if $e\le \gamma/4$ then
+$7\gamma^2-24\gamma e-3e^2\ge13\gamma^2/16>0$, so row 4 dominates.
+If $e\ge \gamma/4$, then
+$-\gamma^2+5\gamma e+2e^2\ge3\gamma^2/8>0$, so row 6 dominates.
+Thus the largest explained variance is the maximum in
+\eqref{eq:v32-delayed-exact}.
+
+Both remaining candidates are attained without encoder randomization.
+The four-word tail is $\{X_1=X_2=1\}$. Its two conditional centered
+means are $(\gamma,\gamma)$ and $(-\gamma/3,-\gamma/3)$.
+The six-word tail adds
+$\{X_1=-X_2,\ U_1=U_2=1\}$. Its centered means in either coordinate
+are $(2\gamma+e)/3$ and $-(2\gamma+e)/5$. Add $1/2$ to obtain the allowed
+prediction probabilities. These two encoders attain the computed maximum
+of the explained variances, proving the exact formula. Finally,
+$V_{\rm early}(e)\to2\gamma^2/3>0$ while $V_{\rm jit}(e)=e^2$.
+\end{proof}
+
+The active branch changes at $e=(\sqrt5-2)\gamma$. The formula is an
+analytic solution of the private-randomization minimax problem, not merely
+an enumeration of deterministic partitions. A retained public coin gives
+a different decision problem and need not have this value. For example,
+a fair public coin that selects which large sign $X_j$ to retain gives
+risk $\gamma^2/2+e^2$ at each checkpoint. This observation is an admissible
+upper bound only in that enlarged resource convention. It is not used in
+Theorem~\ref{thm:v32-delayed}.
+
+At each checkpoint the currently scored marginal law is the same in the
+two schedules, and its two-label distortion is $e^2$. Nevertheless, the
+common early controller must preserve competing directions for later
+use. Equations~\eqref{eq:v32-compatible} retain that constraint. The
+example exhibits its consequence in a model with positive likelihoods and
+positive local risks; the uniform approximation and relative certificate
+results address the whole prescribed monomial family, rather than this
+one finite test alone.

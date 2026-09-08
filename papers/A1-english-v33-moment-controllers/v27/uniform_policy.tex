@@ -1,0 +1,111 @@
+\section{One order for an entire prediction curve}
+\label{sec:v27-policy}
+The order supplied by Theorem~\ref{thm:v25-adaptive} may depend on the memory budget. A different question arises when the acquisition rule is chosen before the desired resolution is specified. We retain the experiment, priors, command laws and query menus of Section~\ref{sec:v25-graph}. In particular, changing the required resolution does not change the law of the observations.
+
+\subsection{Acquisition rules and predictive encoders}
+\begin{definition}[Resolution-blind acquisition rule]\label{def:v27-blind}
+At a fixed calibration $a$, a resolution-blind rule $\sigma$ selects each successive vertex nonanticipatively from the revealed commands and reports and from a random seed independent of the complete tapes. Its transition functions and the law of this seed are fixed as the predictive label budget $M$ and the target error $\varepsilon$ vary. The rule receives neither of these quantities and does not read a state or an output of a resolution-specific predictive encoder. It may depend on the known calibration. Consequently the joint law of the tapes, the acquisition seed and the complete order is the same throughout its prediction curve.
+\end{definition}
+
+For a converse we allow $\sigma$ to read its full revealed past without charging its storage. Only the predictive information retained for the decoder is limited to $M$ labels. This is an oracle relaxation of the charged model, not a change to that model. The predictive encoder is causal, reads its previous label and the current batch, and may receive the finite order prefix. The decoder reads the label, the independent query descriptor and, in this relaxation, that prefix. It receives no other commands or reports. Independent coding coins, including coins shared with acquisition, may be fixed in advance; their joint law cannot encode a tape. The acquisition rule cannot use information sent back by the predictive encoder.
+
+Write $R^{\mathrm{o,av}}_{\sigma,M}(a)$ for the infimum, over these predictive encoders and decoders, of
+\[
+             \max_{1\le j<v}\E_{\tau,\xi}\mathcal L_j.
+\]
+The infimum is over one encoder for all boundaries at that budget. Different budgets may use different encoders. If a specified implementation class is empty, its infimum is $+\infty$. Define $B^{\mathrm{o,av}}_\sigma(\varepsilon,a)$ by restricting $M$ to $2^B$, $B\in\N\cup\{0\}$. Superscript $\mathrm{o}$ always denotes the scheduler oracle and finite-prefix decoder just specified. We use $R^{*,\mathrm{max}}_{\pi,M}$ and $B^{*,\mathrm{max}}_\pi$ for the original charged deterministic-order model.
+
+Put
+\[
+ Q_\pi(M,a)=\max_{1\le j<v}\Theta_{\delta(S_j^\pi)}(M,a),\qquad
+ W_\pi(\varepsilon,a)=\max_{1\le j<v}
+                  \sum_{e\in\delta(S_j^\pi)}b_e(\varepsilon,a).
+\]
+All constants in this section refer to a fixed graph experiment. They are uniform in calibration, in the acquisition rule and in the predictive budget. No assertion of uniformity over growing graphs is made.
+
+\subsection{Selection before the budget is specified}
+Let $\mathcal A$ be the first-block event of Lemma~\ref{lem:v26-first-block}, let $\beta(a)=\Prob(\mathcal A)$, and put $N=v!$. For an order $\pi$, define
+\[
+       \alpha_\pi(a,\sigma)=\Prob\{\mathcal A,\ \mathrm{order}=\pi\}.
+\]
+These probabilities involve the acquisition rule but no predictive encoder or budget. For a positive allocation $\ell$ on $F=\delta(S_j^\pi)$, write $k=\sum_e\ell_e$, $D_{F,\ell}=\prod_eD_{e,\ell_e}$ and $V_{F,\ell}=\prod_eV_{e,\ell_e}$. We retain $C_{S,\ell}(a)$ from \eqref{eq:v26-capacity-constant}. The same recovery norm may be used for all prefixes leading to $S$: the true query vector and the recovered coordinates depend on $S$, not on the order in which its vertices were visited.
+
+\begin{lemma}[A fixed trace with positive mass]\label{lem:v27-heavy}
+There is an order $\pi=\pi(a,\sigma)$ with $\alpha_\pi\ge\beta(a)/N$. For this single order, every budget, every admitted predictive encoder, every boundary $j$ and every positive allocation on its cut satisfy
+\begin{equation}\label{eq:v27-heavy-risk}
+ \max_i\E\mathcal L_i\ \ge\
+ \frac{\alpha_\pi}{2}
+ \left(\frac{\alpha_\pi D_{F,\ell}}
+ {2\beta(a)M C_{S_j^\pi,\ell}(a)}\right)^{2/k}.
+\end{equation}
+The order is independent of all resolution-specific predictive codebooks and of $M$.
+\end{lemma}
+\begin{proof}
+The complete orders partition the common event, and there are at most $N$ of them. Select one with mass at least $\beta(a)/N$, once and for all. Fix the independent seeds. At the prefix of this particular order and at the specified boundary the decoder has at most $M$ query-prediction vectors. This remains true when the prefix is provided for free, because it has now been fixed. Applying the affine recovery map to arbitrary prediction centres shows that loss at most $t$ places $X_{F,\ell}$ in at most $M$ Euclidean balls of radius $L_{S_j^\pi,\ell}\sqrt t$.
+
+Apply the unconditioned subprobability bound of Lemma~\ref{lem:v26-first-block} to these balls, and only then intersect with the event that the chosen order occurs. After averaging the fixed seeds, it gives
+\begin{equation}\label{eq:v27-trace-smallball}
+ \Prob\{\mathcal A,\ \mathrm{order}=\pi,\ \mathcal L_j\le t\}
+ \le \beta(a)M C_{S_j^\pi,\ell}(a)t^{k/2}/D_{F,\ell}.
+\end{equation}
+No density conditional on an order and no regularity of the rule's decision regions are used. The potential first-block coordinates coincide with the actual active posterior coordinates on $\mathcal A$, including when completed edges have reported nonfailures.
+
+Set $t=(\alpha_\pi D_{F,\ell}/(2\beta(a)M C_{S_j^\pi,\ell}(a)))^{2/k}$. At least $\alpha_\pi/2$ of the probability lies in $\{\mathcal L_j>t\}$. Thus $\E\mathcal L_j\ge\alpha_\pi t/2$, proving \eqref{eq:v27-heavy-risk}. This uses the expectation at one fixed boundary. It does not replace an expectation of a maximum by a maximum of expectations.
+
+The choice of order was made from the acquisition law before the encoder was specified. Predictive coding randomness cannot change that law. The estimates are uniform in the fixed seeds, so shared independent randomness and private decoder randomness do not alter the conclusion.
+\end{proof}
+
+\begin{theorem}[Simultaneous deterministic domination]\label{thm:v27-curve}
+Suppose $E\ne\varnothing$. There are constants $c_*,C_*>0$ such that, for every calibration and every resolution-blind acquisition rule, one deterministic order $\pi(a,\sigma)$ satisfies, simultaneously for all integers $M\ge1$,
+\begin{equation}\label{eq:v27-curve}
+ R^{\mathrm{o,av}}_{\sigma,M}(a)\ge c_*Q_\pi(M,a),\qquad
+ R^{*,\mathrm{max}}_{\pi,M}(a)\le C_*Q_\pi(M,a).
+\end{equation}
+In particular,
+\[
+ R^{*,\mathrm{max}}_{\pi,M}(a)
+       \le (C_*/c_*)R^{\mathrm{o,av}}_{\sigma,M}(a)
+                 \quad\hbox{for every }M.
+\]
+The deterministic upper bound is realized in the original charged model by one causal joint-label filter at each budget. The order, but not necessarily the filter, is common to all budgets. For an empty edge set every predictive risk is zero.
+\end{theorem}
+\begin{proof}
+Use the order from Lemma~\ref{lem:v27-heavy}. Put $\Lambda_\ell=\prod_{e\in F}\ell_e!$. The retained inequalities $D_{F,\ell}\le V_{F,\ell}\le\Lambda_\ell D_{F,\ell}$ and $\alpha_\pi\ge\beta(a)/N$ give
+\[
+ \max_i\E\mathcal L_i\ge
+ \frac{\beta(a)}{2N}
+ \left(\frac{1}{2N C_{S_j^\pi,\ell}(a)\Lambda_\ell}\right)^{2/k}
+                  (V_{F,\ell}/M)^{2/k}.
+\]
+There are finitely many subsets and allocations. Their dimensions are positive integers bounded by $\sum_ep_e$, their recovery and density constants admit uniform finite upper bounds, and $\beta(a)$ has a uniform positive lower bound. Hence the displayed prefactor has a positive uniform lower bound. Maximize over positive allocations and then over the boundaries of the selected order. Zero products contribute zero to the profile and require no inverse. This proves the first inequality before the infimum over encoders is taken, and therefore afterwards as well. Proposition~\ref{prop:v25-fixed-order} proves the second inequality, uniformly over the finite family of orders.
+\end{proof}
+
+An accuracy-dependent rule is not covered by this conclusion merely because it has the same source code. In particular, a rule that reads a budget-dependent compressed state can have a different acquisition law at every budget. Such rules remain covered, separately at each budget, by Theorem~\ref{thm:v25-adaptive}. The stronger quantifier in \eqref{eq:v27-curve} requires the acquisition law to be fixed across the curve.
+
+\begin{corollary}[A uniform additive bit comparison]\label{cor:v27-bits}
+For the same order as in Theorem~\ref{thm:v27-curve}, there is a uniform constant $K_*$ such that
+\begin{equation}\label{eq:v27-bit-domination}
+ B^{*,\mathrm{max}}_\pi(\varepsilon,a)
+ \le B^{\mathrm{o,av}}_\sigma(\varepsilon,a)+K_*
+                     \qquad(0<\varepsilon\le1).
+\end{equation}
+A more explicit lower comparison is
+\[
+ B^{\mathrm{o,av}}_\sigma(\varepsilon,a)
+                         \ge W_\pi(\varepsilon,a)-\Delta(a),
+\]
+where one may take the maximum of zero and, over all internal subsets and positive allocations, the quantities
+\begin{equation}\label{eq:v27-bit-cost}
+ \log_2\!\bigl(2N C_{S,\ell}(a)\Lambda_\ell\bigr)
+                  +\frac{k}{2}\log_2\!\frac{2N}{\beta(a)}.
+\end{equation}
+The function $\Delta(a)$ is bounded uniformly on the admitted calibration set.
+\end{corollary}
+\begin{proof}
+If an encoder with $M=2^B$ has risk at most $\varepsilon$, the last display in the proof of Theorem~\ref{thm:v27-curve} implies
+\[
+ B\ge \log_2V_{F,\ell}
+          +\frac{k}{2}\log_2(1/\varepsilon)-\Delta(a).
+\]
+The statement also follows by a limit when the risk infimum is not attained. Allowing the zero allocation and maximizing the independently capped edge indices gives the cut sum of the $b_e$. Maximizing over boundaries gives $W_\pi$. The fixed-order version of Corollary~\ref{cor:v25-graph-bits} yields $B^{*,\mathrm{max}}_\pi\le W_\pi+C_+$, with a uniform $C_+$. Combining these inequalities proves \eqref{eq:v27-bit-domination}. The bound concerns persistent bits, not temporary arithmetic workspace or a common codebook at every resolution.
+\end{proof}
