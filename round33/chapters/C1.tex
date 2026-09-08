@@ -1,0 +1,214 @@
+\section{C1. Normalized observations, complete cylinder-dual spaces, and an exact adaptive diagnostic experiment}
+\label{sec:r33-c1}
+
+The original objective is inference from partially observed deterministic
+mechanics.  Three logically different assertions must be separated: a valid
+probability channel, finite-horizon differentiability of its filter, and
+long-time statistical identification.  The first two do not imply a strict
+filter contraction.  We prove them on a specified infinite product state and
+provide an exactly solvable adaptive diagnostic experiment for the third.
+This example is not asserted to identify arbitrary mechanical parameters.
+
+\subsection{The probability of selecting a stratum}
+
+Let $Y=\bigsqcup_{s\ge1}Y_s$, let $m_s$ be a sigma-finite measure, and let
+$q_s>0$ be an $m_s$-density of total mass one.  Fix $\alpha_s>0$ with
+$\sum_s\alpha_s=1$ and put $\nu|_{Y_s}=\alpha_sq_sm_s$.
+For each hidden state, parameter, and action, specify measurable numbers
+$p_s(\theta,a,x)\ge0$ of sum one and conditional densities
+$\rho_s(\theta,a,x;\cdot)$ of mass one relative to $m_s$.  Then
+\begin{equation}\label{eq:r33-c1-density}
+ g_\theta^a(x,y)=
+ \frac{p_s(\theta,a,x)\rho_s(\theta,a,x;y)}{\alpha_sq_s(y)},
+ \qquad y\in Y_s.
+\end{equation}
+
+\begin{proposition}[Whole-channel normalization]
+\label{prop:r33-c1-channel}
+The measure $g_\theta^a(x,y)\nu(dy)$ is a probability kernel.  If the
+parameter derivatives of $p_s\rho_s$ through order $r$ are continuous in
+$L^1(m_s)$ and their $L^1$ norms are summable uniformly on compact parameter
+sets, the channel is $C^r$ in $L^1(\nu)$.
+\end{proposition}
+\begin{proof}
+Multiplication by $\nu$ cancels $\alpha_sq_s$ on stratum $s$ and its integral
+is $p_s$.  Tonelli gives total mass $\sum_sp_s=1$.  The same cancellation
+identifies the $L^1(\nu)$ derivative norm with the sum of the $L^1(m_s)$
+norms, so the Banach-valued Weierstrass theorem applies.  This does not claim
+quadratic-mean differentiability at a parameter where a previously absent
+stratum acquires positive probability; square-root differentiability requires
+its own condition.
+\end{proof}
+
+\subsection{A complete cylinder-dual space with explicit bonding maps}
+
+For this construction take the genuinely infinite-dimensional hidden space
+$X=(\mathbb T^d)^{\mathbb N}$ with its product topology.  It is compact
+metrizable.  Let $s>d/2$ and, for $j\ge0$, set
+\[
+ H_{n,j}=\widehat\bigotimes_{i=1}^n H^{-(s+j)}(\mathbb T^d).
+\]
+All tensor products are Hilbert tensor products with Fourier weights.
+The map $b_{n+1,n}:H_{n+1,j}\to H_{n,j}$ is contraction with the constant
+function $1$ in the last coordinate, whose positive Sobolev norm is one.
+Define
+\[
+ \mathscr E_j=
+ \{(T_n)_{n\ge1}:b_{n+1,n}T_{n+1}=T_n\},
+ \qquad p_{n,j}(T)=\|T_n\|_{H_{n,j}}.
+\]
+
+\begin{proposition}[Complete projective dual and probability embedding]
+\label{prop:r33-c1-projective}
+The space $\mathscr E_j$ is a complete metrizable locally convex space, with
+metric $\sum_n2^{-n}(1\wedge p_{n,j}(T-S))$.  Finite signed measures on $X$
+embed by their finite-coordinate marginals.  The embedding of probability
+measures is continuous from weak convergence into every seminorm $p_{n,j}$.
+\end{proposition}
+\begin{proof}
+The countable product of the Hilbert spaces is complete and the compatibility
+equations are kernels of continuous linear maps.  Thus their intersection is
+closed and complete.  For one coordinate,
+$\sum_{k\in\mathbb Z^d}(1+|k|^2)^{-s-j}<\infty$ makes $x\mapsto\delta_x$
+a continuous map into $H^{-(s+j)}$.  Finite tensor products give the same
+property for $x_{1:n}\mapsto\delta_{x_{1:n}}$, with compact image.  Approximate
+this Hilbert-valued continuous map uniformly by finite-rank continuous maps.
+Weak convergence of marginals then implies norm convergence of their Bochner
+integrals, which are precisely the marginal distributions in $H_{n,j}$.
+Bonding compatibility follows from marginalization.
+\end{proof}
+
+Suppose $\Phi_\theta:X\to X$ is compatible and its first $n$ output
+coordinates depend on finitely many input coordinates, with $C^{r+1}$
+parameter derivatives bounded on compact parameter sets.  No inverse map is
+required.  Spatial differentiability is needed only for the finite output
+coordinates tested below.
+
+\begin{theorem}[Strong parameter derivatives on the common cylinder level]
+\label{thm:r33-c1-push}
+For a fixed finite signed measure $\mu$ on $X$, the map
+$\theta\mapsto(\Phi_\theta)_\#\mu$ is $C^r$ in $\mathscr E_r$.
+For a smooth cylindrical test $\varphi$,
+\[
+ \langle\partial_\theta^j(\Phi_\theta)_\#\mu,\varphi\rangle
+ =\int_X\partial_\theta^j[\varphi(\Phi_\theta(x))]\,\mu(dx),
+ \qquad j\le r.
+\]
+\end{theorem}
+\begin{proof}
+For a finite coordinate, the Fourier series for $\partial^\ell\delta_x$ is
+square summable in $H^{-(s+r)}$ for $\ell\le r$; dominated convergence of
+that series makes these derivatives norm continuous.  The finite tensor
+product has norm-continuous derivatives of total order at most $r$.
+Composition with the first $n$ output coordinates of $\Phi_\theta$ therefore
+has a Taylor remainder tending to zero uniformly in $x$ on each compact
+parameter set.  Integrating that remainder against $|\mu|$ proves strong,
+not merely weak, differentiability in $H_{n,r}$.  The identities are compatible
+under every $b_{n+1,n}$, so convergence holds in the stated projective topology.
+The assertion is for measures and their resulting jets; it does not assert
+that an arbitrary nonlinear push-forward is bounded on every distributional
+dual space.
+\end{proof}
+
+For a fixed observation record of length $n$, write the unnormalized posterior
+as one integral over the initial hidden state:
+\[
+ \langle N_{n,\theta},\varphi\rangle
+ =\int\varphi(X_n^\theta(x))
+   \prod_{k=1}^n g_\theta^{a_k}(X_k^\theta(x),y_k)\,\mu(dx).
+\]
+If its likelihood factors and output coordinate maps have the preceding
+finite-coordinate smoothness and bounded derivative envelopes, the same
+Taylor argument differentiates $N_{n,\theta}$ in each $H_{m,r}$.
+Where $r_{n,\theta}=N_{n,\theta}(1)>0$, normalization gives
+\[
+ \partial_\theta\Pi_{n,\theta}
+ =r_{n,\theta}^{-1}\partial_\theta N_{n,\theta}
+  -r_{n,\theta}^{-2}N_{n,\theta}\partial_\theta r_{n,\theta}.
+\]
+These are finite-horizon estimates; their constants can grow with $n$.
+A positive likelihood and a deterministic permutation do not imply a strict
+Hilbert-projective contraction: multiplication cancels in posterior density
+ratios.  No such contraction is used here.
+
+\subsection{Nonoverlapping diagnostic scheduling}
+
+A policy chooses an action using the observed past and a fresh external
+randomizer before the next noise is drawn.  Its conditional action law is a
+fixed measurable function of that past and does not explicitly depend on the
+unknown parameter.  To schedule length-$m_0$ diagnostic words, partition time
+into disjoint blocks.  At a block start choose one word $j$ with probability
+at least $\rho_j$, where $\sum_j\rho_j\le1$, and execute that word until the
+block ends.  Distinct incompatible words are not required to occur in the
+same block.  This defines a nonempty causal policy class.
+
+\subsection{An exact, nonempty adaptive statistical example}
+
+Let the hidden state evolve by any parameter-free deterministic map of $X$.
+The parameter $\theta\in\mathbb R^d$ is a diagnostic sensor offset.  At time
+$k$ the policy selects a diagnostic indicator $A_k\in\{0,1\}$ with
+\[
+ \mathbb P(A_k=1\mid\mathcal F_{k-1})\ge\rho>0.
+\]
+When $A_k=1$, observe $Y_k=\theta+\xi_k$, with independent
+$\xi_k\sim N(0,\Sigma)$, $\Sigma>0$, independent also of the policy
+randomizer and hidden state.  Nondiagnostic outputs have a parameter-free
+law and no dependence on these diagnostic noises.  Put
+$T_n=\sum_{k\le n}A_k$ and
+$S_n=\sum_{k\le n}A_k(Y_k-\theta_0)$.
+Take a prior $N(m_0,V_0)$, $V_0>0$.
+
+\begin{theorem}[Exact adaptive likelihood and posterior]
+\label{thm:r33-c1-exact}
+For every such policy,
+\[
+ \log\frac{dP_{\theta_0+h/\sqrt n}}{dP_{\theta_0}}
+ =h^T\Sigma^{-1}S_n/\sqrt n
+   -\frac{T_n}{2n}h^T\Sigma^{-1}h
+\]
+exactly.  Conditional on all observations and actions, the posterior is
+$N(m_n,V_n)$, where
+\[
+ V_n=(V_0^{-1}+T_n\Sigma^{-1})^{-1},\qquad
+ m_n=V_n\left(V_0^{-1}m_0+
+            \Sigma^{-1}\sum_{k\le n}A_kY_k\right).
+\]
+Furthermore $\mathbb P(T_n<\rho n/2)\le e^{-c_\rho n}$ and, with
+$\bar Y_n=T_n^{-1}\sum A_kY_k$ on $T_n>0$,
+\[
+ d_{\rm TV}\left(
+ \mathcal L(\sqrt{T_n}(\theta-\bar Y_n)\mid\mathcal F_n),
+ N(0,\Sigma)\right)\longrightarrow0
+\]
+in $P_{\theta_0}$-probability uniformly over the policy class.
+\end{theorem}
+\begin{proof}
+The common policy likelihood factors cancel in the chronological joint law
+of actions and outputs.  The remaining Gaussian factors give the displayed
+quadratic log likelihood.  Completing its square with the Gaussian prior
+gives $m_n,V_n$, even though the diagnostic choices are adaptive.
+The differences $A_k-E(A_k\mid\mathcal F_{k-1})$ are bounded martingale
+differences.  Azuma's inequality proves the bound on $T_n$.
+The score sum has $E\|S_n\|^2\le n\operatorname{tr}\Sigma$, uniformly in
+the policy, so $\bar Y_n-\theta_0=O_P(n^{-1/2})$ on the high-probability
+event $T_n\ge\rho n/2$.
+
+The rescaled posterior covariance is $T_nV_n\to\Sigma$ uniformly on this
+event.  Its mean is
+$\sqrt{T_n}(m_n-\bar Y_n)
+ =\sqrt{T_n}V_nV_0^{-1}(m_0-\bar Y_n)=O_P(n^{-1/2})$.
+The explicit relative entropy between two nondegenerate Gaussian laws tends
+to zero; Pinsker's inequality proves the total-variation conclusion.
+No hidden filter contraction, Riccati identity, or unproved annular testing
+argument is needed for this example.
+\end{proof}
+
+\subsection{Mechanical identification remains a separate theorem}
+
+The exact diagnostic experiment proves that normalized adaptive inference is
+nonempty on an infinite-dimensional deterministic hidden state.  It does not
+prove that a billiard or hard-sphere parameter can be identified from an
+arbitrary chosen signal.  For that application one must establish induced-law
+identification, recursive derivative bounds uniform in time, and posterior
+testing for the actual mechanical channel.  A pointwise Fisher inequality is
+not substituted for any of these statements.

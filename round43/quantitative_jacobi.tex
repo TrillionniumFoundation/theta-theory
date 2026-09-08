@@ -1,0 +1,470 @@
+
+\section{Effective inverse stability, adaptive exploration, and physical-time uncertainty}
+\label{sec:quantitative-jacobi}
+
+The response metric in Theorem~\ref{thm:jacobi-rate} is intrinsic, but a
+coefficient theorem also requires a computable modulus.  We now construct one.
+The bounds below are intentionally conservative: their role is to expose the
+depth, separation, sampling-weight, and elapsed-time dependence rather than to
+hide analytic continuation inside compactness.
+
+Put
+\[
+ B_J=b_++2a_+,
+ \qquad \Lambda_A=1+c_++B_J,
+ \qquad Q=8\max\{2,\Lambda_A,T,T^{-1},a_-^{-1}\}.
+\]
+For \(J\ge0\), set \(R_J=4J+8\) and
+\begin{equation}
+ L_J=Q^{12(J+1)^3}.
+ \label{eq:effective-LJ}
+\end{equation}
+All these constants are determined by the declared coefficient box and the
+probe horizon.
+
+\begin{lemma}[Effective response-jet inversion]
+\label{lem:effective-response-jet}
+For every \(J\ge0\) and \(\beta,\gamma\in\mathfrak B\),
+\begin{equation}
+ d_J(\beta,\gamma)
+ \le L_J\max_{0\le r\le R_J}
+       |h_\beta^{(r)}(0)-h_\gamma^{(r)}(0)|.
+ \label{eq:effective-jet-inverse}
+\end{equation}
+The exponent in \eqref{eq:effective-LJ} is not optimized.
+\end{lemma}
+
+\begin{proof}
+Let \(\mu_k(\beta)=\langle e_0,J_\beta^ke_0\rangle\).  Repeatedly using
+\(A_\beta(q,v)=(v,-J_\beta q-cv)\) shows triangularly that
+\(h_\beta^{(2k+2)}(0)=(-1)^k\mu_k(\beta)\) plus a polynomial in
+\(c,\mu_0,\ldots,\mu_{k-1}\), while the odd derivative gives the companion
+triangular relation.  Hence derivatives through order \(4J+8\) recover
+\(c,\mu_0,\ldots,\mu_{2J+2}\) by additions and multiplications whose
+Lipschitz constants are bounded by \(Q^{4(J+1)^2}\).
+
+Write
+\(\Delta_j=\det(\mu_{r+s})_{r,s=0}^j\).  The monic orthogonal-polynomial
+identity gives
+\begin{equation}
+ \Delta_j=\prod_{r=0}^{j-1}a_r^{2(j-r)}
+ \ge a_-^{j(j+1)}.
+ \label{eq:hankel-determinant-lower}
+\end{equation}
+Moreover \(|\mu_k|\le B_J^k\).  The standard determinant formulas for the
+Jacobi recurrence coefficients, followed by the adjugate formula and
+Hadamard's inequality, therefore bound the Lipschitz constant of the map
+\((\mu_0,\ldots,\mu_{2J+2})\mapsto(a_0,b_0,\ldots,a_J,b_J)\) by
+\(Q^{8(J+1)^3}\).  Multiplying the two displayed bounds gives
+\eqref{eq:effective-jet-inverse}.  This proof is an effective finite
+calculation; in particular, \(L_J\) is not a minimum over a compact set.
+\end{proof}
+
+For \(R\ge1\), let
+\[
+ V_R=(k^r/r!)_{0\le k,r\le R},
+ \qquad C_R=\|V_R^{-1}\|_\infty,
+ \qquad M_R=2e^{\Lambda_AT}\Lambda_A^R.
+\]
+The number \(C_R\) is a completely explicit rational number.  Lagrange
+interpolation at \(0,\ldots,R\) gives the useful closed bound
+\begin{equation}
+ C_R\le 2^{R+1}(R+1)!.
+ \label{eq:vandermonde-inverse-bound}
+\end{equation}
+Indeed, the coefficient sum of
+\(\prod_{0\le j\le R,\,j\ne k}(x-j)\) is at most
+\((R+1)!/(k+1)\), and multiplication by
+\(r!/[k!(R-k)!]\) bounds every entry of \(V_R^{-1}\); summing a row gives
+\eqref{eq:vandermonde-inverse-bound}.  For
+\(0<\varepsilon\le\min(1,T/R)\), define
+\begin{equation}
+ E_R(\varepsilon)=
+ \frac{C_RM_RR^{R+1}}{(R+1)!}\,\varepsilon.
+ \label{eq:taylor-grid-error}
+\end{equation}
+
+\begin{lemma}[Finite-grid derivative certificate]
+\label{lem:finite-grid-certificate}
+If \(g=h_\beta-h_\gamma\), then
+\begin{equation}
+ \max_{0\le r\le R}|g^{(r)}(0)|
+ \le C_R\varepsilon^{-R}
+       \max_{0\le k\le R}|g(k\varepsilon)|
+       +E_R(\varepsilon).
+ \label{eq:finite-grid-derivative}
+\end{equation}
+Here \(g(0)=0\) is known exactly, so only the positive grid points require
+measurements.
+\end{lemma}
+
+\begin{proof}
+For \(r\ge1\),
+\(h_\beta^{(r)}(t)=\ell A_\beta^{r-1}e^{tA_\beta}B\); hence
+\(\sup_{t\le T}|g^{(R+1)}(t)|\le
+2e^{\Lambda_AT}\Lambda_A^R=M_R\).  Taylor's formula at the \(R+1\)
+points \(k\varepsilon\) therefore gives
+\(V_R(\varepsilon^rg^{(r)}(0))_{r=0}^R\) plus a remainder bounded by
+\(M_R(R\varepsilon)^{R+1}/(R+1)!\).  Multiply by \(V_R^{-1}\) and use
+\(\varepsilon^{-r}\le\varepsilon^{-R}\).
+\end{proof}
+
+We specialize the diagnostic law to a canonical union of two countable
+families.  Half of its mass is any fixed explicit dense enumeration
+\((u_m)\) of the rational points of \((0,T]\), with weight \(2^{-m-1}\).
+The remaining half is assigned to the multiscale cells
+\[
+ q=(J,s,k),\qquad J\ge0,\ s\ge1,\ 1\le k\le R_J,
+\]
+with
+\begin{equation}
+ \varepsilon_{J,s}=\min\left\{1,\frac{T}{2R_J}\right\}2^{-s},\qquad
+ t_q=k\varepsilon_{J,s},\qquad
+ \omega_q=\frac{2^{-J-s-2}}{R_J}.
+ \label{eq:multiscale-design}
+\end{equation}
+The weights sum to one and the dense half preserves the hypotheses of
+Theorem~\ref{thm:jacobi-rate}.
+
+For \(0<\delta\le1\), let \(s_J(\delta)\) be the least positive integer for
+which
+\begin{equation}
+ E_{R_J}(\varepsilon_{J,s_J(\delta)})
+ \le \frac{\delta}{2L_J},
+ \label{eq:scale-choice}
+\end{equation}
+and put
+\begin{align}
+ \underline\kappa_J(\delta)
+ &=\frac{2^{-J-s_J(\delta)-2}}{R_J}
+ \left\{
+   \frac{\delta\,\varepsilon_{J,s_J(\delta)}^{R_J}}
+        {2C_{R_J}L_J}
+ \right\}^2,
+ \label{eq:effective-kappa}\\
+ \zeta_R&=\min\{1,T/(2R)\},\qquad
+ H_R=\frac{C_RM_RR^{R+1}}{(R+1)!},\notag\\
+ G_J&=\max\{2/\zeta_{R_J},\,4L_JH_{R_J}\},\notag\\
+ K_J&=\frac{2^{-J-4}}
+ {R_J\zeta_{R_J}C_{R_J}^2L_J^2G_J^{2R_J+1}}.
+ \label{eq:explicit-kappa-prefactor}
+\end{align}
+
+\begin{theorem}[Explicit depth-dependent Jacobi stability]
+\label{thm:effective-jacobi-stability}
+For every \(J\ge0\), \(0<\delta\le1\), and
+\(\beta,\gamma\in\mathfrak B\),
+\begin{equation}
+ d_J(\beta,\gamma)\ge\delta
+ \quad\Longrightarrow\quad
+ D(\beta,\gamma)\ge\underline\kappa_J(\delta)>0.
+ \label{eq:effective-response-separation}
+\end{equation}
+Consequently \(\kappa_J(\delta)\ge\underline\kappa_J(\delta)\), and the
+fully explicit lower estimate
+\begin{equation}
+ \underline\kappa_J(\delta)\ge K_J\delta^{2R_J+3}
+ \ge \exp\{-A_0(J+1)^4\}\delta^{20(J+1)},
+ \qquad 0<\delta\le1,
+ \label{eq:kappa-asymptotic-lower}
+\end{equation}
+holds with the displayed prefactor \(K_J\) and, for example,
+\begin{equation}
+ A_0=10^6\{1+\Lambda_AT+|\log T|+\log Q\}.
+ \label{eq:explicit-A0}
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+If \(d_J\ge\delta\), Lemma~\ref{lem:effective-response-jet} gives a
+derivative difference at least \(\delta/L_J\).  Apply
+Lemma~\ref{lem:finite-grid-certificate} at the scale selected in
+\eqref{eq:scale-choice}.  Some measured grid value then has magnitude at
+least
+\(\delta\varepsilon_{J,s}^{R_J}/(2C_{R_J}L_J)\).  Its single contribution
+to \(D\) is exactly the right side of \eqref{eq:effective-kappa}.
+To prove the first inequality in \eqref{eq:kappa-asymptotic-lower}, write
+\(\varepsilon_{J,s}=\zeta_{R_J}2^{-s}\).  If the least admissible scale has
+\(s=1\), then \(\varepsilon_{J,s}=\zeta_{R_J}/2\ge\delta/G_J\).  If
+\(s>1\), minimality says
+\(2H_{R_J}\varepsilon_{J,s}>\delta/(2L_J)\), and again
+\(\varepsilon_{J,s}>\delta/G_J\).  Hence
+\(2^{-s}=\varepsilon_{J,s}/\zeta_{R_J}
+\ge\delta/(\zeta_{R_J}G_J)\).  Substitution into
+\eqref{eq:effective-kappa} gives exactly
+\(\underline\kappa_J(\delta)\ge K_J\delta^{2R_J+3}\).
+Finally \eqref{eq:vandermonde-inverse-bound},
+\(R_J\le8(J+1)\), \(\log x\le x\), and the definitions of
+\(L_J,H_R,G_J\) give
+\(-\log K_J\le A_0(J+1)^4\) with \(A_0\) in
+\eqref{eq:explicit-A0}; also \(2R_J+3=8J+19\le20(J+1)\).
+Since \(0<\delta\le1\), the second inequality follows.  Thus no constant in
+the inverse modulus is defined by an unnamed extremum or compactness
+argument.
+\end{proof}
+
+\begin{corollary}[Coefficient posterior exponent with no hidden modulus]
+\label{cor:effective-cylinder-rate}
+Under the multiscale design,
+\begin{equation}
+ \limsup_{n\to\infty}\frac1n
+ \log\Pi_n^{\nu_n}\{d_J(\beta,\beta_0)\ge\delta\}
+ \le-\frac{a^2}{2\sigma^2}\underline\kappa_J(\delta)
+ \quad\text{almost surely}.
+ \label{eq:effective-cylinder-posterior}
+\end{equation}
+\end{corollary}
+
+\begin{proof}
+Combine Theorem~\ref{thm:jacobi-rate} with
+Theorem~\ref{thm:effective-jacobi-stability}.
+\end{proof}
+
+\subsection{Finite propagation and increasing-depth recovery}
+
+\begin{lemma}[Boundary locality for a tridiagonal bath]
+\label{lem:jacobi-boundary-locality}
+There is an explicit \(C_{\rm loc}\), depending only on the coefficient box,
+such that if \(\beta\) and \(\gamma\) agree through depth \(K\), including
+\(c\), then
+\begin{equation}
+ \|h_\beta-h_\gamma\|_{C([0,T])}
+ \le C_{\rm loc}e^{\Lambda_AT}
+       \frac{(\Lambda_AT)^{K+1}}{(K+1)!}.
+ \label{eq:factorial-boundary-locality}
+\end{equation}
+If their first \(K\) coefficients differ by at most \(r\), the right side is
+augmented by \(C_{\rm loc}e^{\Lambda_AT}(K+1)r\).
+\end{lemma}
+
+\begin{proof}
+Expand the two bounded semigroups in powers of their generators.  A word that
+starts at the boundary, visits a coefficient below depth \(K\), and returns
+to the boundary contains at least \(K+1\) nearest-neighbour transmissions.
+All shorter words cancel.  Summing the remaining exponential-series tail
+gives \eqref{eq:factorial-boundary-locality}.  Telescoping the finitely many
+changed boundary coefficients gives the Lipschitz term.
+\end{proof}
+
+Assume for the next result that the Jacobi prior is a product prior whose
+one-coordinate densities are bounded below by one common \(p_->0\) on their
+compact intervals.  Let \(\mathcal H(\epsilon)\) denote the logarithm of the
+\(C([0,T])\) covering number of the response image at radius \(\epsilon\).
+Let \(K(\epsilon)\) be the least integer for which the factorial term in
+\eqref{eq:factorial-boundary-locality} is at most \(\epsilon/4\), put
+\[
+ A_K=C_{\rm loc}e^{\Lambda_AT}(K+1),
+ \qquad
+ \mathcal P(\epsilon)=(2K(\epsilon)+3)
+   \log\frac{4A_{K(\epsilon)}}{p_-\epsilon},
+\]
+and interpret \(\mathcal P\) as a deterministic lower bound on minus the log
+prior mass of an \(\epsilon\)-response ball.  Lemma~\ref{lem:jacobi-boundary-locality}
+gives the effective bounds
+\begin{equation}
+ \mathcal H(\epsilon)+\mathcal P(\epsilon)
+ \le C\frac{|\log\epsilon|^2}{\log(2+|\log\epsilon|)}
+ \qquad(0<\epsilon<1/2).
+ \label{eq:response-entropy-bound}
+\end{equation}
+
+\begin{theorem}[Growing-depth posterior recovery]
+\label{thm:growing-depth-recovery}
+Let \(J_n\uparrow\infty\), \(0<\delta_n\le1\), and put
+\(k_n=\underline\kappa_{J_n}(\delta_n)\).  If
+\begin{equation}
+ n k_n^2-\mathcal H(k_n/16)\longrightarrow+\infty,
+ \qquad
+ \mathcal P(\sqrt{k_n}/8)=o(nk_n),
+ \label{eq:growing-depth-conditions}
+\end{equation}
+then
+\begin{equation}
+ \Pi_n^{\nu_n}\{d_{J_n}(\beta,\beta_0)\ge\delta_n\}
+ \longrightarrow0
+ \quad\text{in }P_{\beta_0,z_0}\text{-probability}.
+ \label{eq:growing-depth-contraction}
+\end{equation}
+For every fixed \(\delta>0\), the concrete choice
+\(J_n=o((\log n)^{1/5})\) satisfies the conditions.
+\end{theorem}
+
+\begin{proof}
+Use an \(k_n/16\)-net of the compact response image.  Gaussian concentration
+at the net points and sup-norm interpolation give a uniform likelihood error
+smaller than \(k_n/8\) with probability tending to one under the first
+condition.  The product-prior lower bound, combined with
+Lemma~\ref{lem:jacobi-boundary-locality}, supplies a response ball of radius
+\(\sqrt{k_n}/8\) whose negative log mass is \(o(nk_n)\) under the second
+condition.  On the
+complement of the cylinder, Theorem~\ref{thm:effective-jacobi-stability}
+gives response information at least \(k_n\), so numerator over denominator
+tends to zero.  Finally \eqref{eq:kappa-asymptotic-lower} and
+\eqref{eq:response-entropy-bound} verify the stated concrete regime.
+\end{proof}
+
+For \(\tau>0\), let \(W_\tau e_j=e^{-\tau j}e_j\).
+
+\begin{corollary}[Weighted operator-norm recovery]
+\label{cor:weighted-operator-recovery}
+There is a box constant \(C_{\rm box}\) such that
+\begin{equation}
+ \|W_\tau(J_\beta-J_{\beta_0})W_\tau\|_{\rm op}
+ \le3d_J(\beta,\beta_0)+C_{\rm box}e^{-2\tau(J+1)}.
+ \label{eq:weighted-operator-bound}
+\end{equation}
+Hence any sequences in Theorem~\ref{thm:growing-depth-recovery} with
+\(\delta_n\to0\) yield posterior contraction in this weighted operator norm.
+\end{corollary}
+
+\begin{proof}
+Apply the Schur row-sum bound to the tridiagonal difference.  The first
+\(J+1\) rows contribute at most \(3d_J\); every remaining matrix entry is
+multiplied by at most \(e^{-2\tau(J+1)}\), and the coefficient box bounds its
+row sum by \(C_{\rm box}\).
+\end{proof}
+
+\subsection{Adaptive diagnostic allocation}
+
+The fixed multiscale law is not essential.  At stage \(i\), first draw a fresh
+Bernoulli exploration flag \(E_i\) of parameter \(\rho_J\in(0,1]\).  If
+\(E_i=1\), draw the diagnostic cell from \(\omega\); otherwise an arbitrary
+predictable reward-seeking or stabilizing controller may choose the diagnostic
+cell, in addition to choosing the preceding bounded feedback segment.  The
+fresh sign and readout noise are still drawn after that choice.
+
+\begin{theorem}[Exploration-floor adaptive identification]
+\label{thm:adaptive-exploration-floor}
+For every closed \(F\subset\mathfrak B\), the exact posterior under the
+exploration-floor policy satisfies
+\begin{equation}
+ \limsup_{n\to\infty}\frac1n\log\Pi_n^{\nu_n}(F)
+ \le-\frac{\rho_Ja^2}{2\sigma^2}
+       \inf_{\beta\in F}D(\beta,\beta_0)
+ \quad\text{almost surely}.
+ \label{eq:adaptive-exploration-rate}
+\end{equation}
+For fixed \(J\), all effective coefficient conclusions remain valid with the
+exponent multiplied by \(\rho_J\), while the nonexploration actions may be
+fully adaptive.  For a triangular sequence \(J=J_n\) with exploration floors
+\(\rho_n\), put
+\[
+ k_n^{\rm ad}=\rho_n\underline\kappa_{J_n}(\delta_n).
+\]
+If
+\begin{equation}
+ n(k_n^{\rm ad})^2-\mathcal H(k_n^{\rm ad}/16)\longrightarrow+\infty,
+ \qquad
+ \mathcal P(\sqrt{k_n^{\rm ad}}/8)=o(nk_n^{\rm ad}),
+ \label{eq:adaptive-growing-depth-conditions}
+\end{equation}
+then the growing-block conclusion of
+Theorem~\ref{thm:growing-depth-recovery} holds under the adaptive policy; if
+also \(\delta_n\to0\), so does the weighted operator-norm conclusion of
+Corollary~\ref{cor:weighted-operator-recovery}.  In particular, whenever
+\(\inf_n\rho_n>0\), the concrete fixed-\(\delta\) regime
+\(J_n=o((\log n)^{1/5})\) is unchanged.
+\end{theorem}
+
+\begin{proof}
+Conditionally on the past, the exploration contribution to every squared
+response difference is \(\rho_JD(\beta,\beta_0)\); all other diagnostic
+contributions are nonnegative.  The signed score is a bounded-envelope
+Gaussian martingale field.  The same finite sup-norm nets used in
+Lemma~\ref{lem:supnorm-response-slln} give a uniform martingale strong law.
+The denominator has exponential rate zero by full support and uniform response
+continuity.  The standard numerator--denominator argument then gives
+\eqref{eq:adaptive-exploration-rate}.
+
+For the triangular assertion, the exploration quadratic term supplies the
+uniform separation \(k_n^{\rm ad}\), whereas every nonexploration quadratic
+term remains nonnegative.  Bernoulli and Gaussian martingale concentration on
+an \(k_n^{\rm ad}/16\)-net has exponent at least a constant multiple of
+\(n(k_n^{\rm ad})^2\).  The response ball of radius
+\(\sqrt{k_n^{\rm ad}}/8\) supplies the denominator.  Hence the proof of
+Theorem~\ref{thm:growing-depth-recovery} applies verbatim under
+\eqref{eq:adaptive-growing-depth-conditions}; the weighted conclusion then
+follows from Corollary~\ref{cor:weighted-operator-recovery}.
+\end{proof}
+
+\subsection{Honest coefficient cylinders and elapsed-time rate}
+
+Fix a finite set \(\mathcal Q\) of multiscale cells.  Let \(N_q(n)\) be the
+number of visits to cell \(q\), and, when \(N_q(n)>0\), define
+\[
+ \widehat h_q=\frac1{aN_q(n)}
+   \sum_{i\le n:M_i=q}S_iY_i.
+\]
+Let \(r_i=C(i+1)^{-1-\epsilon_w}\) be the deterministic envelope in
+\eqref{eq:polynomial-washout-envelope}, and put
+\begin{equation}
+ R_{q,n}(\alpha)=
+ \frac{\sigma}{a}\sqrt{\frac{2\log(2n|\mathcal Q|/\alpha)}{N_q(n)}}
+ +\frac1{aN_q(n)}\sum_{i\le n:M_i=q}r_i,
+ \label{eq:response-confidence-radius}
+\end{equation}
+with \(R_{q,n}=+\infty\) if \(N_q(n)=0\).
+
+\begin{theorem}[Honest growing finite-block uncertainty]
+\label{thm:honest-jacobi-cylinders}
+The response confidence set
+\begin{equation}
+ \mathcal C_n(\alpha)=\{\beta\in\mathfrak B:
+ |h_\beta(t_q)-\widehat h_q|\le R_{q,n}(\alpha)
+ \text{ for every }q\in\mathcal Q\}
+ \label{eq:response-confidence-set}
+\end{equation}
+has frequentist coverage at least \(1-\alpha\), uniformly over the coefficient
+box, bounded feedback segments, and working initial-state priors.  Let
+\[
+ \epsilon_{J,\delta}=\zeta_{R_J}2^{-s_J(\delta)}
+\]
+be the scale selected in the proof of
+Theorem~\ref{thm:effective-jacobi-stability}.  If \(\mathcal Q\) contains its
+\(R_J+1\) grid cells and
+\begin{equation}
+ 2\max_{q\in\mathcal Q}R_{q,n}(\alpha)
+ <\frac{\delta\epsilon_{J,\delta}^{R_J}}
+        {2C_{R_J}L_J},
+ \label{eq:honest-cylinder-explicit-threshold}
+\end{equation}
+then \(\operatorname{diam}_{d_J}\mathcal C_n(\alpha)\le\delta\).  The same
+coverage statement holds for triangular finite cell sets \(\mathcal Q_n\)
+when \(|\mathcal Q|\) in \eqref{eq:response-confidence-radius} is replaced by
+\(|\mathcal Q_n|\); the growing-block diameter conclusion follows whenever
+\eqref{eq:honest-cylinder-explicit-threshold} eventually holds.
+\end{theorem}
+
+\begin{proof}
+For every cell, the visit indicator at stage \(i\) is predictable before the
+fresh Gaussian readout.  Therefore the selected Gaussian sums are martingale
+transforms.  At each possible visit count \(1\le m\le n\), the corresponding
+sum is \(N(0,m\sigma^2)\); a union bound over cells, signs, and the at most
+\(n\) possible counts gives the first term of
+\eqref{eq:response-confidence-radius}.  This argument remains valid when
+future visits depend on earlier readouts.  The persistent-state bias is
+bounded by the second term.  Apply
+Lemma~\ref{lem:finite-grid-certificate} to any two elements of the confidence
+set and then Lemma~\ref{lem:effective-response-jet} to obtain the diameter
+claim.
+\end{proof}
+
+Finally, let \(\mathsf T_n\) be total elapsed physical time through stage
+\(n\).  Bounded feedback and probe durations, together with
+\eqref{eq:logarithmic-washout}, give
+\begin{equation}
+ \mathsf T_n=\kappa_w n\log n+O(n),
+ \qquad \kappa_w=\frac{1+\epsilon_w}{\lambda_*}.
+ \label{eq:physical-time-complexity}
+\end{equation}
+Let \(W\) denote the principal Lambert function and define
+\begin{equation}
+ v(t)=\frac{t}{\kappa_w W(t/\kappa_w)}
+ \sim\frac{t}{\kappa_w\log t}.
+ \label{eq:physical-time-speed}
+\end{equation}
+Then \(v(\mathsf T_n)/n\to1\).  Consequently every upper and lower posterior
+large-deviation bound in Theorem~\ref{thm:jacobi-rate} remains valid in elapsed
+physical time after replacing the stage speed \(n\) by
+\(v(\mathsf T_n)\).  In particular the experiment has near-linear, rather
+than quadratic, physical-time cost.
