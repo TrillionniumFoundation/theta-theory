@@ -1,0 +1,30 @@
+name: A2 v9 revision source bundle
+on:
+  push:
+    branches:
+      - revision/a2-v9-relative-flux-poisson-minimax-2026-09-09
+    paths:
+      - .github/workflows/a2-v9-revision-source.yml
+      - papers/A2-v9-relative-flux-poisson-minimax/**
+permissions:
+  contents: read
+jobs:
+  source-bundle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Archive pinned mathematical sources and controlling review
+        run: |
+          mkdir -p export
+          git rev-parse HEAD > export/COMMIT.txt
+          tar -czf export/a2-v9-source.tar.gz papers/A2-v9-relative-flux-poisson-minimax papers/A2-v8-relative-boundary-fixed-offset reviews/a2-v8-relative-boundary-harsh-independent-2026-09-09
+          sha256sum export/a2-v9-source.tar.gz > export/SHA256SUMS
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: a2-v9-revision-source
+          path: export/
+          if-no-files-found: error
+          retention-days: 7
