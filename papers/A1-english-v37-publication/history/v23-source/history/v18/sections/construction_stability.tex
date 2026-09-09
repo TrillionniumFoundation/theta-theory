@@ -1,0 +1,486 @@
+\section{Verified construction and stability of finite advice}
+\label{sec:construction-stability}
+The intrinsic law concerns an experiment, whereas a numerical certificate
+concerns specified data or a specified program. We now relate these
+statements without identifying them. The resulting construction is stable
+under a common, imperfect numerical description of several experiments.
+In particular, an exact additive relation need not be resolved when its
+effect lies below the accuracy of the supplied moments.
+
+\subsection{A construction certificate independent of the program residual}
+Use the compact finite-horizon system of Section~\ref{sec:effective}.
+The numerical value attached to each grid history is fixed during one
+compilation. Let $\widetilde s_n(w)$ approximate its true state to accuracy
+$\tau$ in the maximum norm, including numerical rounding. Denote the
+selected histories by $w_{n,1},\ldots,w_{n,k_n}$, $k_n\le M$, and put
+\[
+ \widetilde c_{n,i}=\widetilde s_n(w_{n,i}),\qquad
+ r_n=\max_{w\in\mathcal H_n^h}\min_{i\le k_n}
+             \|\widetilde s_n(w)-\widetilde c_{n,i}\|_\infty.
+\]
+Here $\mathcal H_n^h$ is the complete finite list of grid histories.
+A history extending a selected history by a grid command and a report
+belongs to the next such list. We order the lists once and use the first
+index whenever a minimum or maximum is attained more than once.
+
+\begin{definition}[Finite construction contract]\label{def:construction-contract}
+A table satisfies the construction contract if its representatives are
+the farthest-first selection from the fixed numerical lists, its state
+counts agree with those representatives, every transition satisfies
+\begin{equation}\label{eq:nearest-contract}
+ j(n,i,u,x)=\min\operatorname*{argmin}_{k\le k_{n+1}}
+ \|\widetilde s_{n+1}(w_{n,i}(u,x))-
+                               \widetilde c_{n+1,k}\|_\infty,
+\end{equation}
+and every output is the prescribed clipped dyadic rounding of the
+numerical query evaluation at its representative history. All numerical
+lists and their radii $r_n$ are fixed before a table is checked.
+The histories and the contract are offline objects, not persistent state.
+\end{definition}
+
+\begin{theorem}[Construction-to-covering implication]
+\label{thm:construction-contract}
+Suppose the fixed state and query evaluations have errors at most $\tau$,
+the command grid has radius $h$, and a table satisfies
+Definition~\ref{def:construction-contract}. If $E_n$ bounds the distance
+from a true state to the true representative selected by the running
+filter, then one may take
+\begin{equation}\label{eq:contract-recurrence}
+ E_0=0,\qquad E_{n+1}=L_nE_n+G_nh+r_{n+1}+2\tau.
+\end{equation}
+The query error at stage $n$ is at most $K_nE_n+\tau$.
+Moreover,
+\begin{equation}\label{eq:contract-order}
+ r_n\le 2e_n(M)+2\tau,\qquad
+ \max_{i,u,x}\|T_n(c_{n,i},\bar u,x)-c_{n+1,j(n,i,u,x)}\|_\infty
+       \le r_{n+1}+2\tau.
+\end{equation}
+The right side of the second inequality is fixed by the numerical
+history lists, not increased in response to a supplied transition table.
+Consequently, at fixed horizon the table has worst-history query error
+$O(e(M)+h+\tau)$.
+\end{theorem}
+\begin{proof}
+The true initial state is the representative of the empty history, so
+$E_0=0$ even when its numerical name is imperfect. For a stored
+representative and a grid command, the numerical target in
+\eqref{eq:nearest-contract} belongs to $\mathcal H_{n+1}^h$.
+Its distance to the selected numerical centre is therefore at most
+$r_{n+1}$. Passing from the two numerical values to their two true
+values costs at most $2\tau$. This proves the second inequality in
+\eqref{eq:contract-order}. The first is the farthest-first separation
+argument of Lemma~\ref{lem:radius-certificate}: if there is an
+unselected point, the selected points together with a farthest point
+are $r_n$-separated; transferring them to an arbitrary $M$-ball cover
+of the true set gives $r_n\le2e_n(M)+2\tau$. If every point is
+selected, $r_n=0$ and the inequality is immediate.
+
+For an actual command, first compare the true current state with its
+true representative, at cost $L_nE_n$, and then replace the command
+by its grid code, at cost $G_nh$. Apply the just proved bound to the
+appended representative history. This gives
+\eqref{eq:contract-recurrence}. Compare a true query with its value
+at that representative, at cost $K_nE_n$, and then use the certified
+stored output, at cost $\tau$. Iterating the recurrence finitely many
+times and using the first inequality in \eqref{eq:contract-order}
+proves the last assertion. At no step is an approximate vector passed
+to a transition map whose domain is the feasible state set.
+\end{proof}
+
+The residual bound in Proposition~\ref{prop:program-certificate} remains
+valid for an arbitrary table. It is a different assertion: its right
+side is measured from that table. The following comparison makes the
+logical distinction quantitative. The example and its role as a
+transition diagnostic were given in \cite{RefereeV11Note}; we include
+the argument because the distinction is part of the numerical theorem.
+
+\begin{proposition}[Residual validity and covering-order realization]
+\label{prop:residual-comparison}
+There is a fixed compact one-step Lipschitz system for which a sequence
+of $M$-label tables has exact outputs at all representatives and valid
+residual bounds, yet its worst-history squared prediction error divided
+by the squared optimal $M$-centre radius is $4M^2$. Thus these two
+properties, even together with knowledge of the optimal covering radius,
+do not imply the construction-to-covering conclusion. For the same
+system a table satisfying the nearest-centre construction has the
+covering-order bound of Theorem~\ref{thm:construction-contract}.
+\end{proposition}
+\begin{proof}
+Take $U=[1/4,3/4]$, $s_0=1/2$, $T(s,u)=(s+u)/2$, and $Q(s)=s$.
+The reachable interval $[3/8,5/8]$ has length $1/4$. Since $M$ balls
+of radius $e$ have total length at most $2Me$, its covering radius
+is at least $1/(8M)$; equally spaced midpoints attain that value.
+Select representatives by farthest-first on an endpoint-containing
+command grid whose first history gives $3/8$, and store their exact
+query values. Replace every transition target by this first index.
+The output for command $3/4$ is now $3/8$, instead of $5/8$.
+The maximum error is exactly $1/4$, so the asserted squared ratio is
+$(1/4)^2/(1/(8M))^2=4M^2$. Its measured transition residual is also
+$1/4$, hence its residual bound is true. None of these computations
+changes the optimal radius of the experiment. For the correct table,
+\eqref{eq:nearest-contract} and Theorem~\ref{thm:construction-contract}
+give error $O(e(M)+h)$; choose $h=O(e(M))$. For the dyadic grids with
+$8M$ segments used in the finite diagnostic, $M$ a power of two,
+farthest-first gives maximum grid error at most $2e(M)$: after the
+endpoints, each new point bisects a longest interval between consecutive
+centres. Induction over the dyadic levels bounds its largest half-gap
+by $1/(4M)$; for $M=1$ the endpoint error is $1/4$.
+\end{proof}
+
+This proposition is not a limitation on finite approximation methods.
+It states exactly what a residual estimate does not assert about an
+arbitrary program. The additional input that identifies the sharp
+scale in this paper is the attained geometry of
+Theorem~\ref{thm:intrinsic-checkpoint}, not the error recurrence itself.
+We next give a consequence of that geometry which also concerns
+imperfectly known experiments, rather than only a count of table entries.
+
+\subsection{Stability of attainable sets and their profiles}
+All state coordinates in this subsection are the formal raw coordinates;
+coincident labels are not removed. Two experiments have the same
+command and report alphabets and are compared on the same histories.
+Their moment tables contain every formal degree through $N$.
+
+\begin{lemma}[Paired-history stability]\label{lem:paired-history}
+Consider two positive monomial experiments with uniformly bounded cell
+coefficient norms and report factors bounded below by $\kappa>0$.
+Suppose the maximum entrywise difference of their cell coefficients and
+formal moment tables is at most $\delta\le1$. There is a constant $C_*$,
+depending only on the fixed finite format and positivity bounds, such
+that, at every history of length $n<N$,
+\begin{equation}\label{eq:paired-stability}
+ \|s_n(w)-s'_n(w)\|_\infty\le C_*\delta.
+\end{equation}
+For a common probe menu with fixed formal coefficients the query
+probabilities satisfy the same assertion, with another fixed constant.
+In particular,
+\begin{equation}\label{eq:hausdorff-profile}
+ d_H(S_n,S'_n)\le C_*\delta,\qquad
+ |e_n(M)-e'_n(M)|\le C_*\delta\quad(M\ge1).
+\end{equation}
+No lower bound on a nonzero difference of exponent sums occurs here.
+\end{lemma}
+\begin{proof}
+Let $B$ bound the coefficient norm of a report factor and put $C_f=Jr$.
+For a fixed command, the difference of the two factor coefficient
+vectors has norm at most $C_f\delta$. Telescoping a product of $n$
+factors and then changing its moments bounds each integrated numerator
+and its evidence by
+\[
+ D_n\delta,\qquad
+ D_n=nC_f(B+1)^{n-1}+(B+1)^n.
+\]
+The same calculation applies after multiplication by any formal raw
+monomial of the remaining degree. If $A/Z$ and $A'/Z'$ are the two
+raw moments, then $Z,Z'\ge\kappa^n$ and $0\le A'/Z'\le1$.
+Consequently
+\[
+ \left|\frac A Z-\frac{A'}{Z'}\right|
+ =\frac{|A-A'+(A'/Z')(Z'-Z)|}{Z}
+ \le 2D_n\kappa^{-n}\delta.
+\]
+Take the maximum over the finitely many stages. A fixed formal query
+is a bounded linear combination of raw moments, proving its assertion.
+These estimates compare two actual experiments; the formal moment
+entries need not satisfy the same coincidence identities in the two.
+
+Every reachable point is obtained from some history. Use that identical
+history in the other experiment to obtain \eqref{eq:paired-stability}
+in both directions. This proves the Hausdorff bound. An arbitrary
+$M$-centre cover of one set, with radius within $\epsilon$ of its
+infimum, covers the other with additional radius at most $C_*\delta$.
+Interchange the sets and let $\epsilon$ decrease to zero to finish.
+\end{proof}
+
+Uniformity over priors must be specified, not inferred from full support
+alone. Fix a full-support Borel probability $\mu_0$ on $[0,1]$ and
+constants $0<c_-\le1\le c_+<\infty$. Write
+\[
+ \mathcal D=\{\mu\hbox{ a probability}:c_-\mu_0\le\mu\le c_+\mu_0\}.
+\]
+These are inequalities of measures. They do not require $\mu_0$, or
+any member of $\mathcal D$, to have a Lebesgue density.
+
+\begin{lemma}[Uniformity on a dominated prior family]
+\label{lem:prior-envelope}
+The constants in the intrinsic checkpoint and causal laws, and in
+Lemma~\ref{lem:cover-profile}, can be chosen uniformly for
+$(a,\mu)\in K\times\mathcal D$. The finite-horizon transition and
+finite-input estimates have the same uniformity.
+\end{lemma}
+\begin{proof}
+The family $\mathcal D$ is weakly compact. Indeed, probabilities on
+$[0,1]$ are weakly compact, and each measure inequality is closed:
+pass to the limit against a nonnegative continuous function and then
+use regularity of finite Borel measures. Every member has full support.
+The ordinary and complete confluent moment entries used in
+Lemma~\ref{lem:confluent-positive} depend continuously on
+$(a,\mu)$ on this compact family. For a logarithmic entry, its positive
+exponent is bounded away from zero; hence $t^c(\log t)^j$, extended
+by zero at the origin, varies continuously in the uniform norm on
+the relevant compact parameter set. The zero-exponent constant block
+has multiplicity one.
+
+There are finitely many formal orderings and confluent block types.
+For each, the mixed-moment pairing is strictly positive by the
+confluent positivity lemma for every $\mu\in\mathcal D$.
+Equivalently, in its determinant integration formula a product of
+$k$ copies of $\mu$ dominates $c_-^k\mu_0^{\otimes k}$; the ordered
+separated intervals used to prove strict positivity therefore retain
+positive mass. Compactness and continuity give the uniform lower
+singular-value bounds in the normalized attainable flag argument.
+The derivatives used in its local inverse and volume minorization
+are uniformly bounded, since all factor coefficients are bounded and
+the evidence is at least $\kappa^n$. The acquisition-prefix probability
+has this same lower bound independently of the prior.
+
+For the global cover, changing the moments only changes real
+coefficients in the bounded-format formula. Neither its format nor
+its attainable dimension changes. The bounding rectangle, evidence
+bound, and finite query maps are uniformly bounded. Thus both the
+local lower estimate and the global upper estimate used in
+Theorem~\ref{thm:intrinsic-checkpoint} are uniform. The causal argument
+uses only these estimates and finitely many uniform transition bounds.
+Finally, the proof of Lemma~\ref{lem:cover-profile} and the explicit
+moment error estimate use those same constants. This accounts for
+all prior-dependent inputs of the asserted estimates.
+\end{proof}
+
+\begin{corollary}[Stability of the collision profile]
+\label{cor:profile-stability}
+Fix the detector and let $(a,\mu),(a',\mu')\in K\times\mathcal D$.
+If their formal moment tables differ by at most $\delta$, then,
+uniformly for all $M\ge1$,
+\begin{equation}\label{eq:xi-stability}
+ \Xi_N(M,a)\le C\bigl(\Xi_N(M,a')+\delta^2\bigr),\qquad
+ \Xi_N(M,a')\le C\bigl(\Xi_N(M,a)+\delta^2\bigr).
+\end{equation}
+For a fixed prior, $\delta$ may be replaced by $C\|a-a'\|_\infty$.
+In particular, equality of additive sums may change without producing
+an instability above the scale of the moment error.
+\end{corollary}
+\begin{proof}
+Lemmas~\ref{lem:paired-history} and \ref{lem:prior-envelope} give
+$e(M)\le e'(M)+C_*\delta$ and the reverse inequality, uniformly.
+Square these inequalities and use Lemma~\ref{lem:cover-profile}.
+For the calibration assertion, the constant formal label is independent
+of $a$. For every other label of degree at most $N$, its exponent is
+uniformly positive on $K$. The derivatives of $t^{\alpha\cdot a}$
+with respect to positive-exponent coordinates are
+$\alpha_jt^{\alpha\cdot a}\log t$, uniformly bounded on $[0,1]$.
+The line segment between two points of $K$ retains a positive lower
+bound on the one-step exponents. Integrating the derivative along that
+segment proves the stated moment estimate for any probability prior.
+\end{proof}
+
+\subsection{One program from a common imperfect numerical name}
+Suppose a collection of compact systems shares its labelled history
+interface, its state-coordinate dimensions, and constants $L_n,G_n,K_n$.
+A \emph{common numerical name of floor $\rho$}, $0<\rho\le1$, supplies
+at scale $h=2^{-b}$ one finite command grid and one numerical evaluation
+on its feasible histories. For every compatible system, the grid is an
+$h$-net and its state and query errors, including rounding, are at most
+\[
+ \tau_b=\max\{h,\rho\}.
+\]
+The same data are used for all compatible systems. This quantifier is
+essential: a different exact prior hidden in a program is not a common
+numerical name. Write $e_{\mathcal E}(M)$ for the largest covering radius
+of a compatible system $\mathcal E$, and let $A=\max_n A_n$ be the
+history-net constant. Assume the state sets lie in fixed bounded cubes.
+
+\begin{theorem}[Stable common-advice realization]\label{thm:common-advice}
+From such a common name one can construct one table satisfying
+Definition~\ref{def:construction-contract}, with at most $M$ persistent
+labels at each stage, whose worst-history query error in every compatible
+system is at most
+\begin{equation}\label{eq:common-advice-error}
+ C\bigl(e_{\mathcal E}(M)+\rho\bigr).
+\end{equation}
+The construction does not select a compatible system. More precisely,
+put $c=A+4$, and stop at the first dyadic scale for which
+\begin{equation}\label{eq:robust-stop}
+ r_b\ge4c h_b\quad\hbox{or}\quad h_b\le\rho,
+ \qquad r_b=\max_{1\le n<N}r_{n,b}.
+\end{equation}
+The stopping scale satisfies, simultaneously for every compatible system,
+\[
+ h_b\asymp\min\{1,e_{\mathcal E}(M)+\rho\}.
+\]
+All constants depend only on the fixed horizon, bounds, and dimensions.
+\end{theorem}
+\begin{proof}
+The second condition ensures finite termination. Until and including the
+first stopping scale, $\tau_b\le2h_b$: before crossing the floor it
+is $h_b$, and the first dyadic scale below $\rho$ is greater than
+$\rho/2$ (with equality at the initial endpoint treated separately).
+For each compatible system, the finite-cover argument therefore gives
+\begin{equation}\label{eq:robust-bracket}
+ \max\{0,r_b/2-2h_b\}\le e_{\mathcal E}(M)
+           \le r_b+(A+4)h_b.
+\end{equation}
+The numerical radius on both sides is common, although the true covering
+radius may depend on the system.
+
+Suppose $b>0$ is the first stopping index. At the previous scale both
+conditions failed. By \eqref{eq:robust-bracket} and
+$h_{b-1}=2h_b$,
+\[
+ e_{\mathcal E}(M)<10c h_b,\qquad \rho<2h_b.
+\]
+Thus $h_b>(e_{\mathcal E}(M)+\rho)/(10c+2)$.
+If the radius condition holds at $b$, use
+$r_b\le2e_{\mathcal E}(M)+4h_b$ to obtain
+$h_b\le e_{\mathcal E}(M)/(2c-2)$.
+If it does not, the floor condition gives $h_b\le\rho$.
+In both cases $h_b\le e_{\mathcal E}(M)+\rho$.
+The initial stopping case follows from the fixed diameter bound and
+$\rho\le1$; if its radius condition holds, the same inequality bounds
+$e_{\mathcal E}$ below by a fixed positive number, and otherwise
+$\rho=1$. This proves the asserted scale comparison.
+
+The farthest-first selection and the independently checked nearest
+transitions use only the common numerical lists. In every compatible
+system Theorem~\ref{thm:construction-contract} bounds the query error
+by $C(e_{\mathcal E}+h_b+\tau_b)$. At the stopping scale the last
+two terms are $O(e_{\mathcal E}+\rho)$, proving
+\eqref{eq:common-advice-error}. Every state remains an index of an
+actual representative history for that system. Neither its true
+coordinates nor its model identity are consulted at runtime.
+\end{proof}
+
+\begin{corollary}[Finite moment uncertainty through collisions]
+\label{cor:uncertain-monomial}
+Fix a detector, $K$, $N$, and the prior envelope $\mathcal D$.
+Suppose a finite numerical moment table of degree at most $N$ is within
+$\delta$ of every compatible $(a,\mu)\in K\times\mathcal D$.
+The cell coefficients may also be supplied to this numerical accuracy;
+the underlying detector is fixed. For all sufficiently small $\delta>0$,
+one causal $M$-label filter constructed from these same data has
+maximum worst-history regret at most
+\begin{equation}\label{eq:uncertain-profile}
+ C\bigl(\Xi_N(M,a)+\delta^2\bigr)
+\end{equation}
+in every compatible experiment. No collision decision or value of $\Xi_N$
+is supplied to the construction. Its selected scale is comparable to
+$\min\{1,\sqrt{\Xi_N(M,a)}+\delta\}$ for each such experiment.
+\end{corollary}
+\begin{proof}
+Lemma~\ref{lem:explicit-moment-certificate} bounds the error of evaluating
+any feasible history from the supplied finite data by $C_0\delta$,
+with $C_0$ uniform by Lemma~\ref{lem:prior-envelope}. Use
+$\rho=2C_0\delta$, increasing $C_0$ if necessary to cover the fixed
+query coefficients. Exact rational evaluation of the supplied entries,
+followed by rounding at $b+2$ binary places, has error at most
+$\rho/2+h_b/8\le\max\{h_b,\rho\}$. Every compatible experiment
+therefore has the same valid numerical name. The rational command
+cube admits the required grids. Apply Theorem~\ref{thm:common-advice},
+square its bound, and use Lemma~\ref{lem:cover-profile}, uniformly in
+the prior envelope. The physical probe map is the same fixed formal
+map for the fixed detector. The running program has the prescribed
+label budget throughout. The smallness restriction on $\delta$ merely
+ensures the printed positive-evidence and $\rho\le1$ bounds.
+\end{proof}
+
+This is a robustness statement about one finite description, not an
+assumption that the approximate moment table is itself a positive
+moment sequence. It supplies a direct interpretation of the full
+collision law when even exact identities among supplied entries are
+unavailable. The additional $\delta^2$ term is not only an artifact of
+propagating a norm bound.
+
+\begin{proposition}[Sharp advice uncertainty in a positive experiment]
+\label{prop:advice-floor}
+There is a fixed positive detector with $r=2$ and $N=2$, and a dominated
+full-support prior family, for which the minimax regret of one filter
+required to serve all priors compatible with a common $\delta$-accurate
+moment table has order
+\[
+ M^{-2}+\delta^2,
+\]
+for all $M\ge1$ and all sufficiently small $\delta>0$. The lower bound
+holds under the same independent command exploration and a fixed finite
+spanning probe menu. It applies to programs receiving that common advice;
+it is not a precision converse for programs given different exact priors.
+\end{proposition}
+\begin{proof}
+Take $a_0=0,a_1=1$ and the three detector cells
+\[
+ k_0(t)=\tfrac14,\qquad k_1(t)=\tfrac38+\tfrac18t,
+ \qquad k_2(t)=\tfrac38-\tfrac18t.
+\]
+They are positive, sum to one, and span $\operatorname{span}\{1,t\}$.
+Let $\eta=1/4$, and take as reference prior uniform measure on $[0,1]$,
+with envelope constants $1/2$ and $3/2$. For
+$\epsilon=6\delta\le1/2$ consider the two densities
+$1\pm\epsilon(2t-1)$. Their moments are
+\[
+ m_k^\pm=\frac1{k+1}\pm\epsilon\frac{k}{(k+1)(k+2)}.
+\]
+Since $k/((k+1)(k+2))\le1/6$ for every nonnegative integer $k$,
+the uniform-prior moments form one common $\delta$-accurate numerical
+name, even if more moments than required are supplied.
+
+Upon reporting accepted cell $0$, its likelihood $g_0/4$ is constant
+in $t$, so the posterior remains the prior. The joint density of this
+report and the observed command is identical in the two experiments;
+its probability is at least $\eta/4$. The probe obtained with command
+$(1/2,3/8,5/8)$ is the event of rejection, whose function is
+$q(t)=1/2+t/32$. Its two posterior means differ by $\delta/16$.
+For any possibly randomized prediction $Y$ using the common advice,
+the distribution of $Y$ conditional on the accepted-cell-$0$ history
+is the same in the two experiments. If the two means are $q_-,q_+$,
+\[
+ \frac{\E(Y-q_-)^2+\E(Y-q_+)^2}{2}
+ =\E\left(Y-\frac{q_-+q_+}{2}\right)^2
+       +\frac{(q_+-q_-)^2}{4}
+ \ge\frac{\delta^2}{1024}.
+\]
+Integrate over those identical command histories and multiply by the
+fixed positive probability of selecting this probe from the spanning
+menu. The larger of the two unconditional regrets is at least
+$c\delta^2$, independently of $M$.
+
+For either fixed prior, the intrinsic checkpoint lower bound is
+$c'M^{-2}$, uniformly in this envelope. Indeed, $n=m=1$ and the
+attainable dimension is one, so $\Xi_2(M,a)=M^{-2}$.
+A common-advice filter is an admissible $M$-label filter for that fixed
+experiment; supplying less information does not invalidate its memory
+lower bound. Combining the two lower bounds gives a constant times
+$M^{-2}+\delta^2$. Corollary~\ref{cor:uncertain-monomial} gives the
+matching upper bound simultaneously for all compatible priors in the
+envelope, proving the assertion.
+\end{proof}
+
+\subsection{Exact rational workspace}
+\begin{lemma}[Input accuracy and exact intermediate lengths]
+\label{lem:rational-workspace}
+For the finite moment evaluator at fixed horizon and fixed format,
+$b+O(1)$-place dyadic inputs suffice for $O(2^{-b})$ evaluation error.
+If evaluated with exact rational operations, every intermediate numerator
+and denominator has $O(b+1)$ bits, with a constant depending on the fixed
+arithmetic circuit. This statement does not give an additive $O(1)$
+overhead in exact intermediate length. In fact, for
+$x_b=(2^b-1)/2^b$, the exact fractional length of $x_b^N$ is $Nb$.
+\end{lemma}
+\begin{proof}
+The input-accuracy assertion is the positive-evidence error bound of
+Lemma~\ref{lem:explicit-moment-certificate}. For the exact length
+assertion, bound the lengths of the numerator and denominator of a
+reduced fraction by those of its unreduced representation. Multiplication
+or division adds the operand lengths, while addition forms two products
+and their sum, increasing the resulting length by at most one beyond
+those product bounds. The circuit for one fixed-degree moment quotient
+has a number of gates depending only on the fixed format. Induction over
+these gates gives $C(b+1)$ bits for every intermediate. Its evidence is
+nonzero by the supplied certificate. Distances and comparisons of a
+fixed number of coordinates satisfy the same bound; selecting among
+more histories increases the number of operations and the index length,
+not the degree of a moment evaluation.
+
+Finally, $2^b-1$ is odd. The reduced denominator of $x_b^N$ is thus
+exactly $2^{Nb}$. This proves the stated exact length and explains why
+input/output accuracy and exact arithmetic storage cannot be identified.
+The rational-operation counts in the preceding sections exclude the
+cost of obtaining numerical advice; they are not bit-operation counts.
+\end{proof}

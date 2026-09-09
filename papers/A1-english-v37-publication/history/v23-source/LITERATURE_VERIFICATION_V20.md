@@ -1,0 +1,13 @@
+# Primary-source attribution check, 7 September 2026
+
+The following sources were checked for the specific comparisons below. This is not an exhaustive novelty search and makes no claim about journal acceptance.
+
+**Banaji–Pantea.** *Some results on injectivity and multistationarity in chemical reaction networks*, SIAM J. Appl. Dyn. Syst. 15 (2016), 807–869, DOI 10.1137/15M1034441. The arXiv v6 text at https://arxiv.org/html/1309.6771v6 gives Definition 2.24 and Lemma 2.36; Definition 2.5 specifies the compound-sign convention. This supports the retained finite-square attribution. It does not establish the manuscript's full physical memory theorem.
+
+**Müller et al.** *Sign conditions for injectivity of generalized polynomial maps with applications to chemical reaction networks and real algebraic geometry*, Found. Comput. Math. 16 (2016), 69–97, DOI 10.1007/s10208-014-9239-3. Lemma 2.1 in https://arxiv.org/html/1311.5493v2 supplies the finite positive-diagonal sign-vector mechanism. The already corrected rectangular attribution remains unchanged.
+
+**Kaveh–Makhnatch.** *Invariant factors as limit of singular values of a matrix*, https://arxiv.org/html/1811.07706v2, Theorem 1.1 and Section 6. The one-variable analytic invariant-order/singular-value relationship is classical. The A1 analytic memory law uses it after the physical affine classification; it is not presented as a new normal-form theorem.
+
+**de Wolf.** *A brief introduction to Fourier analysis on the Boolean cube*, Theory of Computing Library, Graduate Surveys 1 (2008), 1–20, DOI 10.4086/toc.gs.2008.001. Publication metadata: https://theoryofcomputing.org/articles/gs001/. The author-hosted version https://homepages.cwi.nl/~rdewolf/publ/other/fourier.pdf, Section 2.2, printed page 2, equation (1), gives the product-character orthonormality and inversion formula. That PDF page was also inspected as an image. This is the baseline for the elementary density perturbation, not an attribution of the positive acquisition/query construction or regret law to the survey. The bibliography now includes it explicitly.
+
+The exact-kernel section identifies its own separation, orthogonal-projection, polynomial-nonvanishing, interpolation, and factor-theorem inputs as elementary. Its additional assertion is their compatibility with continuous full-support priors under prescribed annihilation, including local positive witnesses and a physical block classification. The contribution statement is centered on the complete acquisition/cover/causal synthesis, without claiming a novelty certification for every supporting identity.

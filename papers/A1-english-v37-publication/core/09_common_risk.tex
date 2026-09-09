@@ -1,0 +1,243 @@
+\section{A collision bit at a common finite-memory budget}\label{sec:common-risk}
+This section compares total risks for one fixed target, not regrets against
+two different Bayes forecasters. It concerns an uncensored raw detector,
+so that erasure is literal postprocessing. It does not identify this operation
+with erasure \emph{before} a commanded comparator.
+
+\subsection{The counted mechanical realization}
+Let the triangular lattice have fundamental area
+$\mathfrak a=\sqrt3/2$, let $I_R=[9/20,47/100]$, and put a reflecting
+disk of radius $R$ at each lattice point. In each cartridge prepare a
+uniform position in the ambient torus, a uniform velocity direction,
+and independent uniform apparatus coordinates. A guarded insertion fails
+when the position is inside a disk. Otherwise a unit-speed particle is
+released. Every attempted insertion consumes one cartridge.
+
+Fix $0<T<3/50$ and $\epsilon>0$ with
+$\epsilon(47/100)^2<1$. Distinct lifted disks have separation at least
+$3/50$; an outgoing reflected ray cannot reenter the same convex disk
+before another collision. Thus each released particle has at most one
+collision by time $T$. At a collision let $z$ be its impact coordinate
+relative to the disk center. The fixed detector reports $+$ when its
+prepared uniform coordinate is at most
+$1/2+\epsilon|z|^2/\pi$, and otherwise reports $-$. The controller
+never receives $z$ or the uniform seed. This is an internally exact-coordinate
+apparatus, not a lower bound on the complexity of physical measurement.
+
+For completeness, incoming one-collision states are parameterized by
+\[
+ q=Rn_\alpha-sv^-,\quad
+ v^-=-\cos\phi\,n_\alpha+\sin\phi\,t_\alpha,
+ \quad 0<s<T,\quad |\phi|<\pi/2.
+\]
+The backward segment remains outside its own disk by convexity and cannot
+reach a distinct disk within $T$ by separation. The forward reflected
+segment has the same exclusion. Every regular colliding initial state
+has its unique impact triple. At fixed incoming laboratory angle the
+position Jacobian is $R\cos\phi$, and the angular coordinate change
+has determinant of absolute value one. Integration against ambient
+preparation $\dd q\,\dd\vartheta/(2\pi\mathfrak a)$ gives collision
+mass
+\[
+ \frac{R}{2\pi\mathfrak a}
+      \int_0^T\int_0^{2\pi}\int_{-\pi/2}^{\pi/2}
+                       \cos\phi\,\dd\phi\,\dd\alpha\,\dd s
+ =\frac{2TR}{\mathfrak a}.
+\]
+Tangencies are null, not an excluded positive-mass neighborhood.
+Since $|z|=R$ at impact, the four uncensored raw probabilities are
+\begin{equation}\label{eq:mechanical-cells}
+ \begin{split}
+ k_\partial&=\pi R^2/\mathfrak a,\qquad
+ k_0=1-\pi R^2/\mathfrak a-2TR/\mathfrak a,\\
+ k_\pm&=TR/\mathfrak a\ \pm 2T\epsilon R^3/(\pi\mathfrak a).
+ \end{split}
+\end{equation}
+They are positive on $I_R$ and sum to one. For $k_0$, positivity follows
+already at $R=47/100$, $T=3/50$, using $\mathfrak a>0.86$ and
+$\pi<22/7$; the other inequalities follow from the stated bounds.
+Their coefficient matrix in degrees zero through three is
+\[
+ \begin{pmatrix}
+ 0&1&0&0\\
+ 0&-2T/\mathfrak a&T/\mathfrak a&T/\mathfrak a\\
+ \pi/\mathfrak a&-\pi/\mathfrak a&0&0\\
+ 0&0&2T\epsilon/(\pi\mathfrak a)&-2T\epsilon/(\pi\mathfrak a)
+ \end{pmatrix},
+\]
+with determinant of absolute value $4T^2\epsilon/\mathfrak a^3$.
+A bounded lookup comparator therefore realizes $A=\{0,1,2,3\}$.
+Merging the signs gives the three probabilities
+$k_\partial,k_0,k_++k_-$, which span $A=\{0,1,2\}$.
+This supplies the dense special cases of Theorem~\ref{thm:main} from
+one counted apparatus. The stronger complete-record response, positive
+filter, boundary-control and surrogate derivations are preserved in the
+source companion \cite{A1v5}; the collision calculation above uses their
+whole-preparation normalization rather than conditioning away insertion
+failures.
+
+\subsection{One target and all state budgets}
+Consume two cartridges without censoring. Let $X\in\{\partial,0,+,-\}$
+be the first raw report, and let $Y$ be the placement-failure indicator
+on the second cartridge. After the first report the controller stores
+one of $M$ states, then announces its forecast $a\in[0,1]$ and incurs
+$(a-Y)^2$. The erased experiment observes
+$e(X)\in\{\partial,0,H\}$ with $e(+)=e(-)=H$.
+Both experiments use the same prior, both ambient attempts, and the same
+second-cartridge variable $Y$. There is no acceptance charge or saved
+cartridge. This is a separate uncensored experiment; it is not subject
+to the lower acceptance margin of the streaming theorem.
+
+Put $h(R)=\pi R^2/\mathfrak a$ and define
+\[
+ p_x=\mu k_x>0,\quad z_x=\mu(k_xh),\quad b_x=z_x/p_x,
+ \qquad p_B=\sum_{x\in B}p_x,\quad z_B=\sum_{x\in B}z_x.
+\]
+For a nonempty subset $B$ set
+\begin{equation}\label{eq:merge-cost}
+ \delta(B)=\sum_{x\in B}\frac{z_x^2}{p_x}-\frac{z_B^2}{p_B}
+ =\frac1{p_B}\sum_{\{x,y\}\subset B}p_xp_y(b_x-b_y)^2.
+\end{equation}
+All these quantities are finite combinations of prior moments through
+order five and the exact physical constants.
+
+\begin{theorem}[Complete common-risk finite-state comparison]\label{thm:finite-bit-value}
+For either alphabet $\mathcal X$ (four raw symbols or three erased tags),
+its optimal $M$-state risk, allowing independent randomization, is
+\begin{equation}\label{eq:partition-risk}
+ R_M(\mathcal X)=\mu h-
+  \max_{\substack{\mathcal Q\text{ partition of }\mathcal X\\|\mathcal Q|\le M}}
+             \sum_{B\in\mathcal Q}\frac{z_B^2}{p_B}.
+\end{equation}
+A maximizing partition, its block index and block forecasts $z_B/p_B$
+give an attained finite-state implementation.
+
+Let $R_M^+$ and $R_M^0$ denote the raw and erased risks and
+$\Gamma_M=R_M^0-R_M^+$. Then $\Gamma_M\ge0$ for every $M$,
+$\Gamma_1=0$, and, with $\Delta=\delta(\{+,-\})$,
+\begin{equation}\label{eq:all-budgets}
+ \Gamma_3=\Delta-\min_{x\ne y}\delta(\{x,y\}),\qquad
+ \Gamma_M=\Delta\quad(M\ge4).
+\end{equation}
+The case $M=2$ is exactly \eqref{eq:partition-risk}: it compares the seven
+two-block raw partitions and the three two-block erased partitions
+(one-block partitions are dominated). Equivalently, if
+$D_M^+$ and $D_M^0$ are the minimum sums of merge costs in the two
+alphabets, then
+\begin{equation}\label{eq:common-decomposition}
+ \Gamma_M=\Delta+D_M^0-D_M^+.
+\end{equation}
+These are common \emph{total} Bayes risks, not two separately normalized
+memory regrets.
+\end{theorem}
+\begin{proof}
+Conditional on a block message, the optimal forecast is $z_B/p_B$.
+Expanding squared loss gives block contribution
+$z_B-z_B^2/p_B$; summing proves the risk of every deterministic partition.
+For arbitrary random encoders and decoders, first replace a randomized
+forecast at each message by its conditional mean. Holding these at most
+$M$ forecasts fixed, each raw symbol can be assigned deterministically to
+a forecast minimizing its conditional squared loss. This cannot increase
+risk. Reoptimizing each resulting block forecast also cannot increase risk.
+Thus a deterministic partition is optimal, and the finite maximum is
+attained. A fresh public seed independent of $X,Y$ merely averages such
+risks and does not improve the optimum.
+
+The identity \eqref{eq:merge-cost} is obtained by expanding the weighted
+variance. The lossless raw risk is $\mu h-\sum_x z_x^2/p_x$; the
+lossless erased risk exceeds it by $\Delta$. Adding the optimal merging
+distortion in each alphabet gives \eqref{eq:common-decomposition}.
+Any erased code is a raw code after the deterministic map $e$, proving
+$\Gamma_M\ge0$ directly. With one state both forecasts equal $\mu h$.
+With at least four states both alphabets are losslessly encoded. With
+three states the erased alphabet is lossless, and an optimal raw partition
+can be refined to exactly three blocks without increasing risk. Such a
+partition merges exactly one pair. This proves \eqref{eq:all-budgets}.
+The partition counts for $M=2$ are the numbers of nontrivial subsets
+modulo complementation, namely $(2^4-2)/2=7$ and $(2^3-2)/2=3$.
+\end{proof}
+
+Write $\mu_j=\mu(R^j)$, let
+$\mu_H(\dd R)=R\mu(\dd R)/\mu_1$, and put
+\[
+ v=\Var_{\mu_H}(R^2),\qquad
+ \bar c=1/2+(\epsilon/\pi)\mu_H(R^2).
+\]
+The exact lossless gain retained from \cite{A1v5} is
+\begin{equation}\label{eq:physical-gain}
+ \Delta=\frac{2T\mu_1}{\mathfrak a}
+    \frac{(\epsilon v/\mathfrak a)^2}{\bar c(1-\bar c)}>0.
+\end{equation}
+Indeed conditional on a first hit the sign probability is
+$c(R)=1/2+\epsilon R^2/\pi$, and
+$\Cov_{\mu_H}(h,c)=\epsilon v/\mathfrak a$.
+The two conditional-mean shifts are respectively this covariance divided
+by $\bar c$ and its negative divided by $1-\bar c$.
+Their weighted squared sum is the covariance squared over
+$\bar c(1-\bar c)$. Multiplication by the hit probability proves
+\eqref{eq:physical-gain}, which is also precisely the pair cost
+$\delta(\{+,-\})$. Full support makes $v>0$. This is an explicit
+conditional-variance calculation, not a new general comparison-of-experiments
+principle \cite{Blackwell}.
+
+\begin{corollary}[A genuine finite-resolution threshold]\label{cor:threshold}
+Fix $T>0$ and a full-support prior on $I_R$. There exists
+$\epsilon_*>0$ such that, for $0<\epsilon<\epsilon_*$,
+\begin{equation}\label{eq:threshold}
+ \Gamma_M=0\quad(M=1,2,3),\qquad
+ \Gamma_M=\Delta>0\quad(M\ge4).
+\end{equation}
+Thus a four-state, two-bit controller realizes the strict gain, whereas
+all smaller state budgets have exactly zero gain in this amplitude range.
+This does not identify exact algebraic dimension with useful accuracy.
+\end{corollary}
+\begin{proof}
+At $\epsilon=0$, $b_+=b_-=b_H$. The three distinct tag means satisfy
+\[
+ b_0<\mu h<b_H<b_\partial.
+\]
+The first strict inequality follows because $k_0$ is strictly decreasing
+and $h$ strictly increasing, so $\Cov_\mu(k_0,h)<0$.
+For example this sign follows by integrating
+$(k_0(R)-k_0(R'))(h(R)-h(R'))/2$ against two independent prior draws.
+The second inequality uses the positive covariance of $R$ and $h$.
+The last follows in the hit-tilted prior from the same positive covariance
+of $R$ and $h$, since the placement posterior is its additional $R$-tilt.
+Full support makes all these covariances strict.
+
+For three states the unique zero-distortion merging pattern at amplitude
+zero is to keep the three distinct tag means separate and merge the two
+signs. Every other pair has positive merge cost. For two states, no optimal
+partition at amplitude zero splits the equal-mean signs between its two
+blocks. To prove this, use the optimal block means as centers. Equal-mean
+points assigned to different centers must be equidistant from them;
+otherwise reassignment to the closer center strictly improves risk.
+If the centers are distinct, $b_H$ is their midpoint. Each block must
+then contain a different extreme tag to place its mean strictly on the
+corresponding side of $b_H$. Move one sign into the other block, holding
+centers fixed; the cost is unchanged. The vacated-sign block still contains
+its extreme tag, so reoptimizing its center strictly reduces the cost,
+a contradiction. If the two centers agree, the achieved risk is the
+one-state risk, strictly worse than separating one extreme tag. Thus an
+optimal two-state partition never splits the signs.
+
+There are finitely many partitions. At amplitude zero every partition
+that splits the signs and uses at most two states has a strictly positive
+risk gap to the optimum, as does every non-sign-merging three-state
+partition. All their risks depend continuously on $\epsilon$ because
+the cell masses stay positive. Therefore, for a sufficiently small common
+positive $\epsilon_*$, none of these partitions is optimal for $M=2,3$.
+Every remaining partition keeps the signs together and has exactly the
+risk of the corresponding erased partition, because both $p_++p_-$
+and $z_++z_-$ are independent of $\epsilon$. This proves equality of
+risks for $M=2,3$; $M=1$ and $M\ge4$ follow from
+Theorem~\ref{thm:finite-bit-value} and \eqref{eq:physical-gain}.
+\end{proof}
+
+The threshold is checkable from finitely many moment expressions: enumerate
+the partitions in \eqref{eq:partition-risk}, find their positive gaps at
+zero, and bound their continuous rational derivatives while cell masses
+stay bounded away from zero. No prior-uniform or horizon-uniform threshold
+is claimed. In particular \eqref{eq:physical-gain} can be extremely small
+for a concentrated prior. The threshold theorem gives an exact resource
+comparison, not a promise of a practically large gain.

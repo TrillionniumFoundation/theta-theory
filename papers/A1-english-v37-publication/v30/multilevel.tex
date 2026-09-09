@@ -1,0 +1,346 @@
+\section{Statistical realization of multilevel prediction bounds}
+\label{sec:v30-multilevel}
+The occupation theorem concerns local distribution bounds, whereas a
+statistical prediction problem also requires a common decoder and causal
+state transitions. We now identify a class on which this distinction can
+be evaluated exactly. The class consists of regenerative experiments on
+finitely many committed routes. Its analysis keeps the entire acquired
+law, including its atoms. In particular, no event requiring a favorable
+report at every checkpoint is introduced.
+
+\subsection{Regenerative experiments and the retained resource}
+Fix integers $R,J\ge1$. Before observing any data, a route
+$r\in\{1,\ldots,R\}$ is selected using a tape-independent random seed.
+The route is then fixed. At stage $j$ a fresh latent variable and its
+acquisition block are independent of all other stages, conditionally on
+$r$. Write $H_{rj}$ for that block. After its compression, an independent
+query $u$ is drawn from a finite set $\mathcal U_{rj}$ with probability
+$p_{rj}(u)>0$. Only this query is executed. Its conditional mean, given
+the complete history, is $q_{rj}(H_{rj},u)\in[0,1]$. Independence makes
+the current block sufficient for this conditional mean; it does not
+make that block available to the decoder.
+
+At every queried boundary the predictor retains at most $M$ labels.
+A transition reads the preceding label and the current acquisition
+block, but the decoder reads only the retained label, the query, the
+stage, the announced route and the independent seed. The stage and
+initial route are read-only experiment descriptors. Previous outputs,
+commands and reports cannot be read back. Temporary arithmetic is not
+charged, as in the persistent-label model of this article. A route
+cannot be changed after observing a block. Randomness correlated with
+the tape is not an admitted seed.
+
+For each route and stage define the one-block distortion
+\begin{equation}\label{eq:v30-one-block}
+ d_{rj}(M)=\min_{c_1,\ldots,c_M\in[0,1]^{\mathcal U_{rj}}}
+ \E\min_{1\le m\le M}
+       \sum_{u\in\mathcal U_{rj}}p_{rj}(u)
+       |q_{rj}(H_{rj},u)-c_m(u)|^2.
+\end{equation}
+Repeated centers are allowed. The minimum exists: the domain is compact,
+and the integrand is bounded and continuous in the centers. The
+statistical objective, denoted $\mathcal R_M^{\rm reg}$, is the infimum
+over the initial route law and one causal predictor of the maximum,
+over $1\le j\le J$, of the expected query-averaged excess at stage $j$.
+The expectation includes the initial seed. Thus the maximum is outside
+the seed average, not inside it.
+
+\begin{theorem}[Exact multilevel statistical minimax]
+\label{thm:v30-regenerative}
+Under the preceding protocol, for every integer $M\ge1$,
+\begin{equation}\label{eq:v30-exact-lp}
+ \mathcal R_M^{\rm reg}
+ =\min_{\rho\in\Delta_R}\max_{1\le j\le J}
+                  \sum_{r=1}^R\rho_r d_{rj}(M)
+ =\max_{\lambda\in\Delta_J}\min_{1\le r\le R}
+                  \sum_{j=1}^J\lambda_j d_{rj}(M),
+\end{equation}
+where $\Delta_n$ is the probability simplex. All extrema are attained.
+The first equality is realized by a single $M$-label causal predictor,
+not by an oracle granting the decoder the preceding history.
+\end{theorem}
+\begin{proof}
+Condition on the complete independent seed. The initial route is now
+fixed, and at stage $j$ the decoder has at most $M$ prediction vectors.
+Its state may depend on earlier blocks, but every realized vector is
+one of these same $M$ vectors. For each current block its loss is
+therefore at least the distance to the nearest of those vectors.
+The current block has its prescribed law after the seed is fixed.
+Integrating proves a conditional lower bound $d_{rj}(M)$ at every
+stage. This argument allows arbitrary randomized assignments, since
+an average of distances cannot be smaller than their minimum.
+If $\rho_r$ is the probability of the initial route, averaging at each
+fixed stage gives a lower risk vector with coordinates
+$\sum_r\rho_r d_{rj}(M)$. Taking the checkpoint maximum only now,
+and then the infimum over predictors and route laws, proves the first
+lower inequality in \eqref{eq:v30-exact-lp}.
+
+Conversely, choose a minimizing $\rho$ and, for every $(r,j)$, a
+minimizing codebook in \eqref{eq:v30-one-block}. On reading the current
+block, the transition replaces the old label by the index of a nearest
+center; ties are resolved by the least index. It retains no other
+information. The decoder returns that center's coordinate at the
+independently sampled query. The rule at a later stage again reads its
+fresh block and replaces the label. These stage-indexed maps constitute
+one causal predictor with a fixed program and the same label set at
+all stages. They attain every conditional distortion $d_{rj}(M)$,
+so their risk is the first minimum in \eqref{eq:v30-exact-lp}.
+The finite-dimensional objective is continuous on $\Delta_R$.
+
+For completeness, let $K$ be the convex hull of the row vectors
+$(d_{r1}(M),\ldots,d_{rJ}(M))$ and put
+$t_* = \min_{y\in K}\max_j y_j$. The point $t_*\mathbf1$ is on
+the boundary of the closed convex upward set $K+\R_+^J$. A supporting
+hyperplane has a nonzero normal $\lambda\ge0$; normalize it so that
+$\sum_j\lambda_j=1$. Its support value is
+$\min_{y\in K}\lambda\cdot y=t_*$, which equals the minimum over
+the finitely many row vectors. Conversely, for every such $\lambda$
+and every $y\in K$, $\lambda\cdot y\le\max_jy_j$.
+These two inequalities prove the dual equality and its attainment.
+This is finite convex separation, not a new linear-programming duality
+principle; compare \cite{Rockafellar1964}.
+\end{proof}
+
+The theorem permits arbitrary finite one-block query menus and arbitrary
+acquired laws. Its realizability assertion uses regeneration and initial
+commitment essentially. It does not describe a later data-dependent
+route change, a nonregenerative posterior, or a decoder with unspecified
+side information. If the announced route must instead be retained in
+the state, the construction above uses at most $RM$ labels, or at most
+$\lceil\log_2R\rceil$ additional bits. No equality for that different
+charged-route optimum is inferred from \eqref{eq:v30-exact-lp}.
+
+\subsection{A positive experiment with an exact common design factor}
+At every stage use the two-trial positive detector from
+Section~\ref{sec:v27-evaluated}, with an independent uniform latent
+variable on $[0,1]$. Its first command is uniform on $[1/4,3/4]^2$,
+its cells are $k_0(t)=1/2+t/4$ and $k_1(t)=1/2-t/4$, and all first
+reports are retained in the law. The acquired posterior mean $Z$ has
+law
+\begin{equation}\label{eq:v30-law}
+ \nu=\frac5{16}\delta_{8/15}+\frac3{16}\delta_{4/9}+f(z)\,dz.
+\end{equation}
+The continuous component has mass $1/2$, is supported on
+$[10/21,14/27]$, and has density bounded by $H=26$. These facts,
+including the report evidence, are proved in
+Proposition~\ref{prop:v27-density}. The four original query means are
+\[
+ q(z)=(3/4,\ 1/2+z/8,\ 1/2-z/8,\ 1/4),\qquad
+ \|q(z)-q(z')\|_q^2=(z-z')^2/128.
+\]
+Here the four queries have equal weight.
+
+Fix a matrix of gains $s=(s_{rj})$ with $0<s_{rj}\le1$. On route $r$
+at stage $j$, execute the original second trial for its sampled query.
+The scored binary event equals its failure indicator with independent
+probability $s_{rj}$, and otherwise equals an independent fair coin.
+This is a specified randomization of the readout, not a change to the
+acquired law or an unobserved selection of histories. The conditional
+query vector is
+\begin{equation}\label{eq:v30-attenuation}
+ q_{rj}(z)=(1-s_{rj})\mathbf1/2+s_{rj}q(z).
+\end{equation}
+It is an admitted probability vector and its squared query distance is
+$s_{rj}^2(z-z')^2/128$. Every run executes exactly $2J$ detector trials;
+the independent readout coins are not additional observations of a
+latent variable. The entire protocol, including the restriction to a
+committed route, is fixed before data are generated.
+
+Put $a_{rj}=s_{rj}^2$ and define the finite design value
+\begin{equation}\label{eq:v30-design}
+ V(a)=\min_{\rho\in\Delta_R}\max_j\sum_r\rho_r a_{rj}
+     =\max_{\lambda\in\Delta_J}\min_r\sum_j\lambda_j a_{rj}.
+\end{equation}
+It is positive. As before, $D_M(\nu)$ is scalar squared quantization
+error for the full measure $\nu$, without deleting its atoms.
+
+\begin{theorem}[Exact realization at every budget]
+\label{thm:v30-positive-realization}
+For the committed-route positive experiments just defined,
+\begin{equation}\label{eq:v30-positive-risk}
+                \mathcal R_M^{\rm reg}
+                      =\frac{D_M(\nu)}{128}\,V(a)
+                         \qquad(M\ge1).
+\end{equation}
+One initial route law attains this formula simultaneously for all
+budgets, with a predictive codebook chosen anew at each budget.
+Furthermore,
+\begin{equation}\label{eq:v30-positive-asymptotic}
+ \lim_{M\to\infty}M^2\mathcal R_M^{\rm reg}
+ =\kappa_{\rm ex}V(a),\qquad
+ \kappa_{\rm ex}=\frac1{1536}
+               \left(\int_{10/21}^{14/27}f(z)^{1/3}\,dz\right)^3.
+\end{equation}
+\end{theorem}
+\begin{proof}
+Project arbitrary decoder vectors orthogonally onto the affine line
+\eqref{eq:v30-attenuation} in the query norm. Projection does not
+increase distance to a true vector on that line. Clipping the resulting
+scalar centers to $[4/9,8/15]$, the convex hull of the support of $\nu$,
+further decreases distance and yields admitted probability predictions.
+The line isometry therefore gives
+$d_{rj}(M)=s_{rj}^2D_M(\nu)/128$, exactly as in
+Proposition~\ref{prop:v27-exact-reduction}. Substitution in
+Theorem~\ref{thm:v30-regenerative} proves \eqref{eq:v30-positive-risk}.
+A minimizing route law for $V(a)$ is independent of $M$. A common
+scalar quantizer may be used on every route and stage, with the
+appropriate readout gain, so the construction does not require a new
+acquisition law at each budget. Finally,
+Lemma~\ref{lem:v27-quantization} applies to the actual density and its
+two atoms and proves \eqref{eq:v30-positive-asymptotic}.
+\end{proof}
+
+\subsection{Atom-aware capacities and a uniform relaxation gap}
+Represent the committed routes by $R$ disjoint source--sink paths, each
+with $J$ internal vertices $(r,j)$. Let $L_j$ be the query-averaged
+squared excess, after clipping predictions to $[0,1]$. Thus $0\le L_j\le1$.
+Use the whole probability space as the event in the occupation theorem,
+so its event mass is one. Define
+\begin{equation}\label{eq:v30-capacity}
+ c_{rj}(t)=\min\{1,\tfrac12+b_{rj}\sqrt t\},\qquad
+ b_{rj}=\frac{2HLM}{s_{rj}},\quad H=26,\quad L=8\sqrt2.
+\end{equation}
+The term $1/2$ is the total mass of the two acquired atoms, not a
+conditional probability after choosing a route. It is indispensable.
+
+\begin{lemma}[Local capacities from the full acquired law]
+\label{lem:v30-atom-capacity}
+The functions \eqref{eq:v30-capacity} satisfy the local occupation
+inequalities both unconditionally and seed by seed, with common
+constants. Their terminal capacities are one. For $0\le x\le1$,
+\begin{equation}\label{eq:v30-atom-cost}
+ \phi_{rj}(x)=\int_0^1[x-c_{rj}(t)]_+\,dt
+            =\frac{(x-1/2)_+^3}{3b_{rj}^2}.
+\end{equation}
+In particular,
+\begin{equation}\label{eq:v30-unit-cost}
+                 \phi_{rj}(1)
+                      =\frac{s_{rj}^2}{8306688\,M^2}.
+\end{equation}
+\end{lemma}
+\begin{proof}
+Fix a seed and a route. The decoder has at most $M$ query vectors.
+The recovery map on the original line has norm $L$; after attenuation
+its norm is $L/s_{rj}$. Therefore a query ball of radius $\sqrt t$
+around an arbitrary vector restricts the acquired scalar to an interval
+of length at most $2L\sqrt t/s_{rj}$. For $M$ vectors, the continuous
+part has probability at most $2HLM\sqrt t/s_{rj}$. The two atoms have
+total probability at most $1/2$, regardless of the centers. Adding
+these bounds and clipping at one proves \eqref{eq:v30-capacity} on
+the visited route. On every other route the visitation event is empty.
+Averaging independent seeds preserves the same inequality. No
+conditioning on the continuous component, on a report word at other
+stages, or on an adaptively selected scalar is used.
+
+Since $b_{rj}\ge 2HL>1$, $c_{rj}(1)=1$. For $x\le1/2$ the
+integrand in \eqref{eq:v30-atom-cost} vanishes. For $x>1/2$, put
+$y=x-1/2$. The integrand equals $y-b_{rj}\sqrt t$ from zero to
+$(y/b_{rj})^2<1$, and zero thereafter. Its integral is
+$y^3/(3b_{rj}^2)$. At $x=1$ this is
+$1/(24b_{rj}^2)=s_{rj}^2/(96H^2L^2M^2)$.
+The identity $96\cdot26^2\cdot128=8306688$ proves
+\eqref{eq:v30-unit-cost}.
+\end{proof}
+
+\begin{theorem}[A statistically controlled occupation relaxation]
+\label{thm:v30-controlled-gap}
+Let $\Gamma$ and $\Gamma_{\rm pre}$ be respectively the occupation
+and pre-acquisition perspective values of
+Sections~\ref{sec:v29-occupation} and \ref{sec:v29-initial} for
+\eqref{eq:v30-capacity}. Then
+\begin{equation}\label{eq:v30-anchored-value}
+ \Gamma_{\rm pre}
+       =\frac{V(a)}{8306688\,M^2}
+       \le\mathcal R_M^{\rm reg}
+       \le\frac{8306688}{64800}\,\Gamma_{\rm pre}.
+\end{equation}
+The multiplicative upper bound is less than $129$ and is independent
+of $R$, $J$, the positive gains and the budget. More precisely,
+\begin{equation}\label{eq:v30-exact-gap}
+ \frac{\mathcal R_M^{\rm reg}}{\Gamma_{\rm pre}}
+            =\frac{8306688}{128}M^2D_M(\nu)
+       \longrightarrow 8306688\kappa_{\rm ex}.
+\end{equation}
+The convergence is uniform over all finite route designs and positive
+gain matrices. The scalar coefficient evaluation in
+Section~\ref{sec:v29-evaluated} places the limiting ratio between
+$4.05$ and $4.06$. If $R\ge2$, the unanchored value for these same
+local capacities is $\Gamma=0$.
+\end{theorem}
+\begin{proof}
+Conditioning on the initial independent seed fixes the first vertex
+and hence the entire committed route. The anchored unit flow has
+occupation one at every vertex of that route and zero elsewhere.
+A mixture with route law $\rho$ therefore has level costs
+$\sum_r\rho_r\phi_{rj}(1)$. Theorem~\ref{thm:v29-pre} and
+\eqref{eq:v30-unit-cost} give
+$\Gamma_{\rm pre}=V(a)/(8306688M^2)$ and its lower-bound direction.
+Equivalently, the dual weights in \eqref{eq:v30-design} give the same
+value; no nonoptimal primal value is used as a lower certificate.
+Combining with \eqref{eq:v30-positive-risk} proves
+\eqref{eq:v30-exact-gap}.
+
+The support of $\nu$ is contained in an interval of length $4/45$.
+Partition that entire interval into $M$ equal intervals and use their
+midpoints. Every point of the support lies within $2/(45M)$ of a
+center. Thus $D_M(\nu)\le4/(2025M^2)$, including the atoms.
+Substitution in \eqref{eq:v30-exact-gap} gives the factor
+$8306688/64800$ in \eqref{eq:v30-anchored-value}. The scalar
+high-resolution limit proves the last equality in
+\eqref{eq:v30-exact-gap}. Its right side has no route-design parameter,
+so convergence is uniform even when the finite number of routes and
+checkpoints, or the positive gains, vary with $M$.
+
+For the last assertion, put mass $1/2$ on each of any two routes.
+Every visited-node occupation is then at most $1/2$. Formula
+\eqref{eq:v30-atom-cost} makes all node costs zero, so $\Gamma=0$.
+In contrast $V(a)>0$, and hence $\Gamma_{\rm pre}>0$ for every finite
+budget. This strict distinction arises in actual positive experiments,
+not solely in freely assigned random-path loss models.
+\end{proof}
+
+\subsection{An unbounded loss from optimizing checkpoints separately}
+For $J=R\ge2$ choose $s_{rj}=1$ if $r=j$ and $s_{rj}=1/J$ otherwise.
+Every detector and acquisition law is the same; only the prescribed
+readout gain along the committed route changes. The initial route
+choice balances which checkpoint receives the larger gain.
+
+\begin{corollary}[Exact multilevel consistency penalty]
+\label{cor:v30-checkpoint-gap}
+For this family,
+\begin{equation}\label{eq:v30-balanced-family}
+ V(a)=\frac1J+\frac1{J^2}-\frac1{J^3},\qquad
+ \mathcal R_M^{\rm reg}
+   =\frac{D_M(\nu)}{128}
+           \left(\frac1J+\frac1{J^2}-\frac1{J^3}\right).
+\end{equation}
+The uniform route law and uniform checkpoint weights are matching
+primal and dual optimizers, for every budget. Allowing a different
+route law to minimize each checkpoint separately would instead give
+$D_M(\nu)/(128J^2)$. The ratio of the actual optimum to that invalid
+separate-checkpoint comparator is exactly $J+1-1/J$ for every finite
+$M$.
+\end{corollary}
+\begin{proof}
+At checkpoint $j$ the design cost under $\rho$ is
+$J^{-2}+(1-J^{-2})\rho_j$. Its maximum is minimized when all
+$\rho_j=1/J$, since $\max_j\rho_j\ge1/J$. This proves the first
+formula. For uniform dual weights, every route has exactly the same
+weighted cost, equal to the stated value, giving a matching dual.
+At one separately optimized checkpoint one may choose a different
+route and obtain gain squared $J^{-2}$. Division of the two exact
+values proves the ratio. The denominator is positive because $\nu$
+has a nonzero continuous part and no finite codebook gives it zero
+distortion.
+\end{proof}
+
+The result is an unbounded penalty for dropping the common initial
+route law, not an adaptivity advantage over admissible causal filters.
+It applies to the explicitly attenuated regenerative query protocol,
+not to the original tensor-only graph task. The two distinctions are
+part of the theorem's information model. What the family supplies is
+an exact statistical realization, a horizon-independent relaxation-gap
+bound, and a multilevel dual witness for one common causal controller.
+The scalar quantization and finite separation used in its proof are
+classical; the earlier collision-uniform and nonregenerative graph
+results remain separate, with their complete proofs.

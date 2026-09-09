@@ -1,0 +1,183 @@
+\section{Order optimization and collision-path phases}
+\label{sec:v26-phases}
+The risk profile and its logarithmic inverse admit optimization on the
+same subset lattice. This gives a finite procedure for computing the
+comparison profile, rather than the exact minimax distortion constant.
+
+\begin{proposition}[Subset recursion]\label{prop:v26-dynamic}
+For $S\subseteq V$ put $h(S)=\Theta_{\delta(S)}(M,a)$, with
+$h(\varnothing)=h(V)=0$. Define $f(\varnothing)=0$ and, in increasing
+cardinality,
+\begin{equation}\label{eq:v26-dynamic}
+ f(S)=\max\left\{h(S),\min_{x\in S}f(S\setminus\{x\})\right\}.
+\end{equation}
+Then $f(V)=Q_G(M,a)$, and minimizing predecessors give an optimal order.
+Replacing $h(S)$ by $\sum_{e\in\delta(S)}b_e(\varepsilon,a)$ gives
+$f(V)=W_G(\varepsilon,a)$. Once the cut costs are supplied, either
+recursion uses $O(v2^v)$ comparisons and $O(2^v)$ stored values.
+\end{proposition}
+\begin{proof}
+A path ending at $S$ has a last predecessor $S\setminus\{x\}$.
+Its largest cost is the larger of $h(S)$ and the largest cost on its
+predecessor path. Minimize first among paths with this predecessor,
+and then among $x\in S$. The identity
+$\min_x\max\{c,a_x\}=\max\{c,\min_xa_x\}$ proves
+\eqref{eq:v26-dynamic} by induction on $|S|$. Backtracking realizes
+each minimizing choice. There are $2^v$ subsets and
+$\sum_S|S|=v2^{v-1}$ predecessor comparisons. The bit recursion is
+the identical argument with its additive cut costs. These are
+arithmetic/comparison counts for supplied real costs, not a claim
+that arbitrary prior moments have a finite exact compiler or that
+the dependence on $v$ is polynomial.
+\end{proof}
+
+\subsection{Analytic paths}
+Let $a(\theta)$, $0\le\theta\le\theta_0$, be a real-analytic path
+in the admitted compact calibration chamber, analytic in a
+neighbourhood of zero. For an edge $e$, let $\tau_{e,i}(\theta)$
+be its normalized positive formal future nodes. Retain their formal
+labels even when two node functions coincide identically. For each
+pair set
+\[
+ \nu_{e,ij}=\operatorname{ord}_{\theta=0}
+                  (\tau_{e,i}(\theta)-\tau_{e,j}(\theta))
+                  \in\N\cup\{0,\infty\}.
+\]
+Order $\infty$ means an identically zero difference near zero. Put
+$\eta_{e,0}=0$, and, for $1\le\ell\le p_e$,
+\begin{equation}\label{eq:v26-contact-volumes}
+ \eta_{e,\ell}=\min_{|I|=\ell}
+                    \sum_{\{i,j\}\subset I}\nu_{e,ij}.
+\end{equation}
+A singleton sum is zero. An infinite term is omitted in subsequent
+maxima. For $s\ge0$ define
+\begin{equation}\label{eq:v26-tropical-width}
+ \begin{split}
+ w_e(s)&=\max_{0\le\ell\le p_e}\{\ell s-\eta_{e,\ell}\},\\
+ W_\pi(s)&=\max_{1\le j<v}\sum_{e\in\delta(S_j^\pi)}w_e(s),
+ \qquad W(s)=\min_\pi W_\pi(s).
+ \end{split}
+\end{equation}
+Here $w_e$ is a leading bit coefficient, not a finite-$\theta$ cost.
+
+\begin{theorem}[Finite collision-path phase law]\label{thm:v26-phases}
+On every compact interval $I\subset(0,\infty)$, uniformly in $s\in I$,
+\begin{equation}\label{eq:v26-phase-law}
+ B_G^{*,\mathrm{av}}(\theta^{2s},a(\theta))
+ =W(s)\log_2(1/\theta)+O(1),\qquad
+ B_G^{*,\mathrm{max}}(\theta^{2s},a(\theta))
+ =W(s)\log_2(1/\theta)+O(1).
+\end{equation}
+The function $W$ is continuous, nondecreasing and piecewise affine,
+with finitely many pieces, nonnegative integer slopes and rational
+breakpoints. There is a finite subdivision on whose open intervals
+one deterministic order realizes $W$ throughout. Convexity of $W$
+is not required and need not hold.
+
+For either risk criterion let $B_\pi^*$ denote the optimal bit
+requirement when the order is fixed to $\pi$. Then
+\begin{equation}\label{eq:v26-regret-law}
+ \min_\pi\sup_{s\in I}
+ \{B_\pi^*(\theta^{2s},a(\theta))-B_G^*(\theta^{2s},a(\theta))\}
+ =\mathfrak g_I\log_2(1/\theta)+O(1),
+\end{equation}
+where
+$\mathfrak g_I=\min_\pi\sup_{s\in I}\{W_\pi(s)-W(s)\}$.
+For a closed interval $I$, its endpoints and the breakpoints of these
+finitely many functions suffice to compute every supremum.
+\end{theorem}
+\begin{proof}
+A nonzero analytic node difference has a finite integral order and a
+nonzero leading coefficient. On a sufficiently short positive interval
+its absolute value is bounded above and below by positive multiples
+of $\theta^{\nu_{e,ij}}$. A determinant product indexed by $I$
+therefore has order $\sum_{\{i,j\}\subset I}\nu_{e,ij}$, or is
+identically zero. There are finitely many such products, and their
+maximum has the smallest of their finite orders. Thus
+\[
+ V_{e,\ell}(a(\theta))\asymp\theta^{\eta_{e,\ell}}
+\]
+for finite $\eta_{e,\ell}$; for infinite order the volume is zero.
+All comparisons are simultaneous over the finite edge and index sets.
+Writing $U=\log_2(1/\theta)$ and using the zero index, the bit formula
+\eqref{eq:v25-edge-bits} gives
+$b_e(\theta^{2s},a(\theta))=Uw_e(s)+O(1)$, with an error independent
+of $s$. Finite sums, maxima and minima change by at most the largest
+accumulated error. Corollary~\ref{cor:v25-graph-bits} proves
+\eqref{eq:v26-phase-law}; its fixed-order version from
+Proposition~\ref{prop:v25-fixed-order} proves
+$B_\pi^*=UW_\pi+O(1)$ simultaneously for every $\pi$ and $s$.
+
+Each $w_e$ is a maximum of finitely many affine functions with integral
+slope and intercept. On each common interval of affinity, every cut
+sum is affine with integral coefficients. Subdivide further at every
+intersection of these finitely many affine functions. Their relative
+orders are fixed on an open interval of the resulting subdivision,
+so all cut maxima and order minima choose fixed branches there.
+All intersections that are isolated are rational. Continuity follows
+from finite maxima and minima of continuous functions. Nondecreasing
+edge costs give nondecreasing cut maxima and order minima. Each active
+branch has a nonnegative integral slope. A fixed tie rule chooses an
+order on every open interval. Taking a minimum may destroy convexity.
+
+Subtract the uniform fixed-order and optimal expansions. The supremum
+and then the minimum preserve a uniform bounded error, proving
+\eqref{eq:v26-regret-law}, even when the chosen order depends on
+$\theta$. A continuous piecewise affine function on a compact interval
+attains its maximum at a subdivision endpoint, proving the last claim.
+These statements classify leading phases; bounded terms can still
+resolve ties between orders at a transition.
+\end{proof}
+
+\subsection{The entire phase diagram of the three-edge experiment}
+The star of Corollary~\ref{cor:v25-star} has leading edge weights
+\[
+       w_1(s)=7s,\qquad w_2(s)=\max\{6s,9s-3\},\qquad w_3(s)=s.
+\]
+The second edge has contact orders zero through index six, followed by
+one, two and three. No new detector or adjustable formal scale is
+introduced here.
+
+\begin{corollary}[Four phases and uniform-resolution loss]
+\label{cor:v26-starphase}
+For this same $24$-trial experiment the leading optimal bit coefficient is
+\begin{equation}\label{eq:v26-starphase}
+ W(s)=\begin{cases}
+ 7s,&0<s\le1,\\
+ 10s-3,&1\le s\le3/2,\\
+ 8s,&3/2\le s\le3,\\
+ 9s-3,&s\ge3.
+ \end{cases}
+\end{equation}
+It is not convex. An optimal leading order isolates edge $1$ before
+$s=3/2$ and edge $2$ after $s=3/2$. For either bit criterion,
+\begin{equation}\label{eq:v26-starinterval}
+ \min_\pi\sup_{1/2\le s\le2}
+ \{B_\pi^*(\theta^{2s},\theta)-B_G^*(\theta^{2s},\theta)\}
+                   =\log_2(1/\theta)+O(1).
+\end{equation}
+In contrast, restricting the supremum to $s\in\{1/2,2\}$ gives
+$\tfrac12\log_2(1/\theta)+O(1)$.
+\end{corollary}
+\begin{proof}
+Every star order partitions its leaves before and after the centre.
+Isolating edge $1$ has cost
+$W_1(s)=7s$ for $s\le1$ and $W_1(s)=10s-3$ for $s\ge1$.
+Isolating edge $2$ has cost $W_2(s)=8s$ for $s\le3$ and
+$W_2(s)=9s-3$ for $s\ge3$. The other two partition types are
+pointwise no better: the optimal partition isolates a largest weight,
+as proved in Corollary~\ref{cor:v25-star}, and edge $3$ is never a
+largest weight for $s>0$. Taking $\min\{W_1,W_2\}$ gives
+\eqref{eq:v26-starphase}. Its slope drops from $10$ to $8$ at
+$s=3/2$, proving nonconvexity.
+
+On $[1/2,2]$, the largest value of $W_1-W$ is one, attained at $s=2$.
+For $W_2-W$ it is also one, attained at $s=1$. Isolating edge $3$
+or taking an empty side has excess greater than one already at
+$s=1/2$: their costs there are $13/2$ and $7$, whereas $W=7/2$.
+Thus $\mathfrak g_{[1/2,2]}=1$. At just the two endpoints, the two
+candidate maximal excesses are respectively one and $1/2$, while the
+other partitions remain worse. Apply Theorem~\ref{thm:v26-phases}
+with its simultaneous bounded errors. The intermediate resolution,
+not either endpoint, is essential for \eqref{eq:v26-starinterval}.
+\end{proof}
