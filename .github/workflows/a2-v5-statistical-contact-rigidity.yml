@@ -1,0 +1,42 @@
+name: A2 v5 complete manuscript and diagnostics
+on:
+  push:
+    branches:
+      - revision/a2-v5-statistical-contact-rigidity-2026-09-09
+    paths:
+      - 'papers/A2-v5-statistical-contact-rigidity/**'
+      - '.github/workflows/a2-v5-statistical-contact-rigidity.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+      - name: Install Python dependencies
+        run: python -m pip install -r papers/A2-v5-statistical-contact-rigidity/tools-v5/requirements.txt
+      - name: Install document tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+      - name: Audit, test, and compile the complete native sources
+        run: python papers/A2-v5-statistical-contact-rigidity/tools-v5/build.py
+      - name: Render first page for visual inspection
+        run: |
+          cd papers/A2-v5-statistical-contact-rigidity
+          pdftoppm -f 1 -singlefile -scale-to 1600 -png main.pdf verification-v5/main-first-page
+      - name: Upload sources, documents, and execution evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: A2-v5-statistical-contact-rigidity-${{ github.sha }}
+          path: papers/A2-v5-statistical-contact-rigidity/
+          if-no-files-found: error
+          retention-days: 30
