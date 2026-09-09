@@ -14,7 +14,7 @@ This ledger separates theorem proofs, exact finite identities, and non-interval 
 | Sharpness `thm:v5-sharpness` | Realized equal-gap support family; weighted norm exponent a<gamma_- | Two-sided radius path, uniform third derivative bound polynomial(j) exp(-j gamma_-), nonzero first-amplitude cubic term. Positive upper estimate comes from four amplitudes. |
 | Radial inverse `thm:v4-sequence-stability` | Comparison against the circular reference | Original Jensen-gap and whole-sequence quadratic proof retained. Its exponent 1/2 is not a pairwise assertion. |
 | Timing `prop:v5-harmonic` | Fixed-order programmed-offset extrapolation | Exact binomial/harmonic identity, uniform variance derivative bound. Nonzero first timing sensitivity is retained. |
-| Root calibration `lem:v5-calibration` | Coarse bracket |j(g-g0)|<=h/4; m+1 positive-offset probabilities; small relative errors | Right Taylor polynomial of d sqrt(F_j(d)); scaled Lagrange interpolation; derivative bounded away from zero. No negative-offset probability is invoked. |
+| Root calibration `lem:v5-calibration` | Coarse bracket abs(j(g-g0))<=h/4; m+1 positive-offset probabilities; small relative errors | Right Taylor polynomial of d sqrt(F_j(d)); scaled Lagrange interpolation; derivative bounded away from zero. No negative-offset probability is invoked. |
 | Joint acquisition `thm:v5-self-calibration` | Independent preparations, coarse bracket, fixed selected patches, fixed m | Negative-binomial concentration; fresh endpoint sample; timing propagation. Safe root/fallback interval ensures positive actual windows even on pilot failure and finite unconditional expected cost. |
 
 ## Fixed-order and topology conventions
