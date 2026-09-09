@@ -1,0 +1,29 @@
+name: A2 v7 pinned source packet
+on:
+  push:
+    branches: [revision/a2-v7-sharp-experiments-econometrica-2026-09-09]
+    paths: [.github/workflows/a2-v7-source-packet.yml]
+permissions:
+  contents: read
+jobs:
+  packet:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Package pinned author and review sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p handoff
+          git rev-parse HEAD > handoff/PACKET_COMMIT.txt
+          git archive --format=tar.gz --output=handoff/a2-pinned-repository.tar.gz HEAD
+          sha256sum handoff/a2-pinned-repository.tar.gz > handoff/SHA256SUMS
+      - uses: actions/upload-artifact@v4
+        with:
+          name: a2-v7-pinned-source-packet
+          path: handoff/
+          retention-days: 7
+          if-no-files-found: error
