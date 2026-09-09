@@ -1,0 +1,32 @@
+name: Materialize authorized A2 v9 revision
+on:
+  push:
+    branches:
+      - automation/materialize-a2-v9-nonlinear-boundary-2026-09-10
+permissions:
+  contents: write
+concurrency:
+  group: materialize-a2-v9-nonlinear-boundary
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    container: debian:trixie
+    timeout-minutes: 25
+    steps:
+      - name: Install build and verification dependencies
+        shell: bash
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          apt-get update -qq
+          apt-get install -y --no-install-recommends git ca-certificates python3 python3-sympy python3-mpmath latexmk texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern
+          pdflatex --version
+      - name: Checkout isolated publication transport
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 2
+          sparse-checkout: .publication/a2-v9
+      - name: Verify, publish native sources, rebuild, and publish identical PDFs
+        shell: bash
+        run: python3 .publication/a2-v9/materialize.py
