@@ -1,0 +1,201 @@
+\section{Residual-time normalization and calibration}
+\label{sec:v5-residual}
+The offset in a paired-position denominator is not itself an observed
+random variable. A gap error in that denominator produces a singular
+sensitivity as the programmed offset tends to zero. The first residual
+time, which is part of the collision record, supplies a different
+normalizer. We first record the precise sensitivity of the original
+estimator, and then prove a recovery theorem for the new observation.
+Throughout this section $j$ is odd and the selected channel is fixed.
+Constants are uniform on the compact positive gap--curvature and
+boundary-regularity sets already specified.
+
+\begin{proposition}[Harmonic sensitivity of programmed normalization]
+\label{prop:v5-harmonic}
+Use the weights $\omega_l$ in \eqref{eq:v4-richardson} and put
+$\tau=j\Delta g$. At endpoint $b$ the population statistic using the
+programmed offset $lh$ as its denominator is
+\[
+ P_b(\tau)=\sum_{l=1}^m\omega_l
+       \left(1-\frac{\tau}{lh}\right)V_{j,b}(lh-\tau).
+\]
+For each fixed $m$,
+\begin{equation}\label{eq:v5-harmonic-sensitivity}
+ P_b'(0)=-\frac{v_{j,b}H_m}{h}+O_m(1),\qquad
+ H_m=\sum_{l=1}^m\frac1l.
+\end{equation}
+The remainder is bounded uniformly in $j$ and small $h$.
+\end{proposition}
+\begin{proof}
+Differentiation gives
+$P_b'(0)=-\sum_l\omega_l[V_{j,b}(lh)/(lh)+V_{j,b}'(lh)]$.
+Uniform smoothness and $V_{j,b}(d)=v_{j,b}+O(d)$ reduce this to
+$-v_{j,b}\sum_l\omega_l/(lh)+O_m(1)$.
+The exact identity
+\[
+ \sum_{l=1}^m\frac{\omega_l}{l}
+ =\int_0^1\frac{1-(1-x)^m}{x}\,\dd x
+ =\int_0^1\sum_{k=0}^{m-1}(1-x)^k\,\dd x=H_m
+\]
+proves \eqref{eq:v5-harmonic-sensitivity}.
+\end{proof}
+
+\subsection{An observable normalizer}
+Let $r$ be the time from the independent preparation to the first
+impact of a successful record, in its actual physical window. This is
+an observed time; it does not require a supplied value of $g$.
+Define
+\begin{equation}\label{eq:v5-residual-normalizer}
+ D_j(d)=\frac{3}{d}\E(r\mid E_{j,e}(d)),\qquad
+ T_{j,b}(d)=\frac{\operatorname{Var}(Q_b\mid E_{j,e}(d))}
+                         {3\E(r\mid E_{j,e}(d))}.
+\end{equation}
+These are a ratio of population means, not a mean of ratios involving
+$1/r$.
+
+\begin{lemma}[Smooth residual normalization]\label{lem:v5-residual}
+On a common collar,
+\begin{equation}\label{eq:v5-residual-smooth}
+ D_j(d)=1+d\,a_j(d),\qquad
+ T_{j,b}(d)=v_{j,b}+d\,t_{j,b}(d),\qquad D_j(d)\ge\tfrac12.
+\end{equation}
+The functions have smooth right extensions and uniform bounds for
+each fixed mixed geometric and offset derivative order.
+\end{lemma}
+\begin{proof}
+Use the common Morse coordinates of Lemma~\ref{lem:g-radial} and
+put $w=\sqrt{2d}\,z$, $r=d\eta$. The latent domain is
+$\mathcal U=\{|z|^2+\eta<1,\ \eta>0\}$, with amplitude
+$a_j(\sqrt{2d}\,z)$ independent of $\eta$.
+At zero this amplitude is constant. Integrating $\eta$ gives
+\[
+ \frac{\int_{|z|<1}(1-|z|^2)^2\,\dd z/2}
+      {\int_{|z|<1}(1-|z|^2)\,\dd z}
+ =\frac{\pi/6}{\pi/2}=\frac13.
+\]
+Radial integration annihilates odd powers of $z$. The same Taylor
+integral-remainder argument used for the normalized covariance therefore
+gives $\E r/d=1/3+d\,\widetilde a_j(d)$ with all the stated
+derivatives. Its denominator is uniformly positive in the fixed
+latent domain. Decrease the collar once to obtain $D_j\ge1/2$.
+Finally $T_{j,b}=V_{j,b}/D_j$, so
+Proposition~\ref{prop:v3-metric} gives the second expansion and all
+its derivative bounds.
+\end{proof}
+
+\subsection{Estimation with an imperfect gap}
+Take $m\ge1$ fixed and programmed windows $j\widehat g+lh$,
+$1\le l\le m$. The true gap is $g=\widehat g+\Delta g$; put
+$\tau=j\Delta g$ and assume
+\begin{equation}\label{eq:v5-residual-window}
+ |\tau|\le h/2,\qquad mh+|\tau|<d_*.
+\end{equation}
+Here $d_*$ is a common collar for the preceding results and both gap
+values belong to the chosen compact box. At window $l$ retain $2K$
+successful records from independent full-phase preparations, and define
+\begin{equation}\label{eq:v5-sample-ratios}
+ \begin{split}
+ \widehat N_{l,b}&=\frac1K\sum_{k=1}^K
+    \frac{|Q_b^{(2k)}-Q_b^{(2k-1)}|^2}{2lh},\\
+ \widehat D_l&=\frac{3}{2Klh}\sum_{i=1}^{2K}r^{(i)},\qquad
+ \widehat T_{l,b}=\frac{\widehat N_{l,b}}
+                            {\max(\widehat D_l,1/8)}.
+ \end{split}
+\end{equation}
+The division by $lh$ in both sample means cancels in their ratio when
+the denominator is not clipped. It is used only to fix a bounded
+scale for the concentration argument. The clipping defines the
+statistic on every sample.
+
+\begin{theorem}[Residual-normalized recovery]\label{thm:v5-residual-recovery}
+For $K\ge C_m\log(C_m/\eta)$, extrapolate the ratios in
+\eqref{eq:v5-sample-ratios} with the weights
+$\omega_l=(-1)^{l-1}\binom ml$, and reconstruct the curvatures from
+the resulting two variances at the supplied gap $\widehat g$ by
+projection onto the compact leading-observation image. With probability
+at least $1-\eta$, the resulting error is at most
+\begin{equation}\label{eq:v5-residual-error}
+ C_m\left[h^m+\sqrt{\frac{\log(C_m/\eta)}K}
+                  +j|\Delta g|+|\Delta g|\right].
+\end{equation}
+The expected number of unconditioned preparations is comparable to
+$K h^{-2}e^{j\gamma}$. With the same probability convention, the
+error bound and a preparation bound
+\begin{equation}\label{eq:v5-residual-cost}
+ C_m e^{j\gamma}h^{-2}[K+\log(C_m/\eta)]
+\end{equation}
+hold simultaneously. Thus, for fixed $m$, a sufficient acquisition
+order for curvature accuracy $\epsilon$ is
+\[
+ C_m e^{j\gamma}\epsilon^{-(2+2/m)}\log(C_m/\eta),
+ \qquad |\Delta g|\le c_m\epsilon/j.
+\]
+The window condition \eqref{eq:v5-residual-window} is also required.
+For the choice $h=c_m'\epsilon^{1/m}$ it follows from the displayed
+calibration after making its constant small enough.
+\end{theorem}
+\begin{proof}
+The actual offsets are $d_l=lh-\tau$. Put $s_l=d_l/(lh)$, so
+$1/2\le s_l\le3/2$. The expectations of the two sample means are
+\[
+ N_{l,b}=s_lV_{j,b}(d_l),\qquad
+ D_l=s_lD_j(d_l)\ge\tfrac14,
+ \qquad N_{l,b}/D_l=T_{j,b}(d_l).
+\]
+Endpoint coercivity and $0<r<d_l$ bound each normalized summand
+in \eqref{eq:v5-sample-ratios} by one constant independent of $j,l,h$.
+The elementary bounded-variable exponential inequality in
+Proposition~\ref{prop:v3-sampling}, and a union bound, show that all
+sample means differ from their expectations by at most
+$C\sqrt{\log(C_m/\eta)/K}$ with failure probability at most
+$\eta/2$. No independence between the position numerator and the
+residual denominator within a window is required. On this event and
+for the stated lower bound on $K$, all denominators exceed $1/8$.
+The ratio map on this uniformly positive set is Lipschitz. Consequently
+\[
+ \max_{l,b}|\widehat T_{l,b}-T_{j,b}(d_l)|
+       \le C\sqrt{\log(C_m/\eta)/K}.
+\]
+Lemma~\ref{lem:v5-residual} and the polynomial cancellation in
+\eqref{eq:v4-richardson} give
+\[
+ \left|\sum_l\omega_l T_{j,b}(lh)-v_{j,b}\right|\le C_m h^m.
+\]
+The uniform first offset derivative also gives
+$|T_{j,b}(lh-\tau)-T_{j,b}(lh)|\le C|\tau|$.
+Multiply by the fixed weights and combine these bounds. The two
+leading-variance estimates therefore have error at most
+$C_m[h^m+|\tau|+\sqrt{\log(C_m/\eta)/K}]$.
+Projection onto the compact leading-observation image at
+$\widehat g$ and the joint gap--variance inverse bound
+\eqref{eq:v3-bilip} add only $C|\Delta g|$. More explicitly the
+image of the true curvature pair at $\widehat g$ is within
+$C|\Delta g|$ of its image at $g$, and is an admissible comparison
+in the projection. This proves \eqref{eq:v5-residual-error}.
+
+The success probabilities satisfy
+$c(lh)^2e^{-j\gamma}\le p_l\le C(lh)^2e^{-j\gamma}$ because
+$d_l/(lh)$ is uniformly bounded above and below. Waiting for $2K$
+successes has mean $2K/p_l$. The binomial lower-tail argument in
+Theorem~\ref{thm:v4-acquisition}, with failure probability
+$\eta/(2m)$ for each window, proves \eqref{eq:v5-residual-cost}.
+A union bound makes this simultaneous with the estimation event.
+Finally choose $h=c_m'\epsilon^{1/m}$ and
+$K\ge C_m\epsilon^{-2}\log(C_m/\eta)$, and impose the stated gap
+accuracy with a sufficiently small constant. Each term in
+\eqref{eq:v5-residual-error} is then at most a prescribed fraction
+of $\epsilon$, and the cost has the displayed order.
+\end{proof}
+
+The new population statistic has timing derivative
+$-\sum_l\omega_lT_{j,b}'(lh)=O_m(1)$, rather than the nonzero
+$-v_{j,b}H_m/h$ term of
+Proposition~\ref{prop:v5-harmonic}. For an $O(h^m)$ deterministic
+bias it therefore suffices to know the gap to $O_m(h^m/j)$, compared
+with $O_m(h^{m+1}/j)$ for the programmed-offset denominator. The
+improvement uses the measured first residual time as additional data;
+it is not a correction to the earlier theorem for endpoint positions
+alone. Neither theorem estimates an unknown gap without calibration.
+Their preparation bounds count the records used for conditional
+estimation, not a separate calibration experiment. The constants are
+for fixed $m$, and no minimax assertion is made.
