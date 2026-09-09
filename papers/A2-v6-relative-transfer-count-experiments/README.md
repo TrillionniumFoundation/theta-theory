@@ -1,29 +1,35 @@
-# A2 v5 — statistical contact rigidity
+# A2 v6: relative boundary laws and statistical reconstruction
 
-**Qian Qi. Collision threshold laws and statistical contact rigidity in periodic dispersing billiards. September 9, 2026.**
+**Author:** Qian Qi. **Date:** September 9, 2026.  
+**Main source:** `main.tex`. **Local compiled length:** 63 pages.  
+**Revision branch:** `revision/a2-v6-relative-transfer-count-experiments-2026-09-09`.
 
-`main.tex` is the complete native English manuscript, not a patch note or an abstract. It includes the general threshold proofs, the relative half-line determinant and physical law, the nonlinear examples, conditional observations, unlabelled inversion, marked and moving-cut responses, and all circular appendices. `two_collision.tex` is the unchanged full companion.
+This is the materialized response to the v5 statistical-contact-rigidity report at `9975aa037d5d9eb1f339b9220f9cd21fb54c0876` and the later second report at `0421836a5868967f90093281c7ca43aab9815a0d`. It is based on the actual author manuscript at `1e57d9c024f90f0304e5572c0e320707bab88074`, not the earlier branch whose v6 name only pointed to a review snapshot.
 
-## Reading order
+## Referee entry points
 
-The main argument runs from geometric localization to relative boundary factorization, physical probability, and nonlinear contact determination. New proofs are in `v5/20_contact_rigidity.tex`, `v5/40_pairwise_inverse.tex`, and `v5/50_self_calibration.tex`. `RESPONSE_TO_REFEREE_V5.md` maps the controlling review to exact source labels; `PROOF_LEDGER_V5.md` records hypotheses and proof dependencies.
+Read `RESPONSE_TO_REFEREE_V6.md` for the point-by-point response, `PROOF_LEDGER_V6.md` for assumptions and dependencies, `SOURCE_PINS_V6.json` for provenance, and `VERIFICATION_V6.json` for executed commands and limits. The `V5` ledgers and prior source pins retained in this directory describe the previous revision, not the present verification run.
 
-The contact inverse proves all-order triangular jet recovery and analytic continuation in the identical-even class, including an independent-jet geometric realization. The one-flight comparison is stated explicitly. The pairwise inverse uses four amplitudes and proves the optimal exponent 1/3, while retaining the distinct circular-reference exponent 1/2. Local self-calibration uses a coarse onset bracket and charges the fine calibration preparations in its cost.
+The new mathematical sections are `v6/10_experiment_transfer.tex` (total variation, raw rare-event mass and product-risk transfer), `v6/20_finite_jet_stability.tex` (all finite flights, fixed-order uniform inverse and sensitivity comparison), `v6/30_three_amplitudes.tex` (the constrained physical area model), and `v6/40_count_only_acquisition.tex` (Bernoulli counts through fine calibration to coalescing curvature recovery). The general nonsymmetric forward theorem, full relative-factorization proof, limiting contact inverse, four-amplitude inverse, selected-position acquisition and all active appendices remain.
 
-## Reproduction
+## Build and checks
 
-From this directory, install the packages in `tools-v5/requirements.txt` and a TeX distribution containing `amsart`, `lmodern`, `microtype`, `geometry`, `xr-hyper`, and `hyperref`. Run:
+Install a TeX distribution with `latexmk`, `pdflatex`, AMS packages and the packages named in `preamble.tex`. From this directory:
 
 ```sh
-python tools-v5/build.py
+python tools-v6/build.py
+python tools-v6/verify_revision.py > revision-checks.json
+python -O tools-v6/verify_revision.py > revision-checks-optimized.json
+cmp revision-checks.json revision-checks-optimized.json
+python review-basis-v5/independent_checks_second.py > referee-checks.json
 ```
 
-This audits native input paths and labels, executes the diagnostics normally and under `python -O`, requires byte-identical outputs within that environment, compiles the companion and the complete manuscript, and records build logs and hashes under `verification-v5/`. The dedicated branch-scoped GitHub workflow has read-only repository permissions and uploads the complete source/PDF/log package. It never merges, changes permissions, or pushes generated changes.
+The diagnostic scripts require NumPy, SciPy and SymPy; exact executed versions are in `VERIFICATION_V6.json`. They use explicit failure exceptions and make no network requests. The latest referee script is retained unmodified with its provenance. The build script compiles the complete article and the unchanged seven-page companion, and rejects undefined references and overfull boxes.
 
-The initial local run completed 175 finite checks (136 exact, 39 ordinary floating non-interval), identically with and without optimization. Its exact script identity and result digest are in `verification-v5/local_checks_summary.json`. These finite checks are not certificates of the infinite-dimensional, inverse, or statistical theorems; those are supported by the written proofs.
+The source is committed to this branch. Compiled PDFs and the standalone active-source packet are delivered separately with the conversation; their hashes are recorded in the verification and delivery records. No remote CI success or journal acceptance is asserted. The standalone packet is sufficient to compile the active article; the Git branch additionally preserves all inactive inherited history and older verification materials.
 
-## Preservation and provenance
+## Observation models
 
-The branch starts from review commit `ec861ecfcdd83a81880c1a9082becc19b0c76977`, which reviews manuscript `68bbf5b841a66dcc2b85f4d76ce66b1ae8b9782f`. The controlling report is copied byte-for-byte into `review-basis-v4/`. The `v2`, `v3`, `v4`, `sections`, `history`, and legacy `tools` trees are retained by their original Git tree identities. All inherited mathematical proof files used by the new main article are unmodified. The rewritten introduction and comparison replace presentation, not theorem scope or proof content. Every older manuscript, report, and repository workstream remains unchanged on this branch.
+Scalar leading amplitudes recover actual contact curvatures only when the two facing curvatures within each channel agree; otherwise the parameters are effective channel curvatures. The physical three-amplitude theorem is local near `R=1/4`; the four-amplitude theorem permits an independent normalizer. Exact contact germs, noisy coefficient vectors, conditional positions, and raw counts are distinct data.
 
-The manuscript is an author revision for independent re-review, not a journal decision or a proof-assistant certification.
+The new count-only rate includes fine calibration but starts from a supplied coarse bracket. It is a sufficient rate, not a minimax assertion. The total-variation theorem concerns the specified endpoint/residual-time record and its failure atom, not a silently enlarged full growing collision array. All these distinctions are printed in the mathematical statements and proofs.
