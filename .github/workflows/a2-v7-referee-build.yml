@@ -1,0 +1,57 @@
+name: A2 v7 complete referee manuscript
+
+on:
+  push:
+    branches:
+      - revision/a2-v7-sharp-physical-experiments-2026-09-09
+    paths:
+      - papers/A2-v7-sharp-physical-experiments/**
+      - .github/workflows/a2-v7-referee-build.yml
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    if: github.ref == 'refs/heads/revision/a2-v7-sharp-physical-experiments-2026-09-09'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact revision
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 1
+      - name: Install TeX dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern
+      - name: Verify preservation, run diagnostics, and compile the full manuscript
+        run: python papers/A2-v7-sharp-physical-experiments/tools-v7/build.py --repo-root "$GITHUB_WORKSPACE"
+      - name: Upload private referee source and build evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: a2-v7-referee-${{ github.sha }}
+          retention-days: 30
+          if-no-files-found: error
+          path: |
+            papers/A2-v7-sharp-physical-experiments
+            papers/A2-v6-relative-transfer-count-experiments
+            reviews/a2-v6-relative-transfer-harsh-independent-2026-09-09
+            A2_REVISION_V7_INDEX.md
+      - name: Materialize PDFs and actual verification on the same revision branch
+        if: success()
+        env:
+          REVISION_BRANCH: revision/a2-v7-sharp-physical-experiments-2026-09-09
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = "refs/heads/$REVISION_BRANCH"
+          paper=papers/A2-v7-sharp-physical-experiments
+          test -f "$paper/verification-v7/BUILD_V7.json"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f -- "$paper/build/main.pdf" "$paper/build/two_collision.pdf" "$paper/verification-v7/BUILD_V7.json" "$paper/verification-v7/source-sha256.json" "$paper/verification-v7/checks-normal.json" "$paper/verification-v7/checks-optimized.json"
+          if ! git diff --cached --quiet; then
+            git commit -m 'build(A2 v7): materialize full referee PDFs and actual verification [skip ci]'
+            git push origin "HEAD:refs/heads/$REVISION_BRANCH"
+          fi
