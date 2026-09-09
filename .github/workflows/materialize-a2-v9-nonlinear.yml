@@ -11,22 +11,34 @@ concurrency:
 jobs:
   publish:
     runs-on: ubuntu-24.04
-    container: debian:trixie
     timeout-minutes: 25
     steps:
-      - name: Install build and verification dependencies
+      - name: Fetch the pinned publication transport without third-party actions
         shell: bash
         env:
-          DEBIAN_FRONTEND: noninteractive
+          GH_TOKEN: ${{ github.token }}
         run: |
-          apt-get update -qq
-          apt-get install -y --no-install-recommends git ca-certificates python3 python3-sympy python3-mpmath latexmk texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern
-          pdflatex --version
-      - name: Checkout isolated publication transport
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
-        with:
-          fetch-depth: 2
-          sparse-checkout: .publication/a2-v9
-      - name: Verify, publish native sources, rebuild, and publish identical PDFs
+          set -euo pipefail
+          cd "$GITHUB_WORKSPACE"
+          git init
+          git remote add origin "https://github.com/$GITHUB_REPOSITORY.git"
+          AUTH=$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)
+          echo "::add-mask::$AUTH"
+          git config http.https://github.com/.extraheader "AUTHORIZATION: basic $AUTH"
+          git fetch --depth=2 origin "$GITHUB_SHA"
+          git checkout --detach FETCH_HEAD
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+      - name: Restore, verify and publish the native manuscript in the matching TeX environment
         shell: bash
-        run: python3 .publication/a2-v9/materialize.py
+        run: |
+          set -euo pipefail
+          cd "$GITHUB_WORKSPACE"
+          docker run --rm -v "$PWD:/work" -w /work \
+            -e GITHUB_REPOSITORY -e GITHUB_SERVER_URL -e GITHUB_RUN_ID \
+            -e DEBIAN_FRONTEND=noninteractive \
+            debian:trixie bash -ec '
+              apt-get update -qq
+              apt-get install -y --no-install-recommends git ca-certificates python3 python3-sympy python3-mpmath latexmk texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern
+              git config --global --add safe.directory /work
+              python3 .publication/a2-v9/materialize.py
+            '
