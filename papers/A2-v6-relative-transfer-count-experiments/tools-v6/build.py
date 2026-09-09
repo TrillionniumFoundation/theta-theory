@@ -11,7 +11,9 @@ def main() -> None:
     root = Path(__file__).resolve().parents[1]
     if shutil.which('latexmk') is None:
         raise SystemExit('latexmk is required; install a TeX distribution first.')
-    for stem in ('main', 'two_collision'):
+    # The main article imports labels from two_collision.aux via xr.
+    # Build that independent companion first, including on a clean checkout.
+    for stem in ('two_collision', 'main'):
         subprocess.run(['latexmk', '-pdf', '-interaction=nonstopmode',
                         '-halt-on-error', f'{stem}.tex'], cwd=root, check=True)
         pdf = root / f'{stem}.pdf'
