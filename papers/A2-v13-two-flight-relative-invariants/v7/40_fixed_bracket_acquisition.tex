@@ -1,0 +1,160 @@
+\section{Count-only reconstruction from a fixed local bracket}
+\label{sec:v7-bracket}
+The preceding acquisition theorem presupposes a bracket whose width
+shrinks with the desired accuracy. We now acquire that bracket using
+counts, starting from a fixed local interval. A deterministic cap on
+all later waiting times prevents an unsuccessful search from producing
+an infinite preparation cost. The original locally supplied-bracket
+theorem remains useful, with its sharper description of each stage.
+
+Fix a sufficiently small compact physical neighborhood in
+Theorem~\ref{thm:v6-three}. The constants of the forward law on this
+neighborhood, including a positive lower bound, are regarded as design
+information. This is local reconstruction in a specified family, not
+a procedure requiring no prior geometric information. For $j=1$ there
+are known constants $c_*>0$, $d_*>0$ such that
+\begin{equation}\label{eq:v7-search-onset}
+ \Pr(N_{g+d}\ge2)\ge c_*d^2\quad(0<d\le d_*),
+ \qquad \Pr(N_t\ge2)=0\quad(t\le g).
+\end{equation}
+These follow from Theorem~\ref{thm:g-stability} and compactness.
+
+\begin{lemma}[Count acquisition of a coarse bracket]
+\label{lem:v7-bracket}
+Suppose $g\in[L_0,U_0]$, with fixed width $0<W=U_0-L_0\le d_*$.
+For $0<h<W$ and $0<\delta<1/2$, a binary count procedure returns
+$g_0$ satisfying $|g-g_0|\le h/4$ with probability at least
+$1-\delta$. On every history it uses at most
+\begin{equation}\label{eq:v7-bracket-cost}
+ C h^{-2}\log\left(\frac{2+\log(W/h)}{\delta}\right)
+\end{equation}
+independent preparations. Its queries use only the indicator of two
+or more collisions at programmed times inside $[L_0,U_0]$.
+\end{lemma}
+\begin{proof}
+Maintain an interval $[L,U]$, initially $[L_0,U_0]$, and stop when
+its width $w$ is at most $h/2$. At a nonterminal stage query
+$t=(L+U)/2$ on
+\[
+ n(w)=\left\lceil\frac{16}{c_*w^2}
+                  \log\frac{M+1}{\delta}\right\rceil
+\]
+fresh preparations, where
+$M=\lceil\log(2W/h)/\log(4/3)\rceil$.
+If at least one query succeeds, replace $U$ by $t$; otherwise replace
+$L$ by $t-w/4$. In either case the interval is nested in the previous
+one and its width is either $w/2$ or $3w/4$. There are at most $M$
+stages, regardless of the observations.
+
+Conditional on an interval containing $g$, a success certifies $g<t$
+by \eqref{eq:v7-search-onset}. A failure branch can discard $g$ only
+if $g<t-w/4$. In this case $t-g>w/4$ and $t-g\le W\le d_*$, so the
+probability of seeing no success is at most
+$\exp(-n(w)c_*w^2/16)\le\delta/(M+1)$. A union bound over the first
+possible incorrect discard proves that all retained intervals contain
+$g$ with probability at least $1-\delta$. The midpoint of the final
+interval then has error at most $h/4$.
+
+For cost, each nonterminal width exceeds $h/2$ and contracts by at
+least a factor $3/4$. Summing reciprocal squared widths backwards
+from the last such stage gives $\sum w^{-2}\le C h^{-2}$.
+The ceiling contributions add at most $M$, also bounded by
+$C h^{-2}$ on the stated range, with a constant depending on fixed
+$W$. This proves \eqref{eq:v7-bracket-cost} and its all-history form.
+There is no waiting for an event of unknown positive probability in
+this search.
+\end{proof}
+
+\begin{theorem}[Fully charged local count reconstruction]
+\label{thm:v7-fixed-bracket}
+Fix $m\ge1$, a compact physical neighborhood as above, and a fixed
+interval $[L_0,U_0]$ containing its possible gaps and satisfying the
+hypotheses of Lemma~\ref{lem:v7-bracket}. There exist $h_m>0$ and
+$C_m<\infty$ such that, for $0<h\le h_m$ and $0<\eta<1/2$, a
+count-only procedure estimates the gap, area, and unordered curvature
+triple with
+\begin{equation}\label{eq:v7-fixed-bracket-errors}
+ |\widehat g-g|\le C_mh^{m+1},\qquad
+ |\widehat A-A|\le C_mh^m,\qquad
+ \operatorname{dist}_{\rm match}(\widehat\kappa,\kappa)
+                                      \le C_mh^{m/3}
+\end{equation}
+with probability at least $1-\eta$. Its total preparation count is
+bounded on every history by
+\begin{equation}\label{eq:v7-fixed-bracket-cost}
+ C_m h^{-(2m+2)}\log(C_m/\eta).
+\end{equation}
+The procedure uses only binary collision-count reports with flight
+numbers $1,2,3$, independent full-phase preparations, and noiseless
+elapsed-time recording. In particular curvature accuracy $\varepsilon$
+has sufficient total cost
+$C_m\varepsilon^{-(6+6/m)}\log(C_m/\eta)$ from a bracket independent
+of $\varepsilon$. The supplied information includes the fixed local
+family and its uniform bounds, but no accuracy-dependent gap bracket,
+contact positions, or separately measured area.
+\end{theorem}
+\begin{proof}
+Use Lemma~\ref{lem:v7-bracket} with failure budget $\eta/4$ to acquire
+$g_0$. Conditional on its success, the hypothesis
+$|g-g_0|\le h/4$ of Theorem~\ref{thm:v6-count-only} holds.
+All subsequent preparations are fresh. Run that theorem's pilot and
+amplitude stages with $J=3$, and allocate failure probability
+$\eta/2$ to their estimation bounds. Their constants are uniform over
+all admissible $g_0$, so conditioning on the entire first stage is
+legitimate. On these good events their estimates satisfy
+\eqref{eq:v7-fixed-bracket-errors}.
+
+There is an additional issue on a failed first stage: a programmed
+pilot window could lie below onset. We therefore modify each pilot
+waiting time as follows. If its target
+$r=\lceil C_mh^{-2m}\log(C_m/\eta)\rceil$ successes have not occurred
+within
+\[
+ B_m=\left\lceil C_m h^{-(2m+2)}\log(C_m/\eta)\right\rceil
+\]
+preparations, stop the entire procedure and return a fixed admissible
+parameter as a fallback. On first-stage success, every pilot
+probability is at least $c_mh^2$, uniformly over its programmed nodes.
+Choose the constant in $B_m$ so that $B_mc_mh^2\ge2r$ and
+$B_mc_mh^2\ge8\log(4(m+1)/\eta)$. The exponential Markov bound for a
+binomial variable gives
+\[
+ \Pr\{T_r>B_m\}
+  =\Pr\{\operatorname{Bin}(B_m,p)<r\}
+  \le e^{-B_mp/8}\le\eta/[4(m+1)].
+\]
+A union bound over the $m+1$ pilots charges at most $\eta/4$ for a
+cap on a good first stage. Before a cap the procedure agrees exactly
+with the original one, so this modification does not condition or
+bias the claimed estimation guarantee. The final amplitude stage has
+a predetermined number of preparations, whether or not its estimates
+are good. Its compact minimizer is selected by
+Lemma~\ref{lem:v7-selection}.
+
+Every history now has a deterministic preparation bound: the first
+stage has \eqref{eq:v7-bracket-cost}, each of the fixed number of
+pilots has cap $B_m$, and the amplitude stage has the deterministic
+bound in the proof of Theorem~\ref{thm:v6-count-only}. For fixed
+$m\ge1$, the function
+$h^{2m}\log(2+\log(W/h))$ is bounded for $0<h\le h_m<W$.
+Thus the first-stage cost is absorbed into
+\eqref{eq:v7-fixed-bracket-cost}, uniformly in $\eta<1/2$.
+The three allocated failure probabilities sum to at most $\eta$.
+Finally choose $h=c_m\varepsilon^{3/m}$, with fixed $c_m$ small enough
+to make the curvature bound at most $\varepsilon$.
+\end{proof}
+
+The same initial search and cap construction applies to the independent-
+normalizer four-amplitude experiment of Theorem~\ref{thm:v6-count-only}
+on any specified compact physical family satisfying its hypotheses;
+then $J=4$. The search uses only its positive one-flight onset bound,
+and no area constraint is needed for that stage.
+
+The first-stage windows are allowed to have offsets larger than $h$.
+Accordingly Theorem~\ref{thm:v7-fixed-bracket} is an upper bound for a
+larger design class than the all-history shrinking-collar class in
+\eqref{eq:v7-cost-lower}. We do not infer global minimax optimality
+for this enlarged class from that lower bound. The weighted-exposure
+inequality \eqref{eq:v7-kl-exposure} remains applicable whenever its
+own query hypotheses hold. The selected-position acquisition theorem
+has different data and is unchanged by this count-only construction.

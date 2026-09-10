@@ -1,0 +1,236 @@
+\section{Acquisition from integrated physical flux}
+\label{sec:v11-acquisition}
+The preceding construction controls three integer derivatives after
+normalizing every observation by $d^2$. We now retain the integrated
+flux and use the linear Abel discrepancy of
+Section~\ref{sec:v11-abel}. This changes both the approximation loss
+and the allocation of preparations. The observation is still exactly
+the selected-event bit; no endpoint coordinate or derivative is added.
+
+Keep $\mathcal K_m(B,\beta;D)$, the supplied $g,A,\gamma$, the
+labels and \eqref{eq:v10-physical-bounds}. Write
+\begin{equation}\label{eq:v11-integrated-observation}
+ c_j=2A\sinh(j\gamma),\qquad
+ H_{j,b}(d)=c_jp_{j,b}(d)=d^2F_{j,b}(d),\qquad
+ H_b=H_{\mathcal V_b}.
+\end{equation}
+The relative law gives
+$\|H_{j,b}-H_b\|_{C^3}\le C\tau^j$. Multiplication by $d^2$
+has not altered that estimate. In contrast, the variance of a scaled
+empirical integrated flux decreases quadratically at the onset.
+
+\begin{theorem}[Abel-discrepancy acquisition]
+\label{thm:v11-acquisition}
+Let $L\ge m$, $h=D/L\le1$, $j\ge2$ be even, and
+$0<t,\delta\le1$. At every positive node $d_k=kh$ and in each
+orientation $b=0,1$, make
+\begin{equation}\label{eq:v11-allocation}
+ N_{b,k}=\left\lceil
+   2c_j(Md_k^2+t/3)t^{-2}\log\frac{4L}{\eta}
+                                   \right\rceil
+\end{equation}
+independent preparations. There is a Borel finite-dictionary estimator
+$(\widehat V_0,\widehat V_1)\in\mathcal K^2$ for which, with
+probability at least $1-\eta$,
+\begin{equation}\label{eq:v11-profile-error}
+ \max_b\|\widehat V_b-\mathcal V_b\|_\infty
+  \le C\{h^{m-5/2}+\tau^j+t h^{-5/2}+\delta\}.
+\end{equation}
+The prediction of the odd limiting law has at most $2B$ times this
+error. Every preparation, including every failure, is included in the
+deterministic bound
+\begin{equation}\label{eq:v11-budget-general}
+ N_{\rm tot}\le 2L+C A\sinh(j\gamma)h^{-1}t^{-2}
+                                       \log\frac{4L}{\eta}.
+\end{equation}
+No value or derivative at zero is observed. Computational complexity
+of the finite dictionary is not included in this preparation bound.
+\end{theorem}
+
+\begin{corollary}[A refined preparation bound]
+\label{cor:v11-budget}
+For sufficiently small $\varepsilon>0$, both complete profiles and
+their predicted odd law are recovered to uniform accuracy
+$\varepsilon$, with confidence $1-\eta$, using at most
+\begin{equation}\label{eq:v11-budget}
+ C\varepsilon^{-\left(2+\frac{6}{m-5/2}
+                       +\frac{\gamma}{|\log\tau|}\right)}
+                         \log\frac{C}{\eta\varepsilon}
+\end{equation}
+preparations. The flight number is even and of order
+$\log(1/\varepsilon)$. This is a sufficient bound for this design,
+not a minimax assertion. The factor involving $\tau$ depends on the
+supplied relative convergence certificate; it is not asserted to be
+an invariant of the billiard.
+\end{corollary}
+
+\subsection{A globally smooth positive-node reconstruction}
+The Abel discrepancy is applied to globally smooth functions, not to
+distributional derivatives across interpolation cells. We give a
+specific reconstruction with this property. Let
+\[
+ \omega(u)=\begin{cases}\exp\{-1/(1-u^2)\},&|u|<1,\\0,&|u|\ge1,
+                \end{cases}\qquad
+ \theta_\ell(x)=\frac{\omega(x/h-\ell)}
+                     {\sum_{r=0}^L\omega(x/h-r)},\quad0\le\ell\le L.
+\]
+The denominator is positive on $[0,D]$. For each $\ell$, let
+$P_\ell z$ interpolate the $m$ positive nodal values starting at
+\[
+ s_\ell=\max\{1,\min\{\ell-\lfloor(m-1)/2\rfloor,L-m+1\}\}.
+\]
+Thus the nodes are $s_\ell h,\ldots,(s_\ell+m-1)h$. Define
+\begin{equation}\label{eq:v11-smooth-interpolator}
+                   J_hz=\sum_{\ell=0}^L\theta_\ell P_\ell z.
+\end{equation}
+Every polynomial of degree at most $m-1$ is reproduced. At a positive
+grid point, only its central weight is nonzero and its polynomial
+contains that node, so the nodal values are interpolated. At zero,
+the first stencil uses $h,\ldots,mh$; it extrapolates rather than
+inserting a known datum. The output is $C^\infty$ on the closed
+interval in the usual extension sense.
+
+\begin{lemma}[Smooth reconstruction in the Abel seminorm]
+\label{lem:v11-interpolation}
+With constants depending only on $m,D$, one has
+\begin{align}
+ |J_hf-f|_{\mathscr A}
+       &\le C h^{m-5/2}\|f\|_{m-1,1},
+                    &&f\in C^{m-1,1},\label{eq:v11-approx}\\
+ |J_hf|_{\mathscr A}
+       &\le C\|f\|_{C^3},
+                    &&f\in C^3,\label{eq:v11-smooth-bias}\\
+ |J_hz|_{\mathscr A}
+       &\le C h^{-5/2}\max_k|z_k|.
+                                      \label{eq:v11-scalar-noise}
+\end{align}
+In particular, a smooth bridge error and an arbitrary nodal error
+have different amplification factors.
+\end{lemma}
+\begin{proof}
+At each $x$ at most two weights are positive. A nearest integer to
+$x/h$ is at distance at most $1/2$, so the denominator of the weights
+has a fixed positive lower bound. Its derivatives of order $r$ are
+bounded by $C_rh^{-r}$, as are those of $\theta_\ell$. Each active
+stencil lies within distance $(m+1)h$ of $x$. After rescaling, there
+are only finitely many Lagrange basis configurations; their derivatives
+of every order at most $m-1$ on the relevant compact intervals are
+uniformly bounded. The product rule therefore gives
+\[
+ \|J_hz\|_{C^r}\le C h^{-r}\max_k|z_k|,\qquad 0\le r\le3.
+\]
+For $f\in C^{m-1,1}$, subtract its degree-$(m-1)$ Taylor polynomial
+at the point at which a derivative is evaluated. The interpolator
+reproduces that polynomial; its nodal remainders are bounded by
+$C h^m\|f\|_{m-1,1}$. The differentiated remainder estimate and
+the product rule give
+\begin{equation}\label{eq:v11-interpolation-r}
+ \|J_hf-f\|_{C^r}\le C h^{m-r}\|f\|_{m-1,1},\qquad r=2,3.
+\end{equation}
+This argument is valid at both endpoints because all active stencils
+remain a bounded rescaled distance away. Subtracting instead the
+quadratic Taylor polynomial for $f\in C^3$ gives
+$\|J_hf\|_{C^3}\le C\|f\|_{C^3}$.
+
+Apply \eqref{eq:v11-mixed-bound}. In \eqref{eq:v11-interpolation-r}
+the product of the second- and third-derivative errors is of order
+$h^{2m-5}$; its square root is $h^{m-5/2}$. The endpoint
+second-derivative error is $O(h^{m-2})$, a smaller bound when
+$h\le1$. For nodal noise the two derivative scales are $h^{-2}$
+and $h^{-3}$, whose geometric mean is $h^{-5/2}$. Finally the
+$C^3$ stability just proved bounds the smooth-bias term without any
+negative power of $h$.
+\end{proof}
+
+\subsection{The estimator and its full preparation charge}
+The maps $V\mapsto H_V$ take $\mathcal K$ into a bounded
+$C^{m-1,1}$ set. This follows from
+Lemma~\ref{lem:v10-dictionary} and multiplication by $d^2$.
+For fixed $h$, the map
+$V\mapsto\mathscr A J_hH_V$ has compact image in $C^0$:
+it is a continuous map of the compact class $\mathcal K$ through a
+finite-dimensional vector of nodal values. Choose, independently of
+the unknown profile, a finite ordered set
+$\mathcal D^{\mathscr A}_{h,\delta}\subset\mathcal K$ such that
+\begin{equation}\label{eq:v11-dictionary}
+ \inf_{W\in\mathcal D^{\mathscr A}_{h,\delta}}
+               |J_hH_V-J_hH_W|_{\mathscr A}\le\delta
+                       \quad(V\in\mathcal K).
+\end{equation}
+For a data vector $z$, let $\widehat V(z)$ be the first minimizer of
+$|J_hH_W-J_hz|_{\mathscr A}$ over this ordered set. Each criterion
+is continuous in $z$; the fixed tie rule makes the estimator Borel.
+The affine nullspace of $\mathscr A$ causes no problem for this
+finite minimization or for the norm on actual profile differences.
+
+\begin{proof}[Proof of Theorem~\ref{thm:v11-acquisition}]
+Let $Z_{b,k}=c_j\overline Y_{b,k}$, with $\overline Y$ the empirical
+success proportion. Its mean is $H_{j,b}(d_k)$, and
+\[
+ \operatorname{Var}(Z_{b,k})
+    =\frac{c_jH_{j,b}(d_k)(1-p_{j,b}(d_k))}{N_{b,k}}
+    \le\frac{c_jMd_k^2}{N_{b,k}}.
+\]
+The centered summands are bounded by $c_j$. The elementary Bernoulli
+exponential-moment bound used in Section~\ref{sec:v10-acquisition}
+therefore gives
+\[
+ \Pr\{|Z_{b,k}-H_{j,b}(d_k)|>t\}
+ \le2\exp\left\{-\frac{N_{b,k}t^2}
+                         {2c_j(Md_k^2+t/3)}\right\}.
+\]
+The allocation and a union bound over $2L$ means give simultaneous
+nodal error at most $t$ with probability $1-\eta$.
+
+On this event, Lemma~\ref{lem:v11-interpolation} and the relative
+$C^3$ bound give
+\[
+ |J_hZ_b-J_hH_b|_{\mathscr A}
+                    \le C(t h^{-5/2}+\tau^j).
+\]
+The minimizing property and \eqref{eq:v11-dictionary} bound
+$|J_hH_{\widehat V_b}-J_hH_b|_{\mathscr A}$ by twice this
+quantity plus $\delta$. The interpolation error for the two
+candidate fluxes then gives
+\[
+ |H_{\widehat V_b}-H_b|_{\mathscr A}
+       \le C(h^{m-5/2}+t h^{-5/2}+\tau^j+\delta).
+\]
+Here the triangle inequality is that of the linear Abel seminorm.
+The inverse estimate \eqref{eq:v11-two-sided} proves
+\eqref{eq:v11-profile-error}. The positive mass-one bilinear kernel
+of $T$ gives the stated odd-law error.
+
+Finally $\sum_{k=1}^L d_k^2\le D^2L$ and $L=D/h$.
+Summing \eqref{eq:v11-allocation}, including each ceiling, yields
+\eqref{eq:v11-budget-general}. This sums the allocations themselves,
+not the number of successes or a waiting time conditional on success.
+\end{proof}
+
+\begin{proof}[Proof of Corollary~\ref{cor:v11-budget}]
+Put $\nu=m-5/2>0$. Choose $L$ so that $h$ is comparable to a
+sufficiently small multiple of $\varepsilon^{1/\nu}$, take
+$t=c\varepsilon h^{5/2}$ and $\delta=c\varepsilon$, and choose
+the least even $j\ge2$ with $\tau^j\le c\varepsilon$.
+All constants can be chosen to control also the odd-law error.
+Rounding $j$ changes it by less than two once the lower endpoint is
+inactive, so $\sinh(j\gamma)\le
+C\varepsilon^{-\gamma/|\log\tau|}$. Moreover
+\[
+ h^{-1}t^{-2}=c^{-2}\varepsilon^{-2}h^{-6}.
+\]
+The logarithmic factor is bounded by
+$C\log\{C/(\eta\varepsilon)\}$, and the ceiling contribution
+$2L$ is smaller than the displayed bound. This proves the claim.
+\end{proof}
+
+There are two separate improvements over
+Corollary~\ref{cor:v10-budget}: the approximation/noise loss is
+$5/2$ rather than three, and the sum of integrated-flux variances has
+order $h^{-1}$ rather than the $h^{-2}$ sum produced by dividing
+first by $d_k^2$. Neither improvement follows by merely substituting
+a mixed-norm inequality in the earlier discrepancy criterion. In
+particular, when $m=4$ the accuracy exponent becomes
+$6+\gamma/|\log\tau|$ rather than
+$10+\gamma/|\log\tau|$. Both remain sufficient exponents with a
+supplied convergence certificate.
