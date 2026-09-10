@@ -2,6 +2,16 @@
 
 This index separates the current statistical A1 submission from the dynamical and mechanical research programme. Historical manuscripts and reports remain preserved.
 
+## Latest A2 author revision: v15 — intrinsic scalar transport
+
+**Nonlinear boundary laws and two-contact rigidity in dispersing billiards**
+
+[Complete native English manuscript and build map](papers/A2-v15-intrinsic-scalar-transport/README.md) · [Response to the latest A2 v14 report](papers/A2-v15-intrinsic-scalar-transport/RESPONSE_TO_REFEREES.md) · [Executed verification and scope](papers/A2-v15-intrinsic-scalar-transport/VERIFICATION.json).
+
+Revision branch: `revision/a2-v15-intrinsic-scalar-transport-2026-09-11`, based on review commit `0c523413ef7ffa2dedd1ab471ce58b3275896a93`. The revision adds the attributed uniform scalar product construction, identifies it exactly with the physical Fredholm density, unifies flight/return notation and states the two-way width/profile equivalence. All prior mathematical inputs remain active. The original versions of overridden files are archived inside the new native directory. The local checks include 10,549 new exact/source checks and a rerun of all 3,216 referee diagnostics; both normal/optimized pairs are byte-identical. The isolated revised-section build is not a full-paper build. No successful remote CI, journal acceptance or formal proof certification is asserted.
+
+The earlier A2 entry below is retained as historical navigation; its build statements refer to that earlier revision, not to v15.
+
 ## A2 v14: intrinsic boundary measure and normal-form comparison
 
 **Nonlinear boundary laws and two-contact rigidity in dispersing billiards**
