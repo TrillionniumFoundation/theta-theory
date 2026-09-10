@@ -2,16 +2,6 @@
 
 This index separates the current statistical A1 submission from the dynamical and mechanical research programme. Historical manuscripts and reports remain preserved.
 
-## A2 v14: intrinsic boundary measure and normal-form comparison
-
-**Nonlinear boundary laws and two-contact rigidity in dispersing billiards**
-
-- [Current complete English source and build instructions](papers/A2-v14-intrinsic-boundary-normal-form/README.md).
-- [Point-by-point response to the two A2 v13 reports](papers/A2-v14-intrinsic-boundary-normal-form/RESPONSE_TO_REFEREES.md).
-- [Frozen primary report](https://github.com/TrillionniumFoundation/theta-theory/blob/b3f0ad5843782c221651c9189fc156d20865cab1/reviews/a2-v13-independent-harsh-normal-form-2026-09-10/REFEREE_REPORT.md).
-
-Author revision on `revision/a2-v14-intrinsic-boundary-normal-form-2026-09-10`, for further independent review. The new Section 8 gives the physical analytic normal-form comparison, the smooth first-flight density cocycle and the normalized stable-action width. All 218 reviewed formal statement/proof blocks remain active. Compiled PDFs and the reproducible local packet accompany the originating conversation; repository sources reproduce them. No journal acceptance or formal proof certification is asserted.
-
 ## Statistical A1 v36: frozen author version
 
 **Attainable information and causal compression at exponent collisions**
