@@ -1,262 +1,229 @@
 # Response to the A2 v22 independent referee report
 
 **Revision:** A2 v23  
-**Revision branch:** `revision/a2-v23-intrinsic-multiscale-top4-2026-09-11`  
+**Branch:** `revision/a2-v23-intrinsic-multiscale-top4-2026-09-11`  
 **Report answered:** `reviews/a2-v22-independent-harsh-top4-2026-09-11/REFEREE_REPORT.md`  
-**Report branch head used as revision base:** `7057ec51b341264fa3752a0e5eb466650579bab1`  
-**Reviewed v22 revision head:** `ea97acaa8efb1f4009df5394af58cf9c367a13ab`  
-**Active entry point:** `papers/A2-v17-boundary-information-coarsening/main.tex`
+**Review-head base:** `7057ec51b341264fa3752a0e5eb466650579bab1`  
+**Active manuscript:** `papers/A2-v17-boundary-information-coarsening/main.tex`
 
-We thank the referee for separating the defects already repaired in v22 from the remaining architectural questions.  The v23 revision does not downscale the determinant-one inverse, remove the non-dominated statistical results, or replace the global theorem by a weaker local statement.  It builds outward from the v22 core in the directions requested by the report.
+The v23 revision takes the strengthening route throughout.  It preserves the v22 all-order determinant-one signed inverse, the non-dominated/common-collar endpoint theory, the fixed-window realization and the stopped finite-to-boundary transfer.  It does not replace those results by lower-order statements, does not narrow the paper to avoid the report, and does not delete accepted mathematical content.  Instead it adds an intrinsic periodic global theorem, two richer physical local experiments, and a growing-order analytic/statistical bridge.
 
-The principal changes are theorem-level rather than rhetorical:
+## C22-M1 / R22-1: make the global theorem intrinsic and define the registration problem exactly
 
-1. the global analytic theorem is reformulated on intrinsic **lifted-channel** data, with no common laboratory placement of distinct channel frames;
-2. obstacle placement and periodic deck/lattice placement are reconstructed by an explicit gluing/holonomy theorem on a connected measured network;
-3. the complete stopped endpoint--time acquisition transcript is given a fastest-scale Poisson boundary limit;
-4. after residual time is removed, waiting counts and endpoints are analyzed jointly in a two-speed Gaussian experiment;
-5. a compact analytic finite-coordinate theorem and diagonal sieve argument connect fixed-order physical information to growing-order global table recovery;
-6. the manuscript is reorganized around the active theorem chain, while the mathematical modules supporting the v22 repairs are retained.
+**New sources**
 
-## C22-M1 / R22-1. Intrinsic global rigidity rather than supplied common registration
+- `article/23b_intrinsic_multichannel_rigidity_v23.tex`
+- `article/23c_analytic_continuation_v23.tex`
 
-**Addressed in:**
+The v22 global theorem supplied the participating contacts and oriented channel frames in one common Euclidean registration.  V23 replaces that architecture by the native periodic channel index of the paper,
 
-- `article/23c_analytic_continuation_v23.tex`;
-- `article/23b_intrinsic_multichannel_rigidity_v23.tex`.
+`e=(a,b,ell)`.
 
-The referee correctly identified two different inverse problems hidden by the v22 phrase “registration forgotten.”  V23 therefore defines the data before the theorem and uses the same periodic channel index as the geometric setup.
+For each measured channel the intrinsic datum contains the lifted channel label `(a,b,ell)`, the physical onset, the two same-type signed endpoint-law germs and the transverse sign convention.  It is recorded only in the channel-adapted frame.  No Euclidean placement of that frame relative to the periodic lattice or to another measured channel is supplied.
 
-A measured channel is `e=(a,b,ell)`, where `ell` is the marked lattice deck displacement.  For each channel, the **intrinsic signed lifted-channel datum** contains:
+The v22 all-order inverse recovers the complete analytic boundary germs at the two contacts.  A new standalone analytic-continuation lemma proves that a registered nonempty germ of a connected real-analytic strictly convex boundary determines the complete boundary image.  The proof uses analytic continuation of the signed curvature, equality of the arclength periods from positivity and total turning `2 pi`, and uniqueness of the planar Frenet system.
 
-- the lifted label `(a,b,ell)`;
-- the physical onset;
-- the two same-type signed endpoint-law germs;
-- the sign convention for the transverse endpoint coordinate.
+Thus each measured edge now recovers complete oriented analytic copies `C_{e,-}, C_{e,+}` of the two incident obstacle lifts in its own frame.  V23 then treats their relative placement as the inverse problem.
 
-The law is expressed only in that channel's adapted frame.  No Euclidean placement of this frame relative to the periodic lattice or to another measured channel is supplied.
-
-The v22 all-order inverse, followed by the new standalone analytic-continuation lemma, recovers complete oriented analytic copies of the two incident obstacle **lifts** in the edge frame.  V23 then treats the periodic placement problem itself as unknown.
-
-Let `Lambda_abs` be the marked abstract Euclidean lattice and let `iota` be an unknown oriented Euclidean realization of it.  If an incidence `(e,sigma)` has deck offset `nu(e,sigma)`, a periodic gluing consists of `iota` and edge-frame placements `A_e in SE(2)` satisfying
+Let `Lambda_abs` be the marked abstract Euclidean lattice and let `iota` be an unknown oriented Euclidean realization.  An algebraic periodic gluing consists of `iota` and one `A_e in SE(2)` for every measured edge, with the condition
 
 `tau_{-iota(nu(e,sigma))} A_e C_{e,sigma}
  = tau_{-iota(nu(f,sigma'))} A_f C_{f,sigma'}`
 
-whenever the two incidences belong to the same quotient obstacle orbit.  After translating each recovered lift back by its deck vector, all copies of the same quotient obstacle must coincide.
+whenever the two incidences carry the same quotient obstacle label.  In words, every recovered obstacle lift is translated back by its deck vector before copies of the same quotient obstacle are matched.
 
-The quotient of these gluings by one simultaneous global `SE(2)` action is the data-determined periodic gluing space `G_per(D)`.  The new classification theorem proves a bijection
+The gluing is called **admissible** only if the resulting periodic translates have disjoint obstacle closures and the declared measured edges retain their prescribed facing contacts, onsets and selected closest-pair channel geometry.  Hence an arbitrary algebraic curve matching is not silently promoted to a billiard table.
 
-`periodic table realizations modulo one global SE(2)  <->  G_per(D)`.
+The quotient of admissible periodic gluings by one simultaneous global `SE(2)` action is denoted `G_per(D)`.  The new classification theorem proves
 
-Thus the remaining ambiguity is classified rather than hidden in an external registration assumption.
+`periodic dispersing table realizations / global SE(2)  <->  G_per(D)`.
 
-### Obstacle symmetries
+This makes the remaining ambiguity an explicit object determined by the intrinsic observations.
 
-For an oriented connected real-analytic strictly convex closed curve, equality of the complete curvature signature at two points is equivalent to the existence of an orientation-preserving Euclidean symmetry carrying one framed point to the other.  A circle therefore has a genuine continuous phase ambiguity; a cyclically symmetric obstacle can have a finite one.  V23 records those ambiguities as part of the gluing space.
+### Symmetry and lattice holonomy
 
-### Periodic lattice holonomy
+V23 proves that two framed points of a connected analytic strictly convex curve have identical complete oriented curvature signatures exactly when an orientation-preserving Euclidean symmetry carries one to the other.  Circle phase ambiguity and finite cyclic symmetries are therefore treated as genuine inverse ambiguities rather than hidden conventions.
 
-The interface audit also makes explicit a periodic issue which the registered v22 theorem did not have to confront.  A signature-rigid spanning tree can propagate relative obstacle placements, but by itself it need not determine the orientation of the marked periodic lattice relative to the channel network.  V23 therefore tracks deck translations rather than suppressing them.
+For a closed measured channel cycle with signature-rigid incidence matches, compose the unique data-determined frame transitions.  The new cycle-holonomy lemma proves that the composition has no rotational part and is a translation `tau_{v_c}`.  If
 
-For a signature-rigid closed channel cycle, the recovered frame transitions compose to a translation `v_c` in the starting channel frame.  The same cycle has marked deck displacement
+`eta_c = sum epsilon_i ell_{e_i}`
 
-`eta_c = sum epsilon_i ell_{e_i}`.
+is the total marked deck displacement, then every admissible realization satisfies
 
-Every realization satisfies the holonomy identity
+`R_{e0} v_c = iota(eta_c)`,
 
-`iota(eta_c)=v_c`.
+where `R_{e0}` is the rotation of the starting channel placement.  Thus a cycle with `eta_c != 0` fixes the orientation of the marked lattice relative to the channel network once the global Euclidean gauge is removed.
 
-If `eta_c != 0`, this fixes the orientation-preserving realization of the marked Euclidean lattice relative to the starting channel frame.  Such a cycle is called **lattice-anchoring**.
+A **lattice-anchoring cycle** is a signature-rigid cycle with nonzero deck displacement.  A rooted **signature-rigid spanning tree** then propagates the placement from an obstacle met by that cycle to all obstacle orbits.  The resulting corollary proves that the complete labelled periodic table is determined up to one simultaneous global `SE(2)` motion, with no absolute contact point, tangent frame, inter-channel placement or channel-to-lattice orientation supplied in advance.
 
-Hence a signature-rigid spanning tree plus one signature-rigid lattice-anchoring cycle gives a fully intrinsic periodic rigidity theorem: the complete labelled periodic table is determined up to one simultaneous global Euclidean motion, with no absolute contact point, tangent frame, inter-channel placement, or lattice orientation relative to the channel frames supplied in advance.
+Two calibrated special cases are stated separately rather than conflated with the intrinsic theorem:
 
-If an oriented ambient lattice frame is independently known physical structure, the anchoring cycle is unnecessary and the signature-rigid spanning tree alone suffices.  If all channel and lattice placements are supplied, the v22 registered theorem is recovered as a special case.
+1. if the oriented lattice realization **and one root channel frame relative to that lattice** are supplied, a rooted signature-rigid tree determines the remaining placements;
+2. if every channel frame is supplied in one laboratory, the registered v22 theorem is recovered.
 
-This directly answers the report's Sections 4.2--4.3: the data model, group action, graph connectivity, periodic lift labels and placement induction are now explicit theorem ingredients rather than prose qualifications.
+This explicitly resolves the two readings of “registration forgotten” raised in the report, and it uses graph connectivity and deck displacement rather than the old vertex-cover notion alone.
 
-## C22-M2. Top-four conceptual consequence
+## C22-M2: strengthen the global consequence rather than lower the target
 
-V23 strengthens the global consequence rather than changing the venue target or narrowing the result.
+The global theorem chain is now
 
-The global chain is now
+`intrinsic signed lifted-channel laws`
+`-> all-order framed contact inverse`
+`-> complete analytic obstacle lifts`
+`-> admissible symmetry/lattice-holonomy gluing`
+`-> periodic table rigidity up to one Euclidean motion`.
 
-`intrinsic signed lifted-channel laws
- -> all-order framed contact inverse
- -> complete analytic lifted obstacle copies
- -> symmetry + lattice-holonomy gluing
- -> global periodic table up to one Euclidean motion`.
+The relative channel placement and the periodic deck geometry are part of the inverse theorem rather than external laboratory input.  The exact obstruction is `G_per(D)`; the paper then gives a concrete sufficient uniqueness mechanism through one anchoring cycle and a rooted signature-rigid spanning tree.
 
-Relative placement of measured channel frames and the periodic deck geometry are inside the inverse theorem.  The exact obstruction is the periodic gluing space; the paper then supplies a concrete uniqueness mechanism through signature-rigid propagation plus a nonzero anchoring holonomy.  This is materially stronger than the registered v22 corollary while preserving the determinant-one local mechanism.
+The registered analytic-continuation statement remains only as a special case, not as the headline global theorem.
 
-## C22-M3 / R22-3. Bridge fixed-order statistics to analytic/global recovery
+## C22-M3 / R22-3: connect fixed finite-jet statistics to global analytic recovery
 
-**Addressed in:** `article/25_analytic_global_bridge_v23.tex`.
+**New source:** `article/25_analytic_global_bridge_v23.tex`.
 
-The referee correctly observed that v22 placed an all-order analytic exact theorem beside a fixed-finite-jet local statistical theorem without an `M_n -> infinity` passage.  V23 adds two results.
+Let `K` be a compact analytic class, modulo one simultaneous global `SE(2)` action, with persistent lifted channels and singleton admissible periodic gluing.  For finite order `M`, let `D_M(T)` contain all measured channel onsets and the two half-line action jets through order `M`; the lifted labels `(a,b,ell)` are fixed by the design.
 
-### Finite-coordinate resolution on a compact analytic class
+### Uniform finite-coordinate resolution
 
-Let `K` be a compact analytic class, modulo one simultaneous global `SE(2)` action, with persistent lifted channels and **singleton periodic intrinsic gluing**.  For each `M`, let `D_M(T)` contain the channel onsets and the action derivatives through order `M`; the lifted channel labels and deck displacements are fixed by the experimental design.
-
-For every global `C^q` tolerance `epsilon>0`, the new theorem proves that there exist finite `M` and `eta>0` such that
+For every integer `q >= 0` and every `epsilon>0`, V23 proves that there are finite `M` and `eta>0` such that
 
 `||D_M(T)-D_M(T')|| < eta  =>  d_q(T,T') < epsilon`
 
 uniformly on `K`.
 
-The proof is by compactness.  Otherwise one obtains globally separated subsequences agreeing to increasing finite order.  Passing to limits gives equality of every finite action jet, hence equality of the full intrinsic lifted-channel data, and the intrinsic periodic rigidity theorem forces equality of the limiting tables, a contradiction.
+The proof is by compactness.  If the statement failed, one would obtain globally separated table pairs whose data agree to increasing finite order.  Compact subsequences give limiting tables with identical data at every finite order, hence identical complete intrinsic lifted-channel data.  The all-order inverse and singleton admissible periodic gluing then force the two limits to be the same table, contradicting the global separation.
 
-A sufficient geometric model for the singleton-gluing hypothesis is a persistent signature-rigid spanning tree together with a persistent lattice-anchoring cycle.  With a known oriented ambient lattice frame, the spanning tree suffices.
+This is a stability bridge on a compact analytic class; it does not use noisy Taylor-series analytic continuation as an algorithm.
 
-This is a global stability statement which avoids pretending that noisy Taylor-series analytic continuation is a stable numerical algorithm.
+### One growing-order sequence for all fixed global losses
 
-### Diagonal growing-order reconstruction
+Assume that every fixed `D_M` is uniformly consistently estimable in the physical experiment.  The diagonal theorem chooses a single deterministic `M_n -> infinity`, increasing arbitrarily slowly, and measurable minimum-distance estimators `T_hat_n` such that for every fixed integer `q` and every `epsilon>0`,
 
-Assume that for every fixed `M` the physical experiment admits uniformly consistent estimators of `D_M`.  V23 proves that one can choose a deterministic nondecreasing `M_n -> infinity` and minimum-distance estimators on the compact analytic class whose global `C^q` risk tends to zero uniformly for every fixed `q`.
+`sup_T P_T{ d_q(T_hat_n,T)>epsilon } -> 0`.
 
-The sequence `M_n` may grow arbitrarily slowly.  No uniform-in-`M` lower singular-value bound is assumed.  This supplies the missing growing-order/global-loss passage while preserving the honest v22 statement that the quantitative signed-jet inverse is fixed-order.
+The diagonal construction is simultaneous over `q=0,...,m` at stage `m`, so the same `M_n` works for all fixed `C^q` losses.  No uniform-in-`M` lower singular-value estimate is inserted.  A sharp analytic minimax rate is not claimed.
 
-A sharp analytic minimax rate is not claimed; obtaining one would require new uniform-in-order conditioning estimates.  The revision states this boundary explicitly.
+This supplies the missing `M_n -> infinity` and global-loss passage while preserving the honest fixed-order conditioning statement of v22.
 
-## C22-M4 / R22-2. Complete the physical information theorem rather than narrow the headline
+## C22-M4 / R22-2: analyze richer physical information instead of renaming the endpoint subexperiment
 
-V23 takes the stronger path suggested by the report.
+V23 keeps the v22 endpoint Gaussian experiment but places it in an explicit hierarchy and derives two richer experiments from the record spaces for which the historical coupling was actually proved.
 
-### A. Endpoint--time Poisson boundary experiment
+### 1. Complete stopped endpoint--time experiment: Poisson boundary shift
 
-**Addressed in:** `article/18c_full_endpoint_time_information_v23.tex`.
+**New source:** `article/18c_full_endpoint_time_information_v23.tex`.
 
-The historical v6 transfer theorem is already proved for a per-preparation record retaining the two endpoints, residual preparation-to-first-impact time, and a failure atom.  The adaptive theorem already compares the entire stopped transcript built from those records, including designs, failures, and stopping time.  V23 therefore studies that same record rather than inventing a new observation space.
+The historical transfer theorem compares the selected per-preparation record consisting of the two signed endpoints, residual preparation-to-first-impact time, and a failure atom.  The adaptive theorem propagates this comparison through the entire stopped transcript, including designs, failures and stopping time.  V23 therefore analyzes this same record.
 
-Conditional on success at design `l`, the boundary record has density
+Conditional on success at design `ell`, the boundary law has density
 
-`q_{l,0}(u,v,r) = rho_l(u,v) 1_{0<r<w_l(u,v)}`,
+`q_{ell,0}(u,v,r) = rho_ell(u,v) 1_{0<r<w_ell(u,v)}`,
 
-with positive density at the moving ceiling `r=w_l(u,v)`.  With `k_n` successful records, shape perturbations of order `1/k_n` and gap perturbations of order `1/(j_n k_n)` move that ceiling by order `1/k_n`.
+with positive density at the moving ceiling `r=w_ell(u,v)`.
 
-The scaled ceiling slacks form independent Poisson point processes with intensity
+With `k_n` successful records, use local shape scale `1/k_n` and gap scale `1/(j_n k_n)`.  If `y=k_n(w-r)` is the scaled null ceiling slack, V23 proves convergence in Le Cam distance to independent Poisson point processes with intensities
 
-`alpha_l rho_l(u,v) 1_{y>U_l(u,v) z} du dv dy`.
+`alpha_ell rho_ell(u,v) 1_{y>U_ell(u,v)z} du dv dy`.
 
-The limit is generally non-dominated.  The finite positive design from v22 makes the family of support velocities injective, so every fixed labelled finite contact-jet coordinate is identifiable at this fastest scale.
+The limit is generally non-dominated.  The proof explicitly removes the codimension-two `r=0, w=0` corner: by coarea its endpoint collar has area `O(1/k_n)`, its residual length is `O(1/k_n)`, hence its one-record mass is `O(1/k_n^2)` and its accumulated mass over `O(k_n)` records is `o(1)`.  On the remaining boundary layer, a binomial-to-Poisson total-variation bound gives the point-process limit; the common bulk has centered likelihood variance `O(1/k_n)` and contributes only the Poisson compensator at first order.
 
-The proof separates the `1/k_n` boundary layer from the common bulk.  The boundary layer has rare-cell probabilities of order `1/k_n` and Poissonizes; after its compensator is extracted, the centered bulk likelihood has vanishing variance.  Thus the limit is a boundary-shift Poisson experiment rather than a Gaussian LAN experiment.
+The positive finite design from v22 makes the support-velocity map injective, so every fixed labelled finite contact-jet coordinate is visible at shape scale `1/k_n` and gap at `1/(j_n k_n)`.
 
-Under `j_n=o(sqrt(k_n))`, the negative-binomial waiting count is asymptotically ancillary at this fastest `1/k_n` shape scale.  The reference cap is still adequate, and the existing stopped finite-to-boundary theorem transfers the entire endpoint--time transcript to actual finite bridges if `k_n tau^{j_n}->0`.
+Before capping, the stopped boundary law factorizes exactly into a negative-binomial waiting count and iid successful endpoint--time marks.  Under `j_n=o(sqrt(k_n))`, the waiting-count Hellinger distance at this fastest scale is `O(j_n^2/k_n)=o(1)`, so waiting counts are ancillary here.  With `k_n tau^{j_n}->0`, the complete stopped endpoint--time experiment transfers to actual finite bridges by the existing v22 stopped coupling.
 
-### B. Waiting-count plus endpoint multirate experiment after residual time is removed
+### 2. Residual time removed, waiting counts retained: two-speed Gaussian experiment
 
-**Addressed in:** `article/18d_count_endpoint_multirate_v23.tex`.
+**New source:** `article/18d_count_endpoint_multirate_v23.tex`.
 
-Once residual time is integrated out, the fastest ceiling layer disappears and the endpoint density vanishes linearly at its moving boundary.  V23 then retains the waiting counts jointly with endpoints.
+After residual time is integrated out, the endpoint density vanishes linearly at its moving support.  Waiting counts then expose the success probability `p ~ exp(-j gamma)`.
 
-Let `lambda = D_vartheta gamma` at the reference channel, choose `v_gamma` with `lambda(v_gamma)=1`, and put `H_gamma=ker lambda`.  At the endpoint scale
+Let `lambda=D_vartheta gamma`, choose `v_gamma` with `lambda(v_gamma)=1`, and let `H_gamma=ker lambda`.  At
 
-`k_n delta_n^2 log(1/delta_n) -> 1`,
+`k_n delta_n^2 log(1/delta_n) -> 1`
 
 use
 
-`vartheta = b/(j_n sqrt(k_n)) v_gamma + delta_n h`, with `h in H_gamma`,
+`vartheta = b/(j_n sqrt(k_n)) v_gamma + delta_n h`, `h in H_gamma`,
 
-and `g=g_0+delta_n a/j_n`.
+and
 
-The stopped waiting count is negative binomial.  The exact success asymptotic gives
+`g = g0 + delta_n a/j_n`.
 
-`log(p_n(b,a,h)/p_n(0)) = -b/sqrt(k_n) + o(k_n^{-1/2})`.
+The negative-binomial waiting-count likelihood gives a one-dimensional Gaussian shift in `b` with information one.  The slow `(a,h)` directions are asymptotically invisible to that count likelihood.  Conversely, under
 
-Hence the waiting-count likelihood has a one-dimensional Gaussian shift limit with information one.  The slow iso-hyperbolic directions are invisible to this count likelihood.
+`log(j_n sqrt(k_n))/j_n^2 -> 0`,
 
-Conversely, the fast hyperbolic perturbation is invisible to the endpoint experiment because
+the fast `v_gamma` perturbation is invisible to the endpoint marks.  The latter retain the v22 Gaussian moving-support experiment restricted to `R x H_gamma`.  Exact stopped Bernoulli-mark factorization gives independence of the two Gaussian factors.
 
-`k_n eta_n^2 log(1/eta_n) = log(j_n sqrt(k_n))/j_n^2 -> 0`.
-
-The endpoint marks retain the v22 Gaussian shift on `(a,h)` with the positive-definite information matrix restricted to `R x H_gamma`.  Exact factorization of the stopped Bernoulli-mark experiment gives independence of the two limiting factors.
-
-Thus the count--endpoint observation has a genuine two-speed Gaussian limit:
+Thus the count--endpoint record has a genuine two-speed limit:
 
 - hyperbolic shape direction: `(j_n sqrt(k_n))^{-1}`;
 - iso-hyperbolic shape directions: `delta_n`;
 - gap: `delta_n/j_n`.
 
-The actual finite-bridge experiment has the same limit by the stopped physical transfer.
+Again the stopped finite-to-boundary transfer gives the same local experiment for actual finite bridges.
 
-### C. The endpoint-output theorem is retained as the next coarsening
+### 3. Waiting counts also removed: the v22 endpoint-output Gaussian experiment
 
-The v22 non-dominated/common-collar endpoint Gaussian theorem remains active.  It is no longer advertised as all physical information.  Instead it is the third level of an explicit hierarchy:
+The v22 non-dominated/common-collar endpoint theorem remains active as the third observation level.  It is no longer called complete physical information.  The three sigma-fields and their different critical scales are stated explicitly in `article/01b_observation_hierarchy_v23.tex`.
 
-1. endpoints + residual time + waiting/stopping transcript: Poisson boundary experiment at the fastest scale;
-2. residual time removed, waiting counts retained: two-speed Gaussian count--endpoint experiment;
-3. residual time and waiting counts removed: moving-endpoint Gaussian experiment.
+## C22-M5 / R22-5: exact-head build verification
 
-This strengthens the paper rather than narrowing its title.
+The new workflow `.github/workflows/a2-v23-native-build.yml` is branch-specific and records the exact commit before running the native TeX build and numerical diagnostics.  It is configured to:
 
-## C22-M5 / R22-5. Canonical build
+1. archive the exact source and commit;
+2. install the native TeX/Python dependencies;
+3. run `tools/build_submission.py`;
+4. run `check_boundary_information.py` under normal and optimized Python and compare the outputs;
+5. reject unresolved references/citations and fatal TeX diagnostics;
+6. record PDF hashes;
+7. upload exact-source and build artifacts.
 
-A new exact-branch workflow, `.github/workflows/a2-v23-native-build.yml`, is included in this revision.  It is configured to:
+The workflow has repeatedly been triggered on exact manuscript-source pushes, but GitHub currently returns a failed job with `steps=null` before checkout or any other runner command begins.  Explicit reruns have the same zero-step failure mode.  The revision therefore does **not** claim a successful native-build certificate.  It also does not label the zero-step runner failure a TeX failure.  `A2_REVISION_V23_VERIFICATION.md` records the exact source commit and workflow evidence.
 
-1. check out and record the exact revision head;
-2. archive the exact manuscript source;
-3. install a native TeX/Python toolchain;
-4. run `tools/build_submission.py`;
-5. run the boundary diagnostics under normal and optimized Python;
-6. reject unresolved references/citations and fatal LaTeX diagnostics;
-7. record source and PDF hashes;
-8. upload source and build artifacts.
+## R22-4: preserve the v22 repairs
 
-The source revision is not described as submission-ready unless this workflow actually executes successfully.  Its exact run status is recorded separately in `A2_REVISION_V23_VERIFICATION.md` after each canonical source correction.
+The following accepted v22 results remain active and are not weakened:
 
-## R22-4. Preserve the v22 repairs
-
-All mathematical repairs which the report explicitly accepted remain active:
-
-- the weighted all-order half-line inverse;
-- finite-truncation envelope cancellation and homogeneous jet filtration;
-- determinant-one all-order signed inverse;
-- even-flight same-type convention;
-- fixed laboratory observation coordinates;
-- one reference-based cap sequence independent of compact local parameter sets;
-- the exact observation-sigma-field hierarchy;
-- the non-dominated/common-collar distinction;
+- weighted all-order half-line inverse;
+- finite-truncation envelope cancellation and homogeneous action-jet filtration;
+- determinant-one signed inverse at every order;
+- even-flight same-type physical design;
+- fixed laboratory endpoint coordinates for the local statistical family;
+- one reference-based cap sequence with the correct quantifier order;
+- explicit observation sigma-fields;
+- non-dominated original endpoint family versus dominated common-collar LAN representative;
 - parameter-independent comparison kernels;
-- the identifiable-subspace formulation for singular information;
-- fixed-order finite positive physical designs;
-- the stopped endpoint/residual-time finite-to-boundary transfer;
-- the statement that full growing collision histories are not compared in total variation.
+- identifiable-subspace treatment of singular information;
+- finite positive physical designs for every fixed finite jet order;
+- stopped endpoint--time finite-to-boundary transfer;
+- no total-variation claim for the full growing collision array.
 
-No accepted v22 theorem was removed merely to improve the venue assessment.
+## Secondary comments and source organization
 
-## R22-6. Reorganize around the strongest theorem chain
+- The exact success-ratio input for the reference cap is now traced directly to Theorem `thm:g-stability`, equation `eq:g-competition`.
+- `article/18e_compatible_rates_v23.tex` gives one simultaneous nonempty rate regime:
+  `delta_n=n^{-1}`, `k_n=floor(n^2/log n)`, `j_n=2 ceil(C log n)` with `C>|log tau|^{-1}`.
+- The active introduction states explicitly that finitely many measured channel **families** are not finitely many scalar observations; each contains a continuum signed support germ.
+- Fixed-order quantitative conditioning is never promoted to a uniform-in-order bound.
+- The title/abstract/introduction are theorem-first.  Revision chronology and detailed referee provenance are kept in repository response/manifest files rather than used as proof authority.
 
-The active title is now
+## Resulting theorem architecture
 
-*Boundary laws, intrinsic rigidity, and multiscale physical information in dispersing billiards*.
+The active deterministic chain is
 
-The abstract and introduction are theorem-first rather than revision-first.  The active manuscript is organized around
+`relative boundary law`
+`-> all-order signed inverse`
+`-> intrinsic lifted-channel analytic copies`
+`-> admissible symmetry/lattice-holonomy gluing`
+`-> fully intrinsic periodic table rigidity`.
 
-`relative boundary law -> all-order signed inverse -> intrinsic lifted-channel gluing -> periodic analytic rigidity`
+The active statistical chain is
 
-and
+`stopped endpoint--time transcript`
+`-> non-dominated Poisson boundary experiment`
+`-> count--endpoint two-speed Gaussian experiment`
+`-> endpoint-output Gaussian coarsening`
+`-> growing-order compact analytic/global reconstruction`.
 
-`endpoint-time Poisson experiment -> count-endpoint multirate experiment -> endpoint Gaussian coarsening -> growing-order analytic/global bridge`.
-
-Historical modules required by the proofs remain in the source, but revision-history language and the long list of referee memoranda have been removed from the mathematical narrative.  Provenance is retained in repository response/manifest documents rather than used as proof authority.
-
-## Secondary comments
-
-The smaller points in Section 9 of the report are also addressed.
-
-- **9.1--9.3 Data model and group action.**  The intrinsic lifted-channel datum is defined before the global theorem.  The same `(a,b,ell)` channel convention as the geometric setup is used.  Absolute laboratory placement, quotient modulo one global `SE(2)`, and unrelated per-channel frames are separate objects.  Connectivity, deck displacement, obstacle symmetry and lattice holonomy are explicit.  A signature-rigid spanning tree plus a nonzero anchoring cycle gives a constructive fully intrinsic periodic placement theorem.
-- **9.4 Cap citation.**  `article/18e_compatible_rates_v23.tex` points the cap success-ratio estimate directly to Theorem `thm:g-stability`, equation `eq:g-competition`, and explains how the smooth prefactor and `sinh(j gamma)^{-1}` factor give the `1+o(1)` ratio under `j_n delta_n -> 0`.
-- **9.5 Compatible rates.**  The same file gives the explicit choice `delta_n=n^{-1}`, `k_n=floor(n^2/log n)`, `j_n=2 ceil(C log n)` with `C>|log tau|^{-1}`.  It simultaneously satisfies the endpoint-critical, slow-hyperbolic-variation, stopped-transfer, endpoint--time and two-speed conditions.
-- **9.6 Fixed-order conditioning.**  The introduction and global bridge repeatedly state that the compact lower singular-value bound is fixed-`M`; no uniform-in-`M` conditioning is claimed.
-- **9.7 Finite channel data.**  The introduction explicitly says that finitely many lifted channel families are not finitely many real numbers: each channel supplies a continuum support germ.
-- **9.8 Analytic continuation.**  `article/23c_analytic_continuation_v23.tex` gives a standalone lemma: equality of a nonempty registered analytic boundary germ implies equality of the full connected boundary image, with a proof by analytic curvature continuation and uniqueness of the Frenet system.
-- **9.9 Structure.**  Mathematical modules are retained, but the active title/abstract/introduction and part headings expose the dependency graph directly.
-- **9.10 Proof provenance.**  The article is self-contained; the acknowledgment is reduced to a concise provenance statement, while detailed AI/referee history remains outside the theorem narrative.
-
-## Summary
-
-V23 accepts the referee's central diagnosis but takes the strengthening route throughout.  The determinant-one inverse remains all-order.  The global theorem no longer obtains channel placement or periodic deck placement for free from a common laboratory registration.  The physical theorem now treats the endpoint--time transcript and the waiting-count channel rather than calling the endpoint coarsening complete.  The exact analytic theorem and the finite-order statistical theorem are connected by a growing-order compact analytic reconstruction principle.
-
-The remaining mechanical question is the exact-head native build.  The mathematical revision is committed independently of that infrastructure status, and the verification record reports the result without converting a runner failure into either a theorem failure or a false build certificate.
+This is the v23 revision submitted for a fresh referee assessment.  The only unresolved item recorded as mechanical rather than mathematical is a successful execution of the exact-head native-build workflow on an available GitHub runner.
