@@ -2,15 +2,17 @@
 
 This index separates the current statistical A1 submission from the dynamical and mechanical research programme. Historical manuscripts and reports remain preserved.
 
-## Latest A2 author revision: v17 — boundary information and observation coarsening
+## Latest A2 author revision: v19 — signed endpoint rigidity and unknown-geometry information
 
-**Nonlinear boundary laws and two-contact rigidity in dispersing billiards**
+**Boundary laws, signed contact rigidity, and nonregular information in dispersing billiards**
 
-[Complete native English manuscript](papers/A2-v17-boundary-information-coarsening/README.md) · [Response to the latest v16 report](papers/A2-v17-boundary-information-coarsening/RESPONSE_TO_REFEREES.md) · [Proof ledger](papers/A2-v17-boundary-information-coarsening/PROOF_LEDGER.md) · [Executed verification and full-build status](papers/A2-v17-boundary-information-coarsening/VERIFICATION.json).
+[Complete native English manuscript](papers/A2-v17-boundary-information-coarsening/README.md) · [Active v19 source manifest](papers/A2-v17-boundary-information-coarsening/ACTIVE_SOURCE_MANIFEST_V19.md) · [Response to the latest v18 report](papers/A2-v17-boundary-information-coarsening/RESPONSE_TO_REFEREE_V19.md) · [v19 proof ledger](papers/A2-v17-boundary-information-coarsening/PROOF_LEDGER_V19.md) · [v19 literature audit](papers/A2-v17-boundary-information-coarsening/LITERATURE_VERIFICATION_V19.md).
 
-Revision branch: `revision/a2-v17-boundary-information-coarsening-2026-09-11`, descended from review commit `c5fed5340df3147f64cb3479cf1837357f73e7a8`. The revision retains the entire reviewed native source tree and all 56 old direct inputs, adds four active modules, and proves a boundary-information formula and a sharp endpoint-only Gaussian critical experiment after residual-time integration. It establishes three different limiting comparison experiments for full records, endpoint records and success bits, with raw failed preparations charged. The random-hazard clarification is explicitly attributed. The 143 new finite diagnostics passed in ordinary and optimized Python modes with identical outputs; these are not proof certification. Full-native build evidence is recorded separately, not inferred from a workflow file. Previous source versions and reports remain unchanged, and no journal acceptance is asserted.
+Revision branch: `revision/a2-v19-signed-endpoint-rigidity-2026-09-11`, descended from the latest independent review branch `review/a2-v18-independent-harsh-top4-2026-09-11`. The v18 referee reported no fatal error in the boundary-information/endpoint-critical core but asked for substantially stronger geometric rigidity and an unknown-geometry statistical experiment. v19 addresses those points by recovering the unsymmetrized half-line actions from signed endpoint supports, deriving an all-order labelled contact-jet block of determinant one without individual evenness or supplied curvatures, and proving a vector moving-support LAN theorem with an intrinsic information matrix, efficient local estimator and sharp quadratic local minimax value. On every fixed finite contact-jet family, finitely many positive endpoint windows have a nonsingular summed information matrix; the relative law transfers the experiment to actual long finite bridges. The fixed-table observation-coarsening hierarchy remains active as a separate theorem.
 
-The A2 entries below are historical navigation. Their build and verification statements belong to their respective revisions, not to v17.
+The containing A2 directory retains its historical v17 filesystem name to preserve the reviewed source graph. `ACTIVE_SOURCE_MANIFEST_V19.md` is authoritative for the v19 source identity. The appendix source graph is collected behind one compendium input without deleting the retained mathematics. Full native build evidence, finite diagnostics and CI status are recorded separately and are not inferred from the existence of scripts or workflow files. No journal acceptance or formal proof certification is asserted.
+
+The A2 entries below are historical navigation. Their build and verification statements belong to their respective revisions, not to v19.
 
 ## Historical A2 author revision: v15 — intrinsic scalar transport
 
@@ -53,4 +55,4 @@ The old eleven-paper targets are not automatically completed by statistical A1 o
 
 ## Preservation and review
 
-This index is proposed on a separate work branch. Creating that branch does not merge it into `main`. Existing mathematical sources, historical review reports and repository permissions are unchanged. Review each new theorem within its printed scope before downstream use.
+This index is proposed on a separate revision branch. Creating that branch does not merge it into `main`. Existing historical mathematical sources, review reports and repository permissions are unchanged. Review each new theorem within its printed scope before downstream use.
