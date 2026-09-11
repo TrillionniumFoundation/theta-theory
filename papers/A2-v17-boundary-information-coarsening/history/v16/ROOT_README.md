@@ -2,17 +2,7 @@
 
 This index separates the current statistical A1 submission from the dynamical and mechanical research programme. Historical manuscripts and reports remain preserved.
 
-## Latest A2 author revision: v17 — boundary information and observation coarsening
-
-**Nonlinear boundary laws and two-contact rigidity in dispersing billiards**
-
-[Complete native English manuscript](papers/A2-v17-boundary-information-coarsening/README.md) · [Response to the latest v16 report](papers/A2-v17-boundary-information-coarsening/RESPONSE_TO_REFEREES.md) · [Proof ledger](papers/A2-v17-boundary-information-coarsening/PROOF_LEDGER.md) · [Executed verification and full-build status](papers/A2-v17-boundary-information-coarsening/VERIFICATION.json).
-
-Revision branch: `revision/a2-v17-boundary-information-coarsening-2026-09-11`, descended from review commit `c5fed5340df3147f64cb3479cf1837357f73e7a8`. The revision retains the entire reviewed native source tree and all 56 old direct inputs, adds four active modules, and proves a boundary-information formula and a sharp endpoint-only Gaussian critical experiment after residual-time integration. It establishes three different limiting comparison experiments for full records, endpoint records and success bits, with raw failed preparations charged. The random-hazard clarification is explicitly attributed. The 143 new finite diagnostics passed in ordinary and optimized Python modes with identical outputs; these are not proof certification. Full-native build evidence is recorded separately, not inferred from a workflow file. Previous source versions and reports remain unchanged, and no journal acceptance is asserted.
-
-The A2 entries below are historical navigation. Their build and verification statements belong to their respective revisions, not to v17.
-
-## Historical A2 author revision: v15 — intrinsic scalar transport
+## Latest A2 author revision: v15 — intrinsic scalar transport
 
 **Nonlinear boundary laws and two-contact rigidity in dispersing billiards**
 
