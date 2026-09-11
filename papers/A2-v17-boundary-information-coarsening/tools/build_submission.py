@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the complete native A2 v16 source graph, never a shortened smoke test."""
+"""Build the complete native A2 source graph, never a shortened smoke test."""
 from __future__ import annotations
 import argparse
 import hashlib
@@ -79,7 +79,7 @@ def main() -> None:
         if (out/'adaptive-normal.json').read_bytes() != (out/'adaptive-optimized.json').read_bytes():
             raise RuntimeError('Ordinary and optimized diagnostic outputs differ')
         report['finite_diagnostics']=json.loads((out/'adaptive-normal.json').read_text())
-        with tempfile.TemporaryDirectory(prefix='a2-v16-build-') as tmp:
+        with tempfile.TemporaryDirectory(prefix='a2-native-build-') as tmp:
             work=Path(tmp)/'paper'
             shutil.copytree(SOURCE,work,ignore=shutil.ignore_patterns(
                 '*.pdf','*.aux','*.log','*.fls','*.fdb_latexmk','*.out','*.toc','__pycache__'))
