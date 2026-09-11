@@ -7,19 +7,20 @@
 
 ## Revision policy
 
-This revision keeps the v22 all-order signed inverse, fixed-laboratory physical model, non-dominated/common-collar Gaussian theory and stopped finite-to-boundary transfer.  It does not lower the target theorem level or delete accepted mathematical content to avoid the v22 referee objections.  The new work strengthens the global geometry and physical information architecture and supplies a growing-order bridge to analytic global loss.
+This revision keeps the v22 all-order signed inverse, fixed-laboratory physical model, non-dominated/common-collar Gaussian theory and stopped finite-to-boundary transfer.  It does not lower the target theorem level or delete accepted mathematical content to avoid the v22 referee objections.  The new work strengthens the global periodic geometry and physical information architecture and supplies a growing-order bridge to analytic global loss.
 
 ## Active v23 source changes
 
 - `papers/A2-v17-boundary-information-coarsening/main.tex`
-  - new title and abstract centered on intrinsic rigidity and multiscale physical information;
+  - new title and abstract centered on intrinsic periodic rigidity and multiscale physical information;
   - theorem-first two-part architecture;
   - retains the inherited proof modules supporting the accepted v22 results;
   - activates the new v23 global, physical and analytic bridge modules.
 
 - `article/01_introduction_v23.tex`
   - presents the active theorem chains rather than revision chronology;
-  - separates intrinsic global geometry from laboratory coordinates used in local statistics;
+  - uses the repository's native lifted-channel index `e=(a,b,ell)`;
+  - separates intrinsic periodic gluing from laboratory coordinates used in local statistics;
   - states the three nested physical observation levels and their distinct limit experiments;
   - states the fixed-order versus growing-order distinction explicitly.
 
@@ -33,13 +34,16 @@ This revision keeps the v22 all-order signed inverse, fixed-laboratory physical 
   - proof via real-analytic curvature continuation and uniqueness of the Frenet system.
 
 - `article/23b_intrinsic_multichannel_rigidity_v23.tex`
-  - replaces the ambiguous unregistered v22 extension by a precise intrinsic data model;
-  - uses a connected measured-channel graph with no inter-channel laboratory placement supplied;
-  - defines the data-determined Euclidean gluing/holonomy space;
-  - proves a classification of all global realizations modulo one simultaneous `SE(2)` motion;
+  - defines intrinsic signed **lifted-channel** data using the same `(a,b,ell)` convention as the geometric setup;
+  - supplies no inter-channel Euclidean placement and no channel-to-lattice orientation;
+  - introduces an unknown oriented Euclidean realization of the marked abstract periodic lattice;
+  - defines the periodic gluing space by translating recovered obstacle lifts back by their deck offsets;
+  - proves a classification of all periodic realizations modulo one simultaneous `SE(2)` motion;
   - identifies complete curvature-signature coincidences with Euclidean symmetry orbits;
-  - proves intrinsic global rigidity under a signature-rigid spanning tree;
-  - retains the registered v22 theorem as a special case.
+  - proves obstacle-placement propagation along a signature-rigid spanning tree;
+  - identifies a signature-rigid cycle with nonzero accumulated deck displacement as a lattice-anchoring holonomy;
+  - proves full intrinsic periodic rigidity from the spanning tree plus an anchoring cycle;
+  - treats a known ambient lattice frame and the fully registered v22 theorem as special cases.
 
 - `article/18c_full_endpoint_time_information_v23.tex`
   - studies the exact endpoint/residual-time selected record used by the historical transfer theorem;
@@ -61,7 +65,8 @@ This revision keeps the v22 all-order signed inverse, fixed-laboratory physical 
   - cites the exact uniform threshold theorem/equation feeding the reference-cap success-ratio estimate.
 
 - `article/25_analytic_global_bridge_v23.tex`
-  - finite-coordinate resolution theorem for compact analytic classes with unique intrinsic gluing;
+  - finite-coordinate resolution theorem for compact analytic classes with singleton **periodic** intrinsic gluing;
+  - records a signature-rigid spanning tree plus lattice-anchoring cycle as a sufficient intrinsic model;
   - diagonal `M_n -> infinity` reconstruction theorem from uniformly consistent fixed-order estimators;
   - global `C^q` consistency without an assumed uniform-in-order signed-jet condition number.
 
@@ -73,7 +78,7 @@ This revision keeps the v22 all-order signed inverse, fixed-laboratory physical 
 | Referee item | V23 source |
 |---|---|
 | C22-M1 / R22-1 intrinsic global theorem and registration ambiguity | `23b_intrinsic_multichannel_rigidity_v23.tex`, `23c_analytic_continuation_v23.tex` |
-| C22-M2 top-four global consequence | intrinsic gluing/holonomy theorem + signature-rigid global corollary |
+| C22-M2 top-four global consequence | periodic gluing/holonomy classification + spanning-tree/anchoring-cycle global corollary |
 | C22-M3 finite-jet statistics versus analytic/global recovery | `25_analytic_global_bridge_v23.tex` |
 | C22-M4 incomplete physical information / waiting channel | `18c_full_endpoint_time_information_v23.tex`, `18d_count_endpoint_multirate_v23.tex` |
 | C22-M5 canonical native build | `.github/workflows/a2-v23-native-build.yml`, verification record |
@@ -94,7 +99,7 @@ No uniform-in-jet-order conditioning theorem is inserted into these inherited re
 
 ## Scope of the new global and physical claims
 
-The intrinsic global theorem uses finitely many **channel families**, each carrying a continuum signed support germ; it does not call this finitely many scalar observations.  It reconstructs relative channel placement except for genuine obstacle-symmetry holonomy, and gives a clean sufficient condition for uniqueness.
+The intrinsic global theorem uses finitely many **lifted channel families**, each carrying a continuum signed support germ; it does not call this finitely many scalar observations.  It reconstructs relative channel placement and periodic lattice holonomy except for genuine obstacle-symmetry / gluing ambiguity, and gives explicit sufficient conditions for uniqueness.
 
 The physical theorem is complete for the stopped endpoint--time transcript at the declared record level, not for the full growing collision array.  The endpoint-output Gaussian theorem is retained as a coarsening, not as an efficiency claim for richer observations.
 
