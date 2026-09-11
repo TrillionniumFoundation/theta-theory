@@ -1,0 +1,65 @@
+# Exact-head verification for the A2 v23 referee-response revision.
+name: A2 v23 complete native build
+on:
+  push:
+    branches:
+      - revision/a2-v23-intrinsic-multiscale-top4-2026-09-11
+    paths:
+      - papers/A2-v17-boundary-information-coarsening/**
+      - .github/workflows/a2-v23-native-build.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Record exact revision head
+        run: |
+          mkdir -p "${RUNNER_TEMP}/a2-v23-source"
+          git rev-parse HEAD > "${RUNNER_TEMP}/a2-v23-source/source-commit.txt"
+          git status --porcelain=v1 > "${RUNNER_TEMP}/a2-v23-source/worktree-status.txt"
+          tar -czf "${RUNNER_TEMP}/a2-v23-source/native-source.tar.gz" -C papers A2-v17-boundary-information-coarsening
+      - uses: actions/upload-artifact@v4
+        with:
+          name: a2-v23-native-source-${{ github.sha }}
+          path: ${{ runner.temp }}/a2-v23-source
+          retention-days: 30
+      - name: Install native build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y latexmk texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils python3-numpy python3-scipy
+      - name: Build companion and complete article
+        run: |
+          python3 papers/A2-v17-boundary-information-coarsening/tools/build_submission.py --output-dir "${RUNNER_TEMP}/a2-v23-build"
+      - name: Verify boundary diagnostics in normal and optimized Python
+        run: |
+          python3 papers/A2-v17-boundary-information-coarsening/tools/check_boundary_information.py > "${RUNNER_TEMP}/a2-v23-build/boundary-normal.json"
+          python3 -O papers/A2-v17-boundary-information-coarsening/tools/check_boundary_information.py > "${RUNNER_TEMP}/a2-v23-build/boundary-optimized.json"
+          cmp "${RUNNER_TEMP}/a2-v23-build/boundary-normal.json" "${RUNNER_TEMP}/a2-v23-build/boundary-optimized.json"
+      - name: Reject unresolved references and fatal LaTeX diagnostics
+        run: |
+          if grep -R -E "LaTeX Warning: (There were undefined references|Label\\(s\\) may have changed)|undefined references|Citation .* undefined|Reference .* undefined" "${RUNNER_TEMP}/a2-v23-build" --include='*.log'; then
+            echo "Unresolved references/citations remain in the canonical build" >&2
+            exit 1
+          fi
+          if grep -R -E "^! |Emergency stop|Fatal error" "${RUNNER_TEMP}/a2-v23-build" --include='*.log'; then
+            echo "Fatal LaTeX diagnostic found" >&2
+            exit 1
+          fi
+      - name: Record source and PDF hashes
+        if: success()
+        run: |
+          git rev-parse HEAD > "${RUNNER_TEMP}/a2-v23-build/source-commit.txt"
+          find "${RUNNER_TEMP}/a2-v23-build" -type f -name '*.pdf' -print0 | sort -z | xargs -0 sha256sum > "${RUNNER_TEMP}/a2-v23-build/pdf-sha256.txt"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: a2-v23-native-build-${{ github.sha }}
+          path: ${{ runner.temp }}/a2-v23-build
+          if-no-files-found: warn
+          retention-days: 30
