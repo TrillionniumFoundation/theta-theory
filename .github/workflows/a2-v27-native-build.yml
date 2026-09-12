@@ -1,0 +1,59 @@
+name: A2 v27 complete native build
+on:
+  push:
+    branches: [revision/a2-v27-observed-type-smooth-jets-top4-2026-09-12]
+    paths:
+      - 'papers/A2-v17-boundary-information-coarsening/**/*.tex'
+      - 'papers/A2-v17-boundary-information-coarsening/tools/**'
+      - '.github/workflows/a2-v27-native-build.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      P: papers/A2-v17-boundary-information-coarsening
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install native typesetting tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y latexmk texlive-latex-extra texlive-fonts-recommended texlive-science lmodern poppler-utils
+      - name: Pin source and record tool versions
+        run: |
+          mkdir -p "$RUNNER_TEMP/a2-v27"
+          git rev-parse HEAD > "$RUNNER_TEMP/a2-v27/source-commit.txt"
+          git archive HEAD "$P" | gzip -n > "$RUNNER_TEMP/a2-v27/native-source.tar.gz"
+          python3 --version > "$RUNNER_TEMP/a2-v27/python-version.txt"
+      - name: Run v27 diagnostics when present
+        run: |
+          if test -f "$P/tools/check_revision_v27.py"; then
+            python3 "$P/tools/check_revision_v27.py" > "$RUNNER_TEMP/a2-v27/finite-normal.json"
+            python3 -O "$P/tools/check_revision_v27.py" > "$RUNNER_TEMP/a2-v27/finite-optimized.json"
+            cmp "$RUNNER_TEMP/a2-v27/finite-normal.json" "$RUNNER_TEMP/a2-v27/finite-optimized.json"
+          fi
+      - name: Audit complete native source graph when present
+        if: always()
+        run: |
+          if test -f "$P/tools/audit_native_sources_v27.py"; then
+            python3 "$P/tools/audit_native_sources_v27.py" --output "$RUNNER_TEMP/a2-v27/native-graph.json"
+          fi
+      - name: Build both complete native manuscripts
+        if: always()
+        run: python3 "$P/tools/build_submission.py" --output-dir "$RUNNER_TEMP/a2-v27/native-build"
+      - name: Record product hashes
+        if: always()
+        run: |
+          cd "$RUNNER_TEMP/a2-v27"
+          find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 -r sha256sum > SHA256SUMS
+      - name: Preserve evidence, including failures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a2-v27-native-${{ github.sha }}
+          path: ${{ runner.temp }}/a2-v27
+          if-no-files-found: error
