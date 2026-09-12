@@ -1,26 +1,26 @@
-# A2 v27 — observed-type information and smooth contact jets
+# A2 v28 — common-orientation periodic classification
 
 **Boundary laws, intrinsic periodic rigidity, and global physical reconstruction in dispersing billiards**  
 Qian Qi · Complete English author revision · September 12, 2026
 
-Revision branch: `revision/a2-v27-observed-type-smooth-jets-top4-2026-09-12`.  
-Mathematical source commit: `416124f13f182f8e2d876f93090865f13269c86b`.  
-Review base: `a5b2d4b5a9ed31059e16e5011c8010579d713598`; reviewed v26 manuscript: `cefd89084682cc2e31d730eab1a4b8d8eaac0bbe`.
+Branch: `revision/a2-v28-common-orientation-quotient-top4-2026-09-12`.  
+Mathematical revision: `6d8f158c60f3636c572daa64779f57c9c9ec757b`.  
+Review base: `e5a153b1bbb663c4a5e3153c6a7bdedb7fcd5864`.
 
-[Complete native manuscript](main.tex) · [Point-by-point response to v26](RESPONSE_TO_REFEREE_V27.md) · [Active source and preservation map](ACTIVE_SOURCE_MANIFEST_V27.md) · [Executed checks and remaining native-build requirement](VERIFICATION_V27.md) · [Latest addressed report](../../reviews/a2-v26-external-harsh-top4-2026-09-12/REFEREE_REPORT.md)
+[Complete native manuscript](main.tex) · [Unchanged companion](two_collision.tex) · [Point-by-point response](RESPONSE_TO_REFEREE_V28.md) · [Active source and preservation map](ACTIVE_SOURCE_MANIFEST_V28.md) · [Verification record](VERIFICATION_V28.md) · [Historical derivation audit](HISTORICAL_DERIVATION_AUDIT_V28.md) · [Addressed v27 report](../../reviews/a2-v27-external-harsh-top4-2026-09-12/REFEREE_REPORT.md)
 
 ## Mathematical revision
 
-The comparison now defines matched endpoint records and proves the exact observed-type dichotomy. For any finite positive number of successful records on an uncountable interval of anchored homotheties, scalar-to-position deficiency is one when the observed endpoints lie on the varying obstacle, with reverse deficiency zero. When both endpoints lie on the fixed facing obstacle, the matched experiments are equivalent. The explicit two-disk counterexample to the old unrestricted statement is retained with a positive-core proof. Residual-time retention is treated only when matched in both records.
+The common-orientation datum is an orbit of the entire marked signed law collection under one simultaneous reversal, including the lattice orientation convention. The new definition, equivariance lemma and classification theorem prove exactly the passage from proper to arbitrary global Euclidean motions. Contact-jet parity, signature matching, holonomy, recovered Gram form and fixed-order quotient stability are treated explicitly. Pointwise absolute values, samplewise reversal quotients, random symmetrization and independent channel orientation erasure are distinguished rather than identified with this datum.
 
-The smooth signed-jet inverse now uses finite Taylor expansions and a functional interpolation/envelope lemma. Equal graph jets through degree M give an action difference of order M+1, including arbitrary smooth and flat remainders. The determinant-one all-order recursion, quantitative fixed-order inverse, analytic continuation, intrinsic gluing, metric-free rank-two lattice recovery and global physical reconstruction remain active. A small functional support-preserving example explains why one density carries more information than one support; it is not claimed as a realized global billiard family.
+The inherited intrinsic multichannel section is retained in full except for its ambiguous orientation sentence, now replaced by the precise statement and theorem reference. The old version remains available. The v27 observed-contact dichotomy, functional finite-smooth-remainder proof, single-offset density inverse, analytic rigidity, rank-two lattice recovery, physical information and charged global reconstruction remain active and unchanged.
 
-## Source and verification
+## Preservation and actual verification
 
-The stable directory retains its historical v17 name. `main.tex` is the complete current manuscript; `two_collision.tex` is the unchanged companion. All prior mathematical source files and the complete active auxiliary compendium are preserved. The old complete entry page is available as [README_PRE_V27.md](README_PRE_V27.md).
+The stable directory retains its historical v17 name. `main.tex` is the complete current native source, with 49 direct inputs rather than 48: two versioned replacements and one added subsection. The companion, the complete 36-input auxiliary compendium and bibliography are retained. The previous native entry is [main_pre_v28.tex](main_pre_v28.tex), and the previous navigation is [README_PRE_V28.md](README_PRE_V28.md).
 
-884 finite diagnostics were actually executed in normal and optimized Python with identical output, and the executed script's Git blob matches the repository blob. A changed-source audit and a separately labeled revised-module typesetting fixture were also executed. They are not a full native manuscript build.
+883 exact finite diagnostics and the changed-source audit passed in ordinary and optimized Python with identical output. A separately labelled eight-page revised-module fixture compiled; it retains ten unresolved-reference occurrences involving eight inherited labels outside the fixture and is not a complete submission build.
 
-**Complete native build remains unverified.** The first v27 Actions job failed before executing any step (`steps=[]`, `runner_id=0`). This is neither compilation success nor evidence of a TeX failure. The exact observations, reproducible full-checkout commands and distinction between proof and diagnostics are in [VERIFICATION_V27.md](VERIFICATION_V27.md).
+**C2 remains open.** The actual v28 native workflow run `34677164341` failed before any job step executed (`steps=[]`, `runner_id=0`). No complete main/companion PDF, complete recursive reference check or full-PDF visual certificate is claimed. The configured full-checkout workflow, exact observations and reproduction commands are in [VERIFICATION_V28.md](VERIFICATION_V28.md).
 
-This is an author revision for further independent review, not a journal decision, and it has not been merged into `main`.
+This is an author revision for further independent review, not a journal decision. It has not been merged into `main`.
