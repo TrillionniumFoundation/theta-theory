@@ -54,6 +54,12 @@ The job did not execute checkout, dependency installation, or TeX. This supplies
 
 The final workflow and tools require complete native inputs, archive the exact source commit, record versions, run normal/optimized diagnostics and the full recursive scan, build both `two_collision.tex` and `main.tex` through the retained full build utility, and archive logs, PDFs, page metadata and hashes. Only an actual successful execution of those steps can close the referee's native-build request.
 
+## Subsequent complete-checkout attempt and final evidence
+
+After the mandatory full-audit tools and workflow were committed at `852bfc5981f067b0ad0f701137fbb819f56c2479`, a second run `34674631142` executed as an Actions scheduling attempt. Its job `103502162490` completed with `failure` at `2026-09-12T05:04:09Z`, again with `steps=[]`, `runner_id=0`, and an empty runner name. No diagnostic or TeX step executed. The normalized observations from both job-API responses are committed in `diagnostics/v27-native-run-attempts.json`.
+
+The mathematical source bytes at this second source commit remain identical to the mathematical snapshot `416124f13f182f8e2d876f93090865f13269c86b`. The final evidence-only update changes no native source or workflow. Two pre-step failures do not constitute two failed TeX compilations, and neither is counted as a successful full native build. The pending native execution requirement is unchanged.
+
 ## Reproduction from a complete checkout
 
 Use an output directory outside the manuscript tree:
