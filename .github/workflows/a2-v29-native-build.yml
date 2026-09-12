@@ -1,0 +1,58 @@
+name: A2 v29 complete native submission
+on:
+  push:
+    branches: [revision/a2-v29-equivariant-density-stability-top4-2026-09-12]
+    paths:
+      - 'papers/A2-v17-boundary-information-coarsening/**/*.tex'
+      - 'papers/A2-v17-boundary-information-coarsening/tools/**'
+      - '.github/workflows/a2-v29-native-build.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      P: papers/A2-v17-boundary-information-coarsening
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Pin immutable source and toolchain
+        run: |
+          mkdir -p "$RUNNER_TEMP/a2-v29"
+          git rev-parse HEAD > "$RUNNER_TEMP/a2-v29/source-commit.txt"
+          git archive HEAD "$P" .github/workflows/a2-v29-native-build.yml | gzip -n > "$RUNNER_TEMP/a2-v29/native-source.tar.gz"
+          python3 --version > "$RUNNER_TEMP/a2-v29/python-version.txt"
+      - name: Install native typesetting tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y latexmk texlive-latex-extra texlive-fonts-recommended texlive-science lmodern poppler-utils
+      - name: Execute finite algebra and complete-tree preservation checks
+        run: |
+          for VERSION in 27 28 29; do
+            python3 "$P/tools/check_revision_v${VERSION}.py" > "$RUNNER_TEMP/a2-v29/v${VERSION}-normal.json"
+            python3 -O "$P/tools/check_revision_v${VERSION}.py" > "$RUNNER_TEMP/a2-v29/v${VERSION}-optimized.json"
+            cmp "$RUNNER_TEMP/a2-v29/v${VERSION}-normal.json" "$RUNNER_TEMP/a2-v29/v${VERSION}-optimized.json"
+          done
+          python3 "$P/tools/check_preservation_v29.py" > "$RUNNER_TEMP/a2-v29/preservation.json"
+      - name: Audit both complete native source graphs
+        if: always()
+        run: python3 "$P/tools/audit_native_sources_v27.py" --output "$RUNNER_TEMP/a2-v29/native-graph.json"
+      - name: Build both complete native manuscripts
+        if: always()
+        run: python3 "$P/tools/build_submission.py" --output-dir "$RUNNER_TEMP/a2-v29/native-build"
+      - name: Record product hashes
+        if: always()
+        run: |
+          cd "$RUNNER_TEMP/a2-v29"
+          find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 -r sha256sum > SHA256SUMS
+      - name: Preserve source, logs, products and failures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a2-v29-native-${{ github.sha }}
+          path: ${{ runner.temp }}/a2-v29
+          if-no-files-found: error
