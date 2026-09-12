@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   native-build:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
@@ -31,19 +31,25 @@ jobs:
           name: a2-v25-source-${{ github.sha }}
           path: ${{ runner.temp }}/a2-v25-evidence
           retention-days: 30
-      - name: Install native build dependencies
+      - name: Ensure native build dependencies
         id: deps
         run: |
           set -euo pipefail
-          sudo apt-get update
-          sudo apt-get install -y latexmk texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils python3-numpy python3-scipy
+          if ! command -v latexmk >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y latexmk texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils python3-numpy python3-scipy
+          fi
+          python3 - <<'PY'
+          import numpy, scipy
+          print('diagnostic dependencies available')
+          PY
       - name: Verify v25 identities and complete source graph
         id: audit
         continue-on-error: true
         run: |
           set -euo pipefail
-          /usr/bin/python3 papers/A2-v17-boundary-information-coarsening/tools/check_revision_v25.py > "${RUNNER_TEMP}/a2-v25-evidence/v25-normal.json" 2> "${RUNNER_TEMP}/a2-v25-evidence/v25-normal.stderr"
-          /usr/bin/python3 -O papers/A2-v17-boundary-information-coarsening/tools/check_revision_v25.py > "${RUNNER_TEMP}/a2-v25-evidence/v25-optimized.json" 2> "${RUNNER_TEMP}/a2-v25-evidence/v25-optimized.stderr"
+          python3 papers/A2-v17-boundary-information-coarsening/tools/check_revision_v25.py > "${RUNNER_TEMP}/a2-v25-evidence/v25-normal.json" 2> "${RUNNER_TEMP}/a2-v25-evidence/v25-normal.stderr"
+          python3 -O papers/A2-v17-boundary-information-coarsening/tools/check_revision_v25.py > "${RUNNER_TEMP}/a2-v25-evidence/v25-optimized.json" 2> "${RUNNER_TEMP}/a2-v25-evidence/v25-optimized.stderr"
           cmp "${RUNNER_TEMP}/a2-v25-evidence/v25-normal.json" "${RUNNER_TEMP}/a2-v25-evidence/v25-optimized.json"
       - name: Build complete companion and article
         id: native
@@ -51,15 +57,15 @@ jobs:
         continue-on-error: true
         run: |
           set -euo pipefail
-          /usr/bin/python3 papers/A2-v17-boundary-information-coarsening/tools/build_submission.py --output-dir "${RUNNER_TEMP}/a2-v25-evidence/native-build"
+          python3 papers/A2-v17-boundary-information-coarsening/tools/build_submission.py --output-dir "${RUNNER_TEMP}/a2-v25-evidence/native-build"
       - name: Retained boundary diagnostics
         id: boundary
         if: ${{ !cancelled() && steps.deps.outcome == 'success' }}
         continue-on-error: true
         run: |
           set -euo pipefail
-          /usr/bin/python3 papers/A2-v17-boundary-information-coarsening/tools/check_boundary_information.py > "${RUNNER_TEMP}/a2-v25-evidence/boundary-normal.json"
-          /usr/bin/python3 -O papers/A2-v17-boundary-information-coarsening/tools/check_boundary_information.py > "${RUNNER_TEMP}/a2-v25-evidence/boundary-optimized.json"
+          python3 papers/A2-v17-boundary-information-coarsening/tools/check_boundary_information.py > "${RUNNER_TEMP}/a2-v25-evidence/boundary-normal.json"
+          python3 -O papers/A2-v17-boundary-information-coarsening/tools/check_boundary_information.py > "${RUNNER_TEMP}/a2-v25-evidence/boundary-optimized.json"
           cmp "${RUNNER_TEMP}/a2-v25-evidence/boundary-normal.json" "${RUNNER_TEMP}/a2-v25-evidence/boundary-optimized.json"
       - name: Record product hashes and execution status
         if: always()
