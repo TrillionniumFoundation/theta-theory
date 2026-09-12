@@ -1,22 +1,21 @@
 # Theta-Theory: current manuscripts and preserved workstreams
 
-## A2 author revision on this branch: v32
+## Current A2 author revision: v35
 
 **Boundary laws, intrinsic periodic rigidity, and global physical reconstruction in dispersing billiards**
 
-[Complete English manuscript and revision entry](papers/A2-v17-boundary-information-coarsening/README.md) · [Native main source](papers/A2-v17-boundary-information-coarsening/main.tex) · [Response to the v31 referee](papers/A2-v17-boundary-information-coarsening/RESPONSE_TO_REFEREE_V32.md) · [Preservation and source identities](papers/A2-v17-boundary-information-coarsening/PRESERVATION_V32.md) · [Execution record](papers/A2-v17-boundary-information-coarsening/VERIFICATION_V32.md).
+[Complete English manuscript entry](papers/A2-v17-boundary-information-coarsening/README.md) · [Native main source](papers/A2-v17-boundary-information-coarsening/main.tex) · [Response to the latest v33 referee](papers/A2-v17-boundary-information-coarsening/RESPONSE_TO_REFEREE_V35.md) · [Current verification record](papers/A2-v17-boundary-information-coarsening/VERIFICATION_V35.md) · [Preservation and provenance](papers/A2-v17-boundary-information-coarsening/PRESERVATION_V35.md).
 
-Branch: `revision/a2-v32-compact-lecam-native-submission-top4-2026-09-12`.
-Mathematical-source commit: `35fd4ccef1b5785692de512635f7240a4df0d641`.
-Review parent: `9edd5f48d91b74d09718149de6e2c3550c375f20`, reviewing `e1f6304f6069869ac323e7d1a634a619faa4bc32`.
-The branch also contains the current navigation, response and verification machinery; the execution record distinguishes the tested full-submission SHA from the mathematical-source SHA.
+Branch: `revision/a2-v35-referee-integration-native-verification-2026-09-13`.
 
-V32 proves the compact-parameter Le Cam assertion rather than replacing it by a finite-subexperiment claim. A uniform moving-boundary Hellinger modulus and a finite-net argument complete the endpoint approximation, including singular information. Exact geometric-waiting comparisons then give the compact two-sided Gaussian product limit for the count--endpoint coarsening. The geometric inverse, intrinsic rigidity, physical calibration, companion and all auxiliary proofs are preserved.
+The addressed report is at `d51c06689ba540711b2f890beb35eb235dba13e4`, reviewing the assembled v33 submission `b577cffcb3ca5597cb4905269bea9de3bd4ead38`. This revision also preserves the intervening, not-yet-reviewed v34 work at `127f9334f15c5fb12307bd691973d1eb44e499e8`. These are predecessor identities, not the tested SHA of the current assembled submission; the current execution record distinguishes them explicitly.
 
-Local finite diagnostics passed in ordinary and optimized Python. The two changed sections were separately syntax-checked with their external references explicitly unresolved. **These checks are not a complete native-main build. C2 is not claimed closed without successful full-main and companion execution and inspection; consult the current execution record.**
+V35 inserts the local-alternative mean expansion directly into the existing vector Gaussian theorem proof, applies the fourth-moment formula to centered summands, and clarifies per-observation censoring. It retains the v34 tilting proof, every theorem statement, the full abstract, all 52 direct manuscript inputs and all 36 auxiliary inputs. Compact two-sided Le Cam convergence, the signed all-order inverse, intrinsic periodic reconstruction, charged physical calibration and the direct-position comparison are not weakened.
+
+The exact native companion has been compiled locally into a seven-page PDF. The R1 finite diagnostics pass in ordinary and optimized Python. These are separate from the full-main requirement: **consult the current verification record for the actual complete-native execution and inspection status; a workflow definition or isolated syntax check is not C2 evidence.**
 
 ## Statistical A1 and historical programme navigation
 
-The [preceding repository entry](README_PRE_V32.md) is retained by exact Git blob. The [earlier programme entry](README_PRE_V28.md) and [complete programme index](README_PRE_V27.md) retain statistical A1 v36, separate dynamical/mechanical workstreams, earlier A2 versions, reports and provenance. This A2 revision does not alter or conflate those workstreams.
+[The preceding repository entry](README_PRE_V35.md), [the earlier programme entry](README_PRE_V28.md), and [the complete programme index](README_PRE_V27.md) preserve statistical A1 v36, separate dynamical/mechanical workstreams, earlier A2 versions, reports and provenance. This A2 revision neither alters nor conflates those workstreams.
 
-This branch is for independent re-review. It is not merged into `main`; review branches, branch protections, membership and permissions are unchanged.
+This branch is for independent re-review. It is not merged into `main`. Existing review branches, branch protections, memberships and permissions are unchanged.
