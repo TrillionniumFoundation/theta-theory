@@ -1,0 +1,98 @@
+name: A2 v26 complete native build
+on:
+  push:
+    branches:
+      - revision/a2-v26-single-offset-law-inverse-top4-2026-09-12
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: a2-v26-native-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  native-build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Archive exact source before any build
+        run: |
+          set -euo pipefail
+          mkdir -p "${RUNNER_TEMP}/a2-v26-evidence"
+          git rev-parse HEAD > "${RUNNER_TEMP}/a2-v26-evidence/source-commit.txt"
+          git status --porcelain=v1 > "${RUNNER_TEMP}/a2-v26-evidence/worktree-status.txt"
+          git archive --format=tar.gz HEAD papers/A2-v17-boundary-information-coarsening > "${RUNNER_TEMP}/a2-v26-evidence/native-source.tar.gz"
+          sha256sum "${RUNNER_TEMP}/a2-v26-evidence/native-source.tar.gz" > "${RUNNER_TEMP}/a2-v26-evidence/source-archive-sha256.txt"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: a2-v26-source-${{ github.sha }}
+          path: ${{ runner.temp }}/a2-v26-evidence
+          retention-days: 30
+      - name: Install native dependencies
+        id: deps
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y latexmk texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils python3-numpy python3-scipy
+      - name: Complete source and mathematical audit
+        id: audit
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          P=papers/A2-v17-boundary-information-coarsening
+          if test -f "$P/tools/check_revision_v26.py"; then
+            python3 "$P/tools/check_revision_v26.py" > "${RUNNER_TEMP}/a2-v26-evidence/v26-normal.json"
+            python3 -O "$P/tools/check_revision_v26.py" > "${RUNNER_TEMP}/a2-v26-evidence/v26-optimized.json"
+            cmp "${RUNNER_TEMP}/a2-v26-evidence/v26-normal.json" "${RUNNER_TEMP}/a2-v26-evidence/v26-optimized.json"
+          else
+            printf '%s\n' 'Bootstrap archive only: the v26 revision audit has not yet been committed.' > "${RUNNER_TEMP}/a2-v26-evidence/bootstrap.txt"
+            exit 1
+          fi
+      - name: Build complete companion and article
+        id: native
+        if: ${{ !cancelled() && steps.deps.outcome == 'success' }}
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          python3 papers/A2-v17-boundary-information-coarsening/tools/build_submission.py --output-dir "${RUNNER_TEMP}/a2-v26-evidence/native-build"
+      - name: Retained boundary diagnostics
+        id: boundary
+        if: ${{ !cancelled() && steps.deps.outcome == 'success' }}
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          P=papers/A2-v17-boundary-information-coarsening
+          python3 "$P/tools/check_boundary_information.py" > "${RUNNER_TEMP}/a2-v26-evidence/boundary-normal.json"
+          python3 -O "$P/tools/check_boundary_information.py" > "${RUNNER_TEMP}/a2-v26-evidence/boundary-optimized.json"
+          cmp "${RUNNER_TEMP}/a2-v26-evidence/boundary-normal.json" "${RUNNER_TEMP}/a2-v26-evidence/boundary-optimized.json"
+      - name: Record hashes and actual execution status
+        if: always()
+        env:
+          AUDIT_STATUS: ${{ steps.audit.outcome }}
+          NATIVE_STATUS: ${{ steps.native.outcome }}
+          BOUNDARY_STATUS: ${{ steps.boundary.outcome }}
+        run: |
+          set -euo pipefail
+          mkdir -p "${RUNNER_TEMP}/a2-v26-evidence"
+          printf 'source-audit=%s\nnative-build=%s\nboundary-diagnostics=%s\n' "$AUDIT_STATUS" "$NATIVE_STATUS" "$BOUNDARY_STATUS" > "${RUNNER_TEMP}/a2-v26-evidence/execution-status.txt"
+          find "${RUNNER_TEMP}/a2-v26-evidence" -type f -name '*.pdf' -print0 | sort -z | xargs -0 -r sha256sum > "${RUNNER_TEMP}/a2-v26-evidence/pdf-sha256.txt"
+          cat "${RUNNER_TEMP}/a2-v26-evidence/execution-status.txt" >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: a2-v26-build-evidence-${{ github.sha }}
+          path: ${{ runner.temp }}/a2-v26-evidence
+          retention-days: 30
+      - name: Require every verification gate
+        if: always()
+        env:
+          AUDIT_STATUS: ${{ steps.audit.outcome }}
+          NATIVE_STATUS: ${{ steps.native.outcome }}
+          BOUNDARY_STATUS: ${{ steps.boundary.outcome }}
+        run: |
+          test "$AUDIT_STATUS" = success
+          test "$NATIVE_STATUS" = success
+          test "$BOUNDARY_STATUS" = success
