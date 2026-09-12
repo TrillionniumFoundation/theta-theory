@@ -1,26 +1,27 @@
-# A2 v29 — equivariant density stability and stopped observation spaces
+# A2 v32 — compact local experiments and complete native submission
 
 **Boundary laws, intrinsic periodic rigidity, and global physical reconstruction in dispersing billiards**  
 Qian Qi · Complete English author revision · September 12, 2026
 
-Branch: `revision/a2-v29-equivariant-density-stability-top4-2026-09-12`.  
-Mathematical source: `78852f2ccf828385fd45063c1b58c0d474ddf6c5`.  
-Review base: `5f10927a6399ebec0492b7f87b622ec80a4df631`.
+Branch: `revision/a2-v32-compact-lecam-native-submission-top4-2026-09-12`.  
+Mathematical-source commit: `35fd4ccef1b5785692de512635f7240a4df0d641`.  
+Review parent: `9edd5f48d91b74d09718149de6e2c3550c375f20`.  
+Reviewed predecessor: `e1f6304f6069869ac323e7d1a634a619faa4bc32`.
 
-[Complete native manuscript](main.tex) · [Unchanged native companion](two_collision.tex) · [Point-by-point response](RESPONSE_TO_REFEREE_V29.md) · [Active source and preservation](ACTIVE_SOURCE_MANIFEST_V29.md) · [Execution record](VERIFICATION_V29.md) · [Historical derivation audit](HISTORICAL_DERIVATION_AUDIT_V29.md) · [Addressed v28 report](../../reviews/a2-v28-external-harsh-top4-2026-09-12/REFEREE_REPORT.md)
+[Complete native manuscript](main.tex) · [Native companion](two_collision.tex) · [Point-by-point response](RESPONSE_TO_REFEREE_V32.md) · [Source preservation](PRESERVATION_V32.md) · [Execution record](VERIFICATION_V32.md) · [Historical dependencies examined](HISTORICAL_DERIVATION_AUDIT_V32.md) · [Addressed referee report](../../reviews/a2-v31-external-harsh-top4-2026-09-12/REFEREE_REPORT.md)
 
 ## Mathematical revision
 
-The density inverse now transports the anchor with the common orientation. On an explicitly specified open domain of general positive `C^M` functions, the action and normalized amplitude reconstruction commute exactly with reflection. Uniform pairwise Lipschitz bounds and the finite-contact-jet inverse descend to the common-orientation quotient with the same fixed-order constants. The referee's fixed-anchor witness is retained and independently recomputed; the perturbation neighborhood is not deleted.
+The compact-experiment section proves a finite-net passage lemma and obtains a uniform total-variation modulus from the existing linearly vanishing support Hellinger estimate. It upgrades the original endpoint experiments, including singular information, to two-sided Le Cam convergence on each fixed compact local set. The fixed-window endpoint theorem inherits this conclusion through the existing exact/ideal comparison, common reference caps and success-weighted finite-bridge transfer.
 
-The observation hierarchy is formulated on one full stopped-history space for a fixed policy, with designs, failures and stopping time retained. The per-preparation map is a building block rather than a different stopped sample space. The exact common-orientation classification already accepted under C1 is preserved, together with all earlier signed inverse, smooth-remainder, observed-contact, analytic rigidity, information and charged acquisition results.
+The count--endpoint chapter now states both compact Le Cam limits explicitly. Its proof retains the original fast hyperbolic, slow iso-hyperbolic and gap scales; includes mixed Taylor remainders; compares exact geometric waiting laws in Hellinger distance; separates the independent uncapped factors; and accounts for cap and finite-bridge errors afterward. The chapter uses theorem and equation references instead of revision-era prose.
 
-## Preservation and actual verification
+The signed inverse, off-model equivariance, common-orientation classification, moving-ceiling Poisson kernels, physical calibration, charged global reconstruction, direct-position benchmark and all auxiliary mathematics remain in the complete manuscript. The original count chapter remains archived in its original path; its stable theorem labels are implemented by the expanded active chapter, not duplicated in the active graph.
 
-The historical directory name is unchanged. The complete native entry has 50 direct inputs, with two versioned replacements and one added subsection. The companion, 36-input auxiliary compendium, bibliography and all historical sources remain present. Exact earlier entries are [main_pre_v29.tex](main_pre_v29.tex) and [README_PRE_V29.md](README_PRE_V29.md).
+## Verification and review status
 
-The new exact rational diagnostics pass in ordinary and optimized Python with identical output. The complete native companion has been compiled successfully to a seven-page PDF with resolved references/citations and no duplicate labels, missing glyphs or overfull/underfull boxes; all seven pages were rendered and inspected. A separately identified ten-page changed-module fixture was also typeset, with its seventeen external unresolved labels explicitly reported.
+The local finite diagnostics pass in ordinary and optimized Python with identical output. A five-page isolated syntax check used the actual preamble and the two new sections, without theorem or reference stubs; its sixteen external labels remain explicitly unresolved. This is not a submission PDF.
 
-**C2 remains open for the complete native main package.** The v29 hosted jobs ended before any step executed (`steps=[]`, `runner_id=0`). Neither the companion alone nor the fixture is presented as full-main compilation. [VERIFICATION_V29.md](VERIFICATION_V29.md) records immutable source identities, complete companion logs, hashes, actual failures and the complete-build commands.
+**C2 is not certified by these local checks.** The complete native build workflow archives the immutable full source, builds `two_collision.tex` and `main.tex`, and retains real logs even when a build fails. The [execution record](VERIFICATION_V32.md) reports what actually ran and distinguishes intended commands from successful evidence. A successful compilation would still require inspection of the complete PDF.
 
-This is an author revision for independent re-review, not a journal decision. It is not merged into `main`.
+The historical directory name remains unchanged. [The previous main](main_pre_v32.tex) and [previous paper entry](README_PRE_V32.md) are preserved by exact Git blob. This author revision is for independent re-review, not an assertion of journal acceptance.
