@@ -2,7 +2,23 @@
 
 This index separates the current statistical A1 submission from the dynamical and mechanical research programme. Historical manuscripts and reports remain preserved.
 
-## Latest A2 author revision: v20 — signed rigidity and fixed-window physical information
+## Latest A2 author revision on this branch: v25 — observable calibration and global reconstruction
+
+**Boundary laws, intrinsic periodic rigidity, and global physical reconstruction in dispersing billiards**
+
+[Complete English manuscript and current entry page](papers/A2-v17-boundary-information-coarsening/README.md) · [Main TeX source](papers/A2-v17-boundary-information-coarsening/main.tex) · [Response to the v24 referee report](papers/A2-v17-boundary-information-coarsening/RESPONSE_TO_REFEREE_V25.md) · [Active source and preservation manifest](papers/A2-v17-boundary-information-coarsening/ACTIVE_SOURCE_MANIFEST_V25.md) · [Executed checks and verification boundary](papers/A2-v17-boundary-information-coarsening/VERIFICATION_V25.md).
+
+Revision branch: `revision/a2-v25-observable-calibration-signature-top4-2026-09-12`. It descends from the latest located v24 review tip `8129defd970bbc1e011bb480b70603d39a31324d`; the reviewed v24 manuscript is pinned at `c35b31b1924a1621374eab72ee60e4cb5ab37df5`.
+
+V25 adds a common physical endpoint-position acquisition and a charged long-even-bridge pilot for contact centers, tangents and onsets. The global estimator explicitly includes gaps alongside conditional-law tests. Finite-signature stability now has separately proved local embedding, global separation and unique noisy matching. A compatible analytic Hermite-variation bundle replaces the unsupported identification of the entire compact analytic class with a finite-dimensional local model. The Poisson density notation, bulk relative-density dependency and reverse-kernel corner conventions are explicit. A signed one-flight support inverse is included as a benchmark, while the global physical theorem works with only even flight numbers whose minimum may tend to infinity.
+
+The all-order signed inverse, rank-two lattice recovery without a supplied metric, intrinsic gluing, count quotient, local information experiments and complete auxiliary derivations are retained. This remains an author revision for independent review, not a journal decision or a merged main-branch release.
+
+337 finite diagnostics were executed locally in normal and optimized Python with identical output, and the executed script's blob hash was verified against GitHub. The complete native build is **not certified**: the first hosted run failed before any step executed, and the workflow was then routed to the repository's existing self-hosted Linux x64 labels. The verification record distinguishes committed proofs, executed finite tests and native checks that still require successful execution.
+
+The A2 entries below are historical navigation. Their scope and verification statements belong to those earlier versions, not to v25.
+
+## Historical A2 author revision: v20 — signed rigidity and fixed-window physical information
 
 **Boundary laws, signed contact rigidity, and physical information in dispersing billiards**
 
