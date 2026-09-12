@@ -29,19 +29,14 @@ jobs:
           git rev-parse HEAD > "$RUNNER_TEMP/a2-v27/source-commit.txt"
           git archive HEAD "$P" | gzip -n > "$RUNNER_TEMP/a2-v27/native-source.tar.gz"
           python3 --version > "$RUNNER_TEMP/a2-v27/python-version.txt"
-      - name: Run v27 diagnostics when present
+      - name: Run ordinary and optimized v27 diagnostics
         run: |
-          if test -f "$P/tools/check_revision_v27.py"; then
-            python3 "$P/tools/check_revision_v27.py" > "$RUNNER_TEMP/a2-v27/finite-normal.json"
-            python3 -O "$P/tools/check_revision_v27.py" > "$RUNNER_TEMP/a2-v27/finite-optimized.json"
-            cmp "$RUNNER_TEMP/a2-v27/finite-normal.json" "$RUNNER_TEMP/a2-v27/finite-optimized.json"
-          fi
-      - name: Audit complete native source graph when present
+          python3 "$P/tools/check_revision_v27.py" > "$RUNNER_TEMP/a2-v27/finite-normal.json"
+          python3 -O "$P/tools/check_revision_v27.py" > "$RUNNER_TEMP/a2-v27/finite-optimized.json"
+          cmp "$RUNNER_TEMP/a2-v27/finite-normal.json" "$RUNNER_TEMP/a2-v27/finite-optimized.json"
+      - name: Audit both complete native source graphs
         if: always()
-        run: |
-          if test -f "$P/tools/audit_native_sources_v27.py"; then
-            python3 "$P/tools/audit_native_sources_v27.py" --output "$RUNNER_TEMP/a2-v27/native-graph.json"
-          fi
+        run: python3 "$P/tools/audit_native_sources_v27.py" --output "$RUNNER_TEMP/a2-v27/native-graph.json"
       - name: Build both complete native manuscripts
         if: always()
         run: python3 "$P/tools/build_submission.py" --output-dir "$RUNNER_TEMP/a2-v27/native-build"
