@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
-"""Build both complete native A2 entries; preserve logs even on a failed build."""
+"""Build both unabridged native A2 entries from an immutable Git snapshot.
+
+A passing build is not a mathematical correctness or visual-inspection
+certificate. All available logs and input manifests are retained on failure.
+"""
 from __future__ import annotations
 import argparse
-import hashlib
 import json
 import os
 from pathlib import Path
@@ -12,166 +15,163 @@ import subprocess
 import sys
 import tempfile
 
+from source_provenance import (PRODUCT_SUFFIXES, freeze_git_source, graph,
+                               recorder_inputs, require, sha256, source_archive,
+                               tex_roots, verify_copy, verify_generated, write_json)
+
 SOURCE = Path(__file__).resolve().parents[1]
 ENTRIES = ('two_collision', 'main')
-INPUT = re.compile(r'\\(?:input|include)\s*\{([^}]+)\}')
-PRODUCT_SUFFIXES = ('.pdf','.log','.aux','.fls','.fdb_latexmk','.out','.toc')
+DIAGNOSTICS = ('check_adaptive.py', 'check_revision_v32.py', 'check_revision_v38.py')
 
 
-def sha256(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
-
-
-def run(cmd: list[str], cwd: Path, env: dict[str,str], output: Path) -> int:
+def run(cmd: list[str], cwd: Path, env: dict[str, str], output: Path) -> int:
     with output.open('wb') as stream:
-        return subprocess.run(cmd,cwd=cwd,env=env,stdout=stream,
-                              stderr=subprocess.STDOUT,check=False).returncode
+        return subprocess.run(cmd, cwd=cwd, env=env, stdout=stream,
+                              stderr=subprocess.STDOUT, check=False).returncode
 
 
-def graph(entry: str, visited: set[str]) -> None:
-    if entry in visited:
-        return
-    file = SOURCE/entry
-    if not file.is_file():
-        raise FileNotFoundError('Missing native TeX input: '+entry)
-    visited.add(entry)
-    text = re.sub(r'(?<!\\)%[^\n]*','',file.read_text(encoding='utf-8'))
-    for raw in INPUT.findall(text):
-        rel = raw if raw.endswith('.tex') else raw+'.tex'
-        if Path(rel).is_absolute() or '..' in Path(rel).parts:
-            raise ValueError('Nonlocal TeX input: '+rel)
-        graph(rel,visited)
-
-
-def copy_ignore(directory: str, names: list[str]) -> list[str]:
-    ignored = [name for name in names if name in ('__pycache__','.git')]
-    if Path(directory).resolve() == SOURCE.resolve():
-        generated = {stem+suffix for stem in ENTRIES for suffix in PRODUCT_SUFFIXES}
-        ignored.extend(name for name in names if name in generated)
-    return ignored
-
-
-def build_entry(stem: str, work: Path, out: Path, env: dict[str,str]) -> dict:
-    result = {'status':'started','entry':stem+'.tex','layout_review':'not performed by this script'}
-    cmd = ['latexmk','-pdf','-interaction=nonstopmode','-halt-on-error',
-           '-file-line-error','-pdflatex=pdflatex -no-shell-escape %O %S',stem+'.tex']
+def build_entry(stem: str, work: Path, out: Path, env: dict[str, str],
+                files: dict, expected: set[str], external_roots: list[Path],
+                imported_generated: dict | None = None) -> dict:
+    result = {'status': 'started', 'entry': stem + '.tex',
+              'layout_review': 'not performed by this script'}
+    # -norc excludes user/project latexmk configuration; -recorder is explicit.
+    cmd = ['latexmk', '-norc', '-pdf', '-interaction=nonstopmode', '-halt-on-error',
+           '-file-line-error', '-recorder',
+           '-pdflatex=pdflatex -no-shell-escape -recorder %O %S', stem + '.tex']
     result['command'] = cmd
     try:
-        code = run(cmd,work,env,out/(stem+'-build.txt'))
+        verify_copy(work, files)
+        verify_generated(work, imported_generated or {})
+        require(stem + '.tex' in files and stem + '.tex' in expected, 'Unmanifested native entry')
+        code = run(cmd, work, env, out / (stem + '-build.txt'))
         result['returncode'] = code
-        log_file = work/(stem+'.log')
-        log = log_file.read_text(errors='replace') if log_file.exists() else ''
-        # TeX wraps diagnostic words, not only lines between words.
+        require(code == 0, 'latexmk failed; available logs are preserved')
+        log_file = work / (stem + '.log')
+        require(log_file.is_file() and log_file.stat().st_size > 0, 'Missing or empty TeX log')
+        log = log_file.read_text(errors='replace')
         flat = ''.join(log.splitlines())
         fatal = re.search(r'undefined references|undefined citations|'
                           r'(?:Reference|Citation) `.{0,250}?undefined|'
-                          r'multiply[- ]defined|Missing character:',flat,re.I)
-        result['warnings'] = re.findall(r'.*(?:Warning:|Overfull \\[hv]box|Underfull \\[hv]box).*',log)
-        if code:
-            raise RuntimeError('latexmk failed; complete available logs are preserved')
-        if fatal:
-            raise RuntimeError('Unresolved references/citations, duplicate labels, or missing glyphs')
-        pdf = work/(stem+'.pdf')
-        cp = subprocess.run(['pdfinfo',str(pdf)],capture_output=True,text=True,check=True)
-        (out/(stem+'-pdfinfo.txt')).write_text(cp.stdout)
-        pages = re.search(r'^Pages:\s*(\d+)',cp.stdout,re.M)
-        if pages is None:
-            raise RuntimeError('Could not read native PDF page count')
-        result['product'] = {'pages':int(pages.group(1)), 'bytes':pdf.stat().st_size,
-                             'sha256':sha256(pdf)}
-        fls = work/(stem+'.fls')
-        actual = {}
-        if fls.exists():
-            for line in fls.read_text(errors='replace').splitlines():
-                if not line.startswith('INPUT '):
-                    continue
-                candidate = Path(line[6:])
-                if not candidate.is_absolute():
-                    candidate = work/candidate
-                try:
-                    rel = candidate.resolve().relative_to(work.resolve())
-                except ValueError:
-                    continue
-                original = SOURCE/rel
-                if original.is_file():
-                    actual[rel.as_posix()] = sha256(original)
-        (out/(stem+'-recorder-source-inputs.json')).write_text(json.dumps(actual,indent=2,sort_keys=True)+'\n')
+                          r'multiply[- ]defined|Missing character:|'
+                          r'destination with the same identifier', flat, re.I)
+        result['warnings'] = re.findall(r'.*(?:Warning:|Overfull \\[hv]box|Underfull \\[hv]box).*', log)
+        require(fatal is None, 'Unresolved reference/citation, duplicate destination/label, or missing glyph')
+        # Fail before issuing a successful product certificate if provenance is absent.
+        recorded = recorder_inputs(stem, work, files, expected, external_roots, imported_generated)
+        write_json(out / (stem + '-recorder-inputs.json'), recorded)
+        result['source_integrity'] = 'verified'
+        result['recorded_native_files'] = len(recorded['source_inputs'])
+        pdf = work / (stem + '.pdf')
+        require(pdf.is_file() and pdf.read_bytes().startswith(b'%PDF-'), 'Missing native PDF')
+        cp = subprocess.run(['pdfinfo', str(pdf)], env=env, capture_output=True, text=True, check=False)
+        (out / (stem + '-pdfinfo.txt')).write_text(cp.stdout + cp.stderr)
+        require(cp.returncode == 0, 'pdfinfo failed')
+        pages = re.search(r'^Pages:\s*(\d+)', cp.stdout, re.M)
+        require(pages is not None and int(pages.group(1)) > 0, 'Invalid native PDF page count')
+        result['product'] = {'pages': int(pages.group(1)), 'bytes': pdf.stat().st_size,
+                             'sha256': sha256(pdf)}
         result['status'] = 'passed'
     except Exception as exc:
         result['status'] = 'failed'
         result['error'] = str(exc)
     finally:
-        # Run this before TemporaryDirectory cleanup, including on latexmk failure.
         for suffix in PRODUCT_SUFFIXES:
-            path = work/(stem+suffix)
-            if path.exists():
-                shutil.copy2(path,out/path.name)
+            path = work / (stem + suffix)
+            if path.is_file():
+                shutil.copy2(path, out / path.name)
     return result
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--output-dir',required=True,type=Path)
+    parser.add_argument('--output-dir', required=True, type=Path)
     args = parser.parse_args()
     out = args.output_dir.resolve()
-    if out == SOURCE or SOURCE in out.parents:
-        raise ValueError('Output directory must be outside the manuscript tree')
-    out.mkdir(parents=True,exist_ok=True)
-    report = {'status':'started','entrypoints':[s+'.tex' for s in ENTRIES],
-              'scope':'Complete native companion and main; all active inputs, appendices and bibliography. No shortened fixture.',
-              'source_commit':None,'errors':[],'entries':{},'finite_diagnostics':{}}
-    env = os.environ.copy()
-    env.update({'SOURCE_DATE_EPOCH':'1789084800','FORCE_SOURCE_DATE':'1',
-                'TZ':'UTC','LC_ALL':'C.UTF-8'})
+    require(out != SOURCE and SOURCE not in out.parents, 'Output must be outside the manuscript tree')
+    require(not out.exists() or not any(out.iterdir()), 'Output directory must be absent or empty')
+    out.mkdir(parents=True, exist_ok=True)
+    report = {'status': 'started', 'entrypoints': [s + '.tex' for s in ENTRIES],
+              'scope': 'Both complete native entries, including every recursive input and bibliography',
+              'source_commit': None, 'errors': [], 'entries': {}, 'finite_diagnostics': {},
+              'python_version': sys.version, 'python_executable': sys.executable,
+              'visual_inspection': 'not performed; required separately for C2',
+              'trust_boundary': 'Git and installed TeX toolchain; not hostile-compiler attestation'}
     try:
-        cp = subprocess.run(['git','rev-parse','HEAD'],cwd=SOURCE,
-                            capture_output=True,text=True,check=False)
-        if cp.returncode == 0:
-            report['source_commit'] = cp.stdout.strip()
-        visited = set()
-        for stem in ENTRIES:
-            try:
-                graph(stem+'.tex',visited)
-            except Exception as exc:
-                report['errors'].append(str(exc))
-        manifest = {p:{'bytes':(SOURCE/p).stat().st_size,'sha256':sha256(SOURCE/p)}
-                    for p in sorted(visited)}
-        (out/'active-source-manifest.json').write_text(json.dumps(manifest,indent=2,sort_keys=True)+'\n')
-        report['active_tex_files'] = len(visited)
-        for tool in ('latexmk','pdflatex','pdfinfo'):
-            if not shutil.which(tool):
-                raise RuntimeError('Required native build executable unavailable: '+tool)
-            cp = subprocess.run([tool,'-v' if tool=='pdfinfo' else '--version'],
-                                capture_output=True,text=True,check=False)
-            (out/(tool+'-version.txt')).write_text(cp.stdout+cp.stderr)
-        for script in ('check_adaptive.py','check_revision_v32.py'):
-            outputs = []
-            for opt,name in (([],'normal'),(['-O'],'optimized')):
-                target = out/(Path(script).stem+'-'+name+'.json')
-                code = run([sys.executable,*opt,str(SOURCE/'tools'/script)],SOURCE,env,target)
-                outputs.append(target)
-                if code:
-                    report['errors'].append(script+' '+name+' failed; see '+target.name)
-            if outputs[0].read_bytes() != outputs[1].read_bytes():
-                report['errors'].append(script+': ordinary/optimized outputs differ')
-            try:
-                report['finite_diagnostics'][script] = json.loads(outputs[0].read_text())
-            except (ValueError,UnicodeError):
-                report['errors'].append(script+': diagnostic output is not JSON')
-        with tempfile.TemporaryDirectory(prefix='a2-complete-native-') as temporary:
-            work = Path(temporary)/'paper'
-            shutil.copytree(SOURCE,work,ignore=copy_ignore)
+        with tempfile.TemporaryDirectory(prefix='a2-source-pinned-') as temporary:
+            temporary = Path(temporary)
+            snapshot = temporary / 'snapshot'
+            manifest = freeze_git_source(SOURCE, snapshot, ENTRIES)
+            write_json(out / 'frozen-source-manifest.json', manifest)
+            source_archive(snapshot, manifest, out / 'native-source.zip')
+            report.update({key: manifest[key] for key in
+                           ('source_commit', 'source_tree', 'repository_tree', 'source_prefix', 'working_tree')})
+            report['source_archive_sha256'] = sha256(out / 'native-source.zip')
+            expected = {stem: graph(snapshot, stem + '.tex') for stem in ENTRIES}
+            write_json(out / 'active-source-manifest.json', {
+                stem: {name: manifest['files'][name] for name in sorted(expected[stem])} for stem in ENTRIES})
+            report['active_tex_files'] = len(set().union(*expected.values()))
+            # Do not inherit TeX search-path overrides or mutable user configuration.
+            env = {k: v for k, v in os.environ.items()
+                   if not k.startswith(('TEX', 'BIB', 'BST', 'VARTEX', 'LATEXMK'))}
+            home = temporary / 'empty-home'
+            home.mkdir()
+            env.update({'HOME': str(home), 'TEXMFHOME': str(home / 'texmf'),
+                        'SOURCE_DATE_EPOCH': '1789257600', 'FORCE_SOURCE_DATE': '1',
+                        'TZ': 'UTC', 'LC_ALL': 'C.UTF-8', 'PYTHONDONTWRITEBYTECODE': '1'})
+            for tool in ('git', 'latexmk', 'pdflatex', 'pdfinfo', 'kpsewhich'):
+                require(shutil.which(tool) is not None, 'Required executable unavailable: ' + tool)
+                cp = subprocess.run([tool, '-v' if tool == 'pdfinfo' else '--version'],
+                                    env=env, capture_output=True, text=True, check=False)
+                (out / (tool + '-version.txt')).write_text(cp.stdout + cp.stderr)
+                require(cp.returncode == 0, 'Could not record version of ' + tool)
+            roots = tex_roots(env)
+            report['external_tex_roots'] = [str(root) for root in roots]
+            for script in DIAGNOSTICS:
+                results = []
+                for opt, mode in (([], 'normal'), (['-O'], 'optimized')):
+                    target = out / (Path(script).stem + '-' + mode + '.json')
+                    code = run([sys.executable, '-B', *opt, str(snapshot / 'tools' / script)], snapshot, env, target)
+                    results.append(target)
+                    if code:
+                        report['errors'].append(script + ' ' + mode + ' failed; see ' + target.name)
+                if results[0].read_bytes() != results[1].read_bytes():
+                    report['errors'].append(script + ': normal/optimized outputs differ')
+                try:
+                    report['finite_diagnostics'][script] = json.loads(results[0].read_text())
+                except (ValueError, UnicodeError):
+                    report['errors'].append(script + ': diagnostic output is not JSON')
             for stem in ENTRIES:
-                report['entries'][stem] = build_entry(stem,work,out,env)
+                work = temporary / ('compile-' + stem)
+                shutil.copytree(snapshot, work)
+                imported = {}
+                if stem == 'main':
+                    companion = report['entries'].get('two_collision', {})
+                    require(companion.get('status') == 'passed',
+                            'A source-verified companion build is required before the main')
+                    aux = out / 'two_collision.aux'
+                    require(aux.is_file(), 'Companion auxiliary output is missing')
+                    shutil.copy2(aux, work / aux.name)
+                    imported[aux.name] = {
+                        'bytes': aux.stat().st_size, 'sha256': sha256(aux),
+                        'producer_entry': 'two_collision.tex',
+                        'producer_source_commit': manifest['source_commit'],
+                        'producer_pdf_sha256': companion['product']['sha256'],
+                        'producer_recorder_sha256': sha256(out/'two_collision-recorder-inputs.json')}
+                    write_json(out/'main-imported-generated-inputs.json', imported)
+                report['entries'][stem] = build_entry(stem, work, out, env,
+                                                     manifest['files'], expected[stem], roots, imported)
                 if report['entries'][stem]['status'] != 'passed':
-                    report['errors'].append(stem+': '+report['entries'][stem]['error'])
-        report['status'] = 'failed' if report['errors'] else 'passed'
+                    report['errors'].append(stem + ': ' + report['entries'][stem]['error'])
+            report['status'] = 'failed' if report['errors'] else 'passed'
     except Exception as exc:
         report['status'] = 'failed'
         report['errors'].append(str(exc))
     finally:
-        (out/'build-report.json').write_text(json.dumps(report,indent=2,sort_keys=True)+'\n')
-    print(json.dumps(report,indent=2,sort_keys=True))
+        report['evidence_files'] = {p.name: {'bytes': p.stat().st_size, 'sha256': sha256(p)}
+                                    for p in sorted(out.iterdir()) if p.is_file() and p.name != 'build-report.json'}
+        write_json(out / 'build-report.json', report)
+    print(json.dumps(report, indent=2, sort_keys=True))
     if report['status'] != 'passed':
         raise SystemExit(1)
 
