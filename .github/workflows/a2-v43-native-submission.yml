@@ -1,0 +1,57 @@
+name: A2 v43 complete native submission
+on:
+  push:
+    branches:
+      - revision/a2-v43-complete-native-delivery-2026-09-14
+    paths:
+      - papers/A2-v17-boundary-information-coarsening/**/*.tex
+      - papers/A2-v17-boundary-information-coarsening/tools/**
+      - .github/workflows/a2-v43-native-submission.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 40
+    steps:
+      - name: Checkout the exact triggering commit
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Export complete native source independently of the compiler
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          mkdir -p "$RUNNER_TEMP/a2-v43-source"
+          git archive --format=zip --output="$RUNNER_TEMP/a2-v43-source/native-source.zip" HEAD papers/A2-v17-boundary-information-coarsening
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/a2-v43-source/git-identity.txt"
+          git ls-tree -r HEAD -- papers/A2-v17-boundary-information-coarsening > "$RUNNER_TEMP/a2-v43-source/git-input-tree.txt"
+          sha256sum "$RUNNER_TEMP/a2-v43-source/native-source.zip" > "$RUNNER_TEMP/a2-v43-source/SHA256SUMS"
+      - name: Retain the source checkpoint
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: a2-v43-source-${{ github.sha }}
+          path: ${{ runner.temp }}/a2-v43-source/
+          if-no-files-found: error
+          retention-days: 90
+      - name: Install native toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends latexmk texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils python3-numpy python3-scipy python3-sympy
+      - name: Build the complete main and companion
+        shell: bash
+        run: |
+          set -euo pipefail
+          /usr/bin/python3 -B papers/A2-v17-boundary-information-coarsening/tools/build_submission.py --output-dir "$RUNNER_TEMP/a2-v43-native-$GITHUB_SHA"
+      - name: Retain actual products and execution evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: a2-v43-native-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/a2-v43-native-${{ github.sha }}/
+          if-no-files-found: error
+          retention-days: 90
