@@ -88,9 +88,8 @@ def revised(name: str, old: str) -> str:
              r'\input{article/23l_calibrated_histograms_v47}')]:
             text = replace_one(text, anchor, anchor + '\n' + addition)
         return text
-    anchor = (' \\Omega\\bigl(2v_g,\\,2(u_n+b_j)+C_{\\rm bin}\\delta\\bigr)\n'
-              '\\end{equation}\n')
-    return replace_one(old, anchor, anchor + CLARIFICATION)
+    anchor = 'whenever the second argument is at most one.  '
+    return replace_one(old, anchor, anchor + '\n' + CLARIFICATION + '\n')
 
 
 def main() -> None:
@@ -106,7 +105,12 @@ def main() -> None:
         original = target.read_bytes() if target.exists() else source.read_bytes()
         require(blob(original) == expected, 'Unexpected v46 object: ' + name)
         new = revised(name, original.decode()).encode()
-        require(source.read_bytes() in (original, new), 'Refusing concurrent/unreviewed edit: ' + name)
+        current = source.read_bytes()
+        previous_layout = (name == 'article/23k_quantized_law_stability_v46.tex'
+                           and blob(current) == '1f82557610e41a27705d24149ddb710557342f08'
+                           and current.replace(CLARIFICATION.encode(), b'', 1) == original)
+        require(current in (original, new) or previous_layout,
+                'Refusing concurrent/unreviewed edit: ' + name)
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes(original)
         source.write_bytes(new)
