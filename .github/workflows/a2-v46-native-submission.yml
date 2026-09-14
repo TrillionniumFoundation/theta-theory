@@ -6,7 +6,7 @@ on:
     paths:
       - papers/A2-v17-boundary-information-coarsening/**/*.tex
       - papers/A2-v17-boundary-information-coarsening/tools/**
-      - .github/revision-sources/a2-v46-integrate.py
+      - .github/revision-sources/a2-v46-final-layout.py
       - .github/workflows/a2-v46-native-submission.yml
   workflow_dispatch:
 permissions:
@@ -26,19 +26,19 @@ jobs:
           ref: ${{ github.sha }}
           fetch-depth: 1
           persist-credentials: true
-      - name: Materialize and commit the exact reviewed source edits
+      - name: Materialize and commit the inspected pagination correction
         id: source
         shell: bash
         run: |
           set -euo pipefail
           test "$GITHUB_REF_NAME" = revision/a2-v46-quantized-law-boundary-stability-2026-09-14
-          python3 -B .github/revision-sources/a2-v46-integrate.py > "$RUNNER_TEMP/materialization-v46.json"
+          python3 -B .github/revision-sources/a2-v46-final-layout.py > "$RUNNER_TEMP/materialization-v46.json"
           git switch -C "$GITHUB_REF_NAME"
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -- README.md papers/A2-v17-boundary-information-coarsening
           if ! git diff --cached --quiet; then
-            git commit -m 'A2 v46: integrate full quantitative revision and archive exact v45 originals'
+            git commit -m 'A2 v46: retain the full abstract with correct AMS page flow'
             git push origin "HEAD:refs/heads/$GITHUB_REF_NAME"
           fi
           SOURCE=$(git rev-parse HEAD)
