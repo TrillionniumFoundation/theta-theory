@@ -1,22 +1,24 @@
-# A2 v38 — source-pinned native revision and referee response
+# A2 v42 — complete native manuscript and response to the v41 referee
 
 **Boundary laws, intrinsic periodic rigidity, and global physical reconstruction in dispersing billiards**  
-Qian Qi · September 13, 2026
+Qian Qi · September 14, 2026
 
-This stable directory contains the complete unabridged native source. Its `A2-v17` directory name is not the current revision number. The current branch is `revision/a2-v38-source-pinned-native-referee-response-2026-09-13`.
+The current branch is `revision/a2-v42-native-source-referee-response-2026-09-14`. The directory name `A2-v17` is a stable historical path, not the current manuscript version.
 
-[Native main](main.tex) · [Native companion](two_collision.tex) · [Response to the v37 referee](RESPONSE_TO_REFEREE_V38.md) · [Actual verification](VERIFICATION_V38.md) · [Preservation](PRESERVATION_V38.md) · [Historical dependency audit](HISTORICAL_DERIVATION_AUDIT_V38.md) · [Complete build protocol](NATIVE_BUILD_PROTOCOL_V38.md).
+[Complete native main](main.tex) · [Native companion](two_collision.tex) · [Current referee response](RESPONSE_TO_REFEREE_V42.md) · [Actual verification ledger](VERIFICATION_V42.md) · [Preservation and historical dependencies](PRESERVATION_AND_DEPENDENCIES_V42.md) · [Addressed v41 report](../../reviews/a2-v41-independent-harsh-top4-2026-09-13/REFEREE_REPORT.md).
 
-## Revision identity and changes
+## Source and mathematical revision
 
-The addressed [v37 report](../../reviews/a2-v37-external-harsh-top4-2026-09-13/REFEREE_REPORT.md) is at review commit `377efa79597776e75e3cc1d399c1986edd097aaf`, reviewing submission `6c311aa389e3af833f06f14ae98de7bfc28c1327`. The new branch descends from that review commit. Mathematical changes are at `c206a27ba01f20f1a21b780e6d71c77a837ef11d`; the complete inherited source and repaired tools are at `7d34d96a7c2dd974ab3725e009bbb584d3228114`.
+The addressed report is pinned at `e162532115071265cf73b97a5069f33628347cfe`; its reviewed submission is `c730a60bbc8af2a4c6e432813c31dccc897828e7`. The native manuscript retains the complete three-part argument, auxiliary compendium and bibliography. Its 54 literal direct inputs include the preamble and bibliography; the auxiliary compendium retains all 36 of its inputs.
 
-The abstract and introductory rigidity theorem now specify a rank-two anchoring pair based at one channel frame and rooted signature-rigid propagation to every obstacle orbit. The short contiguity proof directly invokes the existing noncircular normalized-likelihood argument. The detailed periodic theorem, signed inverse, original-alternative moments, compact-experiment conclusions, physical acquisition and complete appendices are retained. All 52 direct main inputs and the unchanged 36-input auxiliary wrapper remain in place.
+The revised [single-offset inverse chapter](article/23f_single_offset_law_inverse_v42.tex) retains the complete density inverse, fixed-order stability and finite-flight reconstruction. In its detailed periodic-determination proof, the supplied signature-rigid tree is explicitly rerooted at an obstacle incident to the anchoring frame. The proof then recovers the lattice, places every obstacle orbit in the same frame and compares two admissible realizations in one gauge. No incidence, observation, registration assumption, symmetry hypothesis, or restriction on the stated finite jet order is added. All theorem, proposition and corollary statements in this chapter are byte-identical to their predecessor.
 
-The builder now reads immutable Git-object snapshots and verifies the actual compilation inputs against them. Recorder, native entry and recursive-input coverage are mandatory. Generated companion auxiliary data have explicit producer/consumer provenance. The old mathematical files and builder are preserved under [history/v37](history/v37); the prior directory entry is [README_PRE_V38.md](README_PRE_V38.md).
+The predecessor chapter remains at [its original path](article/23f_single_offset_law_inverse_v26.tex). The exact preceding native entry and both preceding README files are preserved in [history/v41-review-baseline](history/v41-review-baseline). These are archival source snapshots; their relative paths retain their original manuscript-root interpretation.
 
-## Actual verification and remaining delivery
+## Evidence and delivery
 
-Forty-one software-provenance regressions and six retained mathematical diagnostic families were actually executed in normal and optimized Python; each pair of outputs is byte-identical. A genuine miniature TeX integration run validates the complete new CLI and companion-auxiliary path, but its one-page entries are not A2 manuscripts. The exact native companion was separately compiled into seven pages, source-verified and inspected on all rendered pages. Its PDF and full raw local evidence accompany the revision conversation; identities and scope are in the ledger.
+The [verification ledger](VERIFICATION_V42.md) distinguishes new executions from inherited results. At this source-revision checkpoint, the hosted run `34798984887` failed with an empty executed-step list and runner ID zero. That is not a compiler test and does not close C2. The complete main and native companion, their source-matched recursive inputs, raw execution evidence, and rendered-page inspection remain the required delivery standard. A fixture, a companion-only build or mathematical diagnostic count is not substituted for it.
 
-**C2 remains open.** The complete native main has not been built or PDF-inspected in this revision session. The hosted full-build attempt failed without executed steps or artifacts. Neither diagnostics, the companion, a fixture nor workflow configuration is presented as complete-main delivery. The full mathematical source remains available here for further independent review; no submission-readiness or journal-acceptance claim is made.
+The inherited [native build protocol](NATIVE_BUILD_PROTOCOL_V38.md) and fail-closed builder remain available. The [v42 workflow](../../.github/workflows/a2-v42-native-submission.yml) checks out its exact triggering commit and attempts both complete native entries; its existence is not evidence of successful execution.
+
+This is the sole current A2 response/evidence entry on this branch. Earlier responses and audits retain their historical identities. The manuscript is provided for another independent referee examination, not as a claim of journal acceptance or universal proof certification.
