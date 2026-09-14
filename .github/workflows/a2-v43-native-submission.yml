@@ -21,6 +21,13 @@ jobs:
           ref: ${{ github.sha }}
           fetch-depth: 1
           persist-credentials: false
+      - name: Verify preservation of the complete mathematical source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B papers/A2-v17-boundary-information-coarsening/tools/check_revision_v43.py > "$RUNNER_TEMP/a2-v43-preservation-normal.json"
+          python3 -O -B papers/A2-v17-boundary-information-coarsening/tools/check_revision_v43.py > "$RUNNER_TEMP/a2-v43-preservation-optimized.json"
+          cmp "$RUNNER_TEMP/a2-v43-preservation-normal.json" "$RUNNER_TEMP/a2-v43-preservation-optimized.json"
       - name: Export complete native source independently of the compiler
         shell: bash
         run: |
@@ -30,6 +37,7 @@ jobs:
           git archive --format=zip --output="$RUNNER_TEMP/a2-v43-source/native-source.zip" HEAD papers/A2-v17-boundary-information-coarsening
           git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/a2-v43-source/git-identity.txt"
           git ls-tree -r HEAD -- papers/A2-v17-boundary-information-coarsening > "$RUNNER_TEMP/a2-v43-source/git-input-tree.txt"
+          cp "$RUNNER_TEMP"/a2-v43-preservation-*.json "$RUNNER_TEMP/a2-v43-source/"
           sha256sum "$RUNNER_TEMP/a2-v43-source/native-source.zip" > "$RUNNER_TEMP/a2-v43-source/SHA256SUMS"
       - name: Retain the source checkpoint
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -47,6 +55,7 @@ jobs:
         run: |
           set -euo pipefail
           /usr/bin/python3 -B papers/A2-v17-boundary-information-coarsening/tools/build_submission.py --output-dir "$RUNNER_TEMP/a2-v43-native-$GITHUB_SHA"
+          cp "$RUNNER_TEMP"/a2-v43-preservation-*.json "$RUNNER_TEMP/a2-v43-native-$GITHUB_SHA/"
       - name: Retain actual products and execution evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -55,3 +64,37 @@ jobs:
           path: ${{ runner.temp }}/a2-v43-native-${{ github.sha }}/
           if-no-files-found: error
           retention-days: 90
+  retain-in-repository:
+    needs: native
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 10
+    permissions:
+      actions: read
+      contents: write
+    steps:
+      - name: Checkout the source parent for a new products-only revision branch
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: true
+      - name: Retrieve and verify the successful native artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh run download "$GITHUB_RUN_ID" --repo "$GITHUB_REPOSITORY" --name "a2-v43-native-$GITHUB_SHA-$GITHUB_RUN_ATTEMPT" --dir "$RUNNER_TEMP/a2-v43-retained"
+          python3 -B papers/A2-v17-boundary-information-coarsening/tools/retain_native_v43.py --evidence "$RUNNER_TEMP/a2-v43-retained" --destination "deliveries/a2-v43/$GITHUB_SHA" --source-commit "$GITHUB_SHA" --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT"
+      - name: Commit products without changing source or existing branches
+        shell: bash
+        run: |
+          set -euo pipefail
+          branch="revision/a2-v43-native-products-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          git switch -c "$branch"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- "deliveries/a2-v43/$GITHUB_SHA"
+          git commit -m "A2 v43: retain complete native products for source $GITHUB_SHA"
+          git push origin "HEAD:refs/heads/$branch"
+          printf 'Source: `%s`\n\nProducts branch: `%s`\n\nProducts commit: `%s`\n' "$GITHUB_SHA" "$branch" "$(git rev-parse HEAD)" >> "$GITHUB_STEP_SUMMARY"
