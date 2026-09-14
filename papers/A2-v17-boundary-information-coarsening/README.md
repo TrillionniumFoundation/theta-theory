@@ -1,24 +1,28 @@
-# A2 v42 — complete native manuscript and response to the v41 referee
+# A2 v44 — complete native revision for independent review
 
 **Boundary laws, intrinsic periodic rigidity, and global physical reconstruction in dispersing billiards**  
 Qian Qi · September 14, 2026
 
-The current branch is `revision/a2-v42-native-source-referee-response-2026-09-14`. The directory name `A2-v17` is a stable historical path, not the current manuscript version.
+The directory name `A2-v17` is historical. The current author revision is **v44**, on `revision/a2-v44-nonsymmetric-realization-2026-09-14`.
 
-[Complete native main](main.tex) · [Native companion](two_collision.tex) · [Current referee response](RESPONSE_TO_REFEREE_V42.md) · [Actual verification ledger](VERIFICATION_V42.md) · [Preservation and historical dependencies](PRESERVATION_AND_DEPENDENCIES_V42.md) · [Addressed v41 report](../../reviews/a2-v41-independent-harsh-top4-2026-09-13/REFEREE_REPORT.md).
+[Complete native article](main.tex) · [Seven-page native companion](two_collision.tex) · [Response to referee](RESPONSE_TO_REFEREE_V44.md) · [Verification, source and products](VERIFICATION_V44.md) · [Preservation and dependencies](PRESERVATION_AND_DEPENDENCIES_V44.md).
 
-## Source and mathematical revision
+## Mathematical revision
 
-The addressed report is pinned at `e162532115071265cf73b97a5069f33628347cfe`; its reviewed submission is `c730a60bbc8af2a4c6e432813c31dccc897828e7`. The native manuscript retains the complete three-part argument, auxiliary compendium and bibliography. Its 54 literal direct inputs include the preamble and bibliography; the auxiliary compendium retains all 36 of its inputs.
+The native article retains the relative nonlinear forward law, smooth finite-remainder signed inverse, single-offset amplitude-free density inversion, analytic image determination, intrinsic signature matching, common-frame rank-two reconstruction, all local experiments, observable calibration, physical reconstruction and complete auxiliary proofs.
 
-The revised [single-offset inverse chapter](article/23f_single_offset_law_inverse_v42.tex) retains the complete density inverse, fixed-order stability and finite-flight reconstruction. In its detailed periodic-determination proof, the supplied signature-rigid tree is explicitly rerooted at an obstacle incident to the anchoring frame. The proof then recovers the lattice, places every obstacle orbit in the same frame and compares two admissible realizations in one gauge. No incidence, observation, registration assumption, symmetry hypothesis, or restriction on the stated finite jet order is added. All theorem, proposition and corollary statements in this chapter are byte-identical to their predecessor.
+The added [Section 17](article/23i_nonsymmetric_periodic_realization_v44.tex) supplies the integrated geometric demonstration requested in R43-S1. Theorem 17.1 constructs a nonsymmetric two-obstacle periodic family with four selected channels, disjoint curvature ranges, all-obstacle separation greater than 43/10 and third-obstacle clearance at least 383/200. Proposition 17.2 recovers relative frames from the second and third support harmonics of already recovered curve images. Corollary 17.3 composes eight signed laws and four gaps into full marked-table and lattice determination. Proposition 17.4 proves persistence in an infinite-dimensional analytic neighborhood. An [introductory subsection](article/01e_realization_overview_v44.tex) explains its place in the argument without replacing the earlier introduction.
 
-The predecessor chapter remains at [its original path](article/23f_single_offset_law_inverse_v26.tex). The exact preceding native entry and both preceding README files are preserved in [history/v41-review-baseline](history/v41-review-baseline). These are archival source snapshots; their relative paths retain their original manuscript-root interpretation.
+The construction parameters and harmonic coefficients are not additional observations. Registration stability is stated only after complete curve images are recovered; no effective analytic-continuation rate is inferred. The direct-position benchmark and all preparation costs remain in the manuscript.
 
-## Evidence and delivery
+## Referee and delivery provenance
 
-The [verification ledger](VERIFICATION_V42.md) distinguishes new executions from inherited results. At this source-revision checkpoint, the hosted run `34798984887` failed with an empty executed-step list and runner ID zero. That is not a compiler test and does not close C2. The complete main and native companion, their source-matched recursive inputs, raw execution evidence, and rendered-page inspection remain the required delivery standard. A fixture, a companion-only build or mathematical diagnostic count is not substituted for it.
+The [latest addressed report](../../reviews/a2-v43-independent-harsh-top4-2026-09-14/REFEREE_REPORT.md) is frozen at `6f7de242000a7db2bf473276b8e1792104c7cd42`. It reviews source `22d9b930a426cdb2c62984a5a3e5875e95e05e79`, built in Actions run `34813913830`, and products `edd95683ee57965ff8cd82cee1462a478d06ae39`.
 
-The inherited [native build protocol](NATIVE_BUILD_PROTOCOL_V38.md) and fail-closed builder remain available. The [v42 workflow](../../.github/workflows/a2-v42-native-submission.yml) checks out its exact triggering commit and attempts both complete native entries; its existence is not evidence of successful execution.
+The v43 native main and companion genuinely existed. Its incorrect Git-retention receipt and stale navigation are addressed separately from mathematics. The replacement [retention implementation](tools/retain_native_v44.py) distinguishes artifact-copy hashes, index verification and post-publication committed-object verification. The [execution ledger](VERIFICATION_V44.md) records which of these steps actually ran and identifies the final products.
 
-This is the sole current A2 response/evidence entry on this branch. Earlier responses and audits retain their historical identities. The manuscript is provided for another independent referee examination, not as a claim of journal acceptance or universal proof certification.
+## Reproduction
+
+From a Git checkout, run `python3 -B papers/A2-v17-boundary-information-coarsening/tools/check_revision_v44.py` and `python3 -B papers/A2-v17-boundary-information-coarsening/tools/check_realization_v44.py`; repeat under `python3 -O -B` and compare JSON. With the installed native TeX toolchain, use `tools/build_submission.py --output-dir <empty-directory-outside-the-paper>`. It freezes committed source, builds the companion before the complete main, checks generated-input provenance and retains raw evidence. Compilation is not a mathematical or all-page visual certificate.
+
+The [unchanged v43 main](history/v43-review-baseline/main.tex) and old navigation entries are preserved. Earlier reports, derivations, A1 and other workstreams remain in the repository.
