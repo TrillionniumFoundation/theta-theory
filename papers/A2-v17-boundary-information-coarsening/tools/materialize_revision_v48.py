@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Materialize the complete v48 entry, preserving the exact reviewed v47 inputs.
 
-Only the main entry and one section heading are changed.  Mathematical modules
-are ordinary, readable TeX files committed with this script.  This script is
-idempotent and rejects an unexpected baseline instead of guessing an edit.
+Only the main entry and one section heading of the inherited manuscript are
+changed.  New mathematical modules are ordinary readable TeX files; their
+contact-centered observation convention is made explicit before compilation.
+This script is idempotent and rejects unexpected edit anchors.
 """
 from __future__ import annotations
 import hashlib
@@ -74,6 +75,25 @@ def revised(name: str, text: str) -> str:
         '\\input{article/23j_generic_finite_channel_rigidity_v45}\n\\input{article/23m_differential_rigidity_v48}')
 
 
+def clarify_contact_squares() -> None:
+    edits = (
+        (NEW_INPUTS[0],
+         'vanishes on a positive interior square, then the table variation is the',
+         'vanishes on a contact-centered positive interior square, then the table variation is the'),
+        (NEW_INPUTS[1],
+         'The two positive-density squares $Q_{e,b}$ and their nonzero\nanchors can be fixed on a parameter neighborhood.',
+         'Fix contact-centered squares $Q_{e,b}=(-r_{e,b},r_{e,b})^2$ whose\nclosures lie in the respective positive-density regions, and nonzero scalar\nanchors $a_{e,b}\\in(-r_{e,b},r_{e,b})$.  These choices persist on a\nparameter neighborhood.'),
+    )
+    for name, before, after in edits:
+        path = P/name
+        text = path.read_text()
+        if before in text:
+            text = replace_once(text, before, after)
+            path.write_text(text)
+        else:
+            require(text.count(after) == 1, 'Unexpected contact-coordinate convention: ' + name)
+
+
 def materialize() -> dict:
     for name in NEW_INPUTS:
         require((P/name).is_file(), 'Missing readable new TeX input: ' + name)
@@ -100,9 +120,11 @@ def materialize() -> dict:
             current = (P/name).read_text()
             require(current in (data.decode(), expected), 'Unexpected existing edit: ' + name)
             (P/name).write_text(expected)
+    clarify_contact_squares()
     return {'baseline_source': SOURCE_V47, 'review_head': REVIEW_V47,
             'archived_exact_originals': list(CHANGES), 'baseline_active_inputs': len(old),
-            'new_inputs': list(NEW_INPUTS), 'mathematical_certification': False}
+            'new_inputs': list(NEW_INPUTS), 'contact_centered_observation_squares': True,
+            'mathematical_certification': False}
 
 
 if __name__ == '__main__':
