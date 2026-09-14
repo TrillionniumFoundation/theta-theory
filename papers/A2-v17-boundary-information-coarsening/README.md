@@ -1,9 +1,9 @@
-# A2 revision 47 — complete manuscript
+# A2 revision 48 — complete manuscript
 
-[Main source](main.tex) · [Full companion source](two_collision.tex) · [Response to v46](RESPONSE_TO_REFEREE_V47.md) · [Historical audit](HISTORICAL_DERIVATION_AUDIT_V47.md).
+[Main source](main.tex) · [Full companion](two_collision.tex) · [Response to v47](RESPONSE_TO_REFEREE_V48.md) · [Historical audit](HISTORICAL_DERIVATION_AUDIT_V48.md).
 
-Revision 47 adds a calibration-aware acquisition theorem and an explicit finite prescription for hard transverse histograms, while preserving the entire v46 inverse and all other active mathematics. The historical directory name `A2-v17` is not the current revision number.
+The historical directory name `A2-v17` is not the current version number. The article is organized around [Theorem A](article/00_structural_introduction_v48.tex); [Section 20](article/23m_differential_rigidity_v48.tex) proves the full single-offset derivative kernel and finite-observable local coordinates on immersed models. The new differential hypotheses do not narrow the inherited exact or quantitative classes.
 
-The baseline report is pinned at `45b42eee377c7fd3cff81c24c95acb91d6f46ab6`. Exact original amended files and entry points are in [the v46 archive](history/v46-review-baseline/). The new mathematical module is [Section 19.7–19.9](article/23l_calibrated_histograms_v47.tex).
+The latest reviewed v47 source is frozen at `219b39e94b14187561dc3b7e5bdbae49dbd92cc2`, with report at `757f2ee4e3bf766d2eb56d972e6d2f621b3fd2a6`. Its [exact amended-file originals](history/v47-review-baseline/) and active-source manifest are retained. Every inherited mathematical statement and proof remains active, including all v47 hard-cell calibration results.
 
-The version-scoped native workflow compiles the complete companion first and the complete main second. Its product branch contains both PDFs, full source ZIP, active-source manifest, logs, diagnostics, build report, and fetched-Git-object verification. Consult the final v47 review-ready entry for the completed product identity rather than an earlier v46 PDF.
+The native workflow compiles the full companion and then the full main from the actual committed source, retains both PDFs and complete source/evidence, and verifies the pushed Git objects. Refer to the final v48 review-ready entry for completed build identities and actual visual coverage.
