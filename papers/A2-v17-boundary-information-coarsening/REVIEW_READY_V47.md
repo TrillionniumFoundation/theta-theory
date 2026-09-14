@@ -44,7 +44,7 @@ The response preserves the report's favorable C1–C4 findings and addresses E1 
 
 The frozen main-plus-companion active-source manifest contains 101 inherited files. Of these, 99 remain byte-identical in place; the other two have exact original Git objects archived under `history/v46-review-baseline/` and only prescribed additive changes. All inherited main input order is retained. The current manifest contains exactly 103 active files, including two new modules. All 233 inherited main theorem-style environments, 22 remarks and 224 proofs remain; four theorem-style environments and four proofs are added. The companion is unchanged.
 
-Both native jobs and both publication/verification jobs of the final run succeeded. The complete companion was built first, followed by the complete main, using native LaTeX with shell escape disabled. The final main has five underfull-box notices, no overfull-box notice and no unresolved reference or citation. The companion has no recorded build warning.
+Both jobs of the final run—the native build job and the publication/verification job—succeeded. The complete companion was built first, followed by the complete main, using native LaTeX with shell escape disabled. The final main has five underfull-box notices, no overfull-box notice and no unresolved reference or citation. The companion has no recorded build warning.
 
 The downloaded final artifact ZIP matches GitHub's SHA-256 digest. All 34 evidence entries listed in the native build report were checked against their bytes and hashes. All 103 active inputs in the source ZIP match both their recorded hashes and the locally built source. The v47 preservation/calibration checks and inherited quantized/adaptive/v32/v38 checks agree under ordinary and optimized Python.
 
