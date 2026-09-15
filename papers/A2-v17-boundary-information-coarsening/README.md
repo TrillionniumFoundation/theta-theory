@@ -1,9 +1,9 @@
-# A2 revision 54 — complete manuscript
+# A2 revision 55 — complete manuscript
 
-[Main source](main.tex) · [Complete companion](two_collision.tex) · [Response to v53](RESPONSE_TO_REFEREE_V54.md) · [Historical audit](HISTORICAL_DERIVATION_AUDIT_V54.md) · [Literature check](LITERATURE_CHECK_V54.md).
+[Main source](main.tex) · [Companion](two_collision.tex) · [Response to both v54 memoranda](RESPONSE_TO_REFEREE_V55.md) · [Historical audit](HISTORICAL_DERIVATION_AUDIT_V55.md) · [Primary records](LITERATURE_CHECK_V55.md).
 
-The historical directory name `A2-v17` is not the current revision number. The existing [Section 23](article/18g_realized_window_information_v53.tex) now contains the strengthened finite-flight comparison and the precise accepted-mark, waiting-count and capped-preparation experiments. The physical table/profile pair is unchanged. The original h^(-8) successful-record theorem and all structural geometry remain in their original scope.
+The directory name `A2-v17` is historical. The active revision is 55. Existing Theorem 23.4 now includes the exact stopped-count reductions and their proof. Its original clauses, the full geometric inverse, finite-flight comparison and all statistical/quantitative premises remain. No new section, theorem number or proof environment is appended.
 
-The baseline v53 report is pinned at `000ce24f65f8381d2180cbd1f080d3d8470c8157`, its compiled source at `42cc62f230473c34d78af1d06b9ca5c2651ae86d`. Exact amended-file originals and the native manifest are in [the v53 archive](history/v53-review-baseline/). The two replaced statement/proof blocks belong only to Corollary 23.3, which is strengthened; they are not incorrectly reported as verbatim. Every other old statement/proof and all 111 active inputs remain compiled.
+The baseline mathematical source is `2cedae961195f97df802aaa81112d95cd32974e1`. Both v54 reports are addressed: latest `67250d08714acf76274e82158f107246f0de7eee`, earlier `1030ca91a96ca1be8ecd0347ecbdac7084cdd8d4`. Exact amended-file originals and the native active manifest are in [the v54 archive](history/v54-review-baseline/). The full catalogue remains actively compiled in Appendix A.1.
 
-The native workflow builds the complete companion first and complete main second from the actual committed source, then retains and verifies both PDFs, source and evidence as Git objects. The final review-ready ledger gives completed product identities and actual visual coverage. Neither compilation nor finite diagnostics certifies a theorem or decides journal significance.
+The version-scoped workflow builds both complete entries from actual committed source, retains native products and verifies published Git objects. Completed evidence and actual visual coverage belong in the final review-ready ledger, not in a claim based on preparation alone.
