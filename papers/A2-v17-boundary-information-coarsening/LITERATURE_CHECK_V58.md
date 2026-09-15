@@ -1,0 +1,13 @@
+# Primary literature check — A2 v58
+
+Checked September 15, 2026. These are targeted observation/attribution checks, not an exhaustive priority search or a new proof review of the cited works. No external mathematical theorem is added as a premise of the new block proof.
+
+**Finamore–Leguil.** *A CAT(0)-approach to the marked length spectral rigidity of Sinai billiards*, arXiv:2510.18983v1, submitted October 21, 2025. The current primary record lists v1. Its abstract and PDF printed pp. 4–5 were inspected, including the enriched length functional and Theorem A. The datum includes limiting lengths indexed by classes on the lifted surface and is not merely ordinary billiard periodic-orbit marked lengths. Its finite-horizon setting and enriched observation are not identified with the present conditional endpoint-law datum. Primary record: https://arxiv.org/abs/2510.18983 ; versioned PDF: https://arxiv.org/pdf/2510.18983v1 .
+
+**De Simoi–Kaloshin–Leguil.** *Marked Length Spectral determination of analytic chaotic billiards with axial symmetries*, arXiv:1905.00890v4, revised August 17, 2022. The primary abstract specifies analytic strictly convex obstacles in the plane, non-eclipse, and the stated symmetry/genericity assumptions. Its marked length observation differs from the periodic-law inverse here. Journal DOI on the primary record: 10.1007/s00222-023-01191-8. Record: https://arxiv.org/abs/1905.00890 . The complete external proof was not re-audited.
+
+**Osius.** *Asymptotic inference for semiparametric association models*, Annals of Statistics 37 (2009), 459–489; DOI 10.1214/07-AOS572; arXiv:0903.0702v1. The primary record describes odds-ratio association models without restrictions on the marginals. This supplies the existing association background, not a relative billiard limit or contact inverse. Record: https://arxiv.org/abs/0903.0702 .
+
+**Florio–Leguil.** *Smooth conjugacy classes of 3D Axiom A flows*, arXiv:2010.04120v5, June 3, 2021. The version-specific primary record expressly records removal of an affected geometric open-billiard spectral-rigidity assertion and retention/improvement of dynamical results. The current manuscript does not use the removed assertion. Record: https://arxiv.org/abs/2010.04120v5 .
+
+**Internal contribution attribution.** The admissible highest-degree block bound and its exponential approach to the identity were communicated in R57-M3 of the author-requested AI-assisted v57 memorandum, frozen at `e14138660e716daf60471f3b98e8f1d30cb61a34`. The revised article cites that memorandum at the new proof and in both bibliographies. It is not represented as a commissioned journal report, nor is the finite diagnostic evidence represented as a proof certificate.
