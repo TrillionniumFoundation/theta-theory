@@ -1,9 +1,9 @@
-# A2 revision 55 — complete manuscript
+# A2 revision 56 — principal article and complete technical manuscript
 
-[Main source](main.tex) · [Companion](two_collision.tex) · [Response to both v54 memoranda](RESPONSE_TO_REFEREE_V55.md) · [Historical audit](HISTORICAL_DERIVATION_AUDIT_V55.md) · [Primary records](LITERATURE_CHECK_V55.md).
+[Principal article](rigidity.tex) · [Complete technical manuscript](main.tex) · [Two-collision companion](two_collision.tex) · [Response](RESPONSE_TO_REFEREE_V56.md) · [History](HISTORICAL_DERIVATION_AUDIT_V56.md) · [Primary literature](LITERATURE_CHECK_V56.md).
 
-The directory name `A2-v17` is historical. The active revision is 55. Existing Theorem 23.4 now includes the exact stopped-count reductions and their proof. Its original clauses, the full geometric inverse, finite-flight comparison and all statistical/quantitative premises remain. No new section, theorem number or proof environment is appended.
+The directory name `A2-v17` is historical. The active version is 56. The new principal article contains the full core proofs, a theorem-led introduction and explicit comparison appendices. The full manuscript retains all 111 inherited active inputs and all 546 statement/proof blocks, including 257 proofs. Its only amendment is entry metadata; the exact original and manifest are in `history/v55-review-baseline/`.
 
-The baseline mathematical source is `2cedae961195f97df802aaa81112d95cd32974e1`. Both v54 reports are addressed: latest `67250d08714acf76274e82158f107246f0de7eee`, earlier `1030ca91a96ca1be8ecd0347ecbdac7084cdd8d4`. Exact amended-file originals and the native active manifest are in [the v54 archive](history/v54-review-baseline/). The full catalogue remains actively compiled in Appendix A.1.
+The structural statements A/B are shared verbatim. The new Theorem 1.1 consolidates inherited analytical mechanisms; it is not presented as an additional discovery by renumbering. The graph/support lemma isolates an elementary geometric coordinate fact from the full quantitative/statistical material. `journal/DEPENDENCY_MAP_V56.json` records the principal inputs and the nine explicitly F.-prefixed full-manuscript comparisons; static closure is not mathematical certification.
 
-The version-scoped workflow builds both complete entries from actual committed source, retains native products and verifies published Git objects. Completed evidence and actual visual coverage belong in the final review-ready ledger, not in a claim based on preparation alone.
+Native build order is `two_collision.tex`, `main.tex`, then `rigidity.tex`. The principal article imports source-matched auxiliary labels from the full manuscript only for its explicit comparisons. The version-scoped builder validates all three products and their producer/consumer evidence. The final review-ready entry identifies the completed source/products and actual sampled visual coverage.
