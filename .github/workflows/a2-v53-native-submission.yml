@@ -1,0 +1,155 @@
+name: A2 v53 realized window information and native submission
+on:
+  push:
+    branches:
+      - revision/a2-v53-realized-window-information-2026-09-15
+    paths:
+      - papers/A2-v17-boundary-information-coarsening/**/*.tex
+      - papers/A2-v17-boundary-information-coarsening/tools/**
+      - .github/workflows/a2-v53-native-submission.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 40
+    permissions:
+      contents: write
+    outputs:
+      source_commit: ${{ steps.source.outputs.source_commit }}
+    steps:
+      - name: Check out the exact preparation commit
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: true
+      - name: Materialize the complete manuscript and preserve the reviewed source
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = revision/a2-v53-realized-window-information-2026-09-15
+          P=papers/A2-v17-boundary-information-coarsening
+          python3 -B "$P/tools/materialize_revision_v53.py" > "$RUNNER_TEMP/materialization-v53.json"
+          A="$P/history/v52-review-baseline"
+          test -e "$A/REPOSITORY_README.md" || cp README.md "$A/REPOSITORY_README.md"
+          test -e "$A/README.md" || cp "$P/README.md" "$A/README.md"
+          cat > README.md <<'EOF'
+          # Theta-Theory: A2 revision 53
+
+          **Boundary laws and rigidity of periodic dispersing billiards** — Qian Qi, September 15, 2026.
+
+          [Complete main source](papers/A2-v17-boundary-information-coarsening/main.tex) · [Complete companion](papers/A2-v17-boundary-information-coarsening/two_collision.tex) · [Response to the latest v52 report](papers/A2-v17-boundary-information-coarsening/RESPONSE_TO_REFEREE_V53.md) · [Historical derivation audit](papers/A2-v17-boundary-information-coarsening/HISTORICAL_DERIVATION_AUDIT_V53.md) · [Primary literature check](papers/A2-v17-boundary-information-coarsening/LITERATURE_CHECK_V53.md).
+
+          Author branch: `revision/a2-v53-realized-window-information-2026-09-15`. Latest report head: `28873f43ff25b2052afcce4df8c68907517e8b14`; actual reviewed mathematical source: `9fd0c14c7b3fd816bdb9d7c3db0fdbae2104dcd6`.
+
+          New Section 23 realizes the small-window information loss on an actual noncircular periodic family with fixed lattice and gaps. It proves the attained two-point successful-record scale, critical likelihood error, and a uniform finite-flight/window comparison. Recording profiles are fixed as the window shrinks but can differ between the specified nuisance alternatives. Recording mass and preparation effort are retained separately; this is not an unrestricted-profile minimax estimator or a counts-retaining lower bound.
+
+          All 110 inherited active inputs and all 538 inherited statement/proof blocks remain active. Exact originals of the three prescribed amended inputs are archived; 107 inputs remain byte-identical in place. Theorems A/B, the window inverse, unknown-lattice rigidity, finite fibers, differential and quantitative/statistical results retain their original scope. The companion, A1 and unrelated workstreams are unchanged.
+
+          The version-scoped workflow compiles both complete entries and publishes products under `deliveries/a2-v53/<actual-source-commit>/` on a new `revision/a2-v53-native-products-<run>-<attempt>` branch. Consult the final review-ready entry for completed product identities. This source entry does not claim that an unfinished workflow succeeded.
+          EOF
+          cat > "$P/README.md" <<'EOF'
+          # A2 revision 53 — complete manuscript
+
+          [Main source](main.tex) · [Full companion](two_collision.tex) · [Response to v52](RESPONSE_TO_REFEREE_V53.md) · [Historical audit](HISTORICAL_DERIVATION_AUDIT_V53.md) · [Literature check](LITERATURE_CHECK_V53.md).
+
+          The historical directory name `A2-v17` is not the current revision number. The new [Section 23](article/18g_realized_window_information_v53.tex) proves a real-table small-window experiment, an attained two-point testing scale, and its finite-flight comparison. The exact/window/global theorems retain their full conclusions and hypothesis boundaries. The stated upper testing bound is for two specified table/profile alternatives, and accepted records are distinguished from all preparations.
+
+          The baseline report is pinned at `28873f43ff25b2052afcce4df8c68907517e8b14`, its mathematical source at `9fd0c14c7b3fd816bdb9d7c3db0fdbae2104dcd6`. Exact amended-file originals and the native active manifest are in [the v52 archive](history/v52-review-baseline/). All inherited proofs remain compiled, including the full catalogue in Appendix A.1.
+
+          The native workflow builds the full companion and main from the actual committed source, then retains both PDFs, complete source and raw evidence as verified Git objects. The final review-ready entry records completed source/product identities and actual visual coverage; no build or finite check is a mathematical certificate.
+          EOF
+          git switch -C "$GITHUB_REF_NAME"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- README.md "$P"
+          if ! git diff --cached --quiet; then
+            git commit -m 'A2 v53: materialize the complete realized-window manuscript and preserve the exact v52 baseline'
+            git push origin "HEAD:refs/heads/$GITHUB_REF_NAME"
+          fi
+          SOURCE=$(git rev-parse HEAD)
+          echo "source_commit=$SOURCE" >> "$GITHUB_OUTPUT"
+          printf 'Preparation: `%s`\n\nActual mathematical source: `%s`\n' "$GITHUB_SHA" "$SOURCE" >> "$GITHUB_STEP_SUMMARY"
+      - name: Install the native toolchain and diagnostic libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends latexmk texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils python3-numpy python3-scipy python3-sympy
+      - name: Verify full preservation and exact finite controls in both Python modes
+        shell: bash
+        run: |
+          set -euo pipefail
+          P=papers/A2-v17-boundary-information-coarsening
+          for script in check_revision_v53 check_quantized_v46 check_adaptive check_revision_v32 check_revision_v38; do
+            /usr/bin/python3 -B "$P/tools/$script.py" > "$RUNNER_TEMP/$script-normal.json"
+            /usr/bin/python3 -O -B "$P/tools/$script.py" > "$RUNNER_TEMP/$script-optimized.json"
+            cmp "$RUNNER_TEMP/$script-normal.json" "$RUNNER_TEMP/$script-optimized.json"
+          done
+      - name: Compile both complete native entries from actual source Git objects
+        env:
+          SOURCE: ${{ steps.source.outputs.source_commit }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE"
+          /usr/bin/python3 -B papers/A2-v17-boundary-information-coarsening/tools/build_submission.py --output-dir "$RUNNER_TEMP/a2-v53-native-$SOURCE"
+          cp "$RUNNER_TEMP"/check_*-normal.json "$RUNNER_TEMP"/check_*-optimized.json "$RUNNER_TEMP/a2-v53-native-$SOURCE/"
+          cp "$RUNNER_TEMP/materialization-v53.json" "$RUNNER_TEMP/a2-v53-native-$SOURCE/"
+          printf '%s\n' "$GITHUB_SHA" > "$RUNNER_TEMP/a2-v53-native-$SOURCE/workflow-preparation-commit.txt"
+      - name: Retain products and raw evidence
+        if: always() && steps.source.outputs.source_commit != ''
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: a2-v53-native-${{ steps.source.outputs.source_commit }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/a2-v53-native-${{ steps.source.outputs.source_commit }}/
+          if-no-files-found: error
+          retention-days: 90
+  publish-verified-products:
+    needs: native
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 15
+    permissions:
+      actions: read
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.native.outputs.source_commit }}
+          fetch-depth: 1
+          persist-credentials: true
+      - name: Retrieve and validate source-matched native products
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE: ${{ needs.native.outputs.source_commit }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          P=papers/A2-v17-boundary-information-coarsening
+          gh run download "$GITHUB_RUN_ID" --repo "$GITHUB_REPOSITORY" --name "a2-v53-native-$SOURCE-$GITHUB_RUN_ATTEMPT" --dir "$RUNNER_TEMP/v53"
+          python3 -B "$P/tools/retain_native_v53.py" prepare --evidence "$RUNNER_TEMP/v53" --destination "deliveries/a2-v53/$SOURCE" --source-commit "$SOURCE" --run-id "$GITHUB_RUN_ID"
+      - name: Publish on a new products branch and verify fetched Git objects
+        env:
+          SOURCE: ${{ needs.native.outputs.source_commit }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          P=papers/A2-v17-boundary-information-coarsening
+          D="deliveries/a2-v53/$SOURCE"
+          branch="revision/a2-v53-native-products-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          git switch -c "$branch"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f -- "$D"
+          python3 -B "$P/tools/retain_native_v53.py" verify --destination "$D" --ref INDEX
+          git commit -m 'A2 v53: retain both complete native manuscripts and all source-matched evidence'
+          git push origin "HEAD:refs/heads/$branch"
+          git fetch origin "refs/heads/$branch"
+          python3 -B "$P/tools/retain_native_v53.py" verify --destination "$D" --ref FETCH_HEAD --attestation
+          git add -- "$D/COMMITTED_OBJECTS_VERIFIED.json"
+          git commit -m 'A2 v53: attest the fetched published native Git objects'
+          git push origin "HEAD:refs/heads/$branch"
+          git fetch origin "refs/heads/$branch"
+          python3 -B "$P/tools/retain_native_v53.py" verify --destination "$D" --ref FETCH_HEAD
+          printf 'Source: `%s`\n\nProducts branch: `%s`\n\nVerified final head: `%s`\n' "$SOURCE" "$branch" "$(git rev-parse FETCH_HEAD)" >> "$GITHUB_STEP_SUMMARY"
