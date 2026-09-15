@@ -1,0 +1,155 @@
+name: A2 v55 stopped-record reduction and full native submission
+on:
+  push:
+    branches:
+      - revision/a2-v55-stopped-record-reduction-2026-09-15
+    paths:
+      - papers/A2-v17-boundary-information-coarsening/**/*.tex
+      - papers/A2-v17-boundary-information-coarsening/tools/**
+      - .github/workflows/a2-v55-native-submission.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 40
+    permissions:
+      contents: write
+    outputs:
+      source_commit: ${{ steps.source.outputs.source_commit }}
+    steps:
+      - name: Check out the exact preparation commit
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: true
+      - name: Materialize the complete revision and preserve both reviewed records
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = revision/a2-v55-stopped-record-reduction-2026-09-15
+          P=papers/A2-v17-boundary-information-coarsening
+          git fetch --depth=1 origin 1030ca91a96ca1be8ecd0347ecbdac7084cdd8d4
+          git restore --source=1030ca91a96ca1be8ecd0347ecbdac7084cdd8d4 -- reviews/a2-v54-independent-harsh-top4-2026-09-15
+          python3 -B "$P/tools/materialize_revision_v55.py" > "$RUNNER_TEMP/materialization-v55.json"
+          A="$P/history/v54-review-baseline"
+          test -e "$A/REPOSITORY_README.md" || cp README.md "$A/REPOSITORY_README.md"
+          test -e "$A/README.md" || cp "$P/README.md" "$A/README.md"
+          cat > README.md <<'EOF'
+          # Theta-Theory: A2 revision 55
+
+          **Boundary laws and rigidity of periodic dispersing billiards** — Qian Qi, September 15, 2026.
+
+          [Complete main source](papers/A2-v17-boundary-information-coarsening/main.tex) · [Complete companion](papers/A2-v17-boundary-information-coarsening/two_collision.tex) · [Response to both v54 reports](papers/A2-v17-boundary-information-coarsening/RESPONSE_TO_REFEREE_V55.md) · [Historical audit](papers/A2-v17-boundary-information-coarsening/HISTORICAL_DERIVATION_AUDIT_V55.md) · [Primary-record check](papers/A2-v17-boundary-information-coarsening/LITERATURE_CHECK_V55.md).
+
+          Author branch: `revision/a2-v55-stopped-record-reduction-2026-09-15`. Latest second report: `67250d08714acf76274e82158f107246f0de7eee`; first report: `1030ca91a96ca1be8ecd0347ecbdac7084cdd8d4`. Both concern mathematical source `2cedae961195f97df802aaa81112d95cd32974e1` and both report directories are retained.
+
+          Theorem 23.4 is expanded in place: count sufficiency uniform over caps, exact finite count risk with a separate full overlap identity, finite-intensity Bernoulli equivalence and its large-cap boundary. No new theorem or section is added. All old claims and proof text remain; 544 inherited blocks are verbatim and the two expanded blocks recover their original bytes after removing the insertions. Theorems A/B, the complete nonlinear relative/smooth inverse, and every earlier calibration result retain their scope.
+
+          All 111 inherited active inputs remain. The complete native workflow publishes both full PDFs and source-matched evidence under `deliveries/a2-v55/<actual-source-commit>/` on a new products branch. Consult the final review-ready entry for completed identities; this entry does not claim success of an unfinished run. Neither these AI-assisted reports nor a successful build decides journal placement or certifies mathematics.
+          EOF
+          cat > "$P/README.md" <<'EOF'
+          # A2 revision 55 — complete manuscript
+
+          [Main source](main.tex) · [Companion](two_collision.tex) · [Response to both v54 memoranda](RESPONSE_TO_REFEREE_V55.md) · [Historical audit](HISTORICAL_DERIVATION_AUDIT_V55.md) · [Primary records](LITERATURE_CHECK_V55.md).
+
+          The directory name `A2-v17` is historical. The active revision is 55. Existing Theorem 23.4 now includes the exact stopped-count reductions and their proof. Its original clauses, the full geometric inverse, finite-flight comparison and all statistical/quantitative premises remain. No new section, theorem number or proof environment is appended.
+
+          The baseline mathematical source is `2cedae961195f97df802aaa81112d95cd32974e1`. Both v54 reports are addressed: latest `67250d08714acf76274e82158f107246f0de7eee`, earlier `1030ca91a96ca1be8ecd0347ecbdac7084cdd8d4`. Exact amended-file originals and the native active manifest are in [the v54 archive](history/v54-review-baseline/). The full catalogue remains actively compiled in Appendix A.1.
+
+          The version-scoped workflow builds both complete entries from actual committed source, retains native products and verifies published Git objects. Completed evidence and actual visual coverage belong in the final review-ready ledger, not in a claim based on preparation alone.
+          EOF
+          git switch -C "$GITHUB_REF_NAME"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- README.md "$P" reviews/a2-v54-independent-harsh-top4-2026-09-15
+          if ! git diff --cached --quiet; then
+            git commit -m 'A2 v55: materialize the full additive revision and preserve both v54 reports and exact baseline'
+            git push origin "HEAD:refs/heads/$GITHUB_REF_NAME"
+          fi
+          SOURCE=$(git rev-parse HEAD)
+          echo "source_commit=$SOURCE" >> "$GITHUB_OUTPUT"
+          printf 'Preparation: `%s`\n\nActual mathematical source: `%s`\n' "$GITHUB_SHA" "$SOURCE" >> "$GITHUB_STEP_SUMMARY"
+      - name: Install native toolchain and diagnostic libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends latexmk texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils python3-numpy python3-scipy python3-sympy
+      - name: Check preservation and finite controls in both Python modes
+        shell: bash
+        run: |
+          set -euo pipefail
+          P=papers/A2-v17-boundary-information-coarsening
+          for script in check_revision_v55 check_quantized_v46 check_adaptive check_revision_v32 check_revision_v38; do
+            /usr/bin/python3 -B "$P/tools/$script.py" > "$RUNNER_TEMP/$script-normal.json"
+            /usr/bin/python3 -O -B "$P/tools/$script.py" > "$RUNNER_TEMP/$script-optimized.json"
+            cmp "$RUNNER_TEMP/$script-normal.json" "$RUNNER_TEMP/$script-optimized.json"
+          done
+      - name: Compile both complete entries from actual source Git objects
+        env:
+          SOURCE: ${{ steps.source.outputs.source_commit }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE"
+          /usr/bin/python3 -B papers/A2-v17-boundary-information-coarsening/tools/build_submission.py --output-dir "$RUNNER_TEMP/a2-v55-native-$SOURCE"
+          cp "$RUNNER_TEMP"/check_*-normal.json "$RUNNER_TEMP"/check_*-optimized.json "$RUNNER_TEMP/a2-v55-native-$SOURCE/"
+          cp "$RUNNER_TEMP/materialization-v55.json" "$RUNNER_TEMP/a2-v55-native-$SOURCE/"
+          printf '%s\n' "$GITHUB_SHA" > "$RUNNER_TEMP/a2-v55-native-$SOURCE/workflow-preparation-commit.txt"
+      - name: Retain products and raw evidence
+        if: always() && steps.source.outputs.source_commit != ''
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: a2-v55-native-${{ steps.source.outputs.source_commit }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/a2-v55-native-${{ steps.source.outputs.source_commit }}/
+          if-no-files-found: error
+          retention-days: 90
+  publish-verified-products:
+    needs: native
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 15
+    permissions:
+      actions: read
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.native.outputs.source_commit }}
+          fetch-depth: 1
+          persist-credentials: true
+      - name: Retrieve and validate the source-matched products
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE: ${{ needs.native.outputs.source_commit }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          P=papers/A2-v17-boundary-information-coarsening
+          gh run download "$GITHUB_RUN_ID" --repo "$GITHUB_REPOSITORY" --name "a2-v55-native-$SOURCE-$GITHUB_RUN_ATTEMPT" --dir "$RUNNER_TEMP/v55"
+          python3 -B "$P/tools/retain_native_v55.py" prepare --evidence "$RUNNER_TEMP/v55" --destination "deliveries/a2-v55/$SOURCE" --source-commit "$SOURCE" --run-id "$GITHUB_RUN_ID"
+      - name: Publish a new products branch and verify fetched Git objects
+        env:
+          SOURCE: ${{ needs.native.outputs.source_commit }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          P=papers/A2-v17-boundary-information-coarsening
+          D="deliveries/a2-v55/$SOURCE"
+          branch="revision/a2-v55-native-products-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          git switch -c "$branch"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f -- "$D"
+          python3 -B "$P/tools/retain_native_v55.py" verify --destination "$D" --ref INDEX
+          git commit -m 'A2 v55: retain both complete native manuscripts and source-matched evidence'
+          git push origin "HEAD:refs/heads/$branch"
+          git fetch origin "refs/heads/$branch"
+          python3 -B "$P/tools/retain_native_v55.py" verify --destination "$D" --ref FETCH_HEAD --attestation
+          git add -- "$D/COMMITTED_OBJECTS_VERIFIED.json"
+          git commit -m 'A2 v55: attest the fetched published native Git objects'
+          git push origin "HEAD:refs/heads/$branch"
+          git fetch origin "refs/heads/$branch"
+          python3 -B "$P/tools/retain_native_v55.py" verify --destination "$D" --ref FETCH_HEAD
+          printf 'Source: `%s`\n\nProducts branch: `%s`\n\nVerified final head: `%s`\n' "$SOURCE" "$branch" "$(git rev-parse FETCH_HEAD)" >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,13 @@
+# Primary-record and attribution check — A2 v55
+
+Records accessed September 15, 2026. This is a targeted check of versions, observations and attribution, not an exhaustive priority search or an independent reproof of the cited papers.
+
+**G. Osius, Asymptotic inference for semiparametric association models.** The official arXiv record `0903.0702v1` gives Annals of Statistics 37 (2009), 459–489, DOI `10.1214/07-AOS572`. The abstract describes odds-ratio models with unrestricted marginals. The manuscript continues to credit this association background; no new association principle is claimed for cancelling separate endpoint factors. Primary record: https://arxiv.org/abs/0903.0702.
+
+**D. Finamore and M. Leguil, A CAT(0)-approach to the marked length spectral rigidity of Sinai billiards.** The official record `2510.18983` lists v1, October 21, 2025. Its abstract describes enriched marked length data and finite-horizon Sinai billiards. No equivalence or ordering between that datum and the present conditional boundary-law datum is inferred. Primary record: https://arxiv.org/abs/2510.18983.
+
+**J. De Simoi, V. Kaloshin and M. Leguil, Marked Length Spectral determination of analytic chaotic billiards with axial symmetries.** The official record lists v4, August 17, 2022, DOI `10.1007/s00222-023-01191-8`. Its stated setting is analytic open billiards with non-eclipse and suitable symmetry/genericity hypotheses. This is a comparison of observation scopes, not evidence that the present inverse is redundant or a strict strengthening. Primary record: https://arxiv.org/abs/1905.00890.
+
+**A. Florio and M. Leguil, Smooth conjugacy classes of 3D Axiom A flows.** The official `2010.04120v5` record dates the version June 3, 2021 and explicitly records removal of a geometric spectral-rigidity assertion affected by an error while retaining dynamical conclusions. The manuscript does not use the removed assertion. Versioned primary record: https://arxiv.org/abs/2010.04120v5.
+
+**The two v54 memoranda.** The finite count-risk formula, count-to-full simulation and finite-intensity bit reduction are attributed to the first memorandum at `1030ca91a96ca1be8ecd0347ecbdac7084cdd8d4` and its overlapping examination in the second at `67250d08714acf76274e82158f107246f0de7eee`. They are cited as author-requested AI-assisted memoranda, not commissioned journal reports. Their elementary probability reductions are proved in the expanded theorem and are not assigned the status of a new geometric mechanism. The large-cap bit deficiency and the exact full overlap identity are obtained in the same proof from the existing stopping law and standard binary testing identities.
