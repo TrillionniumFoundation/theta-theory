@@ -1,9 +1,9 @@
-# A2 revision 58 — principal article and complete technical corpus
+# A2 revision 59 — principal article and complete technical corpus
 
-[Principal source](rigidity.tex) · [Full technical source](main.tex) · [Companion](two_collision.tex) · [Response to v57](RESPONSE_TO_REFEREE_V58.md) · [Historical audit](HISTORICAL_DERIVATION_AUDIT_V58.md) · [Dependency ledger](journal/DEPENDENCY_LEDGER_V58.md).
+[Principal source](rigidity.tex) · [Full technical source](main.tex) · [Companion](two_collision.tex) · [Response to v58](RESPONSE_TO_REFEREE_V59.md) · [Historical audit](HISTORICAL_DERIVATION_AUDIT_V59.md) · [Dependency ledger](journal/DEPENDENCY_LEDGER_V59.md).
 
-The directory's v17 name is historical. The active revision is 58. The [new subsection](article/23a1_uniform_blocks_v58.tex) is part of the signed-contact proof in both entries. It proves admissible uniform block bounds, actual fixed-lower-jet comparison, and the diagonal coefficient-space consequences, with the original nonlinear inverse scope retained. The headline statement is strengthened; all other original conclusions and the acquisition dependency remain.
+The directory's v17 name is historical; the current revision is 59. The [new shared subsection](article/23a2_analytic_contact_inverse_v59.tex) is inside the existing contact-inversion section. It proves the complete local analytic inverse by a stationary-envelope representation, a finite-low/high-tail split and a nonlinear contraction. It does not claim weak-noise analytic continuation, a universal full-table analytic norm, or a uniform acquisition rate. All prior exact, smooth, differential, quantitative and statistical results remain.
 
-The latest v57 report is frozen at `e14138660e716daf60471f3b98e8f1d30cb61a34`; its actual source is `e39315c1fbb79ce71d1da91186a0d7e99a5ad8d6`. Exact amended-file originals and the source-matched active manifest are in [the v57 archive](history/v57-review-baseline/).
+The v58 report is frozen at `464209b66aad6ff48b63f054711396fbfd759b64`, its actual source at `92a6d946c98e19c33ebff15997c0116ac158b89d`. Exact amended-file originals and the source-matched manifest are in [the v58 archive](history/v58-review-baseline/). All 574 old statement/proof blocks remain verbatim.
 
-The unchanged three-entry native engine `tools/build_revision_v56.py` compiles the companion, full technical manuscript and principal article in dependency order. Final product identities and inspection scope belong to the final review-ready ledger. Build success and finite controls do not certify proofs or journal significance.
+The unchanged three-entry engine builds the companion, full technical manuscript and principal article in dependency order from frozen Git source. Final product identities and actual visual coverage are in the final review-ready ledger. Build and finite-check success do not certify proofs or journal significance.
