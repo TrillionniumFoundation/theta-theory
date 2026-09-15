@@ -1,0 +1,12 @@
+# Primary-record and scope check — A2 v59
+
+Records checked September 15, 2026. This is a targeted comparison, not an exhaustive priority survey or a fresh proof audit of these works.
+
+| Primary record | Checked scope | Relation to this revision |
+|---|---|---|
+| Finamore–Leguil, *A CAT(0)-approach to the marked length spectral rigidity of Sinai billiards*, arXiv:2510.18983v1, October 21, 2025; https://arxiv.org/abs/2510.18983 | Current version record, abstract, enriched datum and Theorem A on primary PDF pp. 4–5; these PDF pages were also inspected as images. Finite-horizon Sinai billiards and enriched marked length data. | No equivalence with signed conditional endpoint laws or their analytic action norm is asserted. |
+| De Simoi–Kaloshin–Leguil, *Marked Length Spectral determination of analytic chaotic billiards with axial symmetries*, arXiv:1905.00890v4, August 17, 2022; DOI 10.1007/s00222-023-01191-8; https://arxiv.org/abs/1905.00890 | Primary abstract and version metadata: analytic open billiards with non-eclipse and stated symmetry/genericity conditions. | Different observation and geometric class. The new local analytic action inverse is not advertised as removal of these hypotheses. |
+| Osius, *Asymptotic inference for semiparametric association models*, Annals of Statistics 37 (2009), 459–489; DOI 10.1214/07-AOS572; https://arxiv.org/abs/0903.0702 | Primary association-model and unrestricted-marginal scope. | Marginal cancellation remains established background, not a new association principle. It does not provide the stationary-envelope inverse. |
+| Florio–Leguil, *Smooth conjugacy classes of 3D Axiom A flows*, arXiv:2010.04120v5, June 3, 2021; https://arxiv.org/abs/2010.04120v5 | Version-specific correction notice and retained dynamical conclusions. The earlier affected geometric spectral-rigidity result was removed. | No removed assertion is used as a theorem input or comparison result. |
+
+The bounded-holomorphic-space argument in v59 is proved internally by a weighted contraction, a finite stationary-envelope identity, a finite-low/high-tail inverse and a local nonlinear contraction. The elementary contraction, Cauchy and finite-dimensional linear-algebra tools are not claimed as new general principles. The operator representation for the actual billiard action is the mathematical input developed here. No first-priority or exhaustive literature claim is made for its abstract operator pattern.
