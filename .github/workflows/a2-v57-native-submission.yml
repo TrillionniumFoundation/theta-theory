@@ -1,0 +1,157 @@
+name: A2 v57 explicit acquisition dependency and complete native submission
+on:
+  push:
+    branches:
+      - revision/a2-v57-explicit-acquisition-dependency-2026-09-15
+    paths:
+      - papers/A2-v17-boundary-information-coarsening/**/*.tex
+      - papers/A2-v17-boundary-information-coarsening/tools/**
+      - .github/workflows/a2-v57-native-submission.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 40
+    permissions:
+      contents: write
+    outputs:
+      source_commit: ${{ steps.source.outputs.source_commit }}
+    steps:
+      - name: Check out the exact preparation commit
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: true
+      - name: Materialize the bounded corrections and preserve the reviewed sources
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = revision/a2-v57-explicit-acquisition-dependency-2026-09-15
+          P=papers/A2-v17-boundary-information-coarsening
+          python3 -B "$P/tools/materialize_revision_v57.py" > "$RUNNER_TEMP/materialization-v57.json"
+          A="$P/history/v56-review-baseline"
+          test -e "$A/REPOSITORY_README.md" || cp README.md "$A/REPOSITORY_README.md"
+          test -e "$A/README.md" || cp "$P/README.md" "$A/README.md"
+          cat > README.md <<'EOF'
+          # Theta-Theory: A2 revision 57
+
+          **Boundary laws and rigidity of periodic dispersing billiards** — Qian Qi, September 15, 2026.
+
+          [Principal article source](papers/A2-v17-boundary-information-coarsening/rigidity.tex) · [Complete technical source](papers/A2-v17-boundary-information-coarsening/main.tex) · [Two-collision companion](papers/A2-v17-boundary-information-coarsening/two_collision.tex).
+
+          [Response to the latest v56 report](papers/A2-v17-boundary-information-coarsening/RESPONSE_TO_REFEREE_V57.md) · [Historical audit](papers/A2-v17-boundary-information-coarsening/HISTORICAL_DERIVATION_AUDIT_V57.md) · [Current dependency ledger](papers/A2-v17-boundary-information-coarsening/journal/DEPENDENCY_LEDGER_V57.md) · [Primary-record check](papers/A2-v17-boundary-information-coarsening/LITERATURE_CHECK_V57.md).
+
+          Source branch: `revision/a2-v57-explicit-acquisition-dependency-2026-09-15`. Latest report head: `4d2916b6963404d65966626196c3da5da04f8756`; reviewed mathematical source: `ae0eea2a3368b01a72ab6eaf50bad0cfb50ec8de`.
+
+          Corollary 19.9 is explicitly classified as an application of the complete technical manuscript's acquisition theorem F.47.3. Its proof verifies the persistent-design hypotheses and invokes the external acquisition estimates. The introduction and dependency map distinguish this theorem input from eight background/comparison targets. Theorem 1.1 now says that jets agree at anchored contacts and functional bounds hold on a collar. The principal relative/smooth mechanism is illustrated by its already proved leading-data comparison family; no new probability theorem is appended.
+
+          All 120 inherited active source paths remain active: 114 byte-identical in place and six exact amended-file originals archived. Of 572 statement/proof source blocks, 569 remain verbatim; only Theorem 1.1's wording and the physical corollary/application proof change. Theorem A, Theorem B and the complete technical corpus remain. Shared display copies are source blocks, not independent theorems.
+
+          The version-scoped workflow compiles the companion, full technical manuscript and principal article from one actual committed source. Products will be retained under `deliveries/a2-v57/<actual-source-commit>/` on a new products branch. The final review-ready entry records completed source/product identities; this preparation entry does not assert that an unfinished build succeeded. A1, other research workstreams and prior reviews are unchanged.
+          EOF
+          cat > "$P/README.md" <<'EOF'
+          # A2 revision 57 — principal article and complete technical corpus
+
+          [Principal source](rigidity.tex) · [Full technical source](main.tex) · [Companion](two_collision.tex) · [Response to v56](RESPONSE_TO_REFEREE_V57.md) · [Historical audit](HISTORICAL_DERIVATION_AUDIT_V57.md) · [Dependency ledger](journal/DEPENDENCY_LEDGER_V57.md).
+
+          The source-directory name `A2-v17` is historical. The active revision is 57. R56-C1 is addressed in the principal introduction, shared physical corollary and proof, and the reading-based dependency ledger. The external acquisition theorem is in the full technical manuscript, not one of the marked-length literature comparators. Its additional sensor and uniform-family assumptions are explicit; the corollary is not used in the core geometric proof.
+
+          Theorem 1.1's anchored-jet wording is clarified. Every other theorem statement/proof remains verbatim apart from the explicit application just identified. The 120-source union and all three entry graphs are preserved. The exact originals of the six amended active files are in [the v56 archive](history/v56-review-baseline/). The new dependency map supersedes the old all-comparisons classification; historical records are not overwritten.
+
+          The retained three-entry native engine `tools/build_revision_v56.py` is reused unchanged; the version-specific correction and checks are `materialize_revision_v57.py` and `check_revision_v57.py`. The build binds the principal's generated full-manuscript references to the same compiled source. See the final review-ready ledger for actual product identities and sampled visual coverage. Build success and syntax checks do not certify proofs or journal significance.
+          EOF
+          git switch -C "$GITHUB_REF_NAME"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- README.md "$P"
+          if ! git diff --cached --quiet; then
+            git commit -m 'A2 v57: materialize explicit acquisition-theorem dependence and preserve the exact reviewed v56 inputs'
+            git push origin "HEAD:refs/heads/$GITHUB_REF_NAME"
+          fi
+          SOURCE=$(git rev-parse HEAD)
+          echo "source_commit=$SOURCE" >> "$GITHUB_OUTPUT"
+          printf 'Preparation: `%s`\n\nActual mathematical source: `%s`\n' "$GITHUB_SHA" "$SOURCE" >> "$GITHUB_STEP_SUMMARY"
+      - name: Install the native toolchain and diagnostic libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends latexmk texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils python3-numpy python3-scipy python3-sympy
+      - name: Verify preservation and declared dependency roles in both Python modes
+        shell: bash
+        run: |
+          set -euo pipefail
+          P=papers/A2-v17-boundary-information-coarsening
+          for script in check_revision_v57 check_quantized_v46 check_adaptive check_revision_v32 check_revision_v38; do
+            /usr/bin/python3 -B "$P/tools/$script.py" > "$RUNNER_TEMP/$script-normal.json"
+            /usr/bin/python3 -O -B "$P/tools/$script.py" > "$RUNNER_TEMP/$script-optimized.json"
+            cmp "$RUNNER_TEMP/$script-normal.json" "$RUNNER_TEMP/$script-optimized.json"
+          done
+      - name: Build all three complete entries from actual frozen Git source
+        env:
+          SOURCE: ${{ steps.source.outputs.source_commit }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE"
+          /usr/bin/python3 -B papers/A2-v17-boundary-information-coarsening/tools/build_revision_v56.py --output-dir "$RUNNER_TEMP/a2-v57-native-$SOURCE"
+          cp "$RUNNER_TEMP"/check_*-normal.json "$RUNNER_TEMP"/check_*-optimized.json "$RUNNER_TEMP/a2-v57-native-$SOURCE/"
+          cp "$RUNNER_TEMP/materialization-v57.json" "$RUNNER_TEMP/a2-v57-native-$SOURCE/"
+          printf '%s\n' "$GITHUB_SHA" > "$RUNNER_TEMP/a2-v57-native-$SOURCE/workflow-preparation-commit.txt"
+      - name: Retain products and raw evidence
+        if: always() && steps.source.outputs.source_commit != ''
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: a2-v57-native-${{ steps.source.outputs.source_commit }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/a2-v57-native-${{ steps.source.outputs.source_commit }}/
+          if-no-files-found: error
+          retention-days: 90
+  publish-verified-products:
+    needs: native
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 15
+    permissions:
+      actions: read
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.native.outputs.source_commit }}
+          fetch-depth: 1
+          persist-credentials: true
+      - name: Retrieve and validate all three source-matched native products
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE: ${{ needs.native.outputs.source_commit }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          P=papers/A2-v17-boundary-information-coarsening
+          gh run download "$GITHUB_RUN_ID" --repo "$GITHUB_REPOSITORY" --name "a2-v57-native-$SOURCE-$GITHUB_RUN_ATTEMPT" --dir "$RUNNER_TEMP/v57"
+          python3 -B "$P/tools/retain_native_v57.py" prepare --evidence "$RUNNER_TEMP/v57" --destination "deliveries/a2-v57/$SOURCE" --source-commit "$SOURCE" --run-id "$GITHUB_RUN_ID"
+      - name: Publish new products branch and verify fetched Git objects
+        env:
+          SOURCE: ${{ needs.native.outputs.source_commit }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          P=papers/A2-v17-boundary-information-coarsening
+          D="deliveries/a2-v57/$SOURCE"
+          branch="revision/a2-v57-native-products-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          git switch -c "$branch"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f -- "$D"
+          python3 -B "$P/tools/retain_native_v57.py" verify --destination "$D" --ref INDEX
+          git commit -m 'A2 v57: retain three complete native manuscripts and source-matched evidence'
+          git push origin "HEAD:refs/heads/$branch"
+          git fetch origin "refs/heads/$branch"
+          python3 -B "$P/tools/retain_native_v57.py" verify --destination "$D" --ref FETCH_HEAD --attestation
+          git add -- "$D/COMMITTED_OBJECTS_VERIFIED.json"
+          git commit -m 'A2 v57: attest the fetched published native Git objects'
+          git push origin "HEAD:refs/heads/$branch"
+          git fetch origin "refs/heads/$branch"
+          python3 -B "$P/tools/retain_native_v57.py" verify --destination "$D" --ref FETCH_HEAD
+          printf 'Source: `%s`\n\nProducts branch: `%s`\n\nVerified head: `%s`\n' "$SOURCE" "$branch" "$(git rev-parse FETCH_HEAD)" >> "$GITHUB_STEP_SUMMARY"
