@@ -1,7 +1,9 @@
-# A2 revision 51 — complete manuscript
+# A2 revision 52 — complete manuscript
 
-[Main source](main.tex) · [Complete companion](two_collision.tex) · [Response to v50](RESPONSE_TO_REFEREE_V51.md) · [Historical audit](HISTORICAL_DERIVATION_AUDIT_V51.md) · [Primary literature check](LITERATURE_CHECK_V51.md).
+[Main source](main.tex) · [Full companion](two_collision.tex) · [Response to v51](RESPONSE_TO_REFEREE_V52.md) · [Historical audit](HISTORICAL_DERIVATION_AUDIT_V52.md) · [Primary literature check](LITERATURE_CHECK_V52.md).
 
-The directory name `A2-v17` is historical. Theorem B and [Section 14](article/23p_uncentered_interaction_v51.tex) identify unknown transverse origins and recover the action despite separate unknown positive recording profiles. They retain the ideal geometric fiber and exclude masking of non-Euclidean table variations. The local error bound uses a finite smooth norm and local conditioning, not a total-variation or sample guarantee.
+The historical directory name `A2-v17` is not the current revision number. The new [support and interior-window module](article/23q_support_and_interior_windows_v52.tex) appends Section 14.6–14.8. It distinguishes complete-support centering from boundary-independent interior extraction, then proves the same geometric fiber and projected derivative kernel for positive rectangular windows containing the unknown origins. Window visibility, signed units, directions, gaps and offsets remain specified hypotheses.
 
-Review baseline: `4b22b793cc2c05d3f48efb9a98dfd46cab003e5c`. Actual reviewed source: `49f73409b0cc6cb718fbbe48598fd7f5bc9ddca4`. All inherited statements and proofs are retained. Exact originals and the source-matched active manifest are in [the v50 archive](history/v50-review-baseline/). The complete native products and final review ledger are published separately after the source-matched build and verification.
+The complete Theorems A/B and all inherited proof blocks remain active. The [v51 baseline archive](history/v51-review-baseline/) retains the exact originals of the five amended inputs and the source-matched active manifest. The catalogue remains compiled in Appendix A.1, and the quantitative and calibration modules are unchanged.
+
+The native workflow compiles both complete entries from the actual committed source and retains both PDFs, the full source ZIP, manifests, logs and paired controls. The completed source and product identities and actual visual coverage belong to the final v52 review-ready ledger, not this preparatory source entry.
