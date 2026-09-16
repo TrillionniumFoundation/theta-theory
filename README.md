@@ -1,21 +1,19 @@
-# A2 revision 62 — finite preparations and complete analytic contact recovery
+# Theta-Theory — A2 revision 62, ready for independent reassessment
 
 **Boundary laws and rigidity of periodic dispersing billiards** — Qian Qi, September 16, 2026.
 
-Source branch: `revision/a2-v62-finite-experiment-2026-09-16`.
+Review-ready branch: `revision/a2-v62-review-ready-2026-09-16`. Actual compiled mathematical source: `037c80dc44d8191e6f808591ea0651e813234d06`. Complete revised source and all three native manuscripts are committed, not pending workflow products.
 
-The latest addressed report is [the v61 independent report](reviews/a2-v61-independent-harsh-top4-2026-09-16/REFEREE_REPORT.md), pinned at `9ec2004a18cccc69ed473685bdf94c91f0b25d4d`. The inherited compiled source is `71e0bd6306f54466728c2e6e781bb0f422c5cfb0`. This revision is based on that latest review branch, so the report and full historical proof corpus remain available together.
+| Complete manuscript | Native PDF | Source |
+|---|---|---|
+| Principal article, 125 pages | [Read principal article](deliveries/a2-v62/037c80dc44d8191e6f808591ea0651e813234d06/rigidity.pdf) | [rigidity.tex](papers/A2-v17-boundary-information-coarsening/rigidity.tex) |
+| Full technical manuscript, 300 pages | [Read complete technical manuscript](deliveries/a2-v62/037c80dc44d8191e6f808591ea0651e813234d06/main.pdf) | [main.tex](papers/A2-v17-boundary-information-coarsening/main.tex) |
+| Two-collision companion, 7 pages | [Read companion](deliveries/a2-v62/037c80dc44d8191e6f808591ea0651e813234d06/two_collision.pdf) | [two_collision.tex](papers/A2-v17-boundary-information-coarsening/two_collision.tex) |
 
-[Principal article](papers/A2-v17-boundary-information-coarsening/rigidity.tex) · [Complete technical manuscript](papers/A2-v17-boundary-information-coarsening/main.tex) · [Two-collision companion](papers/A2-v17-boundary-information-coarsening/two_collision.tex).
+[Complete delivery and review guide](A2_REVISION_V62_REVIEW_READY.md) · [Response to the v61 referee](papers/A2-v17-boundary-information-coarsening/RESPONSE_TO_REFEREE_V62.md) · [Cover letter](papers/A2-v17-boundary-information-coarsening/COVER_LETTER_V62.md) · [Frozen complete source ZIP](deliveries/a2-v62/037c80dc44d8191e6f808591ea0651e813234d06/native-source.zip).
 
-[Response to every report item](papers/A2-v17-boundary-information-coarsening/RESPONSE_TO_REFEREE_V62.md) · [Cover letter](papers/A2-v17-boundary-information-coarsening/COVER_LETTER_V62.md) · [Historical derivation audit](papers/A2-v17-boundary-information-coarsening/HISTORICAL_DERIVATION_AUDIT_V62.md) · [Dependency declaration](papers/A2-v17-boundary-information-coarsening/journal/DEPENDENCY_LEDGER_V62.md) · [Primary literature check](papers/A2-v17-boundary-information-coarsening/LITERATURE_CHECK_V62.md).
+The new Section 13.4 proves finite-experiment recovery of the complete analytic contact pair, with finite-flight bias, sampling uncertainty, rejected preparations, and calibration costs distinguished. Its five statements and proofs are included in both manuscripts. An exactly calibrated experiment has an explicit confidence rate; a separate corollary charges the actual position pilot and gives a slower rate in the complete preparation budget. The target remains a complete local analytic germ on a smaller disc, not a fixed finite jet or a finite-dimensional model.
 
-## Added mathematical result
+All 753 inherited frozen source paths remain, with 750 byte-identical. Only the two entry files and manuscript README changed; exact originals are archived. Every inherited proof module remains unchanged and active. The revised frozen source contains 767 files. Native run `35047150051`, attempt 1, completed both compilation and Git publication successfully. The 432 delivered pages match the local build in extracted text; 14 selected rendered pages were compared and visually inspected. See the delivery guide for hashes, benign underfull notices, and the precise limits of these checks.
 
-The new shared [finite-experiment proof](papers/A2-v17-boundary-information-coarsening/article/23f2_finite_experiment_analytic_inverse_v62.tex) combines the relative physical law and complete analytic inverse without treating finite densities or histograms as exactly factorized. On a bounded local analytic class it proves a complete-germ finite-bridge stability estimate and an estimator using charged raw preparations. It includes all failures, the outside endpoint category, a measurable realizable-law fit, offset amplification and the hard-cell displacement term.
-
-At exact calibration, the confidence radius is `C (log(C N/alpha)/N)^(vartheta omega/(4 omega+Gamma))` for 2N raw attempts. With the retained observable position pilot, the complete cap B gives the slower radius `C ([log(C B/alpha)]^2/B)^(vartheta omega/(12 omega+Gamma))`. These are local analytic-germ upper bounds, not claims of optimality, global continuation rates, or unmarked channel discovery. The full original smooth, global, matching, nuisance-window, differential and acquisition results remain unchanged.
-
-All 753 inherited frozen files are retained. Only the entry files and manuscript README change; exact originals are archived. Every previous theorem/proof module remains byte-identical and active. The report established no new mandatory core repair; its exceptional-significance judgment is engaged directly, not declared closed by another theorem or by delivery checks.
-
-Native products are published by the version-scoped workflow to a new products branch. The final review-ready index records actual compiled source, completed run, PDF hashes and visual-inspection scope; this initial source index does not claim that a pending build has completed.
+The addressed report is [the v61 independent assessment](reviews/a2-v61-independent-harsh-top4-2026-09-16/REFEREE_REPORT.md), pinned at `9ec2004a18cccc69ed473685bdf94c91f0b25d4d`. It established no new mandatory core repair and questioned exceptional significance. Revision 62 supplies a substantive finite-experiment consequence without inventing a fatal error or treating the editorial judgment as closed by an additional theorem or a build receipt. A1, the default branch, and previous review branches were not modified.
