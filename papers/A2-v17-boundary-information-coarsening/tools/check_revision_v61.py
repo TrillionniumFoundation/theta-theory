@@ -34,12 +34,13 @@ def main() -> None:
         baseline = {n: x['git_blob'] for n, x in manifest['files'].items()}
     else:
         baseline = {}
-        for row in git('ls-tree', '-r', '-z', BASE + ':' + PREFIX).split(b'\0'):
+        for row in git('ls-tree', '--full-tree', '-r', '-z', BASE + ':' + PREFIX).split(b'\0'):
             if row:
                 meta, name = row.split(b'\t', 1)
                 mode, kind, oid = meta.decode().split()
                 require(kind == 'blob', 'Unexpected baseline object')
                 baseline[name.decode()] = oid
+    require({'main.tex', 'rigidity.tex', OLD}.issubset(baseline), 'Incomplete baseline tree')
     changed = []
     for name, oid in baseline.items():
         path = P / name
