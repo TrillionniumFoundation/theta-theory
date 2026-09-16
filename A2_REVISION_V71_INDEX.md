@@ -1,17 +1,12 @@
-# A2 revision 71 — source and review route
+# A2 revision 71
 
-September 17, 2026. Manuscript: *Boundary laws and smooth contact rigidity of periodic dispersing billiards*, Qian Qi.
+The completed delivery is indexed in **[A2_REVISION_V71_REVIEW_READY.md](A2_REVISION_V71_REVIEW_READY.md)** on `revision/a2-v71-referee-ready-2026-09-17`.
 
-## Revision identity
+Source commit: `b0a0c9a42e61422cdf7c82df3fb80bedc0d105af`.
+Manuscript subtree: `8549bb0789d5e6cdce8ae12f70ed7c100f81510b`.
+Attested products head: `5826d4abdd4c63c4c338422ef10b57d09dae6f20`.
+Native run: `35133556116`, attempt `1`, completed successfully.
 
-This revision starts from the latest independent report at `f1d516c0033256d50ca23d87cc5a40fef8f72d45`, on `review/a2-v70-independent-harsh-top4-2026-09-16`. Its reviewed manuscript subtree is `63fdb25cd2002d9d2b3a238e7e7f1862b2328d2b`. The locally compiled v71 subtree is `8549bb0789d5e6cdce8ae12f70ed7c100f81510b`.
+[Point-by-point response](papers/A2-v17-boundary-information-coarsening/RESPONSE_TO_REFEREE_V71.md) · [Primary-source comparison](papers/A2-v17-boundary-information-coarsening/LITERATURE_CHECK_V71.md) · [Historical derivation audit](papers/A2-v17-boundary-information-coarsening/HISTORICAL_DERIVATION_AUDIT_V71.md) · [Post-download verification](A2_REVISION_V71_DELIVERY_CHECK.json).
 
-The new source branch is `revision/a2-v71-local-law-lens-comparison-2026-09-17`. Its native workflow first materializes and commits all source files, verifies that exact subtree, and only then builds. The bootstrap alone is not the completed native manuscript delivery. The final review-ready branch is `revision/a2-v71-referee-ready-2026-09-17`; its `A2_REVISION_V71_REVIEW_READY.md` records completed source/product/run identities and inspection scope.
-
-## Reading order
-
-[Principal entry](papers/A2-v17-boundary-information-coarsening/rigidity.tex) · [Complete technical entry](papers/A2-v17-boundary-information-coarsening/main.tex) · [Companion](papers/A2-v17-boundary-information-coarsening/two_collision.tex).
-
-[Point-by-point response](papers/A2-v17-boundary-information-coarsening/RESPONSE_TO_REFEREE_V71.md), [cover letter](papers/A2-v17-boundary-information-coarsening/COVER_LETTER_V71.md), [primary-source comparison](papers/A2-v17-boundary-information-coarsening/LITERATURE_CHECK_V71.md), [dependency ledger](papers/A2-v17-boundary-information-coarsening/journal/DEPENDENCY_LEDGER_V71.md), and [historical audit](papers/A2-v17-boundary-information-coarsening/HISTORICAL_DERIVATION_AUDIT_V71.md).
-
-The shared introduction preserves the two main theorem statements. The five full core proof modules remain byte-exact. The new locality section follows them, before the retained foundations. All 911 inherited source files and all 138 earlier active TeX inputs remain, with exact archived originals for the six edited presentation files. This source conservation and the successful local build are not an independent mathematical or journal-placement certificate.
+The bootstrap commit `7450d3887506bfae2db092c22c65f33aabb3af12` is not the compiled source. Its workflow materialized and verified the complete source tree before committing and building it. Source-to-products changes are confined to the native delivery directory. The final referee entry changes only navigation and delivery verification, not manuscript inputs.
