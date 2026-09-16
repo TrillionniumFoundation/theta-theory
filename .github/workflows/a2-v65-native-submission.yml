@@ -1,0 +1,126 @@
+name: A2 v65 marked periodic contact inverse and complete native submission
+on:
+  push:
+    branches:
+      - revision/a2-v65-referee-response-2026-09-16
+    paths:
+      - papers/A2-v17-boundary-information-coarsening/**
+      - .github/revision-sources/materialize-a2-v65.py
+      - .github/workflows/a2-v65-native-submission.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 40
+    permissions:
+      contents: write
+    outputs:
+      source_commit: ${{ steps.source.outputs.source_commit }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: true
+      - name: Activate and commit the complete source-verified revision
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = revision/a2-v65-referee-response-2026-09-16
+          P=papers/A2-v17-boundary-information-coarsening
+          git fetch origin "refs/heads/$GITHUB_REF_NAME"
+          git switch -C "$GITHUB_REF_NAME" FETCH_HEAD
+          python3 -B .github/revision-sources/materialize-a2-v65.py > "$RUNNER_TEMP/materialization-v65.json"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- README.md README_PRE_V65.md A2_REVISION_V65_INDEX.md "$P"
+          TREE=$(git write-tree)
+          test "$(git rev-parse "$TREE:$P")" = b23b5986eb5d6f3cc19d44ea44fd42173e00e504
+          if ! git diff --cached --quiet; then
+            git commit -m 'A2 v65: activate the complete marked periodic inverse with every inherited proof retained'
+          fi
+          git push origin "HEAD:refs/heads/$GITHUB_REF_NAME"
+          SOURCE=$(git rev-parse HEAD)
+          echo "source_commit=$SOURCE" >> "$GITHUB_OUTPUT"
+          printf 'Compiled source: `%s`\n' "$SOURCE" >> "$GITHUB_STEP_SUMMARY"
+      - name: Install native toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends latexmk texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils python3-numpy python3-scipy python3-sympy
+      - name: Verify preservation and exact and actual-chord inverse controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          P=papers/A2-v17-boundary-information-coarsening
+          /usr/bin/python3 -B "$P/tools/check_revision_v65.py" > "$RUNNER_TEMP/check_revision_v65-normal.json"
+          /usr/bin/python3 -O -B "$P/tools/check_revision_v65.py" > "$RUNNER_TEMP/check_revision_v65-optimized.json"
+          cmp "$RUNNER_TEMP/check_revision_v65-normal.json" "$RUNNER_TEMP/check_revision_v65-optimized.json"
+      - name: Build all three complete native manuscripts from committed source
+        env:
+          SOURCE: ${{ steps.source.outputs.source_commit }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE"
+          /usr/bin/python3 -B papers/A2-v17-boundary-information-coarsening/tools/build_revision_v56.py --output-dir "$RUNNER_TEMP/a2-v65-native-$SOURCE"
+          cp "$RUNNER_TEMP"/check_revision_v65-*.json "$RUNNER_TEMP/a2-v65-native-$SOURCE/"
+          cp "$RUNNER_TEMP/materialization-v65.json" "$RUNNER_TEMP/a2-v65-native-$SOURCE/"
+          /usr/bin/python3 -c 'import json,sys; r=json.load(open(sys.argv[1])); bad=[w for e in r["entries"].values() for w in e["warnings"] if "Overfull" in w]; sys.exit("Overfull native output: "+str(bad) if bad else 0)' "$RUNNER_TEMP/a2-v65-native-$SOURCE/build-report.json"
+      - name: Retain native products and exact source evidence
+        if: always() && steps.source.outputs.source_commit != ''
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: a2-v65-native-${{ steps.source.outputs.source_commit }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/a2-v65-native-${{ steps.source.outputs.source_commit }}/
+          if-no-files-found: error
+          retention-days: 90
+  publish-verified-products:
+    needs: native
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 15
+    permissions:
+      actions: read
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.native.outputs.source_commit }}
+          fetch-depth: 1
+          persist-credentials: true
+      - name: Validate exact source-matched products
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE: ${{ needs.native.outputs.source_commit }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          P=papers/A2-v17-boundary-information-coarsening
+          gh run download "$GITHUB_RUN_ID" --repo "$GITHUB_REPOSITORY" --name "a2-v65-native-$SOURCE-$GITHUB_RUN_ATTEMPT" --dir "$RUNNER_TEMP/v65"
+          python3 -B "$P/tools/retain_native_v65.py" prepare --evidence "$RUNNER_TEMP/v65" --destination "deliveries/a2-v65/$SOURCE" --source-commit "$SOURCE" --run-id "$GITHUB_RUN_ID"
+      - name: Publish on a new branch and verify fetched Git objects
+        env:
+          SOURCE: ${{ needs.native.outputs.source_commit }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          P=papers/A2-v17-boundary-information-coarsening
+          D="deliveries/a2-v65/$SOURCE"
+          branch="revision/a2-v65-native-products-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          git switch -c "$branch"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f -- "$D"
+          python3 -B "$P/tools/retain_native_v65.py" verify --destination "$D" --ref INDEX
+          git commit -m 'A2 v65: retain complete native PDFs, frozen source, diagnostics and provenance'
+          git push origin "HEAD:refs/heads/$branch"
+          git fetch origin "refs/heads/$branch"
+          python3 -B "$P/tools/retain_native_v65.py" verify --destination "$D" --ref FETCH_HEAD --attestation
+          git add -- "$D/COMMITTED_OBJECTS_VERIFIED.json"
+          git commit -m 'A2 v65: attest fetched source-matched native Git objects'
+          git push origin "HEAD:refs/heads/$branch"
+          git fetch origin "refs/heads/$branch"
+          python3 -B "$P/tools/retain_native_v65.py" verify --destination "$D" --ref FETCH_HEAD
+          printf 'Source: `%s`\n\nProducts: `%s`\n\nVerified head: `%s`\n' "$SOURCE" "$branch" "$(git rev-parse FETCH_HEAD)" >> "$GITHUB_STEP_SUMMARY"
