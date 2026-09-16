@@ -1,23 +1,3 @@
-# A2 revision 67: the relative-law/contact mechanism
-
-This revision answers the v66 report at immutable head
-`3d49684cc6c9bad36d80c99dc46af276f53fae18` and preserves the complete
-reviewed manuscript. Both `rigidity.tex` and `main.tex` contain the
-corrected finite-flight proposition, its residual stopping certificate,
-and the explicit higher-jet error propagation. No inherited proof input
-is removed, and the companion remains byte-identical.
-
-Read `RESPONSE_TO_REFEREE_V67.md`, `HISTORICAL_DERIVATION_AUDIT_V67.md`,
-`LITERATURE_CHECK_V67.md`, and `VALIDATION_V67.md`. The shared opening
-presents the relative physical law and actual contact response as one
-mechanism; the global curvature inverse is not counted as an independent
-answer to the report's significance judgment. Exact no-closeness
-identification and every existing observation model retain their full
-statements. The original eight edited files and frozen manifest are in
-`history/v66-review-baseline/`.
-
----
-
 # A2 revision 66: global marked contact identification
 
 The current revision answers the v65 report at immutable head
