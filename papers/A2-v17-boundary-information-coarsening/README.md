@@ -1,9 +1,13 @@
-# A2 v61 — principal article and complete technical corpus
+# A2 revision 62 — complete manuscripts for independent reassessment
 
-[Principal article](rigidity.tex) · [Complete technical manuscript](main.tex) · [Companion](two_collision.tex).
+**Boundary laws and rigidity of periodic dispersing billiards** — Qian Qi, September 16, 2026.
 
-[Response to v60](RESPONSE_TO_REFEREE_V61.md) · [Letter for reassessment](COVER_LETTER_V61.md) · [Historical audit](HISTORICAL_DERIVATION_AUDIT_V61.md) · [Dependencies](journal/DEPENDENCY_LEDGER_V61.md) · [Primary literature](LITERATURE_CHECK_V61.md).
+[Principal article](rigidity.tex) · [Complete technical manuscript](main.tex) · [Two-collision companion](two_collision.tex).
 
-The directory name is historical; the active revision is 61. The principal exposition now centers the relative physical limit and actual-smooth action inverse. No theorem is added or weakened. The complete v59/v60 inverse proofs and all global, differential, window and acquisition statements remain. The original introduction is retained, and exact old entry files are archived in `history/v60-review-baseline/`.
+[Response to the v61 report](RESPONSE_TO_REFEREE_V62.md) · [Cover letter](COVER_LETTER_V62.md) · [Historical proof audit](HISTORICAL_DERIVATION_AUDIT_V62.md) · [Dependencies](journal/DEPENDENCY_LEDGER_V62.md) · [Primary literature check](LITERATURE_CHECK_V62.md).
 
-The addressed report is pinned at `396bb28e17ba9944af5ff89a2db601412eeb95ee`; its mathematical source is `1a55bfb1102c3eab9cdcd6a292c5ef9070ea14a5`. The new version-scoped workflow builds all three entries and retains verified products in Git. Consult the final review-ready record for completed identities and actual visual coverage. Source preservation and successful typesetting do not settle correctness or exceptional significance.
+The latest addressed report is pinned at `9ec2004a18cccc69ed473685bdf94c91f0b25d4d`; the inherited compiled mathematical source is `71e0bd6306f54466728c2e6e781bb0f422c5cfb0`. All inherited theorem/proof modules remain byte-identical and active. The directory name is historical; the active revision is 62.
+
+The new shared subsection proves finite-bridge complete analytic contact stability, a confidence rate from charged raw independent preparations at exact calibration, a separate calibration-aware bound, and a slower rate in the full preparation budget including the position-sensor pilot. It does not apply the separated-law inverse to empirical histograms. It preserves the full smooth, global, nuisance-window, differential and acquisition scope. The referee's significance judgment is addressed, not declared closed by an added theorem or a successful build.
+
+The original entry files and README are archived in `history/v61-review-baseline/`. Final native PDFs, source identities, build results and visual coverage are indexed in the repository's v62 review-ready delivery guide.
