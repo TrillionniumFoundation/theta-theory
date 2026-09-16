@@ -1,21 +1,3 @@
-# A2 revision 66: global marked contact identification
-
-The current revision answers the v65 report at immutable head
-`7f4603531f7b97a23ce627fec47b7ddc5f4f9912`.
-Read `RESPONSE_TO_REFEREE_V66.md` and `HISTORICAL_DERIVATION_AUDIT_V66.md`.
-Both `rigidity.tex` and `main.tex` contain the complete new proof in
-`article/10c_global_curvature_inverse_v66.tex`.  The curvature inverse
-is globally single-valued on the positive class; exact analytic marked
-identification no longer needs nearby candidates.  The supplied polygon,
-shared two-offset amplitudes, fixed lattice and full-visitation clauses
-remain explicit.  Analytic norm and real-noise estimates retain their
-local priors and radius loss.  All inherited proofs remain active.
-
-The previous entry is retained below and byte-exact in
-`history/v65-review-baseline/README.md`.
-
----
-
 # A2 revision 65: periodic contact reconstruction
 
 The current complete English manuscripts are `rigidity.tex` (principal article),
