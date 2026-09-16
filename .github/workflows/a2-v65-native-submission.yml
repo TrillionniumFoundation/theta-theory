@@ -33,14 +33,23 @@ jobs:
           P=papers/A2-v17-boundary-information-coarsening
           git fetch origin "refs/heads/$GITHUB_REF_NAME"
           git switch -C "$GITHUB_REF_NAME" FETCH_HEAD
+          # ZIP extraction had not restored the inherited executable bit of
+          # check_adaptive.py in the local tree calculation. Keep the Git mode;
+          # update the expected tree, never chmod the inherited remote source.
+          python3 -c 'from pathlib import Path; names=(".github/revision-sources/materialize-a2-v65.py", "A2_REVISION_V65_INDEX.md"); [(p.write_text(p.read_text().replace("b23b5986eb5d6f3cc19d44ea44fd42173e00e504", "469aba06035399f96f07417b172653228df36114"))) for p in map(Path,names)]'
           python3 -B .github/revision-sources/materialize-a2-v65.py > "$RUNNER_TEMP/materialization-v65.json"
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -- README.md README_PRE_V65.md A2_REVISION_V65_INDEX.md "$P"
+          git add -- README.md README_PRE_V65.md A2_REVISION_V65_INDEX.md .github/revision-sources/materialize-a2-v65.py "$P"
           TREE=$(git write-tree)
-          test "$(git rev-parse "$TREE:$P")" = b23b5986eb5d6f3cc19d44ea44fd42173e00e504
+          ACTUAL=$(git rev-parse "$TREE:$P")
+          printf 'Exact staged paper tree: %s\n' "$ACTUAL"
+          if test "$ACTUAL" != 469aba06035399f96f07417b172653228df36114; then
+            git ls-tree -r "$TREE:$P" | grep -E 'v65|V65|check_adaptive|SOURCE_MANIFEST'
+            exit 1
+          fi
           if ! git diff --cached --quiet; then
-            git commit -m 'A2 v65: activate the complete marked periodic inverse with every inherited proof retained'
+            git commit -m 'A2 v65: activate the complete marked periodic inverse with every inherited proof and Git mode retained'
           fi
           git push origin "HEAD:refs/heads/$GITHUB_REF_NAME"
           SOURCE=$(git rev-parse HEAD)
