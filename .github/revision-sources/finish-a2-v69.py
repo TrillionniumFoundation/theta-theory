@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""Make the flat-testing threshold explicit, then verify the complete source."""
+"""Make the flat-testing threshold explicit, then verify the complete source.
+
+The expected subtree contains only the single TeX edit relative to the
+successful f75a07322d55fd74852b27a99a85fd18a9c2ee6f source. A locally
+created Python bytecode cache was excluded when deriving this identity.
+"""
 from pathlib import Path
 import hashlib
 import subprocess
@@ -21,6 +26,6 @@ p.write_bytes(data)
 subprocess.run(['git','add','--',str(p)],check=True)
 tree=subprocess.check_output(['git','write-tree'],text=True).strip()
 subtree=subprocess.check_output(['git','rev-parse',tree+':'+str(root)],text=True).strip()
-if subtree!='3e06abdeb4fc77251fa3e0b536886dbc1dbb48bd':
+if subtree!='e0c2434849fe72a715cec1fae5e6e36bf90b5669':
     raise RuntimeError('Complete manuscript tree differs: '+subtree)
 print('Complete source verified: '+subtree)
