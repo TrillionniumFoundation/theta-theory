@@ -1,16 +1,16 @@
-# Theta-Theory — A2 revision 68
+# Theta-Theory — A2 revision 71
 
 **Boundary laws and smooth contact rigidity of periodic dispersing billiards** — Qian Qi.
 
-The current revision is indexed in [A2_REVISION_V68_INDEX.md](A2_REVISION_V68_INDEX.md).
-It answers the independent v67 report by extending the central relative-law/contact
-mechanism to complete smooth contact germs, with finite-smoothness real-profile
-stability and an actual equal-area flat family beyond all formal contact/action jets.
-The closed v67 stopping correction and all inherited mathematical modules remain.
+The current revision is indexed in [A2_REVISION_V71_INDEX.md](A2_REVISION_V71_INDEX.md).
+It answers the independent v70 report with a theorem-level comparison to corrected
+planar lens rigidity, an exact locality theorem for the charged endpoint record,
+and actual equal-area remote completions. The relative-law/smooth-contact/finite-
+preparation chain and all inherited proof modules remain unchanged.
 
-[Principal source](papers/A2-v17-boundary-information-coarsening/rigidity.tex) · [Full technical source](papers/A2-v17-boundary-information-coarsening/main.tex) · [Response to the referee](papers/A2-v17-boundary-information-coarsening/RESPONSE_TO_REFEREE_V68.md).
+[Principal source](papers/A2-v17-boundary-information-coarsening/rigidity.tex) · [Full technical source](papers/A2-v17-boundary-information-coarsening/main.tex) · [Response to the referee](papers/A2-v17-boundary-information-coarsening/RESPONSE_TO_REFEREE_V71.md).
 
-Source-matched native PDFs and completed publication identities are recorded in the
-versioned delivery and final review-ready index after successful verification.
-The previous root entry is preserved exactly in [README_PRE_V68.md](README_PRE_V68.md).
-No default branch, review branch or A1 source is rewritten.
+The complete source-matched native delivery and the final review-ready index are
+published on the new v71 revision branches after verification. A workflow definition
+is not a successful run. The [previous root README](README_PRE_V71.md) is preserved
+byte-for-byte. No default branch, review branch or A1 source is rewritten.
