@@ -1,13 +1,11 @@
-# A2 revision 62 — complete manuscripts for independent reassessment
+# A2 — complete revision 63
 
 **Boundary laws and rigidity of periodic dispersing billiards** — Qian Qi, September 16, 2026.
 
-[Principal article](rigidity.tex) · [Complete technical manuscript](main.tex) · [Two-collision companion](two_collision.tex).
+The complete principal article is `rigidity.tex`; the complete technical manuscript is `main.tex`; `two_collision.tex` is the retained two-collision companion. All inherited mathematical modules and conclusions remain. The revision responds to the frozen [v62 report](../../reviews/a2-v62-independent-harsh-top4-2026-09-16/REFEREE_REPORT.md).
 
-[Response to the v61 report](RESPONSE_TO_REFEREE_V62.md) · [Cover letter](COVER_LETTER_V62.md) · [Historical proof audit](HISTORICAL_DERIVATION_AUDIT_V62.md) · [Dependencies](journal/DEPENDENCY_LEDGER_V62.md) · [Primary literature check](LITERATURE_CHECK_V62.md).
+Revision 63 corrects the deterministic pilot-grid time bound in the proof of `cor:v62-total-budget` to account for the ceiling, without changing either confidence rate or the cap. The proof distinguishes the successful stopping bound from the all-history grid bound. A shared, hypothesis-accurate comparison with Zelditch's published orbit-local inverse spectral theorem is integrated into the existing introduction of both manuscripts; both bibliographies retain all entries and add the published citation.
 
-The latest addressed report is pinned at `9ec2004a18cccc69ed473685bdf94c91f0b25d4d`; the inherited compiled mathematical source is `71e0bd6306f54466728c2e6e781bb0f422c5cfb0`. All inherited theorem/proof modules remain byte-identical and active. The directory name is historical; the active revision is 62.
+[Point-by-point response](RESPONSE_TO_REFEREE_V63.md) · [Cover letter](COVER_LETTER_V63.md) · [Historical derivation audit](HISTORICAL_DERIVATION_AUDIT_V63.md) · [Primary-literature check](LITERATURE_CHECK_V63.md) · [Dependencies](journal/DEPENDENCY_LEDGER_V63.md).
 
-The new shared subsection proves finite-bridge complete analytic contact stability, a confidence rate from charged raw independent preparations at exact calibration, a separate calibration-aware bound, and a slower rate in the full preparation budget including the position-sensor pilot. It does not apply the separated-law inverse to empirical histograms. It preserves the full smooth, global, nuisance-window, differential and acquisition scope. The referee's significance judgment is addressed, not declared closed by an added theorem or a successful build.
-
-The original entry files and README are archived in `history/v61-review-baseline/`. Final native PDFs, source identities, build results and visual coverage are indexed in the repository's v62 review-ready delivery guide.
+Every modified inherited source has its exact original under `history/v62-review-baseline/`; the frozen baseline manifest is preserved there. `tools/check_revision_v63.py` checks preservation, active-input retention, unchanged statement bodies and exact finite arithmetic controls. Those checks and a successful native build are not mathematical or editorial certification. The repository-level v63 review-ready guide records the actual native source commit and complete PDF delivery.
