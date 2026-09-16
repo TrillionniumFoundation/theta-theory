@@ -1,23 +1,21 @@
-# A2 — revision 70
+# A2 — revision 71
 
-**Boundary laws and smooth contact rigidity of periodic dispersing billiards**
+**Boundary laws and smooth contact rigidity of periodic dispersing billiards** — Qian Qi
 
-September 16, 2026. The historical directory name is not the current version.
+September 17, 2026. The directory's historical v17 name is not its current revision.
 
-## Complete entries
+## Complete manuscripts
 
-`rigidity.tex` is the principal article. `main.tex` is the complete technical manuscript. `two_collision.tex` is the unchanged retained companion. All inherited proof modules remain active. The periodic relative-law, actual contact inverse, smooth separation and finite-preparation chain is now printed immediately after the new common-model introduction. Broader formulations remain printed in the appendices.
+[Principal article](rigidity.tex), [complete technical manuscript](main.tex), and the unchanged [two-collision companion](two_collision.tex) retain all inherited mathematical content. The full periodic relative-law/smooth-contact/finite-preparation proof chain remains first. The new [local observation section](article/10f_local_observation_comparison_v71.tex) and [lens comparison](article/00k_lens_comparison_v71.tex) answer the concrete data/prior-art issue in the latest report without weakening the central theorem or replacing its proof.
 
-The new lead source is [article/00i_main_thesis_v70.tex](article/00i_main_thesis_v70.tex); the principal abstract is [article/00j_abstract_v70.tex](article/00j_abstract_v70.tex). Their main theorems consolidate proved results; no new mathematical repair is asserted.
+## Response and provenance
 
-## Correspondence and proof route
+[Point-by-point response](RESPONSE_TO_REFEREE_V71.md) · [Cover letter](COVER_LETTER_V71.md) · [Proof dependency ledger](journal/DEPENDENCY_LEDGER_V71.md) · [Historical reading and preservation](HISTORICAL_DERIVATION_AUDIT_V71.md) · [Primary-source comparison](LITERATURE_CHECK_V71.md).
 
-[Response to the v69 referee](RESPONSE_TO_REFEREE_V70.md) · [Cover letter](COVER_LETTER_V70.md) · [Dependency ledger](journal/DEPENDENCY_LEDGER_V70.md) · [Historical derivation audit](HISTORICAL_DERIVATION_AUDIT_V70.md) · [Targeted primary-source check](LITERATURE_CHECK_V70.md).
-
-The report answered is frozen at `ba42d7a3a7873739c596497c5b2b884452f130d1`; its reviewed source is `1a46fd69a508bccb90c6d2553892124f068f4657`, manuscript subtree `e0c2434849fe72a715cec1fae5e6e36bf90b5669`. The starting 895 source files were reconstructed and checked byte-for-byte with their original modes. Edited inherited originals and that source manifest are in [history/v69-review-baseline](history/v69-review-baseline).
+The report is frozen at `f1d516c0033256d50ca23d87cc5a40fef8f72d45`; its reviewed manuscript subtree is `63fdb25cd2002d9d2b3a238e7e7f1862b2328d2b`. All 911 reviewed source paths remain. The six edited originals and full baseline manifest are retained in [history/v70-review-baseline](history/v70-review-baseline/). All 138 earlier active TeX inputs remain; three new shared inputs are added. The five central proof modules are byte-exact.
 
 ## Reproduction
 
-From a clean Git checkout, run `python -B tools/build_revision_v70.py --output-dir /absolute/path/outside/manuscript`. The retained engine freezes tracked Git bytes, checks native input recorders and producer auxiliaries, builds all three entries with shell escape disabled, and runs diagnostics in normal and optimized Python. The new checker verifies inheritance and active proof routing; it is not a mathematical certificate. The existing strict ZIP verifier continues to check raw executable modes.
+From a clean Git checkout run `python -B tools/build_revision_v71.py --output-dir /absolute/path/outside/manuscript`. The native engine freezes tracked Git objects, verifies recorders and producer auxiliaries, builds all three entries with shell escape disabled, and compares normal/optimized finite diagnostics. The v71 conservation check reconstructs reviewed v70 bytes to run its unchanged diagnostic. These checks are not mathematical certification. Raw ZIP-mode and committed-product verification remain separate.
 
-Native products and their source pin are identified by the repository-root `A2_REVISION_V70_REVIEW_READY.md` after publication. A configured build is not a successful run; consult the actual build report. Source integrity, finite controls, visual inspection and mathematical review remain separate claims.
+Source-matched products, completed run identity and actual visual-inspection scope are recorded in the root `A2_REVISION_V71_REVIEW_READY.md` after publication. A workflow definition alone is not a successful build. Exceptional significance remains a matter for independent mathematical assessment, not a diagnostic flag.
