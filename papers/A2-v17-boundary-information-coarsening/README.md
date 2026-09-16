@@ -1,4 +1,4 @@
-# A2 — revision 71
+# A2 — revision 72
 
 **Boundary laws and smooth contact rigidity of periodic dispersing billiards** — Qian Qi
 
@@ -6,16 +6,16 @@ September 17, 2026. The directory's historical v17 name is not its current revis
 
 ## Complete manuscripts
 
-[Principal article](rigidity.tex), [complete technical manuscript](main.tex), and the unchanged [two-collision companion](two_collision.tex) retain all inherited mathematical content. The full periodic relative-law/smooth-contact/finite-preparation proof chain remains first. The new [local observation section](article/10f_local_observation_comparison_v71.tex) and [lens comparison](article/00k_lens_comparison_v71.tex) answer the concrete data/prior-art issue in the latest report without weakening the central theorem or replacing its proof.
+[Principal article](rigidity.tex), [complete technical manuscript](main.tex), and the unchanged [two-collision companion](two_collision.tex) retain all inherited mathematical content. The principal route now includes [one-law recovery with an unreported offset](article/10g_uncalibrated_single_law_v72.tex): for every oblique phase, one conditional law identifies the offset, unequal actions, and complete smooth contact germ; a joint finite-preparation theorem charges all failures. Every clear polygon with at least three distinct physical contacts is oblique. The general two-offset theorem, its six operative proof/comparison modules, and the analytic/multichannel catalogue are unchanged.
 
 ## Response and provenance
 
-[Point-by-point response](RESPONSE_TO_REFEREE_V71.md) · [Cover letter](COVER_LETTER_V71.md) · [Proof dependency ledger](journal/DEPENDENCY_LEDGER_V71.md) · [Historical reading and preservation](HISTORICAL_DERIVATION_AUDIT_V71.md) · [Primary-source comparison](LITERATURE_CHECK_V71.md).
+[Point-by-point response](RESPONSE_TO_REFEREE_V72.md) · [Cover letter](COVER_LETTER_V72.md) · [Observation/dependency map](journal/DEPENDENCY_LEDGER_V72.md) · [Historical audit](HISTORICAL_DERIVATION_AUDIT_V72.md) · [Primary-source comparison](LITERATURE_CHECK_V72.md).
 
-The report is frozen at `f1d516c0033256d50ca23d87cc5a40fef8f72d45`; its reviewed manuscript subtree is `63fdb25cd2002d9d2b3a238e7e7f1862b2328d2b`. All 911 reviewed source paths remain. The six edited originals and full baseline manifest are retained in [history/v70-review-baseline](history/v70-review-baseline/). All 138 earlier active TeX inputs remain; three new shared inputs are added. The five central proof modules are byte-exact.
+The report is frozen at `7bb8971f6b792894ee961f6fab5c6f68847d373d`; its source subtree is `8549bb0789d5e6cdce8ae12f70ed7c100f81510b`. All 929 inherited source paths remain. The four edited originals and the full source manifest are retained in [history/v71-review-baseline](history/v71-review-baseline/). All 141 inherited active TeX inputs remain; three new inputs bring the union to 144. The two old introductory theorem statements remain unchanged.
 
 ## Reproduction
 
-From a clean Git checkout run `python -B tools/build_revision_v71.py --output-dir /absolute/path/outside/manuscript`. The native engine freezes tracked Git objects, verifies recorders and producer auxiliaries, builds all three entries with shell escape disabled, and compares normal/optimized finite diagnostics. The v71 conservation check reconstructs reviewed v70 bytes to run its unchanged diagnostic. These checks are not mathematical certification. Raw ZIP-mode and committed-product verification remain separate.
+From a clean Git checkout run `python -B tools/build_revision_v72.py --output-dir /absolute/path/outside/manuscript`. The frozen-source native engine builds all three complete entries with shell escape disabled, records producer/consumer auxiliaries, checks source hashes and runs normal/optimized finite diagnostics. The new checker also reconstructs v71 and runs its unchanged checker. These are not mathematical proof certificates.
 
-Source-matched products, completed run identity and actual visual-inspection scope are recorded in the root `A2_REVISION_V71_REVIEW_READY.md` after publication. A workflow definition alone is not a successful build. Exceptional significance remains a matter for independent mathematical assessment, not a diagnostic flag.
+The completed source/product identities and actual visual inspection are recorded in the root `A2_REVISION_V72_REVIEW_READY.md` after execution. Unreported offsets are fixed nuisance parameters, not arbitrary drift; marks, exact tags/gates, bounded smoothness and independent resetting remain explicit. Exceptional significance is left to independent mathematical assessment.
