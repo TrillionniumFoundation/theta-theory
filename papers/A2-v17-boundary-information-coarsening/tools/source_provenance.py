@@ -166,7 +166,13 @@ def source_archive(source: Path, manifest: dict, target: Path) -> None:
         for name, data in payloads:
             info = zipfile.ZipInfo(name, date_time=(2026, 9, 13, 0, 0, 0))
             info.compress_type = zipfile.ZIP_DEFLATED
-            info.external_attr = 0o100644 << 16
+            # A frozen snapshot is read-only, so filesystem permissions are
+            # not the source of truth. Preserve the recorded Git modes (R68-P1).
+            mode = (int(manifest['files'][name[len('source/'):]]['mode'], 8)
+                    if name.startswith('source/') else 0o100644)
+            require(mode in (0o100644, 0o100755), 'Unsupported archive mode: ' + name)
+            info.create_system = 3  # Unix permission interpretation in ZIP headers.
+            info.external_attr = mode << 16
             archive.writestr(info, data)
 
 
