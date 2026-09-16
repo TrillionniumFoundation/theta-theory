@@ -6,7 +6,7 @@ on:
       - revision/a2-v69-sampled-smooth-recovery-2026-09-16
     paths:
       - .github/workflows/a2-v69-native.yml
-      - .github/revision-sources/materialize-a2-v69.py
+      - .github/revision-sources/finish-a2-v69.py
       - papers/A2-v17-boundary-information-coarsening/**
 
 permissions:
@@ -24,22 +24,22 @@ jobs:
     env:
       PYTHONDONTWRITEBYTECODE: '1'
       SOURCE_PREFIX: papers/A2-v17-boundary-information-coarsening
-      EXPECTED_SOURCE_TREE: f75a07322d55fd74852b27a99a85fd18a9c2ee6f
+      EXPECTED_SOURCE_TREE: 3e06abdeb4fc77251fa3e0b536886dbc1dbb48bd
     steps:
       - name: Checkout the exact revision commit
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           ref: ${{ github.sha }}
-      - name: Integrate and publish the complete source
+      - name: Finalize and publish the complete source
         shell: bash
         run: |
           set -euo pipefail
-          python3 -B .github/revision-sources/materialize-a2-v69.py
+          python3 -B .github/revision-sources/finish-a2-v69.py
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           if ! git diff --cached --quiet; then
-            git commit -m 'Activate complete A2 v69: finite charged smooth recovery and faithful source ZIP modes'
+            git commit -m 'Make the flat-family test use the explicit profile-error radius'
           fi
           SOURCE_SHA=$(git rev-parse HEAD)
           test "$(git rev-parse "${SOURCE_SHA}:${SOURCE_PREFIX}")" = "$EXPECTED_SOURCE_TREE"
