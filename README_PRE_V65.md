@@ -1,15 +1,3 @@
-# A2 revision 65: marked periodic contact reconstruction
-
-The current A2 revision is indexed in [A2_REVISION_V65_INDEX.md](A2_REVISION_V65_INDEX.md).
-The principal article, full technical manuscript and companion are retained in
-`papers/A2-v17-boundary-information-coarsening/`. Both principal and full entries
-contain the complete new periodic contact inverse. Exact native source and product
-identities are recorded in the versioned delivery and subsequent review-ready index.
-
-The complete preceding repository entry is preserved below and in `README_PRE_V65.md`.
-
----
-
 # Theta-Theory — A2 revision 64
 
 **Boundary laws and rigidity of periodic dispersing billiards** — Qian Qi, September 16, 2026.

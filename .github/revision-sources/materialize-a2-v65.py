@@ -12,7 +12,7 @@ from pathlib import Path
 
 PAPER = Path('papers/A2-v17-boundary-information-coarsening')
 ARCHIVE = PAPER/'history/v64-review-baseline'
-EXPECTED_TREE = 'b23b5986eb5d6f3cc19d44ea44fd42173e00e504'
+EXPECTED_TREE = '469aba06035399f96f07417b172653228df36114'
 TARGETS = {
  'main.tex': 'ad6a211d56a752580cee1ba3d96e1b8ce47bb32c',
  'rigidity.tex': '9b47898e7094344b455b239d2ea06b1132225bcf',

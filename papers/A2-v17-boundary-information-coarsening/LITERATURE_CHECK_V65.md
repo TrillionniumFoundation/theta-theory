@@ -18,7 +18,7 @@ Anna Florio and Martin Leguil, *Smooth conjugacy classes of 3D Axiom A flows*, a
 
 ## Enriched marked-length rigidity
 
-Jonathan Finamore and Martin Leguil, *A CAT(0)-approach to the marked length spectral rigidity of Sinai billiards*, arXiv:2510.18983v1, https://arxiv.org/abs/2510.18983v1. The primary abstract/version record was checked. Its finite-horizon Sinai result uses an enriched marked length spectrum and yields isometry under that observation model. The new Section 9 uses a supplied marked collision polygon and phase-resolved two-offset endpoint laws instead. Neither a reduction between these data nor redundancy of one theorem in the other has been established here. This comparison does not imply that our law is an ordinary or enriched marked length spectrum.
+Douglas Finamore and Martin Leguil, *A CAT(0)-approach to the marked length spectral rigidity of Sinai billiards*, arXiv:2510.18983v1, https://arxiv.org/abs/2510.18983v1. The primary abstract/version record was checked. Its finite-horizon Sinai result uses an enriched marked length spectrum and yields isometry under that observation model. The new Section 9 uses a supplied marked collision polygon and phase-resolved two-offset endpoint laws instead. Neither a reduction between these data nor redundancy of one theorem in the other has been established here. This comparison does not imply that our law is an ordinary or enriched marked length spectrum.
 
 ## Consequence for the significance response
 

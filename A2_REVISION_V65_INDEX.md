@@ -3,7 +3,7 @@
 Source branch: `revision/a2-v65-referee-response-2026-09-16`.
 Report answered: `review/a2-v64-independent-harsh-top4-2026-09-16`, immutable head `838e62dd0435f350ca9f398df09374e189a6e44c`.
 Mathematical baseline: `ee2380ceb76808dd2969d6b5faaa180737020eff`.
-Expected complete revised paper tree: `b23b5986eb5d6f3cc19d44ea44fd42173e00e504`.
+Expected complete revised paper tree: `469aba06035399f96f07417b172653228df36114`.
 
 ## Manuscripts and response
 
