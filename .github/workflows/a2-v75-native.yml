@@ -1,0 +1,130 @@
+name: A2 v75 mechanism-first native manuscripts
+on:
+  push:
+    branches:
+      - revision/a2-v75-mechanism-first-2026-09-17
+    paths:
+      - .github/workflows/a2-v75-native.yml
+      - .github/revision-sources/a2-v75-payload-*.b64
+permissions:
+  contents: write
+concurrency:
+  group: a2-v75-native-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  native:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      SOURCE_PREFIX: papers/A2-v17-boundary-information-coarsening
+      EXPECTED_SOURCE_TREE: 8a1a76ffba5009a6c3d9ed2e3c93e48a59f3ac1d
+      SOURCE_BRANCH: revision/a2-v75-mechanism-first-2026-09-17
+    steps:
+      - name: Checkout exact bootstrap
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Materialize complete preserved manuscript
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import base64,hashlib,json,lzma,pathlib
+          parts=sorted(pathlib.Path('.github/revision-sources').glob('a2-v75-payload-*.b64'))
+          if len(parts)!=3: raise RuntimeError('Incomplete authored payload')
+          data=base64.b64decode(''.join(p.read_text().strip() for p in parts),validate=True)
+          if hashlib.sha256(data).hexdigest()!='6773ea37c1a929dea03443f101824cd2f10e4591e71c8bdd4f4d2c198ac25b3e':
+              raise RuntimeError('Payload digest mismatch')
+          files=json.loads(lzma.decompress(data))
+          if len(files)!=8: raise RuntimeError('Unexpected authored file set')
+          for name,text in files.items():
+              p=pathlib.PurePosixPath(name)
+              if p.is_absolute() or '..' in p.parts or not name.startswith(('papers/A2-v17-boundary-information-coarsening/','.github/revision-sources/')):
+                  raise RuntimeError('Unapproved payload path')
+              dest=pathlib.Path(name)
+              if dest.exists(): raise RuntimeError('Seed unexpectedly already exists: '+name)
+              dest.parent.mkdir(parents=True,exist_ok=True);dest.write_text(text,encoding='utf-8')
+          PY
+          python3 -B .github/revision-sources/a2-v75-integrate.py
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- "$SOURCE_PREFIX" .github/revision-sources/a2-v75-integrate.py .github/revision-sources/publish-a2-v75.py
+          test "$(git write-tree | xargs -I{} git rev-parse "{}:$SOURCE_PREFIX")" = "$EXPECTED_SOURCE_TREE"
+          git commit -m 'A2 v75: mechanism-first principal article with complete technical preservation and referee response'
+          git fetch origin "refs/heads/$SOURCE_BRANCH"
+          REMOTE_SHA=$(git rev-parse FETCH_HEAD)
+          if test "$(git rev-parse "$REMOTE_SHA:$SOURCE_PREFIX")" = "$EXPECTED_SOURCE_TREE"; then
+            git checkout --detach "$REMOTE_SHA"
+          else
+            test "$REMOTE_SHA" = "$GITHUB_SHA"
+            git push origin "HEAD:refs/heads/$SOURCE_BRANCH"
+          fi
+          SOURCE_SHA=$(git rev-parse HEAD)
+          test "$(git rev-parse "$SOURCE_SHA:$SOURCE_PREFIX")" = "$EXPECTED_SOURCE_TREE"
+          git fetch origin "refs/heads/$SOURCE_BRANCH"
+          test "$(git rev-parse FETCH_HEAD)" = "$SOURCE_SHA"
+          echo "SOURCE_SHA=$SOURCE_SHA" >> "$GITHUB_ENV"
+          echo "EVIDENCE=$RUNNER_TEMP/a2-v75-native" >> "$GITHUB_ENV"
+          echo "PRODUCTS_BRANCH=revision/a2-v75-native-products-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_ENV"
+          echo "Frozen source: $SOURCE_SHA; manuscript tree: $EXPECTED_SOURCE_TREE" >> "$GITHUB_STEP_SUMMARY"
+      - name: Install TeX and exact algebra dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends latexmk texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils python3-sympy
+      - name: Build all three frozen source entries
+        shell: bash
+        run: |
+          set -euo pipefail
+          /usr/bin/python3 -B "$SOURCE_PREFIX/tools/build_revision_v75.py" --output-dir "$EVIDENCE"
+          /usr/bin/python3 -B "$SOURCE_PREFIX/tools/verify_source_zip_v69.py" "$EVIDENCE/native-source.zip" > "$EVIDENCE/strict-zip-modes.json"
+          if grep -En 'Overfull|LaTeX Error|Missing character:|There were undefined references|There were undefined citations' "$EVIDENCE/main.log" "$EVIDENCE/rigidity.log" "$EVIDENCE/two_collision.log"; then
+            exit 1
+          fi
+          test "$(git rev-parse "HEAD:$SOURCE_PREFIX")" = "$EXPECTED_SOURCE_TREE"
+      - name: Publish and verify native products
+        shell: bash
+        run: |
+          set -euo pipefail
+          DEST="deliveries/a2-v75/$SOURCE_SHA"
+          /usr/bin/python3 -B "$SOURCE_PREFIX/tools/retain_native_v75.py" prepare --destination "$DEST" --source-commit "$SOURCE_SHA" --evidence "$EVIDENCE" --run-id "$GITHUB_RUN_ID"
+          git switch -c "$PRODUCTS_BRANCH" "$SOURCE_SHA"
+          git add -f -- "$DEST"
+          /usr/bin/python3 -B "$SOURCE_PREFIX/tools/retain_native_v75.py" verify --destination "$DEST" --ref INDEX
+          git commit -m 'Retain A2 v75 source-matched native PDFs, full source archive and diagnostics'
+          PRODUCTS_COMMIT=$(git rev-parse HEAD)
+          git push origin "HEAD:refs/heads/$PRODUCTS_BRANCH"
+          git fetch origin "refs/heads/$PRODUCTS_BRANCH:refs/remotes/origin/$PRODUCTS_BRANCH"
+          /usr/bin/python3 -B "$SOURCE_PREFIX/tools/retain_native_v75.py" verify --destination "$DEST" --ref "refs/remotes/origin/$PRODUCTS_BRANCH" --attestation
+          python3 -B .github/revision-sources/publish-a2-v75.py --source-commit "$SOURCE_SHA" --products-commit "$PRODUCTS_COMMIT" --products-branch "$PRODUCTS_BRANCH"
+          git add -- README.md A2_REVISION_V75_REVIEW_READY.md A2_REVISION_V75_PROVENANCE.json
+          git add -f -- "$DEST/COMMITTED_OBJECTS_VERIFIED.json"
+          git commit -m 'Pin A2 v75 referee handoff and fetched-object verification'
+          git push origin "HEAD:refs/heads/$PRODUCTS_BRANCH"
+          git fetch origin "refs/heads/$PRODUCTS_BRANCH:refs/remotes/origin/$PRODUCTS_BRANCH"
+          test "$(git rev-parse HEAD)" = "$(git rev-parse "refs/remotes/origin/$PRODUCTS_BRANCH")"
+          /usr/bin/python3 -B "$SOURCE_PREFIX/tools/retain_native_v75.py" verify --destination "$DEST" --ref "refs/remotes/origin/$PRODUCTS_BRANCH"
+          mkdir -p "$RUNNER_TEMP/a2-v75-handoff"
+          cp README.md A2_REVISION_V75_REVIEW_READY.md A2_REVISION_V75_PROVENANCE.json "$RUNNER_TEMP/a2-v75-handoff/"
+          git switch --detach "$SOURCE_SHA"
+          cp "$RUNNER_TEMP/a2-v75-handoff/"* .
+          git add -- README.md A2_REVISION_V75_REVIEW_READY.md A2_REVISION_V75_PROVENANCE.json
+          git commit -m 'Complete A2 v75 source-branch handoff to pinned native products'
+          test "$(git rev-parse "HEAD:$SOURCE_PREFIX")" = "$EXPECTED_SOURCE_TREE"
+          git push origin "HEAD:refs/heads/$SOURCE_BRANCH"
+          git fetch origin "refs/heads/$SOURCE_BRANCH"
+          test "$(git rev-parse HEAD)" = "$(git rev-parse FETCH_HEAD)"
+          echo "Source branch: $SOURCE_BRANCH at $(git rev-parse HEAD)" >> "$GITHUB_STEP_SUMMARY"
+          echo "Native branch: $PRODUCTS_BRANCH; product commit: $PRODUCTS_COMMIT" >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload native evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a2-v75-native-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/a2-v75-native/
+          if-no-files-found: warn
+          retention-days: 90
