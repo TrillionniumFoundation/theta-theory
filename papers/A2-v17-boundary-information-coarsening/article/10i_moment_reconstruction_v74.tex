@@ -1,0 +1,487 @@
+\section{Reconstruction from first-moment profiles}
+\label{sec:v74-moments}
+
+The separated limiting law has an additional consequence for the amount
+of smoothing required by the inverse problem.  Four functions of one
+variable determine the two-variable law.  The relevant moment matrix is
+nonsingular for a geometric reason: the two marked first derivatives
+have opposite signs.  We first prove this assertion on the limiting
+model, then retain the finite-flight error, and finally construct an
+estimator on the image of actual tables.  All samples in this section
+are the same paired endpoint records as before.
+
+\subsection{An exact moment identity}
+
+Fix a symmetric interval $J=[-R_+,R_+]$ and an interior interval
+$I=[-R,R]\Subset J$, both containing zero.  For an integrable kernel
+$f$ on $J^2$ define
+\begin{align}
+ M_j(u)&=\int_J v^j f(u,v)\,dv,&
+ N_j(v)&=\int_J u^j f(u,v)\,du,\qquad j=0,1,
+ \label{eq:v74-profiles}\\
+ H_f&=\int_{J^2}\binom{1}{u}(1\ \ v)f(u,v)\,du\,dv.
+ \label{eq:v74-matrix}
+\end{align}
+Write $M(u)=(M_0(u),M_1(u))$ and
+$N(v)=(N_0(v),N_1(v))^{\mathsf T}$.  The compression used below is
+\[
+ \mathcal C_I(f)=\bigl(M_0|_I,M_1|_I,N_0|_I,N_1|_I,H_f\bigr)
+ \in\mathcal X_m:=C^m(I)^4\times\mathbb R^{2\times2}.
+\]
+Equip this space with the sum of the largest function norm and the
+matrix operator norm.  The integration domain in all five components
+is the full gate $J^2$.  In particular, $H_{f,00}=1$ for a density
+normalized on that gate; restriction to $I$ does not renormalize it.
+The functions $M_1,N_1$ retain paired information and are not ordinary
+marginal densities.
+
+\begin{lemma}[Moment reconstruction]\label{lem:v74-skeleton}
+Suppose $f(u,v)=a(u)^{\mathsf T}Cb(v)$, where $a,b$ have two
+components and $C$ is a $2\times2$ matrix.  If $H_f$ is nonsingular,
+then
+\begin{equation}\label{eq:v74-reconstruction}
+                  f(u,v)=M(u)H_f^{-1}N(v),\qquad (u,v)\in J^2.
+\end{equation}
+For each integer $m\ge0$, the map
+\[
+ \mathcal R:(M_0,M_1,N_0,N_1,H)\longmapsto
+                   \bigl[(u,v)\mapsto M(u)H^{-1}N(v)\bigr]
+\]
+is uniformly Lipschitz into $C^m(I^2)$ on sets with bounded
+$\mathcal X_m$ norm and $|\det H|\ge\kappa_*>0$.
+Here $C^m(I^2)$ uses derivatives of total order at most $m$.
+\end{lemma}
+\begin{proof}
+Put
+\[
+ L=\int_J\binom{1}{u}a(u)^{\mathsf T}\,du,
+ \qquad R_0=\int_J b(v)(1\ \ v)\,dv.
+\]
+Fubini's theorem gives $H_f=LCR_0$,
+$M(u)=a(u)^{\mathsf T}CR_0$, and $N(v)=LCb(v)$.
+Nonsingularity of their square product implies that all three factors
+are nonsingular.  Cancelling them proves
+\eqref{eq:v74-reconstruction}.  This argument also proves that the
+separation rank is exactly two under the hypothesis.
+
+On the stated bounded set, the adjugate formula bounds $\|H^{-1}\|$.
+For a second matrix $\widetilde H$ use
+\[
+ H^{-1}-\widetilde H^{-1}
+       =H^{-1}(\widetilde H-H)\widetilde H^{-1}.
+\]
+Add and subtract the three products obtained by replacing one factor
+at a time.  For $i+j\le m$, differentiation of a product gives
+$M^{(i)}(u)H^{-1}N^{(j)}(v)$.  The same bounds therefore control
+every required derivative.  No derivative of the data above order $m$
+is used.
+\end{proof}
+
+This is a continuous moment version of the classical exact low-rank
+matrix reconstruction underlying CUR decompositions; see
+\cite{HammHuang2019}.  Its use here requires, in addition, a
+nondegeneracy bound forced by the billiard law and control of the defect
+of finite-flight laws from the separated model.
+
+\begin{proposition}[Geometric nondegeneracy]\label{prop:v74-nondegeneracy}
+Let the limiting law at one phase be
+\begin{equation}\label{eq:v74-law}
+ f(u,v)=Z^{-1}w(u)z(v)\{d-A(u)-C(v)\},\qquad (u,v)\in J^2,
+\end{equation}
+with the hypotheses of \eqref{eq:v72-model}--\eqref{eq:v72-slopes}.
+Suppose throughout $J$ that $A'$ has sign $-p$, $C'$ has sign $p$,
+and $|A'|,|C'|\ge p_*/2>0$.  Then $\det H_f>0$ and
+\eqref{eq:v74-reconstruction} holds.
+
+On a bounded class with $|p|\ge p_*$, fixed $J$, uniform positive
+lower and upper bounds for $w,z$, and an upper bound for $Z$, the
+determinant has a positive uniform lower bound.  The derivative
+hypotheses follow by shrinking $J$ once from the uniform $C^2$ action
+bounds and $A'(0)=-p$, $C'(0)=p$.  They are not additional measured
+amplitudes or supplied curvature data.
+\end{proposition}
+\begin{proof}
+Use
+\[
+ a(u)=\binom{w(u)}{w(u)A(u)},\qquad
+ b(v)=\binom{z(v)}{z(v)C(v)},\qquad
+ C_0=Z^{-1}\begin{pmatrix}d&-1\\-1&0\end{pmatrix}
+\]
+in Lemma~\ref{lem:v74-skeleton}.  To compute the determinant without
+assuming its nonvanishing, set $W=\int_Jw$, $V=\int_Jz$, and let
+$\mu_w,\mu_z$ have densities $w/W,z/V$.  Direct evaluation gives
+\begin{equation}\label{eq:v74-determinant}
+ \det H_f=-\frac{W^2V^2}{Z^2}
+  \operatorname{Cov}_{\mu_w}(u,A(u))
+  \operatorname{Cov}_{\mu_z}(v,C(v)).
+\end{equation}
+Indeed the two covariance factors, multiplied by $W^2,V^2$, are
+respectively $\det L,\det R_0$, and $\det C_0=-Z^{-2}$.
+For a probability measure $\mu$ and independent $X,Y$ of law $\mu$,
+\[
+ \operatorname{Cov}_{\mu}(x,g(x))
+       =\tfrac12\mathbb E[(X-Y)(g(X)-g(Y))].
+\]
+Consequently a derivative of constant sign and magnitude at least
+$p_*/2$ gives a covariance of that sign and magnitude at least
+$(p_*/2)\operatorname{Var}_{\mu}(x)$.  The two covariances in
+\eqref{eq:v74-determinant} have opposite signs.
+
+For completeness, if $w_*\le w\le w^*$ on $J$, then
+\[
+ \operatorname{Var}_{\mu_w}(u)
+ \ge\frac{w_*}{2R_+w^*}\inf_{c\in\mathbb R}
+                      \int_{-R_+}^{R_+}(u-c)^2\,du
+ =\frac{w_*}{w^*}\frac{R_+^2}{3}.
+\]
+The same estimate applies to $z$, while $W,V$ have positive lower
+bounds.  Substitution in \eqref{eq:v74-determinant} proves the uniform
+claim.  Finally, if the second action derivatives are bounded by $K_2$,
+choose $K_2R_+\le p_*/2$.  The mean value theorem gives the asserted
+sign and magnitude bounds.  All constants may deteriorate as the fixed
+gate shrinks or $p_*$ tends to zero; no uniformity in those limits is
+claimed.
+\end{proof}
+
+\begin{corollary}[Moment determination of the local invariant]
+\label{cor:v74-invariant}
+For the oblique marked class, four limiting moment profiles and their
+matrix $H_f$ at each phase determine the offsets and all smooth contact
+germs.  Adding the charged success probabilities as a function of the
+returning length determines the free area.  Conversely, common contact
+germs, offsets and free area give identical compressed charged local
+experiments on sufficiently small common gates.
+\end{corollary}
+\begin{proof}
+Choose the common gates as in Proposition~\ref{prop:v74-nondegeneracy}.
+The moment identity reconstructs each limiting law on $I^2$.
+Theorem~\ref{thm:v72-rigidity} determines the offsets and smooth
+contact germs.  Their curvatures give $D_{N,b}$, and
+\eqref{eq:v73-count-scalar} then determines the area from one phase.
+The converse is the locality direction of
+Theorem~\ref{thm:v73-fibers}, followed by integration.  Applying this
+argument on a cofinal collection of gates gives the assertion for germs.
+\end{proof}
+
+At finite $N$ the identity in Lemma~\ref{lem:v74-skeleton} need not
+hold for $f_N$.  Thus the corollary concerns a family of laws and its
+relative limit, not a sufficient statistic for one finite sample.
+Nor does it replace paired endpoints by two unpaired marginal samples.
+For example, at normal incidence the positive model
+$Z^{-1}(d-a u^2-c v^2)$ on a symmetric square can have rank two but
+$M_1=N_1=0$, so $H_f$ is singular.  The two-offset results at normal
+incidence remain available independently of the first-moment inverse.
+
+\subsection{Finite-flight comparison on the physical image}
+
+Fix the bounded class $\mathscr U$ of
+Proposition~\ref{prop:v73-finite-record-stability}.  In particular,
+$m\ge3$ satisfies the explicit later-visit condition on the enlarged
+positive quadratic class.  Choose $J$, $I\Subset J$, and a contact
+collar $I_c\Subset I$ once so that the preceding proposition and the
+inherited action-to-contact stability apply uniformly.  Densities are
+normalized on the success gate $J^2$; all integrations below still use
+that whole gate.  The relative physical theorem supplies
+\begin{equation}\label{eq:v74-relative}
+ \max_b\|f_{N,b}^{\vartheta}-f_b^{\vartheta}\|_{C^m(J^2)}
+                     \le C_0e^{-\omega N},\qquad N\ge N_0,
+\end{equation}
+uniformly over actual pairs $\vartheta=(T,d)\in\mathscr U$.
+Shrinking the fixed gates changes class constants, not the charged
+preparation convention.
+
+\begin{proposition}[Stability of compressed finite records]
+\label{prop:v74-finite-stability}
+For two actual pairs in $\mathscr U$ put
+\[
+ \Delta_M=\max_b\|\mathcal C_I(f_{N,b}^{\vartheta})-
+                   \mathcal C_I(f_{N,b}^{\widetilde\vartheta})\|_{\mathcal X_m},
+ \quad e_N=\Delta_M+e^{-\omega N},
+ \quad\Delta_\pi=\left|\log
+     \frac{\pi_{N,b_0}^{\widetilde\vartheta}}{\pi_{N,b_0}^{\vartheta}}\right|.
+\]
+There are class constants $C,\eta_*>0$ such that $e_N\le\eta_*$
+implies
+\begin{align}
+ \|F^T-F^{\widetilde T}\|_{C^0(I_c)}
+  +\|d-\widetilde d\|_\infty+\|c-\widetilde c\|_\infty
+                &\le Ce_N,\label{eq:v74-profile-stability}\\
+ \left|\log\frac{\mathcal A(\widetilde T)}{\mathcal A(T)}\right|
+                &\le C(1+N)e_N+\Delta_\pi.
+                \label{eq:v74-area-stability}
+\end{align}
+Here $c$ is the vector of contact curvatures.  The estimate does not
+assume exact rank two at finite flight length.
+\end{proposition}
+\begin{proof}
+Integration in \eqref{eq:v74-profiles}--\eqref{eq:v74-matrix} is a
+bounded linear map from $C^m(J^2)$ to $\mathcal X_m$.  Hence the two
+limiting compressed tuples are at distance at most
+$\Delta_M+Ce^{-\omega N}$.  Proposition~\ref{prop:v74-nondegeneracy}
+gives their uniform determinant floor.  Lemma~\ref{lem:v74-skeleton}
+therefore bounds the distance of the two limiting densities on $I^2$
+by $Ce_N$.  Equation~\eqref{eq:v74-relative} also gives
+\begin{equation}\label{eq:v74-finite-density-control}
+ \max_b\|f_{N,b}^{\vartheta}-f_{N,b}^{\widetilde\vartheta}
+                                             \|_{C^m(I^2)}\le Ce_N.
+\end{equation}
+Now apply Proposition~\ref{prop:v73-finite-record-stability} on
+these fixed interior and contact collars.  Its proof uses the
+$C^m$ law norm to recover the actions and their quadratic coefficients
+before estimating the profiles.  In particular it does not infer
+curvature control from $C^0$ profile control.  The exact same-gate
+central-density identity and the logarithmic twist comparison then give
+\eqref{eq:v74-area-stability}.
+
+Equivalently, the preceding argument shows that
+$\mathcal R(\mathcal C_I(f_{N,b}))$ approximates $f_{N,b}|_{I^2}$
+with error $Ce^{-\omega N}$, for $N$ large enough.  This is only an
+approximation: the finite central density in the area identity is the
+one belonging to the actual candidate, not an exactly identified
+rank-two surrogate.
+\end{proof}
+
+\subsection{Estimation of the four profiles}
+
+We give the sampling estimate in detail because smoothing a weighted
+marginal, rather than a two-variable density, changes the exponents.
+Let $s\ge1$ be an integer.  Assume the same uniform forward bounds
+as before, now stated on the full fixed gate:
+\[
+ \sup_{N\ge N_0,\,b,\,\vartheta\in\mathscr U}
+                   \|f_{N,b}^{\vartheta}\|_{C^{m+s}(J^2)}\le K.
+\]
+All constants below may depend on this class, the fixed intervals,
+$m,s$ and the number $r$ of phases.
+
+Choose $K_0\in C_c^{m+1}((-1,1))$ with integral one and vanishing
+moments of orders $1,\ldots,s-1$.  Such a kernel can be constructed
+by multiplying a positive smooth bump by a polynomial of degree at
+most $s-1$: the moment conditions are a nonsingular Gram system for
+polynomials on the support of that bump.  The kernel need not be
+nonnegative.  Let $h_0\le1$ be smaller than the distance from $I$ to
+$\partial J$.
+
+For $n$ accepted pairs at one phase, write their true coordinates as
+$(U_i,V_i)$ and their readouts as $(\widetilde U_i,\widetilde V_i)$,
+with both coordinate errors at most $0\le\delta\le1$.  Define
+\begin{align}
+ \widehat M_j(u)&=\frac1{nh}\sum_{i=1}^n\widetilde V_i^j
+                   K_0((u-\widetilde U_i)/h),\label{eq:v74-est-M}\\
+ \widehat N_j(v)&=\frac1{nh}\sum_{i=1}^n\widetilde U_i^j
+                   K_0((v-\widetilde V_i)/h),\qquad j=0,1,\\
+ \widehat H&=\frac1n\sum_{i=1}^n
+                      \binom{1}{\widetilde U_i}(1\ \ \widetilde V_i).
+                      \label{eq:v74-est-H}
+\end{align}
+Denote the resulting tuple by $\widehat{\mathcal C}_{N,b}$.  There
+is no inversion of a random nearly singular matrix in this definition.
+
+\begin{lemma}[One-dimensional smoothing bound]
+\label{lem:v74-estimation}
+For $n\ge2$, $n^{-1}\le h\le h_0$, and $0<\zeta<1/2$, put
+$L_n=\log(C_1rn/\zeta)$.  The first $n$ accepted latent pairs at
+each phase may be used in \eqref{eq:v74-est-M}--\eqref{eq:v74-est-H}.
+With probability at least $1-\zeta$,
+\begin{equation}\label{eq:v74-kernel-bound}
+ \begin{split}
+ \max_b\|\widehat{\mathcal C}_{N,b}-
+                 \mathcal C_I(f_{N,b})\|_{\mathcal X_m}
+ \le C\left\{h^s+\sqrt{\frac{L_n}{nh^{2m+1}}}
+       +\frac{L_n}{nh^{m+1}}+n^{-2}
+       +\delta h^{-(m+2)}\right\}.
+ \end{split}
+\end{equation}
+The perturbations may depend arbitrarily on the latent sample.  The
+probability statement is about the independent latent preparations;
+acceptance and its success/failure tags are exact.
+\end{lemma}
+\begin{proof}
+First set $\delta=0$.  For $0\le k\le m$, the expectation of
+$\widehat M_j^{(k)}(u)$ is the convolution of $M_j^{(k)}$ with the
+rescaled kernel on the interior interval.  Integration by parts is
+legitimate because the kernel support does not meet $\partial J$.
+The $C^{m+s}$ bound on $f_N$ gives the same order bound on $M_j$.
+Taylor's formula and the moment cancellations give a uniform bias
+$Ch^s$.  The argument for $N_j$ is identical.
+
+For a fixed $u$, a summand before division by $n$ has magnitude at
+most $Ch^{-k-1}$ and variance at most $Ch^{-2k-1}$.  Indeed the
+integral of the square of $K_0^{(k)}((u-U)/h)$ against the bounded
+joint density gains one factor $h$; $|V|^j$ is uniformly bounded on
+$J$.  Bernstein's inequality thus gives, with failure probability
+at most $2e^{-t}$, fluctuation at most
+\[
+ C\left\{\sqrt{\frac{t}{nh^{2k+1}}}
+                    +\frac{t}{nh^{k+1}}\right\}.
+\]
+Take a grid in $I$ of mesh at most $n^{-2}h^{m+2}$.  Both the
+empirical derivative and its expectation have Lipschitz constants
+at most $Ch^{-m-2}$.  Passage from the grid to the whole interval
+therefore costs at most $Cn^{-2}$.  Since $h\ge n^{-1}$, the grid
+has at most $C n^{m+4}$ points.  A union bound over the four profiles,
+$r$ phases and $m+1$ derivative orders, with $t=C_m L_n$, proves
+the stated stochastic bound.  The entries of $\widehat H$ are
+averages of bounded variables and have error at most
+$C\{\sqrt{L_n/n}+L_n/n\}$ on the same enlarged event.  This is
+absorbed by the displayed bound when $h\le1$.  Independence of the
+four profiles is neither assumed nor needed.
+
+Restore the readout errors.  The mean value theorem for the kernel
+and the bounded weights gives, for each summand of a derivative of
+order $k$,
+\[
+ \left|\widetilde V_i^j h^{-k-1}
+ K_0^{(k)}((u-\widetilde U_i)/h)
+ -V_i^j h^{-k-1}K_0^{(k)}((u-U_i)/h)\right|
+ \le C\delta\{h^{-k-2}+h^{-k-1}\}.
+\]
+The weights remain bounded by $C(R_+)$ because $\delta\le1$.
+For $k\le m$ and $h\le1$ the last bound is
+$C\delta h^{-m-2}$.  Averaging does not increase it.  The matrix
+entries have deterministic perturbation at most $C\delta$, also
+absorbed.  This comparison holds sample by sample and so requires
+no distributional assumption on the readout errors.
+\end{proof}
+
+\subsection{Charged recovery with one-dimensional smoothing}
+
+The actual finite image to be fitted is
+\begin{equation}\label{eq:v74-image}
+ \mathcal K_N(\vartheta)=
+  \bigl((\mathcal C_I(f_{N,b}^{\vartheta}))_{b=0}^{r-1},
+                             \log\pi_{N,b_0}^{\vartheta}\bigr)
+                    \in\mathcal X_m^r\times\mathbb R.
+\end{equation}
+Use the maximum of the tuple norms plus the scalar absolute value.
+For each returning $N$, fix a countable dense subset of this image,
+and one actual representative $(T_j,d_j)\in\mathscr U$ for each
+of its points.  This is possible because $C^m(I)$, and hence the
+ambient metric space, is separable.  Closedness of the image is not
+required.
+
+Perform $B$ independent normalized unit-speed Liouville resets at each
+phase.  Put $q_N=c_0e^{-\Gamma N}$ and $n=\lfloor Bq_N/2\rfloor$.
+If every success count $S_b$ is at least $n\ge2$, use the first $n$
+accepted pairs for the estimated compressed tuples and set
+$\widehat\pi=S_{b_0}/B$.  Select the first representative whose
+distance to
+$((\widehat{\mathcal C}_{N,b})_b,\log\widehat\pi)$ is within
+$n^{-2}$ of the infimum over the countable image.  Otherwise select a
+fixed member of $\mathscr U$.  The infimum of countably many
+measurable distances is measurable, and a qualifying index exists by
+the definition of infimum.  Thus this specifies an actual table-offset
+estimator on every record.  Its area is always the area of that same
+table.  An effective enumeration or polynomial-time search is not
+asserted.
+
+\begin{theorem}[Compressed charged reconstruction]
+\label{thm:v74-charged}
+In the stated class set
+\begin{equation}\label{eq:v74-exponents}
+ \alpha_1=\frac{s}{2(m+s)+1},\qquad
+ \gamma_1=\frac{s}{m+s+2}.
+\end{equation}
+Suppose $N\ge N_0$, $n\ge2$, $Bq_N\ge C_2\log(4r/\zeta)$,
+and $L_n/n\le1$.  Choose
+\[
+ h=\max\{(L_n/n)^{1/[2(m+s)+1]},
+                      \delta^{1/(m+s+2)},n^{-1}\}\le h_0.
+\]
+For $\varepsilon_N=e^{-\omega N}+(L_n/n)^{\alpha_1}
++\delta^{\gamma_1}$ sufficiently small, the estimator just defined
+satisfies, with probability at least $1-2\zeta$,
+\begin{align}
+ \|F^{\widehat T}-F^T\|_{C^0(I_c)}
+ +\|\widehat d-d\|_\infty+\|\widehat c-c\|_\infty
+                 &\le C\varepsilon_N,\label{eq:v74-charged-local}\\
+ \left|\log\frac{\mathcal A(\widehat T)}{\mathcal A(T)}\right|
+                 &\le C(1+N)\varepsilon_N.
+                 \label{eq:v74-charged-area}
+\end{align}
+All $rB$ preparations, including failures, are charged.  No additional
+phase group is needed for the area.  Readout errors occur after exact
+acceptance and do not corrupt the success tags.
+\end{theorem}
+\begin{proof}
+The count argument in \eqref{eq:v73-log-count}, with
+$t=\log(4r/\zeta)$, gives simultaneously
+\[
+ S_b\ge n\quad\hbox{for every }b,\qquad
+ |\log\widehat\pi-\log\pi_{N,b_0}|
+                     \le C\sqrt{t/(Bq_N)}
+\]
+except on an event of probability at most $\zeta$.  The
+Bernoulli/conditional-mark representation of independent resets gives
+independent latent marks of density $f_{N,b}$ at successive successes.
+They may be extended beyond the finite record when proving a probability
+bound; on the count event only the first $n$ actually observed marks
+are used.  This construction does not condition the marks on a
+possibly mark-dependent noisy acceptance test: acceptance is exact.
+
+Apply Lemma~\ref{lem:v74-estimation} to these latent sequences.
+At the prescribed bandwidth, its right side is at most
+$C\{(L_n/n)^{\alpha_1}+\delta^{\gamma_1}\}$.
+For the variance term this follows by substituting the first bandwidth
+lower bound; the envelope exponent becomes
+$(m+2s)/[2(m+s)+1]\ge\alpha_1$.  The readout term is bounded using
+the second lower bound, and the bias is bounded using the maximum
+formula.  The $n^{-2}$ term is absorbed.  Since $\alpha_1<1/2$,
+$n$ is comparable to $Bq_N$, and $L_n/n\le1$, the count error is
+absorbed by the same expression.
+
+Density of the countable actual image implies that its infimal
+distance to the estimated tuple is no larger than the distance of the
+true image.  The selected image is therefore within twice the
+estimation error plus $n^{-2}$ of the true image.  Both candidates
+are actual pairs.  Proposition~\ref{prop:v74-finite-stability}
+gives the assertions, with the physical error $e^{-\omega N}$ added
+only at this step.  The union of the count and smoothing exceptional
+events has probability at most $2\zeta$.
+\end{proof}
+
+\begin{corollary}[Budget-dependent flight length]
+\label{cor:v74-budget}
+Let
+\[
+ \beta_1=\frac{\alpha_1\omega}{\omega+\alpha_1\Gamma},\qquad
+ L_B=\log(C_*rB/\zeta),\qquad
+ t=(L_B/B)^{\beta_1}+\delta^{\gamma_1}<1,
+\]
+and choose $N=P\lfloor\log(1/t)/(P\omega)\rfloor$.
+Whenever the hypotheses of Theorem~\ref{thm:v74-charged} hold,
+its local error is at most $Ct$ and its joint local-and-area error
+is at most
+\begin{equation}\label{eq:v74-budget}
+                            Ct\log(e/t).
+\end{equation}
+\end{corollary}
+\begin{proof}
+The floor gives $e^{-\omega N}\le e^{\omega P}t$,
+$1+N\le C\log(e/t)$ and $n\ge cBt^{\Gamma/\omega}$ under the
+count conditions.  Write $x=(L_B/B)^{\beta_1}\le t$.  Since
+$L_n\le CL_B$,
+\[
+ (L_n/n)^{\alpha_1}
+ \le C(L_B/B)^{\alpha_1}t^{-\alpha_1\Gamma/\omega}
+ \le C(L_B/B)^{\alpha_1}x^{-\alpha_1\Gamma/\omega}=Cx.
+\]
+The last equality is the definition of $\beta_1$.
+Also $\delta^{\gamma_1}\le t$.  Substitution in
+\eqref{eq:v74-charged-local}--\eqref{eq:v74-charged-area} proves
+the claims.
+\end{proof}
+
+For the same $m,s,\omega,\Gamma$, the exponents $\alpha_1$ and
+$\gamma_1$ strictly improve the two-dimensional smoothing exponents
+$s/[2(m+s)+2]$ and $s/(m+s+3)$ in
+Theorem~\ref{thm:v73-charged-invariant}.  The corresponding budget
+exponent improves as well, since
+$\alpha\mapsto\alpha\omega/(\omega+\alpha\Gamma)$ is strictly
+increasing.  These are comparisons of proved upper bounds on the same
+oblique bounded class, not minimax assertions or comparisons with lens
+or marked-length observations.  The improvement comes from estimating
+one-dimensional weighted profiles, not from dividing a small absolute
+error by a rare success probability.  The full smooth inverse and its
+finite-order later-visit estimate remain essential to the passage from
+these profiles to the actual reflecting contacts.

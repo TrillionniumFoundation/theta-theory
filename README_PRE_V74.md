@@ -1,14 +1,3 @@
-# Theta-Theory — A2 revision 74
-
-**Current referee entry: [A2_REVISION_V74_REVIEW_READY.md](A2_REVISION_V74_REVIEW_READY.md).**
-
-The complete English revision adds first-moment reconstruction and stronger charged sampling bounds while retaining the relative physical law, actual smooth contact inverse and all inherited mathematical proof inputs. The preparation convention and current-version source/PDF handoff are explicit.
-
-[Principal source](papers/A2-v17-boundary-information-coarsening/rigidity.tex) · [Full technical source](papers/A2-v17-boundary-information-coarsening/main.tex) · [Response to v73](papers/A2-v17-boundary-information-coarsening/RESPONSE_TO_REFEREE_V74.md) · [Corrected historical v73 entry](A2_REVISION_V73_REVIEW_READY.md).
-
-<details>
-<summary>Historical v72 root entry, retained verbatim</summary>
-
 # Theta-Theory — A2 revision 72
 
 **Boundary laws and smooth contact rigidity of periodic dispersing billiards** — Qian Qi.
@@ -41,5 +30,3 @@ This delivery uses new revision branches only. It does not rewrite the default b
 review branches, A1 sources, earlier revisions, or repository permissions. Completed
 source/build checks are not independent mathematical certification or an acceptance
 recommendation; the exceptional-significance judgment remains for further review.
-
-</details>
