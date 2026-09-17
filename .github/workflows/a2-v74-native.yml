@@ -1,0 +1,113 @@
+name: A2 v74 complete native manuscripts
+on:
+  push:
+    branches:
+      - revision/a2-v74-moment-reconstruction-2026-09-17
+    paths:
+      - .github/workflows/a2-v74-native.yml
+      - .github/revision-sources/materialize-a2-v74.py
+      - .github/revision-sources/a2-v74.delta.*
+      - .github/revision-sources/a2-v74.trigger
+permissions:
+  contents: write
+concurrency:
+  group: a2-v74-native-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  native:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      SOURCE_PREFIX: papers/A2-v17-boundary-information-coarsening
+      EXPECTED_SOURCE_TREE: 9e86d9eedeb4c6d8b9456ef4dbb4e11c1d733677
+      SOURCE_BRANCH: revision/a2-v74-moment-reconstruction-2026-09-17
+    steps:
+      - name: Checkout exact bootstrap
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Materialize complete preserved sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          PRODUCTS_BRANCH="revision/a2-v74-native-products-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          echo "PRODUCTS_BRANCH=$PRODUCTS_BRANCH" >> "$GITHUB_ENV"
+          python3 -B .github/revision-sources/materialize-a2-v74.py materialize --products-branch "$PRODUCTS_BRANCH"
+          python3 -B "$SOURCE_PREFIX/tools/verify_preservation_v74.py" > "$RUNNER_TEMP/a2-v74-preservation.json"
+          cmp "$RUNNER_TEMP/a2-v74-preservation.json" "$SOURCE_PREFIX/REVISION_V74_PRESERVATION.json"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'A2 v74: complete moment reconstruction, charged sampling and referee response'
+          SOURCE_SHA=$(git rev-parse HEAD)
+          test "$(git rev-parse "${SOURCE_SHA}:${SOURCE_PREFIX}")" = "$EXPECTED_SOURCE_TREE"
+          git push origin "HEAD:refs/heads/$SOURCE_BRANCH"
+          git fetch origin "refs/heads/$SOURCE_BRANCH"
+          test "$(git rev-parse FETCH_HEAD)" = "$SOURCE_SHA"
+          echo "SOURCE_SHA=$SOURCE_SHA" >> "$GITHUB_ENV"
+          echo "EVIDENCE=$RUNNER_TEMP/a2-v74-native" >> "$GITHUB_ENV"
+          echo "Compiled source: $SOURCE_SHA; manuscript tree: $EXPECTED_SOURCE_TREE" >> "$GITHUB_STEP_SUMMARY"
+      - name: Install native TeX and exact algebra dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends latexmk texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils python3-sympy
+      - name: Build all complete source-matched manuscripts
+        shell: bash
+        run: |
+          set -euo pipefail
+          /usr/bin/python3 -B "$SOURCE_PREFIX/tools/build_revision_v74.py" --output-dir "$EVIDENCE"
+          test "$(git rev-parse "HEAD:${SOURCE_PREFIX}")" = "$EXPECTED_SOURCE_TREE"
+          /usr/bin/python3 -B "$SOURCE_PREFIX/tools/verify_source_zip_v69.py" "$EVIDENCE/native-source.zip" > "$EVIDENCE/strict-zip-modes.json"
+          if grep -En 'Overfull|LaTeX Error|Missing character:|There were undefined references|There were undefined citations' "$EVIDENCE/main.log" "$EVIDENCE/rigidity.log" "$EVIDENCE/two_collision.log"; then
+            exit 1
+          fi
+      - name: Publish native objects and immutable referee handoff
+        shell: bash
+        run: |
+          set -euo pipefail
+          DEST="deliveries/a2-v74/$SOURCE_SHA"
+          /usr/bin/python3 -B "$SOURCE_PREFIX/tools/retain_native_v74.py" prepare --destination "$DEST" --source-commit "$SOURCE_SHA" --evidence "$EVIDENCE" --run-id "$GITHUB_RUN_ID"
+          git switch -c "$PRODUCTS_BRANCH" "$SOURCE_SHA"
+          git add -f -- "$DEST"
+          /usr/bin/python3 -B "$SOURCE_PREFIX/tools/retain_native_v74.py" verify --destination "$DEST" --ref INDEX
+          git commit -m 'Retain A2 v74 complete native PDFs and frozen-source evidence'
+          PRODUCTS_COMMIT=$(git rev-parse HEAD)
+          git push origin "HEAD:refs/heads/$PRODUCTS_BRANCH"
+          git fetch origin "refs/heads/$PRODUCTS_BRANCH:refs/remotes/origin/$PRODUCTS_BRANCH"
+          /usr/bin/python3 -B "$SOURCE_PREFIX/tools/retain_native_v74.py" verify --destination "$DEST" --ref "refs/remotes/origin/$PRODUCTS_BRANCH" --attestation
+          python3 -B .github/revision-sources/materialize-a2-v74.py handoff --source-commit "$SOURCE_SHA" --products-commit "$PRODUCTS_COMMIT" --products-branch "$PRODUCTS_BRANCH"
+          git add -- README.md A2_REVISION_V74_REVIEW_READY.md A2_REVISION_V74_PROVENANCE.json
+          git add -f -- "$DEST/COMMITTED_OBJECTS_VERIFIED.json"
+          git commit -m 'Pin A2 v74 source-matched reviewer entry and fetched native objects'
+          PRODUCTS_HEAD=$(git rev-parse HEAD)
+          git push origin "HEAD:refs/heads/$PRODUCTS_BRANCH"
+          git fetch origin "refs/heads/$PRODUCTS_BRANCH:refs/remotes/origin/$PRODUCTS_BRANCH"
+          test "$(git rev-parse "refs/remotes/origin/$PRODUCTS_BRANCH")" = "$PRODUCTS_HEAD"
+          /usr/bin/python3 -B "$SOURCE_PREFIX/tools/retain_native_v74.py" verify --destination "$DEST" --ref "refs/remotes/origin/$PRODUCTS_BRANCH"
+          mkdir -p "$RUNNER_TEMP/a2-v74-handoff"
+          cp README.md A2_REVISION_V74_REVIEW_READY.md A2_REVISION_V74_PROVENANCE.json "$RUNNER_TEMP/a2-v74-handoff/"
+          git switch --detach "$SOURCE_SHA"
+          cp "$RUNNER_TEMP/a2-v74-handoff/"* .
+          git add -- README.md A2_REVISION_V74_REVIEW_READY.md A2_REVISION_V74_PROVENANCE.json
+          git commit -m 'Complete A2 v74 source-branch handoff with immutable native PDF references'
+          SOURCE_HEAD=$(git rev-parse HEAD)
+          test "$(git rev-parse "HEAD:${SOURCE_PREFIX}")" = "$EXPECTED_SOURCE_TREE"
+          git push origin "HEAD:refs/heads/$SOURCE_BRANCH"
+          git fetch origin "refs/heads/$SOURCE_BRANCH"
+          test "$(git rev-parse FETCH_HEAD)" = "$SOURCE_HEAD"
+          echo "Source branch: $SOURCE_BRANCH at $SOURCE_HEAD" >> "$GITHUB_STEP_SUMMARY"
+          echo "Compiled source: $SOURCE_SHA; native product commit: $PRODUCTS_COMMIT" >> "$GITHUB_STEP_SUMMARY"
+          echo "Products branch: $PRODUCTS_BRANCH at $PRODUCTS_HEAD" >> "$GITHUB_STEP_SUMMARY"
+          echo "Delivery: $DEST" >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload source-matched native evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a2-v74-native-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/a2-v74-native/
+          if-no-files-found: warn
+          retention-days: 90
