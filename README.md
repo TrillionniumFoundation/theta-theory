@@ -1,3 +1,7 @@
+## A2 revision 76
+
+The current v76 source and native-PDF handoff is [here](A2_REVISION_V76_REVIEW_READY.md).
+
 <!-- A2-V75-REVIEW-ENTRY -->
 ## Current A2 referee entry: revision 75
 
