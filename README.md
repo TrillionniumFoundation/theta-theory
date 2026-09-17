@@ -1,3 +1,8 @@
+<!-- A2-V75-REVIEW-ENTRY -->
+## Current A2 referee entry: revision 75
+
+[Source-matched manuscript, full technical entry, response and native products](A2_REVISION_V75_REVIEW_READY.md). The v74 history below is retained; the compiled v75 source and native commits are pinned in the new entry.
+
 # Theta-Theory — A2 revision 74
 
 **Current referee entry: [A2_REVISION_V74_REVIEW_READY.md](A2_REVISION_V74_REVIEW_READY.md).**
