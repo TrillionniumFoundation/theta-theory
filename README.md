@@ -6,6 +6,8 @@ The complete English revision adds first-moment reconstruction and stronger char
 
 [Principal source](papers/A2-v17-boundary-information-coarsening/rigidity.tex) · [Full technical source](papers/A2-v17-boundary-information-coarsening/main.tex) · [Response to v73](papers/A2-v17-boundary-information-coarsening/RESPONSE_TO_REFEREE_V74.md) · [Corrected historical v73 entry](A2_REVISION_V73_REVIEW_READY.md).
 
+Compiled source: `c52fa361108a0f716d9e89017cd97eea71b0f3da`. Source-matched native products: `da4c0d3cd9e0c69d24402bc948bd8499dba7fa03`. See the current entry for individual PDFs and hashes.
+
 <details>
 <summary>Historical v72 root entry, retained verbatim</summary>
 
