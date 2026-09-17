@@ -1,21 +1,27 @@
-# A2 — revision 72
+# A2 revision 73 — complete charged local observation invariant
 
-**Boundary laws and smooth contact rigidity of periodic dispersing billiards** — Qian Qi
+Qian Qi · September 17, 2026
 
-September 17, 2026. The directory's historical v17 name is not its current revision.
+**Boundary laws and smooth contact rigidity of periodic dispersing billiards**
 
-## Complete manuscripts
+This is the complete English revision responding to the v72 referee report at `c6715aff47ad6e8180acfa7ba229fd680e795293`. The historical directory name `A2-v17-boundary-information-coarsening` is not the current version. The principal article is `rigidity.tex`; `main.tex` retains the full technical manuscript; `two_collision.tex` is the unchanged companion. The three entries overlap and are not counted as three independent contributions.
 
-[Principal article](rigidity.tex), [complete technical manuscript](main.tex), and the unchanged [two-collision companion](two_collision.tex) retain all inherited mathematical content. The principal route now includes [one-law recovery with an unreported offset](article/10g_uncalibrated_single_law_v72.tex): for every oblique phase, one conditional law identifies the offset, unequal actions, and complete smooth contact germ; a joint finite-preparation theorem charges all failures. Every clear polygon with at least three distinct physical contacts is oblique. The general two-offset theorem, its six operative proof/comparison modules, and the analytic/multichannel catalogue are unchanged.
+## Mathematical reading
 
-## Response and provenance
+Begin with the new complete-invariant overview in `article/00n_record_overview_v73.tex` and its full proof module `article/10h_complete_record_v73.tex`, immediately after the one-law section. The new exact phase-volume anchor proves that the charged local experiment determines precisely the actual smooth contact germs, fixed unreported offsets and free cell area. The finite theorem fits an actual table–offset pair, including that same table's area, and retains the returning-length amplification of curvature error.
 
-[Point-by-point response](RESPONSE_TO_REFEREE_V72.md) · [Cover letter](COVER_LETTER_V72.md) · [Observation/dependency map](journal/DEPENDENCY_LEDGER_V72.md) · [Historical audit](HISTORICAL_DERIVATION_AUDIT_V72.md) · [Primary-source comparison](LITERATURE_CHECK_V72.md).
+The finite-flight clock correction and the explicit sufficient weighted derivative-order condition are printed in the retained single-law section. The two-known-offset theorem, symmetric one-known-offset route, unequal-action unreported-offset inverse, actual smooth proofs, analytic/global branches, information/acquisition catalogue and companion remain available. No old active mathematical input is removed.
 
-The report is frozen at `7bb8971f6b792894ee961f6fab5c6f68847d373d`; its source subtree is `8549bb0789d5e6cdce8ae12f70ed7c100f81510b`. All 929 inherited source paths remain. The four edited originals and the full source manifest are retained in [history/v71-review-baseline](history/v71-review-baseline/). All 141 inherited active TeX inputs remain; three new inputs bring the union to 144. The two old introductory theorem statements remain unchanged.
+## Referee materials
 
-## Reproduction
+Read [RESPONSE_TO_REFEREE_V73.md](RESPONSE_TO_REFEREE_V73.md), [COVER_LETTER_V73.md](COVER_LETTER_V73.md), [journal/DEPENDENCY_LEDGER_V73.md](journal/DEPENDENCY_LEDGER_V73.md), [HISTORICAL_DERIVATION_AUDIT_V73.md](HISTORICAL_DERIVATION_AUDIT_V73.md), and [LITERATURE_CHECK_V73.md](LITERATURE_CHECK_V73.md).
 
-From a clean Git checkout run `python -B tools/build_revision_v72.py --output-dir /absolute/path/outside/manuscript`. The frozen-source native engine builds all three complete entries with shell escape disabled, records producer/consumer auxiliaries, checks source hashes and runs normal/optimized finite diagnostics. The new checker also reconstructs v71 and runs its unchanged checker. These are not mathematical proof certificates.
+The response treats the report's exceptional-significance reservation as a judgment, not a fabricated proof defect. It defends the combined relative physical normalization and actual functional inverse, and develops a relevant consequence of the existing charged record. The target is unchanged; editorial acceptance, efficient computation and minimax optimality are not claimed.
 
-The completed source/product identities and actual visual inspection are recorded in the root `A2_REVISION_V72_REVIEW_READY.md` after execution. Unreported offsets are fixed nuisance parameters, not arbitrary drift; marks, exact tags/gates, bounded smoothness and independent resetting remain explicit. Exceptional significance is left to independent mathematical assessment.
+## Native source and verification
+
+`tools/build_revision_v73.py --output-dir <outside-source-directory>` builds all three complete entries from a clean immutable Git snapshot. It runs inherited finite controls, the unchanged v72 checker on isolated restored v72 active sources, and the new v73 diagnostics, normally and under Python optimization, and verifies recorder inputs and external auxiliary provenance. `tools/verify_preservation_v73.py` checks the pinned v72 tree against this revision. `tools/retain_native_v73.py` publishes and verifies source-matched native products under a version-scoped delivery directory.
+
+The repository's `A2_REVISION_V73_REVIEW_READY.md` entry identifies the actual committed native PDFs, source archive, source commit, final reading branch and performed build/layout checks. The build scripts do not themselves certify all-page visual quality or theorem correctness. The later analytic continuation, full global registration/lattice and moving-family results, older catalogue and companion are preserved and compiled, not newly independently recertified in full.
+
+All 945 inherited paths remain. Seven modified originals are preserved byte-for-byte with their modes in `history/v72-review-baseline/`, including the previous README. All earlier responses, evidence, derivations and bibliography entries are retained. Existing remote branches and reports are not overwritten.
