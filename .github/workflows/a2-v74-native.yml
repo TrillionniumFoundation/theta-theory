@@ -8,6 +8,8 @@ on:
       - .github/revision-sources/materialize-a2-v74.py
       - .github/revision-sources/a2-v74.delta.*
       - .github/revision-sources/a2-v74.trigger
+      - .github/revision-sources/publish-a2-v74.py
+      - .github/revision-sources/a2-v74-preservation-fix.patch
 permissions:
   contents: write
 concurrency:
@@ -21,7 +23,7 @@ jobs:
     env:
       PYTHONDONTWRITEBYTECODE: '1'
       SOURCE_PREFIX: papers/A2-v17-boundary-information-coarsening
-      EXPECTED_SOURCE_TREE: 9e86d9eedeb4c6d8b9456ef4dbb4e11c1d733677
+      EXPECTED_SOURCE_TREE: 48787e35d236d4a896abe328d78eff0ef154fdee
       SOURCE_BRANCH: revision/a2-v74-moment-reconstruction-2026-09-17
     steps:
       - name: Checkout exact bootstrap
@@ -35,7 +37,7 @@ jobs:
           set -euo pipefail
           PRODUCTS_BRANCH="revision/a2-v74-native-products-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           echo "PRODUCTS_BRANCH=$PRODUCTS_BRANCH" >> "$GITHUB_ENV"
-          python3 -B .github/revision-sources/materialize-a2-v74.py materialize --products-branch "$PRODUCTS_BRANCH"
+          python3 -B .github/revision-sources/publish-a2-v74.py materialize --products-branch "$PRODUCTS_BRANCH"
           python3 -B "$SOURCE_PREFIX/tools/verify_preservation_v74.py" > "$RUNNER_TEMP/a2-v74-preservation.json"
           cmp "$RUNNER_TEMP/a2-v74-preservation.json" "$SOURCE_PREFIX/REVISION_V74_PRESERVATION.json"
           git config user.name 'github-actions[bot]'
@@ -79,7 +81,7 @@ jobs:
           git push origin "HEAD:refs/heads/$PRODUCTS_BRANCH"
           git fetch origin "refs/heads/$PRODUCTS_BRANCH:refs/remotes/origin/$PRODUCTS_BRANCH"
           /usr/bin/python3 -B "$SOURCE_PREFIX/tools/retain_native_v74.py" verify --destination "$DEST" --ref "refs/remotes/origin/$PRODUCTS_BRANCH" --attestation
-          python3 -B .github/revision-sources/materialize-a2-v74.py handoff --source-commit "$SOURCE_SHA" --products-commit "$PRODUCTS_COMMIT" --products-branch "$PRODUCTS_BRANCH"
+          python3 -B .github/revision-sources/publish-a2-v74.py handoff --source-commit "$SOURCE_SHA" --products-commit "$PRODUCTS_COMMIT" --products-branch "$PRODUCTS_BRANCH"
           git add -- README.md A2_REVISION_V74_REVIEW_READY.md A2_REVISION_V74_PROVENANCE.json
           git add -f -- "$DEST/COMMITTED_OBJECTS_VERIFIED.json"
           git commit -m 'Pin A2 v74 source-matched reviewer entry and fetched native objects'
