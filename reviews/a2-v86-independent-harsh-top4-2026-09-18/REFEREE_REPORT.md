@@ -24,9 +24,9 @@ The previous report asked for changes of mathematical scale rather than more sou
 First, Theorem `thm:v86-shared` changes the nuisance structure rather than merely increasing a pointwise clock budget. The proof uses the spatial domain to remove the clock-only nuisance while controlling the residual label inversion. The linear-versus-quadratic obstruction calculation is clean and produces a sharp exact-identification contrast between two clocks and one clock in the geometric corollary.
 
 Second, Theorems `thm:v86-product-modulus`, `thm:v86-adaptive`, and `thm:v86-singular-lower` replace the vague statement that conditioning deteriorates near rank loss by an explicit product modulus
-[
-ho=|det U,det V|.
-]
+\[
+\rho=|\det U\,\det V|.
+\]
 The determinant-after-pole-clearing argument is the strongest new proof in the revision. The exact marginal-preserving least-favourable family also shows that the product is not an artefact of a crude spectral estimate.
 
 Third, Theorems `thm:v86-divisor` and `thm:v86-divisor-budget` move the detector classification from rational partial fractions to normalized meromorphic differentials on compact real Riemann surfaces. The positive-genus period correction is a genuine extension of the earlier principal-part discussion.
@@ -35,7 +35,7 @@ These are substantive repairs. A harsh report should credit them.
 
 ## 2. The shared-apparatus theorem is elegant but still too model-specific
 
-Theorem `thm:v86-shared` is probably the cleanest conceptual theorem in the revision. With two clocks, unknown site-dependent full-rank channels, and two shared positive constants (k_1,k_2), the action field is identified from the matrix fields under the nowhere-local-constancy assumption.
+Theorem `thm:v86-shared` is probably the cleanest conceptual theorem in the revision. With two clocks, unknown site-dependent full-rank channels, and two shared positive constants \(k_1,k_2\), the action field is identified from the matrix fields under the nowhere-local-constancy assumption.
 
 The proof is persuasive. At a regular site the observable pencil identifies the two weights up to simultaneous inversion. A false direct calibration can persist at only one action value and a false swapped calibration at only two action values. A nowhere locally constant field cannot live on this finite obstruction set. I found no immediate gap in this argument.
 
@@ -57,15 +57,15 @@ For a leading general journal, the natural next theorem would not merely be anot
 Corollary `cor:v86-shared-geometry` is materially stronger than the v85 endpointwise-free nuisance construction. The reference delay and detector law are held fixed, and the metric alternatives are actual scaling metrics. The channel transformation then absorbs the one-clock change while preserving positivity and full rank for small perturbations.
 
 I do not see a short algebraic defect in the transformation
-[
-S_t=I+(w_0-w_t)mathbf 1^{mathsf T},
-quad
+\[
+S_t=I+(w_0-w_t)\mathbf 1^{\mathsf T},
+\qquad
 U_t=US_t,
-quad
-V_t=Voperatorname{diag}(w_0)S_t^{-mathsf T}
-      operatorname{diag}(w_t)^{-1}.
-]
-The proof correctly distinguishes the auxiliary matrix (S_t), which need not be stochastic, from the actual channel matrices.
+\qquad
+V_t=V\operatorname{diag}(w_0)S_t^{-\mathsf T}
+      \operatorname{diag}(w_t)^{-1}.
+\]
+The proof correctly distinguishes the auxiliary matrix \(S_t\), which need not be stochastic, from the actual channel matrices.
 
 However, after the boundary distance has been identified, the metric conclusion is exactly the classical simple-surface rigidity input. The revision is explicit about this, which is good. It also means that the geometric part still does not create a new rigidity mechanism, a partial-data theorem, a non-simple theorem, or a weaker-regularity theorem.
 
@@ -76,34 +76,34 @@ At the stated editorial level, the two-clock acquisition threshold is interestin
 Theorem `thm:v86-product-modulus` is the principal reason I regard v86 as substantially stronger than v85.
 
 The representation
-[
-P(T)=A+rac{B}{T-h}
-]
-extracts the common pole from the three-clock binary model. The first ratio identifies (h) at visible-contrast scale. The determinant of
-[
+\[
+P(T)=A+\frac{B}{T-h}
+\]
+extracts the common pole from the three-clock binary model. The first ratio identifies \(h\) at visible-contrast scale. The determinant of
+\[
 K(T)=(T-h)P(T)
-]
+\]
 then factors as
-[
-det K(T)
+\[
+\det K(T)
 =
-r(1-r)det U,det V,(T-x)(T-	au).
-]
-The proof avoids multiplying two generic inverse singular values and retains exactly one inverse power of (ho). This is a meaningful cancellation.
+r(1-r)\det U\,\det V\,(T-x)(T-\tau).
+\]
+The proof avoids multiplying two generic inverse singular values and retains exactly one inverse power of \(\rho\). This is a meaningful cancellation.
 
 I checked the key steps at theorem level and did not find an immediate contradiction:
 
 - the true matrix contrast controls the pole ratio;
 - in the small-error regime the candidate contrast remains nonzero;
-- the determinant coefficient perturbation can be bounded before division by (ho);
+- the determinant coefficient perturbation can be bounded before division by \(\rho\);
 - the ordered roots remain separated by the fixed apparatus gap;
-- the recovery of (r), hence (log a), follows from the recovered roots and pole.
+- the recovery of \(r\), hence \(\log a\), follows from the recovered roots and pole.
 
 This part is substantially more than a routine application of a generic inverse function theorem.
 
 The problem is scope. The singular theory is proved for:
 
-- binary (2	imes2) channels;
+- binary \(2\times2\) channels;
 - a constant relative detector;
 - exactly three clocks;
 - a scalar action/reference/throughput triple;
@@ -111,19 +111,19 @@ The problem is scope. The singular theory is proved for:
 
 The manuscript does not yet classify singular strata for higher latent rank, higher-degree detector spaces, repeated components, shared apparatus over space, or the larger observation models treated elsewhere in the paper.
 
-For a general-journal theorem, I would expect a result that explains **why the exponent is the product of the vanishing channel contrasts as an invariant of the observation quotient**, and then extends that mechanism beyond the (2	imes2) calculation. Right now the proof is excellent local mathematics inside one specially chosen model, but it has not become a general singular theory.
+For a general-journal theorem, I would expect a result that explains **why the exponent is the product of the vanishing channel contrasts as an invariant of the observation quotient**, and then extends that mechanism beyond the \(2\times2\) calculation. Right now the proof is excellent local mathematics inside one specially chosen model, but it has not become a general singular theory.
 
 ## 5. The adaptive confidence result is honest, but the paper should be precise about what has been generalized
 
 Theorem `thm:v86-adaptive` is carefully stated. It gives coverage over the full closed model, uses no supplied rank floor, and obtains the expected-length and risk bounds
-[
-mathbb E wlesssim
-min{1,(sqrt Nho)^{-1}},
-qquad
-mathbb E|widehat x-x|^2
-lesssim
-min{1,(Nho^2)^{-1}}.
-]
+\[
+\mathbb E w\lesssim
+\min\{1,(\sqrt N\rho)^{-1}\},
+\qquad
+\mathbb E|\widehat x-x|^2
+\lesssim
+\min\{1,(N\rho^2)^{-1}\}.
+\]
 The lower-bound theorem supplies matching orders.
 
 This does address the most serious statistical objection in v85. The exact lower-bound family is especially useful because both marginals are fixed and only a joint interaction changes.
@@ -143,7 +143,7 @@ The proof separates two issues:
 
 Membership in the detector differential space then gives finite obstruction tests. The positive-genus period correction means that principal parts alone are indeed insufficient.
 
-I found the normalization lemma internally coherent. The real-period map on holomorphic differentials has the correct real dimension, and the harmonic-function argument gives injectivity. The independence of (B_x) from the auxiliary base pole also follows from uniqueness of the normalized differential.
+I found the normalization lemma internally coherent. The real-period map on holomorphic differentials has the correct real dimension, and the harmonic-function argument gives injectivity. The independence of \(B_x\) from the auxiliary base pole also follows from uniqueness of the normalized differential.
 
 The difficulty is editorial rather than elementary correctness. Once the action curve is built from normalized third-kind differentials, the classification is very close to the divisor/period structure one would naturally write down. The clock budget then follows from Rolle plus the degree of the canonical divisor.
 
@@ -159,13 +159,13 @@ At present the theorem is broader than v85 but still feels like the natural comp
 ## 7. The intrinsic clock budget remains only sufficient
 
 Theorem `thm:v86-divisor-budget` gives
-[
-N=deg D+2g+4,
-]
+\[
+N=\deg D+2g+4,
+\]
 and Theorem `thm:v86-branched` gives
-[
-N=deg D+4m+2g.
-]
+\[
+N=\deg D+4m+2g.
+\]
 
 The zero-count proofs are correct-looking as upper bounds. The manuscript is commendably explicit that these counts are not claimed to be universally optimal.
 
@@ -269,10 +269,10 @@ The exact theorem allows isolated or thin profile collisions, but the local stab
 ### 12.3 Product-modulus determinant perturbation
 
 The coefficient perturbation argument around
-[
-widetilde K=K-(h'-h)Q
-]
-is the technical heart of the proof and deserves more detail. In particular, the manuscript should explicitly write the affine scalar coefficients of (K) and (Q), show the determinant difference term by term, and then state the uniform bounded-set Lipschitz constant for the second perturbation. The current argument is plausible, but this is exactly the place where a hidden extra inverse power could enter if bookkeeping were wrong.
+\[
+\widetilde K=K-(h'-h)Q
+\]
+is the technical heart of the proof and deserves more detail. In particular, the manuscript should explicitly write the affine scalar coefficients of \(K\) and \(Q\), show the determinant difference term by term, and then state the uniform bounded-set Lipschitz constant for the second perturbation. The current argument is plausible, but this is exactly the place where a hidden extra inverse power could enter if bookkeeping were wrong.
 
 ### 12.4 Confidence radius bookkeeping
 
@@ -284,7 +284,7 @@ The manuscript uses “imaginary-period normalization” and explains its relati
 
 ### 12.6 Branched-clock divisor support
 
-The criterion correctly uses membership in (E), which automatically sees whether the whole fibre over an action value is allowed by the divisor (D). It would still help to state explicitly that (S_pi=pi(operatorname{supp}D)cap I_0) is only a candidate action set; belonging to (S_pi) is not by itself enough for the pulled-back pole divisor to be bounded by (D).
+The criterion correctly uses membership in \(E\), which automatically sees whether the whole fibre over an action value is allowed by the divisor \(D\). It would still help to state explicitly that \(S_\pi=\pi(\operatorname{supp}D)\cap I_0\) is only a candidate action set; belonging to \(S_\pi\) is not by itself enough for the pulled-back pole divisor to be bounded by \(D\).
 
 These are revision points, not the main editorial reason for rejection.
 
