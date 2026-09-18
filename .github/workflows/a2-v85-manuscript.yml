@@ -23,9 +23,13 @@ jobs:
           git ls-files papers/A2-v17-boundary-information-coarsening reviews | grep -E '\.(tex|md|py|json|txt)$' > /tmp/a2-source-list
           tar -czf /tmp/a2-v85-artifact/a2-sources.tar.gz -T /tmp/a2-source-list
           git rev-parse HEAD > /tmp/a2-v85-artifact/source-commit.txt
-      - name: Install TeX
+      - name: Install native build dependencies
         if: hashFiles('papers/A2-v17-boundary-information-coarsening/v85-ready.txt') != ''
-        run: sudo apt-get update -qq && sudo apt-get install -y -qq texlive-latex-extra texlive-fonts-recommended texlive-science latexmk
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq texlive-latex-extra texlive-fonts-recommended texlive-science latexmk python3-numpy python3-scipy
+      - name: Check source graph, preservation and finite identities
+        if: hashFiles('papers/A2-v17-boundary-information-coarsening/v85-ready.txt') != ''
+        working-directory: papers/A2-v17-boundary-information-coarsening
+        run: /usr/bin/python3 verification/verify_v85.py --base "$PWD" --output /tmp/a2-v85-artifact/verification.json
       - name: Build both editions
         if: hashFiles('papers/A2-v17-boundary-information-coarsening/v85-ready.txt') != ''
         working-directory: papers/A2-v17-boundary-information-coarsening
@@ -34,10 +38,14 @@ jobs:
           latexmk -pdf -interaction=nonstopmode -halt-on-error rigidity_v85.tex
           latexmk -pdf -interaction=nonstopmode -halt-on-error rigidity_v85_full.tex
           if grep -E 'undefined references|undefined citations|There were undefined' rigidity_v85.log rigidity_v85_full.log; then exit 1; fi
-          cp rigidity_v85.pdf rigidity_v85_full.pdf rigidity_v85.log rigidity_v85_full.log /tmp/a2-v85-artifact/
+          cp rigidity_v85.pdf rigidity_v85_full.pdf /tmp/a2-v85-artifact/
           sha256sum rigidity_v85.pdf rigidity_v85_full.pdf > /tmp/a2-v85-artifact/pdf-sha256.txt
+      - name: Collect native build diagnostics
+        if: always()
+        run: |
+          find papers/A2-v17-boundary-information-coarsening -maxdepth 1 -name 'rigidity_v85*.log' -exec cp {} /tmp/a2-v85-artifact/ \;
       - name: Store PDFs on the revision branch
-        if: hashFiles('papers/A2-v17-boundary-information-coarsening/v85-ready.txt') != ''
+        if: success() && hashFiles('papers/A2-v17-boundary-information-coarsening/v85-ready.txt') != ''
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
