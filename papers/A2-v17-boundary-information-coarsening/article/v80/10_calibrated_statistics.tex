@@ -1,0 +1,199 @@
+\section{Finite raw experiments with audited calibration}
+\label{sec:v80-finite}
+
+We now estimate the quantities used by the raw inverse.  This section
+counts unsuccessful preparations and audited calibration trials.  It
+does not grant an exact classifier on the scientific sample.
+Throughout, $Q_0\Subset Q_+\subset\R^d$ are fixed rectangles;
+all reconstruction gates lie inside $Q_0$, and smoothing uses records
+on $Q_+$.  There are finitely many acquisition blocks and two deadlines
+per block; write $J$ for the total number of settings.
+
+\begin{definition}[Audited raw calibration]\label{def:v80-calibration}
+At each setting collect $N$ independent scientific raw trials and,
+independently, $N_c$ calibration raw trials from the same acquisition
+mechanism.  A calibration audit reveals the true component $b$ of a
+record \emph{after} the physical gate and retention stages, as well as
+its reported classifier label $a\in\{0,1,\ldots,A\}$.  The label $0$
+is classifier rejection.  Trials not passing the physical stages are
+also counted and return no component.  Every component has probability
+at least $p_c>0$ of being available to this audit.  The only additional
+audit output used is this true component, not a flight time, position in
+Euclidean space, or other geometric measurement.
+\end{definition}
+
+The audit is an explicit additional measurement capability.  It can be
+replaced by a known channel matrix.  Without an audit or another
+identifying calibration condition, a channel matrix is not treated as
+known merely because it appears in a model.  Since the channel is
+independent of the endpoint given the true component, its column can
+be estimated from these audited trials without knowing the component's
+endpoint distribution.
+
+\begin{lemma}[Calibration and subdensity estimation]
+\label{lem:v80-raw-estimation}
+Suppose the joint subdensities $g_{j,a}$ are bounded in
+$C^{m+s}(Q_+)$, where $m\ge0$ and $s\ge1$ are integers.
+Estimate $C_j$ by the reported-label frequencies within each audited
+true component, including rejection in the denominator.  Estimate the
+joint subdensities by
+\[
+ \widehat g_{j,a}(z)=\frac1N\sum_{i=1}^N
+       \one\{\text{reported label }a\}\,K_h(z-Z_i),
+\]
+where a failed trial contributes zero.  Here $K$ is a smooth compactly
+supported kernel of order at least $s$, and recorded endpoints have
+errors at most $\delta$.  Put
+$\ell=\log(C_0J(N+N_c+2)/\zeta)$, with $C_0$ depending on the
+fixed dimensions.  If $N_cp_c\ge C\ell$, then, with probability
+at least $1-\zeta$, simultaneously at all settings,
+\begin{align}
+ \max_j\|\widehat C_j-C_j\|_{\rm op}
+       &\le C\sqrt{\frac{\ell}{N_cp_c}},
+                     \label{eq:v80-calibration-rate}\\
+ \max_{j,a}\|\widehat g_{j,a}-g_{j,a}\|_{C^m(Q_0)}
+       &\le C\left\{h^s+
+          \sqrt{\frac{\ell}{Nh^{2m+d}}}
+          +\frac{\ell}{Nh^{m+d}}
+          +\delta h^{-(m+d+1)}\right\}.
+                     \label{eq:v80-raw-density-rate}
+\end{align}
+The bandwidth is sufficiently small for the fixed collar and may be
+chosen polynomially in $N$ as below.  An arbitrarily small deterministic
+grid remainder is absorbed in the displayed bound.
+\end{lemma}
+\begin{proof}
+The number of calibration trials having any fixed available true
+component is binomial with mean at least $N_cp_c$.  Chernoff's
+inequality and a union bound show that all these denominators exceed
+$N_cp_c/2$, except on an event of probability at most $\zeta/4$.
+Conditional on the denominators and available components, reported
+labels have the corresponding channel-column law.  Hoeffding's
+inequality and a union bound over the finitely many entries prove
+\eqref{eq:v80-calibration-rate}, after conversion from entrywise to
+operator norm.  The endpoint-independence assumption is used here.
+
+For subdensity estimation no random success denominator is introduced.
+For $|\alpha|\le m$, a derivative-kernel summand has envelope
+$Ch^{-d-|\alpha|}$, variance at most $Ch^{-d-2|\alpha|}$, and
+spatial Lipschitz bound $Ch^{-d-|\alpha|-1}$.  Failures contribute
+zero and satisfy the same bounds.  Taylor expansion of $D^\alpha g$
+and the kernel moments give bias at most $Ch^s$.  On a sufficiently
+fine polynomial grid in $Q_0$, Bernstein's inequality and a union bound
+control all derivatives, settings and labels by the second and third
+terms of~\eqref{eq:v80-raw-density-rate}.  Interpolation between grid
+points uses the Lipschitz bound; the grid can be chosen to make this
+remainder smaller than $N^{-2}$, then absorbed.  These steps are the
+usual uniform-kernel argument; compare~\cite{GineGuillou2002}.
+Finally the mean value theorem for the derivative of $K_h$ bounds the
+change caused by each coordinate error by
+$C\delta h^{-d-m-1}$.  Averaging cannot increase this deterministic
+bound.  Combining the exceptional events proves the lemma.
+\end{proof}
+
+\begin{theorem}[Calibrated finite-record geometric rigidity]
+\label{thm:v80-finite-geometry}
+Fix a bounded neighborhood of a finite identifying billiard atlas, with
+the scalar labels, overlaps and all geometric margins specified in
+Theorem~\ref{thm:v78-records}.  Partition the possible reported records
+into finitely many acquisition blocks of the kind in
+Section~\ref{sec:v80-raw}.  Across these blocks the catalogues include every prefix and extension
+branch required by the atlas.  Within each block the catalogue is
+exhaustive, and its two fixed deadlines are admissible on the larger
+gates for every component.  A prefix and its extension need not belong
+to the same block or share deadlines.  The normalized raw source and baseline endpoint retention
+are shared by these two deadlines.  Allow false positive word or lift
+labels through class-dependent matrices with
+$\sigma_{\min}(C_j)\ge\sigma>0$.  Endpoint labels are otherwise
+observed to coordinate accuracy $\delta$.
+
+Set $m=k+2$, with $k\ge2$, and let $s\ge1$.  Suppose all component
+weights have a positive raw floor $a_-$, the relevant actions, weights
+and actual joint subdensities have the bounded regularity required
+above, in particular $C^{m+s}$ for smoothing, and
+\[
+             r_{j,b}=a_b(T_j-W_b)e^{\eta_{j,b}},\qquad
+             \max_{j,b}\|\eta_{j,b}\|_{C^m}\le\epsilon.
+\]
+Use the scientific and calibration budgets of
+Definition~\ref{def:v80-calibration}.  For sufficiently small total
+error there is an explicit estimator satisfying, with probability
+at least $1-\zeta$,
+\begin{equation}\label{eq:v80-geometric-rate}
+ d_k(\widehat{\mathcal T},\mathcal T)
+ \le C\left\{
+       \left(\frac{\ell}{N}\right)^{s/[2(m+s)+d]}
+       +\delta^{s/(m+s+d+1)}
+       +\sqrt{\frac{\ell}{N_cp_c}}+\epsilon\right\},\qquad d=2.
+\end{equation}
+Its output on this event is a smooth strictly convex disjoint periodic
+table.  The number of raw preparations is exactly $J(N+N_c)$; every
+failed launch and every failed calibration attempt is included.  The
+constant depends on the fixed atlas, smoothness bounds, raw weight
+floor, clock gaps and $\sigma$.  The calibration term and its cost are
+omitted when the channel is known.
+
+This is recovery with imperfect labels in a calibrated reference-atlas
+experiment.  It is not a table-independent unmarked protocol, an
+unsupervised estimate of the catalogue, or a minimax sampling-rate
+claim.  The dependence on physical efficiency uncertainty is sharp
+by Corollary~\ref{cor:v80-physical-floor}.
+\end{theorem}
+\begin{proof}
+Choose
+\[
+ h=\max\left\{(\ell/N)^{1/[2(m+s)+d]},
+                   \delta^{1/(m+s+d+1)}\right\}.
+\]
+For sufficiently small total error this bandwidth fits inside the gate
+collar.  At this choice the square-root and linear Bernstein terms in
+\eqref{eq:v80-raw-density-rate} are bounded by a constant times the
+first two terms on the right of~\eqref{eq:v80-geometric-rate}.
+Indeed they decrease as $h$ increases, while $h^s$ is bounded by the
+sum of those two terms; and the coordinate term is at most $h^s$.
+The lemma supplies simultaneous density and channel errors.  Smallness
+of the calibration term ensures $\|\widehat C_j-C_j\|\le\sigma/2$.
+
+Apply~\eqref{eq:v80-channel-inverse} to the estimated \emph{joint}
+subdensities, and then the two-raw formula to each recovered component.
+Theorem~\ref{thm:v80-channel} gives $C^{k+2}$ action errors bounded
+by the braces in~\eqref{eq:v80-geometric-rate}.  No exact positive
+label was used on a scientific trial.  The error estimate compares the
+reconstruction with the true physical actions, not with a possibly
+misleading zero-residual fit.
+
+Use the root and distance reconstruction of
+Proposition~\ref{prop:v77-cancellation}, the finite distance certificate,
+trilateration and overlap registration, and the fixed patch blending
+of Theorem~\ref{thm:v78-records}.  These maps are defined and locally
+Lipschitz on an open neighborhood of the true finite-atlas data; their
+intermediate inputs need not satisfy exact stationary identities.
+Their fixed margins persist under the small $C^{k+2}$ action error.
+They give~\eqref{eq:v80-geometric-rate}.  The same open $C^2$
+conditions as in that theorem preserve strict convexity, disjointness
+and the lattice in the blended output.  Defining a fixed reference
+output outside the admissible reconstruction neighborhood gives a
+measurable estimator everywhere.  Finally the sample count follows
+from the raw-trial definitions, before any selection or rejection.
+\end{proof}
+
+\begin{corollary}[Finite records for the convex suspension]
+\label{cor:v80-finite-convex}
+In Theorem~\ref{thm:v80-four-convex}, impose bounded
+$C^{k+4+s}$ generating functions and bounded $C^{k+2+s}$ source and
+efficiency functions on the fixed larger domains, with positive floors.
+The same raw estimator, using $m=k+2,d=2$, has the bound
+\eqref{eq:v80-geometric-rate} with
+$d_k(\widehat{\mathcal T},\mathcal T)$ replaced by
+$\|\widehat L-L\|_{C^k([-R,R]^2)}$.  Without label corruption it
+uses four settings and $4N$ raw trials.  Calibration adds only the
+explicitly declared settings and raw trials.
+\end{corollary}
+\begin{proof}
+Proposition~\ref{prop:v80-stationary-bounds}, with $m$ replaced by
+$m+s$, supplies the actual subdensity regularity and positive weight
+floors.  Apply the raw density lemma, the two-deadline inverse, and the
+uniform prefix bound in Theorem~\ref{thm:v80-four-convex}.  When a
+calibrated channel is present, insert its left inverse as in the
+preceding theorem.  No geometric sampling lower bound is invoked.
+\end{proof}
