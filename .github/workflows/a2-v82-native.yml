@@ -1,0 +1,30 @@
+name: A2 v82 native manuscript
+on:
+  push:
+    branches: ['revision/a2-v82-selective-detector-rigidity-2026-09-18']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install native build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y latexmk texlive-latex-extra lmodern python3-numpy python3-scipy python3-sympy
+      - name: Compile and check exact checkout
+        env:
+          PYTHON_BIN: /usr/bin/python3
+        run: bash scripts/build_a2_v82.sh
+      - name: Upload source-matched manuscript and diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a2-v82-${{ github.sha }}
+          path: build/a2-v82/
+          if-no-files-found: error
