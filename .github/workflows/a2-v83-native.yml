@@ -1,0 +1,51 @@
+name: A2 v83 source and native manuscripts
+on:
+  push:
+    branches:
+      - revision/a2-v83-sharp-clocks-global-quotient-2026-09-18
+    paths:
+      - 'papers/A2-v17-boundary-information-coarsening/**'
+      - 'scripts/*a2_v83*'
+      - '.github/workflows/a2-v83-native.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Archive the exact checkout sources
+        run: |
+          git rev-parse HEAD > SOURCE_HEAD.txt
+          git archive --format=tar.gz --output=a2-v83-source.tar.gz HEAD papers/A2-v17-boundary-information-coarsening scripts revisions/a2-v83 A2_REVISION_V83_REVIEW_READY.md
+          sha256sum a2-v83-source.tar.gz > source-sha256.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: a2-v83-source-${{ github.sha }}
+          path: |
+            a2-v83-source.tar.gz
+            SOURCE_HEAD.txt
+            source-sha256.txt
+          if-no-files-found: error
+  native:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install TeX and mathematical diagnostics
+        run: |
+          python3 -m pip install numpy scipy sympy
+          sudo apt-get update
+          sudo apt-get install -y latexmk texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+      - name: Build both editions and audit retained inputs
+        run: python3 scripts/build_a2_v83.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: a2-v83-native-${{ github.sha }}
+          path: papers/A2-v17-boundary-information-coarsening/build-v83/
+          if-no-files-found: error
