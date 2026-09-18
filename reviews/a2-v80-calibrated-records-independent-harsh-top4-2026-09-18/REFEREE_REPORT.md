@@ -3,11 +3,11 @@
 **Manuscript:** *Action rigidity from calibrated endpoint records*  
 **Author:** Qian Qi  
 **Review date:** September 18, 2026  
-**Reviewed revision branch:** \`revision/a2-v80-calibrated-records-intrinsic-rigidity-2026-09-18\`  
-**Reviewed revision head:** \`831dc905d139377e117138238d20d96833f4122d\`  
-**Controlling substantive v79 manuscript head:** \`a0c5b0329141d73ded1cb2ea68d0c71a7c5863e9\`  
-**Controlling previous harsh-review commit:** \`97bd4e64f4805c55793115c8bf4bd1744b6d9c53\`  
-**Principal source:** \`papers/A2-v17-boundary-information-coarsening/rigidity_v80.tex\`  
+**Reviewed revision branch:** `revision/a2-v80-calibrated-records-intrinsic-rigidity-2026-09-18`  
+**Reviewed revision head:** `831dc905d139377e117138238d20d96833f4122d`  
+**Controlling substantive v79 manuscript head:** `a0c5b0329141d73ded1cb2ea68d0c71a7c5863e9`  
+**Controlling previous harsh-review commit:** `97bd4e64f4805c55793115c8bf4bd1744b6d9c53`  
+**Principal source:** `papers/A2-v17-boundary-information-coarsening/rigidity_v80.tex`  
 **Requested standard:** the level expected of *Annals of Mathematics*, *Inventiones Mathematicae*, *Acta Mathematica*, or the *Journal of the American Mathematical Society*.
 
 This is an author-requested external-referee-style mathematical report. It is not a commissioned report from any journal and is not an editorial decision. I apply the unusually severe standard appropriate to the four leading general mathematics journals: correctness is necessary, but so are conceptual inevitability, broad mathematical significance, a convincing separation from classical mechanisms, and a theorem hierarchy whose principal result remains important after the experimental encoding is stripped away.
@@ -63,27 +63,27 @@ For a strong specialist journal, I would now regard the manuscript much more fav
 
 The source branch I reviewed is
 
-\`revision/a2-v80-calibrated-records-intrinsic-rigidity-2026-09-18\`
+`revision/a2-v80-calibrated-records-intrinsic-rigidity-2026-09-18`
 
 at
 
-\`831dc905d139377e117138238d20d96833f4122d\`.
+`831dc905d139377e117138238d20d96833f4122d`.
 
 Relative to the substantive v79 branch
 
-\`revision/a2-v79-robust-clock-quotient-contact-suspension-2026-09-17\`,
+`revision/a2-v79-robust-clock-quotient-contact-suspension-2026-09-17`,
 
 the v80 source is a genuine mathematical delta, not a relabelled referee branch. The new principal input graph includes, among other files,
 
-- \`article/v80/01_introduction.tex\`;
-- \`article/v80/02_framework.tex\`;
-- \`article/v80/03_raw_records.tex\`;
-- \`article/v80/04_intrinsic_actions.tex\`;
-- \`article/v80/07_convex_suspensions.tex\`;
-- \`article/v80/08_regularity.tex\`;
-- \`article/v80/09_physical_nuisance.tex\`;
-- \`article/v80/10_calibrated_statistics.tex\`;
-- \`article/v80/references.tex\`;
+- `article/v80/01_introduction.tex`;
+- `article/v80/02_framework.tex`;
+- `article/v80/03_raw_records.tex`;
+- `article/v80/04_intrinsic_actions.tex`;
+- `article/v80/07_convex_suspensions.tex`;
+- `article/v80/08_regularity.tex`;
+- `article/v80/09_physical_nuisance.tex`;
+- `article/v80/10_calibrated_statistics.tex`;
+- `article/v80/references.tex`;
 - the inherited v79 quotient/statistics/prefix material;
 - the inherited v77 distance-registration and finite-coverage material.
 
