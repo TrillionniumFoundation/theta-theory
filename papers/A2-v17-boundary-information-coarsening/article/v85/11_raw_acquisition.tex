@@ -1,0 +1,141 @@
+\section{Raw acquisition costs and quantitative conventions}
+\label{sec:v85-raw}
+The budget $N$ in the preceding readout experiment counts retained
+pairs. A physical acquisition must also count failures. We now give a
+fixed-attempt experiment, without assuming that its success probability
+is calibrated or that a positive lower bound is supplied to the
+confidence procedure.
+
+\begin{theorem}[Fixed raw attempts with observed acceptance]
+\label{thm:v85-raw}
+At each of $mJ$ cells make $B$ independent raw attempts. An attempt
+returns either a failure symbol or a readout pair. Its success
+probability $r_{ij}\in[0,1]$ is unknown, and the conditional law of a
+successful pair is $\Phi_j(\omega_i)$ from
+\eqref{eq:v85-forward}. Different cells need not be independent.
+Let $K_{ij}$ be the observed number of successes. For $K_{ij}>0$ put
+\begin{equation}\label{eq:v85-random-radius}
+ \eta_{ij}=\left\{\frac{uv}{2K_{ij}}
+                      \log\frac{4mJuv}{\zeta}\right\}^{1/2},
+\end{equation}
+and let $\widehat P_{ij}$ be the empirical conditional matrix.
+Construct action confidence sets by imposing the residual bound
+$\eta_{ij}$ at each nonempty cell and imposing no constraint at empty
+cells. These sets cover all true actions simultaneously with probability
+at least $1-\zeta/2$, for every choice of the success probabilities.
+In particular they give the metric certificate
+\eqref{eq:v85-metric-certificate} in the geometric experiment.
+
+On a true regular channel class, suppose in addition that
+$r_{ij}\ge r_*>0$ at every cell, where $r_*$ need not be known to the
+procedure. If
+\[
+                     B r_*\ge8\log\frac{2mJ}{\zeta},
+\]
+then, for sufficiently large $B r_*$, with probability at least
+$1-\zeta$ the largest action interval width is at most
+\begin{equation}\label{eq:v85-raw-width}
+                 C_\kappa\left\{
+                  \frac{\log(4mJuv/\zeta)}{B r_*}\right\}^{1/2}.
+\end{equation}
+The raw budget is exactly $mJB$, including every failure. In the
+boundary experiment the resulting metric error is at most
+\begin{equation}\label{eq:v85-raw-metric}
+ C\left\{h+
+        \left(\frac{\log(4m_hJuv/\zeta)}{B r_*}\right)^{1/2}
+                                                 \right\}^{\mu}.
+\end{equation}
+\end{theorem}
+\begin{proof}
+Conditional on $K_{ij}=k>0$, the retained categorical observations in
+that cell have the multinomial law of $k$ independent draws from
+$\Phi_j(\omega_i)$. Apply the entrywise exponential bound conditional
+on this count. The radius in \eqref{eq:v85-random-radius} gives
+failure probability at most $\zeta/(2mJ)$ for that matrix, uniformly
+in $k$. Integrate over $K_{ij}$ and take a union bound over cells.
+Empty cells impose no constraint and hence cannot exclude the truth.
+This proves the first assertion without a success floor. A finite-grid
+implementation uses cellwise tolerances $\eta_{ij}+L_\Phi\delta$
+and the same action padding as Proposition~\ref{prop:v85-grid}.
+
+For the rate, a binomial lower-tail bound gives
+\[
+ \Pr\{K_{ij}<B r_*/2\}\le \exp(-B r_*/8).
+\]
+One elementary derivation applies Markov's inequality to
+$e^{-tK_{ij}}$, uses
+$(1-r_{ij}+r_{ij}e^{-t})^B\le
+\exp\{-B r_{ij}(1-e^{-t})\}$, and takes $t=\log2$;
+the resulting exponent is at most $-B r_{ij}/8$ at half its mean.
+The event with threshold $B r_*/2$ is smaller when $r_{ij}\ge r_*$.
+A union bound and the displayed budget condition make the total
+failure probability at most $\zeta/2$. On the remaining event every
+radius is bounded by a constant times the square root in
+\eqref{eq:v85-raw-width}. Repeat the regular compact inverse argument
+of Theorem~\ref{thm:v85-confidence}, using the largest cell radius.
+Theorem~\ref{thm:v85-geometric} then gives
+\eqref{eq:v85-raw-metric}. All attempts, including late arrivals,
+missed detections and rejected readings represented by the failure
+symbol, have already been counted in $mJB$.
+\end{proof}
+The conditional law of a successful readout remains a model assumption.
+Unmodelled false readings change that law; they cannot be repaired by
+only charging their cost. At very small success probabilities the
+certificate remains valid but may stay wide. Thus no uniform raw
+budget rate is asserted without actual acceptance information in the
+class. The rate parameter $r_*$ is not a hidden calibration input to
+the procedure.
+
+\subsection{Closed classes for covering reconstruction}
+For clarity, the compact classes used in
+Theorem~\ref{thm:v84-mesh} can be specified without chart choices.
+Fix all its margins and an additional bound $A_0$. For each
+$2\le B_0\le\min(u,v)$ define $\mathcal K_{B_0}$ as the following
+closed subset of centred pointwise parameters:
+\begin{equation}\label{eq:v85-closed-covering-class}
+\begin{split}
+ \mathcal K_{B_0}=\{\Xi={}&(W,U,V,\alpha,\vartheta):\
+ U\in(\Delta_{u-1})^{B_0},\quad V\in(\Delta_{v-1})^{B_0},\\
+ &\sum_b\alpha_b=0,\quad \sum_b\vartheta_{b,\nu}=0,\quad
+             \max(\|W\|_\infty,\|\alpha\|_\infty,
+                           \|\vartheta\|_\infty)\le A_0,\\
+ &r\le T_j-W_b\le R,\quad \pi_{j,b}\ge p_*,\quad
+                         \sigma_{B_0}(P_1)\ge\sigma_*,\\
+ &\min_{b\ne c}\max_{2\le j\le q+2}
+       |\pi_{j,b}/\pi_{1,b}-\pi_{j,c}/\pi_{1,c}|\ge\delta,\\
+ &\max_bW_b-\min_bW_b\ge\gamma,\quad
+                  \min_{b\ne c}\|U_{:b}-U_{:c}\|\ge s_*\}.
+\end{split}
+\end{equation}
+All component and clock inequalities are imposed, and empty classes
+are omitted. The weights $\pi$ and matrices $P$ are computed from
+\eqref{eq:v83-model} in the centred gauge. The inequalities are
+continuous on the stated residual and coefficient bounds, so these
+sets are compact. Selected minors and separating combinations are
+local tools for proving the inverse theorem, not extra unclosed
+choices in the definition of the estimator.
+
+With $d_{\rm perm}$ the Euclidean distance modulo simultaneous
+permutation, a precise admissible inverse constant is any upper bound
+for
+\begin{equation}\label{eq:v85-C0}
+ \max\left\{1,\ \max_{B_0}\sup_{d_{\rm perm}(\Xi,\Xi')>0}
+   \frac{d_{\rm perm}(\Xi,\Xi')}
+        {\max_j\|P_j(\Xi)-P_j(\Xi')\|_F}\right\}.
+\end{equation}
+The suprema are over the declared classes. Their finiteness follows
+from the compact exact inverse proof preceding
+Theorem~\ref{thm:v84-mesh}. Thus $C_0$ is a global prior-class
+modulus, not a quantity inferred from the finite records or from one
+local Jacobian. The new two-arm confidence construction does not
+require this constant as input.
+
+For the experiment in Theorem~\ref{thm:v84-mesh}, independence is
+required among the $n$ readings in each vertex--clock cell. Its union
+bound does not require independence between cells. For the topological
+step, the edge permutations and triangular-face relations describe
+the covering on the two-skeleton of the triangulation. Cellular
+approximation identifies its fundamental group with that of the whole
+complex, and covering classification extends the same monodromy over
+all higher-dimensional simplices. No further higher-dimensional
+cocycle or unobserved permutation relation is being assumed.
