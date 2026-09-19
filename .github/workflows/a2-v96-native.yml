@@ -1,0 +1,52 @@
+name: A2 v96 exact-head full manuscript and spectral phase audit
+on:
+  push:
+    branches: [revision/a2-v96-uniform-stratified-spectral-laws-2026-09-20]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: a2-v96-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  full-manuscript:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install diagnostics and TeX dependencies
+        run: |
+          python -m pip install numpy scipy sympy
+          sudo apt-get update
+          sudo apt-get install -y latexmk texlive-latex-extra texlive-fonts-recommended texlive-science lmodern
+      - name: Audit exact committed sources and all inherited active inputs
+        run: python scripts/audit_a2_v96.py --output build/a2-v96/source-receipt.json
+      - name: Finite mathematical regressions and exact rational examples
+        run: |
+          python scripts/verify_a2_v96_math.py --output build/a2-v96/math-diagnostics.json
+          python scripts/exact_a2_v96_constants.py --output build/a2-v96/exact-constants.json
+      - name: Compile the complete manuscript, not just the family reading copy
+        working-directory: papers/A2-v17-boundary-information-coarsening
+        run: latexmk -gg -pdf -interaction=nonstopmode -halt-on-error -file-line-error rigidity_v96.tex
+      - name: Bind the full build log and actual input graph to runtime HEAD
+        run: |
+          python scripts/audit_a2_v96.py \
+            --fls papers/A2-v17-boundary-information-coarsening/rigidity_v96.fls \
+            --log papers/A2-v17-boundary-information-coarsening/rigidity_v96.log \
+            --pdf papers/A2-v17-boundary-information-coarsening/rigidity_v96.pdf \
+            --output build/a2-v96/full-build-receipt.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: a2-v96-${{ github.sha }}
+          if-no-files-found: warn
+          path: |
+            build/a2-v96/
+            papers/A2-v17-boundary-information-coarsening/rigidity_v96.pdf
+            papers/A2-v17-boundary-information-coarsening/rigidity_v96.log
+            papers/A2-v17-boundary-information-coarsening/rigidity_v96.fls
