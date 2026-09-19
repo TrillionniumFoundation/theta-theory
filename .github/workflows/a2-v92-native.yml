@@ -1,0 +1,55 @@
+name: A2 v92 native manuscript audit
+on:
+  push:
+    branches:
+      - revision/a2-v92-sharp-modulus-and-singular-normal-forms-2026-09-19
+    paths:
+      - .github/workflows/a2-v92-native.yml
+      - revisions/a2-v92/BUILD_REQUEST
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Capture exact text-source snapshot
+        run: |
+          mkdir -p /tmp/a2-v92-delivery
+          git rev-parse HEAD > /tmp/a2-v92-delivery/HEAD.txt
+          git ls-tree -r HEAD > /tmp/a2-v92-delivery/GIT_TREE.txt
+          python3 - <<'PY'
+          import pathlib, subprocess, zipfile
+          names = subprocess.check_output(['git', 'ls-files', '-z']).decode().split('\0')
+          extensions = {'.tex','.bib','.sty','.cls','.py','.md','.json','.yml','.yaml','.txt','.sh'}
+          with zipfile.ZipFile('/tmp/a2-v92-delivery/source.zip', 'w', zipfile.ZIP_DEFLATED) as z:
+              for name in names:
+                  p = pathlib.Path(name)
+                  if name and p.is_file() and p.suffix in extensions:
+                      z.write(p, name)
+          PY
+      - name: Install native TeX and numerical dependencies
+        if: ${{ hashFiles('papers/A2-v17-boundary-information-coarsening/rigidity_v92.tex') != '' }}
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended latexmk python3-numpy python3-scipy python3-sympy poppler-utils
+      - name: Verify sources and finite diagnostics
+        if: ${{ hashFiles('revisions/a2-v92/verify_a2_v92.py') != '' }}
+        run: |
+          python3 revisions/a2-v92/verify_a2_v92.py | tee /tmp/a2-v92-delivery/verification.txt
+      - name: Compile complete revised manuscript
+        if: ${{ hashFiles('papers/A2-v17-boundary-information-coarsening/rigidity_v92.tex') != '' }}
+        working-directory: papers/A2-v17-boundary-information-coarsening
+        run: |
+          latexmk -pdf -interaction=nonstopmode -halt-on-error rigidity_v92.tex
+          cp rigidity_v92.pdf rigidity_v92.log /tmp/a2-v92-delivery/
+          pdftotext rigidity_v92.pdf /tmp/a2-v92-delivery/rigidity_v92.txt
+          if grep -E 'undefined references|Citation .* undefined|Reference .* undefined|multiply defined|Overfull \\hbox' rigidity_v92.log; then exit 1; fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: a2-v92-native-${{ github.sha }}
+          path: /tmp/a2-v92-delivery/
+          if-no-files-found: error
+          retention-days: 30
