@@ -2,11 +2,11 @@
 
 **Review date:** 20 September 2026  
 **Repository:** TrillionniumFoundation/theta-theory  
-**Reviewed revision branch:** `revision/a2-v96-uniform-stratified-spectral-laws-2026-09-20`  
-**Reviewed exact head:** `423a0e135c217d6dc42fc973d8da4ee13893e865`  
-**Immediate manuscript predecessor:** `revision/a2-v95-real-valuations-cubic-classification-2026-09-19` at `ebb796e49ca51a62b90d92ec0d09819cfe8d00a4`  
-**Latest prior independent A2 referee report found in the repository:** `reviews/a2-v95-independent-harsh-top4-2026-09-20/REFEREE_REPORT.md`  
-**Prior review commit:** `c020b5ede3ca07852db4166f614354341b0d8494`  
+**Reviewed revision branch:** revision/a2-v96-uniform-stratified-spectral-laws-2026-09-20  
+**Reviewed exact head:** 423a0e135c217d6dc42fc973d8da4ee13893e865  
+**Immediate manuscript predecessor:** revision/a2-v95-real-valuations-cubic-classification-2026-09-19 at ebb796e49ca51a62b90d92ec0d09819cfe8d00a4  
+**Latest prior independent A2 referee report found in the repository:** reviews/a2-v95-independent-harsh-top4-2026-09-20/REFEREE_REPORT.md  
+**Prior review commit:** c020b5ede3ca07852db4166f614354341b0d8494  
 **Reviewed manuscript:** *Projective polynomial observations: real valuations and stratified spectral laws*  
 **Author:** Qian Qi  
 **Review status:** owner-requested AI-assisted external-referee-style assessment; not a journal-commissioned peer review.
@@ -19,7 +19,7 @@ This is a substantially more positive mathematical assessment than I would have 
 
 1. the exact spectral fibre is classified across both ranks of the first channel for the named binary cubic family, including the weight-isolated rank-one region;
 2. the pointwise leading-fibre calculation is upgraded to a whole-model Hausdorff normal form uniform on compact subsets of the identifiable region;
-3. the leading constant is reduced to finitely many active-set tests, giving a semialgebraic phase partition and exact rational formulas for (C^4);
+3. the leading constant is reduced to finitely many active-set tests, giving a semialgebraic phase partition and exact rational formulas for C^4;
 4. continuity across active-set changes and across identified channel-rank changes is addressed at theorem level rather than left as a numerical observation;
 5. two rational examples are supplied with exact arithmetic rather than floating-point fitting.
 
@@ -30,7 +30,7 @@ However, the manuscript still does not meet the standard of a leading general ma
 - the claimed “stratified spectral laws” are a finite chamber decomposition **inside one fixed binary cubic singularity type**, not a general singularity stratification;
 - the broad real-valuative theorem remains very close to classical resolution/Łojasiewicz technology and to current valuative finite-max theory, and revision 96 does not give the theorem-by-theorem novelty separation requested by the latest referee;
 - the general “effective finite algorithm” remains compressed at precisely the points where the previous report asked for proof-grade specifications;
-- the strongest uniform theorem is only compact-interior uniformity on the identifiable set; the behavior as one approaches the actual identification walls is still not classified;
+- the strongest uniform theorem is only compact-interior uniformity on the identifiable set; behavior approaching the actual identification walls is still not classified;
 - the complete manuscript remains an accretive research-program compendium even though the preceding report explicitly asked either for conceptual generalization or for architectural narrowing;
 - most seriously as a review-process matter, revision 96 declares revision 94 to be the controlling report and says that no later A2 report was found, even though the independent v95 report had already been committed to the repository before the v96 head was created.
 
@@ -40,30 +40,30 @@ I therefore do **not** recommend another local “closure round” at the same v
 
 Revision 96 is exactly one commit ahead of revision 95. The v95 head is
 
-`ebb796e49ca51a62b90d92ec0d09819cfe8d00a4`,
+    ebb796e49ca51a62b90d92ec0d09819cfe8d00a4
 
 and the v96 head is
 
-`423a0e135c217d6dc42fc973d8da4ee13893e865`.
+    423a0e135c217d6dc42fc973d8da4ee13893e865.
 
 The v95-to-v96 delta is addition-only and consists of the new v96 article modules, revision packet, diagnostics, exact-arithmetic evaluator, source-audit script, and branch-scoped workflow. The complete entrypoint is
 
-`papers/A2-v17-boundary-information-coarsening/rigidity_v96.tex`,
+    papers/A2-v17-boundary-information-coarsening/rigidity_v96.tex
 
-which imports `article/v96/paper.tex`. The latter imports the v95 model and real-valuative theorem, then the new v96 family classification, uniform normal form, and active-set sections, followed by the retained historical appendices.
+which imports article/v96/paper.tex. The latter imports the v95 model and real-valuative theorem, then the new v96 family classification, uniform normal form, and active-set sections, followed by the retained historical appendices.
 
 I reviewed, in particular:
 
-- `article/v96/paper.tex`;
-- `article/v96/family.tex`;
-- `article/v96/uniform_normal_form.tex`;
-- `article/v96/active_sets.tex`;
-- the unchanged v95 `finite_newton.tex`;
+- article/v96/paper.tex;
+- article/v96/family.tex;
+- article/v96/uniform_normal_form.tex;
+- article/v96/active_sets.tex;
+- the unchanged v95 finite_newton.tex;
 - the relevant literature discussion and added bibliography;
-- `revisions/a2-v96/RESPONSE_TO_REFEREE.md`;
-- `revisions/a2-v96/MATH_DIAGNOSTICS.json`;
-- `revisions/a2-v96/EXACT_CONSTANTS.json`;
-- `scripts/verify_a2_v96_math.py`;
+- revisions/a2-v96/RESPONSE_TO_REFEREE.md;
+- revisions/a2-v96/MATH_DIAGNOSTICS.json;
+- revisions/a2-v96/EXACT_CONSTANTS.json;
+- scripts/verify_a2_v96_math.py;
 - the exact-head audit/workflow definitions;
 - the independent v95 referee report.
 
@@ -79,19 +79,19 @@ That statement is inconsistent with the repository chronology.
 
 The independent v95 review commit
 
-`c020b5ede3ca07852db4166f614354341b0d8494`
+    c020b5ede3ca07852db4166f614354341b0d8494
 
 was created at **2026-09-19T18:35:37Z**.
 
 The v96 manuscript commit
 
-`423a0e135c217d6dc42fc973d8da4ee13893e865`
+    423a0e135c217d6dc42fc973d8da4ee13893e865
 
 was created at **2026-09-19T18:55:55Z**.
 
 Thus the v95 report was already present in the repository roughly twenty minutes before the v96 head was committed. It is on the branch
 
-`review/a2-v95-independent-harsh-top4-2026-09-20`
+    review/a2-v95-independent-harsh-top4-2026-09-20
 
 and consists of a 502-line referee report specifically reviewing the exact v95 head from which v96 was derived.
 
@@ -103,42 +103,31 @@ For a serious revision chain, the next author response should source-pin the lat
 
 ### 3.1 The exact fibre theorem now covers the whole named family across first-channel rank
 
-Theorem `thm:family-classification-v96` is a genuine strengthening of the v95 family result.
+Theorem thm:family-classification-v96 is a genuine strengthening of the v95 family result.
 
 For
 
-[
-f(z)=z(z-r)^2,qquad g(z)=(z-s)^3,qquad 0<s<r<D,
-]
+    f(z) = z(z-r)^2,
+    g(z) = (z-s)^3,
+    0 < s < r < D,
 
-with a positive arbitrary first channel (U), a positive invertible second channel (V), strict mixture weights and at least seven clocks, the theorem introduces
+with a positive arbitrary first channel U, a positive invertible second channel V, strict mixture weights and at least seven clocks, the theorem introduces
 
-[
-A=(r+3s)(2r-3s)^2,qquad
-B=(3D-r)s-2rD,
-]
+    A = (r+3s)(2r-3s)^2,
+    B = (3D-r)s - 2rD,
 
 and
 
-[
-E=(1-alpha)A-4alpha_*r^3.
-]
+    E = (1-alpha)A - 4 alpha_* r^3.
 
 It then claims the exact spectral fibre is a singleton precisely on
 
-[
-mathfrak I
-=
-{det U
-eq0}cup{B<0}cup{E<0}.
-]
+    I = {det U != 0} union {B < 0} union {E < 0}.
 
 On the complement, all additional component-polynomial pairs are given explicitly by
 
-[
-(f,(1-c)f+cg),qquad
-c_*le cle min{c_D,(1-alpha)/alpha_*}.
-]
+    (f, (1-c)f + cg),
+    c_* <= c <= min{c_D, (1-alpha)/alpha_*}.
 
 This is no longer merely an open rank-one region. It includes:
 
@@ -153,9 +142,9 @@ I found no simple counterexample to this classification.
 
 ### 3.2 The whole-model inverse is a meaningful upgrade
 
-Lemma `lem:uniform-inverse-v96` is one of the most important new ingredients.
+Lemma lem:uniform-inverse-v96 is one of the most important new ingredients.
 
-The lemma does not merely control alternatives chosen inside the displayed parametric family. It asserts that every nearby competitor in the entire closed binary cubic model is, after a component permutation, (O(delta))-close in component coefficients and non-root parameters.
+The lemma does not merely control alternatives chosen inside the displayed parametric family. It asserts that every nearby competitor in the entire closed binary cubic model is, after a component permutation, O(delta)-close in component coefficients and non-root parameters.
 
 The rank-two proof uses a two-clock generalized-eigenvector reconstruction. The rank-one proof uses quantitative inversion of the second marginal, local affine-pencil isolation near the two base components, and coefficient functionals to recover weights and channels.
 
@@ -163,22 +152,18 @@ That is the correct kind of theorem if one wants the subsequent leading-set stat
 
 ### 3.3 The leading-set theorem is substantially stronger than a pointwise Puiseux statement
 
-Theorem `thm:uniform-normal-v96` states a Hausdorff approximation
+Theorem thm:uniform-normal-v96 states a Hausdorff approximation
 
-[
-d_H(mathcal R_	heta(t),mathcal L_	heta)
-le C_Hsqrt t
-]
+    d_H(R_theta(t), L_theta) <= C_H sqrt(t)
 
-uniformly for (	heta) on compact subsets of the identifiable set.
+uniformly for theta on compact subsets of the identifiable set.
 
 The leading set is described by the double- and triple-root variables
 
-[
-X,Yge0,qquad
-J_	heta(X,Y)le4,qquad
-27Z^2le4Y^3.
-]
+    X >= 0,
+    Y >= 0,
+    J_theta(X,Y) <= 4,
+    27 Z^2 <= 4 Y^3.
 
 The proof includes both directions:
 
@@ -187,11 +172,9 @@ The proof includes both directions:
 
 The consequence
 
-[
-omega_	heta(t)=C(	heta)sqrt t+O_H(t)
-]
+    omega_theta(t) = C(theta) sqrt(t) + O_H(t)
 
-is therefore more informative than a fixed-point little-(o) expansion.
+is therefore more informative than a fixed-point little-o expansion.
 
 This directly addresses a major weakness of earlier versions.
 
@@ -201,20 +184,17 @@ The v95 report explicitly requested a finite active-set/wall-chamber analysis fo
 
 Revision 96 supplies one.
 
-For each of (kappa_x) and (kappa_y), there are four possible supports in the two remaining nonnegative coordinates. The KKT conditions are explicit rational sign tests. Hence, after refining by identification signs and the rank condition, one obtains a finite semialgebraic partition on which
+For each of kappa_x and kappa_y, there are four possible supports in the two remaining nonnegative coordinates. The KKT conditions are explicit rational sign tests. Hence, after refining by identification signs and the rank condition, one obtains a finite semialgebraic partition on which
 
-[
-C^4=
-rac4{kappa_x}
-quad	ext{or}quad
-rac{64}{9kappa_y}.
-]
+    C^4 = 4/kappa_x
+
+or
+
+    C^4 = 64/(9 kappa_y).
 
 The switching wall is
 
-[
-9kappa_y-16kappa_x=0.
-]
+    9 kappa_y - 16 kappa_x = 0.
 
 This is a useful and clean theorem. The proof's minimal-positive-support argument correctly handles singular two-column active Gram matrices without pretending that a fixed support remains valid everywhere.
 
@@ -222,15 +202,11 @@ This is a useful and clean theorem. The proof's minimal-positive-support argumen
 
 The rational examples are genuinely exact evaluations of the finite programs. The rank-one example gives a very large leading constant,
 
-[
-3778.707<C<3778.708,
-]
+    3778.707 < C < 3778.708,
 
 while a specified rank-two example gives
 
-[
-59.970<C<59.971.
-]
+    59.970 < C < 59.971.
 
 The accompanying file records exact rational Gram matrices and rational fourth powers. This is much stronger than presenting an optimizer's floating-point output as evidence for the theorem.
 
@@ -248,7 +224,7 @@ Revision 96 has a finite semialgebraic partition, but the ambient family is stil
 - a fixed interior triple root in the second component;
 - fixed root multiplicities;
 - a positive invertible second channel;
-- positive (2	imes2) channels;
+- positive 2-by-2 channels;
 - a fixed binary observation architecture;
 - clocks strictly beyond the root interval;
 - at least seven clocks;
@@ -296,13 +272,13 @@ A finite stratification controlling those changes would materially alter the sig
 
 The v95 report's first major objection was not that the real-valuative theorem was obviously wrong. It was that the manuscript had not isolated sharply enough what is new beyond established resolution/Łojasiewicz machinery.
 
-Revision 96 does not change `article/v95/finite_newton.tex`. The general real-valuative theorem and its proof remain inherited.
+Revision 96 does not change article/v95/finite_newton.tex. The general real-valuative theorem and its proof remain inherited.
 
 The manuscript now says more clearly that ratios of divisor orders are classical and credits Bierstone--Milman, Bivià-Ausina--Encinas, semialgebraic elimination, metric regularity, and Hà's 2026 valuative work. This is an improvement in tone.
 
 But the key request remains unanswered:
 
-> Suppose the reader grants, for free, the strongest applicable finite-max theorem for Łojasiewicz exponents/filtrations after resolution. Which theorem of this paper is still genuinely new, and what hypotheses and outputs distinguish it from those results?
+> Suppose the reader grants, for free, the strongest applicable finite-max theorem for Łojasiewicz exponents or filtrations after resolution. Which theorem of this paper is still genuinely new, and what hypotheses and outputs distinguish it from those results?
 
 The answer is presumably not “the divisor-ratio formula.” The strongest candidate for the paper's distinctive contribution is instead the **joint real constrained weighted specialization**, together with its spectral root image and stochastic feasibility constraints.
 
@@ -334,7 +310,7 @@ The claimed algorithm still compresses a long sequence of nontrivial operations:
 - detection of real-accessible exceptional divisors;
 - selection of local cluster branches;
 - weighted rescaling;
-- real closure at (arepsilon=0);
+- real closure at epsilon = 0;
 - projection of bounded model coordinates;
 - quantifier elimination;
 - algebraic encoding of complex roots over real coordinates;
@@ -346,9 +322,9 @@ Every step is plausible. The composition of all of them is exactly what the theo
 
 Several concrete issues from the v95 report remain.
 
-### 6.1 The definition still treats identically zero (H) explicitly but not identically zero (G)
+### 6.1 The definition still treats identically zero H explicitly but not identically zero G
 
-Definition `def:real-data-v95` says that a displayed (H) may be identically zero on a box. The proof later says that components on which “a function” vanishes identically are treated separately, so the intended treatment of (Gequiv0) is inferable.
+Definition def:real-data-v95 says that a displayed H may be identically zero on a box. The proof later says that components on which “a function” vanishes identically are treated separately, so the intended treatment of G identically zero is inferable.
 
 But the definition itself still does not state what the monomial datum is on a source component lying entirely over the exact observation fibre.
 
@@ -391,7 +367,7 @@ No complexity bound is necessary. Proof-grade specification is.
 
 ## 7. Major objection IV: the uniform inverse and rank-crossing normal form are plausible but too compressed for the role they now play
 
-I do not have a counterexample to Lemma `lem:uniform-inverse-v96`, and its proof has the right architecture.
+I do not have a counterexample to Lemma lem:uniform-inverse-v96, and its proof has the right architecture.
 
 Nevertheless, this lemma has become the load-bearing bridge from exact identification to the entire uniform leading-set theorem. At top-four standards, its most delicate part deserves more space.
 
@@ -399,18 +375,18 @@ The rank-one argument uses several steps in rapid succession:
 
 1. exact-fibre compactness excludes remote spectral alternatives;
 2. the observable second marginal yields a uniform lower bound on the competitor's second-channel singular value;
-3. nearby component polynomials are reduced to bounded affine-pencil coordinates (c_b);
-4. endpoint and discriminant inequalities isolate (c_b) near zero;
-5. a depressed-cubic real-rootedness inequality isolates (c_b) near one;
+3. nearby component polynomials are reduced to bounded affine-pencil coordinates c_b;
+4. endpoint and discriminant inequalities isolate c_b near zero;
+5. a depressed-cubic real-rootedness inequality isolates c_b near one;
 6. coefficient functionals then recover the rank-one coefficient matrices, weights, and channels.
 
-Each step is plausible, but the proof currently hides the quantitative separation constants that become essential when the compact set (H) crosses the rank-one/rank-two locus.
+Each step is plausible, but the proof currently hides the quantitative separation constants that become essential when the compact set H crosses the rank-one/rank-two locus.
 
 The final sentence invokes a finite neighbourhood cover. That is standard once the local constants have genuinely been established, but the current presentation makes the most delicate constants implicit.
 
 I would require a standalone quantitative lemma of the following form:
 
-> On every compact (HSubsetmathfrak I), there is a uniform positive separation between the base spectral fibre and every remote admissible affine-pencil branch, and the local inverse constants for the normalization map, marginal factorization, and two base-pencil points admit a common bound.
+> On every compact H compactly contained in I, there is a uniform positive separation between the base spectral fibre and every remote admissible affine-pencil branch, and the local inverse constants for the normalization map, marginal factorization, and two base-pencil points admit a common bound.
 
 That statement would make the subsequent coercivity and Hausdorff arguments much easier to audit.
 
@@ -418,27 +394,27 @@ This is not a request for a new theorem of independent significance. It is a req
 
 ## 8. Major objection V: the actual identification walls are still not analyzed
 
-Revision 96 proves continuity of (C(	heta)) on the open identifiable set (mathfrak I) and uniform remainder estimates on compact subsets (HSubsetmathfrak I).
+Revision 96 proves continuity of C(theta) on the open identifiable set I and uniform remainder estimates on compact subsets H compactly contained in I.
 
 That is useful, but it deliberately stops before the most interesting singular limit.
 
 The exact-fibre theorem identifies concrete walls:
 
-- (det U=0);
-- (B=0), where the geometric pencil first reaches the root-domain boundary;
-- (E=0), where the stochastic weight floor first permits the extra pencil component.
+- det U = 0;
+- B = 0, where the geometric pencil first reaches the root-domain boundary;
+- E = 0, where the stochastic weight floor first permits the extra pencil component.
 
 At those walls the exact fibre can cease to be a singleton.
 
 For a paper whose new organizing language is “stratified spectral laws,” the natural next questions are unavoidable:
 
-- Does (kappa_x) or (kappa_y) vanish as an identification wall is approached?
+- Does kappa_x or kappa_y vanish as an identification wall is approached?
 - At what algebraic rate?
-- What is the corresponding blow-up rate of (C(	heta))?
-- Does the (t^{1/2}) modulus cross over to a nonvanishing exact-fibre diameter at the wall?
-- What is the two-parameter scaling law when (tdownarrow0) while the centre approaches (B=0) or (E=0)?
-- At (B=0), where the extra pencil branch is born at a root hitting (D), what is the local normal form?
-- At (E=0), where the extra branch is admitted exactly at the weight floor, what is the constrained local normal form?
+- What is the corresponding blow-up rate of C(theta)?
+- Does the sqrt(t) modulus cross over to a nonvanishing exact-fibre diameter at the wall?
+- What is the two-parameter scaling law when t goes to zero while the centre approaches B = 0 or E = 0?
+- At B = 0, where the extra pencil branch is born at a root hitting D, what is the local normal form?
+- At E = 0, where the extra branch is admitted exactly at the weight floor, what is the constrained local normal form?
 - Is the large rank-one constant in the rational example a precursor of a quantified blow-up near one of these walls, or merely conditioning at that selected datum?
 
 The current compact-interior theorem cannot answer these questions.
@@ -454,7 +430,7 @@ There are currently two powerful but insufficiently connected parts of the manus
 
 What is missing is the theorem joining them.
 
-The v96 family partition is obtained from elementary explicit formulas (B,E), the rank of (U), and the finite Fisher KKT signs. It does **not** show that, in a general algebraic family, the accessible divisor list, the minimizing valuation, the weighted initial fibre, and the Fisher active set vary over a finite semialgebraic stratification.
+The v96 family partition is obtained from elementary explicit formulas B and E, the rank of U, and the finite Fisher KKT signs. It does **not** show that, in a general algebraic family, the accessible divisor list, the minimizing valuation, the weighted initial fibre, and the Fisher active set vary over a finite semialgebraic stratification.
 
 Conversely, the general real-valuative theorem does not provide a parameter-dependent finite wall decomposition.
 
@@ -499,15 +475,10 @@ Repository preservation is commendable. It is not the same thing as journal arch
 
 The strongest v96 story is now relatively clean:
 
-[
-	ext{real constrained graph}
-	o
-	ext{exact binary-cubic fibre classification}
-	o
-	ext{uniform leading spectral set}
-	o
-	ext{finite active-set constant}.
-]
+    real constrained graph
+      -> exact binary-cubic fibre classification
+      -> uniform leading spectral set
+      -> finite active-set constant.
 
 If the authors do not prove a genuinely broader stratification theorem that logically needs the historical apparatus, then the top-four submission should be rebuilt around this spine and most inherited material should move to companion papers or archival appendices outside the principal article.
 
@@ -538,11 +509,11 @@ If statistics is to become a co-equal contribution, the appropriate next theorem
 
 The next response must cite the v95 report
 
-`reviews/a2-v95-independent-harsh-top4-2026-09-20/REFEREE_REPORT.md`
+    reviews/a2-v95-independent-harsh-top4-2026-09-20/REFEREE_REPORT.md
 
 at commit
 
-`c020b5ede3ca07852db4166f614354341b0d8494`.
+    c020b5ede3ca07852db4166f614354341b0d8494.
 
 A point-by-point response should distinguish:
 
@@ -570,7 +541,7 @@ The current prose is not sufficiently precise for the claimed venue.
 
 Either prove a stratification allowing a genuine change of singularity type, or make unmistakably clear in the title/abstract that the finite phase theorem concerns one fixed binary cubic boundary double/triple-root family.
 
-### 12.4 State the (Gequiv0) case directly in the monomial-data definition
+### 12.4 State the G identically zero case directly in the monomial-data definition
 
 Do not leave it only in the proof's generic sentence about identically vanishing functions.
 
@@ -584,11 +555,11 @@ Prove finite coverage and admissible real transversals as a standalone propositi
 
 ### 12.7 Expand the uniform inverse proof
 
-State and prove the uniform remote-branch separation and the local inverse constants that survive across rank changes inside compact subsets of (mathfrak I).
+State and prove the uniform remote-branch separation and the local inverse constants that survive across rank changes inside compact subsets of I.
 
 ### 12.8 Analyze at least one identification wall asymptotically
 
-The natural candidates are (B=0) or (E=0). A two-scale normal form showing how (C(	heta)) diverges and how the exact fibre is born would be a genuinely new structural result.
+The natural candidates are B = 0 or E = 0. A two-scale normal form showing how C(theta) diverges and how the exact fibre is born would be a genuinely new structural result.
 
 ### 12.9 Connect valuation walls to Fisher walls
 
@@ -627,9 +598,9 @@ Positive features include:
 - exact rational evaluation of two Fisher programs;
 - rational isolating intervals for the fourth root.
 
-I emphasize, however, that the very large rank-one constant is mathematically informative. It shows that compact-interior positivity of (kappa_x,kappa_y) is not the end of the conditioning story.
+I emphasize, however, that the very large rank-one constant is mathematically informative. It shows that compact-interior positivity of kappa_x and kappa_y is not the end of the conditioning story.
 
-A future revision should use exact arithmetic not only to show that (C) can be large, but to explain **why** it becomes large and how that behavior is organized by the nearby semialgebraic walls.
+A future revision should use exact arithmetic not only to show that C can be large, but to explain **why** it becomes large and how that behavior is organized by the nearby semialgebraic walls.
 
 ## 14. Reproducibility and exact-head build status
 
@@ -642,7 +613,7 @@ The branch adds an exact-head audit script that:
 - verifies hashes of new sources;
 - checks inherited active inputs against the v95 base;
 - checks the actual TeX input graph;
-- can bind the complete build log, `.fls`, and PDF to runtime HEAD.
+- can bind the complete build log, .fls, and PDF to runtime HEAD.
 
 The workflow is designed to compile the full manuscript, not merely the eight-page family reading copy.
 
@@ -664,7 +635,7 @@ It is important to be precise: revision 96 does answer part of the v95 report ev
 
 ### Substantially answered
 
-- The request for active-set behavior of (kappa_x,kappa_y) is substantially answered.
+- The request for active-set behavior of kappa_x and kappa_y is substantially answered.
 - Continuity and semialgebraic/analytic phase structure of the leading constant inside the identifiable family are substantially answered.
 - Rank-two perturbations of the first channel are no longer merely numerical; they are included in the theorem.
 - The weight-isolated rank-one region is explicitly classified.
@@ -681,7 +652,7 @@ It is important to be precise: revision 96 does answer part of the v95 report ev
 - A theorem-by-theorem novelty comparison with the strongest applicable classical/current valuative results.
 - A broader singularity stratification where multiplicity or accessible valuation data change.
 - Proof-grade expansion of the general effective real-resolution algorithm.
-- The (Gequiv0) definitional issue.
+- The G identically zero definitional issue.
 - Boundary blow-up rates for the exact leading constant.
 - Architectural narrowing of the complete article.
 - A response sourced to the actual latest v95 referee report.
@@ -722,7 +693,7 @@ A much stronger focused paper could contain:
 2. a rigorous novelty comparison showing exactly what is beyond scalar Łojasiewicz finite-max theory;
 3. the complete binary cubic exact-fibre classification;
 4. the uniform whole-model spectral normal form;
-5. the finite active-set formula for (C);
+5. the finite active-set formula for C;
 6. one carefully analyzed identification wall;
 7. the oracle risk consequence as a short corollary.
 
