@@ -1,0 +1,67 @@
+name: A2 v97 exact-head manuscript and archive
+on:
+  push:
+    branches: [revision/a2-v97-real-singularity-atlas-weight-wall-2026-09-20]
+  pull_request:
+    branches:
+      - review/a2-v96-independent-harsh-top4-2026-09-20
+      - revision/a2-v96-uniform-stratified-spectral-laws-2026-09-20
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: a2-v97-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+jobs:
+  manuscript:
+    if: github.event_name != 'pull_request' || github.head_ref == 'revision/a2-v97-real-singularity-atlas-weight-wall-2026-09-20'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - name: Install TeX and exact arithmetic
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y latexmk texlive-latex-extra texlive-fonts-recommended texlive-science lmodern poppler-utils
+          python -m pip install sympy==1.14.0
+      - name: Audit exact source head
+        run: python scripts/audit_a2_v97.py --repo --output /tmp/a2-v97-source.json
+      - name: Run finite exact regressions
+        run: |
+          python scripts/verify_a2_v97_math.py --output /tmp/a2-v97-diagnostics.json
+          python - <<'PY'
+          import json
+          old = json.load(open('revisions/a2-v97/EXACT_DIAGNOSTICS.json'))
+          new = json.load(open('/tmp/a2-v97-diagnostics.json'))
+          assert old['wall_example'] == new['wall_example']
+          assert old['base_local_fisher']['C4'] == new['base_local_fisher']['C4']
+          assert old['wall_remote_fisher']['mu2'] == new['wall_remote_fisher']['mu2']
+          assert old['multiplicity_regression']['kappas'] == new['multiplicity_regression']['kappas']
+          PY
+      - name: Compile principal, unchanged archive, and complete volume
+        working-directory: papers/A2-v17-boundary-information-coarsening
+        run: |
+          latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error -recorder rigidity_v97.tex
+          latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error -recorder rigidity_v97_archive.tex
+          latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error -recorder rigidity_v97_complete.tex
+      - name: Bind PDFs and actual input graphs to HEAD
+        run: |
+          mkdir -p a2-v97-artifacts
+          python scripts/audit_a2_v97.py --repo --build --output a2-v97-artifacts/RUNTIME_RECEIPT.json
+          cp /tmp/a2-v97-diagnostics.json a2-v97-artifacts/EXACT_DIAGNOSTICS.json
+          cp revisions/a2-v97/{SOURCE_MANIFEST.json,RESPONSE_TO_REFEREE.md,LOCAL_VALIDATION.json} a2-v97-artifacts/
+          cp papers/A2-v17-boundary-information-coarsening/rigidity_v97{,_archive,_complete}.{pdf,log,fls} a2-v97-artifacts/
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: a2-v97-${{ env.EXPECTED_HEAD }}
+          path: |
+            a2-v97-artifacts/
+            papers/A2-v17-boundary-information-coarsening/rigidity_v97*.log
+          if-no-files-found: warn
+          retention-days: 90
