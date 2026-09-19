@@ -1,0 +1,77 @@
+name: A2 v88 manuscript
+on:
+  push:
+    branches: [revision/a2-v88-projective-polynomial-rigidity-2026-09-19]
+    paths:
+      - .github/workflows/a2-v88-manuscript.yml
+      - papers/A2-v17-boundary-information-coarsening/article/v88/**
+      - papers/A2-v17-boundary-information-coarsening/rigidity_v88.tex
+      - papers/A2-v17-boundary-information-coarsening/verification/*v88.py
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: a2-v88-native-manuscript
+  cancel-in-progress: false
+jobs:
+  manuscript:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      ART: /tmp/a2-v88-artifact
+      REVIEW: 976d23ef269126e68dd90c4c9d3184ee67ff0b54
+      REVISION_BRANCH: revision/a2-v88-projective-polynomial-rigidity-2026-09-19
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Pin source
+        run: |
+          set -euo pipefail
+          mkdir -p "$ART"
+          git rev-parse HEAD > "$ART/source-commit.txt"
+          git ls-files -z -- papers/A2-v17-boundary-information-coarsening/article/v88 papers/A2-v17-boundary-information-coarsening/rigidity_v88.tex papers/A2-v17-boundary-information-coarsening/verification/reconstruct_v88.py papers/A2-v17-boundary-information-coarsening/verification/verify_v88.py reviews/a2-v88-response-to-v87-2026-09-19 A2_REVISION_V88_MANIFEST.md .github/workflows/a2-v88-manuscript.yml > /tmp/a2-v88-source-list
+          tar --null -czf "$ART/a2-v88-sources.tar.gz" -T /tmp/a2-v88-source-list
+      - name: Install native dependencies
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq texlive-latex-extra texlive-fonts-recommended texlive-science latexmk python3-numpy python3-sympy poppler-utils
+      - name: Verify identities, source graph and additive preservation
+        working-directory: papers/A2-v17-boundary-information-coarsening
+        run: /usr/bin/python3 verification/verify_v88.py --base "$PWD" --review-base "$REVIEW" --output "$ART/verification.json"
+      - name: Compile and record actual output
+        working-directory: papers/A2-v17-boundary-information-coarsening
+        run: |
+          set -euo pipefail
+          latexmk -pdf -interaction=nonstopmode -halt-on-error rigidity_v88.tex
+          if grep -E 'undefined references|undefined citations|There were undefined|multiply defined|Overfull' rigidity_v88.log; then exit 1; fi
+          cp rigidity_v88.pdf "$ART/"
+          pdfinfo rigidity_v88.pdf > "$ART/pdfinfo.txt"
+          sha256sum rigidity_v88.pdf > "$ART/pdf-sha256.txt"
+          pdflatex --version > "$ART/compiler.txt"
+          pdftoppm -r 75 -png rigidity_v88.pdf "$ART/page"
+      - name: Commit compiled article and source-pinned native evidence
+        working-directory: papers/A2-v17-boundary-information-coarsening
+        run: |
+          set -euo pipefail
+          cp "$ART/verification.json" verification/v88-native-verification.json
+          cp "$ART/source-commit.txt" verification/v88-native-source-commit.txt
+          cp "$ART/pdf-sha256.txt" verification/v88-native-pdf-sha256.txt
+          cp "$ART/compiler.txt" verification/v88-native-compiler.txt
+          cp "$ART/pdfinfo.txt" verification/v88-native-pdfinfo.txt
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f rigidity_v88.pdf verification/v88-native-verification.json verification/v88-native-source-commit.txt verification/v88-native-pdf-sha256.txt verification/v88-native-compiler.txt verification/v88-native-pdfinfo.txt
+          if ! git diff --cached --quiet; then
+            git commit -m 'Build A2 v88 manuscript and record source-pinned native evidence'
+            git push origin "HEAD:$REVISION_BRANCH"
+          fi
+      - name: Collect diagnostics
+        if: always()
+        run: |
+          mkdir -p "$ART"
+          find papers/A2-v17-boundary-information-coarsening -maxdepth 1 -name 'rigidity_v88.log' -exec cp {} "$ART/" \;
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: a2-v88-manuscript
+          path: /tmp/a2-v88-artifact/
+          retention-days: 30
