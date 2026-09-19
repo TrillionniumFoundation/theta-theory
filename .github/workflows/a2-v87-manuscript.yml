@@ -1,0 +1,80 @@
+name: A2 v87 manuscript
+on:
+  push:
+    branches: [revision/a2-v87-gap-free-singular-quotient-2026-09-19]
+    paths:
+      - .github/workflows/a2-v87-manuscript.yml
+      - papers/A2-v17-boundary-information-coarsening/article/v87/**
+      - papers/A2-v17-boundary-information-coarsening/rigidity_v87*.tex
+      - papers/A2-v17-boundary-information-coarsening/verification/verify_v87.py
+      - papers/A2-v17-boundary-information-coarsening/v87-ready.txt
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: a2-v87-native-manuscript
+  cancel-in-progress: false
+jobs:
+  manuscript:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      ART: /tmp/a2-v87-artifact
+      REVIEW: 18de3872c705b5be9582429567877aac8d1a5fbe
+      REVISION_BRANCH: revision/a2-v87-gap-free-singular-quotient-2026-09-19
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Pin source and preserve review base
+        run: |
+          set -euo pipefail
+          mkdir -p "$ART"
+          git rev-parse HEAD > "$ART/source-commit.txt"
+          git fetch --depth=1 origin "$REVIEW"
+          git ls-files -z -- papers/A2-v17-boundary-information-coarsening reviews/a2-v86-independent-harsh-top4-2026-09-18 reviews/a2-v87-response-to-v86-2026-09-19 A2_REVISION_V87_MANIFEST.md .github/workflows/a2-v87-manuscript.yml > /tmp/a2-v87-source-list
+          tar --null -czf "$ART/a2-v87-sources.tar.gz" -T /tmp/a2-v87-source-list
+      - name: Install native dependencies
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq texlive-latex-extra texlive-fonts-recommended texlive-science latexmk python3-numpy python3-sympy poppler-utils
+      - name: Check identities, both source graphs and additive preservation
+        working-directory: papers/A2-v17-boundary-information-coarsening
+        run: /usr/bin/python3 verification/verify_v87.py --base "$PWD" --review-base "$REVIEW" --output "$ART/verification.json"
+      - name: Compile both editions and record actual output
+        working-directory: papers/A2-v17-boundary-information-coarsening
+        run: |
+          set -euo pipefail
+          for name in rigidity_v87 rigidity_v87_companion; do
+            latexmk -pdf -interaction=nonstopmode -halt-on-error "$name.tex"
+            if grep -E 'undefined references|undefined citations|There were undefined|multiply defined|Overfull' "$name.log"; then exit 1; fi
+            cp "$name.pdf" "$ART/"
+            pdfinfo "$name.pdf" > "$ART/$name.pdfinfo.txt"
+          done
+          sha256sum rigidity_v87.pdf rigidity_v87_companion.pdf > "$ART/pdf-sha256.txt"
+          pdflatex --version > "$ART/pdflatex-version.txt"
+          pdftoppm -r 80 -png rigidity_v87.pdf "$ART/principal"
+      - name: Record source-pinned native evidence and compiled manuscripts
+        working-directory: papers/A2-v17-boundary-information-coarsening
+        run: |
+          set -euo pipefail
+          cp "$ART/verification.json" verification/v87-native-verification.json
+          cp "$ART/source-commit.txt" verification/v87-native-source-commit.txt
+          cp "$ART/pdf-sha256.txt" verification/v87-native-pdf-sha256.txt
+          cp "$ART/pdflatex-version.txt" verification/v87-native-compiler.txt
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f rigidity_v87.pdf rigidity_v87_companion.pdf verification/v87-native-verification.json verification/v87-native-source-commit.txt verification/v87-native-pdf-sha256.txt verification/v87-native-compiler.txt
+          if ! git diff --cached --quiet; then
+            git commit -m 'Build both A2 v87 manuscripts and record source-pinned native evidence'
+            git push origin "HEAD:$REVISION_BRANCH"
+          fi
+      - name: Collect diagnostics even on failure
+        if: always()
+        run: |
+          mkdir -p "$ART"
+          find papers/A2-v17-boundary-information-coarsening -maxdepth 1 -name 'rigidity_v87*.log' -exec cp {} "$ART/" \;
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: a2-v87-manuscript
+          path: /tmp/a2-v87-artifact/
+          retention-days: 30
