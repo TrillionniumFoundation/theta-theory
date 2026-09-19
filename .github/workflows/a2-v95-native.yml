@@ -1,0 +1,48 @@
+name: A2 v95 exact-head full manuscript and real-germ diagnostics
+on:
+  push:
+    branches: [revision/a2-v95-real-valuations-cubic-classification-2026-09-19]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  manuscript:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install mathematical and native typesetting dependencies
+        run: |
+          python -m pip install numpy scipy sympy
+          sudo apt-get update
+          sudo apt-get install -y latexmk texlive-latex-extra texlive-science texlive-fonts-recommended lmodern poppler-utils
+      - name: Audit exact HEAD and preserved source graph
+        run: python revisions/a2-v95/verify_a2_v95.py --receipt build/a2-v95/source-audit.json
+      - name: Run finite regressions, not proof verification
+        run: python revisions/a2-v95/diagnostics_v95.py --output build/a2-v95/diagnostics.json
+      - name: Compile the complete manuscript, including all appendices
+        working-directory: papers/A2-v17-boundary-information-coarsening
+        run: latexmk -pdf -interaction=nonstopmode -halt-on-error rigidity_v95.tex
+      - name: Audit the actual compiled input graph and package exact sources
+        run: |
+          python revisions/a2-v95/verify_a2_v95.py --compiled --receipt build/a2-v95/exact-head.json --package build/a2-v95/source-and-response.tar.gz
+          cp papers/A2-v17-boundary-information-coarsening/rigidity_v95.pdf build/a2-v95/
+          pdftotext -layout build/a2-v95/rigidity_v95.pdf build/a2-v95/rigidity_v95.txt
+      - name: Retain native log after every compilation attempt
+        if: always()
+        run: |
+          mkdir -p build/a2-v95
+          if test -f papers/A2-v17-boundary-information-coarsening/rigidity_v95.log; then
+            cp papers/A2-v17-boundary-information-coarsening/rigidity_v95.log build/a2-v95/
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: a2-v95-exact-head-${{ github.sha }}
+          path: build/a2-v95/
+          if-no-files-found: warn
