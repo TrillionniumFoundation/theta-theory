@@ -116,6 +116,29 @@ def collision_check() -> dict:
     x,y=s.symbols('x y')
     F=s.Matrix([x*x+y*y,x*y])
     require(s.expand(F.jacobian([x,y]).det())==2*(x*x-y*y),'Discriminant determinant')
+    # Verify the slow degree-six bound, not only the fast inverse identities.
+    # On the prescribed tube, |u| is comparable to t^(1/2) and |v| to t.
+    u,v=s.symbols('u v', nonzero=True)
+    gx,gy=(u+v)/2,(u-v)/2
+    slow=s.Matrix([gx**6,gx**3*gy**3,gy**6])
+    invfast=s.Matrix([[1/(2*u),1/u],[1/(2*v),-1/v]])
+    first=slow.jacobian([u,v])*invfast
+    second=s.Matrix(list(first)).jacobian([u,v])*invfast
+    def weight_order(expr):
+        terms=s.Add.make_args(s.expand(expr))
+        orders=[]
+        for term in terms:
+            if term==0:
+                continue
+            powers=term.as_powers_dict()
+            eu,ev=powers.get(u,0),powers.get(v,0)
+            require(s.simplify(term/u**eu/v**ev).free_symbols==set(),
+                    'Derivative is not the asserted Laurent polynomial')
+            orders.append(s.Rational(eu,2)+ev)
+        return min(orders) if orders else s.oo
+    require(min(weight_order(g) for g in slow)>=3,'Slow residual order')
+    require(min(weight_order(g) for g in first)>=s.Rational(3,2),'Fast slope order')
+    require(min(weight_order(g) for g in second)>=-s.Rational(1,2),'Fast second derivative order')
     return {'lambda':1,'four_exact_inverse_branches':True,
             'det_DF':'2*(x^2-y^2)','tested_homogeneous_degree':6,
             'c_over_radius_exponent':'1','radius_times_M_exponent':'3/2'}
