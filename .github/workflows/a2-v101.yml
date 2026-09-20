@@ -1,0 +1,64 @@
+name: A2 v101 source-bound native revision
+on:
+  push:
+    branches:
+      - revision/a2-v101-finite-metric-divisorial-contact-2026-09-20
+    paths:
+      - 'papers/A2-v17-boundary-information-coarsening/article/v101/**'
+      - 'papers/A2-v17-boundary-information-coarsening/rigidity_v101*.tex'
+      - 'scripts/build_a2_v101.py'
+      - 'scripts/check_a2_v101.py'
+      - '.github/workflows/a2-v101.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: a2-v101-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  native:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - name: Native toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y latexmk texlive-latex-extra texlive-fonts-recommended lmodern python3-sympy python3-mpmath poppler-utils
+      - name: Finite arithmetic and feasible recovery curves
+        run: /usr/bin/python3 scripts/check_a2_v101.py --output /tmp/a2-v101-exact.json
+      - name: Principal, archive and complete native source graph
+        run: /usr/bin/python3 scripts/build_a2_v101.py
+      - uses: actions/upload-artifact@v4
+        id: bundle
+        with:
+          name: a2-v101-${{ github.sha }}
+          path: revisions/a2-v101/native/
+          if-no-files-found: error
+          retention-days: 90
+      - name: Preserve evidence on this revision branch only
+        env:
+          SOURCE_HEAD: ${{ github.sha }}
+          TARGET_BRANCH: ${{ github.ref_name }}
+          ARTIFACT_ID: ${{ steps.bundle.outputs.artifact-id }}
+          ARTIFACT_URL: ${{ steps.bundle.outputs.artifact-url }}
+        run: |
+          /usr/bin/python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          p=Path('revisions/a2-v101/native/RUNTIME_RECEIPT.json')
+          d=json.loads(p.read_text())
+          d['artifact_id']=os.environ['ARTIFACT_ID']
+          d['artifact_url']=os.environ['ARTIFACT_URL']
+          p.write_text(json.dumps(d,indent=2,sort_keys=True)+'\n')
+          PY
+          git fetch origin "$TARGET_BRANCH"
+          test "$(git rev-parse FETCH_HEAD)" = "$SOURCE_HEAD"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add revisions/a2-v101/native
+          git commit -m "A2 v101: preserve native receipt for $SOURCE_HEAD [skip ci]"
+          git push origin "HEAD:$TARGET_BRANCH"
