@@ -1,0 +1,68 @@
+\section{The local experiment represented by a ray cost}\label{sec:experiment}
+We use squared Hellinger distance $h^2(p,q)=\sum_e(\sqrt{p_e}-\sqrt{q_e})^2$, with no factor of one half. Let $p$ be a strictly positive finite probability vector. Suppose the feasible local alternatives, indexed by $a\in\R^r$ and $v$ in a cone $\mathcal K\subset\R^k$ with nonempty interior, have
+\begin{equation}\label{eq:LAN-model}
+ p_{n,a,v}=p+n^{-1/2}(La+Dv)+o(n^{-1/2}),
+\end{equation}
+uniformly on bounded index sets. The columns have zero sums and $(L,D)$ is injective. The remainder is in ordinary Euclidean norm on the finite cell space. Define
+\[
+ W=\diag(p_e^{-1}),\quad I=(L,D)^{\mathsf T}W(L,D),\quad
+ Q=I_{DD}-I_{DL}I_{LL}^{-1}I_{LD}.
+\]
+The empty free block has its natural convention. Fixed clock designs with limiting proportions $w_j>0$ give the same formula with $W=\diag(w_j/p_{je})$.
+
+\begin{theorem}[Canonical efficient discrimination]\label{thm:experiment}
+For independent observations from \eqref{eq:LAN-model}, the local log likelihood has the expansion, for each bounded local index and uniformly on compact index sets when the remainders are uniform,
+\begin{equation}\label{eq:LAN}
+ \log\frac{dP_{n,a,v}^{\otimes n}}{dP_{n,0,0}^{\otimes n}}
+ =(a,v)^{\mathsf T}Z_n-\tfrac12(a,v)^{\mathsf T}I(a,v)+o_{P}(1),
+ \qquad Z_n\ \Longrightarrow\ N(0,I),
+\end{equation}
+provided the centre is taken to be exactly $p_{n,0,0}=p$. After removal of the unrestricted nuisance translation, the Gaussian limit experiment is
+\begin{equation}\label{eq:efficient-experiment}
+ Y\sim N(Qv,Q),\qquad v\in\mathcal K.
+\end{equation}
+Its scalar discrimination cost is
+\begin{equation}\label{eq:cost-affinity}
+ c(v)=v^{\mathsf T}Qv,
+ \quad \operatorname{Aff}(N(0,Q),N(Qv,Q))=e^{-c(v)/8},
+ \quad \operatorname{Power}_{\alpha}(v)=
+ \Phi\bigl(\Phi^{-1}(\alpha)+\sqrt{c(v)}\bigr).
+\end{equation}
+Here the last expression is the Neyman--Pearson power for testing the null against the specified efficient local alternative at level $\alpha$.
+
+Two such labelled quotient experiments with the same retained coordinates are statistically equivalent by Markov randomizations in both directions if and only if their matrices $Q$ agree. Thus the ray costs determine an intrinsic discrimination object, not just a chosen matrix representation. Exact-ray complexity is nevertheless not sample complexity.
+\end{theorem}
+\begin{proof}
+Write $s=La+Dv$ and $\delta_n=p_{n,a,v}-p$. Positivity gives a uniform bound on $|\delta_{ne}/p_e|$. Taylor expansion of $\log(1+u)$, with the third-order remainder bounded by a constant times $|u|^3$, yields
+\[
+ \sum_{i=1}^n\log\frac{p_{n,a,v}(X_i)}{p(X_i)}
+ =\sum_e(N_e-np_e)\frac{\delta_{ne}}{p_e}
+ -\tfrac n2\sum_e\frac{\delta_{ne}^2}{p_e}+o_P(1).
+\]
+The first-order expectation vanishes because $\sum_e\delta_{ne}=0$. The replacement of the quadratic empirical counts by their expectations has order $o_P(1)$, and $n\sum_e|\delta_{ne}|^3=O(n^{-1/2})$. The finite-dimensional multinomial central limit theorem and \eqref{eq:LAN-model} now give \eqref{eq:LAN}. Uniformity follows from bounding the remainder against the norm of the same finite-dimensional count vector. The zero-sum score columns remove the $pp^{\mathsf T}$ covariance term. For a deterministic clock allocation, apply the same argument independently to each group and use $n_j/n\to w_j$.
+
+The Gaussian score $Z=(Z_L,Z_D)$ has mean $I(a,v)$ and covariance $I$ under the local alternative. The efficient score
+\[
+ Y=Z_D-I_{DL}I_{LL}^{-1}Z_L
+\]
+has mean $Qv$, covariance $Q$, and zero covariance with $Z_L$. The two blocks are therefore independent. The mean of the nuisance block is $I_{LL}a+I_{LD}v$ and can take every value as $a$ ranges freely. Equivalently, after the nuisance reparametrization $a\mapsto a+I_{LL}^{-1}I_{LD}v$, the Gaussian experiment is the product of the efficient experiment and an unrelated full translation family. Discarding that nuisance translation yields precisely \eqref{eq:efficient-experiment}. This is the quotient operation; it does not claim that data concerning an unknown nuisance parameter can be simulated without a parameter.
+
+Whitening by $Q^{-1/2}$ gives normal distributions with common identity covariance and mean difference $Q^{1/2}v$. Integrating the product of square-root densities by completing the square gives the affinity in \eqref{eq:cost-affinity}. The log likelihood has variance $c(v)$ and means $-c(v)/2$ and $c(v)/2$ under the null and alternative; its threshold test gives the displayed power, also at $c(v)=0$ by continuity.
+
+Identical $Q$ give identical quotient experiments. Conversely Hellinger affinity cannot decrease under a Markov kernel: apply the Cauchy--Schwarz inequality conditionally on each output. Kernels in both directions therefore force equality of affinities of each labelled parameter pair, in particular of $0$ and $v$. Formula \eqref{eq:cost-affinity} implies equality of $v^{\mathsf T}Qv$ on the cone. Since that cone has nonempty interior, the two quadratic polynomials and their matrices are equal. This proves the converse.
+\end{proof}
+
+\begin{corollary}[Variational costs and singular root scaling]\label{cor:statistical-roots}
+Suppose the feasible local chart has the stronger score expansion
+$p_{t,a,v}=p+t(La+Dv)+O(t^{1+\epsilon})$, $\epsilon>0$, with bounded free coordinates realizing each bounded feasible $v$, and every almost-minimizing local law has bounded scaled coordinates. Then
+\[
+ \lim_{t\downarrow0}\frac4{t^2}\inf_a h^2(p_{t,a,v},p)=v^{\mathsf T}Qv.
+\]
+With $t=n^{-1/2}$ the same matrix is the efficient information in Theorem~\ref{thm:experiment}. In a repeated interior cluster, variance $tv$ is realized by root displacements of order $n^{-1/4}$; inward endpoint sums and simple root shifts have order $n^{-1/2}$.
+\end{corollary}
+\begin{proof}
+The square-root identity gives
+$4t^{-2}h^2(p_{t,a,v},p)=\|La+Dv\|_W^2+o(1)$ uniformly on bounded sets. Its minimum over $a$ is $v^{\mathsf T}Qv$, obtained by $a_*=-I_{LL}^{-1}I_{LD}v$. Testing its feasible realization proves the upper bound; the bounded-coordinate assumption and the same expansion prove the lower bound for every almost-minimizing sequence. Setting $t=n^{-1/2}$ gives \eqref{eq:LAN-model}. The cluster identity $X=\frac12\sum u_i^2$ for zero-mean root displacements gives the square-root scale $\sqrt t$; sums are linear. These are realized score paths, including the cone boundary.
+\end{proof}
+The binary whole-model coefficient inverse and cluster estimates retained in the supporting volume verify these hypotheses on every compact full-rank fixed-pattern stratum. The paired-contrast model verifies them directly in its probability coordinates. Thus the two settings share the efficient discrimination interpretation. This identifies the intrinsic meaning of a variational ray while leaving separate the number of independent observations needed to estimate it.
+
