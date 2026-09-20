@@ -1,0 +1,74 @@
+name: A2 v100 exact-head revision
+on:
+  push:
+    branches: [revision/a2-v100-canonical-degeneration-and-singular-entrances-2026-09-20]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: a2-v100-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  source:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+      - name: Preserve exact source snapshot
+        run: |
+          mkdir -p /tmp/source
+          git rev-parse HEAD > /tmp/source/HEAD.txt
+          git ls-files -z '*.tex' '*.bib' '*.sty' '*.cls' '*.py' '*.json' '*.md' '*.yml' '*.yaml' | tar --null -T - -czf /tmp/source/source.tar.gz
+      - uses: actions/upload-artifact@v4
+        with:
+          name: a2-v100-source-${{ github.sha }}
+          path: /tmp/source/
+          retention-days: 90
+  manuscript:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - name: Install native TeX and exact arithmetic
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y latexmk texlive-latex-extra texlive-fonts-recommended texlive-science lmodern poppler-utils
+          python -m pip install sympy==1.14.0
+      - name: Exact arithmetic
+        run: |
+          mkdir -p a2-v100-artifacts
+          if test -f scripts/verify_a2_v100_math.py; then
+            python scripts/verify_a2_v100_math.py --output a2-v100-artifacts/EXACT_DIAGNOSTICS.json
+          fi
+      - name: Compile preserved and revised manuscripts
+        working-directory: papers/A2-v17-boundary-information-coarsening
+        run: |
+          V=99
+          if test -f rigidity_v100.tex; then V=100; fi
+          for stem in rigidity_v${V} rigidity_v${V}_archive rigidity_v${V}_complete; do
+            latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error -recorder "$stem.tex"
+          done
+      - name: Bind output to exact source head
+        run: |
+          if test -f scripts/audit_a2_v100.py; then
+            python scripts/audit_a2_v100.py --output a2-v100-artifacts/RUNTIME_RECEIPT.json
+          else
+            git rev-parse HEAD > a2-v100-artifacts/BASELINE_HEAD.txt
+          fi
+          cp papers/A2-v17-boundary-information-coarsening/rigidity_v{99,100}*.pdf a2-v100-artifacts/ 2>/dev/null || true
+          cp papers/A2-v17-boundary-information-coarsening/rigidity_v{99,100}*.fls a2-v100-artifacts/ 2>/dev/null || true
+          cp papers/A2-v17-boundary-information-coarsening/rigidity_v{99,100}*.log a2-v100-artifacts/ 2>/dev/null || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: a2-v100-native-${{ github.sha }}
+          path: |
+            a2-v100-artifacts/
+            papers/A2-v17-boundary-information-coarsening/rigidity_v99*.log
+            papers/A2-v17-boundary-information-coarsening/rigidity_v100*.log
+          retention-days: 90
