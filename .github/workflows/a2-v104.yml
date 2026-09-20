@@ -1,0 +1,71 @@
+name: A2 v104 native revision and exact v103 replay
+on:
+  push:
+    branches:
+      - revision/a2-v104-intrinsic-reduction-endpoint-reconstruction-2026-09-20
+    paths:
+      - 'papers/A2-v17-boundary-information-coarsening/article/v104/**'
+      - 'papers/A2-v17-boundary-information-coarsening/rigidity_v104*.tex'
+      - 'scripts/build_a2_v104.py'
+      - 'scripts/check_a2_v104.py'
+      - '.github/workflows/a2-v104.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: a2-v104-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - name: Install native toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y latexmk texlive-latex-extra texlive-fonts-recommended lmodern python3-sympy poppler-utils
+      - name: Compile principal, replay exact v103 source, compile all v104 volumes
+        run: /usr/bin/python3 scripts/build_a2_v104.py
+      - uses: actions/upload-artifact@v4
+        id: bundle
+        if: always()
+        with:
+          name: a2-v104-${{ github.sha }}
+          path: revisions/a2-v104/native/
+          if-no-files-found: error
+          retention-days: 90
+      - name: Commit only a successful source-bound native receipt on the revision branch
+        if: success()
+        env:
+          SOURCE_HEAD: ${{ github.sha }}
+          TARGET_BRANCH: ${{ github.ref_name }}
+          ARTIFACT_ID: ${{ steps.bundle.outputs.artifact-id }}
+          ARTIFACT_URL: ${{ steps.bundle.outputs.artifact-url }}
+        run: |
+          test "$TARGET_BRANCH" = 'revision/a2-v104-intrinsic-reduction-endpoint-reconstruction-2026-09-20'
+          /usr/bin/python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          p=Path('revisions/a2-v104/native/RUNTIME_RECEIPT.json')
+          d=json.loads(p.read_text())
+          assert d['status']=='native_passed'
+          assert d['source_head']==os.environ['SOURCE_HEAD']
+          assert d['v103_exact_replay_head']=='618b0b098654f53e61a782138272349df92d16ad'
+          d['artifact_id']=os.environ['ARTIFACT_ID']
+          d['artifact_url']=os.environ['ARTIFACT_URL']
+          p.write_text(json.dumps(d,indent=2,sort_keys=True)+'\n')
+          PY
+          git fetch origin "$TARGET_BRANCH"
+          git diff --quiet "$SOURCE_HEAD" FETCH_HEAD -- papers/A2-v17-boundary-information-coarsening scripts/build_a2_v100.py scripts/build_a2_v103.py scripts/check_a2_v103.py .github/workflows/a2-v103.yml scripts/build_a2_v104.py scripts/check_a2_v104.py .github/workflows/a2-v104.yml
+          git add -f revisions/a2-v104/native
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m "A2 v104: native receipt and exact v103 replay for $SOURCE_HEAD [skip ci]"
+          EVIDENCE_COMMIT=$(git rev-parse HEAD)
+          git checkout -B a2-v104-native-receipt FETCH_HEAD
+          git cherry-pick "$EVIDENCE_COMMIT"
+          git push origin "HEAD:$TARGET_BRANCH"
