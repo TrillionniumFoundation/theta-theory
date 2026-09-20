@@ -856,7 +856,7 @@ A top-four paper needs a theorem that makes the distinctive mathematics unavoida
 
 Revision 100 is a better paper than revision 99.
 
-It closes the v99 reproducibility regression, narrows effectivity responsibly, improves the literature discussion, moves scalar separation into the real model, and generalizes remote entrance from regular corners to arbitrary finite semialgebraic fibres at the level of value-function asymptotics.
+It substantially repairs the v99 reproducibility regression, narrows effectivity responsibly, improves the literature discussion, moves scalar separation into the real model, and generalizes remote entrance from regular corners to arbitrary finite semialgebraic fibres at the level of value-function asymptotics.
 
 I do not think those improvements are enough for the stated journal class.
 
