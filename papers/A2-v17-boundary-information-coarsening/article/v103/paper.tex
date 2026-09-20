@@ -1,0 +1,670 @@
+\documentclass[11pt,reqno]{amsart}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern,amsmath,amssymb,amsthm,mathtools,microtype,mathrsfs}
+\usepackage[margin=1.08in]{geometry}
+\usepackage[hidelinks]{hyperref}
+\allowdisplaybreaks[2]
+\setlength{\emergencystretch}{2em}
+\numberwithin{equation}{section}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newcommand{\R}{\mathbb R}
+\newcommand{\Sym}{\operatorname{Sym}}
+\newcommand{\tr}{\operatorname{tr}}
+\newcommand{\dist}{\operatorname{dist}}
+\newcommand{\ord}{\operatorname{ord}}
+\newcommand{\ran}{\operatorname{ran}}
+\newcommand{\cl}{\operatorname{cl}}
+\newcommand{\one}{\mathbf 1}
+\newcommand{\cE}{\mathcal E}
+\newcommand{\cC}{\mathcal C}
+\newcommand{\cK}{\mathcal K}
+\newcommand{\cL}{\mathcal L}
+\newcommand{\cQ}{\mathscr Q}
+\newcommand{\eps}{\varepsilon}
+\DeclareMathOperator*{\argmin}{argmin}
+\hypersetup{pdftitle={Finite-sheet metric contact and spectral quotients of polynomial observations},pdfauthor={Qian Qi},pdfsubject={A2 revision 103}}
+\title[Finite-sheet metric contact]{Finite-sheet metric contact and spectral quotients\\ of polynomial observations}
+\author{Qian Qi}
+\date{September 20, 2026}
+\subjclass[2020]{14P10, 35R30, 15A22, 62G05}
+\keywords{Polynomial inverse problems, metric contact, cancellation, spectral fibres, Hellinger geometry}
+\begin{document}
+\begin{abstract}
+We study the metric data that survive singular minimization in polynomial observation problems. A finite union of affine leading-residual sheets admits an exact semidefinite representation; its positive-metric exposed faces are the convex hulls of the projected residual tensors of the minimizing sheets. We prove a cancellation-uniform normal-form theorem for several fast equations, coupled residual coordinates, and finitely many inverse branches. Weighted polynomial systems satisfy its hypotheses and supply the affine sheets on every nonexact semialgebraic opening arc. For binary stochastic polynomial observations we prove the whole-model local spectral limit with uniform error bounds on compact fixed-pattern strata. The native Hellinger quotient family has a finite rational-moment description, yielding query bounds linear in the polynomial degree. In a two-variance pattern, even with clocks and weights fixed, this family has dimension three and exactly three scalar ray queries are necessary, even adaptively. Endpoint elimination is classified by a finite equality test and a simplicial-cone representation; for one invisible endpoint we determine every equivalence class and its minimal representative. A real analytic monomial-presentation theorem supplies the classical exponent calculation independently of these metric results.
+\end{abstract}
+\maketitle
+
+\section{Introduction}
+The leading distance to a polynomial observation fibre contains two different kinds of information. Its order records how closely a feasible branch can approach the observation. Its coefficient records how the surviving residual is situated relative to the observation metric. When several branches compete, or when leading terms cancel on a moving parameter path, the coefficient cannot be recovered from the order alone. A related loss occurs at an identifying observation: profiling free coordinates gives a quadratic form, but the leading spectrum may see only a one-sided partial minimum of that form.
+
+This paper gives a common description of these losses. Our first result concerns a finite affine arrangement in residual space,
+\begin{equation}\label{eq:intro-sheets}
+ E=\bigcup_{b=1}^B(c_b+L_b\R^{r_b}),\qquad c_b\notin\ran L_b.
+\end{equation}
+The metric contact envelope is the closed convex upper hull of the tensors $yy^{\mathsf T}$, $y\in E$. Theorem~\ref{thm:affine} gives a finite semidefinite lift of this envelope, identifies all its exposed faces for positive definite metrics, and realizes every such arrangement by a polynomial residual germ. Thus the envelope has a finite structure in this class, rather than merely a definition by all metric minima.
+
+Theorem~\ref{thm:shear} explains why these arrangements occur. On finitely many inverse sheets, suppose a residual has coordinates
+\[
+ (U,\ C_b(t)+B_b(U,t)U),\qquad \sup\|B_b\|\longrightarrow0.
+\]
+Provided the exact residuals $C_b$ are small compared with the inverse-chart radius, the minimum distance is, with a uniform relative error, the minimum of the Schur norms of the $C_b$. The estimate remains valid at exact cancellation. Theorem~\ref{thm:weighted} verifies the hypotheses for coupled weighted polynomial systems with several fast coordinates. Along an opening arc the sheets with maximal contact order give precisely \eqref{eq:intro-sheets}. The metric envelope, its exposed faces, and branch competition are therefore consequences of one normal-form theorem.
+
+The local part concerns a binary stochastic polynomial model. Theorem~\ref{thm:local} proves the scaled whole-model spectral limit, including its cone boundary and compact-stratum uniformity. We then retain the fixed Hellinger metric rather than replace it by an arbitrary ambient metric. Theorem~\ref{thm:moments} expresses the native quotient family through finitely many rational moments of the clock design. Theorem~\ref{thm:native} proves that a two-variance family has nonempty interior in $\Sym_2^{++}$. Theorem~\ref{thm:dimension-queries} also gives general dimension-based ray bounds, which improve on polarization for high-dimensional native patterns. The three-query lower bound is consequently a theorem about the native model family. It is a deterministic exact-oracle statement, not a claim about empirical sample complexity.
+
+Finally, Theorems~\ref{thm:endpoint-class} and \ref{thm:one-endpoint} classify the quotient caused by invisible one-sided endpoint coordinates. The first gives a finite equality criterion in every dimension and a geometric representation of the range. The second determines all equivalence classes with one endpoint, including their dimensions and canonical minimal representatives.
+
+\subsection*{Classical ingredients and the additional conclusions}
+Closed convex separation, moment matrices of affine random vectors, and Schur complements are standard convex analysis; see \cite{BV}. The support reconstruction in Proposition~\ref{prop:intrinsic} is used as a foundation, not as a new separation theorem. The additional conclusions are the exact finite-sheet lift, the exposed-face formula, its realization, and its occurrence in the cancellation normal form.
+
+The active-set description of a strictly convex parametric quadratic program is also classical. In particular, \cite[Theorem 4 and Corollary 1]{BMDP} establish the piecewise-affine and piecewise-quadratic structure relevant here. We use that structure to decide equality of endpoint-eliminated metrics and to classify the one-endpoint fibres. Piecewise quadraticity itself is not the classification claim.
+
+Contact orders belong to the classical theory of integral closure and real analytic inequalities; see Lejeune-Jalabert and Teissier, with Risler's real-analytic appendix, in \cite{LJT}. Uniformization and normal crossings are supplied by \cite[Theorem 0.1 and Corollary 4.9]{BM}. Ha's recent algebraic treatment \cite{Ha} develops valuative finite-max principles and family wall-chamber results for exponents. Our order formula is consistent with that theory and does not replace it. The assertions beyond orders concern vector residuals, positive-metric exposed tensors, and estimates relative to the \emph{exact canceled residual}. These require data not specified by an exponent or a list of valuations. The exact binary inverse and the earlier cubic, boundary, and weighted-atlas results are preserved in the accompanying mathematical volumes; the proofs needed for the present principal results are given below.
+
+\section{Finite-sheet metric contact}\label{sec:envelope}
+Write $\Sym_M^+$ and $\Sym_M^{++}$ for the positive semidefinite and positive definite symmetric matrices. For $E\subset\R^M$ put
+\begin{equation}\label{eq:envelope}
+ \cC(E)=\cl\bigl(\operatorname{conv}\{yy^{\mathsf T}:y\in E\}+\Sym_M^+\bigr).
+\end{equation}
+The closure is important for general $E$.
+
+\begin{proposition}[Intrinsic leading residuals]\label{prop:intrinsic}
+Let $N$ be compact semialgebraic and $R:N\times[0,t_0]\to\R^M$ continuous semialgebraic. Suppose that $R(\cdot,0)$ has finitely many zeros, at least one, and that $R(\cdot,t)$ has no zero for $0<t\ll1$. Then
+\[
+ d_I(t):=\min_N|R(x,t)|=a_I t^\rho+o(t^\rho),\qquad
+ a_I>0,\quad\rho\in\mathbb Q_{>0}.
+\]
+Define $\cE_\rho$ as the zero-time section of the closure of
+$\{(t,t^{-\rho}R(x,t)):x\in N,\ t>0\}$. It is closed semialgebraic, nonempty, and has distance $a_I$ from zero. For every $H>0$,
+\begin{equation}\label{eq:intrinsic}
+ d_H(t)=a_Ht^\rho+o(t^\rho),\qquad
+ a_H^2=\min_{y\in\cE_\rho}y^{\mathsf T}Hy
+      =\inf_{S\in\cC(\cE_\rho)}\tr(HS).
+\end{equation}
+Moreover,
+\begin{equation}\label{eq:reconstruct}
+ \cC(\cE_\rho)=\bigcap_{H>0}\{S:\tr(HS)\ge a_H^2\}.
+\end{equation}
+The exponent is the supremum, attained, of
+$\min_i\ord(R_i\circ\gamma)/\ord(t\circ\gamma)$ over feasible positive-time Puiseux arcs approaching a central zero.
+\end{proposition}
+\begin{proof}
+Compact minimization and one-variable semialgebraic parametrization give the first expansion. Normalized residuals of minimizers are bounded and have a subsequential limit of norm $a_I$. Any other limit has norm at least $a_I$. Norm equivalence bounds $d_H/d_I$ above and below, so the positive semialgebraic function $d_H$ has the same exponent. Its minimizing normalized residuals have a bounded subsequence attaining $a_H$ in $\cE_\rho$. Testing any sequence defining another element of $\cE_\rho$ gives the opposite inequality in \eqref{eq:intrinsic}. Taking convex hulls, positive semidefinite upper closure, and closure leaves the infimum of a positive linear functional unchanged.
+
+If $S_0$ is outside the closed convex upper set, strict separation gives a symmetric $G$ with $\tr(GS_0)<\inf_{\cC}\tr(GS)$. The upper-set property forces $G\ge0$. Since $\cC\subset\Sym_M^+$, replacing $G$ by $G+\eps I$ preserves strict separation for small $\eps>0$. This proves \eqref{eq:reconstruct}. Finally $|R|\ge(a_I/2)t^\rho$ bounds every arc ratio by $\rho$. Semialgebraic choice of minimizers, followed by a Puiseux parametrization, attains it. Compactness and finiteness of the central zero set place this arc at a central zero. The order of a real sum of squares is twice the smallest coordinate order.
+\end{proof}
+The function $H\mapsto a_H^2$ is homogeneous, concave, monotone, and locally Lipschitz on $\Sym_M^{++}$. Indeed, on $\lambda I\le H\le\Lambda I$ its minimizing residuals have uniformly bounded norm, by comparison with one fixed element of $\cE_\rho$. Testing minimizers at two metrics proves the Lipschitz assertion. An invertible residual change $T$ sends the envelope to $T\cC T^{\mathsf T}$. The invariant refers to the real feasible residual image and the marked time coordinate, not just to an unmarked complex ideal.
+
+\begin{theorem}[Finite lift, exposed faces, and realization]\label{thm:affine}
+In \eqref{eq:intro-sheets}, assume $L_b$ has full column rank and set $A_b=[L_b,c_b]$. Then
+\begin{equation}\label{eq:lift}
+ \cC(E)=\left\{\sum_b A_bM_bA_b^{\mathsf T}+P:
+ M_b\ge0,\ P\ge0,\ \sum_b(M_b)_{r_b+1,r_b+1}=1\right\}.
+\end{equation}
+In particular this linear image of a spectrahedron is closed. For $H>0$ put
+\begin{align}
+ a_b(H)&=-(L_b^{\mathsf T}HL_b)^{-1}L_b^{\mathsf T}Hc_b,
+ &y_b(H)&=c_b+L_ba_b(H),\notag\\
+ q_b(H)&=y_b(H)^{\mathsf T}Hy_b(H),
+ &q(H)&=\min_bq_b(H).\label{eq:branch-support}
+\end{align}
+The exposed face at the minimum of $\tr(HS)$ is exactly
+\begin{equation}\label{eq:face}
+ \operatorname{conv}\{y_b(H)y_b(H)^{\mathsf T}:q_b(H)=q(H)\}.
+\end{equation}
+The active-branch sets define a finite semialgebraic partition of the positive metric cone. Their support values are locally Lipschitz jointly in the metric and affine-sheet data on compact sets with uniform rank and positive-distance margins.
+
+Every arrangement \eqref{eq:intro-sheets} is the leading residual set of a polynomial germ with a finite central zero set. A common integer order $p\ge1$ may be prescribed. Rational orders are obtained by time ramification, or by a semialgebraic time coordinate.
+\end{theorem}
+\begin{proof}
+First,
+\begin{equation}\label{eq:affine-moment}
+ \operatorname{conv}\{(a,1)(a,1)^{\mathsf T}:a\in\R^r\}
+ =\{M\ge0:M_{r+1,r+1}=1\}.
+\end{equation}
+For the reverse inclusion write $M=\left(\begin{smallmatrix}K&m\\m^{\mathsf T}&1\end{smallmatrix}\right)$. Positivity gives $K-mm^{\mathsf T}\ge0$. Diagonalize this covariance and realize it by a finite distribution with mean $m$, using symmetric pairs in its eigendirections. Its second moment is $M$. This also proves \eqref{eq:affine-moment} without a closure.
+
+A finite convex combination of the sheets' tensors therefore has the form on the right of \eqref{eq:lift}. Conversely set $\lambda_b=(M_b)_{r_b+1,r_b+1}$. If $\lambda_b>0$, apply \eqref{eq:affine-moment} to $M_b/\lambda_b$. If $\lambda_b=0$, positivity makes its last row and column zero; $A_bM_bA_b^{\mathsf T}$ is then a positive semidefinite contribution that can be absorbed into $P$. Thus the displayed set is the convex hull plus the positive semidefinite cone.
+
+To prove it closed, take a convergent sequence of represented matrices. All summands are positive semidefinite. Full column rank of $A_b$ gives
+\[
+ \tr(A_bM_bA_b^{\mathsf T})\ge\sigma_{\min}(A_b)^2\tr M_b.
+\]
+Their traces, and hence all $M_b$ and $P$, are bounded. A convergent subsequence preserves positivity and the weight equation. This proves closedness and \eqref{eq:lift}.
+
+Completing the square on each sheet gives the unique minimizer \eqref{eq:branch-support}. For equality in the minimum of \eqref{eq:lift}, positivity of $H$ forces $P=0$, zero covariance in every positive-weight moment matrix, and positive weights only on minimizing sheets. Zero-weight nonzero contributions also have positive cost. This proves \eqref{eq:face}, including ties. The $q_b$ are rational functions with positive denominators on the stated domain. Their comparisons are semialgebraic. Their derivatives are bounded on the specified compact sets, and a minimum of finitely many uniformly Lipschitz functions is Lipschitz.
+
+For realization use a disjoint union of closed balls, one for each $b$, with
+$R_b(x,t)=L_bx+c_bt^p$. Its only central zero on each ball is $x=0$. Orthogonal projection off $\ran L_b$ excludes exact positive-time zeros. A bounded normalized residual forces $x=O(t^p)$ and its limits are exactly $c_b+L_ba$, with arbitrary $a$. The balls can be embedded in a common ambient space, with unused coordinates fixed at zero, and tagged by distinct real constants; Lagrange interpolation in the tag gives a single polynomial map on their disjoint semialgebraic union. Replacing the marked time by a power gives the ramified assertion.
+\end{proof}
+
+\begin{corollary}[Independent products]\label{cor:product}
+For two semialgebraic residual problems of the same leading order $\rho$, with independent feasible variables, the joint leading residual set is $\cE_\rho^1\times\cE_\rho^2$. Finite affine-sheet arrangements are consequently closed under products. Formula~\eqref{eq:lift} applied to the paired sheets computes all joint metric coefficients, including metrics with off-diagonal blocks. For a block-diagonal metric the squared leading coefficient is the sum of the two squared coefficients.
+\end{corollary}
+\begin{proof}
+One inclusion follows by taking coordinate projections of normalized residual limits. For the other, curve selection at each prescribed limit gives a positive-time semialgebraic arc. Its time coordinate is eventually strictly monotone and covers a punctured interval. Reparametrize both arcs by the same time and take their product. The resulting normalized residual converges to the prescribed pair. Products of affine sheets are affine sheets, and the last assertion follows by independent minimization of the two summands.
+\end{proof}
+The metric exposed tensors in \eqref{eq:face} are therefore represented by actual minimizing leading arcs, not merely by abstract separating functionals. The lift need not be minimal or unique. Its image and its exposed faces are the invariant assertions.
+
+\section{Cancellation-uniform normal forms}\label{sec:wall}
+We first state a chart theorem with quantitative hypotheses. It separates the geometric reduction from the metric minimization. Parameters, omitted from some notation, range in a fixed compact set; all constants below are uniform in them.
+
+\begin{theorem}[Several equations and finitely many sheets]\label{thm:shear}
+Let a continuous residual on a compact feasible set have coordinates in $\R^r\times\R^q$. Suppose there are finitely many feasible inverse charts $\phi_b(U,t)$ for $|U|\le r_t$, where $r_t\downarrow0$, such that
+\begin{equation}\label{eq:shear}
+ R(\phi_b(U,t),t)=(U,C_b(t)+B_b(U,t)U),\qquad
+ \sup_{b,U}\|B_b(U,t)\|\le\eps_t\longrightarrow0.
+\end{equation}
+Assume $\max_b|C_b(t)|=o(r_t)$ uniformly, and that outside the union of these charts $|R|\ge\gamma r_t$ for a fixed $\gamma>0$. Write
+\[
+ H=\begin{pmatrix}H_{11}&H_{12}\\H_{21}&H_{22}\end{pmatrix}>0,
+ \qquad S_H=H_{22}-H_{21}H_{11}^{-1}H_{12}.
+\]
+Uniformly for $H$ in a compact subset of $\Sym_{r+q}^{++}$, there is $K$ such that
+\begin{equation}\label{eq:multirel}
+ (1-K\eps_t)\min_b\|C_b(t)\|_{S_H}
+ \le \min_x\|R(x,t)\|_H
+ \le(1+K\eps_t)\min_b\|C_b(t)\|_{S_H}.
+\end{equation}
+The exact zero set is the union of the equations $C_b(t)=0$.
+\end{theorem}
+\begin{proof}
+The trials $U=0$ have cost $O(\max_b|C_b|)=o(r_t)$. Norm equivalence and the outside lower bound put every global minimizer in a chart for small time. The linear shear
+$T_B(U,V)=(U,V+BU)$ satisfies
+\[
+ (1-K\eps_t)\|(U,V)\|_H\le\|T_B(U,V)\|_H
+ \le(1+K\eps_t)\|(U,V)\|_H
+\]
+with a uniform $K$; this follows from the triangle inequality and the compact metric bounds. For every chart point the unsheared norm is at least
+$\min_U\|(U,C_b)\|_H=\|C_b\|_{S_H}$. This proves the lower bound. Its unrestricted minimizing fast coordinate is
+$U_b^*=-H_{11}^{-1}H_{12}C_b$, which belongs to the chart ball because $C_b=o(r_t)$. Testing this coordinate gives the upper bound and then taking the smallest branch completes \eqref{eq:multirel}. If a residual vanishes in a chart, its first coordinate forces $U=0$ and its second forces $C_b=0$. Conversely that equation makes the chart origin an exact zero. The outside bound excludes any others.
+\end{proof}
+The estimate is relative to the canceled vector $C_b$, not to a generic leading monomial. No lower bound on $|C_b|$ is assumed. The comparison of the branch Schur norms describes leading metric competition; at a nonzero tie, higher-order terms can still decide the exact finite-time minimizing branch.
+
+\begin{theorem}[Coupled weighted polynomial systems]\label{thm:weighted}
+Fix integers $m_1,\ldots,m_r\ge1$, a compact set of $\eta\in(0,\infty)^r$, and a finite nonempty set $\mathcal A\subset\mathbb N^r$ with
+\[
+ \nu:=\min_{\alpha\in\mathcal A}|\alpha|_m>1,
+ \qquad |\alpha|_m:=\sum_i\alpha_i/m_i.
+\]
+Let $G_a(x)=\sum_{\alpha\in\mathcal A}A_\alpha x^\alpha\in\R^q$, with the vector coefficients in a compact set, and let $v(t)=O(t^\nu)$ uniformly. On a fixed small box about zero in $\R^r$ consider
+\begin{equation}\label{eq:weighted-residual}
+ R(x,t)=\bigl((x_i^{m_i}-t\eta_i)_{i=1}^r,\ G_a(x)-v(t)\bigr).
+\end{equation}
+For each real inverse sign $\sigma_i$ of $x_i^{m_i}=t\eta_i$ put
+\begin{equation}\label{eq:Cweighted}
+ C_\sigma(t)=\sum_{\alpha\in\mathcal A}
+ A_\alpha\sigma^\alpha\eta^{\alpha/m}t^{|\alpha|_m}-v(t).
+\end{equation}
+Then \eqref{eq:multirel} holds with $\eps_t=t^{\nu-1}$ and the minimum over these signs. It holds also on the positive box, with only its feasible positive sheet. In particular the exact identification wall is the union of $C_\sigma(t)=0$.
+\end{theorem}
+\begin{proof}
+Choose $c>0$ smaller than half the minimum of the $\eta_i$, and set $r_t=ct$. On $|U|\le ct$ the inverse charts are
+\[
+ \phi_\sigma(U,t)_i=\sigma_i(t\eta_i+U_i)^{1/m_i}.
+\]
+For odd $m_i$ the sign is positive; for even $m_i$ both real signs occur. These charts are feasible for all small time. If the fast residual has norm at most $ct$, its source lies in one of them. Outside their union the fast residual already has norm greater than $ct$.
+
+Each derivative of a weighted monomial after substitution is bounded by a constant times $t^{|\alpha|_m-1}$. This follows directly by differentiating one factor $(t\eta_i+U_i)^{\alpha_i/m_i}$; its argument stays between two fixed positive multiples of $t$. The mean-value formula on the convex $U$-ball gives
+\[
+ G_a(\phi_\sigma(U,t))-G_a(\phi_\sigma(0,t))=B_\sigma(U,t)U,
+ \qquad \|B_\sigma\|\le C t^{\nu-1}.
+\]
+Also $C_\sigma=O(t^\nu)=o(t)$. All hypotheses of Theorem~\ref{thm:shear} follow. Its exact-zero assertion proves the wall statement.
+\end{proof}
+
+\begin{corollary}[Opening arcs and their entire envelopes]\label{cor:opening}
+In Theorem~\ref{thm:weighted}, let the coefficients, $\eta$, and $v$ follow bounded semialgebraic paths satisfying the stated uniform bounds. Regard their substitution into \eqref{eq:weighted-residual} as a single fixed semialgebraic residual germ. If one $C_\sigma$ is identically zero, the distance is eventually zero. Otherwise write
+$C_\sigma(t)=c_\sigma t^{\rho_\sigma}+o(t^{\rho_\sigma})$, with $c_\sigma\ne0$, and put $\rho=\max_\sigma\rho_\sigma$. Then
+\begin{equation}\label{eq:opening}
+ \cE_\rho=\bigcup_{\rho_\sigma=\rho}(\R^r\times\{c_\sigma\}),
+ \qquad
+ a_H=\min_{\rho_\sigma=\rho}\|c_\sigma\|_{S_H}.
+\end{equation}
+Its envelope and all positive-metric exposed faces are given by Theorem~\ref{thm:affine}.
+\end{corollary}
+\begin{proof}
+A vector semialgebraic germ is eventually zero or has a nonzero Puiseux leading vector. Formula~\eqref{eq:multirel} selects the largest exponent, proving the coefficient statement. Since $\rho\ge\nu>1$, a bounded normalized residual has $U=O(t^\rho)=o(t)$ and is in an inverse chart. Its second normalized coordinate is $t^{-\rho}C_\sigma+o(1)$. A branch of lower order cannot give a finite limit. On a branch of order $\rho$, every $(u,c_\sigma)$ is obtained by setting $U=t^\rho u$, which remains in the chart. This proves both inclusions in \eqref{eq:opening}.
+\end{proof}
+
+\begin{example}[Two fast equations and a coupled two-coordinate wall]\label{ex:coupled}
+Take $m_1=m_2=2$, $\eta=(1,1)$, $v=0$, and
+\[
+ G(x,y)=(a x^3+b y^3,\ c x^2y^2+d x^3y).
+\]
+The residual vectors on the four sheets are
+\[
+ C_\sigma(t)=\bigl(t^{3/2}(a\sigma_1+b\sigma_2),\
+                         t^2(c+d\sigma_1\sigma_2)\bigr).
+\]
+Thus the exact wall is
+\[
+ \{a+b=0,\ c+d=0\}\ \cup\ \{a-b=0,\ c-d=0\}.
+\]
+The relative error is $O(t^{1/2})$ uniformly for bounded $(a,b,c,d)$, including moving paths approaching either component of this codimension-two wall. Both residual equations, and the choice between inverse signs, are essential here.
+\end{example}
+
+\begin{corollary}[The scalar polynomial and crossover laws]\label{cor:scalar}
+For $R=(x^m-t,\sum_i a_ix^{n_i})$ on $x\ge0$, $m<n_1<\cdots<n_s$, put $z=t^{1/m}$ and $C=\sum_i a_i z^{n_i}$. Then
+\[
+ d_H(t)=\sqrt{h_{22}-h_{12}^2/h_{11}}\,|C|
+                 (1+O(z^{n_1-m}))
+\]
+in the two-sided relative sense of \eqref{eq:multirel}. For two terms $a x^n+b x^q$, the choice $a=A t^{(q-n)/m}$ gives the uniform crossover coefficient $\sqrt{h_{22}-h_{12}^2/h_{11}}\,|A+b|$ at order $q/m$. The path
+$a=-b t^{(q-n)/m}+c t^\lambda$, $\lambda>(q-n)/m$, $c\ne0$, instead has order $n/m+\lambda$.
+\end{corollary}
+\begin{proof}
+Apply Theorem~\ref{thm:weighted} with one fast and one slow coordinate and substitute the two displayed paths into the exact scalar $C$. The estimate is still relative when $A+b=0$, so it includes the exact wall and every higher cancellation stated here.
+\end{proof}
+
+\begin{theorem}[Positive probability realization]\label{thm:hellinger}
+Let $V$ have $r+q$ independent zero-sum columns in a probability space with at least $r+q+1$ cells, and let $P_0$ be strictly positive. Define on sufficiently small components
+\begin{align*}
+ P_{\rm rem}(x)&=P_0+V(x_1^{m_1},\ldots,x_r^{m_r},G_a(x))^{\mathsf T},\\
+ P_{\rm base}(t)&=P_0+V(t\eta,v(t))^{\mathsf T}.
+\end{align*}
+They are uniformly strictly positive for bounded coefficients. Their minimum Hellinger distance obeys \eqref{eq:multirel} with
+\[
+ H_0=\tfrac14 V^{\mathsf T}\operatorname{diag}(P_0^{-1})V,
+ \qquad \eps_t=t^{\min\{1,\nu-1\}}.
+\]
+Their exact wall is the same union of vector equations \eqref{eq:Cweighted}.
+\end{theorem}
+\begin{proof}
+Strict positivity follows from a uniform small bound on the perturbations of $P_0$; zero column sums preserve total mass. Independence makes $H_0$ positive definite and makes equality of probabilities equivalent to equality of the displayed residual coordinates. On the compact positive neighbourhood, Hellinger distance and their Euclidean residual norm are uniformly equivalent. Trials at $U=0$ therefore put every minimizing point in the fast charts, with $U=O(t^\nu)$. Both probabilities at those points are $P_0+O(t)$. The identity
+\[
+ h(P',P)^2=\sum_e\frac{(P'_e-P_e)^2}{(\sqrt{P'_e}+\sqrt{P_e})^2}
+\]
+then compares their distance with the $H_0$ norm by a relative factor $1+O(t)$. Apply the lower shear estimate at the Hellinger minimizer and the upper estimate at the quadratic trial $U^*$. Combining the two relative errors proves the assertion, including exact zeros.
+\end{proof}
+This realizes a multivariable class of positive polynomial observations, with a semialgebraic centre path when the path is not polynomial. It does not assert that every stochastic observation singularity, or the particular binary cubic family, has this fast-coordinate normal form.
+
+\section{Whole-model local spectral geometry}\label{sec:local}
+Fix $D>0$, $d\ge1$, and $0<\pi<1/2$. Let $f_1,f_2$ be monic degree-$d$ polynomials with roots in $[0,D]$, let $\alpha_1+\alpha_2=1$ with $\alpha_a\ge\pi$, and let $U=(u_1,u_2)$ and $V=(v_1,v_2)$ be nonnegative column-stochastic $2\times2$ matrices. The observation is
+\begin{equation}\label{eq:binary}
+ K(z)=\sum_{a=1}^2\alpha_a f_a(z)u_av_a^{\mathsf T},\quad
+ q(z)=\one^{\mathsf T}K(z)\one,\quad P_j=K(T_j)/q(T_j),
+\end{equation}
+where $D<T_1<\cdots<T_\ell$, $\ell\ge2d+1$. Give these probability tables the distance
+\[
+ h_w(P,P')^2=\sum_j w_j\sum_e(\sqrt{P_{je}}-\sqrt{P'_{je}})^2,
+ \qquad w_j>0,\quad\sum_jw_j=1.
+\]
+The target is the unordered multiset of roots of $f_1f_2$, in bottleneck distance. A full-rank centre means that $f_1,f_2$ are coprime, $U,V$ invertible and strictly positive, and $\alpha_a>\pi$. Every ball below allows competitors in the \emph{entire closed model}. Uniform assertions refer to compact sets of these centres, clocks, and weights with a fixed root-multiplicity and endpoint pattern. In particular all required gaps and strict margins are bounded away from zero.
+
+\begin{lemma}[Exact inverse and uniform coefficient control]\label{lem:inverse}
+A full-rank centre law identifies the component polynomials, weights, and channels up to common component permutation. Near it these coefficient and stochastic coordinates are recovered by an analytic map with a bounded derivative. On the stated compact sets, every sufficiently close whole-model competitor satisfies the corresponding uniform Lipschitz bound.
+\end{lemma}
+\begin{proof}
+The monic normalizer is recovered from a finite linear system. Its homogeneous ambiguity consists of $e$ of degree below $d$ and a matrix polynomial $H$ of degree at most $d$ with $H(T_j)=e(T_j)P_j$. The degree-$2d$ polynomial $qH-eK$ vanishes at all clocks and is zero. Taking the second marginal and multiplying by $V^{-1}$ gives explicitly
+\[
+ q(z)V^{-1}H(z)^{\mathsf T}\one
+       =e(z)(\alpha_1 f_1(z),\alpha_2 f_2(z))^{\mathsf T}.
+\]
+Thus $q\mid ef_1$ and $q\mid ef_2$. A Bezout identity for the coprime $f_1,f_2$ yields $q\mid e$, so $e=0$ and $H=0$. A nonsingular minor of the linear system gives an analytic local inverse for $q,K$.
+
+Two clocks $i,j$ have distinct ratios $f_a(T_j)/f_a(T_i)$. Otherwise $f_1-cf_2$ would vanish at more than $d$ clocks and be zero, contrary to coprimality. The matrix $K(T_j)K(T_i)^{-1}$ has these distinct eigenvalues and columns of $U$ as eigenvectors. Normalize each by its entry sum. Row sums of $U^{-1}K(z)$ recover $\alpha_a f_a(z)$; leading coefficients and normalized rows then give $\alpha$ and $V$. These operations are analytic near the centre. They apply also to an exact competitor, proving uniqueness. For a close competitor the same nonsingular minor reconstructs its actual coefficients from its interpolation equations. Compactness of the closed parameter model bounds their coefficients. The simple-eigenvalue operations therefore supply the claimed bound for all close competitors, not only for a chosen parametrized branch. A finite cover gives uniform constants. Differentiating the recovered coordinates gives a left inverse of the observation derivative in coefficient and stochastic coordinates.
+\end{proof}
+
+Mark each central cluster by its component, location $r_j$, multiplicity $m_j$, and endpoint status, using Lemma~\ref{lem:inverse}. Analytic factorization into separated cluster polynomials defines, for nearby root displacements $u_{j,i}$,
+\[
+ s_j=\sum_i u_{j,i},\qquad X_j=\tfrac12\sum_i(u_{j,i}-s_j/m_j)^2.
+\]
+These are analytic coefficient functions even when individual roots are not differentiable. At $D$ use the inward sum $-s_j$, and at zero use $s_j$.
+
+If an interior cluster is repeated, retain the variance $X_j$ of every repeated interior cluster and every endpoint sum. All interior sums and all stochastic coordinates are free. Write the retained cone as $\cK=\R_+^k$ and set $\beta=1/2$. If there is no repeated interior cluster, retain all cluster sums, put $\cK=\R^{k_0}\times\R_+^{k_1}$, let only stochastic coordinates be free, and set $\beta=1$. Denote the retained law-space functions by $\tau_p$. The first score in free and retained coordinates is written $La+Dv$; here the matrix $D$ is distinguished from the endpoint bound by its use as a matrix.
+
+\begin{lemma}[Uniform cluster estimates and feasible scores]\label{lem:clusters}
+There are constants $C,t_1>0$ such that a whole-model competitor with $h_w(p',p)\le t<t_1$ has coefficient and stochastic displacement at most $Ct$, every cluster sum at most $Ct$, every interior centred root displacement at most $C\sqrt t$, and every endpoint displacement at most $Ct$. With bounded scaled free and retained variables its score satisfies
+\begin{equation}\label{eq:score}
+ F(\xi)-p=t(La+Dv)+O(t^{1+\eps}),\qquad
+ \frac{4h_w(F(\xi),p)^2}{t^2}=\|La+Dv\|_W^2+O(t^\eps),
+\end{equation}
+where $W=\operatorname{diag}(w_j/p_{je})$, and $\eps=1/2$ in the repeated regime and $\eps=1$ in the linear regime. Every bounded feasible limiting root vector, with bounded free coordinates, has an actual realization with retained coordinates exactly $tv$ and these estimates. All constants are uniform on the specified compact pattern sets.
+\end{lemma}
+\begin{proof}
+Positivity near the centre makes probability error at most a constant times Hellinger error. Lemma~\ref{lem:inverse} bounds coefficient and stochastic errors. Analytic separated-cluster factorization bounds cluster coefficient errors by the same order. Its first coefficient bounds $s_j$. For a centred real cluster the second elementary coefficient equals
+$-\frac12\sum_i(u_{j,i}-s_j/m_j)^2$, which gives the square-root bound. At an endpoint all displacements have the same sign, so each is bounded by the inward sum. A simple interior root equals its own sum and has order $t$.
+
+Expansion of a cluster polynomial gives the first coefficient increment
+\[
+ -s_j\frac{f_a(z)}{z-r_j}
+ -X_j\frac{f_a(z)}{(z-r_j)^2}
+\]
+when the interior cluster is repeated; the second term is absent otherwise. At the upper endpoint its inward-coordinate version has the corresponding reversed sign. Terms containing at least three centred root displacements, or a product of an order-$t$ sum with a centred displacement, contribute $O(t^{3/2})$. Products of two order-$t$ quantities contribute $O(t^2)$. In the linear regime all roots move by $O(t)$, so the full remainder is $O(t^2)$. Analyticity of the rational observation map transfers these bounds to its score. The exact square-root identity used in Theorem~\ref{thm:hellinger} gives the second estimate in \eqref{eq:score}.
+
+For realization choose in each repeated interior cluster an ordered zero-sum vector $y_j$ with $\frac12\sum_i y_{j,i}^2=v_j$, and put
+$u_{j,i}=ta_j/m_j+\sqrt t\,y_{j,i}$. Each nonnegative variance is realizable, including zero. At endpoints use any ordered one-sided increments with total $tv_j$; equal increments suffice when only their sum is prescribed. In the linear regime use the desired simple-root increments and the desired one-sided endpoint vector directly. Apply the order-$t$ free stochastic increments. Uniform strict margins and separated clusters ensure feasibility. The retained sums and variances are exactly $tv$. The preceding expansions apply to these competitors and have constants uniform on bounded scaled sets.
+\end{proof}
+
+\begin{theorem}[The quotient and the whole-model spectral limit]\label{thm:local}
+The combined score $(L,D)$ is injective and
+\begin{equation}\label{eq:quotient}
+ Q=D^{\mathsf T}WD-D^{\mathsf T}WL(L^{\mathsf T}WL)^{-1}L^{\mathsf T}WD>0.
+\end{equation}
+Empty free blocks have the evident convention. The law-space variational costs satisfy
+\begin{equation}\label{eq:oracle}
+ c_p(v):=\lim_{t\downarrow0}\frac4{t^2}
+ \inf_{\tau_p(p')=tv}h_w(p',p)^2=v^{\mathsf T}Qv,
+ \qquad v\in\cK,
+\end{equation}
+where the infimum is over nearby model laws.
+
+Decode $\{v\in\cK:v^{\mathsf T}Qv\le4\}$ as follows. In the repeated regime, replace each variance by every ordered zero-sum cluster vector of that variance, put zero in the other root blocks, and existentially minimize the endpoint sums. In the linear regime decode sums into the simple-root increments and all ordered one-sided endpoint vectors with those sums. Call the resulting compact root set $\cL(Q)$. The root displacements in the whole-model Hellinger ball of radius $t$, scaled by $t^{-\beta}$, converge to $\cL(Q)$ in Hausdorff distance, with error $O(\sqrt t)$ in the repeated regime and $O(t)$ in the linear regime. These bounds are uniform on compact fixed-pattern sets.
+\end{theorem}
+\begin{proof}
+The simple and double partial fractions at distinct cluster roots are linearly independent. The polynomial score columns in Lemma~\ref{lem:clusters}, together with the stochastic columns and the derivative left inverse in Lemma~\ref{lem:inverse}, therefore make $(L,D)$ injective. Orthogonal projection off $\ran L$ in the $W$ inner product proves \eqref{eq:quotient}. Its eigenvalue lower bound is uniform on the specified compact sets.
+
+For \eqref{eq:oracle}, minimize the quadratic score in $a$; its minimizer is
+$a_* =-(L^{\mathsf T}WL)^{-1}L^{\mathsf T}WDv$. The feasible construction proves the upper bound. Any sequence of almost-minimizers with cost $O(t^2)$ satisfies the cluster bounds, and its scaled sums, variances, and stochastic variables are bounded. Formula~\eqref{eq:score} then proves the lower bound. Restricting to a small closed cluster neighbourhood gives compact attainment. The inverse forces small-cost competitors into every smaller such neighbourhood, so the resulting limit does not depend on that restriction. Adding a free column to a retained column, or changing free coordinates, leaves the quotient unchanged.
+
+We give both Hausdorff estimates explicitly. Put $e_t=t^{\eps}$ with the exponent in Lemma~\ref{lem:clusters}. Every actual ball competitor has
+$\|La+Dv\|_W^2\le4+C e_t$. Multiply its scaled order-$t$ variables by
+$\lambda_t=2/\sqrt{4+C e_t}$. The resulting score is in the limiting ball. In the repeated blocks multiply the centred root vector by $\sqrt{\lambda_t}$; its variance is then multiplied by $\lambda_t$. The removed means are $O(\sqrt t)$ after root scaling, and the simple and endpoint blocks also have that bound. In the linear regime multiply the complete root vector by $\lambda_t$. Both changes have size $O(e_t)$. Dilation preserves every one-sided cone, including its boundary. This gives the outer estimate.
+
+Conversely a point of $\cL(Q)$ has a retained representative with $v^{\mathsf T}Qv\le4$ and bounded $v$, and use its bounded minimizing free vector $a_*$. Multiply all order-$t$ variables by $\mu_t=1-Ae_t$; repeated centred root vectors are multiplied by $\sqrt{\mu_t}$. Realize them as in Lemma~\ref{lem:clusters}. The actual squared normalized Hellinger cost is at most $4\mu_t^2+C'e_t$. Choose a uniform $A>C'/8+1$ and shorten $t_1$ so that this is at most four and $\mu_t>0$. This gives a genuine ball competitor within $O(e_t)$ of the chosen limiting vector. No interior margin for $v$ was used.
+
+Finally there are no unseen components of the whole-model ball. Otherwise a sequence outside a fixed cluster neighbourhood, with centres in the compact pattern set and distance tending to zero, would have a convergent subsequence in the closed model. Its limit would be an exact competitor at the limiting full-rank centre, contradicting Lemma~\ref{lem:inverse}. The same argument is uniform. Separated clusters identify bottleneck distance locally with the maximum of ordered within-cluster distances. This completes the whole-set, rather than merely diameter, assertion.
+\end{proof}
+The oracle \eqref{eq:oracle} is a variational object on a known model germ, after exact centre identification. It is not an empirical scalar statistic or an intervention on latent roots. Across a change of multiplicity pattern the marking need not vary continuously; the uniform theorem does not assert otherwise.
+
+\section{The native Hellinger quotient family}\label{sec:native}
+Fix a full-rank pattern and centre. At a variable clock $T>D$ write its score as $(L(T),D(T))$ and set
+\[
+ J(T)=(L(T),D(T))^{\mathsf T}\operatorname{diag}(P(T)^{-1})(L(T),D(T)).
+\]
+For positive design weights $w$, the full information is $I(w)=\sum_jw_jJ(T_j)$. Partition it according to free and retained variables. The native family is
+\begin{equation}\label{eq:native-family}
+ \cQ_{\rm nat}=\{I_{DD}-I_{DL}I_{LL}^{-1}I_{LD}:w_j>0,\ \sum_jw_j=1\}.
+\end{equation}
+The probability metric is fixed throughout; only the design varies.
+
+\begin{theorem}[Rational moments and differential geometry]\label{thm:moments}
+For the degree-$d$ binary model there are fixed symmetric matrices $J_s$ and a polynomial $\Delta$ of degree at most $7d$, positive on $(D,\infty)$, such that
+\begin{equation}\label{eq:moments}
+ J(T)=\frac{\sum_{s=0}^{7d}J_sT^s}{\Delta(T)},\qquad
+ I=\sum_{s=0}^{7d}J_s\mu_s,
+ \quad\mu_s=\sum_j\frac{w_jT_j^s}{\Delta(T_j)}.
+\end{equation}
+Writing $\Delta(T)=\sum_s\Delta_sT^s$, the moments satisfy $\sum_s\Delta_s\mu_s=1$. On a compact clock interval every finite design has the same full information matrix as a design on at most $7d+1$ clocks.
+
+For fixed clocks, put $B=I_{LL}^{-1}I_{LD}$ and
+\begin{equation}\label{eq:design-derivative}
+ E_j=D(T_j)-L(T_j)B,\qquad
+ G_j=E_j^{\mathsf T}\operatorname{diag}(P(T_j)^{-1})E_j.
+\end{equation}
+The derivatives of $Q$ in simplex coordinates $w_1,\ldots,w_{\ell-1}$ are $G_j-G_\ell$. The semialgebraic dimension of \eqref{eq:native-family} is the maximal rank of this Jacobian. In particular it is at most $\min\{\ell-1,7d,k(k+1)/2\}$. Its secant set is the rational-image set obtained from two copies of \eqref{eq:native-family}; it has a finite semialgebraic description.
+\end{theorem}
+\begin{proof}
+Write $k_e(T)$ for the four entries of $K(T)$. A coefficient or stochastic score coordinate has derivative
+\[
+ \partial P_e=(q\,\partial k_e-k_e\,\partial q)/q^2=:N_e/q^2,
+ \qquad \deg N_e\le2d.
+\]
+Retained cluster scores are fixed linear combinations of these coefficient scores. Hence an information entry is a sum of $N_eN_e^{\mathsf T}/(q^3k_e)$. Choose $\Delta=q^3\prod_e k_e$. Multiplication by it leaves numerator degree at most $4d+3d=7d$. Positivity holds because all clocks are beyond the real roots and channels are strictly positive. This proves \eqref{eq:moments}; the normalization is obtained by summing the weights. The rational moment curve lies in an affine hyperplane of dimension at most $7d$, so the convex-hull theorem of Caratheodory gives the support bound. This preserves information, not necessarily global identification by the compressed clocks.
+
+The profile identity is $Q=\sum_j w_jE_j^{\mathsf T}W_jE_j$, with $W_j=\operatorname{diag}(P_j^{-1})$. Differentiate it. Terms differentiating $B$ cancel because
+$\sum_j w_jL_j^{\mathsf T}W_jE_j=0$. The unconstrained derivative is $G_j$; enforcing $\sum w_j=1$ subtracts $G_\ell$. Rationality and the constant-rank theorem on a finite semialgebraic stratification identify image dimension with maximal differential rank. The moment normalization gives the $7d$ bound. Finally the two-copy rational parametrization and projection of semialgebraic sets give the assertion about secants.
+\end{proof}
+
+For any family $\cQ$, a finite set of legal ray queries $v\mapsto v^{\mathsf T}Qv$ determines $Q$ exactly when its linear sampling kernel meets $\cQ-\cQ$ only at zero. This elementary injectivity criterion is useful here only after the native family has been described. In a query-complexity statement the unknown member is supplied only by its ray oracle, together with the family and pattern. It is not also supplied by all its numerical centre and design parameters, or by an exact centre law from which they can be recovered: with that extra information, the inverse and formula~\eqref{eq:native-family} compute $Q$ without queries. In the fixed-design family below the design and root locations are known, but the varying stochastic centre parameters are not supplied.
+
+\begin{theorem}[Dimension bounds for legal ray information]\label{thm:dimension-queries}
+Let $\cQ\subset\Sym_k^{++}$ be a semialgebraic family of dimension $s\ge1$, and let the legal ray cone have nonempty interior. If $q_{\rm ad}$ and $q_{\rm fixed}$ denote worst-case deterministic exact-query complexity with adaptive and fixed rays respectively, then
+\begin{equation}\label{eq:dimension-queries}
+ s\le q_{\rm ad}\le q_{\rm fixed}
+       \le\min\{k(k+1)/2,\ 2s+1\}.
+\end{equation}
+When $2s+1<k(k+1)/2$, a generic tuple of $2s+1$ rays in the interior of the cone is sufficient. In the native family with a fixed centre,
+\[
+ q_{\rm fixed}\le\min\{k(k+1)/2,\ 2\ell-1,\ 14d+1\}.
+\]
+For a fixed experiment with centres varying in one fixed-pattern chart of dimension $h$, the native quotient image instead has $s\le h\le2d+5$, hence $q_{\rm fixed}\le\min\{k(k+1)/2,4d+11\}$. Thus, for a fixed centre and $\ell=2d+1$ on an endpoint-free simple-root pattern, at most $4d+1$ queries suffice for its $k=2d$ retained form. For $d\ge2$ this is strictly fewer than $k(k+1)/2$. This upper bound is not a claim that $4d+1$ is sharp.
+\end{theorem}
+\begin{proof}
+We use the elementary semialgebraic dimension and fibre properties recorded in \cite[Chapters 2 and 9]{BCR}. Normalize the nonzero secants of $\cQ$ to Frobenius norm one, and call the resulting semialgebraic set $\mathcal D$. Its dimension is at most $2s$. For a fixed $H\in\mathcal D$, the polynomial $v^{\mathsf T}Hv$ is not identically zero on the interior of the legal cone. Its zero set there has dimension at most $k-1$. The incidence set
+\[
+ \{(H,v_1,\ldots,v_m):H\in\mathcal D,\ v_i^{\mathsf T}Hv_i=0\ \text{for all }i\}
+\]
+therefore has dimension at most $2s+m(k-1)$. For $m>2s$ its projection to the $mk$-dimensional ray space has smaller dimension; so does its closure. Outside that closure the sampling kernel contains no nonzero secant, proving generic sufficiency. Independently, rank-one tensors from any open set of rays span $\Sym_k$: a symmetric matrix annihilating all of them defines a quadratic polynomial vanishing on an open set and is zero. Select a basis to obtain the $k(k+1)/2$ upper bound. On the family, an injective semialgebraic sampling map has a semialgebraic inverse on its image, so the unique matrix is determined, not merely separated formally.
+
+For the adaptive lower bound maintain the semialgebraic set of matrices consistent with a query transcript. Initially its dimension is $s$. After any chosen ray, the fibre-dimension theorem for its scalar answer supplies an answer whose nonempty fibre has dimension at least the preceding dimension minus one. This remains true if the answer map has finite image, in which case some fibre keeps the full dimension. The adversary chooses such an answer. After fewer than $s$ queries, the consistent set has positive dimension and contains two distinct matrices. A deterministic algorithm has the same transcript on both and cannot recover both correctly. The chosen rays may depend arbitrarily on previous answers; no regularity of that dependence is used. Applying Theorem~\ref{thm:moments} gives the fixed-centre native bounds. With a fixed experiment, the score and its Schur complement are rational in the distinct root locations and the five stochastic parameters; there are at most $2d+5$ such centre parameters. Image dimension cannot exceed that parameter dimension, proving the centre-family bound. For $k=2d$ and $\ell=2d+1$, $4d+1<d(2d+1)$ when $d\ge2$.
+\end{proof}
+
+\begin{theorem}[A sharp coupled native family]\label{thm:native}
+Take $d=2$, $D=3$, $\pi<2/5$, and the full-rank centre
+\begin{gather*}
+ f_1=(z-1)^2,\qquad f_2=(z-2)^2,\qquad \alpha=(2/5,3/5),\\
+ U=\begin{pmatrix}4/5&1/5\\1/5&4/5\end{pmatrix},\qquad
+ V=\begin{pmatrix}3/4&1/4\\1/4&3/4\end{pmatrix},\qquad T_j=j+3\quad(1\le j\le5).
+\end{gather*}
+Retain the two cluster variances. Hold all clocks and weights $w_j=1/5$ fixed and vary $(\alpha_1,u_{11},u_{12})$ in a neighbourhood of the displayed centre, keeping $V$ and the two root locations fixed. This native fixed-Hellinger family has dimension three and contains an open subset of $\Sym_2^{++}$. Its secants contain a neighbourhood of zero in $\Sym_2$. The separate design family \eqref{eq:native-family}, with the displayed centre fixed and the five weights varying, has the same conclusions.
+
+Exactly three legal ray values are necessary in the worst case to recover this family, even for deterministic adaptive exact queries. The same is true for recovery of its complete leading spectral fibre. The three rays $e_1,e_2,e_1+e_2$ suffice. The full-rank centre Jacobian property persists on an open neighbourhood of the displayed centre and holds on an open dense subset of the corresponding rational stochastic-parameter chart. The design Jacobian has the analogous property.
+\end{theorem}
+\begin{proof}
+There are seven free coordinates, in the order
+$(s_1,s_2,\alpha_1,u_{11},u_{12},v_{11},v_{12})$, followed by the two variances. At $w_j=1/5$, set $Z=(-B^{\mathsf T},I_2)^{\mathsf T}$, where $B=I_{LL}^{-1}I_{LD}$. Differentiation of the Schur complement gives
+\[
+ \partial_\theta Q=Z^{\mathsf T}(\partial_\theta I)Z.
+\]
+For centre parameters $\theta=(\alpha_1,u_{11},u_{12})$, the exact first-jet calculation in Appendix~\ref{app:certificate} gives the Jacobian, with rows $(Q_{11},Q_{12},Q_{22})$,
+\begin{equation}\label{eq:center-jac}
+ \begin{pmatrix}578035&241954&31304\\
+ 915041&708926&260448\\254308&573529&493204\end{pmatrix}
+ \pmod {1000003}.
+\end{equation}
+Its determinant is $933885$ modulo that prime. Every denominator is invertible there, and $\det I_{LL}=743349$ modulo the prime. Thus the rational Jacobian has rank three. The inverse function theorem gives an open image for the fixed experiment. Positivity follows from Theorem~\ref{thm:local}; all strict model margins persist under these small centre changes.
+
+For the separate design family, formula~\eqref{eq:design-derivative} gives
+\begin{equation}\label{eq:mod-jac}
+ \begin{pmatrix}
+ 235716&140518&511071&71108\\
+ 695313&878177&193809&605568\\
+ 150377&764535&992260&912493
+ \end{pmatrix}\pmod {1000003},
+\end{equation}
+with columns $w_1,\ldots,w_4$. Its first three columns have determinant $230039$. The inverse function theorem with $w_4$ fixed proves the design-family assertion. Both images have dimension three, and differences of a small open ball contain a neighbourhood of zero. A nonzero rational minor has a nonzero polynomial numerator, which proves the stated generic property and its local persistence.
+
+Three rays recover $Q_{11}$, $Q_{22}$, and $2Q_{12}$ by polarization. For necessity, take $Q_0$ in the interior of the native image and run any proposed deterministic algorithm making at most two queries there. There is a nonzero symmetric $H$ orthogonal to its queried rank-one tensors. Both $Q_0\pm\eps H$ remain in that image for small $\eps>0$. They give exactly the same answers as $Q_0$ on the recorded rays. Induction on the query number makes the entire adaptive transcript, including stopping, the same. The algorithm cannot distinguish the two forms. This does not assume continuity of its query rule.
+
+There are no endpoint variables in this pattern. Reading the two variances from the leading root fibre recovers $\{v\ge0:v^{\mathsf T}Qv\le4\}$. Its radial gauge determines the quadratic polynomial on the positive orthant, hence determines $Q$. Thus the same adversary gives distinct spectral fibres and proves the fibre lower bound.
+\end{proof}
+This establishes sharpness inside the native probability geometry, with the observation metric, clocks, and weights fixed in the first family. The second family gives an independent design-based realization. The rational-moment description applies to every degree and fixed pattern. The three-query theorem does not imply that polarization is minimal for every higher-dimensional native pattern; maximal native Jacobian rank, and possible smaller secant families, must be established for the pattern in question.
+
+\begin{proposition}[Stability after a sufficient linear probe family]\label{prop:probe-stability}
+Let the ray-sampling map be injective on $\Sym_k$ with least singular value $\sigma>0$ for Frobenius and Euclidean norms. An answer error of norm at most $\eps$ gives a least-squares reconstruction with $\|\widehat Q-Q\|_{\rm op}\le\eps/\sigma$. If $Q\ge\lambda I$ and $\theta=\eps/(\sigma\lambda)<1$, then for a fixed root decoder of degree $\beta\in\{1/2,1\}$,
+\[
+ (1+\theta)^{-\beta/2}\cL(Q)\subseteq\cL(\widehat Q)
+ \subseteq(1-\theta)^{-\beta/2}\cL(Q).
+\]
+\end{proposition}
+\begin{proof}
+The linear left inverse has norm $1/\sigma$. The resulting bound gives
+$(1-\theta)Q\le\widehat Q\le(1+\theta)Q$. Compare the quadratic cone balls by radial dilation and then use the decoder's homogeneity. Existential endpoint elimination respects these inclusions as well.
+\end{proof}
+
+\section{Classification of endpoint-eliminated metrics}\label{sec:endpoints}
+In the repeated regime let $r\ge1$ and let $x\in\R_+^r$ be the visible interior variances and $z\in\R_+^e$ the endpoint sums erased by the leading root scale. Partition
+\[
+ Q=\begin{pmatrix}A&B\\B^{\mathsf T}&C\end{pmatrix}>0,
+ \qquad G_Q(x)=\min_{z\ge0}(x,z)^{\mathsf T}Q(x,z).
+\]
+The leading fibre determines $G_Q$ by its radial gauge, and conversely $G_Q$ and the fixed decoder determine the fibre. This follows from Theorem~\ref{thm:local}, because every visible variance vector is realized by ordered zero-sum clusters.
+
+For $I\subseteq\{1,\ldots,e\}$ define
+\begin{align*}
+ z_I(x)&=-C_{II}^{-1}B_I^{\mathsf T}x,\qquad z_{I^c}(x)=0,\\
+ K_I(Q)&=\{x\ge0:z_I(x)\ge0,\ B_b^{\mathsf T}x+C_{bI}z_I(x)\ge0\ (b\notin I)\},\\
+ S_I(Q)&=A-B_IC_{II}^{-1}B_I^{\mathsf T}.
+\end{align*}
+Here $B_I$ contains the columns indexed by $I$. Use $K_\varnothing$ and $S_\varnothing=A$ with the natural empty-block convention.
+
+\begin{theorem}[Finite equality test and geometric range]\label{thm:endpoint-class}
+Two positive definite matrices $Q,Q'$, possibly with different endpoint dimensions but the same visible dimension, satisfy $G_Q=G_{Q'}$ on $\R_+^r$ if and only if
+\begin{equation}\label{eq:finite-equality}
+ S_I(Q)=S_J(Q')
+\end{equation}
+for every pair whose cone intersection $K_I(Q)\cap K_J(Q')$ has nonempty interior in $(0,\infty)^r$.
+
+Canonical finite data for this equivalence class are obtained as follows. For each quadratic polynomial $x^{\mathsf T}Px$ occurring locally on a nonempty open subset of $(0,\infty)^r$, take the closure of the set where $G_Q$ is locally that polynomial, and label it by $P$. Merge identical polynomials. The resulting finite collection is intrinsic and determines $G_Q$; each member is a finite union of polyhedral cones.
+
+The functions representable with $e$ endpoint variables are exactly
+\begin{equation}\label{eq:cone-range}
+ G(x)=x^{\mathsf T}Sx+\dist(Tx,K)^2,\qquad x\ge0,
+\end{equation}
+where $S>0$, $T\in\R^{e\times r}$, and $K=L\R_+^e$ for an invertible $L\in\R^{e\times e}$. A representing matrix is
+\begin{equation}\label{eq:range-matrix}
+ Q=\begin{pmatrix}S+T^{\mathsf T}T&-T^{\mathsf T}L\\-L^{\mathsf T}T&L^{\mathsf T}L\end{pmatrix}.
+\end{equation}
+The case $e=0$ means an ordinary positive definite quadratic form.
+\end{theorem}
+\begin{proof}
+Strict convexity gives a unique endpoint minimizer. Its positive support $I$ satisfies the stationarity and complementary inequalities defining $K_I$. Conversely these conditions suffice for the minimum, and substitution gives $G_Q(x)=x^{\mathsf T}S_I(Q)x$ on $K_I$. There are finitely many closed polyhedral cones, they cover the orthant, and their formulas agree at overlaps. In particular $G_Q$ is continuous.
+
+If the two functions agree, their quadratic polynomials agree on each full-dimensional intersection and hence have equal matrices. Conversely the full-dimensional intersections of the two finite covers form a dense subset of the open orthant: the union of their lower-dimensional cells and boundaries has empty interior. Equality on these intersections extends everywhere by continuity, including the boundary of the orthant. This proves \eqref{eq:finite-equality}. The same observation shows that the locally quadratic open sets in the stated construction consist of unions of cells, with any artificial subdivisions between identical polynomials removed. Their closures, together with their labels, determine the continuous function on a dense set and therefore everywhere. The data are defined from the function itself. We do not choose a purportedly unique convex subdivision of a nonconvex union.
+
+Complete the square with
+$S=A-BC^{-1}B^{\mathsf T}>0$, $L=C^{1/2}$, and $T=-C^{-1/2}B^{\mathsf T}$. The minimized part is $\min_{z\ge0}|Lz-Tx|^2$, proving \eqref{eq:cone-range}. Conversely expanding that square gives \eqref{eq:range-matrix}. Its quadratic form is $x^{\mathsf T}Sx+|Lz-Tx|^2$, which is strictly positive away from zero. This proves the range assertion.
+\end{proof}
+The active-set calculation in this proof is classical parametric quadratic programming. The equality criterion discards regions invisible to the value function; the cone representation characterizes the range of endpoint elimination rather than all homogeneous piecewise-quadratic functions.
+
+\begin{theorem}[Complete one-endpoint fibres]\label{thm:one-endpoint}
+For $e=1$ write $C=c>0$, $B=b$, and $u=b/\sqrt c$. Then
+\begin{equation}\label{eq:one}
+ G_Q(x)=x^{\mathsf T}Ax-\min\{u^{\mathsf T}x,0\}^2,
+ \qquad A-uu^{\mathsf T}>0.
+\end{equation}
+If $u$ has both positive and negative coordinates, $G_Q$ is nonquadratic and determines $A$ and the oriented vector $u$ uniquely. Its entire one-endpoint equivalence class is
+\[
+ c>0,\qquad b=\sqrt c\,u,\qquad A\ \hbox{fixed}.
+\]
+It has dimension one, its minimal endpoint dimension is one, and $c=1$ gives a canonical representative.
+
+If $G_Q(x)=x^{\mathsf T}Sx$ is quadratic on the orthant, its one-endpoint representations are exactly
+\begin{equation}\label{eq:quadratic-fibre}
+ \begin{cases}u\ge0,\quad A=S,\quad S-uu^{\mathsf T}>0,\end{cases}
+ \quad\hbox{or}\quad
+ \begin{cases}u\le0,\quad A=S+uu^{\mathsf T},\end{cases}
+ \qquad c>0,
+\end{equation}
+with $b=\sqrt c\,u$. The maximal dimension of this fibre is $r+1$ and its minimal endpoint dimension is zero, represented canonically by $S$.
+\end{theorem}
+\begin{proof}
+Scalar minimization gives $z_* =\max\{0,-b^{\mathsf T}x/c\}$ and hence \eqref{eq:one}. For mixed-sign $u$, both halfspaces of $u^{\mathsf T}x=0$ meet the open positive orthant. The two quadratic matrices there are $A$ and $A-uu^{\mathsf T}$, and they differ. Their positive semidefinite ordering identifies which one is $A$. The rank-one difference identifies $u$ up to sign, and the halfspace on which the subtraction occurs identifies its sign. Thus no further one-endpoint representatives exist. Scaling $c$ gives all those stated and preserves positivity. A zero-endpoint representation would be quadratic, so one is minimal.
+
+If the function is quadratic, a mixed-sign vector is excluded by the preceding argument. A nonnegative $u$ never activates the subtraction on the orthant, and a nonpositive $u$ always does. These give exactly \eqref{eq:quadratic-fibre}. Conversely both formulas plainly give $S$. In the first case positivity imposes the additional inequality written there; in the second it is equivalent to $S>0$. Each full sign chamber has $r$ vector parameters and the positive scalar $c$, giving maximal dimension $r+1$. The matrix $S$ itself is a zero-endpoint representation and is unique there.
+\end{proof}
+For example, with $r=2$, $u=(1,-1)^{\mathsf T}$ and $A=3I$, the two open regions $x_1>x_2$ and $x_1<x_2$ have distinct quadratic matrices. Only the positive endpoint rescaling remains invisible. By contrast, the scalar example $Q=\left(\begin{smallmatrix}1&b\\b&1\end{smallmatrix}\right)$, $0\le b<1$, belongs to the quadratic fibre; it does not represent the mixed-sign phenomenon.
+
+\appendix
+\section{A proper real monomial presentation}\label{app:real}
+The metric theorems above do not require a resolution. For completeness we supply a precise existence result sufficient for computing their contact order. A real analytic presentation is enough for this calculation; no assertion that an analytic uniformizing map is Nash is needed.
+
+\begin{theorem}[Existence with real feasibility and positive time]\label{thm:presentation}
+Let $\Gamma$ be a compact subanalytic feasible set in a real analytic manifold, equal to the closure of its positive-time part. Let $t,R_1,\ldots,R_M$ be analytic on an ambient neighbourhood, with $t\ge0$ on $\Gamma$. Suppose $R$ has no zero on $\Gamma\cap\{0<t\ll1\}$. After restricting to a sufficiently small compact time interval there is a finite collection of compact real corner charts mapping properly and surjectively onto the feasible germ, with
+\begin{equation}\label{eq:monomial}
+ t=u(r,z)r^a,\qquad R=r^bV(r,z),\qquad r_i\ge0,
+\end{equation}
+where $u>0$, $V$ has no common zero, and both units have positive lower bounds on the charts. The charts lie in the closure of their positive-time parts. Each coordinate face used in a ratio $b_i/a_i$ has a relatively open part reached transversely from positive-time feasible points with the other divisor coordinates positive.
+\end{theorem}
+\begin{proof}
+Apply the uniformization theorem \cite[Theorem 0.1]{BM} to $\Gamma$. It gives a proper surjective real analytic map from a real analytic manifold. Its source is compact because its image is contained in the compact set $\Gamma$. Discard components on which the pulled-back time is identically zero. Every positive-time point still has a preimage. Compactness and the assumption $\Gamma=\cl(\Gamma\cap\{t>0\})$ show that the image of the retained components still covers the feasible germ. On them neither $t$ nor $\sum_iR_i^2$ is identically zero.
+
+Apply \cite[Corollary 4.9]{BM} to the single real analytic function
+$t\sum_iR_i^2$ on this retained manifold. It supplies a proper surjective real analytic map on which this function has normal crossings. The composite remains proper and surjective; its source is again compact. In a normal-crossing coordinate ring, a factor of a monomial times a unit is itself a coordinate monomial times a unit. This follows by successively dividing by each prime coordinate and then observing that the remaining factors multiply to a unit. Consequently $t=u r^a$ and $\sum_iR_i^2=w r^\gamma$ locally.
+
+For each coordinate $r_j$, the vanishing order of a sum of real squares is twice the smallest coordinate vanishing order of its summands. Indeed its first potentially nonzero coefficient is a sum of squares of analytic functions of the remaining real variables and cannot vanish identically unless each is zero. Thus $\gamma=2b$, every $R_i$ is divisible by $r^b$, and $\sum_i(R_i/r^b)^2=w$ is a nonvanishing positive unit. This gives \eqref{eq:monomial} with a nonzero vector unit.
+
+Take a finite cover by small closed coordinate boxes and split their divisor coordinates by signs. On each retained orthant the time unit is positive. Remove pieces having no positive-time part and take the closures of the others. The image still covers by properness and approximation from positive time. Shrinking boxes before taking the finite cover bounds the units away from zero. A divisor face in such a full orthant has a relatively open part with other divisor coordinates positive, and the coordinate transverse segment approaches it through positive time whenever $a_i>0$. The same segments with time positive test faces having $a_i=0$. The composite chart maps send all these segments into the feasible set, because feasibility was built into the initial uniformization image. No real point of a complex exceptional divisor is added by this procedure.
+\end{proof}
+The source charts and maps in this theorem are real analytic on compact neighbourhoods, hence subanalytic after restriction. When the original residual is semialgebraic, its intrinsic envelope remains the semialgebraic object of Proposition~\ref{prop:intrinsic}. The analytic presentation is a means of computing it, not part of its definition.
+
+\begin{proposition}[Orders and metric units]\label{prop:order}
+Under the nonexact hypotheses of Proposition~\ref{prop:intrinsic} and a presentation \eqref{eq:monomial}, every accessible index with $a_i=0$ has $b_i=0$, and
+\[
+ \rho=\max_{a_i>0}b_i/a_i.
+\]
+For every $H>0$, $t^\rho/\|R\|_H$ extends continuously on each chart to zero time. If its maximum there is $M_H$, then $0<M_H<\infty$ and $a_H=M_H^{-1}$.
+\end{proposition}
+\begin{proof}
+If $a_i=0<b_i$, the relatively open transverse face would map to a positive-time zero of $R$, a contradiction. For the displayed maximum all exponents $\rho a_i-b_i$ are nonnegative. Thus
+\[
+ \frac{t^\rho}{\|R\|_H}=\frac{u^\rho}{\|V\|_H}\prod_i r_i^{\rho a_i-b_i}
+\]
+is bounded and continuous. A transverse arc at a maximizing divisor gives a positive zero-time value, so $M_H>0$. Surjectivity and compactness identify the positive-time maximum with $t^\rho/d_H(t)$. Limit points of its maximizers give an upper limit at most $M_H$. Conversely a chart arc from a zero-time maximizing point through its positive-time part has a time coordinate eventually strictly monotone onto a punctured interval; continuity gives the reverse limit. Hence $d_H\sim t^\rho/M_H$, proving both the order formula and the coefficient formula.
+\end{proof}
+The order is classical real contact data. Resolved unit maxima compute the metric coefficients and, through \eqref{eq:reconstruct}, the intrinsic envelope. Neither the list of charts nor the divisor list is declared canonical.
+
+\section{Exact certificate for the native rank calculation}\label{app:certificate}
+This appendix gives a reproducible finite-field certificate for the rational derivative in Theorem~\ref{thm:native}. It is part of that specific finite calculation, not a numerical substitute for the preceding universal proofs.
+
+At clock $T$ set $f_a=(T-a)^2$, use the $\alpha,u_a,v_a$ in the theorem, and put $d_0=(1,-1)^{\mathsf T}$. For the nine score columns, the pairs $(\partial K,\partial q)$ are, in order,
+\begin{align*}
+ &(-\alpha_a(T-a)u_av_a^{\mathsf T},\ -\alpha_a(T-a)) &&(a=1,2),\\
+ &(f_1u_1v_1^{\mathsf T}-f_2u_2v_2^{\mathsf T},\ f_1-f_2),&\\
+ &(\alpha_af_ad_0v_a^{\mathsf T},0) &&(a=1,2),\\
+ &(\alpha_af_au_ad_0^{\mathsf T},0) &&(a=1,2),\\
+ &(-\alpha_au_av_a^{\mathsf T},-\alpha_a) &&(a=1,2).
+\end{align*}
+Flatten each $2\times2$ table by rows and form the column
+$(q\,\partial K-K\,\partial q)/q^2$. Let $S_T$ be the resulting $4\times9$ matrix and $W_T=\operatorname{diag}(q/K_e)$. All entries are rational. Compute
+\[
+ I=\frac15\sum_{T=4}^8 S_T^{\mathsf T}W_TS_T,
+ \quad B=I_{LL}^{-1}I_{LD},\quad
+ G_T=(D_T-L_TB)^{\mathsf T}W_T(D_T-L_TB).
+\]
+Reduction modulo $p=1000003$, taking inverses of the nonzero denominators, gives
+\[
+ B=\begin{pmatrix}
+ 57388&28336\\553816&294504\\313698&366164\\
+ 317847&732133\\56957&558844\\884425&918404\\368275&411718
+ \end{pmatrix},\qquad
+ Q=\begin{pmatrix}375554&938627\\938627&749243\end{pmatrix}
+ \quad\pmod p.
+\]
+The vectors of entries $(11,12,22)$ of $G_T-G_8$, $T=4,5,6,7$, give \eqref{eq:mod-jac}.
+For the fixed-design centre derivative, regard $\alpha_1,u_{11},u_{12}$ as first-jet variables in these same score formulas, with their derivatives respectively the three coordinate unit vectors. Arithmetic is performed on pairs $(a,a')$ over $\mathbb F_p$, using
+\[
+ (a,a')(b,b')=(ab,ab'+ba'),\qquad
+ (a,a')^{-1}=(a^{-1},-a^{-2}a').
+\]
+The quantities $f_a,V,T,w$ are held fixed. Extract $I_\theta$ from the resulting first jets and form $Z^{\mathsf T}I_\theta Z$. This gives exactly \eqref{eq:center-jac} and its determinant $933885$. Every inverse in the recurrence is tested to have nonzero denominator. Reduction commutes with rational differentiation on this domain, so this is an exact certificate for a nonzero real rational derivative, not a finite-difference calculation.
+ Gaussian elimination gives $\det I_{LL}=743349\pmod p$ and the indicated $3\times3$ minor $230039\pmod p$. These nonzero residues prove nonvanishing over $\mathbb Q$. The accompanying exact checker computes both the rational matrices and their modular reductions, tests invertibility of every denominator it reduces, and compares these integers. Positivity over the reals comes from score injectivity, not from ordering elements of a finite field.
+
+\section{Scope of the preserved mathematical record}\label{app:record}
+The complete preceding principal article and all its supporting and historical sources are retained without alteration. They include the full multiplicity and boundary atlas, exact rank-deficient cubic fibre, inverse through channel-rank loss, both cubic walls, signed second-order and equality-shell calculations, real weighted atlas, finite-jet and Puiseux-residue comparisons, and fixed-format entrance results. For the cubic family $f=z(z-r)^2$, $g=(z-s)^3$, its previously established identifying locus remains
+\[
+ \{\det U\ne0\}\ \cup\ \{(3D-r)s-2rD<0\}\ \cup\
+ \{(1-\alpha)(r+3s)(2r-3s)^2-4\pi r^3<0\},
+\]
+under its original hypotheses. The weighted systems in Section~\ref{sec:wall} do not replace this cubic family or its regular order-one calculations.
+
+For a closed ball the remote component enters exactly when its actual distance is at most the radius. The cancellation-uniform estimates identify exact zero walls and decide asymptotic comparisons when the leading ratio differs from one. At a nonzero equality of leading distance and radius, they do not determine the side; the preserved exact semialgebraic sign test or higher-order terms are still required. Likewise, the native three-query theorem is specific to the proved coupled pattern, whereas the general moment description and endpoint equality criterion have the dimensions stated in their theorems. These distinctions keep the conclusions tied to their proofs without deleting earlier results.
+
+\begin{thebibliography}{99}
+\bibitem{BMDP} A. Bemporad, M. Morari, V. Dua, and E. N. Pistikopoulos,
+The explicit linear quadratic regulator for constrained systems,
+\emph{Automatica} \textbf{38} (2002), 3--20.
+\bibitem{BM} E. Bierstone and P. D. Milman,
+Semianalytic and subanalytic sets,
+\emph{Publ. Math. Inst. Hautes \'Etudes Sci.} \textbf{67} (1988), 5--42.
+\bibitem{BCR} J. Bochnak, M. Coste, and M.-F. Roy,
+\emph{Real Algebraic Geometry}, Ergebnisse der Mathematik und ihrer Grenzgebiete (3), vol. 36, Springer-Verlag, Berlin, 1998.
+\bibitem{BV} S. Boyd and L. Vandenberghe,
+\emph{Convex Optimization}, Cambridge University Press, Cambridge, 2004.
+\bibitem{Ha} T. H. Ha,
+An algebraic theory of \L{}ojasiewicz exponents,
+arXiv:2602.18410, 2026, version 1.
+\bibitem{LJT} M. Lejeune-Jalabert and B. Teissier, with J.-J. Risler,
+Cl\^oture int\'egrale des id\'eaux et \'equisingularit\'e,
+arXiv:0803.2369, 2008; seminar of 1973--1974 with complements.
+\end{thebibliography}
+\end{document}
