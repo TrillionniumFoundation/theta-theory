@@ -1,0 +1,65 @@
+name: A2 v98 exact-head manuscript and archive
+on:
+  push:
+    branches: [revision/a2-v98-relative-spectral-atlas-proof-2026-09-20]
+  pull_request:
+    branches: [review/a2-v97-independent-harsh-top4-2026-09-20]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: a2-v98-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+jobs:
+  manuscript:
+    if: github.event_name != 'pull_request' || github.head_ref == 'revision/a2-v98-relative-spectral-atlas-proof-2026-09-20'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+      - name: Install native TeX and exact arithmetic
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y latexmk texlive-latex-extra texlive-fonts-recommended texlive-science lmodern poppler-utils
+          python -m pip install sympy==1.14.0
+      - name: Check exact source head and preservation
+        run: python scripts/audit_a2_v98.py --repo --output /tmp/a2-v98-source.json
+      - name: Reproduce finite exact regressions
+        run: |
+          python scripts/verify_a2_v97_math.py --output /tmp/a2-v97-regression.json
+          python scripts/verify_a2_v98_math.py --output /tmp/a2-v98-regression.json
+          python - <<'PY'
+          import json
+          expected = json.load(open('revisions/a2-v98/EXACT_DIAGNOSTICS.json'))
+          actual = json.load(open('/tmp/a2-v98-regression.json'))
+          assert expected == actual
+          PY
+      - name: Compile principal and complete preserved history
+        working-directory: papers/A2-v17-boundary-information-coarsening
+        run: |
+          latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error -recorder rigidity_v97.tex
+          latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error -recorder rigidity_v97_archive.tex
+          latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error -recorder rigidity_v98.tex
+          latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error -recorder rigidity_v98_archive.tex
+          latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error -recorder rigidity_v98_complete.tex
+      - name: Bind native PDFs and actual TeX input graphs to HEAD
+        run: |
+          mkdir -p a2-v98-artifacts
+          python scripts/audit_a2_v98.py --repo --build --output a2-v98-artifacts/RUNTIME_RECEIPT.json
+          cp /tmp/a2-v98-regression.json a2-v98-artifacts/EXACT_DIAGNOSTICS.json
+          cp revisions/a2-v98/{SOURCE_MANIFEST.json,RESPONSE_TO_REFEREE.md,LOCAL_VALIDATION.json} a2-v98-artifacts/
+          cp papers/A2-v17-boundary-information-coarsening/rigidity_v98{,_archive,_complete}.{pdf,log,fls} a2-v98-artifacts/
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: a2-v98-${{ env.EXPECTED_HEAD }}
+          path: |
+            a2-v98-artifacts/
+            papers/A2-v17-boundary-information-coarsening/rigidity_v98*.log
+          if-no-files-found: warn
+          retention-days: 90
