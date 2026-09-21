@@ -1,0 +1,58 @@
+name: A2 v110 exact-source three-volume review
+on:
+  push:
+    branches:
+      - revision/a2-v110-sharp-threshold-native-realization-2026-09-21
+    paths:
+      - '.github/workflows/a2-v110-review.yml'
+      - 'papers/A2-v17-boundary-information-coarsening/article/v110/*.tex'
+      - 'papers/A2-v17-boundary-information-coarsening/article/v110/*.py'
+      - 'papers/A2-v17-boundary-information-coarsening/article/v110/*.md'
+permissions:
+  contents: write
+concurrency:
+  group: a2-v110-exact-review
+  cancel-in-progress: true
+jobs:
+  review:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Install native build dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq latexmk texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils python3-sympy python3-numpy
+      - name: Verify preserved preparation
+        run: |
+          set -euo pipefail
+          /usr/bin/python3 papers/A2-v17-boundary-information-coarsening/article/v108/prepare.py
+          git diff --exit-code -- papers/A2-v17-boundary-information-coarsening/article/v108/prepared
+      - name: Build three exact-source volumes and run all diagnostics
+        env:
+          A2_RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: /usr/bin/python3 papers/A2-v17-boundary-information-coarsening/article/v110/verify.py
+      - name: Upload actual review evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a2-v110-review-evidence-${{ github.sha }}
+          path: papers/A2-v17-boundary-information-coarsening/article/v110/evidence/
+          if-no-files-found: warn
+          retention-days: 90
+      - name: Commit successful evidence without changing the source
+        if: success()
+        run: |
+          set -euo pipefail
+          git fetch origin "$GITHUB_REF_NAME"
+          test "$(git rev-parse FETCH_HEAD)" = "$GITHUB_SHA"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f papers/A2-v17-boundary-information-coarsening/article/v110/evidence
+          if ! git diff --cached --quiet; then
+            git commit -m 'A2 v110: record exact-source three-volume verification evidence'
+            git push origin HEAD:refs/heads/revision/a2-v110-sharp-threshold-native-realization-2026-09-21
+          fi
