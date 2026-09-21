@@ -598,6 +598,8 @@ These checks reinforce, rather than refute, the manuscript: they show the mechan
 
 These finite calculations are diagnostic only. They do not certify the universal all-dimensional proof and do not determine journal-level originality.
 
+The exact finite checks used for the two smaller witnesses and the dimension threshold are stored beside this report as `INDEPENDENT_CHECKS.py` and `INDEPENDENT_CHECKS.json`.
+
 ## 21. Assessment of the previous R108 requests
 
 ### R108.1 — Rebase the conormal theorem on classical projective duality
