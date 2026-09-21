@@ -1,0 +1,489 @@
+\documentclass[11pt,reqno]{amsart}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern,amsmath,amssymb,amsthm,mathtools,microtype,booktabs}
+\usepackage[margin=1.08in]{geometry}
+\usepackage[hidelinks]{hyperref}
+\numberwithin{equation}{section}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\theoremstyle{remark}\newtheorem{remark}[theorem]{Remark}
+\newcommand{\R}{\mathbb R}
+\newcommand{\Sym}{\operatorname{Sym}}
+\newcommand{\diag}{\operatorname{diag}}
+\newcommand{\rank}{\operatorname{rank}}
+\newcommand{\ran}{\operatorname{ran}}
+\newcommand{\tr}{\operatorname{tr}}
+\newcommand{\Span}{\operatorname{span}}
+\newcommand{\ri}{\operatorname{ri}}
+\newcommand{\cP}{\mathcal P}
+\newcommand{\cL}{\mathcal L}
+\newcommand{\cM}{\mathcal M}
+\newcommand{\cN}{\mathcal N}
+\newcommand{\cU}{\mathcal U}
+\newcommand{\eps}{\varepsilon}
+\DeclareMathOperator*{\argmin}{argmin}
+\allowdisplaybreaks[2]
+\setlength{\emergencystretch}{2em}
+\title[Single-contact recovery of information metrics]{Single-contact recovery of information metrics\\through polynomial multiplication}
+\author{Qian Qi}
+\date{September 21, 2026. A2 revision 109.}
+\subjclass[2020]{35R30, 15B05, 14P10, 62B15, 62F12}
+\keywords{Partial contact data, structured information, polynomial multiplication, synchronized root splitting, statistical inverse problems}
+\hypersetup{pdftitle={Single-contact recovery of information metrics through polynomial multiplication},pdfauthor={Qian Qi},pdfsubject={A2 revision 109; controlling referee source 5a8a8190e6a5979719591b286fca92aae3cc15cc}}
+\begin{document}
+\begin{abstract}
+We consider recovery of an information metric from second contact at finitely many prescribed points of a residual manifold. For inverse information in a known Hankel congruence class, we identify the complete ambiguity with the annihilator of a space of products of normal polynomials. This gives a necessary and sufficient recovery criterion using partial, rather than complete, conormal data. We construct calibrated polynomial experiments with $k=3d+2$ root pairs and $d$ shared perturbation parameters in which one contact point determines all $2k-1$ native information coordinates, whereas unrestricted metrics have an invisible space of dimension $5d(d+1)/2$. The construction works in every $d\ge2$; for $d\ge6$ the ambient quadratic measurement map is necessarily noninjective. We prove stability in terms of the multiplication operator and transfer recovery to a finite noisy contact-value experiment, including a nonasymptotic risk bound and its local asymptotic minimax information. The complete-conormal discriminant calculation is separated as classical geometric input. Earlier contact, endpoint, and fixed-budget results are retained, with their complete proofs in the accompanying companion source.
+\end{abstract}
+\maketitle
+
+\section{Introduction}
+Let $M$ be a known residual manifold in $\R^k$, and let $R$ be an unknown positive definite inverse information matrix. The leading contact with a target $b$ is often a squared distance
+\begin{equation}\label{eq:distance}
+ C_R(b)=\inf_{x\in M}(x-b)^{\mathsf T}R^{-1}(x-b).
+\end{equation}
+At a smooth point of $M$, the second derivative of this function sees only the restriction of $R$ to the normal space. It cannot recover an arbitrary ambient matrix from one contact point. The question addressed here is when information structure supplied by an observation model removes that obstruction.
+
+For calibrated polynomial binary observations, interpolation forces
+\begin{equation}\label{eq:intro-hankel}
+ R=JH(\theta)J^{\mathsf T},\qquad H(\theta)_{ab}=\theta_{a+b},\quad 0\le a,b\le k-1,
+\end{equation}
+where $J$ is known and $\theta$ ranges over an open finite moment cone. A normal vector $n$ determines a polynomial with coefficient vector $J^{\mathsf T}n$. The normal bilinear data are consequently evaluations of the moment functional on products of these polynomials. This identifies the complete inverse fibre, not just a sufficient rank test.
+
+Theorem~\ref{thm:products} formulates this principle for arbitrary prescribed smooth contact points. Theorem~\ref{thm:realization} is its native realization: in every shared dimension $d\ge2$, one contact point suffices for a nonempty open family of calibrated experiments with $k=3d+2$. The unrestricted ambiguity there has dimension $5d(d+1)/2$, rather than one. For $d\ge6$, $k<d(d+1)/2$, so injectivity on all symmetric $d\times d$ matrices is impossible. Neither complete conormal observation nor injectivity of that quadratic measurement map is used in the new theorem.
+
+The inverse problem has a quantitative form. The least singular value of the normal-polynomial multiplication operator gives an explicit stability constant (Theorem~\ref{thm:stability}). We then replace exact second derivatives by finitely many noisy, symmetric contact-value measurements at nonzero offsets. The resulting finite-dimensional experiment has an injective mean map for sufficiently small fixed offsets; it admits root-sample-size estimation and an explicit local asymptotic information matrix (Theorem~\ref{thm:noise}). These observations are noisy contact values, not unlabelled categorical observations and not an exact-real jet oracle. The distinction is part of the statistical statement.
+
+\subsection*{Classical inputs and scope}
+The dual of the quadratic Veronese variety is the discriminant of singular quadratic forms. In symmetric matrix coordinates the discriminant is the determinant; its degree-two ideal is a line in dimension two and zero in higher dimension. We use the classical framework of Gelfand--Kapranov--Zelevinsky \cite{GKZ}, and give the elementary real-coordinate consequence in Section~\ref{sec:classical}. It is not a new dual variety or a dimension-uniform native interaction theorem.
+
+Likewise, the duality between Hankel forms and polynomial multiplication is standard structured-matrix algebra; see Mourrain--Pan \cite{MP}. Our contribution is the contact-selected multiplication criterion together with a realization by the \emph{native} information matrix of the calibrated experiment, including positive targets, open loading families, noninjective ambient measurements, and finite noisy contact observations. The Gaussian asymptotic theory used for the latter is classical \cite{vdV}; the task here is to verify its hypotheses from the partial-contact geometry and to identify its conditioning.
+
+The results do not assert that an arbitrary collection of $2k-1$ numbers is measurable by a statistical experiment, that all clock systems have the square-clock congruence, or that every contact point is informative. Rank failure is characterized exactly by Theorem~\ref{thm:products}. The full-conormal results, reciprocal design fibres, and function-input endpoint representation theorem remain valid in their original scopes. The companion volume preserves the complete earlier proofs; Section~\ref{sec:companions} explains the dependency separation.
+
+\section{Normal contact and structured inverse information}\label{sec:normal}
+Write $\cP_s$ for the real polynomials of degree at most $s$, equipped with the Euclidean norm of their coefficient vector. Let $J\in\R^{k\times k}$ be invertible. For $\theta=(\theta_0,\ldots,\theta_{2k-2})$, define
+\[
+ \ell_\theta\Big(\sum_{a=0}^{2k-2}p_a t^a\Big)=\sum_a p_a\theta_a,
+ \qquad H(\theta)_{ab}=\theta_{a+b}.
+\]
+Our parameter set $\Omega$ is an open subset of $\R^{2k-1}$ on which $R_\theta=JH(\theta)J^{\mathsf T}>0$. In the native experiment it is the interior of the full-dimensional cone
+\begin{equation}\label{eq:momentcone}
+ \cM=\Big\{\sum_{j=1}^m\omega_j(1,T_j,\ldots,T_j^{2k-2}):\omega_j>0\Big\},
+ \qquad m\ge2k-1,
+\end{equation}
+with distinct clocks. The notation describes the open image of positive weights, not a unique weight representation.
+
+Let $x_1,\ldots,x_L$ be prescribed smooth points of $M$, with known tangent spaces $T_\nu$ and Euclidean normal spaces $N_\nu=T_\nu^\perp$. We require that the distance in \eqref{eq:distance} agrees, near each $x_\nu$, with the distance to one embedded smooth germ. One can instead take that local-germ distance as the definition. In the global native theorem below we verify the stronger global condition. When parameter derivatives or noisy offsets are used, the germs are analytic and the distance is smooth jointly in $b$ and $\theta$ on a uniform tube over each compact parameter set.
+
+Choose a matrix $Z_\nu$ with orthonormal columns spanning $N_\nu$, and define
+\[
+ G_\nu(\theta)=\tfrac12Z_\nu^{\mathsf T}D^2 C_{R_\theta}(x_\nu)Z_\nu,
+ \qquad B_\nu(\theta)=Z_\nu^{\mathsf T}R_\theta Z_\nu.
+\]
+\begin{lemma}[The normal second jet]\label{lem:normal}
+The observed matrix $G_\nu$ is positive definite and
+\begin{equation}\label{eq:normal}
+ G_\nu(\theta)=B_\nu(\theta)^{-1}.
+\end{equation}
+The full Hessian is zero on $T_\nu$ and is determined by $G_\nu$.
+\end{lemma}
+\begin{proof}
+At $x=x_\nu$, the quadratic term of the distance is the minimum of $(u-v)^{\mathsf T}R^{-1}(u-v)$ over $v\in T_\nu$. At its minimizer the residual equals $Rn$ for some $n\in N_\nu$, and its normal projection is that of $u$. Hence, in orthonormal normal coordinates, $Bn=Z^{\mathsf T}u$, and the minimum is $(Z^{\mathsf T}u)^{\mathsf T}B^{-1}(Z^{\mathsf T}u)$. Taylor expansion of a local parametrization gives the same second-order term for the manifold. The tangent Gram matrix is positive definite, so the implicit function theorem supplies the local minimizing projection and justifies that expansion. This proves \eqref{eq:normal} and the assertion about the tangent kernel.
+\end{proof}
+
+For a normal vector $n$, let $p_n$ denote the polynomial with coefficient vector $J^{\mathsf T}n$. Define
+\begin{equation}\label{eq:products}
+ U_\nu=\{p_n:n\in N_\nu\}\subset\cP_{k-1},\qquad
+ \cU=\sum_{\nu=1}^L\Span\{p q:p,q\in U_\nu\}\subset\cP_{2k-2}.
+\end{equation}
+The sum is within each observed normal space. There are no cross-products between different contact points unless those are separately observable. Set
+\[
+ \cL\theta=(Z_\nu^{\mathsf T}JH(\theta)J^{\mathsf T}Z_\nu)_{\nu=1}^L,
+\]
+with the direct-sum Frobenius norm on its range. This is the dual of the multiplication map in \eqref{eq:products}, expressed in orthonormal normal coordinates.
+
+\begin{theorem}[Complete partial-contact fibre]\label{thm:products}
+For the preceding structured family and prescribed contact points, the second jets for $\theta$ and $\theta'$ are equal if and only if
+\begin{equation}\label{eq:fibre}
+ \ell_{\theta'-\theta}|_{\cU}=0.
+\end{equation}
+Consequently their exact fibre through $\theta$ is
+\[
+ (\theta+\cU^\perp)\cap\Omega,
+\]
+its local dimension is $2k-1-\dim\cU$, and the following are equivalent: all parameters are identifiable; $\cL$ is injective; and $\cU=\cP_{2k-2}$. The rank of the observation map is $\dim\cU$. These statements require no quadratic parametrization of $M$ and no observation of its complete conormal bundle.
+\end{theorem}
+\begin{proof}
+By Lemma~\ref{lem:normal}, the second jets are equivalent to the matrices $B_\nu$. For $n,n'\in N_\nu$,
+\[
+ n^{\mathsf T}(R_{\theta'}-R_\theta)n'
+   =\ell_{\theta'-\theta}(p_n p_{n'}).
+\]
+Thus equality of the matrices is exactly \eqref{eq:fibre}. Conversely that identity gives all their bilinear entries, hence their inverses and the full Hessians. The rank of the linear map $\cL$ equals the dimension of the span of its coefficient polynomials, which is $\dim\cU$. Inversion on each positive definite block is a diffeomorphism, so it does not change rank or fibres. Openness of $\Omega$ makes every fibre locally open in its indicated affine subspace. This proves every assertion.
+\end{proof}
+
+\begin{corollary}[One contact point]\label{cor:one}
+At a single contact point of a $d$-dimensional manifold in $\R^k$, native recovery is equivalent to
+\[
+ \Span(UU)=\cP_{2k-2},\qquad \dim U=k-d.
+\]
+A necessary condition is $(k-d)(k-d+1)/2\ge2k-1$. For arbitrary positive ambient matrices the same contact point always has an invisible linear space of dimension
+\begin{equation}\label{eq:ambientkernel}
+ \frac{k(k+1)-(k-d)(k-d+1)}2=\frac{d(2k-d+1)}2.
+\end{equation}
+\end{corollary}
+\begin{proof}
+Only the symmetric products of $k-d$ normal polynomials are supplied. Their number bounds the rank. For the unrestricted family, choose an orthogonal tangent--normal decomposition. The normal--normal block is fixed; the tangent--tangent and tangent--normal blocks are arbitrary infinitesimal perturbations. Their dimension is \eqref{eq:ambientkernel}, and small perturbations preserve positive definiteness.
+\end{proof}
+
+\section{A native all-dimensional single-contact theorem}\label{sec:realization}
+We first derive the information structure from the observation rather than prescribing a metric. Fix distinct strictly positive rank-one probability tables $M_1,M_2$ with four cells, $k$ distinct roots $0<r_1<\cdots<r_k<D$, and $2k+1$ distinct clocks $D<T_1<\cdots<T_{2k+1}$. In one component put the variable factors
+\[
+ f_1(T)=f_{1,0}(T)\prod_{i=1}^k\big((T-r_i-s_i/2)^2-v_i\big),
+\]
+where $f_{1,0}$ and the other component polynomial $f_2$ are fixed and positive at the clocks. Observe
+\begin{equation}\label{eq:binary}
+ p_j=\pi_jM_1+(1-\pi_j)M_2,\qquad
+ \frac{\pi_j}{1-\pi_j}=\frac{\alpha f_1(T_j)}{(1-\alpha)f_2(T_j)}.
+\end{equation}
+At the centre, $s=v=0$. The free coordinates are log mixing odds and the $k$ root-sum displacements; the retained coordinates are $v_i$. The physical cone is $v_i\ge0$. Positive exposures $\lambda_j$ weight the independent clock groups. The scalar information for log odds is
+\[
+ \kappa_j=\pi_j^2(1-\pi_j)^2\sum_c\frac{(M_{1c}-M_{2c})^2}{p_{jc}}>0.
+\]
+Let $V=[L,D_0]$ be the square scalar score matrix with row
+\[
+ L_j=\big(1,-(T_j-r_1)^{-1},\ldots,-(T_j-r_k)^{-1}\big),\qquad
+ (D_0)_{ji}=-(T_j-r_i)^{-2}.
+\]
+Write $h(t)=\prod_i(t-r_i)^2$, $p_*(t)=\prod_i(t-r_i)$, and $P(t)=\prod_j(t-T_j)$. Set
+\begin{equation}\label{eq:J}
+ d_i=\frac{P(r_i)}{\prod_{a\ne i}(r_i-r_a)^2}<0,\qquad
+ \xi_j=\frac{h(T_j)}{P'(T_j)},\qquad
+ J_{ia}=[t^a]\,d_i\frac{p_*(t)}{t-r_i},\quad 0\le a\le k-1.
+\end{equation}
+Here $[t^a]$ denotes a polynomial coefficient, not an observation.
+
+\begin{proposition}[Native moment coordinates]\label{prop:native}
+The inverse efficient information after profiling the free coordinates is
+\begin{equation}\label{eq:native}
+ R=JH(\theta)J^{\mathsf T},\quad
+ \theta_a=\sum_j\omega_jT_j^a,\quad
+ \omega_j=\frac{\xi_j^2}{p_*(T_j)^2\lambda_j\kappa_j}>0.
+\end{equation}
+The matrix $J$ is invertible. As the exposures range independently over the positive orthant, $\theta$ ranges over the open cone \eqref{eq:momentcone}, of dimension $2k-1$.
+\end{proposition}
+\begin{proof}
+Multiplying a linear combination of the columns of $V$ by $h$ gives a polynomial of degree at most $2k$. If it vanishes at the $2k+1$ clocks it vanishes identically. Principal parts at the roots and the value at infinity then show that every coefficient is zero. Thus $V$ is invertible. The full information is $V^{\mathsf T}\diag(\lambda_j\kappa_j)V$. The lower-right block of its inverse equals the inverse of the nuisance Schur complement.
+
+For clock increments $y_j$, Lagrange interpolation of $g(t)=h(t)(V\beta)(t)$ gives
+\[
+ g(t)=\sum_j h(T_j)y_j\frac{P(t)}{(t-T_j)P'(T_j)}.
+\]
+The retained principal-part coefficient at $r_i$ is $-g(r_i)/\prod_{a\ne i}(r_i-r_a)^2$. Hence the retained rows $Z$ of $V^{-1}$ satisfy
+\[
+ Z_{ij}=\frac{\xi_jd_i}{T_j-r_i}
+       =\frac{\xi_j}{p_*(T_j)}(Jw(T_j))_i,\quad
+ w(t)=(1,t,\ldots,t^{k-1})^{\mathsf T}.
+\]
+The inverse information is $Z\diag((\lambda_j\kappa_j)^{-1})Z^{\mathsf T}$, which proves \eqref{eq:native}. Evaluation at the roots shows that the row polynomials $p_*(t)/(t-r_i)$ form a basis, so $J$ is invertible. The Vandermonde moment map has rank $2k-1$. A surjective linear map sends an open set to an open set in its range; its positive-orthant image is the relative interior of the finite cone generated by its columns. All the corresponding Hankel matrices are positive definite since the clock evaluation vectors span $\R^k$.
+\end{proof}
+
+For a loading matrix $A\in\R^{k\times d}$, with rows $a_i^{\mathsf T}$, synchronize the root splitting by
+\[
+ v_i=(a_i^{\mathsf T}\eta)^2,
+ \qquad q_A(\eta)=\big((a_i^{\mathsf T}\eta)^2\big)_i.
+\]
+The information $J$ is fixed by the central experiment; the loading matrix determines the physical subfamily. Its choice below does not select an arbitrary target metric.
+
+\begin{theorem}[Native single-contact realization]\label{thm:realization}
+Let $d\ge2$ and $k=3d+2$. For every fixed separated root and clock configuration in \eqref{eq:binary}, there is a nonempty open set of real loading matrices $A$, and a strictly positive smooth point $b_0=q_A(e_1)$ of the global image $q_A(\R^d)$, such that the single second jet
+\[
+ D^2C_R(b_0),\qquad C_R(b)=\min_\eta(q_A(\eta)-b)^{\mathsf T}R^{-1}(q_A(\eta)-b),
+\]
+recovers every native inverse information matrix in \eqref{eq:native}. The recovery criterion holds for all positive exposures, not only a chosen metric. The open set contains rational loading matrices.
+
+In contrast, unrestricted positive matrices have a local fibre of dimension $5d(d+1)/2$ at the same observation. For $d\ge6$, the quadratic measurement map $S\mapsto(a_i^{\mathsf T}Sa_i)_i$ on $\Sym_d$ is noninjective for dimension reasons. Thus the native conclusion is not obtained by the complete-conormal discriminant argument.
+\end{theorem}
+\begin{proof}
+Use coefficient indices $0,\ldots,3d+1$ and put
+\[
+ E=\{d+1,\ldots,2d\},\qquad
+ S=\{0,\ldots,d\}\cup\{2d+1,\ldots,3d+1\}.
+\]
+Every coefficient of $p_*(t)/(t-r_i)$ at index $a$ has sign $(-1)^{k-1-a}$ and is nonzero, since all roots are positive. Since $d_i<0$, the vector $t=-Je_{d+1}$ is strictly positive: here $k-(d+1)=2d+1$ is odd. Write $z_i=\sqrt{t_i}$ and form the columns of $A_0$ as
+\begin{equation}\label{eq:loadconstruct}
+ (A_0)_{\cdot1}=z,\qquad
+ (A_0)_{\cdot \ell}=\diag(z)^{-1}Je_{d+\ell},\quad 2\le\ell\le d.
+\end{equation}
+Then $q_{A_0}(e_1)=t$ and
+\[
+ \ran Dq_{A_0}(e_1)=J\Span\{e_a:a\in E\}.
+\]
+The $d$ columns are independent. Its normal space is consequently
+\[
+ N_0=J^{-\mathsf T}\Span\{e_a:a\in S\},\qquad
+ U_0=\Span\{t^a:a\in S\}.
+\]
+The pairwise sums of exponents contain the three consecutive integer intervals
+\[
+ [0,2d],\qquad [2d+1,4d+1],\qquad [4d+2,6d+2].
+\]
+They cover all indices $0,\ldots,2k-2$. Therefore $\Span(U_0U_0)=\cP_{2k-2}$. This is an exact algebraic construction for a local embedded germ at $e_1$.
+
+We next arrange that the local germ is the germ of the global image. The full-product condition persists under all sufficiently small perturbations of $A_0$: in any full-rank tangent chart a nonzero maximal minor of the multiplication matrix is continuous and stays nonzero. Full column rank and nonvanishing entries of $Ae_1$ also persist.
+
+For completeness, global separation at this one point is generic in $A$ when $k>d$. Write $z=Ae_1$ and fix a nonconstant sign vector $s\in\{\pm1\}^k$. The condition $\diag(s)z\in\ran A$ is an algebraic rank condition. It is proper: choose $z$ with all entries nonzero, so $z$ and $\diag(s)z$ are independent, and extend $z$ to a $d$-plane avoiding the latter vector, which is possible since $k>d$. Thus, outside finitely many proper algebraic sets, $q_A(\eta)=q_A(e_1)$ implies $A\eta=z$ or $-z$, and hence $\eta=\pm e_1$. This dense open set meets the open full-product neighbourhood of $A_0$. It also contains rational matrices there, because each exceptional condition is given by real polynomials with a proper zero set and the desired intersection is a nonempty Euclidean open set.
+
+For such an $A$, the map $q_A$ is proper: $\|q_A(\eta)\|_2\ge k^{-1/2}\|A\eta\|_2^2\ge c\|\eta\|_2^2$. At $\pm e_1$ its derivative has rank $d$, and the two local images coincide by evenness. Properness and the just-proved two-point inverse fibre exclude any other sheet approaching $b_0$. Hence the image has one embedded smooth germ there. For each fixed positive $R$, a minimizing image in the distance formula approaches $b_0$ as $b\to b_0$, by positive definiteness and the trial image $b_0$. The local projection therefore computes the global distance. Compact families of positive $R$ give a uniform tube. Theorem~\ref{thm:products} now proves the claimed native recovery. Formula~\eqref{eq:ambientkernel} gives $5d(d+1)/2$. Finally $3d+2<d(d+1)/2$ precisely for integer $d\ge6$ in the range at issue.
+\end{proof}
+
+\begin{remark}[What is and is not optimized]
+The value $k=3d+2$ is a constructive sufficient size, not a claimed minimum. The necessary one-point dimension inequality is that of Corollary~\ref{cor:one}. The construction proves a whole open family, not just a rank observed at finitely many numerical examples. With exact algebraic root and clock data, a rational perturbation may be selected by enumerating rational matrices and testing the finitely many rank and sign conditions; success is decidable on these inputs. For arbitrary real configurations the conclusion is existence of rational matrices, not an algorithm for unspecified real-number input. No practical complexity bound is claimed.
+\end{remark}
+
+\begin{example}[Rational, globally separated instances]
+The finite diagnostics include $d=2,3,6$, with $k=3d+2$, roots $r_i=i$, clocks $k+2,\ldots,3k+2$, and $A_{i\ell}=i^{\ell-1}$. Here $q_A(e_1)=\mathbf1$. If $q_A(\eta)=\mathbf1$, the polynomial $f(t)=\sum_{\ell=1}^d\eta_\ell t^{\ell-1}$ satisfies $f(i)^2=1$ at $k>2(d-1)$ distinct points. Hence $f^2-1$ is identically zero and $\eta=\pm e_1$. These instances are globally separated without an unspecified perturbation. The corresponding product matrices have full ranks $15,21,39$, respectively, as verified by nonzero full-column minors modulo the prime $1000003$; this implies the same ranks over $\mathbb Q$. A second implementation inverts the raw square score matrix and checks the compressed clock tensors directly, without constructing the normal-polynomial products. These are reproducible finite examples. The all-dimensional existence proof is the preceding argument, not an extrapolation from them.
+\end{example}
+
+\subsection{Explicit coordinates at the constructed germ}
+For the local-germ distance, the unperturbed construction also gives a direct formula. The global distance has the same formula whenever this unperturbed germ is globally separated; global separation is guaranteed after the perturbation in Theorem~\ref{thm:realization}, not asserted for every unperturbed configuration. Let $W$ have columns $n_a=J^{-\mathsf T}e_a$, $a\in S$, and set
+\[
+ K=W^{\mathsf T}W,\qquad G=\tfrac12W^{\mathsf T}D^2C_R(b_0)W.
+\]
+These normals are not generally orthonormal. The correctly normalized dual data are
+\begin{equation}\label{eq:nonorth}
+ B=KG^{-1}K=W^{\mathsf T}RW,
+ \qquad B_{ab}=\theta_{a+b}.
+\end{equation}
+Every $\theta_j$ is therefore read from an entry with $a+b=j$. Repeated representations give consistency equations, not additional unknowns. To prove \eqref{eq:nonorth}, write $W=ZO$ with $Z$ orthonormal and $O$ invertible; then $K=O^{\mathsf T}O$ and $G=O^{\mathsf T}(Z^{\mathsf T}RZ)^{-1}O$. Direct inversion gives the formula. At a nearby globally separated loading, one uses the corresponding multiplication matrix rather than this monomial readout.
+
+\section{Stability, partial observation, and noise}\label{sec:stability}
+Suppose $\cL$ in Section~\ref{sec:normal} is injective. Let $\gamma>0$ be its smallest singular value, with Euclidean moment norm and direct-sum Frobenius data norm. Orthonormal changes of normal coordinates preserve this constant. Polynomial coefficient changes need their corresponding norm transformation; no basis-independent numerical constant is asserted without fixed norms.
+
+\begin{theorem}[Stable recovery from approximate second jets]\label{thm:stability}
+Assume $mI\le B_\nu(\theta)\le MI$ on a compact native parameter set. Let symmetric observed blocks satisfy
+\[
+ \widehat G_\nu=G_\nu(\theta)+E_\nu,\qquad
+ \max_\nu\|E_\nu\|_{\rm op}\le(2M)^{-1}.
+\]
+Define $\widehat B_\nu=\widehat G_\nu^{-1}$ and $\widehat\theta=\cL^\dagger(\widehat B_\nu)_\nu$. Then
+\begin{equation}\label{eq:stability}
+ \|\widehat\theta-\theta\|_2
+ \le \frac{2M^2}{\gamma}
+       \Big(\sum_\nu\|E_\nu\|_F^2\Big)^{1/2}.
+\end{equation}
+Projection of $\widehat\theta$ onto a closed convex admissible set containing the truth cannot increase this bound. The dependence on $\gamma^{-1}$ is necessary for linear recovery of the dual blocks. If $\cU\ne\cP_{2k-2}$, no uniformly consistent recovery from those exact second jets is possible on an open native parameter set.
+\end{theorem}
+\begin{proof}
+The eigenvalue bound gives $\widehat G_\nu\ge(2M)^{-1}I$. The inverse identity yields
+\[
+ \widehat B_\nu-B_\nu=-\widehat G_\nu^{-1}E_\nu B_\nu,
+ \qquad \|\widehat B_\nu-B_\nu\|_F\le2M^2\|E_\nu\|_F.
+\]
+Apply the left inverse, whose norm is $\gamma^{-1}$. Euclidean projection onto a closed convex set containing $\theta$ decreases distance to $\theta$. For necessity, take a unit right singular vector of $\cL$ for $\gamma$ and small opposite perturbations of an interior parameter. Their parameter separation is $2\delta$, and their dual-block separation is $2\delta\gamma$. If rank fails, Theorem~\ref{thm:products} gives distinct parameters with identical data, precluding consistency even without noise.
+\end{proof}
+
+The recovered metric also controls the full global contact function. If $r_-I\le R,R'\le r_+I$, then for the quadratic cone, which contains zero,
+\begin{equation}\label{eq:fullcontact}
+ |C_R(b)-C_{R'}(b)|\le\frac{r_+}{r_-^3}\|b\|_2^2\|R-R'\|_{\rm op}.
+\end{equation}
+Indeed the trial zero bounds the minimum by $\|b\|^2/r_-$; a minimizing residual has squared Euclidean norm at most $(r_+/r_-)\|b\|^2$. Compare its two quadratic values and use $\|R^{-1}-R'^{-1}\|\le\|R-R'\|/r_-^2$, then reverse the roles. Unique minimizers away from the observed point are unnecessary.
+
+\subsection{A finite noisy contact-value experiment}
+We specify the observations before making a statistical claim. Work at one of the globally separated points of Theorem~\ref{thm:realization}. Fix a compact convex set $\Theta\subset\Omega$ with nonempty interior. Let $Z$ be an orthonormal normal basis, of size $c=k-d$. Choose the $p=c(c+1)/2$ vectors $v_a$ consisting of its columns and their pairwise sums. The map
+\[
+ \mathcal Q(B)=(v_a^{\mathsf T}ZBZ^{\mathsf T}v_a)_{a=1}^p
+\]
+is a linear isomorphism from $\Sym_c$ to $\R^p$. For a small positive \emph{fixed} offset $h$, set
+\begin{equation}\label{eq:mean}
+ \mu_h(\theta)_a=\tfrac12\{C_{R_\theta}(b_0+hv_a)+C_{R_\theta}(b_0-hv_a)\}.
+\end{equation}
+A replicate is the $p$-vector
+\begin{equation}\label{eq:noise}
+ Y_j=\mu_h(\theta)+\sigma\xi_j,\qquad
+ \xi_j\ \hbox{independent }N(0,I_p),\quad j=1,\ldots,N.
+\end{equation}
+The noise level $\sigma>0$ is known. This represents noisy symmetric contact readings. If each of the two contact values is measured independently, their average has this form after adjusting the known variance. There are $2p$ contact locations and $N$ repetitions; no second derivative is supplied as data.
+
+\begin{theorem}[Finite-offset identification and statistical information]\label{thm:noise}
+For sufficiently small $h_0>0$, all targets in \eqref{eq:mean} are positive when $0<h\le h_0$. There are constants $a,b>0$, independent of $h$, such that
+\begin{equation}\label{eq:bilip}
+ ah^2\|\theta-\theta'\|_2\le
+ \|\mu_h(\theta)-\mu_h(\theta')\|_2
+ \le bh^2\|\theta-\theta'\|_2,
+ \quad\theta,\theta'\in\Theta.
+\end{equation}
+One may take $a$ proportional to $\gamma$ on fixed compact metric bounds, provided $h_0$ is chosen sufficiently small relative to $\gamma$ and the uniform derivative bounds.
+
+For any measurable least-squares minimizer over $\Theta$, based on the sample mean $\bar Y$, one has
+\begin{equation}\label{eq:riskupper}
+ \sup_{\theta\in\Theta}\mathbb E_\theta\|\widehat\theta_N-\theta\|_2^2
+ \le \frac{4p\sigma^2}{Na^2h^4}.
+\end{equation}
+For each interior $\theta_0$ and fixed $0<h\le h_0$, the experiment is locally asymptotically normal with information per replicate
+\begin{equation}\label{eq:fish}
+ I_h(\theta_0)=\sigma^{-2}D\mu_h(\theta_0)^{\mathsf T}D\mu_h(\theta_0)>0.
+\end{equation}
+Least squares is locally asymptotically efficient and attains covariance $I_h(\theta_0)^{-1}$. The local asymptotic minimax squared-error bound is $\tr I_h(\theta_0)^{-1}/N$. In particular the fixed-offset rate $N^{-1}$ cannot be improved. As $h\downarrow0$, the information divided by $h^4$ converges to the Gram matrix of the derivative of $\mathcal Q((\cL\theta)^{-1})$, divided by $\sigma^2$. Its smallest eigenvalue is comparable to $\gamma^2/\sigma^2$ on fixed positive metric bounds.
+\end{theorem}
+\begin{proof}
+Properness, the unique embedded germ, and the compact metric set give a tube in which the minimizing projection is analytic jointly in $\theta$ and the target. Positivity of $b_0$ lets us reduce this tube so that all the finitely many targets are positive. Symmetric Taylor expansion, including one parameter derivative, gives uniformly on a neighbourhood of $\Theta$
+\begin{equation}\label{eq:taylor}
+ h^{-2}\mu_h(\theta)
+ =\mathcal Q(B(\theta)^{-1})+h^2\rho_h(\theta),
+ \qquad \|\rho_h\|_{C^1(\Theta)}\le C,
+ \quad B(\theta)=\cL\theta.
+\end{equation}
+The factor follows from the definition $G=\tfrac12D^2C|_N$; the symmetric contact average has leading term $h^2v^{\mathsf T}Z G Z^{\mathsf T}v$.
+
+Apply $\mathcal Q^{-1}$ to \eqref{eq:taylor}. Its output is uniformly positive for small $h$, and inversion gives a map
+\[
+ F_h(\theta)=\big[\mathcal Q^{-1}(h^{-2}\mu_h(\theta))\big]^{-1}
+            =\cL\theta+h^2E_h(\theta),\qquad \|E_h\|_{C^1}\le C'.
+\]
+Choose $h_0$ so that $C'h_0^2\le\gamma/2$. Convexity of $\Theta$ and integration along its line segments imply
+\[
+ \|F_h(\theta)-F_h(\theta')\|_F\ge(\gamma/2)\|\theta-\theta'\|_2.
+\]
+The inversion and encoding maps have bounded Lipschitz constants on the compact positive matrix region. This proves the lower bound in \eqref{eq:bilip}. Its upper bound follows directly from \eqref{eq:taylor}. This argument proves global injectivity on $\Theta$; a pointwise Jacobian-rank assertion alone would not do so.
+
+Existence of least squares follows from compactness and continuity; a measurable choice exists, for example by the standard measurable minimum construction on a compact metric parameter space. Its defining inequality implies
+\[
+ \|\mu_h(\widehat\theta_N)-\mu_h(\theta)\|_2
+ \le2\|\bar Y-\mu_h(\theta)\|_2.
+\]
+Use \eqref{eq:bilip} and $\mathbb E\|\bar Y-\mu_h(\theta)\|^2=p\sigma^2/N$ to obtain \eqref{eq:riskupper}.
+
+For the local assertion, let $J_h=D\mu_h(\theta_0)$ and take bounded $u$. Taylor expansion of the exact Gaussian likelihood at $\theta_0+u/\sqrt N$ gives
+\[
+ \log\frac{dP^{(N)}_{\theta_0+u/\sqrt N}}{dP^{(N)}_{\theta_0}}
+ =u^{\mathsf T}\Delta_N-\tfrac12u^{\mathsf T}I_hu+o_{P_{\theta_0}}(1),
+ \quad
+ \Delta_N=\sigma^{-2}J_h^{\mathsf T}\sqrt N(\bar Y-\mu_h(\theta_0)).
+\]
+Here $\Delta_N$ is exactly Gaussian with covariance $I_h$. The remainder is uniform on bounded $u$ because the mean has bounded second parameter derivatives. The global consistency bound and the positive Jacobian rank put the least-squares minimizer in an interior neighbourhood with probability tending to one. Expanding its normal equations then gives
+\[
+ \sqrt N(\widehat\theta_N-\theta_0)
+ =(J_h^{\mathsf T}J_h)^{-1}J_h^{\mathsf T}\sqrt N(\bar Y-\mu_h(\theta_0))+o_P(1).
+\]
+Gaussian tails and the global bound above give uniform integrability and the same expansion under bounded local alternatives. Thus it attains the stated covariance and risk. The local asymptotic minimax theorem for the resulting Gaussian shift gives the lower bound; this is the usual parametric theorem, not a new decision-theoretic principle \cite[Chapters 7--8]{vdV}. More explicitly its lower-bound meaning is
+\[
+ \lim_{c\to\infty}\liminf_{N\to\infty}\inf_{\widetilde\theta_N}
+ \sup_{\|u\|\le c}N\mathbb E_{\theta_0+u/\sqrt N}
+ \|\widetilde\theta_N-(\theta_0+u/\sqrt N)\|^2
+ \ge\tr I_h(\theta_0)^{-1}.
+\]
+Finally \eqref{eq:taylor} gives $h^{-2}D\mu_h\to D[\mathcal Q(B^{-1})]$. In direction $\delta$ the latter derivative is
+\[
+ -\mathcal Q\big(B^{-1}(\cL\delta)B^{-1}\big).
+\]
+The two multiplication factors $B^{-1}$ and the fixed linear isomorphism $\mathcal Q$ compare its norm above and below with $\|\cL\delta\|_F$. Taking smallest singular values proves the last assertion.
+\end{proof}
+
+\begin{remark}[No hidden derivative oracle]
+At fixed $h$ the estimator fits the exact mean \eqref{eq:mean}. It does not replace that mean by its quadratic Taylor term. Such a replacement would introduce a nonvanishing $O(h^2)$ parameter bias and would not prove the claimed asymptotic risk. The offset restriction depends on the conditioning of the actual multiplication operator. When $\gamma$ degenerates, the second-jet problem loses uniform stability; higher contact orders at nonzero offsets can contain additional information, and are not declared invisible by a second-jet theorem.
+\end{remark}
+
+\section{Complete conormal data and the classical discriminant}\label{sec:classical}
+We retain the complete-data comparison in its proper scope. Let $d\ge2$ and suppose
+\[
+ \mathcal A_A:\Sym_d\longrightarrow\R^k,\qquad S\longmapsto(a_i^{\mathsf T}Sa_i)_i
+\]
+is injective; necessarily $k\ge d(d+1)/2$. At every admissible $\eta$, meaning $\eta\ne0$ and all $a_i^{\mathsf T}\eta\ne0$, its normal space satisfies
+\[
+ n\in N_\eta\quad\Longleftrightarrow\quad
+ \mathcal A_A^*(n)\eta=0,\qquad
+ \mathcal A_A^*(n)=\sum_i n_i a_i a_i^{\mathsf T}.
+\]
+The projectivized rank-one cone is the quadratic Veronese variety. Its dual is the singular-quadratic discriminant, with equation $\det=0$ \cite{GKZ}. Thus the following lemma is the degree-two part of a classical discriminant calculation, pulled back through a surjective linear map.
+
+\begin{lemma}[Quadratic ambiguity of the pulled-back discriminant]\label{lem:classical}
+The quadratic forms on $\R^k$ vanishing on every $N_\eta$ are zero for $d\ge3$. For $d=2$ they are the multiples of $\det\mathcal A_A^*(n)$. Consequently all complete second jets identify an arbitrary positive $R$ in $d\ge3$. In $d=2$ their ambient fibre is
+\[
+ (R+\R B_A)\cap\Sym_k^{++},\qquad
+ (B_A)_{ii}=0,\quad(B_A)_{ij}=\det(a_i,a_j)^2.
+\]
+\end{lemma}
+\begin{proof}
+The adjoint is onto. The union of admissible normals is dense in the inverse image of the singular symmetric matrices: rotate a null vector away from the finitely many excluded hyperplanes and lift the resulting matrix perturbation through a fixed right inverse. Split $n=L(S)+z$, with $z$ in the kernel of the adjoint. A vanishing quadratic form has no pure $z$ part by taking $S=0$, and no mixed part because the singular symmetric matrices span $\Sym_d$. It remains a quadratic $f(S)$ vanishing on all singular matrices.
+
+For $d\ge3$, restrict to $S=U\diag(t_1,\ldots,t_d)U^{\mathsf T}$, with $U$ orthogonal. Every degree-two monomial omits some variable. Vanishing whenever any $t_i=0$ therefore forces all coefficients to be zero. Diagonalization proves $f=0$. For $d=2$, substitution $S=(u,v)(u,v)^{\mathsf T}$ in a general quadratic form leaves precisely a multiple of $S_{11}S_{22}-S_{12}^2$. This is the real-coordinate proof of the discriminant statement. Finally $n^{\mathsf T}B_A n=2\det\mathcal A_A^*(n)$, and Lemma~\ref{lem:normal} identifies the metric fibre.
+\end{proof}
+
+In the native two-dimensional case the ambiguity is further intersected with $J\{\text{Hankel}\}J^{\mathsf T}$. Equivalently it is tested against its annihilator. In the root coordinates of \eqref{eq:J}, that space is cut out by
+\begin{equation}\label{eq:triples}
+ \frac{(r_j-r_i)X_{ij}}{d_i d_j}
+ -\frac{(r_l-r_i)X_{il}}{d_i d_l}
+ +\frac{(r_l-r_j)X_{jl}}{d_j d_l}=0\quad(i<j<l).
+\end{equation}
+Every Cauchy rank-one generator satisfies these relations. Conversely they give $k$ free diagonal entries and $k-1$ off-diagonal divided-difference coordinates, hence dimension $2k-1$. This proves equality with the native span. Testing $B_A$ in \eqref{eq:triples} gives the earlier necessary and sufficient two-parameter transversality criterion. The actual fibre is an intersection with the positive native cone, not an entire affine line of positive matrices. Equal second jets in an exceptional family do not imply equality of all contact orders. The three-root five-curvature formula and its explicit transverse and exceptional families are preserved in the companion volume.
+
+For $d\ge3$, complete conormal data already recover unrestricted metrics: the native restriction is unnecessary for \emph{that} identification statement. This does not conflict with Theorem~\ref{thm:realization}, which uses only one normal space and permits a noninjective $\mathcal A_A$. The distinction between these two observation categories is essential.
+
+\section{Retained inverse and design results}\label{sec:companions}
+The accompanying complete companion retains all earlier finite-map reductions, weighted jets, endpoint strata, native moment derivations, and local probability experiments. The following statements explain their role without making them additional hypotheses of the single-contact theorem.
+
+\subsection{Exact scalar queries}
+A deterministic exact-real scalar dual-jet oracle accepts a known observed contact point and a vector in its normal space, and returns $n^{\mathsf T}Rn$ with no noise. The algorithm chooses each query as a deterministic function of its preceding responses. Under the full-product criterion, exactly $2k-1$ suitable such queries are necessary and sufficient for recovery on an open native set. Indeed the functionals $\ell_\theta(p_n^2)$ span the dual moment space by polarization and Theorem~\ref{thm:products}, so a basis can be selected. Fewer queries leave a common kernel at an interior reference point. Small opposite perturbations along that kernel preserve the deterministic transcript, proving the lower bound. This is an exact linear-oracle theorem; it is not the sample bound of Theorem~\ref{thm:noise}. In higher codimension a dual query requires inversion of a normal Hessian block and is not generally the reciprocal of one ordinary directional curvature.
+
+\subsection{Reciprocal fixed-budget fibres}
+For the native moment weights, define the positive constants
+\[
+ a_j=\frac{\xi_j^2}{p_*(T_j)^2\kappa_j},\qquad \lambda_j=\frac{a_j}{\omega_j}.
+\]
+Let $V_m$ be the moment matrix and set
+\[
+ \chi(\theta)=\min\Big\{\sum_j a_j/\omega_j:V_m\omega=\theta,\ \omega>0\Big\}.
+\]
+The fibre is bounded because its zeroth moment fixes $\sum_j\omega_j$; its boundary has some zero weight. The objective tends to infinity there and is strictly convex, with positive definite Hessian. It therefore has a unique minimizer. The constrained Hessian and the full-row-rank moment matrix imply by the implicit function theorem that $\chi$ is analytic with positive definite Hessian on the moment cone. In fact, if $D$ is the diagonal Hessian of the objective at the minimizer, then
+\[
+ D^2\chi=(V_mD^{-1}V_m^{\mathsf T})^{-1}>0.
+\]
+For $m=2k+1$, the positive affine weight fibre has dimension two. Each level above its minimum is diffeomorphic to $S^1$: every ray from the minimizer in its two-dimensional kernel meets the level once, by strict convexity and boundary blowup. The unit-budget image is exactly $\{\chi\le1\}$, with a singleton design fibre at $\chi=1$ and a circular fibre at $\chi<1$. The boundary is relative to the open moment cone. It is regular since $\chi(t\theta)=t^{-1}\chi(\theta)$ implies $D\chi(\theta)[\theta]=-\chi(\theta)\ne0$. An injective contact recovery map transports these fibres to the observed coordinates. The convex argument itself is not claimed as a new general convexity principle.
+
+\subsection{Function-input endpoint representations}
+For completeness, suppose the supplied input is the exact algebraic semialgebraic graph of a labelled scalar function $F(x)$ on a specified semialgebraic domain. For a fixed endpoint dimension $e$, ask for every normalized positive definite block matrix
+\[
+ Q=\begin{pmatrix}A&B\\B^{\mathsf T}&C\end{pmatrix},\qquad
+ F(x)=\min_{z\ge0}(x,z)^{\mathsf T}Q(x,z).
+\]
+Introduce $Q$ as unknown coefficients. Positive definiteness, the normalization, and the graph condition can all be expressed over the reals by polynomial formulas. For every labelled graph point $(x,y)$ require the existence of $z\ge0$ with
+\[
+ Cz+B^{\mathsf T}x\ge0,\quad z_i(Cz+B^{\mathsf T}x)_i=0,\quad
+ y=x^{\mathsf T}Ax+2x^{\mathsf T}Bz+z^{\mathsf T}Cz.
+\]
+Since $C>0$, these KKT conditions are necessary and sufficient. Real quantifier elimination gives the exact fixed-$e$ semialgebraic representation fibre and decides its emptiness \cite{BPR}. Enumerating $e$ terminates at the minimum under a finite-representability promise. Without that promise no termination in $e$, intrinsic dimension bound, practical complexity bound, or explicit normal-form classification follows from this argument. The explicit visible and first-degenerate-stratum fibre results are retained in the complete companion; this effective result neither replaces nor weakens them.
+
+This scalar-value inverse problem differs from reconstruction of an optimizer map in inverse parametric programming \cite{HGL,NORHN}. Adding a parameter-only term to an objective leaves its optimizer unchanged but alters its scalar value. Those works should not be characterized as assuming a known hidden active fan; their supplied input and reconstruction objectives differ from the labelled value graph used here.
+
+\appendix
+\section{Contact reduction for synchronized root observations}\label{app:reduction}
+We record the local reduction needed to interpret the metric, independently of injectivity of $\mathcal A_A$ on $\Sym_d$. At the central binary experiment, the probability map in free coordinates $u$ and retained variances $v$ has the expansion
+\[
+ p(u,v)=p_0+L_pu+D_pv+O((\|u\|+\|v\|)^2).
+\]
+Its Fisher quadratic form in these coordinates is the positive matrix $I$ of Proposition~\ref{prop:native}. For a target retained displacement $tb$, a synchronized candidate $v=tq_A(\eta)$ and a free displacement $tu$ have, after division by $t^2$, limiting squared Fisher distance
+\[
+ \min_u\|(L_pu+D_p(q_A(\eta)-b))\|_{p_0^{-1}}^2
+ =(q_A(\eta)-b)^{\mathsf T}Q(q_A(\eta)-b),\qquad Q=R^{-1}.
+\]
+This is just the nuisance Schur complement. The physical splitting amplitudes have size $\sqrt t$, while variances have size $t$. On bounded scaled target and loading sets with full-column-rank margin for $A$, $q_A$ is coercive. Trial at zero and positivity of the information bound the scaled minimizers. Taylor remainders then tend to zero uniformly over those bounded minimizers. Local isolation of the central root and clock chart is understood here; the inherited finite-sheet results in the companion specify global chart selection when needed. For nonlinear loadings $g_i(\eta)$ with $g_i(0)=0$, $Dg_i(0)=a_i^{\mathsf T}$ and a common $C^2$ bound, $g_i(\sqrt t\,\eta)^2=t(a_i^{\mathsf T}\eta)^2+O(t^{3/2})$ on bounded scaled sets, giving the same leading contact. None of these local conclusions needs the stronger full-symmetric injectivity hypothesis from Section~\ref{sec:classical}.
+
+\section{Source and preservation conventions}
+This principal source is self-contained: it has no generated TeX inputs. Its accompanying source manifest records its exact bytes. The controlling referee report is the A2 v108 report at commit \texttt{5a8a8190e6a5979719591b286fca92aae3cc15cc}; the reviewed mathematical source is \texttt{4ed51300c2aa6e7b11e701a38ed1d14f8b9e8191}. The submission metadata records the new mathematical source commit separately from the subsequent evidence commit, avoiding a self-referential source hash.
+
+The complete previous manuscript is preserved as the companion rather than deleted to shorten this article. Its four previously absent prepared inputs are materialized from the preserved v107 sources by the existing checked preparation script before the source-bound companion build. The dependency manifest records every actual TeX input; theorem and proof counts are checked when amended copies are prepared. Historical claims are not silently relabelled as new results of this paper. Exact finite algebra diagnostics are reproducibility aids, not certification of universal proofs or a journal decision.
+
+\begin{thebibliography}{99}
+\bibitem{GKZ} I. M. Gelfand, M. M. Kapranov, and A. V. Zelevinsky, \emph{Discriminants, Resultants, and Multidimensional Determinants}, Birkh\"auser, Boston, 1994. DOI: \href{https://doi.org/10.1007/978-0-8176-4771-1}{10.1007/978-0-8176-4771-1}.
+\bibitem{MP} B. Mourrain and V. Y. Pan, Multivariate polynomials, duality, and structured matrices, \emph{J. Complexity} \textbf{16} (2000), 110--180. DOI: \href{https://doi.org/10.1006/jcom.1999.0530}{10.1006/jcom.1999.0530}.
+\bibitem{vdV} A. W. van der Vaart, \emph{Asymptotic Statistics}, Cambridge University Press, Cambridge, 1998.
+\bibitem{BPR} S. Basu, R. Pollack, and M.-F. Roy, \emph{Algorithms in Real Algebraic Geometry}, second ed., Springer, Berlin, 2006.
+\bibitem{HGL} A. B. Hempel, P. J. Goulart, and J. Lygeros, Inverse parametric quadratic programming and an application to hybrid control, \emph{IFAC Proceedings Volumes} \textbf{45}(17) (2012), 68--73. DOI: \href{https://doi.org/10.3182/20120823-5-NL-3013.00033}{10.3182/20120823-5-NL-3013.00033}.
+\bibitem{NORHN} N. A. Nguyen, S. Olaru, P. Rodriguez-Ayerbe, M. Hovd, and I. Necoara, Constructive solution of inverse parametric linear/quadratic programming problems, \emph{J. Optim. Theory Appl.} \textbf{172} (2017), 623--648. DOI: \href{https://doi.org/10.1007/s10957-016-0968-0}{10.1007/s10957-016-0968-0}.
+\end{thebibliography}
+\end{document}
