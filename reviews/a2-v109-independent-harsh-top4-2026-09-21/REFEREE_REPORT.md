@@ -4,7 +4,7 @@
 **Reviewed revision branch:** \`revision/a2-v109-single-contact-multiplication-tomography-2026-09-21\`  
 **Principal source:** \`papers/A2-v17-boundary-information-coarsening/article/v109/paper.tex\`  
 **Principal source blob:** \`1ec9ddd8cfc54d96902f29ccd4221225178ce142\`  
-**Reviewed source commit:** \`[TO-BE-PINNED-FROM-REVIEW-BRANCH-PARENT]\`  
+**Reviewed source commit:** \`60999f38f745072d240909fe8c77aee5be2df69a\`  
 **Date of report:** 21 September 2026  
 **Standard applied:** general-journal standard comparable to Annals of Mathematics / Inventiones Mathematicae / JAMS / Acta Mathematica  
 **Recommendation:** **reject in the present form**
