@@ -1,0 +1,39 @@
+name: A2 v107 source-bound native review
+on:
+  push:
+    branches:
+      - revision/a2-v107-synchronized-root-contact-budget-geometry-2026-09-21
+    paths:
+      - papers/A2-v17-boundary-information-coarsening/article/v107/**
+      - .github/workflows/a2-v107-native-review.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build-and-replay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Fetch the exact reviewed source
+        run: git fetch --no-tags --depth=1 origin 5cbbe96cd2ac590bfa2e17bcef97b0630cd91c4a
+      - name: Install native build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y latexmk texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+          python3 -m pip install 'sympy==1.14.0'
+      - name: Compile both pinned manuscripts and run finite exact checks
+        env:
+          A2_RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: python3 papers/A2-v17-boundary-information-coarsening/article/v107/build_review.py
+      - name: Retain PDFs, exact source closures, logs, and receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: A2-v107-native-review-${{ github.sha }}
+          path: build/a2-v107-review/
+          if-no-files-found: error
+          retention-days: 90
