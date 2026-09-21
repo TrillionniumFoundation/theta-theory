@@ -1,0 +1,59 @@
+\section{Intrinsic recovery from a labelled value function}\label{sec:intrinsic-fibres}
+The contact theorem concerns a metric reconstructed from conormal observations. Endpoint profiling gives a different inverse question, for which it is important not to supply the answer as an unobserved reference matrix. In this section the input is only a labelled function on $X=\R_+^k$. Labels mean that the value at each $x$ is known; they do not name hidden active sets.
+
+\begin{definition}[Exact function input]\label{def:exact-function}
+An exact function input is a quantifier-free semialgebraic formula $\Gamma(x,t)$ over the real algebraic numbers whose realization is the graph of a continuous, degree-two homogeneous function $G:X\to\R$. An equivalent permissible input is a finite rational or real-algebraic polyhedral conic cover $C_\alpha$ of $X$, together with symmetric matrices $S_\alpha$ over that field, specifying $G(x)=x^{\mathsf T}S_\alpha x$ on $C_\alpha$, with agreement on overlaps. Hidden endpoint dimensions, active-set names, and any reference representation are absent. Exact real coefficients may instead be used in a real-closed-field oracle model; the effective assertion below is for the stated algebraic input.
+\end{definition}
+
+For $e\ge0$, write $Q=\left(\begin{smallmatrix}A&B\\B^{\mathsf T}&C\end{smallmatrix}\right)>0$ and
+\[
+ G_Q(x)=\min_{z\in\R_+^e}(x,z)^{\mathsf T}Q(x,z).
+\]
+Normalize $C_{ii}=1$. For $e=0$, this condition is void. Positive diagonal endpoint rescaling puts every positive representation in this normalization. Only endpoint permutations remain as the elementary finite gauge; other points in a fibre need not be gauge equivalent.
+
+\begin{theorem}[Function-input minimal representation fibre]\label{thm:intrinsic-fibre}
+From the exact input $\Gamma$ and any nonnegative integer $e$, one can construct a finite quantifier-free semialgebraic description of
+\[
+ \mathcal F_e(G)=\{Q>0:C_{ii}=1,\ G_Q(x)=G(x)\text{ for every }x\in X\}.
+\]
+This construction requires no reference representation of $G$, and is valid at every visibility and column-rank stratum. It decides emptiness of $\mathcal F_e(G)$ and, when nonempty, returns an algebraic sample representation and a description of all normalized representations of that dimension.
+
+If the input is promised to have a finite positive orthant-quadratic representation, enumeration of $e=0,1,\ldots$ terminates at its intrinsic minimum $e_{\min}$ and returns the entire fibre $\mathcal F_{e_{\min}}(G)$. Endpoint permutations and positive diagonal rescalings recover all unnormalized minimal representations. Without the representability promise, the same procedure decides the question for every supplied finite upper bound on $e$; termination of unbounded search in the nonrepresentable case is not asserted.
+\end{theorem}
+\begin{proof}
+Positive definiteness is expressed by strict positivity of the leading principal minors. For a fixed $e$, the unknown coefficients of $A,B,C$ are finitely many real variables. Introduce $w=B^{\mathsf T}x+Cz$ and the formula
+\begin{equation}\label{eq:intrinsic-KKT}
+ z_i\ge0,\quad w_i\ge0,\quad z_iw_i=0\quad(1\le i\le e),\qquad
+ t=x^{\mathsf T}Ax+2x^{\mathsf T}Bz+z^{\mathsf T}Cz.
+\end{equation}
+All expressions are polynomial, including products of unknown coefficients and quantified variables. Since $C>0$, the objective is strictly convex and coercive on the orthant. Its unique minimizer satisfies these conditions, and these conditions are sufficient: for another feasible $z'$, the objective difference is
+\[
+ 2w^{\mathsf T}(z'-z)+(z'-z)^{\mathsf T}C(z'-z)\ge0.
+\]
+Complementarity gives $w^{\mathsf T}z=0$.
+
+Conjoin positivity and normalization with
+\begin{equation}\label{eq:function-input-formula}
+ \forall x\ \forall t\,
+ \big[(x\in X\ \wedge\ \Gamma(x,t))
+       \Longrightarrow\exists z\ \text{\eqref{eq:intrinsic-KKT}}\big].
+\end{equation}
+By the definition of the input graph, there is exactly one such $t$ for every $x\in X$. The KKT equivalence therefore proves that this formula defines exactly $\mathcal F_e(G)$, in both directions. Quantifier elimination over real closed fields gives a quantifier-free formula in the coefficients of $Q$; sign determination and sample-point algorithms decide emptiness and return a sample over the real algebraic numbers \cite{BCR}. No coefficients of a hidden reference $Q$ appear in this operation.
+
+If a finite positive representation exists, diagonal normalization preserves it, and the enumeration eventually reaches its dimension. The first nonempty fibre is therefore precisely the minimal one. Conversely every point of that fibre is a minimal representation, by emptiness at smaller dimensions. Applying positive diagonal congruences in endpoint coordinates and endpoint permutations gives exactly the unnormalized fibre. This proves the claims, including the termination qualification.
+\end{proof}
+
+\begin{proposition}[A finite atlas implementation]\label{prop:intrinsic-atlas}
+For the polyhedral-quadratic input in Definition~\ref{def:exact-function}, the equality test for a fixed candidate $Q$ can be made by intersections of observed cones with candidate KKT cones. It never requires the active fan of a reference representation. If $K_I(Q)$ is a candidate KKT cone and $S_I(Q)$ its value matrix, equality holds if and only if, for every $\alpha,I$ and every pair of generators $u,v$ of $C_\alpha\cap K_I(Q)$,
+\begin{equation}\label{eq:atlas-comparison}
+ u^{\mathsf T}(S_\alpha-S_I(Q))v=0.
+\end{equation}
+The graph formula \eqref{eq:function-input-formula} gives a uniform semialgebraic description while the candidate cones and their generators vary.
+\end{proposition}
+\begin{proof}
+The observed cones and the candidate KKT cones cover $X$. On an intersection the difference is one homogeneous quadratic polynomial. It vanishes identically on the cone if and only if the corresponding symmetric bilinear form vanishes on its linear span. Testing generators in pairs is sufficient. It is also necessary: vanishing on generators gives the diagonal terms, and vanishing on their sums gives the mixed terms by polarization. This includes lower-dimensional intersections. The resulting identities give equality everywhere on the cover. For variable candidates it is unnecessary to fix a combinatorial type of their generators: the polynomial quantified formula above already handles the varying fan exactly.
+\end{proof}
+
+These results distinguish three levels of inversion. Theorems~\ref{thm:reconstruct}, \ref{thm:one-missing}, and \ref{thm:three-cells} give explicit formulas and low-dimensional moduli on the first strata. Theorem~\ref{thm:all-strata} is retained as a reference-presentation equality test. Theorem~\ref{thm:intrinsic-fibre} supplies the missing function-only input and the complete effective minimal fibre at arbitrary strata. Quantifier elimination is not a polynomial-time claim, and a finite semialgebraic description is not an explicit catalogue of normal forms. Hardt triviality gives qualitative finite partitions for finite-dimensional families; it does not change this distinction.
+
+For instance, if $G(x)=x^{\mathsf T}Sx$ with $S>0$, the algorithm stops at $e=0$, even if the function was originally produced by a much larger representation with nonnegative cross block and identically zero optimal endpoints. Recovering a hidden presentation's endpoint count would give the wrong invariant. The same distinction applies at all visibility degenerations.

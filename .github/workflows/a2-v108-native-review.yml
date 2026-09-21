@@ -1,0 +1,59 @@
+name: A2 v108 source-bound native review
+on:
+  push:
+    branches:
+      - 'revision/a2-v108-*'
+    paths:
+      - 'papers/A2-v17-boundary-information-coarsening/article/v108/**'
+      - '!papers/A2-v17-boundary-information-coarsening/article/v108/evidence/**'
+      - '.github/workflows/a2-v108-native-review.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: a2-v108-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  native:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install native toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y latexmk texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+          python -m pip install sympy==1.14.0
+      - name: Materialize exact source on the isolated revision branch
+        run: |
+          case "$GITHUB_REF_NAME" in revision/a2-v108-*) ;; *) exit 2 ;; esac
+          git config user.name 'A2 revision builder'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          python papers/A2-v17-boundary-information-coarsening/article/v108/prepare.py
+          git add papers/A2-v17-boundary-information-coarsening/article/v108/prepared
+          if ! git diff --cached --quiet; then
+            git commit -m 'A2 v108: materialize explicit hypotheses without removing preserved proofs'
+          fi
+      - name: Compile exact source and replay both finite-check suites
+        env:
+          A2_RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: python papers/A2-v17-boundary-information-coarsening/article/v108/build_review.py
+      - name: Archive review delivery
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: A2-v108-native-review-${{ github.sha }}
+          path: papers/A2-v17-boundary-information-coarsening/article/v108
+          if-no-files-found: error
+          retention-days: 90
+      - name: Commit delivery without modifying any other branch
+        run: |
+          case "$GITHUB_REF_NAME" in revision/a2-v108-*) ;; *) exit 2 ;; esac
+          git add -f papers/A2-v17-boundary-information-coarsening/article/v108/evidence
+          git commit -m 'A2 v108: archive exact-source PDF, final log, manifests and seventeen finite check groups'
+          git push origin "HEAD:refs/heads/$GITHUB_REF_NAME"
