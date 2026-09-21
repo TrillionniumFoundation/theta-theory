@@ -1,0 +1,59 @@
+name: A2 v111 exact-source four-volume review
+on:
+  push:
+    branches: [revision/a2-v111-global-degeneracy-boundary-experiment-2026-09-21]
+    paths:
+      - 'papers/A2-v17-boundary-information-coarsening/article/v111/**.tex'
+      - 'papers/A2-v17-boundary-information-coarsening/article/v111/parts/**'
+      - 'papers/A2-v17-boundary-information-coarsening/article/v111/**.py'
+      - '.github/workflows/a2-v111-verify.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: a2-v111-review-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  verify:
+    if: github.ref == 'refs/heads/revision/a2-v111-global-degeneracy-boundary-experiment-2026-09-21'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 1
+      - name: Fetch immutable review base
+        run: git fetch --no-tags --depth=1 origin 043495e949f535554c5540c24b679b4aafa6a31d
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y latexmk texlive-latex-extra texlive-fonts-recommended texlive-science cm-super poppler-utils python3-sympy
+      - name: Preservation, exact diagnostics and four-volume build
+        run: /usr/bin/python3 papers/A2-v17-boundary-information-coarsening/article/v111/build_review.py
+      - name: Upload source-bound evidence and PDFs
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: a2-v111-review-${{ github.sha }}
+          retention-days: 90
+          path: |
+            papers/A2-v17-boundary-information-coarsening/article/v111/paper.pdf
+            papers/A2-v17-boundary-information-coarsening/article/v111/evidence/
+            papers/A2-v17-boundary-information-coarsening/article/v111/**/*.tex
+            papers/A2-v17-boundary-information-coarsening/article/v111/*.py
+            papers/A2-v17-boundary-information-coarsening/article/v111/*.md
+            build-v111/
+      - name: Publish evidence only to this revision branch
+        env:
+          TARGET_BRANCH: revision/a2-v111-global-degeneracy-boundary-experiment-2026-09-21
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = "$TARGET_BRANCH"
+          remote_sha=$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | cut -f1)
+          test "$remote_sha" = "$GITHUB_SHA"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          p=papers/A2-v17-boundary-information-coarsening/article/v111
+          git add -f "$p/paper.pdf" "$p/evidence/ci-receipt.json" "$p/evidence/diagnostics.json" "$p/evidence/principal.log"
+          git diff --cached --quiet && exit 0
+          git commit -m "A2 v111: bind four-volume build and diagnostics to $GITHUB_SHA [skip ci]"
+          git push origin "HEAD:refs/heads/$TARGET_BRANCH"
