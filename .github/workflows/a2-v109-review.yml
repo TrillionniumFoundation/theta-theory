@@ -1,0 +1,84 @@
+name: A2 v109 exact-source review
+on:
+  push:
+    branches:
+      - revision/a2-v109-single-contact-multiplication-tomography-2026-09-21
+permissions:
+  contents: write
+concurrency:
+  group: a2-v109-exact-review
+  cancel-in-progress: false
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Materialize the preserved companion source before building
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 papers/A2-v17-boundary-information-coarsening/article/v108/prepare.py
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f papers/A2-v17-boundary-information-coarsening/article/v108/prepared
+          if ! git diff --cached --quiet; then
+            git commit -m 'A2 v109: materialize all four preserved companion inputs'
+            git push origin HEAD:refs/heads/revision/a2-v109-single-contact-multiplication-tomography-2026-09-21
+          fi
+          git rev-parse HEAD > /tmp/a2-v109-source-sha
+          python3 - <<'PY'
+          import pathlib, zipfile
+          root = pathlib.Path('.')
+          with zipfile.ZipFile('/tmp/a2-v109-source.zip', 'w', zipfile.ZIP_DEFLATED) as z:
+              for base in ('papers/A2-v17-boundary-information-coarsening', 'reviews/a2-v108-independent-harsh-top4-2026-09-21'):
+                  for p in sorted((root/base).rglob('*')):
+                      if p.is_file() and p.suffix in ('.tex','.bib','.sty','.cls','.py','.md','.json'):
+                          z.write(p, str(p))
+              z.write('/tmp/a2-v109-source-sha', 'SOURCE_COMMIT.txt')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: a2-v109-source-snapshot
+          path: /tmp/a2-v109-source.zip
+          retention-days: 90
+      - name: Install native build dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq latexmk texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+          python3 -m pip install sympy numpy scipy
+      - name: Build exact committed source and run checks
+        env:
+          A2_RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          if test -f papers/A2-v17-boundary-information-coarsening/article/v109/verify.py; then
+            python3 papers/A2-v17-boundary-information-coarsening/article/v109/verify.py
+          else
+            python3 papers/A2-v17-boundary-information-coarsening/article/v108/build_review.py
+          fi
+      - name: Upload review evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a2-v109-review-evidence
+          path: |
+            papers/A2-v17-boundary-information-coarsening/article/v109/evidence/
+            papers/A2-v17-boundary-information-coarsening/article/v108/evidence/
+          if-no-files-found: warn
+          retention-days: 90
+      - name: Commit successful evidence without rewriting source
+        if: success()
+        run: |
+          set -euo pipefail
+          git add -f papers/A2-v17-boundary-information-coarsening/article/v108/evidence
+          if test -d papers/A2-v17-boundary-information-coarsening/article/v109/evidence; then
+            git add -f papers/A2-v17-boundary-information-coarsening/article/v109/evidence
+          fi
+          if ! git diff --cached --quiet; then
+            git commit -m 'A2 v109: record source-bound native build and diagnostic evidence'
+            git push origin HEAD:refs/heads/revision/a2-v109-single-contact-multiplication-tomography-2026-09-21
+          fi
