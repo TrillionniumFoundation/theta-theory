@@ -4,7 +4,7 @@ on:
     branches:
       - revision/general-theta-foundations-i-v10-marked-duality-2026-09-23
     paths:
-      - 'papers/GTF-I-v10-marked-duality/RELEASE_BUNDLE.b64'
+      - 'papers/GTF-I-v10-marked-duality/RELEASE_MANIFEST.json'
   workflow_dispatch:
 permissions:
   contents: write
@@ -15,10 +15,13 @@ jobs:
   revise-and-verify:
     if: github.ref == 'refs/heads/revision/general-theta-foundations-i-v10-marked-duality-2026-09-23'
     runs-on: ubuntu-latest
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 8
+          fetch-depth: 32
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -27,15 +30,52 @@ jobs:
         run: |
           git merge-base --is-ancestor 04890dfca0b7dc9fca657049fe9700330828ad95 HEAD
           python - <<'PY'
-          import base64, hashlib, json, pathlib, zlib
+          import base64, hashlib, json, lzma, pathlib, re
           root = pathlib.Path('papers/GTF-I-v10-marked-duality')
-          bundle = json.loads(zlib.decompress(base64.b64decode((root/'RELEASE_BUNDLE.b64').read_text())))
-          if bundle['base_commit'] != '04890dfca0b7dc9fca657049fe9700330828ad95':
-              raise RuntimeError('Unexpected source base')
-          for name, text in bundle['files'].items():
+          manifest = json.loads((root/'RELEASE_MANIFEST.json').read_text())
+          base = '04890dfca0b7dc9fca657049fe9700330828ad95'
+          if manifest['base_commit'] != base or manifest['compression'] != 'lzma':
+              raise RuntimeError('Unexpected source base or codec')
+          encoded = []
+          for part in manifest['parts']:
+              if not re.fullmatch(r'RELEASE_PART_[0-9]{2}\.b64', part['file']):
+                  raise RuntimeError('Invalid part name')
+              data = (root/part['file']).read_bytes()
+              if hashlib.sha256(data).hexdigest() != part['sha256']:
+                  raise RuntimeError('Transport part digest mismatch: '+part['file'])
+              encoded.append(data.decode('ascii').strip())
+          compressed = base64.b64decode(''.join(encoded), validate=True)
+          if hashlib.sha256(compressed).hexdigest() != manifest['compressed_sha256']:
+              raise RuntimeError('Compressed digest mismatch')
+          raw = lzma.decompress(compressed)
+          if hashlib.sha256(raw).hexdigest() != manifest['raw_sha256']:
+              raise RuntimeError('Bundle digest mismatch')
+          bundle = json.loads(raw)
+          if bundle['base_commit'] != base or len(bundle['files']) != manifest['files']:
+              raise RuntimeError('Unexpected source bundle')
+          for name, specification in bundle['files'].items():
               relative = pathlib.PurePosixPath(name)
               if relative.is_absolute() or len(relative.parts) != 1 or relative.suffix not in {'.tex','.md','.py','.json','.txt'}:
                   raise RuntimeError('Out-of-scope source path: '+name)
+              if isinstance(specification, str):
+                  text = specification
+              else:
+                  original = pathlib.PurePosixPath(specification['base'])
+                  if original.is_absolute() or '..' in original.parts or original.parts[:2] != ('papers','GTF-I-v9-causal-minimax'):
+                      raise RuntimeError('Invalid delta base')
+                  old = pathlib.Path(original).read_bytes()
+                  if hashlib.sha256(old).hexdigest() != specification['base_sha256']:
+                      raise RuntimeError('Delta base digest mismatch: '+str(original))
+                  lines = old.decode('utf-8').splitlines(keepends=True)
+                  pieces = []
+                  for op in specification['ops']:
+                      if isinstance(op, str):
+                          pieces.append(op)
+                      elif isinstance(op, list) and len(op) == 2 and all(isinstance(i,int) for i in op) and 0 <= op[0] <= op[1] <= len(lines):
+                          pieces.append(''.join(lines[op[0]:op[1]]))
+                      else:
+                          raise RuntimeError('Invalid source delta operation')
+                  text = ''.join(pieces)
               data = text.encode('utf-8')
               if hashlib.sha256(data).hexdigest() != bundle['sha256'][name]:
                   raise RuntimeError('Source digest mismatch: '+name)
