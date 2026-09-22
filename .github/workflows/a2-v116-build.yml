@@ -1,0 +1,72 @@
+name: A2 v116 source-bound revision build
+on:
+  push:
+    branches:
+      - revision/a2-v116-higher-product-structure-2026-09-22
+    paths:
+      - 'papers/A2-v17-boundary-information-coarsening/article/v116/**'
+      - '.publication/a2-v116-*'
+      - '.github/workflows/a2-v116-build.yml'
+permissions:
+  contents: write
+concurrency:
+  group: a2-v116-source-bound-build
+  cancel-in-progress: false
+jobs:
+  build:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      ARTICLE: papers/A2-v17-boundary-information-coarsening/article/v116
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 128
+      - name: Materialize and verify authored bytes
+        run: python3 .publication/a2-v116-materialize.py
+      - name: Install TeX and exact-algebra dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils python3-sympy
+      - name: Verify preservation against frozen Git objects in both working directories
+        run: |
+          set -euo pipefail
+          python3 "$ARTICLE/verify_revision.py" --source-only --git-baseline
+          python3 "$ARTICLE/verify_v116.py" --source-only --git-baseline
+          cp "$ARTICLE/evidence/V116_SOURCE_CHECKS.json" "$ARTICLE/evidence/GIT_BASELINE_CHECK.json"
+          (cd "$ARTICLE" && python3 verify_v116.py --source-only --git-baseline)
+          cmp "$ARTICLE/evidence/V116_SOURCE_CHECKS.json" "$ARTICLE/evidence/GIT_BASELINE_CHECK.json"
+      - name: Publish readable mathematical sources before building
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f -A -- "$ARTICLE" .publication A2_REVISION_V116_INDEX.md
+          if ! git diff --cached --quiet; then
+            git commit -m 'A2 v116: publish complete preserved revision sources and frozen-source checks'
+            git push origin "HEAD:refs/heads/${GITHUB_REF_NAME}"
+          fi
+      - name: Build all three manuscripts and execute both diagnostic suites
+        run: bash "$ARTICLE/build.sh"
+      - name: Publish generated PDFs and source-bound evidence
+        run: |
+          set -euo pipefail
+          git add -f -- "$ARTICLE/paper.pdf" "$ARTICLE/geometry.pdf" "$ARTICLE/applications.pdf" "$ARTICLE/paper.log" "$ARTICLE/geometry.log" "$ARTICLE/applications.log" "$ARTICLE/paper.fls" "$ARTICLE/geometry.fls" "$ARTICLE/applications.fls" "$ARTICLE/crossrefs" "$ARTICLE/evidence"
+          if ! git diff --cached --quiet; then
+            git commit -m 'A2 v116: publish verified PDFs and source-bound diagnostic receipts'
+            git push origin "HEAD:refs/heads/${GITHUB_REF_NAME}"
+          fi
+          git diff --exit-code 1cb4e00c86699247454d21dbec2dcce01a9c6b8b -- papers/A2-v17-boundary-information-coarsening/article/v115 reviews/a2-v115-independent-harsh-top4-2026-09-22
+      - name: Package revision and exact checked-out commit
+        if: always()
+        run: |
+          mkdir -p export
+          git rev-parse HEAD > export/checked_out_commit.txt
+          tar -czf export/a2-v116-revision.tar.gz "$ARTICLE" .publication .github/workflows/a2-v116-build.yml reviews/a2-v115-independent-harsh-top4-2026-09-22
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: a2-v116-revision-and-evidence
+          path: export/
+          retention-days: 30
