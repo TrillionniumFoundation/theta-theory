@@ -300,6 +300,42 @@ def rank_one_common_factor(I):
         g=sp.gcd(g,f)
     return sp.factor(g)
 
+def ideal_hilbert(I,dom,nmax=10):
+    G=sp.groebner(I,*VARS,order="grevlex",domain=dom)
+    lms=[tuple(p.LM(order=G.order).exponents) for p in G.polys]
+    return hilbert_from_lms(lms,nmax)
+
+def generic_rankdrop_layer(pair,j):
+    aa,bb=pair
+    data=RANKDROP[pair]
+    params=sp.symbols(f"r0:{len(data['slice'])}")
+    C=sp.Matrix(data["C"])
+    for par,idx in zip(params,data["slice"]):
+        C[idx//3,idx%3]+=par
+    dom=sp.QQ.frac_field(*params) if params else sp.QQ
+    B=generic_B(6-aa,bb)
+    J=residual_ideal(B,C)
+    K=J
+    for _ in range(j-1):
+        K=colon(K,delta,dom)
+    return params,dom,K+[delta]
+
+def proportional_over_slice(f,g):
+    ratio=sp.cancel(f/g)
+    return ratio!=0 and not ratio.has(u0,u1,v0,v1)
+
+def quadratic_ruling_ideal(q,dom):
+    P=sp.Poly(q,u0,u1,domain=dom)
+    A=P.coeff_monomial(u0**2)
+    B=P.coeff_monomial(u0*u1)
+    C=P.coeff_monomial(u1**2)
+    return [
+        delta,
+        sp.expand(A*a*a+B*a*c+C*c*c),
+        sp.expand(A*a*b+B*a*d+C*c*d),
+        sp.expand(A*b*b+B*b*d+C*d*d),
+    ]
+
 def run():
     mixed=[]
     for args in MIXED_CASES:
@@ -314,22 +350,55 @@ def run():
             f"a{aa}_b{bb}",B,C,data["slice"],data["k"],data["h"]
         ))
 
-    factors={}
-    for pair,j in [((2,2),2),((1,3),3),((1,2),4),((0,4),4)]:
+    # Generic ruling factors over the same fraction fields as the
+    # Groebner bases.  This distinguishes genuine generic support
+    # information from a special integral witness.
+    p22,dom22,I22=generic_rankdrop_layer((2,2),2)
+    s0=p22[0]
+    f22=rank_one_common_factor(I22)
+    q22=u0*u1*((s0+9)*u0**2+(3*s0+6)*u0*u1-7*u1**2)
+    assert proportional_over_slice(f22,q22)
+    disc22=sp.factor(sp.discriminant(
+        (s0+9)*u0**2+(3*s0+6)*u0*u1-7*u1**2,u0
+    ).subs(u1,1))
+    assert disc22 == 9*s0**2+64*s0+288
+
+    p13,dom13,I13=generic_rankdrop_layer((1,3),3)
+    t0=p13[0]
+    f13=rank_one_common_factor(I13)
+    q13=10*u0**2+u0*u1-4*u1**2
+    assert proportional_over_slice(f13,q13)
+    disc13=sp.factor(sp.discriminant(q13,u0).subs(u1,1))
+    assert disc13 == 161
+
+    # Exact saturation model for the generic (1,3) embedded vertex.
+    Sat13=quadratic_ruling_ideal(q13,dom13)
+    Gsat=sp.groebner(Sat13,*VARS,order="grevlex",domain=dom13)
+    assert all(sp.expand(Gsat.reduce(f)[1])==0 for f in I13)
+    hI=ideal_hilbert(I13,dom13,10)
+    hSat=ideal_hilbert(Sat13,dom13,10)
+    diff=[x-y for x,y in zip(hI,hSat)]
+    assert diff[:4] == [0,0,3,0]
+    assert all(x==0 for x in diff[3:])
+    embedded_length=sum(diff)
+    assert embedded_length==3
+
+    # The remaining positive-dimensional rows have open stabilizer
+    # orbit in chi-space, so an integral base point is generic there.
+    open_factors={}
+    for pair,j in [((1,2),4),((0,4),4)]:
         aa,bb=pair
-        q=6-aa
-        B=generic_B(q,bb)
+        B=generic_B(6-aa,bb)
         C=sp.Matrix(RANKDROP[pair]["C"])
         J=residual_ideal(B,C)
-        factors[f"a{aa}_b{bb}_W{j}"]=str(rank_one_common_factor(numeric_layer(J,j)))
+        K=J
+        for _ in range(j-1):
+            K=numeric_colon(K,delta)
+        open_factors[f"a{aa}_b{bb}_W{j}"]=str(rank_one_common_factor(K+[delta]))
 
-    assert sp.factor(sp.sympify(factors["a2_b2_W2"])) == sp.factor(u0*u1*(9*u0**2+6*u0*u1-7*u1**2)/9)
-    assert sp.discriminant(9*u0**2+6*u0*u1-7*u1**2,u0) != 0
-    assert sp.discriminant(10*u0**2+u0*u1-4*u1**2,u0) != 0
-    assert sp.discriminant(6*u0**2+u0*u1+4*u1**2,u0) != 0
-
-    # Effective Pieri coefficient: (4,4,4,4)/(4,4,4,0)
-    # is a horizontal 4-strip, so the Sym^4 Pieri coefficient is one.
+    # This checks only the horizontal-strip combinatorics.  The actual
+    # coordinate-ring structure constant is proved by standard
+    # bitableau straightening in the manuscript.
     lam=(4,4,4,0)
     nu=(4,4,4,4)
     added=[]
@@ -340,10 +409,40 @@ def run():
 
     out={
         "kind":"exact rational-function-field Groebner and stabilizer certificate",
+        "scope":{
+            "script_checks":"finite exact algebra only",
+            "structural_proofs_not_machine_certified":[
+                "bounded principal-colon base change theorem",
+                "geometric relative-assassin stratification",
+                "coordinate-ring Cauchy-Pieri projection",
+            ],
+        },
         "mixed_kernel_generic_slices":mixed,
         "rankdrop_generic_slices":rankdrop,
-        "rank_one_binary_factors":factors,
-        "effective_pieri_horizontal_four_strip":True,
+        "generic_rank_one_factors":{
+            "a2_b2_W2":{
+                "field":str(dom22),
+                "factor":str(sp.factor(q22)),
+                "quadratic_discriminant":str(disc22),
+                "noncollision_divisor":str(sp.factor((s0+9)*disc22)),
+            },
+            "a1_b3_W3":{
+                "field":str(dom13),
+                "factor":str(sp.factor(q13)),
+                "discriminant":str(disc13),
+            },
+        },
+        "generic_embedded_saturation":{
+            "a1_b3_W3":{
+                "saturated_ideal":[str(sp.factor(x)) for x in Sat13],
+                "layer_hilbert":hI,
+                "saturation_hilbert":hSat,
+                "quotient_hilbert":diff,
+                "embedded_vertex_length":embedded_length,
+            }
+        },
+        "open_orbit_rank_one_factors":open_factors,
+        "pieri_horizontal_strip_combinatorics_only":True,
         "universal_det_exponent_e4_r2":sp.binomial(5,1),
     }
     evidence=Path(__file__).resolve().parents[1]/"evidence"
