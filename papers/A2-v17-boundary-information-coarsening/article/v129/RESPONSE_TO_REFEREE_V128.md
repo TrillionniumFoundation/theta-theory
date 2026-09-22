@@ -1,10 +1,10 @@
 # Response to the A2 v128 referee report
 
 **Manuscript:** *Universal determinant completion, effective Pieri multiplication, and intrinsic primary boundary laws in multiplication failure*  
-**Revision:** 129  
+**Revision:** 130  
 **Controlling report:** `review/a2-v128-independent-harsh-top4-2026-09-23`, `reviews/a2-v128-independent-harsh-top4-2026-09-23/REFEREE_REPORT.md`.
 
-We thank the referee for isolating four sharply local proof obligations in revision 128. Revision 129 addresses those obligations without deleting or weakening the existing theorem package. The main conceptual change is that the universal determinant exponent and the relative primary atlas are now proved as one mechanism: a bounded principal power gives a finite colon tower, and a two-short-exact-sequence flattening argument makes that tower commute with arbitrary base change before relative associated points are considered.
+We thank the referee for isolating four sharply local proof obligations in revision 128. Revision 130 retains the v129 correctness repairs, audits them against the controlling report, and strengthens the global consequence without deleting or weakening the existing theorem package. The main conceptual change is that the universal determinant exponent and the relative primary atlas are now proved as one mechanism: a bounded principal power gives a finite colon tower, and a two-short-exact-sequence flattening argument makes that tower commute with arbitrary base change before relative associated points are considered.
 
 ## E128.1 — colon formation and base change
 
@@ -85,9 +85,9 @@ No headline theorem is weakened or removed.
 
 ## E128.6 / S128.4 — genuinely global consequence
 
-**Resolved by linking determinant completion to the full primary atlas.**
+**Strengthened to an explicit theorem-level consequence.**
 
-The universal determinant theorem is no longer used only to deduce (d^5\in J). Its exponent is the finiteness input for the new bounded principal-colon theorem. In any finite-presentation family in which (f^N\in J), all residual colons ((J:f^q)), (q<N), admit a simultaneous finite stratification with arbitrary-base-change compatibility and geometric associated-point control. The general determinant identity therefore produces a general primary-structure theorem, and the ((1,4,6)) atlas is its geometric specialization.
+Revision 130 adds Corollary “Universal primary finiteness for symmetric-power quotients.” On the universal parameter space of surjections \(\gamma:\operatorname{Sym}^rV\twoheadrightarrow S\), the determinant-completion exponent \(N=\binom{e+r-1}{r-1}\) is fed directly into the bounded principal-colon theorem. After one finite locally closed stratification, every residual colon \((J_{\mathrm{univ}}:d^q)\), \(q<N\), commutes with arbitrary base change, and the associated-support packets, embedded multiplicities, Hilbert polynomials, and multiplication ranks are constant. Thus the universal theorem now controls finite primary complexity on the entire symmetric-power determinantal family, with the \((1,4,6)\) atlas as a geometric specialization.
 
 ## S128.2 — specialization across boundary strata
 
@@ -111,4 +111,4 @@ The v129 build receipt separates three categories: scripts actually executed; ex
 
 ## Preservation
 
-Revision 129 is based directly on the v128 review head. The v128 manuscript and the controlling referee report are unchanged. No theorem or proof block from the reviewed article is deleted. The branch adds the corrected homological proof, the constructibility lemma, generic-field support certificates, the invariant-projection step, the general bounded principal-colon theorem, and a self-contained submission tree.
+Revision 130 is based on the v129 correction branch, which itself is based directly on the v128 review head. The v128 manuscript, the v129 correction baseline, and the controlling referee report are unchanged on their historical branches. No theorem or proof block from the reviewed article is deleted. The branch adds the corrected homological proof, the constructibility lemma, generic-field support certificates, the invariant-projection step, the general bounded principal-colon theorem, and a self-contained submission tree.
