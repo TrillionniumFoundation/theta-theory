@@ -1,0 +1,82 @@
+name: A2 v116 build and publish
+on:
+  push:
+    branches: [revision/a2-v116-primary-contact-structure-2026-09-22]
+    paths: [.github/workflows/a2-v116-build-publish.yml]
+permissions:
+  contents: write
+concurrency:
+  group: a2-v116-primary-contact-publication
+  cancel-in-progress: false
+jobs:
+  revision:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      P: papers/A2-v17-boundary-information-coarsening/article/v116
+      REVISION_BRANCH: revision/a2-v116-primary-contact-structure-2026-09-22
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: revision/a2-v116-primary-contact-structure-2026-09-22
+          fetch-depth: 64
+          sparse-checkout: |
+            papers/A2-v17-boundary-information-coarsening/article/v115
+            papers/A2-v17-boundary-information-coarsening/article/v116
+            reviews/a2-v115-independent-harsh-top4-2026-09-22
+            .github/workflows
+      - name: Install the mathematical build toolchain
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern python3-sympy poppler-utils
+      - name: Materialize and commit the complete mathematical source
+        run: |
+          test "$(git branch --show-current)" = "$REVISION_BRANCH"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          python3 "$P/prepare_revision.py"
+          python3 "$P/verify_revision.py" --source-only
+          git add -f -- "$P"
+          if ! git diff --cached --quiet; then
+            git commit -m 'feat(a2): materialize v116 conductor classification with complete v115 preservation [skip ci]'
+            git push origin "HEAD:refs/heads/$REVISION_BRANCH"
+          fi
+          git rev-parse HEAD > source_commit.txt
+      - name: Build the three manuscripts and source-bound receipts
+        run: bash "$P/build.sh"
+      - name: Commit actual generated review evidence
+        run: |
+          git add -f -- "$P"
+          if ! git diff --cached --quiet; then
+            git commit -m 'build(a2): publish actual v116 PDFs logs diagnostics and source receipts [skip ci]'
+            git push origin "HEAD:refs/heads/$REVISION_BRANCH"
+          fi
+          git rev-parse HEAD > published_head.txt
+          git ls-remote --heads origin "$REVISION_BRANCH" > remote_ref.txt
+          test "$(cut -f1 remote_ref.txt)" = "$(cat published_head.txt)"
+          git diff --name-only 1cb4e00c86699247454d21dbec2dcce01a9c6b8b HEAD > changed_paths.txt
+          python3 - <<'PY'
+          from pathlib import Path
+          allowed=('papers/A2-v17-boundary-information-coarsening/article/v116/', '.github/workflows/a2-v116-')
+          paths=Path('changed_paths.txt').read_text().splitlines()
+          assert paths and all(p.startswith(allowed) for p in paths), paths
+          print('Verified isolated publication:',len(paths),'paths')
+          PY
+      - name: Package the actual checked-out review tree
+        if: always()
+        run: |
+          tar --exclude='__pycache__' -czf a2-v116-review-bundle.tar.gz "$P"
+          sha256sum a2-v116-review-bundle.tar.gz > bundle.sha256
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: a2-v116-source-bound-review
+          retention-days: 30
+          path: |
+            a2-v116-review-bundle.tar.gz
+            bundle.sha256
+            source_commit.txt
+            published_head.txt
+            remote_ref.txt
+            changed_paths.txt
