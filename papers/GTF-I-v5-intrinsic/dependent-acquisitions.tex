@@ -1,0 +1,204 @@
+\section{Acquisitions with persistent hidden state}\label{sec:v5-dependent}
+The preceding realization can be used when acquisition does not
+regenerate the physical state. The appropriate comparison concerns
+raw prediction risk: the full-history posterior need not equal the
+posterior based on the latest observation alone.
+
+Let $E$ and $\mathsf Y$ be standard Borel spaces, let $T:E\to E$
+be Borel, let $f:E\to\R^r$ be Borel with $\|f\|\le F$, and let
+$\mu$ be a probability with $T_\#\mu=\mu$. Acquisitions occur at
+$\tau_0=0$ and $\tau_{j+1}=\tau_j+L_j$, where the $L_j$ are
+independent positive integer random variables of common finite
+mean $\ell$. The acquisition clock is independent of the hidden
+transition and observation randomizations. Between acquisitions
+$X_t=TX_{t-1}$. At an acquisition $t>0$ the transition and
+observation are specified, in this order, by
+\begin{equation}\label{eq:v5-dependentkernel}
+ X_t\mid X_{t-1}=x\sim Q(x,du),\qquad
+ Y_t\mid X_t=u\sim K(u,dy).
+\end{equation}
+At time zero $X_0\sim\mu$ and $Y_0\sim K(X_0,\cdot)$.
+We assume
+\begin{equation}\label{eq:v5-minorization}
+ \mu Q=\mu,\qquad Q(x,A)\ge\epsilon\mu(A)
+ \quad(x\in E,\ A\text{ Borel}),\qquad 0<\epsilon\le1.
+\end{equation}
+The whole state $X_{t-1}$ can influence $X_t$ through the remaining
+part of $Q$. No regeneration indicator is supplied to the observer.
+The observer sees the acquisition indicators and the $Y_t$ only
+when acquisitions occur; the persistent-state convention is that
+of Section~\ref{sec:v5-model}.
+
+Use a single pair $(U,Y)\sim\mu(du)K(u,dy)$ to define
+\begin{align}
+ s_k&=\Pp(L_0>k),\quad w_k=s_k/\ell,\quad
+ W(n)=\sum_{k\ge n}w_k,\nonumber\\
+ m_k(y)&=\E[f(T^kU)\mid Y=y],\quad
+ Z(y)=(\sqrt{w_k}m_k(y))_{k\ge0},\label{eq:v5-dependentorbit}\\
+ B_0&=\sum_{k\ge0}w_k\E\|f(T^kU)-m_k(Y)\|^2.\nonumber
+\end{align}
+Let $R_M^{\mathrm{dep}}$ denote the infimum of limsup average
+\emph{raw} squared loss in this dependent experiment.
+
+\begin{theorem}[Minorized acquisition comparison]\label{thm:v5-dependent}
+Under \eqref{eq:v5-dependentkernel}--\eqref{eq:v5-minorization},
+\begin{equation}\label{eq:v5-dependentlower}
+ R_M^{\mathrm{dep}}\ge\epsilon\bigl(B_0+e_M^2(Z)\bigr)
+ \quad(M\ge1).
+\end{equation}
+The same lower bound holds for the liminf average loss of each
+randomized, time-dependent $M$-state observer. For every $N,n\ge1$
+with $Nn+1\le M$,
+\begin{equation}\label{eq:v5-dependentupper}
+ R_M^{\mathrm{dep}}\le B_0+e_N^2(Z^{<n})+F^2W(n).
+\end{equation}
+A one-state zero decoder always has risk at most $F^2$.
+More generally, every observer that overwrites its entire state
+using only the latest observation at each acquisition has exactly
+the same sequence of expected one-time losses as in the
+independent-acquisition experiment with law $\mu K$ and the same
+clock, provided it is initialized in the same way.
+\end{theorem}
+
+\begin{proof}
+Condition on the entire acquisition-indicator sequence. At time
+zero the hidden marginal is $\mu$. Each intervening transition is
+either $T$ or $Q$, both of which preserve $\mu$. Induction therefore
+shows that the hidden state at each acquisition has marginal
+$\mu$, even after this conditioning. Its observation pair has
+law $\mu K$. Future survival for $k$ steps has probability $s_k$,
+independent of that pair. Thus an observer which restarts from
+the current observation has the same age-dependent expected loss
+as in the independent experiment, and hence the same expected
+one-time loss after averaging over the common clock. This proves
+the last assertion. Applying the $Nn+1$-state construction of
+Theorem~\ref{thm:v4-orbit} proves
+\eqref{eq:v5-dependentupper}; the constant decoder proves the
+remaining upper bound.
+
+For the converse fix $n$. At an acquisition condition on the
+entire hidden and observed past immediately before the transition,
+and use the independent uniform representation of the observer's
+kernels from Lemma~\ref{lem:v4-kernels}. Freeze its coding uniforms,
+including those used on the hypothetical next $n$ nonacquisition
+steps. The $M$ possible post-update states determine at most $M$
+length-$n$ decoder strings. Conditional on this past, the new
+observation pair has law $Q(x,du)K(u,dy)$, which dominates
+$\epsilon\mu(du)K(u,dy)$. Squared loss is nonnegative, so its
+expected contribution up to the next acquisition, truncated at
+$n$, is at least
+\[
+ \epsilon\inf_{i(\cdot),\,c_{i,k}}
+ \sum_{k<n}s_k\E_{\mu K}\|f(T^kU)-c_{i(Y),k}\|^2
+ =\epsilon\ell\bigl(B_{0,<n}+e_M^2(Z^{<n})\bigr).
+\]
+For the equality, condition on $Y$ and use orthogonality around
+$m_k(Y)$; the remaining infimum is precisely finite-dimensional
+quantization. Enlarging the possible codebooks to all vectors
+only weakens this lower bound. The encoder is permitted to depend
+on the conditioned past, but the resulting bound does not.
+
+For a horizon $H$, sum these truncated contributions only over
+acquisitions at times at most $H-n$. Each contribution stops at
+the next acquisition, so distinct terms charge disjoint time
+indices, path by path. The expected number of these acquisitions,
+divided by $H$, converges to $1/\ell$ by the elementary renewal
+theorem. Taking liminf in $H$ proves the lower bound with
+$B_{0,<n}$ and $Z^{<n}$. Finally let $n\to\infty$.
+The noise terms converge by boundedness. The quantization terms
+increase to $e_M^2(Z)$: projection gives one inequality, and
+extending a truncated codebook by zero gives
+\[
+ e_M^2(Z)\le e_M^2(Z^{<n})+\E\|Z-Z^{<n}\|^2
+ \le e_M^2(Z^{<n})+F^2W(n).
+\]
+This proves \eqref{eq:v5-dependentlower}.
+\end{proof}
+
+The reference number $B_0$ in this theorem is \emph{not} asserted
+to be the Bayes risk conditional on the entire dependent history.
+Older observations can improve that posterior. The theorem uses
+minorization to obtain a lower bound and invariant marginals to
+obtain an upper bound; it does not replace a dependent conditional
+law by an independent one.
+
+\begin{corollary}[The pressure law survives partial refreshment]
+\label{cor:v5-dependentpressure}
+Take the repeller, Gibbs law and geometric acquisition clock of
+Section~\ref{sec:v5-model}, but use any kernel $Q$ satisfying
+\eqref{eq:v5-minorization} at acquisitions. Observe the current
+state exactly at those times. Then, for each fixed $\epsilon>0$,
+\[
+ R_M^{\mathrm{dep}}\asymp G_M(q),\qquad
+ \lim_{M\to\infty}\frac{-\log R_M^{\mathrm{dep}}}{\log M}
+ =\frac{1-s_*(q)}{s_*(q)}.
+\]
+The same order holds for supremum one-time loss. An explicit
+example is
+\begin{equation}\label{eq:v5-partialreset}
+ Q(x,du)=(1-\epsilon)\delta_{Tx}(du)+\epsilon\mu(du).
+\end{equation}
+For $\epsilon<1$ the physical state is not regenerated at every
+acquisition. The phase boundary is governed by the acquisition
+survival probability $q$, not by the unobserved physical-refresh
+survival probability $1-\epsilon(1-q)$.
+\end{corollary}
+
+\begin{proof}
+Exact observations give $B_0=0$ and the orbit $Z_q$.
+Theorem~\ref{thm:v5-dependent} supplies the lower bound
+$\epsilon e_M^2(Z_q)$. The resetting suffix observer in
+Theorem~\ref{thm:v5-intrinsic} supplies the upper bound $CG_M(q)$
+with the same expected losses in the dependent experiment.
+The pressure formula and the supremum statement follow from the
+corresponding results there. Kernel \eqref{eq:v5-partialreset}
+preserves $\mu$ because $T$ does, and has the displayed
+minorization. Its transition coin is not an observation.
+\end{proof}
+
+\begin{corollary}[Noisy acquisition with retained hidden memory]
+\label{cor:v5-dependentnoise}
+On $\mathbb T^d$ let $T_bx=bx\pmod1$, with integers $b\ge2,d\ge1$,
+let $\mu$ be Haar measure, and use any acquisition kernel $Q$
+satisfying \eqref{eq:v5-minorization}. At each acquisition observe
+$Y=X+\sigma G\pmod1$, where the observation noises are independent
+standard Gaussian vectors. Predict
+$\Phi(x)=(\cos(2\pi x_j),\sin(2\pi x_j))_{j=1}^d$.
+Assume $W(n)\le Aw_n$ for every $n$ and some $A<\infty$.
+With
+\[
+ a_k=e^{-2\pi^2\sigma^2b^{2k}},\quad v_k=w_ka_k^2,\quad
+ B_0=d\sum_{k\ge0}w_k(1-a_k^2),
+\]
+and $\Psi_v,n_M$ as in \eqref{eq:v4-profile} and
+\eqref{eq:v4-state-budget}, for all $M\ge1$ and $\sigma\ge0$,
+\begin{equation}\label{eq:v5-dependentnoisybound}
+ \epsilon\left(B_0+\frac{\Psi_v(n_M)}{8Ab^6}\right)
+ \le R_M^{\mathrm{dep}}
+ \le B_0+\frac{d\pi^2}{3}\Psi_v(n_M).
+\end{equation}
+For geometric acquisitions this also bounds the optimal supremum
+raw loss. In particular $R_M^{\mathrm{dep}}\asymp B_0+\Psi_w(n_M)$,
+with constants independent of $M$ and $\sigma$ when
+$\epsilon$ is bounded below. The critical-window comparison of
+Corollary~\ref{cor:v4-critical} remains valid for this dependent
+experiment, and the explicit restarting suffix observer has the
+same exact crossover coefficient as there.
+\end{corollary}
+
+\begin{proof}
+The single-acquisition posterior under $\mu K$ is
+$m_k(y)=a_k\Phi(b^ky)$, by \eqref{eq:v4-explicit-posterior}.
+Lemma~\ref{lem:v4-smallballs} bounds its orbit quantization error
+below by $\Psi_v(n_M)/(8Ab^6)$; use
+\eqref{eq:v5-dependentlower}. The suffix observer proving
+Theorem~\ref{thm:v4-noisy} overwrites its state at acquisitions,
+so its exact expected losses, including the formula
+\eqref{eq:v4-exact-suffix}, transfer unchanged. This proves the
+upper bound and the supremum assertion. Finally
+$0\le\Psi_w(n)-\Psi_v(n)\le B_0/d$ proves the raw-profile
+comparison. Its constants are uniform in the same compact
+$q$-windows as in Corollary~\ref{cor:v4-critical}; the explicit
+observer has exactly the same loss, rather than merely comparable
+loss, so its coefficient limit transfers as well.
+\end{proof}
