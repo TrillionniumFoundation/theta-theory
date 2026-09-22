@@ -1,0 +1,274 @@
+\section{Controlled common encoders and the minimax risk body}
+\label{sec:v9-minimax}
+The causal constraint is a constraint on the encoder, not on each task
+separately. We now give a variational characterization with this constraint
+inside the feasible set. The distinction between a shared random seed and
+private fresh randomization is essential to the statement.
+
+\subsection{Finite instruments and the information pattern}
+Fix a horizon $T$, finite parameter set $K$, finite hidden spaces $Z_t$,
+report alphabets $Y_t$, and a finite control alphabet $A$. The instrument
+is specified by probability vectors $\nu_\theta$ and stochastic matrices
+\[
+ K_{\theta,t}(z',y\mid z,a),\qquad 0\le t<T.
+\]
+The hidden variable is not available to either the encoder or the
+controller. A finite collection $D$ of tasks has finite terminal action
+sets $B_d$ and losses $\ell_{d\theta}(z,b)\in[0,1]$. Any bounded loss on a
+finite trajectory, including losses at several decision times, is of this
+form after adjoining that trajectory to the hidden state. This enlargement
+is a description of the experiment, not memory supplied to its controller.
+
+The encoder has widths ${\bf S}=(S_0,\ldots,S_T)$, with a fixed initial
+label and $S_0\ge1$. Before transition $t$, the task-$d$ controller chooses
+$a$ from its current label $i$. The encoder then observes $(a,y)$ and
+updates the label. At the last time, a task-$d$ terminal rule chooses $b$.
+The encoder's update table is the \emph{same} for all tasks and parameters;
+the controller's tables may depend on $d$ but not on $\theta$. The current
+control is an input to the ensuing update, not a retained action history.
+Task-dependent restrictions on legal controls may be imposed on the
+controller tables. The controller has no additional persistent register.
+
+For a minimax task retain one row $j=(d,\theta)$ per parameter. For a
+Bayesian task retain one row $j$ with its specified prior $\kappa_j$ on
+$K$. More generally a row has a task $d(j)$ and a probability vector
+$\kappa_j$; point masses give the minimax rows. Let $J$ be this finite row
+set, $M=|J|$, and let $\beta_d$ be the full-history optimal risk for the
+\emph{whole} task $d$. In particular, the baseline of a minimax task is
+not a separate parameterwise optimum. Write $b_j=\beta_{d(j)}$.
+
+A \emph{deterministic design} $\omega$ consists of one family of updates
+$f_t(i,a,y)\in[S_{t+1}]$, together with all controller tables
+$a_t^d(i)\in A$ and terminal tables $b^d(i)\in B_d$. Let
+$\Omega_{\bf S}$ be the finite set of these designs. Its raw risk vector
+is denoted $R(\omega)=(R_j(\omega))_{j\in J}$, where
+\begin{equation}
+ R_j(\omega)=\sum_{\theta}\kappa_j(\theta)
+       \E_\theta^{\omega,d(j)}\ell_{d(j)\theta}(Z_T,b^{d(j)}(I_T)).
+ \label{eq:v9-riskrows}
+\end{equation}
+The expectation uses the actual closed-loop law. In particular, controls
+are not optimized separately inside hidden-parameter components.
+
+There are two randomization conventions. In the \emph{shared-seed}
+convention an independent variable is available to the encoder and the
+task controller throughout the run. It is chosen independently of the
+task and parameter; the risk averages its realization before taking the
+supremum over tasks or parameters. The adversary does not select a new
+parameter after seeing that realization. In the \emph{private}
+convention there is no such retained shared variable. Each declared
+kernel uses fresh randomness, with conditional independence given its
+allowed inputs. Any seed remembered across updates is charged in the
+label. We write $\Theta_{\rm sh}$ and $\Theta_{\rm pr}$ for these two
+specified slices of \eqref{eq:v8-spectrum}. The term shared seed here
+has the precise meaning of the public independent seed permitted in
+Section~\ref{sec:v8-spectrum}; it never contains data from the experiment.
+
+\subsection{The variational theorem}
+Define the upper risk body and its lower support function by
+\begin{align}
+ \mathcal U_E({\bf S};J)
+   &=\operatorname{co}\{R(\omega):\omega\in\Omega_{\bf S}\}
+                                      +\R_+^J,\label{eq:v9-body}\\
+ h_E({\bf S};w)&=\min_{\omega\in\Omega_{\bf S}}w\cdot R(\omega),
+                 \qquad w\in\Delta_J.\label{eq:v9-support}
+\end{align}
+Here $\Delta_J$ is the probability simplex. The body is defined from
+controlled execution risks, not from a presumed predictive quotient.
+
+\begin{theorem}[Controlled common-encoder minimax theorem]
+\label{thm:v9-minimax}
+For the finite instrument and information pattern just specified:
+\begin{enumerate}
+\item The shared-seed attainable upper risk set is exactly
+$\mathcal U_E({\bf S};J)$. The common-encoder excess satisfies
+\begin{align}
+ \Theta_{\rm sh}({\bf S};D)
+ &=\min_{\lambda\in\Delta(\Omega_{\bf S})}
+       \max_{j\in J}\left\{\sum_\omega\lambda_\omega
+                                      R_j(\omega)-b_j\right\}
+                                                        \label{eq:v9-primal}\\
+ &=\max_{w\in\Delta_J}\{h_E({\bf S};w)-w\cdot b\}.
+                                                        \label{eq:v9-dual}
+\end{align}
+An optimum uses at most $M+1$ deterministic designs. Thus the encoder is
+chosen once, before the task, in both formulae.
+\item The functions $h_E({\bf S};\cdot)$ determine the whole upper risk
+body. For two matched task/row systems,
+\[
+ \mathcal U_F({\bf S}';J)\subseteq\mathcal U_E({\bf S};J)
+ \quad\Longleftrightarrow\quad
+ h_E({\bf S};w)\le h_F({\bf S}';w)\quad(w\in\Delta_J).
+\]
+In particular equality of all these support functions is equivalent to
+equality of the attainable upper bodies. Relabelling histories, hidden
+states or machine labels changes neither assertion.
+\item For constant width $S$, cardinality alone being charged,
+\begin{equation}
+ \Theta_{\rm pr}((M+1)S;D)
+       \le\Theta_{\rm sh}(S;D)\le\Theta_{\rm pr}(S;D).
+ \label{eq:v9-seedprice}
+\end{equation}
+The first inequality is implemented by retaining the design index in
+the actual register, including initialization. For a fixed finite row
+family, any existing positive cardinality exponent is consequently the
+same under these two randomization conventions.
+\end{enumerate}
+\end{theorem}
+\begin{proof}
+First include the decoder and controller tables in the design. For one
+fixed common encoder their choices for distinct tasks are independent
+optimization variables, whereas the same choice for one task must work
+for all its parameter rows. Compactness of the finite products of
+probability simplexes implies attainment. Hence minimizing jointly over
+the common encoder and all its task rules gives exactly the original
+order $\inf_Q\max_d(r_E(Q,d)-\beta_d)$; it does not give a decoder
+indexed by the unknown parameter.
+
+Realize every update and controller kernel by a uniform variable at its
+specified time, independent of the instrument. For a shared-seed scheme,
+condition on the entire shared seed and these variables. One obtains a
+deterministic common update family and one deterministic controller for
+each task. Although different tasks then generate different observation
+laws, the frozen maps are defined on \emph{all} their possible inputs.
+They therefore form one element of $\Omega_{\bf S}$. Its conditional
+risk is computed under the corresponding controlled instrument, not
+under an incorrectly frozen uncontrolled history law. Averaging gives a
+convex combination of the finite vectors $R(\omega)$.
+
+Conversely sample a design index with probabilities $\lambda$, expose
+that independent index to encoder and controller, and execute its tables.
+The encoder law is independent of which task will be requested. Its risk
+vector is exactly $\sum\lambda_\omega R(\omega)$. Taking coordinatewise
+upper bounds proves \eqref{eq:v9-body} and \eqref{eq:v9-primal}.
+Finite-dimensional convex minimax gives \eqref{eq:v9-dual}. Equivalently,
+the primal is the linear programme minimizing $v$ subject to
+$\lambda\ge0$, $\sum\lambda=1$, and
+$\sum\lambda_\omega R_j(\omega)\le v+b_j$ for every row.
+Carath\'eodory's theorem in $\R^M$ gives support at most $M+1$ without
+changing the optimum risk vector. This argument freezes a tape to form
+its \emph{distribution of designs}; it never moves a worst-task
+supremum through that distribution.
+
+The body in \eqref{eq:v9-body} is closed and convex. If a point lies
+outside it, finite-dimensional separation supplies a linear functional
+whose infimum on the body exceeds its value at the point. The functional
+must be nonnegative on every coordinate direction, because the body
+contains every positive ray starting at one of its points. Normalizing
+its coefficients places it in $\Delta_J$. Its infimum is
+\eqref{eq:v9-support}. This proves the comparison assertion, including
+both directions of equality. A relabelling gives a bijection of the
+same execution laws and of their deterministic designs.
+
+Every private scheme is also a shared-seed scheme that ignores its
+extra input. Conversely an optimal shared scheme can use $k\le M+1$
+designs. Sample its index privately before the first observation and
+retain $(r,I_t)$, which has at most $kS$ values. Each subsequent update,
+control and readout uses this actual pair. This has the same law as the
+shared scheme; no external transcript or hidden seed is used. This
+proves \eqref{eq:v9-seedprice}. Monotonicity, together with
+$\log((M+1)S)/\log S\to1$, proves the exponent assertion. The constant
+$M+1$ is not uniform over growing or infinite task families.
+\end{proof}
+
+The theorem identifies a finite controlled spectrum by one variational
+functional. It is more than the transport of a supplied simulation:
+its feasible set is constructed from the instrument and the prescribed
+memory, and the converse recovers every admissible execution. Convex
+minimax, separation and finite mixed strategies are classical tools.
+Their use here does not reassign their priority. The substantive
+information restriction is that all tasks share $f$, while all parameters
+within a task share its controller, and every retained design index is
+accounted for when the shared-seed convention is removed.
+
+\subsection{Controlled continuation partitions}
+Let $\mathcal H_t$ be the full finite tree of action--report histories,
+including histories null under a particular parameter or task. Histories
+null under every possible execution can be assigned arbitrary updates.
+A family of partitions $\mathcal P_t$ is controlled successor compatible
+when
+\begin{equation}
+ h\sim_t h'\quad\Longrightarrow\quad
+             hay\sim_{t+1}h'ay\qquad(a\in A,\ y\in Y_{t+1}).
+ \label{eq:v9-controlledcongruence}
+\end{equation}
+\begin{proposition}[Intrinsic feasible partitions]\label{prop:v9-partitions}
+Deterministic common encoders with widths ${\bf S}$ are, up to label
+names and unused states, exactly the partition families satisfying
+\eqref{eq:v9-controlledcongruence} and $|\mathcal P_t|\le S_t$.
+A deterministic design adds, for each task, a control constant on every
+current cell and a terminal decision constant on every terminal cell.
+Thus the risk body and both sides of \eqref{eq:v9-dual} can equivalently
+be defined on controlled continuation partitions with these cellwise
+rules.
+\end{proposition}
+\begin{proof}
+Equal machine states have equal successors on the same action and
+report, proving necessity. Conversely label the cells and send $(C,a,y)$
+to the cell containing $hay$ for any $h\in C$. Condition
+\eqref{eq:v9-controlledcongruence} makes this independent of $h$.
+The cellwise controller rule supplies the legal control, and induction
+identifies the actual label with the actual history's cell for every
+parameter and task. Defining the maps on the whole tree ensures that an
+action absent under one task has not made its update task dependent.
+\end{proof}
+
+\subsection{Private randomization is a different finite problem}
+For completeness there is also an exact, nonconvex description without
+a shared seed. Write $g_t^d(a\mid i)$ for the private controller,
+$q_t(i'\mid i,a,y)$ for the common private update, and
+$v^d(b\mid i)$ for its terminal rule. Let $q_0$ be a parameter-independent
+initialization law when randomized initialization is permitted. Then
+\begin{align}
+ p_0^{d\theta}(z,i)&=\nu_\theta(z)q_0(i),\nonumber\\
+ p_{t+1}^{d\theta}(z',i')
+ &=\sum_{z,i,a,y}p_t^{d\theta}(z,i)g_t^d(a\mid i)
+       K_{\theta,t}(z',y\mid z,a)q_t(i'\mid i,a,y).
+ \label{eq:v9-privateflow}
+\end{align}
+The risk of row $j$ is
+\[
+ \sum_{\theta,z,i,b}\kappa_j(\theta)p_T^{d(j)\theta}(z,i)
+                    v^{d(j)}(b\mid i)\ell_{d(j)\theta}(z,b).
+\]
+\begin{proposition}[Private flow characterization]\label{prop:v9-private}
+Minimizing the largest baseline-subtracted row risk over the probability
+simplexes in \eqref{eq:v9-privateflow} gives exactly
+$\Theta_{\rm pr}({\bf S};D)$. The minimum is attained. With rational input
+this is a finite polynomial optimization problem, not in general the
+linear programme \eqref{eq:v9-primal}.
+\end{proposition}
+\begin{proof}
+Induction on the actual execution gives the displayed occupancies and
+risk. Conversely their kernels implement precisely that law with no
+extra retained variable. The variables form a compact product of finite
+simplexes, and every row risk is a polynomial in them. Continuity gives
+attainment. The shared occurrences of $q_t$ cannot be split by task or
+parameter; doing so would change the information pattern.
+\end{proof}
+
+\begin{example}[A strict cost for hiding the seed]\label{ex:v9-privategap}
+Observe $X=\theta\in\{1,2,3\}$ without error, retain two labels, and
+finally guess $\theta$ with zero--one loss under worst-parameter risk.
+The full-information baseline is zero. With a shared seed, choose
+uniformly one of the three two-element subsets and encode the two
+selected symbols without error. The omitted symbol is necessarily
+wrong. Each parameter is omitted with probability $1/3$, so the risk is
+$1/3$. For any fixed seed, the sum of the three correct-reconstruction
+probabilities of a two-label experiment is at most two; averaging proves
+the matching lower bound.
+
+Without a shared seed let $r_1,r_2$ be the two decoder distributions on
+three symbols. Correctness for symbol $x$ is at most
+$\max\{r_1(x),r_2(x)\}$. If all three correctness probabilities exceeded
+$1/2$, one of two probability vectors would exceed $1/2$ at two
+coordinates, an impossibility. Thus the private risk is at least $1/2$.
+It is attained by assigning symbol $1$ to the first label and symbols
+$2,3$ to the second, whose decoder tosses a fair coin. Therefore
+\[
+                  \Theta_{\rm sh}(2)=\tfrac13,
+             \qquad\Theta_{\rm pr}(2)=\tfrac12.
+\]
+The gap is not removed by allowing randomized private encoding. A
+single unknown parameter is selected before the seed, as required above.
+\end{example}
