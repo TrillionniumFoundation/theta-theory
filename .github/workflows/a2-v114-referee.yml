@@ -1,0 +1,94 @@
+name: A2 v114 source-bound referee build
+on:
+  push:
+    branches:
+      - revision/a2-v114-global-residual-singularities-2026-09-22
+    paths:
+      - 'papers/A2-v17-boundary-information-coarsening/article/v114/**.tex'
+      - 'papers/A2-v17-boundary-information-coarsening/article/v114/**.py'
+      - 'papers/A2-v17-boundary-information-coarsening/article/v114/**.md'
+      - 'papers/A2-v17-boundary-information-coarsening/article/v114/**.b64'
+      - 'A2_REVISION_V114_INDEX.md'
+      - '.github/workflows/a2-v114-referee.yml'
+permissions:
+  contents: write
+concurrency:
+  group: a2-v114-referee-build
+  cancel-in-progress: false
+jobs:
+  referee:
+    if: github.ref == 'refs/heads/revision/a2-v114-global-residual-singularities-2026-09-22'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      ARTICLE: papers/A2-v17-boundary-information-coarsening/article/v114
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 32
+          sparse-checkout: |
+            papers/A2-v17-boundary-information-coarsening/article/v113
+            papers/A2-v17-boundary-information-coarsening/article/v114
+            reviews/a2-v113-independent-harsh-top4-2026-09-22
+            .github/workflows
+      - name: Materialize and commit the actual revised manuscript sources
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = 'revision/a2-v114-global-residual-singularities-2026-09-22'
+          git fetch origin "$GITHUB_REF_NAME"
+          test "$(git rev-parse FETCH_HEAD)" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python3 "$ARTICLE/materialize_revision.py"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f "$ARTICLE"
+          if ! git diff --cached --quiet; then
+            git commit -m 'A2 v114: materialize revised manuscript and point-by-point response from checked source pack'
+            git push origin "HEAD:refs/heads/$GITHUB_REF_NAME"
+          fi
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Install TeX and exact diagnostic dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends latexmk texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils python3-sympy
+      - name: Source preservation and finite diagnostics
+        run: python3 "$ARTICLE/verify_revision.py" --source-only
+      - name: Compile principal manuscript
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$ARTICLE"
+          mkdir -p evidence
+          latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error paper.tex 2>&1 | tee evidence/latexmk.log
+          cp paper.log evidence/paper.log
+          pdftoppm -f 1 -l 1 -singlefile -r 90 -png paper.pdf evidence/first-page
+      - name: Bind receipt to mathematical source and PDF
+        run: python3 "$ARTICLE/verify_revision.py" --with-pdf
+      - name: Commit generated evidence on this branch only
+        shell: bash
+        env:
+          SOURCE_SHA: ${{ steps.source.outputs.sha }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = 'revision/a2-v114-global-residual-singularities-2026-09-22'
+          git fetch origin "$GITHUB_REF_NAME"
+          test "$(git rev-parse FETCH_HEAD)" = "$SOURCE_SHA"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git add -f "$ARTICLE/paper.pdf" "$ARTICLE/evidence"
+          if ! git diff --cached --quiet; then
+            git commit -m "A2 v114: bind generated PDF and exact diagnostics to source $SOURCE_SHA"
+            git push origin "HEAD:refs/heads/$GITHUB_REF_NAME"
+          fi
+      - name: Upload referee bundle and logs
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: a2-v114-review-bundle-${{ github.sha }}
+          path: |
+            papers/A2-v17-boundary-information-coarsening/article/v114
+            A2_REVISION_V114_INDEX.md
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 6
