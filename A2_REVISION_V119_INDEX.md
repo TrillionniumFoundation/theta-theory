@@ -1,6 +1,6 @@
 # A2 revision v119 — Codimension bounds and primary structures
 
-Intended revision branch: `revision/a2-v119-codimension-primary-conductor-2026-09-22`.
+Revision branch: `revision/a2-v119-codimension-primary-conductor-2026-09-22`.
 
 Controlling report: `review/a2-v118-independent-harsh-top4-2026-09-22`, pinned at `d4254d9b01405ad02c64d2ff591503d4cc7a6aa7`.
 
@@ -8,4 +8,4 @@ Controlling report: `review/a2-v118-independent-harsh-top4-2026-09-22`, pinned a
 
 This revision supplies ring-level codimension stabilization, equations for the full codimension-two Fitting scheme, a conductor incidence with its exact-stratum fibres, connected embedded-primary multigenerator families, and regularity-controlled global transport for arbitrary finite projective schemes. All 293 inherited labels are retained. The source and build receipts distinguish mathematical proofs from finite regression diagnostics.
 
-**Provenance note:** this authoring session produced a local package and did not create or push a remote GitHub branch. Any later application and push are separate actions. E118.1, the full-text comparison with Ballico (1993), remains open and is not represented as a completed priority audit.
+**Provenance note:** the v119 mathematical source and source-bound PDF products were subsequently pushed to the revision branch above. The remote publication is recorded in `A2_REVISION_V119_REMOTE_RECEIPT.json`; the historical local build receipt remains unchanged as a record of the pre-push build. E118.1, the full-text comparison with Ballico (1993), remains open and is not represented as a completed priority audit.
