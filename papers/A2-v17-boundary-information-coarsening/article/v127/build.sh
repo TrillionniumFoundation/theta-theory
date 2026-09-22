@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-cd -- "$(dirname -- "\${BASH_SOURCE[0]}")"
+cd -- "$(dirname -- "${BASH_SOURCE[0]}")"
 export OPENBLAS_NUM_THREADS=1
 mkdir -p evidence ../v125/evidence
 
