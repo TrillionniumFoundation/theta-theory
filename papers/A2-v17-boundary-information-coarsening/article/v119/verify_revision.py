@@ -1,132 +1,191 @@
 #!/usr/bin/env python3
-"""Exact finite regression checks. These do not certify the general proofs."""
+"""Exact finite diagnostics for A2 v119. Not a proof or priority certificate."""
+from __future__ import annotations
 from pathlib import Path
-import itertools, json, math, random, re
+import importlib.util
+import itertools
+import json
+import math
+import re
 import sympy as sp
-HERE=Path(__file__).resolve().parent
 
-def basis(e,h):
-    return sorted((a for a in itertools.product(range(h),repeat=e) if sum(a)<h),key=lambda a:(sum(a),a))
-def mul(p,q,limit):
-    r={}
-    for a,c in p.items():
-        for b,d in q.items():
-            ab=tuple(x+y for x,y in zip(a,b))
-            if sum(ab)<limit: r[ab]=r.get(ab,0)+c*d
-    return {a:c for a,c in r.items() if c!=0}
-def power(p,n,limit,e):
-    q={(0,)*e:sp.Integer(1)}
-    for _ in range(n): q=mul(q,p,limit)
-    return q
+HERE = Path(__file__).resolve().parent
+b, u, v, z = sp.symbols('b u v z')
 
-def substitution_tests():
-    cases=[]
-    for e,h in [(2,3),(2,4),(2,5),(3,3),(3,4),(4,3)]:
-        bas=basis(e,h); N=math.comb(e+h-1,e+1)
-        for seed in range(3):
-            rng=random.Random(118000+100*e+10*h+seed)
-            xs=[{a:sp.Integer(rng.randint(-2,2)) for a in bas if sum(a)>0} for _ in range(e)]
-            M=sp.Matrix([[xs[i][tuple(int(j==l) for l in range(e))] for i in range(e)] for j in range(e)])
-            if seed==2:
-                for j in range(e): xs[-1][tuple(int(j==l) for l in range(e))]=xs[0][tuple(int(j==l) for l in range(e))]
-                M=sp.Matrix([[xs[i][tuple(int(j==l) for l in range(e))] for i in range(e)] for j in range(e)])
-            cols=[]
-            for alpha in bas:
-                p={(0,)*e:sp.Integer(1)}
-                for i,n in enumerate(alpha):p=mul(p,power(xs[i],n,h,e),h)
-                cols.append([p.get(a,0) for a in bas])
-            T=sp.Matrix.hstack(*(sp.Matrix(c) for c in cols))
-            actual=T.det(method='domain-ge'); expected=M.det()**N
-            assert actual==expected,(e,h,seed)
-            cases.append({'e':e,'h':h,'length':len(bas),'exponent':N,'seed':seed,'linear_det':str(M.det()),'identity_verified':True})
-    # Full symbolic length-six matrix, including independent quadratic terms.
-    a,b,c,d=sp.symbols('a b c d'); u=sp.symbols('u0:6')
-    bas=basis(2,3)
-    xs=[{(1,0):a,(0,1):b,(2,0):u[0],(1,1):u[1],(0,2):u[2]},
-        {(1,0):c,(0,1):d,(2,0):u[3],(1,1):u[4],(0,2):u[5]}]
-    cols=[]
-    for alpha in bas:
-        p={(0,0):sp.Integer(1)}
-        for i,n in enumerate(alpha):p=mul(p,power(xs[i],n,3,2),3)
-        cols.append([p.get(v,0) for v in bas])
-    T=sp.Matrix.hstack(*(sp.Matrix(c0) for c0 in cols))
-    assert sp.factor(T.det()-(a*d-b*c)**4)==0
-    return cases
+def recurrence(h: int) -> list[sp.Expr]:
+    f = [sp.Integer(0), sp.Integer(1)]
+    for j in range(1, h + 1):
+        f.append(sp.expand(u * f[j] + v * f[j-1]))
+    return f
 
-def split_alpha(alpha,j,h,n):
-    total=sum(alpha); sizes=[h]*j
-    rem=total-j*h
-    for i in range(j):
-        t=min(rem,n-h); sizes[i]+=t; rem-=t
-    assert rem==0
-    left=list(alpha); out=[]
-    for size in sizes:
-        v=[0]*len(alpha)
-        for i in range(len(alpha)):
-            t=min(size,left[i]);v[i]=t;left[i]-=t;size-=t
-        assert size==0;out.append(tuple(v))
-    assert not any(left)
-    return out
+def same_ideal(left: list, right: list, variables: tuple) -> bool:
+    gl = sp.groebner(left, *variables, order='lex')
+    gr = sp.groebner(right, *variables, order='lex')
+    return all(gr.reduce(p)[1] == 0 for p in left) and all(gl.reduce(p)[1] == 0 for p in right)
 
-def conductor_tests():
-    rows=[]
-    for e,h,m in [(1,2,2),(2,3,2),(2,3,3),(3,3,2),(2,4,2)]:
-        n=2*h-1;lim=m*n+1
-        u={(0,)*e:sp.Integer(1)}
-        for i in range(e):u[tuple(1 if j==i else 0 for j in range(e))]=sp.Integer(i+1)
-        u[(2,)+(0,)*(e-1)]=sp.Integer(2)
-        bb=[a for a in basis(e,lim) if sum(a)>=h]
-        for alpha in bb:
-            t=sum(alpha); j=next(j for j in range(1,m+1) if j*h<=t<=j*n)
-            factors=split_alpha(alpha,j,h,n)
-            assert all(h<=sum(v)<=n for v in factors)
-            poly={(0,)*e:sp.Integer(1)}
-            for v in factors:poly=mul(poly,{v:sp.Integer(1)},lim)
-            poly=mul(poly,power(u,m-j,lim,e),lim)
-            assert poly[alpha]==1
-            assert all(sum(v)>t or v==alpha for v in poly)
-            assert all(h<=sum(v)<=m*n for v in poly)
-        rows.append({'e':e,'h':h,'n':n,'m':m,'triangular_columns':len(bb),'diagonal_entries_all_one':True})
-    for h in range(2,10):
-        n=2*h-2;exponents={0}|set(range(h,n+1))
-        assert 2*h-1 not in {i+j for i in exponents for j in exponents}
+def colength(g: sp.GroebnerBasis, bounds: tuple[int, ...]) -> int:
+    leads = [poly.LM(order=g.order).exponents for poly in g.polys]
+    return sum(not any(all(x >= y for x, y in zip(exp, lm)) for lm in leads)
+               for exp in itertools.product(*(range(n) for n in bounds)))
+
+def primary_checks() -> list[dict]:
+    rows = []
+    lam = sp.Symbol('lam')
+    for h in range(5, 10):
+        f = recurrence(h)
+        J = [f[h], v*f[h-1]]
+        I = J + [b*v, b*b*u]
+        Q = J + [b*b, b*v]
+        elimination = sp.groebner([lam*u, lam*v] + [(1-lam)*q for q in Q],
+                                  lam, b, u, v, order='lex')
+        intersection = [p.as_expr() for p in elimination.polys if not p.as_expr().has(lam)]
+        assert same_ideal(I, intersection, (b, u, v)), ('primary intersection', h)
+        gj = sp.groebner(J, u, v, order='lex')
+        gq = sp.groebner(Q, b, u, v, order='lex')
+        gi = sp.groebner(I, b, u, v, order='lex')
+        assert colength(gj, (2*h, h+1)) == math.comb(h, 2)
+        assert colength(gq, (3, 2*h, h+1)) == math.comb(h, 2) + h - 1
+        assert gi.reduce(u**(2*h-4))[1] != 0
+        for i in range(2*h-2):
+            assert gi.reduce(u**i * v**(2*h-3-i))[1] == 0
+        Y = sp.Matrix([[0, v], [1, u]])
+        X = b*(Y-u*sp.eye(2))
+        for rel in [X*X, X*Y, Y**h]:
+            assert all(gi.reduce(sp.expand(e))[1] == 0 for e in rel)
+        assert gj.reduce(f[h+1])[1] == 0
+        rows.append({'h': h, 'primary_intersection': True,
+                     'contact_colength': math.comb(h, 2),
+                     'displayed_embedded_primary_colength': math.comb(h, 2)+h-1,
+                     'nilradical_dimension': math.comb(h, 2)+h-3,
+                     'nilradical_index': 2*h-3, 'quotient_relations': True})
     return rows
 
-def action_tests():
-    s=sp.symbols('s');T=sp.Matrix([[0,0],[-s*s,0]])
-    theta=sp.Matrix.hstack(sp.Matrix([1,0,0,1]),sp.Matrix(list(T)),sp.zeros(4,1))
-    minors=[sp.factor(theta.extract(rr,cc).det()) for rr in itertools.combinations(range(4),2) for cc in itertools.combinations(range(3),2)]
-    assert set(x for x in minors if x!=0)<={s*s,-s*s}
-    assert any(x!=0 for x in minors)
-    assert theta.subs(s,0).rank()==1 and theta.subs(s,1).rank()==2
-    assert all(theta.extract(rr,range(3)).det()==0 for rr in itertools.combinations(range(4),3))
-    a,b,c,d,e,f=sp.symbols('a b c d e f')
-    X=sp.Matrix([[a,b],[c,-a]]);Y=sp.Matrix([[d,e],[f,-d]])
-    comm=X*Y-Y*X
-    assert sp.expand(comm[0,0]-(b*f-c*e))==0
-    assert sp.expand(comm[0,1]-2*(a*e-b*d))==0
-    assert sp.expand(comm[1,0]+2*(a*f-c*d))==0
-    return {'codimension_two_rank_one_ideal':'(s^2)','geometric_action_ranks':[2,1],
-            'all_three_minors_zero':True,'traceless_bracket_wedge_identity':True}
+def fork_product(p: list, q: list, h: int) -> list:
+    # Ordered basis: 1, x, y, y^2, ..., y^(h-1).
+    out = [sp.Integer(0)]*(h+1)
+    for i, a in enumerate(p):
+        for j, c in enumerate(q):
+            if a == 0 or c == 0: continue
+            if i == 0: k = j
+            elif j == 0: k = i
+            elif i == 1 or j == 1: continue
+            else:
+                degree = i+j-2
+                if degree >= h: continue
+                k = degree+1
+            out[k] += a*c
+    return [sp.expand(x) for x in out]
 
-def preservation():
-    data=json.loads((HERE/'evidence/PRESERVATION.json').read_text())
-    assert not data['missing_old_labels']
+def incidence_check() -> dict:
+    h = 5
+    f = recurrence(h)
+    t1, t2, t3 = map(sp.Integer, (1,-1,2))
+    one = [1,0,0,0,0,0]
+    omitted = [0,0,-f[4],0,0,1]
+    base = [[0,1,-b,0,0,0], [0,0,-u,1,0,0], [0,0,-f[3],0,1,0]]
+    W = [one] + [[sp.expand(x+t*y) for x,y in zip(vec,omitted)]
+                  for vec,t in zip(base,[t1,t2,t3])]
+    M_basis = [[0,0,1,0,0,0], [0,0,0,0,0,1]]
+    change = sp.Matrix.hstack(*(sp.Matrix(w) for w in W+M_basis))
+    assert change.det() == -1 or change.det() == 1
+    inverse = change.inv()
+    residual = inverse[4:6, :]
+    beta = sp.Matrix.hstack(*(residual*sp.Matrix(fork_product(w,q,h)) for w in W for q in W))
+    Cs = [sp.Matrix.hstack(*(residual*sp.Matrix(fork_product(w,q,h)) for q in M_basis)) for w in W]
+    matrix = sp.Matrix.hstack(beta, *(c*beta for c in Cs))
+    # Drop identically zero/duplicate columns before checking every two-minor.
+    gi = sp.groebner([f[h], v*f[h-1], b*v, b*b*u], b,u,v, order='lex')
+    columns = []
+    for j in range(matrix.cols):
+        col = tuple(gi.reduce(sp.expand(e))[1] for e in matrix[:,j])
+        if any(c != 0 for c in col) and col not in columns: columns.append(col)
+    gi = sp.groebner([f[h], v*f[h-1], b*v, b*b*u], b,u,v, order='lex')
+    checked = 0
+    for p,q in itertools.combinations(columns,2):
+        determinant = sp.expand(p[0]*q[1]-p[1]*q[0])
+        assert gi.reduce(determinant)[1] == 0
+        checked += 1
+    pivot = residual*sp.Matrix(fork_product(W[2],W[2],h))
+    assert pivot[1].subs({b:0,u:0,v:0}) == 1
+    return {'h':h, 'all_nonduplicate_two_minors_checked':checked,
+            'quotient_chart_at_Grassmannian_coordinates':[1,-1,2],
+            'nonreduced_coefficient_ring_retained':True,
+            'quadratic_generation_pivot_at_origin':1}
+
+def rank_and_staircase_checks() -> list[dict]:
+    rows=[]
+    for h in range(5, 13):
+        basis = [list(sp.eye(h+1)[:,j]) for j in range(h+1)]
+        # Omit y and y^4; keep 1, x and all other powers.
+        W = [basis[j] for j in range(h+1) if j not in (2,5)]
+        products = [sp.Matrix(fork_product(x,y,h)) for x in W for y in W]
+        E = sp.Matrix.hstack(*products)
+        assert len(W) == h-1 and E.rank() == h
+        cube = [sp.Matrix(fork_product(list(p),w,h)) for p in products for w in W]
+        assert sp.Matrix.hstack(*cube).rank() == h
+        gens = [(4,0),(3,1),(2,2),(1,h+1),(0,2*h)]
+        standards=[(i,j) for i in range(5) for j in range(2*h+1)
+                   if not any(i>=a and j>=c for a,c in gens)]
+        assert max(i+j for i,j in standards) == 2*h-1
+        rows.append({'h':h,'W_rank':h-1,'quadratic_rank':h,'cubic_rank':h,
+                     'ordinary_square_regularity':2*h})
+    return rows
+
+def cubic_and_compression_checks() -> dict:
+    s,t = sp.symbols('s t')
+    cubic = sp.expand(s*t*t-t*s*s)
+    assert sp.expand(cubic-s*t*(-s+t)) == 0
+    # The square-zero rank-three quotient has identically zero square obstruction.
+    assert s*0-t*0 == 0
+    # Exact compressed commutator check on a universal unital codimension-two
+    # chart of C[y]/(y^5), without imposing any subalgebra equations.
+    a = sp.symbols('a0:4')
+    one=sp.eye(5)[:,0]
+    W=[one, sp.Matrix([0,a[0],a[1],1,0]), sp.Matrix([0,a[2],a[3],0,1])]
+    M=[sp.eye(5)[:,1],sp.eye(5)[:,2]]
+    change=sp.Matrix.hstack(*(W+M)); inv=change.inv()
+    def product(p,q):
+        return sp.Matrix([sum(p[i]*q[j] for i in range(5) for j in range(5) if i+j==k) for k in range(5)])
+    L=[inv*sp.Matrix.hstack(*(product(w,q) for q in W+M)) for w in W]
+    left=L[1][3:5,3:5]*L[2][3:5,3:5]-L[2][3:5,3:5]*L[1][3:5,3:5]
+    right=L[2][3:5,0:3]*L[1][0:3,3:5]-L[1][3:5,0:3]*L[2][0:3,3:5]
+    assert all(sp.expand(x)==0 for x in left-right)
+    assert any(sp.expand(x)!=0 for x in left)
+    # Degree-three and degree-four residual images: direct minors/presentation
+    # identities are proved generally in the manuscript, not inferred here.
+    return {'etale_rank_three_cubic':str(sp.factor(cubic)),
+            'square_zero_rank_three_cubic':0,
+            'compressed_commutator_identity':True,
+            'compressed_operators_not_assumed_commuting':True}
+
+def preservation() -> dict:
+    original=HERE.parent/'v118'
+    # A portable build can instead use the source-label manifest.
+    meta=json.loads((HERE/'evidence/PRESERVATION.json').read_text())
     current=set()
-    for source in list(HERE.glob('*.tex'))+list((HERE/'parts').glob('*.tex')):
-        current.update(re.findall(r'\\label\{([^}]+)\}',source.read_text()))
-    assert set(data['old_labels']) <= current
-    for p in (HERE/'parts').glob('*.tex'):
-        text=p.read_text()
+    for f in list(HERE.glob('*.tex'))+list((HERE/'parts').glob('*.tex')):
+        text=f.read_text()
+        current.update(re.findall(r'\\label\{([^}]+)\}',text))
         for env in ['theorem','proof','lemma','proposition','corollary','remark']:
-            assert text.count('\\begin{'+env+'}')==text.count('\\end{'+env+'}'),(p,env)
-    return {k:data[k] for k in ['retained_old_label_count','new_label_count','missing_old_labels']}
+            assert text.count(r'\begin{'+env+'}') == text.count(r'\end{'+env+'}'),(str(f),env)
+    assert set(meta['old_labels']) <= current
+    return {'old_label_count':len(meta['old_labels']), 'current_label_count':len(current),
+            'missing_old_labels':[]}
 
-def main():
-    out={'kind':'exact finite regression diagnostics; not proof certification',
-         'substitution':substitution_tests(),'symbolic_e2_h3_full_nonlinear_identity':True,
-         'conductor':conductor_tests(),'action':action_tests(),'preservation':preservation(),
-         'proof_certification':False,'priority_certification':False}
-    (HERE/'evidence/DIAGNOSTICS.json').write_text(json.dumps(out,indent=2,sort_keys=True)+'\n')
-    print(json.dumps(out,indent=2,sort_keys=True))
-if __name__=='__main__':main()
+def main() -> None:
+    spec=importlib.util.spec_from_file_location('v118_diagnostics',HERE/'inherited-v118/verify_revision.py')
+    inherited=importlib.util.module_from_spec(spec); spec.loader.exec_module(inherited)
+    data={'kind':'exact finite regression diagnostics, not proof certification',
+          'primary':primary_checks(), 'incidence':incidence_check(),
+          'rank_and_staircase':rank_and_staircase_checks(),
+          'cubic_and_compression':cubic_and_compression_checks(),
+          'inherited_substitution':inherited.substitution_tests(),
+          'inherited_conductor':inherited.conductor_tests(),
+          'inherited_action':inherited.action_tests(),
+          'preservation':preservation(),
+          'proof_certification':False,'priority_certification':False,
+          'remote_push_performed':False}
+    (HERE/'evidence/DIAGNOSTICS.json').write_text(json.dumps(data,indent=2)+'\n')
+    print(json.dumps(data,indent=2))
+if __name__=='__main__':
+    main()

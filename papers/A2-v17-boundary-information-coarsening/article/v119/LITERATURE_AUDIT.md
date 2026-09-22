@@ -1,25 +1,55 @@
-# Theorem-level literature audit for A2 v118
+# Literature and priority audit — A2 v119
 
-Date: 22 September 2026. This is a bounded comparison of inspected primary-source statements, not a proof that no earlier result overlaps the manuscript. Bibliographic data from inaccessible text is not treated as theorem evidence.
+Audit date: September 22, 2026. The inherited v118 audit is preserved under `inherited-v118/LITERATURE_AUDIT.md`. This file records the additional comparison and the unresolved item; it is not an exhaustive priority certificate.
 
-| Inspected source and statement | Role and boundary |
-|---|---|
-| Iovanov–Sistko, arXiv:1705.00762v2, Theorem 0.1 (PDF p.2) | Supplies the field-level maximal-subalgebra comparison under the stated Schur hypothesis. The article attributes the commutative closed-point mechanisms accordingly. |
-| Sistko, arXiv:1809.09760v2, Definition 3.1, Lemma 3.2, Theorems 1.1/4.1 (PDF pp.3,5,9) | Establishes the subalgebra-variety framework and basic-algebra maximal-subalgebra geometry. The manuscript distinguishes the reduced-variety problem from the full relative multiplication equations. |
-| Sistko, Proposition 3.4 (PDF p.6) | Gives the faithful-representation comparison for matrix-algebra subalgebras. The conductor flag in v118 additionally retains the specified inclusion into `B`, quotient module, and exact-rank scheme. |
-| Grönkvist–Leffler–Torstensson–Ufnarovski, arXiv:2107.11916v1, Theorem 39 (printed pp.94–95) | Already classifies codimension-two subalgebras of `K[x]`; the one-variable fibres in the rank-jump example are not claimed new. The relative quotient-tower theorem has arbitrary finite-algebra input. |
-| Arpin–Bozlee–Herr–Smith, arXiv:2108.07185v2, Proposition 3.6, Definition 3.12, Proposition 3.14 | Classical index-form and generator-scheme comparison. The universal generator functor and minors description are not claimed new. |
-| Same source, Example 4.16 (PDF p.26) | Its two-generator jet example has curvilinear target. The target of the new primary theorem is instead the order-`h` truncated algebra in `e` variables; the determinant character calculation is explicitly classical linear algebra. |
-| Haiman, arXiv:math/0010246v2, Corollary 3.8.3 (PDF p.20) | Supplies the all-powers pair-diagonal identity in the reduced three-plane theorem. The text now explicitly distinguishes point count and power exponent. It is not used in the new nonreduced theorem. |
+## 1. E118.1: Ballico 1993 — still open
 
-The source PDFs were read through the available web interface, including theorem-page images for the finite-subalgebra and codimension-two comparisons. No third-party full-text PDF is redistributed in this revision.
+E. Ballico, *On the Failure Locus of Higher Order Properties of Embeddings in Projective Spaces*, Mathematische Nachrichten 163 (1993), 5–13, DOI 10.1002/mana.19931630102.
 
-## Ballico 1993: unresolved mandatory comparison
+The publisher's volume-163 table of contents was consulted and confirms the title, author, year and pages. The enabled public full-text route did not provide the article. The DOI PDF route was inaccessible; exact-title and DOI searches did not supply complete theorem text. The manuscript does not infer absence of overlap from this limitation.
 
-Reference: E. Ballico, *On the Failure Locus of Higher Order Properties of Embeddings in Projective Spaces*, Math. Nachr. 163 (1993), 5–13, DOI `10.1002/mana.19931630102`.
+Primary record consulted: `https://onlinelibrary.wiley.com/toc/15222616/1993/163/1`.
+Attempted full-text route: `https://onlinelibrary.wiley.com/doi/pdf/10.1002/mana.19931630102`.
 
-The DOI route and the Wiley article/PDF routes did not provide full theorem text in this revision. The report's and predecessor's warning therefore remains controlling: **failed access is not evidence of novelty**. Comparison with the conductor transports, fixed finite-contact schemes, moving schemes, and quotient incidence is not certified complete. This is E117.1, explicitly open in the manuscript, response, identity, and build receipt.
+| Comparison requested by R118 | Evidence actually available | Status |
+|---|---|---|
+| Failure loci versus Fitting schemes | Bibliographic record only | Theorem-level comparison not completed |
+| Fixed versus moving finite contacts | Bibliographic record only | Not completed |
+| Higher-order multiplication or osculating failure | Title is not sufficient evidence | Not completed |
+| Conductor transport | No theorem text | Not completed |
+| Quotient/Hilbert incidences | No theorem text | Not completed |
+| Nonreduced scheme structure | No theorem text | Not completed |
 
-## Claims deliberately kept separate
+A future comparison must use the complete source, identify its exact hypotheses and conclusions, and compare each relevant theorem with the new statements. No row is marked closed on the basis of a title, abstract or inaccessible link.
 
-The closed-point subalgebra classification, Hilbert-functor representability, nested-divisor construction, faithful-action viewpoint, symmetric-power determinant identity, and Haiman power identity are not bundled into a new universal novelty claim. The article proves its precise relative flags, Fitting presentations, primary exponents, and global transports, and supplies an explicit nonreduced action-rank example. Originality and significance of this combination require an independent assessment, with the Ballico source gap still visible.
+## 2. Additional primary source actually read: Sidman's regularity paper
+
+J. Sidman, *On the Castelnuovo–Mumford regularity of products of ideal sheaves*, arXiv:math/0110184v2 (2001).
+
+Source: `https://arxiv.org/pdf/math/0110184`.
+The parsed full text was available. The web PDF screenshot endpoint failed with a cache-miss response; no successful screenshot is claimed. Theorem statements and the relevant proof paragraphs were read in the text layer.
+
+**Theorem 1.3:** the regularity condition relates the graded ideal to its saturation in degrees at least its regularity, and gives the cohomology vanishing in the corresponding range. This supports both the sheaf-section/ordinary-square distinction and the first-conormal-layer surjection in the new conductor proof.
+
+**Theorem 1.8:** if the projective schemes defined by homogeneous ideals I and J intersect in a finite set of points, reg(IJ) <= reg(I)+reg(J). Applying it to I=J for a zero-dimensional scheme gives reg(I^2) <= 2 reg(I). Its proof specifically addresses saturation of the ordinary product, not just regularity of the product sheaf.
+
+The paragraph following Theorem 1.8 attributes earlier power bounds to Chandler and independently to Geramita–Gimigliano–Pitteloud, and mentions related work of Conca–Herzog. Those historical statements are attributed to Sidman's discussion; the present session does not claim a fresh theorem-by-theorem reading of every one of those sources.
+
+**What is not claimed:** the regularity inequality, the saturation criterion, or the classical cohomology-and-base-change formalism as new results.
+
+**What the revision proves separately:** the kernel equality for each prescribed inverse-image linear series; the canonical global/finite multiplication-cokernel comparison; its relative extension; and its application to the full embedded Fitting family. No theorem-level non-overlap with Ballico 1993 follows from Sidman's article.
+
+## 3. The finite-algebra comparison retained and sharpened
+
+The inherited comparison with Arpin–Bozlee–Herr–Smith, Iovanov–Sistko, Sistko, GLTU, Grinberg and Haiman remains in the manuscript. The new section explicitly separates:
+
+- classical generator/polygenerator minors from the codimension-sensitive ring-level stabilization proof and the specified full codimension-two presentation;
+- the classical rank-three algebra/binary-cubic square calculation from its role as an exceptional conductor-incidence fibre;
+- the classical two-row Schur basis and contact algebra G_h from the mixed embedded ideal `(F_h,vF_(h-1),bv,b^2u)` and its realization on the full multigenerator failure scheme;
+- the representability of Hilbert/Grassmann functors from the proven isomorphism of the corank-one multiplication scheme with their quadratic-generation incidence.
+
+These distinctions explain the logical inputs and the additional assertions. They do not assert exhaustive originality of a codimension bound or of every incidence construction against all existing literature.
+
+## 4. Mathematical scope is not an editorial or priority judgment
+
+The new text supplies full proofs and specifies parameter spaces. It does not claim that all higher-defect primary strata are classified, that a proper incidence is automatically a normalization, or that primary decompositions commute with arbitrary specialization. New results should be judged on those statements and proofs, not on the successful build, diagnostic counts, branch names, or an asserted likelihood of acceptance.

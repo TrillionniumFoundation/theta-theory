@@ -1,28 +1,46 @@
-# A2 revision 118 — Conductor strata and nonreduced multiplication failure schemes
+# A2 revision 119
 
-**Author:** Qian Qi  
-**Revision branch:** `revision/a2-v118-higher-defect-nonreduced-generators-2026-09-22`  
-**Controlling review:** `review/a2-v117-independent-harsh-top4-2026-09-22`, frozen at `2c6f180fa0baf23386e0a46a64abe7503ea65b00`.  
-**Reviewed v117 product:** `fb999b3a43fe4331becb42646bc2faeadfa5492a`.
+## Codimension bounds and primary structures in multiplication failure
+
+Author: **Qian Qi**. Date: September 22, 2026.
+
+**Origin of this delivery: generated locally; this authoring session did not push to GitHub.**
+A later authorized application and push are separate actions.
+
+Intended new branch: `revision/a2-v119-codimension-primary-conductor-2026-09-22`.
+Controlling R118 review commit: `d4254d9b01405ad02c64d2ff591503d4cc7a6aa7`.
+Reviewed mathematical source: `c87bfdad8d97e68637d269e656b46c4cce85551e`.
+Reviewed v118 product: `44bfc648ead008896a6981a7302a6d5ab8b21bb8`.
 
 ## Reading editions
 
-- **Primary article:** [geometry.pdf](geometry.pdf), with [LaTeX source](geometry.tex).
-- **Complete manuscript:** [paper.pdf](paper.pdf), retaining every previous complementary proof and statistical appendix.
-- **Separate application appendices:** [applications.pdf](applications.pdf).
-- **Response to the controlling report:** [RESPONSE_TO_R117.md](RESPONSE_TO_R117.md).
-- **Literature/priority audit:** [LITERATURE_AUDIT.md](LITERATURE_AUDIT.md).
+- [Primary geometry article](geometry.pdf), with [self-contained LaTeX source](geometry.tex).
+- [Complete manuscript](paper.pdf), retaining all complementary geometry and statistical appendices.
+- [Separate application appendices](applications.pdf).
+- [Point-by-point response to R118](RESPONSE_TO_R118.md).
+- [Literature audit and explicitly open comparison](LITERATURE_AUDIT.md).
 
-The new mathematics is in `parts/02a-higher-defect.tex` and `parts/03a-nonreduced-generators.tex`. The first gives the stable generated algebra, conductor exact-rank flags, the extreme-corank Fitting scheme, and the two codimension-two quotient mechanisms. The second gives the full primary law for truncated local algebras and transports it to section multiplication on projective spaces of arbitrary dimension. The inherited hyperplane, contact, pencil, and reduced three-plane results remain in the main article; unrelated complements remain in the complete edition.
+## New mathematical content
 
-## Reproduction and provenance
+`parts/01c-codimension-stabilization.tex` proves the universal codimension bound over the coefficient ring.
+`parts/02k-full-codimension-two.tex` gives the entire degree-three Fitting scheme, the exact corank-one incidence and the conductor-stratum fibres of its proper extension.
+`parts/03b-embedded-multigenerator.tex` proves a connected arbitrary-order embedded primary family and a supplementary three-generator case.
+`parts/01d-general-conductor.tex` proves the regularity-controlled global transport for arbitrary finite projective schemes and finite flat families, and applies it to the new primary geometry.
 
-Run `bash build.sh` from this directory. The published source tree is self-contained. An initial, unexpanded authoring checkout additionally needs the reviewed `v117` sibling. Requirements: Python 3 with SymPy and a LaTeX distribution providing the packages named in the sources. No network access is needed by the build itself. For initial materialization, `prepare_revision.py` writes only `v118`; it copies reviewed sources, makes explicit targeted revisions, and retains every inherited theorem label. The build does not regenerate an already materialized manuscript, so subsequent direct LaTeX edits are respected. Explicitly rerunning the preparation script regenerates its targeted files. `evidence/PRESERVATION.json` gives hashes and the list of unchanged active sources.
+The quotient-flag statement, relative cyclic-vector argument, Schubert divisor identification, moving-fat-point bundle and low-degree interpretation are also made explicit. The original determinant-power theorem, sharp curve and fat-point bounds, contact classifications and all complementary developments remain present.
 
-On the initial run, the branch workflow materializes the complete source graph and commits the **actual LaTeX sources**, then builds and commits the PDFs and receipts. The mathematical-source commit is recorded in `evidence/SOURCE_RECEIPT.json` and `evidence/BUILD_RECEIPT.json`. The later product commit adds PDFs; it is not confused with the source commit. The reviewable manuscript is the complete `.tex` tree and the PDFs beside it.
+## Reproduction
 
-`verify_revision.py` contains exact finite regression checks of substitution determinants, the nonreduced action-rank jump, and the global triangular conductor construction. The complete proofs are in the article, not inferred from these tests. A successful build is neither proof certification nor a novelty or journal-acceptance certificate.
+Run `bash build.sh` in this directory. It requires Python 3, SymPy, PyMuPDF and a LaTeX distribution providing the packages named in the sources. The build uses no network access and does not regenerate the edited TeX files from an authoring script.
 
-## Remaining source-access item
+`evidence/PRESERVATION.json` contains the pinned old-source hashes and all 293 inherited labels. `make_preservation.py` can regenerate it when the pinned v118 sibling is available; the retained manifest makes an isolated v119 build portable. The old authoring scripts and evidence are clearly separated under `inherited-v118/` and are not new build receipts.
 
-**E117.1 remains open:** the complete theorem pages of Ballico (1993), DOI `10.1002/mana.19931630102`, were not obtained. The manuscript and response do not infer disjointness or originality from this access failure. The broadened comparison with maximal-subalgebra, subalgebra-variety, polynomial-subalgebra, and generator-scheme results is recorded separately; it does not erase this open item.
+`evidence/DIAGNOSTICS.json` records exact finite regression tests, not mathematical proof certification. `evidence/BUILD_RECEIPT.json` and `evidence/SOURCE_MANIFEST.json` describe only the actual local build and its content hashes. They do not claim a remote publication, an independent proof audit, priority certification, or journal acceptance.
+
+## Outstanding scholarly item
+
+E118.1 remains open: complete theorem text of Ballico (1993), DOI `10.1002/mana.19931630102`, was not obtained. The manuscript does not infer non-anticipation from this access failure. All other item dispositions and the exact scope of the new results are recorded in the response.
+
+## Repository application
+
+The top-level delivery package supplies an application script and a Git patch. The script starts from the pinned R118 review commit, creates only the named new revision branch and adds the v119 directory plus its new root index. It requires a clean checkout and refuses to overwrite an existing branch or revision directory. Its optional `--push` flag uses the user's own configured GitHub credentials. No existing branch is merged, force-pushed or rewritten by this package.
