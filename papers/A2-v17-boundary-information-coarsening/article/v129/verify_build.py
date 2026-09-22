@@ -23,7 +23,7 @@ checks = {
     "two_short_exact_sequence_repair_present":
         "0\\longrightarrow I_q" in relative and
         "0\\longrightarrow K_q" in relative and
-        "flatness of the final cokernel" in relative,
+        "final cokernel" in relative and "image module" in relative,
     "constructible_assassin_reference_present": "Tag 05KR" in relative,
     "corank4_invariant_projection_present":
         "Equivariance of the corank-four residual ideal" in proof and
