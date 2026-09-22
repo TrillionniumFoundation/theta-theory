@@ -1,0 +1,54 @@
+name: GTF-I v10 marked compact revision
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v10-marked-compact-2026-09-23
+    paths:
+      - 'papers/GTF-I-v10-marked-compact/**'
+      - '.github/workflows/gtf-i-v10-marked-compact.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: gtf-i-v10-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Preserve source checkout
+        run: |
+          mkdir -p /tmp/gtf-v10-artifacts
+          tar --exclude=.git -czf /tmp/gtf-v10-artifacts/source-checkout.tar.gz .
+      - name: Install typesetting dependencies
+        if: ${{ hashFiles('papers/GTF-I-v10-marked-compact/build.py') != '' }}
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended poppler-utils
+      - name: Verify and build the revision
+        if: ${{ hashFiles('papers/GTF-I-v10-marked-compact/build.py') != '' }}
+        run: python3 papers/GTF-I-v10-marked-compact/build.py
+      - name: Publish only generated v10 evidence
+        if: ${{ hashFiles('papers/GTF-I-v10-marked-compact/evidence/BUILD_RECEIPT.json') != '' }}
+        run: |
+          git config user.name 'GTF revision build'
+          git config user.email 'gtf-build@users.noreply.github.com'
+          git add -f papers/GTF-I-v10-marked-compact/paper.pdf papers/GTF-I-v10-marked-compact/complete-development.pdf papers/GTF-I-v10-marked-compact/evidence
+          if ! git diff --cached --quiet; then
+            git commit -m 'publish(GTF-I v10): exact-source PDFs and verification evidence'
+            git push origin HEAD:revision/general-theta-foundations-i-v10-marked-compact-2026-09-23
+          fi
+      - name: Upload source and build products
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gtf-i-v10-${{ github.sha }}
+          path: |
+            /tmp/gtf-v10-artifacts/source-checkout.tar.gz
+            papers/GTF-I-v10-marked-compact/paper.pdf
+            papers/GTF-I-v10-marked-compact/complete-development.pdf
+            papers/GTF-I-v10-marked-compact/evidence
+          retention-days: 14
