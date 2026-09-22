@@ -1,0 +1,261 @@
+\section{Posterior orbits and finite-state realization}\label{sec:v4-orbits}
+
+Let $E$ and $\mathcal Y$ be standard Borel spaces, let $\mu$ be a
+probability on $E$, and let $K$ be a probability kernel from $E$ to
+$\mathcal Y$. Let $T:E\to E$ and $f:E\to\R^r$ be Borel, with
+$\|f\|\le F<\infty$. At each renewal a fresh pair $(U,Y)$ has law
+$\mu(du)K(u,dy)$. The observer acquires $Y$, not necessarily $U$.
+Between renewals the hidden state follows $T$. The successive cycle
+lengths $L_0,L_1,\ldots$ are independent copies of a positive
+integer-valued random variable $L$, independent of all acquired pairs,
+and
+\begin{equation}
+ \ell=\E L<\infty,\qquad s_k=\Pp(L>k),\qquad
+ w_k=\frac{s_k}{\ell},\qquad W(n)=\sum_{k\ge n}w_k.                 \label{eq:v4-renewal-weights}
+\end{equation}
+Thus $\sum_{k\ge0}w_k=1$. There is an acquisition at time $0$.
+Subsequent acquisition times are $\tau_j=L_0+\cdots+L_{j-1}$.
+At time $t=\tau_j+k<\tau_{j+1}$, the target is $f(T^kU_j)$.
+The renewal indicator is observed, but the length of the current cycle
+is not announced at its beginning.
+
+An $M$-state observer retains $I_t\in\{1,\ldots,M\}$. Its update is
+an arbitrary Borel stochastic kernel of the preceding state, absolute
+time, renewal indicator, and, at a renewal only, the new observation.
+After the update, the decoder has the state, absolute time, and
+independent public randomness. It does not separately retain the last
+observation, the renewal indicator, or the renewal age. Private
+randomness is allowed, but any data-dependent persistent register,
+including an age or a random-seed position, is part of $I_t$.
+Program descriptions, real constants, and transient computation are
+not charged to $M$. This is a persistent-cardinality constraint,
+not a bound on total computational storage.
+
+Choose simultaneous Borel versions
+\begin{equation}
+ m_k(y)=\E[f(T^kU)\mid Y=y],\qquad
+ Z(y)=\bigl(\sqrt{w_k}\,m_k(y)\bigr)_{k\ge0}\in
+ \mathcal H:=\ell^2(\N_0;\R^r).                                  \label{eq:v4-posterior-orbit}
+\end{equation}
+A countable union of null sets makes these versions simultaneous;
+values there may be set to zero. Write
+\begin{equation}
+ e_M^2(Z)=\inf_{c_1,\ldots,c_M\in\mathcal H}
+       \E\min_{i\le M}\|Z(Y)-c_i\|_{\mathcal H}^2,
+ \qquad
+ B=\sum_{k\ge0}w_k\E\|f(T^kU)-m_k(Y)\|^2.                       \label{eq:v4-bayes-floor}
+\end{equation}
+The number $B$ is the unavoidable error of the complete acquisition
+history. Let $A_t=t-\max\{\tau_j:\tau_j\le t\}$, and let $Y_t^*$
+be the observation at that last renewal. Define
+\begin{align}
+ E_M^{\rm av}
+ &=\inf_{\mathcal A}\limsup_{N\to\infty}\frac1N
+       \sum_{t=0}^{N-1}\E\|m_{A_t}(Y_t^*)-\widehat f_t\|^2,
+                                                               \label{eq:v4-excess-risk}\\
+ R_M^{\rm av}
+ &=\inf_{\mathcal A}\limsup_{N\to\infty}\frac1N
+       \sum_{t=0}^{N-1}\E\|f(X_t)-\widehat f_t\|^2.
+\end{align}
+Here and below an infimum is over the specified machine class; it need
+not be attained. All statements about $e_M^2$ use squared distortion.
+
+\begin{lemma}[Kernel realization]\label{lem:v4-kernels}
+The preceding machine class can be realized using a countable family
+of independent uniform random variables, independent of the experiment.
+After fixing this family and the history before a renewal, the first
+$n$ outputs along a continuation with no further renewal belong to a
+set of at most $M$ vectors in $(\R^r)^n$.
+\end{lemma}
+\begin{proof}
+For a finite-state transition kernel the inverse cumulative
+probabilities give a Borel function of the input and one uniform
+variable. For a general standard Borel output, embed its range as a
+Borel subset of $[0,1]$, use the measurable inverse distribution
+function, and map back; a fixed default value handles the null
+exceptional set. Applying this construction to each time-indexed
+kernel uses only countably many uniforms. The product probability
+space supplies them jointly. Public uniforms are included in the
+same construction, with their prescribed sharing between update and
+decoder. Once they are fixed, the update and decoder are deterministic.
+Given the state immediately after a renewal, the no-renewal input
+sequence and absolute times determine the subsequent states and
+outputs. There are only $M$ possible starting states. The argument
+uses a fixed time-indexed family, not an uncharged data-dependent
+position in a random tape.
+\end{proof}
+
+\begin{theorem}[Posterior-orbit converse and realization]\label{thm:v4-orbit}
+For the experiment just defined,
+\begin{equation}
+ R_M^{\rm av}=B+E_M^{\rm av},\qquad
+ e_M^2(Z)\le E_M^{\rm av}.                                      \label{eq:v4-orbit-lower}
+\end{equation}
+In fact every randomized, time-dependent $M$-state machine satisfies
+the latter lower bound with its $\liminf$ time-average excess loss.
+Conversely, for all integers $N,n\ge1$,
+\begin{equation}
+ E_{Nn+1}^{\rm av}
+ \le e_N^2(Z^{<n})+F^2W(n)
+ \le e_N^2(Z)+F^2W(n),                                          \label{eq:v4-orbit-upper}
+\end{equation}
+where $Z^{<n}$ is the first $n$ coordinates of $Z$.
+The upper bound is realized, up to an arbitrary positive error, by a
+stationary deterministic machine with states
+$\{1,\ldots,N\}\times\{0,\ldots,n-1\}\cup\{\partial\}$.
+In particular, for $M\ge2$,
+\begin{equation}
+ e_M^2(Z)\le E_M^{\rm av}
+ \le\inf_{1\le n\le M-1}
+ \left\{e_{\lfloor(M-1)/n\rfloor}^2(Z)+F^2W(n)\right\}.          \label{eq:v4-orbit-sandwich}
+\end{equation}
+\end{theorem}
+\begin{proof}
+Conditional on the full acquired history, the renewal indicators, and
+independent coding randomness, the conditional mean of $f(X_t)$ is
+$m_{A_t}(Y_t^*)$. Indeed, the current acquired pair is independent of
+previous cycles, and survival of its cycle is independent of that
+pair. Conditional orthogonality gives, for every machine,
+\[
+ \E\|f(X_t)-\widehat f_t\|^2
+ =\E\|f(X_t)-m_{A_t}(Y_t^*)\|^2
+  +\E\|m_{A_t}(Y_t^*)-\widehat f_t\|^2.
+\]
+The Ces\`aro renewal-reward identity makes the average of the first
+term tend to $B$. Bounded rewards and $\E L<\infty$ suffice, including
+arithmetic or deterministic cycle lengths. This proves the equality
+in \eqref{eq:v4-orbit-lower}.
+
+Fix $n$. At a renewal at time $s$, condition on the past and then use
+Lemma~\ref{lem:v4-kernels}. Along the first $n$ no-renewal steps the
+outputs are chosen from at most $M$ decoder strings. The new $Y$ has
+its original marginal law under this conditioning. Since survival to
+age $k$ has probability $s_k$, the expected excess reward in those
+steps is at least
+\[
+ \inf_{c_1,\ldots,c_M}\E\min_i
+       \sum_{k<n}s_k\|m_k(Y)-c_{i,k}\|^2
+ =\ell e_M^2(Z^{<n}).
+\]
+Randomizing the selection of a string cannot reduce its pointwise
+minimum. Integrating the conditioned variables preserves the bound.
+Let $u_s=\Pp(s\text{ is a renewal})$. Rewards arising from distinct
+last renewals are disjoint. Summing over $0\le s\le N-n$ therefore
+gives a lower bound
+$\ell e_M^2(Z^{<n})\sum_{s=0}^{N-n}u_s$ for the total excess loss up
+to time $N-1$. The elementary renewal theorem, in its Ces\`aro form,
+gives $N^{-1}\sum_{s<N}u_s\to1/\ell$. Consequently the lower limit
+of average loss is at least $e_M^2(Z^{<n})$.
+
+Truncation cannot increase quantization error. Conversely, extending
+a codebook for the truncation by zero gives
+\[
+ e_M^2(Z^{<n})\le e_M^2(Z)
+ \le e_M^2(Z^{<n})+F^2W(n).
+\]
+Letting $n\to\infty$ proves the converse, without a compactness
+assumption on the orbit image or a restriction to on-image centres.
+
+For the upper bound choose an $\varepsilon$-optimal $N$-centre
+codebook for $Z^{<n}$. Coordinatewise projection permits its $k$th
+coordinate to be written $\sqrt{w_k}c_{i,k}$ with $\|c_{i,k}\|\le F$;
+a zero-weight coordinate is immaterial. At a renewal, choose the first
+nearest centre, a Borel choice, and set the state to $(i,0)$.
+At a nonrenewal change $(i,k)$ to $(i,k+1)$ until $k=n-1$, after
+which the state is $\partial$. The latter state is absorbing between
+renewals. Decode $(i,k)$ as $c_{i,k}$ and $\partial$ as zero.
+The average excess reward is at most
+$e_N^2(Z^{<n})+\varepsilon+F^2W(n)$ by the same renewal-reward
+identity. This is an actual finite-state update; its age information
+is precisely the charged second coordinate. Let $\varepsilon\downarrow0$.
+Unused states are permitted, which proves the last assertion.
+\end{proof}
+
+\begin{corollary}[Invariance of the quantization exponent]\label{cor:v4-exponent}
+Suppose $W(n)\le A\exp(-cn^\beta)$ for some $A,c,\beta>0$, and
+\begin{equation}
+ \alpha=\lim_{M\to\infty}\frac{-\log e_M^2(Z)}{\log M}
+ \quad\hbox{exists in }(0,\infty).
+\end{equation}
+Then
+\begin{equation}
+ \lim_{M\to\infty}\frac{-\log E_M^{\rm av}}{\log M}=\alpha.
+                                                               \label{eq:v4-exponent}
+\end{equation}
+If $e_M^2(Z)\asymp M^{-\alpha}$, more explicitly
+\[
+ c_1M^{-\alpha}\le E_M^{\rm av}
+ \le C_1M^{-\alpha}(\log M)^{\alpha/\beta}\qquad(M\ge2),
+\]
+with constants depending on the displayed hypotheses.
+For geometric renewals with parameter $p>0$, the exponent conclusion
+also holds for the infimum of the supremum-in-time excess risk.
+\end{corollary}
+\begin{proof}
+Choose any $s>\alpha$ and
+$n=\lceil((s/c)\log M)^{1/\beta}\rceil$. Then
+$\log\lfloor(M-1)/n\rfloor/\log M\to1$, whereas $W(n)\le AM^{-s}$.
+Apply \eqref{eq:v4-orbit-sandwich}; the two logarithmic bounds converge
+to $\alpha$. Under the two-sided power bound the same substitution
+gives the explicit inequalities, enlarging constants for finitely
+many small $M$.
+
+For geometric renewals put $q=1-p$, so $w_k=pq^k$. A stationary
+reset-based machine has a nonnegative age-loss sequence $d_k$. With
+an initial acquisition at zero its loss at time $t$ is
+\[
+ p\sum_{k<t}q^kd_k+q^td_t\le p^{-1}\sum_{k\ge0}w_kd_k.
+\]
+Use the upper machines in Theorem~\ref{thm:v4-orbit}; the converse
+follows because a supremum is at least the lower time-average.
+\end{proof}
+
+The corollary is an exponent theorem, not a uniform equivalence of
+errors for arbitrary orbits. It applies to arbitrary Borel dynamics
+and arbitrary noisy or partial reset observations. Its geometric
+invariant is the quantization exponent of the \emph{posterior} future
+orbit; the tail assumption controls the cost of making a finite
+codebook causal. Computing that invariant in a particular dynamical
+system remains a separate mathematical task.
+
+\begin{proposition}[Exact autonomous realization]\label{prop:v4-closure}
+Let a ray mean a sequence $c=(c_k)_{k\ge0}$ in the ball
+$\{z\in\R^r:\|z\|\le F\}$. Among stationary deterministic machines,
+the optimal average excess risk is
+\begin{equation}
+ \inf_{\substack{|\mathcal C|\le M\\ S\mathcal C\subseteq\mathcal C}}
+       \E\min_{c\in\mathcal C}\sum_{k\ge0}w_k\|m_k(Y)-c_k\|^2,
+ \qquad (Sc)_k=c_{k+1}.                                        \label{eq:v4-closed-codebooks}
+\end{equation}
+The reset update may depend on the previous state; allowing that
+dependence does not alter this infimum.
+\end{proposition}
+\begin{proof}
+For a fixed autonomous no-renewal update $a$ and decoder $d$, a state
+$i$ determines the ray $(d(a^ki))_{k\ge0}$. These at most $M$ rays
+are closed under $S$. Any reset rule selects one of them, possibly
+using the previous state; its reward is no smaller than the pointwise
+minimum over all the rays. Conversely, for a finite shift-closed set,
+retain the chosen ray as the state, apply $S$ on a nonrenewal, and
+decode its first coordinate. The first nearest ray is a Borel reset
+rule independent of the previous state. Renewal reward proves the
+formula. This is a characterization of the stated autonomous class,
+not an assertion that all optimal randomized nonstationary machines
+are autonomous.
+\end{proof}
+
+\begin{example}[Orbit cardinality does not include an age register]\label{ex:v4-gap}
+Let $E=\{0,1\}$, $U=1$ deterministically, $T(0)=T(1)=0$, and
+$f(x)=x$. Use geometric renewals with $0<p<1$ and a constant reset
+observation. The posterior orbit is the single ray $(1,0,0,\ldots)$,
+so $e_1^2(Z)=0$ and $B=0$. Nevertheless a one-state decoder, having
+only absolute time and independent public coins, does not know
+whether a renewal occurred at that time. For every $t\ge1$ the
+minimum squared error is $p(1-p)$, since the target is an independent
+Bernoulli($p$) renewal indicator. Two states suffice for zero error:
+write $1$ at each renewal and $0$ otherwise. Thus the orbit converse
+cannot be reversed with the same cardinality without a realizability
+condition. The finite-chain overhead in \eqref{eq:v4-orbit-upper}
+and the closure in \eqref{eq:v4-closed-codebooks} address a genuine
+obstruction.
+\end{example}
