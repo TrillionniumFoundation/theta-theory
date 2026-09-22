@@ -173,7 +173,7 @@ def preservation() -> dict:
             'missing_old_labels':[]}
 
 def main() -> None:
-    spec=importlib.util.spec_from_file_location('v118_diagnostics',HERE/'inherited-v118/verify_revision.py')
+    spec=importlib.util.spec_from_file_location('v118_diagnostics',HERE.parent/'v118'/'verify_revision.py')
     inherited=importlib.util.module_from_spec(spec); spec.loader.exec_module(inherited)
     data={'kind':'exact finite regression diagnostics, not proof certification',
           'primary':primary_checks(), 'incidence':incidence_check(),
