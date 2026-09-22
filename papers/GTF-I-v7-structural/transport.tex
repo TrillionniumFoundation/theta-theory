@@ -1,0 +1,119 @@
+\section{Causal morphisms and charged approximation}\label{sec:v7-transport}
+A resource signature specifies ordered coordinates, for example
+persistent cardinality, numerical precision, transient workspace,
+program description, preparation count and physical time. A budget
+transformer is a monotone map between two such signatures, accompanied
+by an actual implementation. A coordinate may explicitly be unlimited.
+The persistent-cardinality results below leave fixed programs, fixed
+real constants, time and transient computation unlimited unless a more
+specific implementation is given. There is no claim that these resources
+are equivalent.
+
+A causal simulation from an experiment $\mathcal E$ to $\mathcal F$
+consists of a source controller, a causal transducer and its initialized
+state. For every target policy the joint construction must produce the
+target observation/cost history within a declared parameter-uniform
+total-variation error. The transducer never sees the unknown parameter
+or the unobserved physical state. Resource bounds are imposed on this
+joint construction, not just on the terminal observation kernel. We
+use $\|P-Q\|_{\rm TV}=\sup_A|P(A)-Q(A)|$.
+
+\begin{theorem}[Typed simulation and recursive approximation]
+\label{thm:v7-transport}
+The following statements hold.
+
+\smallskip\noindent
+\textup{(i)} Serial causal simulations of errors $\epsilon_1,\epsilon_2$
+and budget transformers $\rho_1,\rho_2$ compose with error at most
+$\epsilon_1+\epsilon_2$ and transformer $\rho_1\circ\rho_2$.
+A simulator with $K$ persistent states and a target observer with $M$
+states can be run with $KM$ persistent states. For losses in $[0,L]$,
+the risk changes by at most $L(\epsilon_1+\epsilon_2)$. Other resource
+coordinates are transformed according to the supplied implementations.
+The identity simulation has zero error and the identity transformer.
+Independent parallel simulations have additive TV error and the product
+register, with preparations and other costs charged by their joint implementation.
+
+\smallskip\noindent
+\textup{(ii)} Suppose the true predictive state lies in a metric space
+$(S,d)$ and updates by $s_t=F_t(s_{t-1},y_t,a_t)$. For all reports and
+actions suppose $F_t$ is $\rho$-Lipschitz in its state, $\rho<1$.
+Let an implementable approximate update $\widetilde F_t$ have local
+error at most $\eta_t$, and let $Q_t:S\to C_t$ be a measurable finite
+quantizer with radius $\epsilon_t$. The register
+\begin{equation}
+ \widehat s_t=Q_t\widetilde F_t(\widehat s_{t-1},y_t,a_t) 
+                                                               \label{eq:v7-recursion}
+\end{equation}
+has at most $|C_t|$ states at time $t$ and, on every common observation
+path,
+\begin{equation}
+ d(s_t,\widehat s_t)\le \rho^t d(s_0,\widehat s_0)
+       +\sum_{j=1}^t\rho^{t-j}(\epsilon_j+\eta_j)=:b_t. 
+                                                               \label{eq:v7-error}
+\end{equation}
+A data-dependent persistent numerical residue must be part of $C_t$;
+it cannot be placed in an uncharged side register.
+If the report kernels are $L_0$-Lipschitz in total variation as functions
+of the predictive state, the length-$n$ simulated history differs by at
+most $L_0\sum_{t<n}\E b_t$. The same statement holds up to a bounded
+stopping time, with the stopped sum. If the true conditional mean is
+$g(s_t)$ with $g$ $L_1$-Lipschitz into a Hilbert space, its implemented
+prediction has Bayes excess at most $L_1^2\E b_t^2$.
+\end{theorem}
+\begin{proof}
+Compose the two transducers on their joint initialized state. Applying a
+Markov kernel contracts total variation, so the triangle inequality gives
+the sum of errors, uniformly over the policy and parameter for which
+the two certificates were supplied. The joint register is the Cartesian
+product. This proves the cardinality bound, and integration of a loss
+with range $[0,L]$ proves the risk bound. The identity is the unchanged history. For independent parallel laws,
+insert one product factor at a time and use TV contraction to obtain
+the same sum bound. The composition order of the
+budget maps follows from first realizing the target in the intermediate
+experiment and then realizing that implementation in the source.
+
+For (ii), insert $F_t(\widehat s_{t-1},y_t,a_t)$ between the two updates.
+Contraction, the local defect and the quantization radius give
+$d(s_t,\widehat s_t)\le\rho d(s_{t-1},\widehat s_{t-1})+
+\eta_t+\epsilon_t$. Induction proves \eqref{eq:v7-error}.
+For the law comparison, telescope the products of the history kernels,
+replacing one kernel at a time. The prefix before the replaced kernel
+is distributed according to the true experiment; its integrated local
+TV error is at most $L_0\E b_t$. All suffix kernels are contractions in
+TV. Summing proves the bound. An absorbing stopped state proves the
+stopped version by the identical calculation. The policy is evaluated
+on the same history in each local comparison: no continuity of a
+possibly discontinuous policy is presumed. Finally apply conditional
+orthogonality as in Proposition~\ref{prop:v7-bayes} and the Lipschitz
+bound for $g$.
+\end{proof}
+
+\begin{corollary}[Resource transport of an attainable profile]
+\label{cor:v7-resource-profile}
+If an $M$-state target observer has risk $R_M$ and a $K$-state causal
+simulation has error $\epsilon$ for its bounded decision problem, then
+the source has a $KM$-state observer of risk at most $R_M+L\epsilon$.
+Two simulations give the corresponding two directed inequalities; they
+need not preserve the same cardinality. A $K$-valued decoder-side event
+can always be absorbed into a register at a factor $K$, but a continuous
+side observation admits no such finite-factor assertion in general.
+\end{corollary}
+\begin{proof}
+Use the product construction. For the finite event store its current
+value as the second register coordinate. For the last assertion, an
+exact uniform real observation supplied directly to a decoder has zero
+squared estimation error with one otherwise empty state. If it is
+available only before an $M$-label encoding, scalar quantization has
+error $1/(12M^2)>0$. Thus no finite factor simulates that side interface
+for all accuracies.
+\end{proof}
+
+The theorem joins quotient approximation to experiment comparison.
+Contractivity is a property to be verified on the true quotient, and
+$Q_t$ is an executable representation of it. A finite-dimensional
+formula for the conditional mean is sufficient for one application,
+but is not a hypothesis of the theorem. In
+Section~\ref{sec:v7-measure} the true state is an entire probability
+measure. In the next section a different structure replaces metric
+contraction by an exact finite-tree update.

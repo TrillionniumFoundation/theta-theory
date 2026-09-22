@@ -1,0 +1,277 @@
+\section{A structural theorem for predictive trees}\label{sec:v7-trees}
+\subsection{Local hypotheses and the finite profile}
+Let $\mathcal L$ be a pruned factorial language on a finite alphabet of
+size $b\ge2$. Thus prefixes and suffixes of legal words are legal, every
+word has an infinite continuation, and only legal children occur in its
+rooted tree. Write $[v]$ for a cylinder in the boundary $\Omega$ and
+$\emptyw$ for the empty word. Assume that along any branch there are at
+most $U$ consecutive vertices with only one legal successor. This
+condition allows unary vertices but excludes an infinite deterministic
+branch. Let $\mu$ be a stationary probability on $\Omega$, positive on
+every legal cylinder, and put $p_v=\mu[v]$.
+
+A predictive energy is a positive family $a_v$, with $a_{\emptyw}=1$.
+Put $D_v=(a_v/p_v)^{1/2}$. The following are the hypotheses of the
+structural theorem. There are constants $a_->0$, $\rho<1$, and
+$c_0,C_0>0$ such that
+\begin{align}
+ a_-a_v\le a_{vi}\le\rho a_v,
+ &\qquad\sum_{i:\,vi\in\mathcal L}a_{vi}\le\rho a_v,
+                                                   \label{eq:v7-tree-child}\\
+ a_{uv}<a_v\quad(u\ne\emptyw),
+ &\qquad D_{vi}\le D_v.                             \label{eq:v7-tree-suffix}
+\end{align}
+These statements concern legal words only. A bounded Borel map $Z$ from
+$\Omega$ into a separable Hilbert space satisfies
+\begin{align}
+ \diam Z([v])&\le C_0D_v,                            \label{eq:v7-tree-diameter}\\
+ \|Z(\omega)-Z(\omega')\|&\ge c_0D_u
+ \quad\text{if $u$ is their longest common prefix}.  \label{eq:v7-tree-separation}
+\end{align}
+The image may be infinite dimensional. Separation is an explicit
+geometric hypothesis, not a consequence of the word notation.
+
+Starting with the root, repeatedly split a leaf of maximal energy into
+\emph{all} its legal children. Fix a tie rule. Let $\mathcal T_N$ be the
+last tree in this sequence with at most $N$ leaves, $\mathcal P_N$ its
+leaf cut, and
+\begin{equation}
+             G_N=\sum_{v\in\mathcal P_N}a_v.         \label{eq:v7-greedy}
+\end{equation}
+A split at a unary vertex is an actual step. Finiteness of $\mathcal T_N$
+will follow below. The construction is a mathematical finite algorithm;
+computable implementation of arbitrary real energies is an additional
+input, not part of their Borel specification.
+
+There are two causal interpretations of these data.
+
+\smallskip\noindent
+\textbf{Deletion model.} Independent acquisitions $\omega\sim\mu$ occur
+at renewal times of independent positive integer length $L$, with
+$\E L<\infty$. The acquired sequence is observed exactly. At age $k$
+the desired output is $g(\sigma^k\omega)$, where $g$ is bounded and
+Hilbert valued. Write
+\[
+ w_k=\Pp(L>k)/\E L,\quad W(n)=\sum_{k\ge n}w_k,
+ \quad Z(\omega)=(\sqrt{w_k}g(\sigma^k\omega))_{k\ge0}.
+\]
+In addition to \eqref{eq:v7-tree-child}--\eqref{eq:v7-tree-separation},
+assume the local oscillation bound
+\begin{equation}
+ \sum_{k<|v|}w_k\bigl(\osc_{[v_{k:}]}g\bigr)^2
+       +4\|g\|_\infty^2W(|v|)\le C_1D_v^2.          \label{eq:v7-deletion-osc}
+\end{equation}
+A register sees the renewal event only during its update; the decoder
+receives neither that event nor a stored raw observation for free.
+
+\smallskip\noindent
+\textbf{Insertion model.} Let $(Y_t)_{t\in\mathbb Z}$ be a stationary
+finite-alphabet observed process whose reversed past
+$\omega_t=(Y_t,Y_{t-1},\ldots)$ has law $\mu$ and language $\mathcal L$.
+For a square-integrable stationary Hilbert target $U_t$, suppose
+\begin{equation}
+ m_t=\E[U_t\mid Y_s:s\le t]=Z(\omega_t),\qquad
+ B=\E\|U_t-m_t\|^2.                                 \label{eq:v7-past-mean}
+\end{equation}
+The finite register may start at zero with a fixed state; it is not
+initialized with the infinite past. Infinite stationary pasts here
+specify the reference prediction and its law. A finite warm-up is
+included in the limiting average. No renewal or independent-observation
+assumption is imposed in this interpretation.
+
+For either model let $R_M$ be the infimum, over all $M$-value registers
+with causal standard Borel update and decoding kernels, of the upper
+limiting expected average squared loss. Absolute time and independent
+coding randomization are permitted. In the insertion model put
+$E_M=R_M-B$.
+
+\begin{theorem}[Predictive-tree realization in two orientations]
+\label{thm:v7-tree}
+Under \eqref{eq:v7-tree-child}--\eqref{eq:v7-tree-separation},
+\begin{equation}
+                 cG_M\le e_M^2(Z)\le CG_M.           \label{eq:v7-tree-static}
+\end{equation}
+Every complete greedy tree is suffix closed. A tree with $L$ leaves has
+exactly $1+\sum_{v\,\mathrm{internal}}d^+(v)$ vertices, and at most
+$(U+1)(2L-1)$ vertices; all of them may be used as designated states.
+For every fixed $B_0\ge1$, $G_{\lceil B_0M\rceil}\asymp_{B_0}G_M$.
+
+In the deletion model, with \eqref{eq:v7-deletion-osc},
+\begin{equation}
+              cG_M\le e_M^2(Z)\le R_M\le CG_M.       \label{eq:v7-tree-delete}
+\end{equation}
+In the insertion model,
+\begin{equation}
+              cG_M\le e_M^2(Z)\le E_M\le CG_M.       \label{eq:v7-tree-insert}
+\end{equation}
+The converses apply to the lower limiting average of each randomized,
+time-dependent observer. The upper bounds are achieved in order by
+stationary deterministic updates. In particular a logarithmic age or
+history multiplier is not required. Constants depend on the displayed
+structural hypotheses, not on the register budget.
+\end{theorem}
+
+\subsection{Balance, dilation and exact closure}
+\begin{lemma}[Greedy balance]\label{lem:v7-balance}
+For all sufficiently large $N$, $N/b\le |\mathcal P_N|\le N$. If
+$\theta_N$ is the largest energy of a current leaf, then
+\begin{equation}
+        a_-\theta_N\le a_v\le\theta_N
+                      \quad(v\in\mathcal P_N).       \label{eq:v7-balance}
+\end{equation}
+The trees are finite and their profiles have the fixed-dilation property
+in Theorem~\ref{thm:v7-tree}.
+\end{lemma}
+\begin{proof}
+Suppress unary vertices in any finite complete tree. A rooted tree with
+$L$ leaves and no unary internal vertex has at most $2L-1$ vertices,
+since its number of edges is the sum of its internal outdegrees. Each
+vertex of the suppressed tree accounts for itself and at most $U$
+unary vertices on its incoming path, including the initial root path.
+Thus the original tree has at most $(U+1)(2L-1)$ vertices. An infinite
+sequence of splits with bounded leaf number is impossible, proving
+finiteness. The split following $\mathcal T_N$ crosses the budget and
+adds at most $b-1$ leaves. Hence $|\mathcal P_N|>N-b+1$.
+
+The maximal leaf energy never increases. Every present leaf was born
+with energy at least $a_-$ times an earlier maximal energy. This proves
+\eqref{eq:v7-balance}, including any unary splits. Set $\ell=U+1$.
+Every vertex has at least two distinct descendants at depth $\ell$, and
+at least $2^j$ at depth $\ell j$. Choose $j$ with $2^j>b(B_0+2)$.
+If the later maximal energy at budget $\lceil B_0N\rceil$ were less
+than $a_-^{\ell j+1}\theta_N$, every original leaf would have been split
+through all these $\ell j$ levels: all intervening vertices have energy
+at least that threshold. The resulting number of leaves would exceed
+$\lceil B_0N\rceil$, a contradiction. Therefore the later maximum is
+at least a fixed multiple of $\theta_N$. Applying
+\eqref{eq:v7-balance} at the later budget gives
+$G_{\lceil B_0N\rceil}\ge c_{B_0}N\theta_N\ge c_{B_0}G_N$.
+Splitting decreases the energy sum by \eqref{eq:v7-tree-child}, giving
+the reverse inequality. Adjusting constants covers the finite initial
+range.
+\end{proof}
+
+\begin{lemma}[Two exact operations on one tree]\label{lem:v7-closure}
+Every proper suffix of an internal greedy-tree vertex is internal, and
+every suffix of any vertex is present. Consequently deletion of the
+first letter stays in the tree. If $v$ is a leaf and $iv$ is legal, then
+$iv$ has a leaf prefix in the same tree. It can therefore be updated
+by prepending $i$ and reading only the letters of $v$ until that leaf is
+reached.
+\end{lemma}
+\begin{proof}
+Suppose an internal word $uv$, $u\ne\emptyw$, is about to be split.
+If its suffix $v$ has not been split, some current leaf $t$ is a prefix
+of $v$. Child decrease and strict prefix-attachment decrease give
+$a_t\ge a_v>a_{uv}$, contrary to maximality. Thus the suffix is already
+internal. For a leaf $i_1\cdots i_n$ with $n\ge2$, its parent is
+internal; the suffix $i_2\cdots i_{n-1}$ of that parent is internal,
+so its legal child $i_2\cdots i_n$ is present. The one-letter case
+ends at the root. Iteration gives closure of every vertex.
+
+If there were no leaf prefix of $iv$, the complete tree would contain
+$iv$ as an internal vertex. Its suffix $v$ would then be internal by
+the first assertion, contradicting that it is a leaf. This proves the
+insertion assertion. Only legal children were used in either proof.
+\end{proof}
+
+\subsection{Static lower bound and the causal converse}
+\begin{lemma}[Arbitrary centres]\label{lem:v7-static}
+The bounds \eqref{eq:v7-tree-static} hold for arbitrary Hilbert-space
+centres, not only centres on $Z(\Omega)$.
+\end{lemma}
+\begin{proof}
+Choose one image point in each leaf cylinder to obtain
+$e_N^2(Z)\le C_0^2G_N$. For the lower bound use $\mathcal P_{4bM}$,
+which has at least $4M$ leaves for large $M$. The open tubes about
+$Z([v])$ of radii $\delta D_v$ are disjoint for a sufficiently small
+fixed $\delta>0$. Indeed for incomparable $v,v'$ their common prefix
+$u$ has $D_u\ge\max(D_v,D_{v'})$, and
+\eqref{eq:v7-tree-separation} separates the two images by at least
+$c_0D_u$. Take $2\delta<c_0$.
+
+At most $M$ of the tubes contain one of $M$ proposed centres. On every
+unoccupied cylinder the squared error is at least $\delta^2D_v^2$.
+Its integrated contribution is $\delta^2a_v$. By balance, the at least
+three-quarters unoccupied leaves carry at least $3a_-/4$ of the total
+energy sum. Thus $e_M^2(Z)\ge cG_{4bM}\ge c'G_M$ by
+Lemma~\ref{lem:v7-balance}. The finite initial range is harmless:
+\eqref{eq:v7-tree-separation} and positive cylinder masses at unbounded
+branching depths give infinitely supported image law, so every fixed
+finite-centre error is positive. Alternatively the same tube proof at
+a larger fixed cut proves that positivity directly.
+\end{proof}
+
+\begin{lemma}[Renewal converse]\label{lem:v7-renewal-converse}
+In the deletion experiment every randomized, nonstationary $M$-state
+observer has lower limiting average loss at least $e_M^2(Z)$.
+\end{lemma}
+\begin{proof}
+A standard Borel probability kernel is realized as a measurable function
+of its input and an independent uniform random variable
+\cite{Kallenberg2021}. Applying this at the countably many update and
+decode times gives an independent coding sequence. A data-dependent
+persistent position in such a sequence, if used, belongs to the charged
+state; the representation itself supplies no history channel.
+
+Condition on an acquisition at a fixed time, its pre-acquisition history,
+and the independent coding variables. The acquired $\omega$ still has
+law $\mu$. Along a hypothetical continuation with no new acquisition,
+each of the at most $M$ post-acquisition labels determines one output
+string. For a truncation at age $n$, the survival-weighted loss is
+therefore at least
+$\E L\,e_M^2(Z^{<n})$, where $Z^{<n}$ is the first $n$ coordinates
+of the weighted orbit. At a fixed physical time, events specifying the
+last acquisition are disjoint. Summing this bound over acquisition times
+at least $n$ before the end of a horizon and using the Ces\`aro renewal
+count gives lower limiting average at least $e_M^2(Z^{<n})$.
+For completeness, the elementary renewal theorem gives expected renewals
+per unit time tending to $1/\E L$; a fixed truncation removes at most
+$n$ terminal time indices, each with bounded contribution. No stationary
+coding rule is presumed.
+
+Finally $e_M^2(Z^{<n})\uparrow e_M^2(Z)$. Monotonicity follows by
+projection. The reverse limiting inequality follows by appending zero
+tails to an arbitrarily good truncated code: the extra mean squared
+norm is at most $\|g\|_\infty^2W(n)\to0$. This completes the proof.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:v7-tree}]
+The static assertion, finite count, dilation and suffix closure are
+proved above. In the deletion experiment retain every tree vertex as
+a designated state. At acquisition store the unique leaf prefix of
+$\omega$. Between acquisitions delete its first letter until the empty
+word is reached, and then keep that word. Choose a representative in
+each nonempty cylinder and output its $g$ value; use a fixed bounded
+output at the empty word. For an acquired leaf $v$ the weighted error
+is bounded by the left side of \eqref{eq:v7-deletion-osc}. Averaging
+and applying renewal reward gives at most $C_1G_N$.
+Lemma~\ref{lem:v7-renewal-converse} gives the unrestricted converse.
+
+For insertion, after reaching a leaf use the prepend-and-parse rule of
+Lemma~\ref{lem:v7-closure}. During initialization store the observed
+reversed word while it is internal, or its first leaf prefix when one
+appears. This uses only vertices of the same tree and after at most its
+maximum depth gives the correct leaf prefix of the full observed past.
+Decode a representative $Z$ value in that leaf cylinder. Its stationary
+excess loss is at most $C_0^2G_N$ by
+\eqref{eq:v7-tree-diameter} and conditional orthogonality. The finite
+warm-up has zero limiting average contribution. The converse holds at
+each time: freeze independent coding randomness, apply orthogonality
+against $m_t$, and use the at most $M$ decoder values to lower bound
+excess by $e_M^2(Z)$. Stationarity makes this the same number at every
+time, even for time-dependent decoders.
+
+In either orientation choose $N$ a fixed sufficiently small multiple
+of $M$, so that $(U+1)(2|\mathcal P_N|-1)\le M$. Dilation converts
+$G_N$ into $O(G_M)$ without a time-depth multiplier. One fixed state
+handles the remaining bounded range of budgets. This proves the two
+risk assertions.
+\end{proof}
+
+The static part of the proof uses familiar separated-cylinder
+quantization ideas \cite{KZ2017,Roychowdhury2014}. Maximal-energy
+prefix splitting is likewise a classical coding device
+\cite{Tunstall1967}. The additional conclusion is that a strict
+\emph{predictive} energy inequality makes the adaptive tree executable
+in both orientations, with its whole persistent state counted.

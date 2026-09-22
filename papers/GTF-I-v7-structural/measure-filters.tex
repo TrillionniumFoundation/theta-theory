@@ -1,0 +1,140 @@
+\section{Finite presentations of measure-valued filters}\label{sec:v7-measure}
+The preceding sharp example has a separated tree geometry. We next give
+a constructive approximation theorem requiring no such separation and
+no finite-dimensional exact posterior coordinate.
+
+\begin{lemma}[A finite Wasserstein presentation]\label{lem:v7-wasserstein-net}
+For $n\ge1$ let $\mathcal C_n$ consist of empirical probability measures
+with $n$ equally weighted atoms on $\{0,1/n,\ldots,1\}$. Then
+\begin{equation}
+ |\mathcal C_n|=\binom{2n}{n}\le4^n,
+ \qquad\sup_{\pi\in\mathcal P([0,1])}\Wone(\pi,Q_n\pi)
+                              \le\frac{3}{2n}         \label{eq:v7-measure-net}
+\end{equation}
+for a specified Borel quantizer $Q_n$.
+\end{lemma}
+\begin{proof}
+Take the generalized quantiles of $\pi$ at $(j-1/2)/n$, $1\le j\le n$,
+and round them to nearest grid points, breaking ties toward zero.
+Quantiles are Borel functions of a probability law. If $q$ is its
+monotone quantile function, the integral of the error from replacing
+$q$ by its midpoint value on each of the $n$ equal subintervals is at
+most $1/n$: bound each integral by its interval length times the
+oscillation and sum the monotone variations, at most one. Rounding
+adds at most $1/(2n)$. In one dimension $\Wone$ is the $L^1$ distance
+of quantile functions, giving the bound. The possible sorted lists are
+multisets of size $n$ from $n+1$ points, counted by $\binom{2n}{n}$.
+The binomial theorem bounds this by $4^n$.
+\end{proof}
+
+\begin{theorem}[A charged measure-valued recursive approximation]
+\label{thm:v7-filter}
+Let the actual filter obey $\pi_t=\Phi_{y_t,a_t}(\pi_{t-1})$ on
+$\mathcal P([0,1])$, and suppose every allowed update is
+$\rho$-contractive in $\Wone$, with $\rho<1$. Suppose an implementable
+update has $\Wone$ defect at most $\eta$. The initialized register
+\[
+ \widehat\pi_t=Q_n\widetilde\Phi_{y_t,a_t}(\widehat\pi_{t-1}),
+              \qquad\widehat\pi_0\in\mathcal C_n
+\]
+has at most $\binom{2n}{n}$ persistent values and satisfies, for every
+actual observation path,
+\begin{equation}
+ \Wone(\pi_t,\widehat\pi_t)
+ \le\rho^t+\frac{3/(2n)+\eta}{1-\rho}.                \label{eq:v7-measure-filter}
+\end{equation}
+This bounds the error of every $1$-Lipschitz test expectation, uniformly
+over the choice of test. Thus for $M\ge4$, $n=\lfloor\log M/\log4\rfloor$
+gives error $O((\log M)^{-1}+\eta)$ and squared error
+$O((\log M)^{-2}+\eta^2)$ after the initialization term. If these test
+expectations are conditional means, the latter is a Bayes excess bound.
+Report-law comparison additionally requires the report Lipschitz
+hypothesis of Theorem~\ref{thm:v7-transport}; it is not automatic from
+$\Wone$ contraction.
+\end{theorem}
+\begin{proof}
+Apply Theorem~\ref{thm:v7-transport} with the true metric state
+$S=\mathcal P([0,1])$, radius $3/(2n)$, and diameter one. The dual
+formula for $\Wone$ gives the assertion for every test; independent
+selection of a terminal test does not enlarge its bound. The codebook
+count and the logarithmic substitution are exact. Only an index of a
+codebook law persists between updates, not its exact unquantized
+posterior or a numerical residual.
+\end{proof}
+
+\subsection{A nonlinear physical realization}
+Let $B_t$ be independent fair bits and define
+\begin{equation}
+ h_0(x)=x/5+x^2/50,\qquad
+ h_1(x)=3/5+x/5+x^2/50,\qquad X_t=h_{B_t}(X_{t-1}).      \label{eq:v7-nonlinear-ifs}
+\end{equation}
+The observation $Y_t$ reports $B_t$ correctly with probability $3/4$,
+independently at each time. A permitted terminal probe $g:[0,1]\to[0,1]$
+returns a Bernoulli variable of probability $g(X_t)$; the tested family
+is $1$-Lipschitz probes and their bounded finite executable continuations.
+The actual update-report instrument on measures is
+\[
+ \mathsf T_y\pi=\tfrac12\{\tfrac34(h_y)_\#\pi+
+                         \tfrac14(h_{1-y})_\#\pi\}.
+\]
+Its mass is $1/2$, independent of the old state. The normalized filter is
+therefore
+\begin{equation}
+ \Phi_y\pi=\tfrac34(h_y)_\#\pi+\tfrac14(h_{1-y})_\#\pi. 
+                                                               \label{eq:v7-nonlinear-filter}
+\end{equation}
+
+\begin{corollary}[Nonlinear posterior, explicit register]
+\label{cor:v7-nonlinear}
+The actual measure-valued filter \eqref{eq:v7-nonlinear-filter} is
+$6/25$-contractive in $\Wone$. Theorem~\ref{thm:v7-filter} applies with
+$\eta=0$ to an exact rational implementation on $\mathcal C_n$.
+The model has no fixed-step nonzero common minorizer. For every integer
+$D\ge1$, the first $D$ polynomial moments do not determine their own
+exact next-step update on the space of all prior laws.
+\end{corollary}
+\begin{proof}
+The two images lie respectively in $[0,11/50]$ and $[3/5,41/50]$.
+Each derivative is between $1/5$ and $6/25$. Couple two old laws
+optimally and use the same branch draw in their mixtures; this gives
+$\Wone(\Phi_y\pi,\Phi_y\pi')\le(6/25)\Wone(\pi,\pi')$.
+For a codebook input, \eqref{eq:v7-nonlinear-filter} has at most $2n$
+atoms, at rational points with denominator dividing $50n^2$, with
+weights multiples of $1/(4n)$. Sorted cumulative weights give the exact
+quantiles, which are rounded back to the fixed grid. Thus no numerical
+limit is being hidden in $\eta=0$. The transient list of at most $2n$
+atoms is discarded; its entries and weights have $O(\log n)$-bit
+rational descriptions. The designated persistent object is the single
+codebook index. Approximate arithmetic instead obeys the separately
+charged $\eta$ bound of the theorem.
+
+After $k$ hidden transitions the law from a fixed $x$ has finite support
+$\{h_v(x):|v|=k\}$. For a second initial point $x'$, each equality
+$h_v(x')=h_u(x)$ excludes at most one $x'$, since $h_v$ is strictly
+increasing. Choose $x'$ outside this finite set. The two supports are
+disjoint, so a measure dominated by all $k$-step laws must be zero.
+
+For the moment assertion, the $D$th updated moment integrates
+$\tfrac34 h_y(x)^D+\tfrac14 h_{1-y}(x)^D$, a polynomial of degree $2D$
+with nonzero leading coefficient $50^{-D}$. It is not in the span of
+$1,x,\ldots,x^D$. Linear algebra on finitely many distinct points
+therefore supplies a signed measure annihilating this span but not the
+new polynomial. Its positive and negative parts have equal mass;
+normalizing them yields two prior probabilities with identical first
+$D$ moments and different updated $D$th moment. The argument is about
+ordinary finite moment closure, not the impossibility of a Borel
+encoding of measures by real numbers.
+\end{proof}
+
+The quotient here is genuinely the posterior law for the specified
+probe family: bounded Lipschitz functions separate probability measures
+on a compact interval, and constants do not affect that separation.
+Updates respect this quotient by \eqref{eq:v7-nonlinear-filter}. The
+advancing reports have the exact state-independent fair law, while a
+terminal Bernoulli probe has total-variation defect at most
+$\Wone(\pi_t,\widehat\pi_t)$. Thus the same finite presentation defines
+a causal experiment simulation with a controlled terminal error and an
+exactly charged register. Multiple probes would update the posterior
+again; no claim for an unverified enlarged probe protocol is implicit.
+This example connects positive instruments, predictive quotient,
+recursive approximation and resource transformation within one model.
