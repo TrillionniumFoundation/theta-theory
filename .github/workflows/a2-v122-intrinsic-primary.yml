@@ -1,0 +1,85 @@
+name: A2 v122 intrinsic primary publication
+on:
+  push:
+    branches:
+      - revision/a2-v122-intrinsic-primary-k3-boundaries-2026-09-23
+    paths:
+      - 'papers/A2-v17-boundary-information-coarsening/article/v122/**'
+      - '.github/workflows/a2-v122-intrinsic-primary.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: a2-v122-intrinsic-primary-publication
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/revision/a2-v122-intrinsic-primary-k3-boundaries-2026-09-23'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      REVISION: papers/A2-v17-boundary-information-coarsening/article/v122
+      BASE: papers/A2-v17-boundary-information-coarsening/article
+      TARGET_BRANCH: revision/a2-v122-intrinsic-primary-k3-boundaries-2026-09-23
+      SOURCE_COMMIT_SHA: ${{ github.sha }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          sparse-checkout: |
+            papers/A2-v17-boundary-information-coarsening/article/v120
+            papers/A2-v17-boundary-information-coarsening/article/v121
+            papers/A2-v17-boundary-information-coarsening/article/v122
+      - name: Verify the committed source matches the locally checked source
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, os
+          from pathlib import Path
+          d = Path(os.environ['REVISION'])
+          lock = json.loads((d / 'SOURCE_LOCK.json').read_text())
+          for relative, expected in lock['sha256'].items():
+              actual = hashlib.sha256((d / relative).read_bytes()).hexdigest()
+              if actual != expected:
+                  raise SystemExit(f'Source mismatch: {relative}: {actual} != {expected}')
+          print(f"Verified {len(lock['sha256'])} new/changed source files")
+          PY
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install mathematical build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+          python -m pip install sympy==1.14.0
+      - name: Run inherited and new exact checks and compile all editions
+        run: bash "$REVISION/build.sh"
+      - name: Confirm historical directories and mathematical source are unchanged
+        run: |
+          git diff --exit-code -- "$BASE/v120" "$BASE/v121"
+          python3 - <<'PY'
+          import hashlib, json, os
+          from pathlib import Path
+          d = Path(os.environ['REVISION'])
+          lock = json.loads((d / 'SOURCE_LOCK.json').read_text())
+          for relative, expected in lock['sha256'].items():
+              assert hashlib.sha256((d / relative).read_bytes()).hexdigest() == expected, relative
+          receipt = json.loads((d / 'evidence/BUILD_RECEIPT.json').read_text())
+          assert receipt['source_commit'] == os.environ['SOURCE_COMMIT_SHA']
+          assert not receipt['proof_certification'] and not receipt['priority_certification']
+          PY
+      - name: Publish source-bound PDFs and review evidence on this branch only
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add --sparse -f -- "$REVISION/paper.pdf" "$REVISION/geometry.pdf" "$REVISION/applications.pdf" "$REVISION/paper.log" "$REVISION/geometry.log" "$REVISION/applications.log" "$REVISION/evidence" "$REVISION/crossrefs"
+          git commit -m "A2 v122: referee PDFs and evidence built from $SOURCE_COMMIT_SHA [skip ci]"
+          git push origin "HEAD:$TARGET_BRANCH"
+      - name: Package complete reproducible referee bundle
+        run: |
+          tar -czf a2-v122-review-bundle.tar.gz "$BASE/v120" "$BASE/v121" "$REVISION" A2_REVISION_V122_INDEX.md
+      - uses: actions/upload-artifact@v4
+        with:
+          name: a2-v122-source-bound-review
+          path: a2-v122-review-bundle.tar.gz
+          retention-days: 30
