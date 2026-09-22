@@ -1,0 +1,75 @@
+name: GTF I v2 revision build
+on:
+  push:
+    branches: [revision/general-theta-foundations-i-v2-2026-09-22]
+    paths:
+      - .github/workflows/gtf-i-v2-revision.yml
+      - papers/GTF-I-v2/**
+      - '!papers/GTF-I-v2/paper.pdf'
+      - '!papers/GTF-I-v2/evidence/**'
+permissions:
+  contents: write
+concurrency:
+  group: gtf-i-v2-revision
+  cancel-in-progress: false
+jobs:
+  revision:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 1
+      - name: Export immutable mathematical sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/gtf-sources/base" "$RUNNER_TEMP/gtf-sources/a1" "$RUNNER_TEMP/gtf-sources/a2"
+          git fetch --depth=1 origin 01d3e78bd40985651f5b4ff24364e1dba5d481f0
+          git archive 01d3e78bd40985651f5b4ff24364e1dba5d481f0 papers/GTF-I-v1 foundations/general-theta reviews/general-theta-foundations-i-v1-2026-09-22 ROUND13_PROOF_DEPENDENCY_LEDGER.md | tar -x -C "$RUNNER_TEMP/gtf-sources/base"
+          git fetch --depth=1 origin 90465076589f5e5c69227d624f278c47744f1c1d
+          git archive 90465076589f5e5c69227d624f278c47744f1c1d papers/A1-english-v37-publication | tar -x -C "$RUNNER_TEMP/gtf-sources/a1"
+          git fetch --depth=1 origin 0c696736e6ec22259c730672f61ebd8ef0d95460
+          git archive 0c696736e6ec22259c730672f61ebd8ef0d95460 papers/A2-v17-boundary-information-coarsening/article/v112 | tar -x -C "$RUNNER_TEMP/gtf-sources/a2"
+      - name: Upload pinned source archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: gtf-i-v2-pinned-sources
+          path: ${{ runner.temp }}/gtf-sources
+          retention-days: 7
+      - name: Install TeX and PDF tools
+        if: hashFiles('papers/GTF-I-v2/main.tex') != ''
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-fonts-recommended lmodern poppler-utils
+      - name: Build the exact revision source
+        if: hashFiles('papers/GTF-I-v2/main.tex') != ''
+        run: python3 papers/GTF-I-v2/build.py
+      - name: Upload revision build
+        if: hashFiles('papers/GTF-I-v2/main.tex') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: gtf-i-v2-review-build
+          path: |
+            papers/GTF-I-v2/paper.pdf
+            papers/GTF-I-v2/evidence
+          retention-days: 30
+      - name: Publish generated products only to the same revision branch
+        if: hashFiles('papers/GTF-I-v2/main.tex') != ''
+        shell: bash
+        run: |
+          set -euo pipefail
+          branch='revision/general-theta-foundations-i-v2-2026-09-22'
+          test "$GITHUB_REF" = "refs/heads/$branch"
+          git fetch origin "$branch" --depth=1
+          test "$(git rev-parse FETCH_HEAD)" = "$GITHUB_SHA"
+          git add -f -- papers/GTF-I-v2/paper.pdf papers/GTF-I-v2/evidence
+          python3 - <<'PY'
+          import subprocess
+          paths=subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines()
+          assert paths and all(p=='papers/GTF-I-v2/paper.pdf' or p.startswith('papers/GTF-I-v2/evidence/') for p in paths), paths
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'GTF I v2: publish source-bound PDF and build evidence [skip ci]'
+          git push origin "HEAD:refs/heads/$branch"
