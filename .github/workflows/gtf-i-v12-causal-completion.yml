@@ -1,0 +1,132 @@
+name: GTF-I v12 causal completion
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v12-causal-completion-2026-09-23
+    paths:
+      - 'papers/GTF-I-v12-causal-completion/RELEASE_MANIFEST.json'
+      - '.github/workflows/gtf-i-v12-causal-completion.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: gtf-i-v12-causal-completion
+  cancel-in-progress: false
+jobs:
+  revise-and-verify:
+    if: github.ref == 'refs/heads/revision/general-theta-foundations-i-v12-causal-completion-2026-09-23'
+    runs-on: ubuntu-latest
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 32
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate and materialize exact revision sources
+        shell: bash
+        run: |
+          git merge-base --is-ancestor b5875ec059e24b328321dcca6d60065cbc3da643 HEAD
+          python - <<'PYCODE'
+          import base64, hashlib, json, lzma, pathlib, re
+          root = pathlib.Path('papers/GTF-I-v12-causal-completion')
+          previous = pathlib.Path('papers/GTF-I-v11-resource-comparison')
+          manifest = json.loads((root/'RELEASE_MANIFEST.json').read_text())
+          base = 'b5875ec059e24b328321dcca6d60065cbc3da643'
+          if manifest['base_commit'] != base or manifest['compression'] != 'lzma':
+              raise RuntimeError('Unexpected source base or codec')
+          encoded = []
+          for part in manifest['parts']:
+              if not re.fullmatch(r'RELEASE_PART_[0-9]{2}\.b64', part['file']):
+                  raise RuntimeError('Invalid transport part name')
+              data = (root/part['file']).read_bytes()
+              if hashlib.sha256(data).hexdigest() != part['sha256']:
+                  raise RuntimeError('Transport part digest mismatch: '+part['file'])
+              encoded.append(data.decode('ascii').strip())
+          compressed = base64.b64decode(''.join(encoded), validate=True)
+          if hashlib.sha256(compressed).hexdigest() != manifest['compressed_sha256']:
+              raise RuntimeError('Compressed digest mismatch')
+          raw = lzma.decompress(compressed)
+          if hashlib.sha256(raw).hexdigest() != manifest['raw_sha256']:
+              raise RuntimeError('Bundle digest mismatch')
+          bundle = json.loads(raw)
+          if bundle['base_commit'] != base or len(bundle['files']) != manifest['files']:
+              raise RuntimeError('Unexpected source bundle')
+          for name, specification in bundle['files'].items():
+              rel = pathlib.PurePosixPath(name)
+              if rel.is_absolute() or len(rel.parts) != 1 or rel.suffix not in {'.tex','.md','.py','.json','.txt'}:
+                  raise RuntimeError('Out-of-scope source path: '+name)
+              if isinstance(specification, str):
+                  text = specification
+              elif specification.get('derive') == 'v11-inputs':
+                  if name != 'INHERITED_INPUTS.json':
+                      raise RuntimeError('Invalid inherited-input target')
+                  old = json.loads((previous/'INHERITED_INPUTS.json').read_text())['files']
+                  old.update(json.loads((previous/'SOURCE_MANIFEST.json').read_text())['files'])
+                  old[str(previous/'SOURCE_MANIFEST.json')] = hashlib.sha256((previous/'SOURCE_MANIFEST.json').read_bytes()).hexdigest()
+                  value = {'base_commit':base, 'source_archive_sha256':'6bc25da32768ef206ebba5af7556ccc6adefc7268ff8437b986f110ccbca6c40', 'files':dict(sorted(old.items()))}
+                  text = json.dumps(value,indent=2)+'\n'
+              else:
+                  original = pathlib.PurePosixPath(specification['base'])
+                  if original.is_absolute() or '..' in original.parts or original.parts[:2] != ('papers','GTF-I-v11-resource-comparison'):
+                      raise RuntimeError('Invalid delta base')
+                  data0 = pathlib.Path(original).read_bytes()
+                  if hashlib.sha256(data0).hexdigest() != specification['base_sha256']:
+                      raise RuntimeError('Delta base digest mismatch: '+str(original))
+                  if specification.get('derive') == 'v11-labels':
+                      if name != 'PREDECESSOR_LABELS.json':
+                          raise RuntimeError('Invalid label target')
+                      labels = {m.group(1):{'number':m.group(2),'page':int(m.group(3))} for m in re.finditer(r'\\newlabel\{([^}]+)\}\{\{([^}]*)\}\{(\d+)\}',data0.decode('utf-8'))}
+                      value = {'source_commit':'0cee9e4ac7d3eb0f1c47c339b271b04b66c4f848','auxiliary_sha256':specification['base_sha256'],'labels':labels}
+                      text = json.dumps(value,indent=2)+'\n'
+                  else:
+                      lines = data0.decode('utf-8').splitlines(keepends=True)
+                      pieces = []
+                      for op in specification['ops']:
+                          if isinstance(op,str):pieces.append(op)
+                          elif isinstance(op,list) and len(op)==2 and all(isinstance(i,int) for i in op) and 0 <= op[0] <= op[1] <= len(lines):pieces.append(''.join(lines[op[0]:op[1]]))
+                          else:raise RuntimeError('Invalid delta operation')
+                      text = ''.join(pieces)
+              data = text.encode('utf-8')
+              if hashlib.sha256(data).hexdigest() != bundle['sha256'][name]:
+                  raise RuntimeError('Source digest mismatch: '+name)
+              (root/name).write_bytes(data)
+          print('Validated plaintext source files:', len(bundle['files']))
+          PYCODE
+          git config user.name 'GTF revision build'
+          git config user.email 'gtf-build@users.noreply.github.com'
+          git add papers/GTF-I-v12-causal-completion
+          if ! git diff --cached --quiet; then
+            git commit -m 'revise(GTF-I v12): causal task completion, infinite horizon and microscopic memory'
+            git push origin HEAD:revision/general-theta-foundations-i-v12-causal-completion-2026-09-23
+          fi
+          echo "GTF_SOURCE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - name: Install verification and typesetting dependencies
+        run: |
+          python -m pip install -r papers/GTF-I-v12-causal-completion/requirements.txt
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+      - name: Verify and compile the source-bound revision
+        run: python papers/GTF-I-v12-causal-completion/build.py
+      - name: Publish PDFs and evidence on this branch only
+        run: |
+          python - <<'PYCODE'
+          import json, os, pathlib
+          p = pathlib.Path('papers/GTF-I-v12-causal-completion/evidence/REMOTE_BUILD.json')
+          p.write_text(json.dumps({'source_commit':os.environ['GTF_SOURCE_COMMIT'], 'workflow_run':os.environ['GITHUB_RUN_ID'], 'branch':os.environ['GITHUB_REF_NAME'], 'build_command_completed':True, 'scope':'Source and build identity, not an analytic proof certificate or journal approval.'}, indent=2)+'\n')
+          PYCODE
+          git add -f papers/GTF-I-v12-causal-completion/paper.pdf papers/GTF-I-v12-causal-completion/complete-development.pdf papers/GTF-I-v12-causal-completion/evidence
+          if ! git diff --cached --quiet; then
+            git commit -m 'publish(GTF-I v12): full article, complete preserved development and verified build'
+            git push origin HEAD:revision/general-theta-foundations-i-v12-causal-completion-2026-09-23
+          fi
+      - name: Upload revision package
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gtf-i-v12-causal-completion-${{ github.run_id }}
+          path: papers/GTF-I-v12-causal-completion
+          retention-days: 30
