@@ -1,0 +1,24 @@
+name: A2 v116 frozen source snapshot
+on:
+  push:
+    branches: [revision/a2-v116-higher-product-structure-2026-09-22]
+    paths: [.github/workflows/a2-v116-source-snapshot.yml]
+permissions:
+  contents: read
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Package reviewed sources and historical proofs
+        run: |
+          mkdir -p snapshot
+          tar -czf snapshot/a2-reviewed-sources.tar.gz papers/A2-v17-boundary-information-coarsening/article/v115 papers/A2-v17-boundary-information-coarsening/article/v114 papers/A2-v17-boundary-information-coarsening/article/v113 reviews/a2-v115-independent-harsh-top4-2026-09-22 .github/workflows/a2-v115-build.yml
+          git rev-parse HEAD > snapshot/snapshot_commit.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: a2-v116-reviewed-source-snapshot
+          path: snapshot/
+          retention-days: 7
