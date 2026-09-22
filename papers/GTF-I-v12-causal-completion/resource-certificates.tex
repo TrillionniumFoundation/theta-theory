@@ -1,0 +1,94 @@
+\section{Stable certificates for exact resource profiles}
+\label{sec:v12-certificates}
+
+The task-cover theorem and the analytic comparison theorem concern the
+same invariant: the least common-encoder excess at a prescribed width
+profile. The following consequence states precisely when an approximate
+experiment certifies an exact resource answer. This is also the point at
+which the microscopic decision limit can be used without exchanging a
+model limit with optimization over encoders.
+
+For the finite restart system of Section~\ref{sec:v12-support}, write
+\[
+ V_E(S,q)=\inf_\pi\max_{t,d}
+  \left[r^E_{td}(\pi)-\sum_h\eta_t(h)m^E_{td}(h)\right].
+\]
+If a positive entry regret exists, define $g_E=\alpha\gamma$ as in
+Corollary~\ref{cor:v12-gap}; for a Brier task family use
+$g_E=\alpha\delta^2/2$. This gap is defined by the target task table, not
+estimated from a lossy experiment. In the trivial case of no positive
+regret every resource profile is feasible and no gap test is necessary.
+
+\begin{theorem}[Comparison, completion, and certification]
+\label{thm:v12-certificate}
+Let $E$ be a finite restart experiment with $g_E>0$, and let $F$ be an
+experiment with the same decision rows and loss scale. Suppose two-sided
+cost-one comparison at the declared seed signature gives risk-body
+Hausdorff error at most $\varepsilon$, and the corresponding full-history
+benchmarks differ by at most $\varepsilon$. Then
+\begin{equation}
+ |V_F(S,q)-V_E(S,q)|\le2\varepsilon.
+ \label{eq:v12-certificate-error}
+\end{equation}
+If $\varepsilon<g_E/4$, the single test
+\begin{equation}
+ V_F(S,q)<g_E/2
+ \label{eq:v12-test}
+\end{equation}
+is equivalent to existence of a causally closed compatible cover for $E$
+with width profile $S$. Equality of the exact feasible profiles holds for
+all private and independent public seed signatures, even though the
+positive-excess values for those signatures may differ.
+
+More generally, suppose only a simulator from $E$ to $F$ is given, with
+cost $(K,r)$, and suppose its risk and benchmark errors are at most
+$\varepsilon$. If
+\[
+ V_F(S,q)+2\varepsilon<g_E,
+\]
+then $E$ has a causally closed compatible cover of width at most $KS$.
+The public seed bound of the implemented design is $rq$, but it is
+unnecessary for exactness of that cover.
+\end{theorem}
+
+\begin{proof}
+The two risk-body inclusions bound the infimum of the maximum centered
+row by the opposite value plus the risk error and the benchmark error.
+This proves \eqref{eq:v12-certificate-error}. By
+Corollary~\ref{cor:v12-gap}, $V_E(S,q)$ is either zero or at least $g_E$,
+and it is zero precisely for a causally closed compatible cover. In the
+first case $V_F(S,q)\le2\varepsilon<g_E/2$; in the second case
+$V_F(S,q)\ge g_E-2\varepsilon>g_E/2$. This proves the test without
+requiring an optimizer for $F$. The one-sided implementation gives
+$V_E(KS,rq)\le V_F(S,q)+2\varepsilon<g_E$, forcing its value to be zero.
+Theorem~\ref{thm:v12-support} then supplies a deterministic cover machine
+at width $KS$.
+\end{proof}
+
+\begin{corollary}[Certified approximation sequence]
+\label{cor:v12-cert-sequence}
+For any family $F_n$ satisfying the hypotheses of the preceding theorem
+with a known error bound $\varepsilon_n\to0$, every fixed resource
+profile of $E$ is classified correctly by \eqref{eq:v12-test} once
+$\varepsilon_n<g_E/4$. If the computed value has an additional certified
+numerical error $\kappa_n$, a sufficient condition is
+$2\varepsilon_n+\kappa_n<g_E/2$, with the corresponding interval test.
+In applications of Theorem~\ref{thm:v12-physical}, the error bound is
+$E_n$ whenever the entire declared restart family, including its
+preparations, is among the compared physical experiments.
+\end{corollary}
+
+\begin{proof}
+Apply \eqref{eq:v12-certificate-error} and add the numerical error.
+The last qualification ensures that the physical comparison controls
+these restart rows, rather than a different initial preparation or only
+a single uncontrolled experiment.
+\end{proof}
+
+The gap may be small, and computing the finite common-encoder optimum
+can be difficult. The statement is a certification theorem, not a
+polynomial-time algorithm. In particular it does not make a constrained
+inverse randomization assertion: a risk witness need not manufacture a
+simulator of a prescribed cost. Its content is the stability of exact
+causal task completion under an independently verified, resource-priced
+comparison.

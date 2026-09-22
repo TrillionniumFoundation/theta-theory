@@ -1,0 +1,271 @@
+\section{Causal task completion on the actual support}
+\label{sec:v12-support}
+
+A finite task family need not induce an equivalence relation on histories.
+Moreover, a report which is impossible after one history must not be
+confused with a report having a prescribed continuation there. We give a
+support-sensitive characterization which addresses both issues at once.
+The underlying device is the compatible-cover construction for partial
+machines. The point here is its exact relation to a common encoder,
+randomized resource signatures, and the zero face of the decision spectrum.
+
+\subsection{Supported trees and simultaneous decisions}
+Let $\mathcal H_t$, $0\le t\le T$, be finite sets of observable histories.
+The initial history $h\in\mathcal H_0$ is consumed by the initial encoder.
+Controls $a\in\mathcal A_t$ and reports $y\in\mathcal Y_{t+1}$ have finite
+alphabets. For each $h$ and $a$, a nonempty set of successors $hay$ is
+specified in $\mathcal H_{t+1}$. These are precisely the positive-probability
+successors in a fixed reference preparation of the controlled instrument.
+The reference preparation charges every history under consideration.
+Zero-probability successors are absent; their probabilities are not changed.
+Controls in the restart tests are fixed open-loop words. This ensures
+that the encoder's private randomization remains independent of the source
+conditional on the supplied history. Conditional marked laws, not a
+parameter oracle, define all the losses below.
+
+At time $t$ there is a finite task set $D_t$. For $d\in D_t$ let $B_{td}$
+be a finite decision alphabet and let $\ell_{td}(h,b)\in[0,1]$ be the
+conditional loss, obtained from the actual marked continuation and any
+continuation protocol specified by the task. Put
+\[
+ m_{td}(h)=\min_b\ell_{td}(h,b),\qquad
+ A_{td}(h)=\argmin_b\ell_{td}(h,b).
+\]
+Choose a preparation $\eta_t(h)>0$ on every $\mathcal H_t$. The full-history
+restart benchmark is $\sum_h\eta_t(h)m_{td}(h)$. At every checkpoint the
+same source-consuming encoder is used for all tasks. Its initial kernel is
+$q_0(m\mid h)$, its updates are $q_{t+1}(m'\mid m,a,y)$, and its task
+readouts are $v_{td}(b\mid m)$. Time dependence is allowed and is not
+persistent memory. Write $Q_t(m\mid h)$ for the message distribution
+obtained by running these kernels along the supplied history. An independent
+public seed, if present, is an additional named input to these kernels.
+
+A set $C\subseteq\mathcal H_t$ is \emph{task compatible} if
+\begin{equation}
+ \bigcap_{h\in C}A_{td}(h)\ne\varnothing
+       \quad\text{for every }d\in D_t.
+ \label{eq:v12-compatible}
+\end{equation}
+Empty sets are permitted. Define its supported successor set by
+\[
+ \operatorname{Succ}_{a,y}(C)
+   =\{hay\in\mathcal H_{t+1}:h\in C\}.
+\]
+
+\begin{definition}[Causally closed compatible cover]
+\label{def:v12-cover}
+A width profile $S=(S_0,\ldots,S_T)$ admits a causally closed compatible
+cover if there are compatible sets $C_{t,m}$, $1\le m\le S_t$, which cover
+$\mathcal H_t$ and satisfy the following condition: for every $t<T,m,a,y$
+there is one index $\delta_t(m,a,y)$ such that
+\begin{equation}
+ \operatorname{Succ}_{a,y}(C_{t,m})
+       \subseteq C_{t+1,\delta_t(m,a,y)}.
+ \label{eq:v12-closed}
+\end{equation}
+The sets may overlap. The single index in \eqref{eq:v12-closed} must work
+for all histories in the cell for which this successor exists.
+\end{definition}
+
+\begin{theorem}[Exact causal task spectrum]
+\label{thm:v12-support}
+For a finite supported instrument and the finite restart tasks above, the
+following conditions on $S$ are equivalent:
+\begin{enumerate}
+\item a deterministic common encoder with width profile at most $S$
+attains every full-history restart benchmark at every checkpoint;
+\item a privately randomized common encoder does so, with or without
+an independent public seed of any prescribed positive size, including an
+ideal uniform seed;
+\item $S$ admits a causally closed compatible cover.
+\end{enumerate}
+The equivalence is independent of the strictly positive preparations
+$\eta_t$. In particular the exact feasible width profiles are not changed
+by private or independent public randomization. No positivity assumption
+is imposed on a next-report probability which is absent from the actual
+support.
+\end{theorem}
+
+\begin{proof}
+For a fixed task the excess risk is
+\begin{equation}
+ \sum_{h,m,b}\eta_t(h)Q_t(m\mid h)v_{td}(b\mid m)
+           [\ell_{td}(h,b)-m_{td}(h)].
+ \label{eq:v12-excess}
+\end{equation}
+It is a sum of nonnegative terms. If it vanishes for all tasks, then
+$C_{t,m}=\{h:Q_t(m\mid h)>0\}$ is compatible: every decision in the
+nonempty support of $v_{td}(\cdot\mid m)$ belongs to every $A_{td}(h)$
+with $h\in C_{t,m}$. The cells cover the supported histories.
+
+For fixed $t,m,a,y$, select any $m'$ with
+$q_{t+1}(m'\mid m,a,y)>0$. If $hay$ is a supported successor of some
+$h\in C_{t,m}$, the recursion for $Q$ includes the positive product
+$Q_t(m\mid h)q_{t+1}(m'\mid m,a,y)$. Consequently
+$hay\in C_{t+1,m'}$, proving \eqref{eq:v12-closed}. There is no inference
+about a history $hay$ outside the support.
+
+Conversely, choose an initial containing cell for each $h\in\mathcal H_0$.
+Use the maps $\delta_t$ as deterministic updates. Induction on time shows
+that the retained cell always contains the actual history. For each cell
+and task choose an action from the intersection in
+\eqref{eq:v12-compatible}. All terms in \eqref{eq:v12-excess} are zero.
+Empty cells and empty successor sets have arbitrary decisions and updates.
+This constructs one machine attaining the entire width profile, rather
+than unrelated checkpoint statistics.
+
+For a public seed $U$, condition the nonnegative expression
+\eqref{eq:v12-excess} on $U$. There are finitely many checkpoints and tasks.
+Outside one seed-null set all their conditional excesses vanish. Because
+the restart preparation and the open-loop controls are independent of
+$U$, they still charge the same supported histories. Fixing one seed in
+this set gives a private machine to which the preceding argument applies.
+The converse may ignore the seed. Only positivity, not the numerical
+values, of $\eta_t$ has been used.
+\end{proof}
+
+The theorem is a zero-excess purification statement, not purification of
+the entire private risk body. Positive excess can benefit from private or
+public randomization, as Theorem~\ref{thm:v10-membership} demonstrates.
+Nor does a family of arbitrary checkpoint-optimal covers automatically
+satisfy \eqref{eq:v12-closed}.
+
+\begin{example}[Support carries information without an extra register]
+\label{ex:v12-support}
+Let the first report be a bit $X$, and let the next report again be $X$.
+The initial task has a constant optimal action and the terminal task is
+to predict $X$ exactly. A one-cell initial cover and two terminal cells
+are causally closed: report $y$ selects its own terminal cell. Thus
+$(S_0,S_1)=(1,2)$ is feasible. Replacing the second report by a constant
+leaves the separate task widths equal to $1$ and $2$, but the profile
+$(1,2)$ is no longer feasible. Its initial cell has both supported
+successors under the same report, and these require different decisions.
+The information timing, not merely a list of checkpoint cover numbers,
+determines the causal answer.
+\end{example}
+
+\begin{example}[Overlapping cells and no coarsest partition]
+\label{ex:v12-overlap}
+There are three initial histories $u,v,w$ with constant initial tasks.
+History $u$ has only successor report $0$, with terminal target $0$;
+$v$ has only report $1$, with terminal target $0$; and $w$ has only
+report $0$, with terminal target $1$. The initial cover
+$\{u,v\},\{v,w\}$, together with terminal target cells, is causally
+closed. Both partitions $\{u,v\}\mid\{w\}$ and
+$\{u\}\mid\{v,w\}$ are feasible, whereas their common coarsening is
+not. Hence no single coarsest feasible partition describes this problem.
+A fictitious signature for an unsupported successor would impose a
+condition absent from the experiment.
+\end{example}
+
+\subsection{A separating risk gap and prediction completion}
+Choose positive numbers $\beta_{td}$ with $\sum_{t,d}\beta_{td}=1$ and
+form the aggregate excess
+\[
+ G(\pi)=\sum_{t,d}\beta_{td}
+       [r_{td}(\pi)-\textstyle\sum_h\eta_t(h)m_{td}(h)].
+\]
+This is a positive decision-row witness for the common risk body. Let
+\[
+ \alpha=\min_{t,d,h}\beta_{td}\eta_t(h)>0.
+\]
+If a strictly positive entry regret exists, let $\gamma$ be the least
+such regret among $\ell_{td}(h,b)-m_{td}(h)$.
+
+\begin{corollary}[Zero face and a finite decision witness]
+\label{cor:v12-gap}
+If the cover condition holds, the minimum of $G$ and the minimax restart
+excess are zero. If it fails, a positive entry regret exists and, for
+all private or independently public-randomized machines of width $S$,
+\begin{equation}
+  G(\pi)\ge\alpha\gamma,
+  \qquad
+  \max_{t,d}\bigl[r_{td}(\pi)-\textstyle\sum_h\eta_t(h)m_{td}(h)\bigr]
+       \ge\alpha\gamma.
+ \label{eq:v12-gap}
+\end{equation}
+Thus causally closed covers characterize exactly the zero face of the
+common-encoder spectrum, with a strictly positive finite witness off that
+face.
+\end{corollary}
+
+\begin{proof}
+Fix all entries of a deterministic time-indexed encoder and all task
+readouts. Infeasibility means that at least one supported history at one
+checkpoint has a nonoptimal decision for some task. Its contribution to
+$G$ is at least $\alpha\gamma$. If every entry regret were zero, the
+one-cell cover at every time would work, so $\gamma$ exists when needed.
+
+A behavioral private design is a mixture, for the purpose of computing
+its risks, of deterministic tables: sample an independent value for each
+initial-encoder row, each time-indexed update row, and each time/task
+readout row according to the design's specified kernels. Along any fixed
+history each such time-indexed row is used at most once, so averaging
+these tables reproduces every expression \eqref{eq:v12-excess}.
+A public seed can first be conditioned upon and then integrated out.
+Every deterministic table has the lower bound, and hence so does their
+mixture. This use of a table mixture is a proof of an inequality; it does
+not grant its table index to an admissible private encoder. The second
+inequality follows because $G$ is a convex combination of task excesses.
+\end{proof}
+
+\begin{corollary}[Brier tasks and universal marked completion]
+\label{cor:v12-prediction}
+Theorem~\ref{thm:v12-support} also holds for finitely many Brier tasks
+whose conditional probabilities are $p_{td}(h)$ and whose actions range
+over $[0,1]$. A cell is then compatible precisely when each probability
+is constant on it. If the cover condition fails, let $\delta>0$ be the
+least positive difference between probabilities for a common time and
+task at two histories. Then every randomized design satisfies
+\[
+ G(\pi)\ge \alpha\delta^2/2.
+\]
+For a finite marked instrument, completing the tests by a finite
+pair-separating family of all marked continuation-event predictions
+recovers the universal marked quotient and its least width profile.
+With strictly positive report probabilities this specializes to the
+signature construction in Theorem~\ref{thm:v11-causal-tasks}.
+\end{corollary}
+
+\begin{proof}
+The conditional Brier excess is $(b-p_{td}(h))^2$. Zero excess forces the
+readout distribution to be concentrated at $p_{td}(h)$ on each message
+support. The support and transition proof is otherwise unchanged. For a
+fixed deterministic encoder, if all its cells had constant probabilities,
+they would form a causally closed compatible cover. In the infeasible
+case some cell contains two histories with probabilities $p,p'$ separated
+by at least $\delta$ for one task. For any readout $b$, their weighted
+contribution is at least
+$\alpha[(b-p)^2+(b-p')^2]\ge\alpha\delta^2/2$.
+Integration over randomized readouts and the finite encoder-table mixture
+proves the bound. Finally, equality of all marked continuation-event
+probabilities is precisely equality of the continuation law. Its
+supported class transitions are well defined by
+Lemma~\ref{lem:v10-continuation}; different classes cannot share a cell.
+The marked quotient tracker attains these class counts. A finite
+pair-separating subfamily suffices because there are finitely many classes.
+\end{proof}
+
+\subsection{Coherent exact machines on an unbounded time interval}
+\begin{corollary}[Finite-prefix criterion]
+\label{cor:v12-prefix}
+Let the supported tree have infinitely many levels but finitely many
+histories, controls, reports, and finite-action tasks at each level.
+Fix finite widths $S_t$ in advance. One deterministic infinite machine
+attains all restart benchmarks if and only if every finite prefix admits
+a causally closed compatible cover with those widths. Independent public
+or private randomization does not change this criterion.
+\end{corollary}
+
+\begin{proof}
+The deterministic initial table and every time-indexed update and readout
+table take values in finite sets. Their countable product is compact.
+Exactness through time $N$ defines a closed cylinder set of tables. These
+sets are nested and are nonempty by Theorem~\ref{thm:v12-support} and
+arbitrary extension of a finite table. Compactness gives a point in their
+intersection. The reverse implication is restriction. For a randomized
+infinite machine, restriction to each prefix gives the covers by the
+finite theorem. The argument is an existence theorem; it asserts neither
+a finite stopping rule for an infeasible infinite problem nor an effective
+bound on the prefix which witnesses infeasibility.
+\end{proof}
