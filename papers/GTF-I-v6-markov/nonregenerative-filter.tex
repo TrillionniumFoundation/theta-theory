@@ -1,0 +1,184 @@
+\section{Finite registers without a common regeneration law}
+\label{sec:v6-filter}
+A different realization mechanism applies when observations arrive
+continually and the posterior itself contracts. It does not use an
+independent reference component of a transition kernel.
+
+Let $(U_t,Y_t)_{t\in\mathbb Z}$ be stationary, with $U_t\in\R^d$ square
+integrable and $Y_t$ standard Borel. Write
+\[
+ \mathcal Y_t^- =\sigma(Y_s:s\le t),\qquad
+ m_t=\E[U_t\mid\mathcal Y_t^-],\qquad
+ B=\E\|U_0-m_0\|^2.
+\]
+An observer starting at zero receives $Y_t$ at every update and retains
+at most $M$ states. Its decoder receives only its post-update state,
+absolute time, and independent coding randomness. Let
+$\mathcal R_M^{\rm fil}$ be the infimum of its upper limiting average
+squared loss. The reference $B$ uses the full two-sided past; initial
+lack of that past will be handled by contraction, not by a fictitious
+initial sufficient statistic.
+
+\begin{theorem}[Contracting posterior realization]\label{thm:v6-filter}
+Suppose $m_0\in L^4$ and a Borel function $F$ has a measurable
+Lipschitz coefficient $\ell(y)\ge0$ such that
+\begin{gather}
+ m_t=F(m_{t-1},Y_t),\qquad
+ \|F(x,y)-F(x',y)\|\le\ell(y)\|x-x'\|,\nonumber\\
+ \E[\ell(Y_t)^4\mid\mathcal Y_{t-1}^-]\le\rho^4<1,
+ \qquad K_4:=\|F(0,Y_0)\|_{L^4}<\infty.                 \label{eq:v6-filter-contract}
+\end{gather}
+A uniform bound $\ell(y)\le\rho$ is sufficient but not necessary;
+individual observation updates may expand.
+If the law of $m_0$ has a Lebesgue density bounded below by a positive
+constant on a cube of positive side length, then
+\begin{equation}
+ B+cM^{-2/d}\le\mathcal R_M^{\rm fil}\le B+CM^{-2/d}
+                       \quad(M\ge1).                   \label{eq:v6-filter-rate}
+\end{equation}
+The lower bound holds for the lower limiting average loss of every
+randomized time-dependent observer. The upper observer is stationary
+and deterministic. It uses no compact support or minorization
+hypothesis on either the hidden dynamics or the observation process.
+
+For a product register of $(2n-1)^d$ states, $n\ge2$, its excess error
+has the explicit upper bound
+\begin{equation}
+ \limsup_{t\to\infty}\E\|m_t-\widehat U_t\|^2
+ \le \frac{d(1+K_4/(1-\rho))^4}{n^2(1-\rho)^2}.
+                                                        \label{eq:v6-filter-constant}
+\end{equation}
+\end{theorem}
+
+\begin{lemma}[A finite inward quantizer]\label{lem:v6-compander}
+For $n\ge2$ define
+\[
+ j_n(x)=\min\left(n-1,\left\lfloor\frac{n|x|}{1+|x|}\right\rfloor\right),
+ \qquad Q_n(x)=\operatorname{sgn}(x)\frac{j_n(x)}{n-j_n(x)}.
+\]
+It has $2n-1$ values and satisfies
+\begin{equation}
+ |Q_n(x)|\le|x|,\qquad |x-Q_n(x)|\le n^{-1}(1+|x|)^2.
+                                                        \label{eq:v6-compander}
+\end{equation}
+Its coordinatewise extension to $\R^d$ satisfies
+$\|Q_nx\|\le\|x\|$ and
+$\|x-Q_nx\|\le\sqrt d\,n^{-1}(1+\|x\|)^2$.
+\end{lemma}
+\begin{proof}
+For $x\ge0$ put $u=x/(1+x)$, so the inverse is $g(u)=u/(1-u)$.
+The quantized argument $j_n(x)/n$ is at most $u$ and differs from it
+by less than $1/n$, including the saturated last bin. The increasing
+derivative $g'(u)=(1-u)^{-2}$ bounds the difference by
+$(1+x)^2/n$. Odd reflection proves the scalar assertion. Sum the
+squared coordinate errors and use $|x_i|\le\|x\|$ for the vector bound.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:v6-filter}]
+Conditional orthogonality, also after adjoining randomness independent
+of the experiment, gives
+\begin{equation}
+ \E\|U_t-\widehat U_t\|^2=B+\E\|m_t-\widehat U_t\|^2.   \label{eq:v6-filter-orthogonal}
+\end{equation}
+At any fixed $t$, freeze all independent randomization. The decoder
+has at most $M$ possible values, even though the encoder has seen a
+long observation history. On a cube where the density of $m_t$ is at
+least $c_0$, take balls of radius $\delta M^{-1/d}$ around those
+values. A sufficiently small $\delta$, independent of their locations,
+makes their total intersection volume at most half the cube's volume.
+The remaining volume incurs squared distance at least
+$\delta^2M^{-2/d}$. Integrating the density lower bound and then the
+randomization gives the lower bound at each time, and hence for lower
+limiting averages.
+
+For the upper bound start from $z_{-1}=0$ and iterate
+\begin{equation}
+       x_t=F(z_{t-1},Y_t),\qquad z_t=Q_nx_t,
+       \qquad\widehat U_t=z_t.                          \label{eq:v6-coded-filter}
+\end{equation}
+Only the index of $z_t$ is stored; $x_t$ is transient. The values of
+$Q_n$ are fixed rational vectors, part of the fixed decoder table.
+Conditional fourth-moment contraction gives
+$\|\ell(Y_t)z_{t-1}\|_{L^4}\le\rho\|z_{t-1}\|_{L^4}$.
+The inward property and Minkowski's inequality therefore give, without
+independence of successive observations,
+\[
+ \|z_t\|_{L^4}\le\rho\|z_{t-1}\|_{L^4}+K_4
+       \le A_4:=K_4/(1-\rho),\qquad \|x_t\|_{L^4}\le A_4.
+\]
+Lemma~\ref{lem:v6-compander} therefore implies
+$\|x_t-Q_nx_t\|_{L^2}\le\sqrt d(1+A_4)^2/n$.
+Couple the exact stationary recursion to the same observations.
+The previous error is measurable with respect to $\mathcal Y_{t-1}^-$;
+conditional Cauchy--Schwarz implies
+$\E[\ell(Y_t)^2\mid\mathcal Y_{t-1}^-]\le\rho^2$. Thus
+\[
+ \|m_t-z_t\|_{L^2}\le\rho\|m_{t-1}-z_{t-1}\|_{L^2}
+                         +\sqrt d(1+A_4)^2/n.
+\]
+The finite initial error is multiplied by $\rho^{t+1}$.
+Summing this recursion proves \eqref{eq:v6-filter-constant}.
+Equation \eqref{eq:v6-filter-orthogonal} gives the upper average bound.
+For large $M$ choose $n=\lfloor(M^{1/d}+1)/2\rfloor$, so
+$(2n-1)^d\le M$ and $n\asymp M^{1/d}$. For the remaining finite range,
+the one-state output zero has finite loss, and an enlarged constant
+completes \eqref{eq:v6-filter-rate}.
+\end{proof}
+
+\begin{corollary}[An unbounded hidden Gaussian chain]\label{cor:v6-gaussian}
+Let
+\begin{equation}
+ X_t=aX_{t-1}+\xi_t,\qquad Y_t=X_t+\eta_t,
+ \quad 0<|a|<1,\quad
+ \xi_t\sim N(0,v),\quad\eta_t\sim N(0,\omega),            \label{eq:v6-ar}
+\end{equation}
+where $v,\omega>0$, the noises are independent, and $X$ has its stationary
+law. Let $P$ be the unique positive solution of
+\begin{equation}
+ P=\frac{\omega(a^2P+v)}{a^2P+v+\omega}.
+                                                        \label{eq:v6-riccati}
+\end{equation}
+Then $\mathcal R_M^{\rm fil}=P+\Theta(M^{-2})$. For $d$ independent
+such coordinates the law is $\sum_iP_i+\Theta(M^{-2/d})$.
+For every fixed $k\ge1$, the hidden $k$-step kernel admits no nonzero
+finite measure dominated by all its transition probabilities.
+\end{corollary}
+\begin{proof}
+Put $S=v/(1-a^2)$. Conditional Gaussian projection gives the one-step
+prediction variance $a^2P+v$ and the update \eqref{eq:v6-riccati}.
+The map on its right sends $[0,S]$ into itself and has derivative at
+most $a^2<1$; its unique fixed point lies in $(0,S)$. Iterating from
+a finite past and letting that past recede gives the stationary
+conditional variance $P$ and the mean recursion
+\[
+ m_t=(1-K)a m_{t-1}+KY_t,\qquad
+ K=\frac{a^2P+v}{a^2P+v+\omega}.
+\]
+This passage is also the $L^2$ martingale convergence of the increasing
+observation sigma fields. Gaussian conditioning supplies the displayed
+finite-past recursion at each step. Thus no distributional filter
+approximation is being substituted for the true conditional mean.
+The mean is Gaussian with variance $S-P>0$, so has all required
+moments and a strictly positive density on every bounded interval.
+The contraction constant is $|(1-K)a|<1$.
+Theorem~\ref{thm:v6-filter} applies; independent coordinates give the
+vector statement with the Euclidean contraction constant equal to the
+largest coordinate constant.
+
+The hidden $k$-step transition from $x$ is a Gaussian with mean $a^kx$
+and fixed finite positive variance. If a nonzero finite measure $\nu$
+were dominated by every such probability, some bounded Borel set $E$
+would have $\nu(E)>0$. Sending $x$ to infinity gives
+$Q^k(x,E)\to0$, a contradiction. The proof of the risk law therefore
+cannot be an application of a global one-step or fixed-multistep
+common-reference minorization.
+\end{proof}
+
+The contraction and Gaussian conditioning in this section are classical
+mechanisms. The quantitative assertion is the matched error in the
+number of values of the \emph{whole persistent register}, with a
+uniform-in-time implementation on an unbounded state space. Constants
+in \eqref{eq:v6-filter-constant} display their deterioration as
+$\rho\uparrow1$. No assertion at $\rho=1$, nor a reinterpretation of
+this theorem as the $\varepsilon\downarrow0$ limit of a minorization
+bound, is needed.
