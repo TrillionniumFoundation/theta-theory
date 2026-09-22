@@ -1,0 +1,78 @@
+name: GTF-I v10 marked duality
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v10-marked-duality-2026-09-23
+    paths:
+      - 'papers/GTF-I-v10-marked-duality/RELEASE_BUNDLE.b64'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: gtf-i-v10-marked-duality
+  cancel-in-progress: false
+jobs:
+  revise-and-verify:
+    if: github.ref == 'refs/heads/revision/general-theta-foundations-i-v10-marked-duality-2026-09-23'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 8
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate and materialize exact revision sources
+        shell: bash
+        run: |
+          git merge-base --is-ancestor 04890dfca0b7dc9fca657049fe9700330828ad95 HEAD
+          python - <<'PY'
+          import base64, hashlib, json, pathlib, zlib
+          root = pathlib.Path('papers/GTF-I-v10-marked-duality')
+          bundle = json.loads(zlib.decompress(base64.b64decode((root/'RELEASE_BUNDLE.b64').read_text())))
+          if bundle['base_commit'] != '04890dfca0b7dc9fca657049fe9700330828ad95':
+              raise RuntimeError('Unexpected source base')
+          for name, text in bundle['files'].items():
+              relative = pathlib.PurePosixPath(name)
+              if relative.is_absolute() or len(relative.parts) != 1 or relative.suffix not in {'.tex','.md','.py','.json','.txt'}:
+                  raise RuntimeError('Out-of-scope source path: '+name)
+              data = text.encode('utf-8')
+              if hashlib.sha256(data).hexdigest() != bundle['sha256'][name]:
+                  raise RuntimeError('Source digest mismatch: '+name)
+              (root/name).write_bytes(data)
+          print('Validated plain revision sources:', len(bundle['files']))
+          PY
+          git config user.name 'GTF revision build'
+          git config user.email 'gtf-build@users.noreply.github.com'
+          git add papers/GTF-I-v10-marked-duality
+          if ! git diff --cached --quiet; then
+            git commit -m 'revise(GTF-I v10): dominated marked duality, operational quotient and full responses'
+            git push origin HEAD:revision/general-theta-foundations-i-v10-marked-duality-2026-09-23
+          fi
+          echo "GTF_SOURCE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - name: Install verification and typesetting dependencies
+        run: |
+          python -m pip install -r papers/GTF-I-v10-marked-duality/requirements.txt
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended poppler-utils
+      - name: Verify and compile the source-bound revision
+        run: python papers/GTF-I-v10-marked-duality/build.py
+      - name: Publish exact-source PDFs and evidence on this branch only
+        run: |
+          python - <<'PY'
+          import json, os, pathlib
+          p = pathlib.Path('papers/GTF-I-v10-marked-duality/evidence/REMOTE_BUILD.json')
+          p.write_text(json.dumps({'source_commit':os.environ['GTF_SOURCE_COMMIT'], 'workflow_run':os.environ['GITHUB_RUN_ID'], 'branch':os.environ['GITHUB_REF_NAME'], 'build_command_completed':True, 'scope':'Source and build identity, not a mathematical proof certificate or journal approval.'}, indent=2)+'\n')
+          PY
+          git add -f papers/GTF-I-v10-marked-duality/paper.pdf papers/GTF-I-v10-marked-duality/complete-development.pdf papers/GTF-I-v10-marked-duality/evidence
+          if ! git diff --cached --quiet; then
+            git commit -m 'publish(GTF-I v10): source-bound article, complete development and verification evidence'
+            git push origin HEAD:revision/general-theta-foundations-i-v10-marked-duality-2026-09-23
+          fi
+      - name: Upload revision package
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gtf-i-v10-marked-duality-${{ github.run_id }}
+          path: papers/GTF-I-v10-marked-duality
+          retention-days: 30
