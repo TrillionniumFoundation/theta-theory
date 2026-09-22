@@ -1,0 +1,313 @@
+\section{Regeneration and the geometry of future predictions}
+\label{sec:v3-regeneration}
+The obstruction in this section concerns information already acquired and
+subsequently discarded. It does not arise from estimating an unknown
+transition probability. We first give a converse for a general regenerative
+experiment and then compute its consequence for an expanding map.
+
+\subsection{A retained-label experiment}
+Let $E$ be a standard Borel space, $T:E\to E$ a Borel map, $\mu$ a
+probability measure, and $f:E\to[0,1]$ a Borel readout. Fix $0<p<1$ and
+write $q=1-p$. At time zero an observer acquires $U_0\sim\mu$ and
+$X_0=U_0$. At each integer time $t\ge1$, an independent mode $R_t$ is
+observed, with $\Pr(R_t=1)=p$. If $R_t=1$, a fresh independent
+$U_t\sim\mu$ is acquired and $X_t=U_t$. Otherwise $X_t=T(X_{t-1})$;
+there is no further observation of $X_t$. All acquisitions and modes are
+independent of the coding randomness. The full-history prediction is
+$f(X_t)$.
+
+A causal $M$-label machine has a state $L_t\in\{1,\ldots,M\}$.
+At time zero it encodes $U_0$. Subsequently its update can use the previous
+label, the clock, the current mode, and, at a reset, the current $U_t$.
+After the update only its label, the clock, and independent public coding
+randomness are available for decoding. In particular the current
+acquisition is no longer available at the checkpoint. Private coding
+randomness is allowed. Past modes, reset times, previous acquisitions, and
+previous decoder outputs are not additional persistent registers.
+Time-dependent programs are allowed in the lower bound.
+Any random-generator state or data-dependent tape position that persists
+also counts as part of the label. Private coins may equivalently be
+supplied as independent, time-indexed uniforms.
+
+One may realize the loss physically by selecting, after this compression,
+a Bernoulli terminal probe of mean $f(X_t)$. The probe is not an additional
+observation in the continuing experiment. Conditional expectation then
+identifies squared prediction excess with
+\[
+ L_t^{\rm pred}=|f(X_t)-\widehat f_t|^2.
+\]
+Projection of the decoder onto $[0,1]$ cannot increase this loss. Define
+\[
+ \mathcal R_M^{\rm ca}(p;T,\mu,f)
+   =\inf_{\text{causal $M$-label machines}}
+      \sup_{t\ge0}\E L_t^{\rm pred}.
+\]
+The clock is free; the elapsed time since the last reset is not free.
+
+\subsection{The future-orbit converse}
+For $u\in E$ set
+\begin{equation}\label{eq:v3-orbit}
+ Z_q(u)=\bigl(\sqrt p\,q^{k/2}f(T^ku)\bigr)_{k\ge0}\in\ell^2,
+ \qquad
+ e_M^2(Z_q)=\inf_{c_1,\ldots,c_M\in\ell^2}
+   \int\min_i\norm{Z_q(u)-c_i}_{\ell^2}^2\,\mu(du).
+\end{equation}
+The map is Borel and has norm at most one. Its geometry records every
+future readout that must be recovered from one label if no new acquisition
+occurs. In contrast, the checkpoint geometry concerns only $f(X_t)$.
+
+\begin{theorem}[Regenerative future-orbit lower bound]
+\label{thm:v3-orbit}
+Every causal $M$-label machine in the preceding experiment satisfies
+\begin{equation}\label{eq:v3-orbit-lower}
+ \liminf_{N\to\infty}\frac1N\sum_{t=1}^N\E L_t^{\rm pred}
+ \ge e_M^2(Z_q).
+\end{equation}
+Consequently $\mathcal R_M^{\rm ca}(p;T,\mu,f)\ge e_M^2(Z_q)$.
+The assertion holds for arbitrary independent public and private coding
+randomization and does not require a stationary machine or an invariant
+law for $T$.
+\end{theorem}
+\begin{proof}
+Let $e_{M,K}^2$ be the quantization error of the first $K+1$ coordinates
+of $Z_q$. Appending the coordinates $\sqrt p\,q^{k/2}/2$, $k>K$,
+to any truncated codebook shows that
+\begin{equation}\label{eq:v3-truncation}
+ e_M^2(Z_q)-\tfrac14q^{K+1}\le e_{M,K}^2\le e_M^2(Z_q).
+\end{equation}
+Approximate minimizers suffice for this argument; existence is not needed.
+
+Fix a possible reset time $j\ge1$. Condition on its entire past, on the
+occurrence of that reset, and on the independent coding random tapes.
+The new $U_j$ still has law $\mu$. The update assigns it one of at most
+$M$ labels. Along the subsequent word of $K$ nonreset modes, every such
+label determines a sequence of $K+1$ decoder values. Future random choices
+are part of the fixed coding tapes; the nonreset word does not contain
+new data. The weighted squared error of these values, integrated over
+$U_j$, is therefore at least $e_{M,K}^2$. This remains true when the
+assignment itself is randomized, since fixing its independent random
+tape produces an ordinary assignment to the same number of centres.
+Integrating back over the past and the tapes gives
+\[
+ p\sum_{k=0}^Kq^k\,
+ \E\bigl[L_{j+k}^{\rm pred}\mid R_j=1,
+                 R_{j+1}=\cdots=R_{j+k}=0\bigr]
+ \ge e_{M,K}^2.
+\]
+The displayed conditional expectations also integrate over the
+unconditioned past at $j$; future modes beyond $j+k$ play no role.
+
+For each checkpoint $t$, the events that its last reset occurred at
+$j=t-k$, $0\le k\le K$, are disjoint. Sum their nonnegative
+contributions over $1\le t\le N$ and retain only $1\le j\le N-K$.
+Independence of the modes gives
+\[
+ \sum_{t=1}^N\E L_t^{\rm pred}\ge (N-K)e_{M,K}^2.
+\]
+First let $N\to\infty$ at fixed $K$, and then let $K\to\infty$ in
+\eqref{eq:v3-truncation}. The supremum of expected checkpoint losses
+dominates their lower limiting average, proving the consequence.
+\end{proof}
+
+The theorem is a converse for arbitrary causal machines, not only for
+machines obtained by quantizing $E$. The centres in \eqref{eq:v3-orbit}
+may lie off the orbit image. In particular, replacing their quantization
+problem by a covering problem for the current state would lose information
+needed for this lower bound.
+
+\section{A sharp causal-memory transition for an expanding experiment}
+\label{sec:v3-doubling}
+Take
+\begin{equation}\label{eq:v3-doubling}
+ E=[0,1),\qquad \mu=\operatorname{Leb}|_{[0,1)},\qquad
+ T(x)=2x-\lfloor2x\rfloor,\qquad f(x)=x.
+\end{equation}
+The fresh acquisition is an analog uniform variable. A machine in the
+upper bound below reads only a finite binary prefix of it. The map is
+piecewise expanding; it is not asserted to be globally Lipschitz for the
+Euclidean metric on $[0,1)$. The proof will account explicitly for the
+jumps at dyadic boundaries.
+
+Let $\mathcal R_M^{\rm cp}(t)$ be the optimal expected squared excess
+when an encoder can use the entire acquisition history at checkpoint $t$
+and then send one of $M$ labels. Put
+\begin{equation}\label{eq:v3-phase-profile}
+ \Phi_q(M)=
+ \begin{cases}
+ M^{-2},&0<q<1/4,\\
+ (1+\log M)M^{-2},&q=1/4,\\
+ M^{-\kappa(q)},&1/4<q<1,
+ \end{cases}
+ \qquad \kappa(q)=\dfrac{\log(1/q)}{\log2}.
+\end{equation}
+All logarithms except those explicitly marked otherwise are natural.
+
+\begin{theorem}[Identical checkpoint geometry, three causal rates]
+\label{thm:v3-phase}
+For the regenerative experiment \eqref{eq:v3-doubling}, every integer
+$M\ge1$, and every $t\ge0$,
+\begin{equation}\label{eq:v3-checkpoint-exact}
+ \mathcal R_M^{\rm cp}(t)=\frac1{12M^2}.
+\end{equation}
+For each $0<q<1$, constants $0<c_q\le C_q<\infty$ give
+\begin{equation}\label{eq:v3-phase-law}
+ c_q\Phi_q(M)\le
+ \mathcal R_M^{\rm ca}(1-q;T,\mu,f)
+ \le C_q\Phi_q(M)\qquad(M\ge1).
+\end{equation}
+The lower bound already holds for the lower limiting temporal mean in
+\eqref{eq:v3-orbit-lower}. The upper bound is attained in order by a
+single deterministic finite program which does not use $p$ or $q$.
+The program has at most $M$ persistent labels, including every state used
+to record the number of retained binary digits.
+\end{theorem}
+
+The threshold is $p=3/4$. Below that reset frequency the causal label
+exponent is smaller than the checkpoint exponent; at the threshold a
+logarithmic factor is necessary. The current acquired prediction is
+uniform in all these regimes. Thus its dimension and even its entire
+probability law do not determine the optimal causal memory law.
+
+\subsection{An explicit finite machine}
+For an integer $B\ge0$ use the label set
+\[
+ \mathcal W_B=\bigcup_{b=0}^B\{0,1\}^b,
+ \qquad |\mathcal W_B|=2^{B+1}-1,
+\]
+including the empty word. At each reset retain the first $B$ binary digits
+of $U_t$, using the terminating expansion at a dyadic rational. At a
+nonreset delete the leading digit, or leave the empty word unchanged.
+Decode a word of length $b$ as the midpoint of its binary cylinder; the
+empty word decodes as $1/2$.
+
+\begin{lemma}[Exact risk of the suffix machine]\label{lem:v3-tree}
+For this machine, $\sup_{t\ge0}\E L_t^{\rm pred}$ equals
+\begin{equation}\label{eq:v3-tree-risk}
+ U_B(q)=\frac1{12}\left[
+ p4^{-B}\sum_{k=0}^{B-1}(4q)^k+q^B\right],
+\end{equation}
+with the sum empty when $B=0$. Equality holds at every $t\ge B$.
+\end{lemma}
+\begin{proof}
+A uniform variable has independent fair binary digits outside the null
+set of dyadic rationals. If the most recent reset was $k$ steps ago,
+then the label retains its next $(B-k)_+$ digits. Conditional on this
+label and the age, the current state is uniform on the corresponding
+cylinder, so its midpoint has squared error
+$4^{-(B-k)_+}/12$. At time $t$ the age probabilities are $pq^k$ for
+$0\le k<t$, and $q^t$ for $k=t$, because time zero was an acquisition.
+Equivalently this age has the law of $\min(G,t)$, where
+$\Pr(G=k)=pq^k$. The function $k\mapsto4^{-(B-k)_+}/12$ is
+nondecreasing and constant for $k\ge B$. Its expectation increases to
+\eqref{eq:v3-tree-risk} and is already equal to it for $t\ge B$.
+\end{proof}
+
+Choose the largest $B$ such that $2^{B+1}-1\le M$. Then
+$(M+1)/4<2^B\le(M+1)/2$. If $4q<1$, the sum in
+\eqref{eq:v3-tree-risk} is bounded, and $q^B\le4^{-B}$.
+If $4q=1$, the expression is $4^{-B}(pB+1)/12$.
+If $4q>1$, it is at most
+$[1+p/(4q-1)]q^B/12$.
+These estimates prove the upper bound in \eqref{eq:v3-phase-law}
+for every integer budget, not just powers of two.
+
+The label can be stored as an integer whose leading sentinel records its
+word length. Only $\lceil\log_2(2^{B+1}-1)\rceil$ persistent bits are
+needed. Binary prefix acquisition and output formatting use $O(B+1)$
+transient bits; deletion can be performed in $O(B+1)$ bit operations.
+The only read-only integer parameter is $B$. Neither a real-valued
+codebook nor the last reset time is hidden in the program. The cost of
+observing the reset mode and reading the new prefix is an acquisition
+cost, distinct from these memory bounds.
+
+\subsection{The lower bound without a restriction on encoders}
+Define, for $0<\delta\le1$,
+\[
+ F_q(\delta)=
+ \begin{cases}
+ \delta^2,&q<1/4,\\
+ \delta^2(1+\log(1/\delta)),&q=1/4,\\
+ \delta^{\kappa(q)},&q>1/4.
+ \end{cases}
+\]
+Each function is increasing on $(0,1]$.
+
+\begin{lemma}[Separation of future orbits]\label{lem:v3-orbit-separation}
+For $u,v\in[0,1)$,
+\begin{equation}\label{eq:v3-orbit-separation}
+ \norm{Z_q(u)-Z_q(v)}_{\ell^2}^2
+ \ge \frac p{32}F_q(|u-v|).
+\end{equation}
+\end{lemma}
+\begin{proof}
+The case $u=v$ is immediate. Write $\delta=|u-v|$.
+If $\delta\le1/2$, let
+$n=\lfloor\log_2(1/(2\delta))\rfloor$. For $0\le k\le n$, the
+difference of the fractional parts of $2^ku$ and $2^kv$ has absolute
+value either $2^k\delta$ or $1-2^k\delta$. Both are at least
+$2^k\delta$, since $2^k\delta\le1/2$. Consequently
+\begin{equation}\label{eq:v3-orbit-sum}
+ \norm{Z_q(u)-Z_q(v)}^2
+ \ge p\delta^2\sum_{k=0}^n(4q)^k.
+\end{equation}
+For $q<1/4$ the $k=0$ term alone suffices, for every $\delta$.
+For $q=1/4$ and $\delta\le1/4$, the integer $n+1$ is at least
+$\log(1/\delta)/(2\log2)$ and hence at least
+$(1+\log(1/\delta))/4$. For $\delta\ge1/4$, the initial term
+$p\delta^2$ is at least
+$p\delta^2(1+\log(1/\delta))/(1+\log4)$.
+This proves a stronger constant than the stated one in the critical case.
+
+For $q>1/4$ and $\delta\le1/2$, one has
+$2^n\delta>1/4$ and $q^n\ge(2\delta)^{\kappa(q)}$.
+The last term in \eqref{eq:v3-orbit-sum} is therefore at least
+$p\delta^{\kappa(q)}/16$. For $\delta>1/2$, the initial term gives
+$p\delta^2\ge p\delta^{\kappa(q)}/4$, since $0<\kappa(q)<2$.
+All cases imply \eqref{eq:v3-orbit-separation}.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:v3-phase}]
+Lebesgue measure is preserved by the doubling map, and a reset also has
+Lebesgue law. Thus $X_t$ is uniform for every $t$. Given the complete
+history it is known exactly. Scalar quantization of the uniform law by
+$M$ midpoints has error $1/(12M^2)$. Conversely, after ordering arbitrary
+centres their Voronoi cells are intervals of lengths $a_i$ with
+$\sum_i a_i=1$; the integral error on an interval is at least $a_i^3/12$.
+Convexity gives $\sum_i a_i^3\ge M^{-2}$. Random assignment cannot
+improve on the nearest centre, and conditioning on an independent public
+seed proves the same bound for randomized encoders and decoders.
+This establishes \eqref{eq:v3-checkpoint-exact}.
+
+For the causal lower bound put $h=1/(2M)$ and
+$r=\tfrac14\sqrt{pF_q(h)/32}$. Consider any radius-$r$ ball in
+$\ell^2$, centred anywhere. Two points of the orbit image lying in this
+ball have distance at most $2r$. By
+Lemma~\ref{lem:v3-orbit-separation}, their preimages cannot be separated
+by $h$ or more. The preimage of the ball therefore has Lebesgue measure
+at most $h$. A union of $M$ such balls covers at most half the acquired
+mass, and hence
+\[
+ e_M^2(Z_q)\ge r^2/2=\frac p{1024}F_q(1/(2M)).
+\]
+For $q\le1/4$ this last profile is at least $\Phi_q(M)/4$;
+for $q>1/4$ it is $2^{-\kappa(q)}\Phi_q(M)\ge\Phi_q(M)/4$.
+Thus $c_q=p/4096$ is one possible lower constant.
+Theorem~\ref{thm:v3-orbit} applies to every causal machine and proves
+the lower assertion including the temporal-mean version. The suffix
+machine and Lemma~\ref{lem:v3-tree} give the upper bound as already
+computed.
+\end{proof}
+
+The converse uses Euclidean differences only up to the first relevant
+dyadic separation; it does not replace the doubling map by an invalid
+global Lipschitz estimate. Nor does it assume that a general machine
+stores an interval or a binary word. These restrictions are used only
+for the explicit upper construction. The same algorithm works for all
+$p\in(0,1)$, so an unknown reset frequency does not change its order of
+performance at any fixed true $p$.
+
+At $p=1$ every step is a fresh checkpoint and the exact risk is
+$1/(12M^2)$. The assertion above concerns $p>0$; its constants need not
+remain uniform as $p\downarrow0$. This dependence is displayed in the
+finite geometric sum \eqref{eq:v3-tree-risk}, rather than suppressed in
+an unspecified stability constant.

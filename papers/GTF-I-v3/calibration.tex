@@ -1,0 +1,247 @@
+\section{An exact calibration quotient and singular resolution}
+\label{sec:v3-calibration}
+The regenerative experiment concerns excess prediction loss relative to a
+full-history observer. We now study squared error relative to an unknown
+parameter. The distinction is essential: calibration uncertainty persists
+even before any label constraint is imposed.
+
+\subsection{Correlated paired measurements}
+Let $\Theta$ be a compact metric space, let $f:\Theta\to\R^m$ be
+continuous, and observe
+\begin{equation}\label{eq:v3-pair}
+ Y=f(\theta)+\eta+\varepsilon_Y,\qquad
+ W=\eta+\varepsilon_W,
+ \qquad \theta\in\Theta,\quad\eta\in\R^m.
+\end{equation}
+The joint centred Gaussian noise has a known positive definite covariance
+\[
+ \Sigma=\begin{pmatrix}\Sigma_{YY}&\Sigma_{YW}\\
+                         \Sigma_{WY}&\Sigma_{WW}\end{pmatrix}.
+\]
+No independence between the two channels or their coordinates is imposed.
+The nuisance $\eta$ is unrestricted and is not available to the observer.
+Both measurements are part of the acquisition. The procedure retains one
+of $M$ labels and decodes an action in a standard Borel action space;
+independent public and private randomization is allowed.
+
+Put
+\begin{align}
+ D&=Y-W,&
+ V&=\Sigma_{YY}+\Sigma_{WW}-\Sigma_{YW}-\Sigma_{WY},\label{eq:v3-difference}\\
+ C&=\Sigma_{WY}-\Sigma_{WW},& A&=CV^{-1},&
+ R&=\Sigma_{WW}-CV^{-1}C^{\mathsf T}.\label{eq:v3-schur}
+\end{align}
+The matrices $V$ and $R$ are positive definite. A direct Gaussian
+regression calculation gives the invertible transformation
+\begin{equation}\label{eq:v3-orthogonal-pair}
+ (Y,W)\longmapsto (D,Z),\qquad Z=W-AD,
+ \qquad
+ D\sim N(f(\theta),V),\quad
+ Z\sim N(\eta-Af(\theta),R),
+\end{equation}
+where $D$ and $Z$ are independent for fixed $(\theta,\eta)$.
+
+For a bounded nonnegative Borel loss $\ell(\theta,a)\le L$, write
+$\mathcal V_M^{\rm pair}$ for the minimax risk in
+\eqref{eq:v3-pair}, with supremum over $(\theta,\eta)$, and
+$\mathcal V_M^{D}$ for the minimax risk from the sole observation
+$D\sim N(f(\theta),V)$, with the same action space, loss, label budget,
+and randomization convention.
+
+\begin{theorem}[Exact minimax elimination of additive calibration]
+\label{thm:v3-quotient}
+For every integer $M\ge1$,
+\begin{equation}\label{eq:v3-exact-quotient}
+ \mathcal V_M^{\rm pair}=\mathcal V_M^D.
+\end{equation}
+Thus correlated measurement noise enters the decision problem through the
+covariance of the observed difference, not through the two marginal
+variances considered separately.
+\end{theorem}
+\begin{proof}
+Taking differences implements every $D$-procedure on the paired experiment
+without changing its label count, so
+$\mathcal V_M^{\rm pair}\le\mathcal V_M^D$.
+For the reverse inequality fix any paired procedure and any $T>0$.
+Average its risk over an independent nuisance
+$\eta\sim N(0,T^2I_m)$. For each $\theta$, this average is bounded
+above by its worst-nuisance risk. Under this averaging,
+\eqref{eq:v3-orthogonal-pair} has product law
+\[
+ N(f(\theta),V)\otimes N(-Af(\theta),T^2I_m+R).
+\]
+Replace the second factor by the parameter-independent law
+$N(0,T^2I_m+R)$. The relative entropy between the two second factors
+is at most $\norm{Af(\theta)}_2^2/(2T^2)$, so their total variation
+distance is at most $\norm{Af(\theta)}_2/(2T)$. This follows also
+when $A$ is singular. Since $f(\Theta)$ is compact, the bound is
+uniform in $\theta$.
+
+A $D$-encoder can sample this parameter-independent replacement $Z$
+using private randomness, reconstruct $W=Z+AD$ and $Y=D+W$, and apply
+the original paired encoder. Its decoder is unchanged and still sees
+at most $M$ labels. Data processing and boundedness of the loss imply
+that its maximum risk is at most the maximum paired risk plus
+\[
+ \frac L{2T}\sup_{\theta\in\Theta}\norm{Af(\theta)}_2.
+\]
+Let $T\to\infty$ and then take the infimum over paired procedures.
+This proves the opposite inequality in \eqref{eq:v3-exact-quotient}.
+\end{proof}
+
+This is an equality of minimax decision problems for $\theta$ under an
+unrestricted additive nuisance. It is not a sufficiency assertion for
+$(\theta,\eta)$, nor an equivalence of the complete experiments for
+estimating $\eta$. The distinction avoids identifying a nuisance-dependent
+conditional law with a parameter-independent postprocessing kernel.
+
+\subsection{Contact geometry in the noise metric}
+Let now
+\[
+ \Theta=\prod_{j=1}^d[0,a_j],\qquad a_j>0,
+ \qquad k_j\in\N,\ k_j\ge1,\qquad v_j>0.
+\]
+Assume that, for fixed constants $0<\lambda\le\Lambda<\infty$,
+\begin{equation}\label{eq:v3-contact-metric}
+ \lambda\norm{b(\theta)-b(\theta')}_2
+ \le\norm{V^{-1/2}(f(\theta)-f(\theta'))}_2
+ \le\Lambda\norm{b(\theta)-b(\theta')}_2,
+ \qquad b_j(\theta)=\theta_j^{k_j}/v_j.
+\end{equation}
+This is a two-sided condition on the actual observation map in the noise
+metric. It is stronger than a rank statement at one point, but it allows
+nonlinear, nonseparable embeddings of the contact coordinates. No
+coordinate independence of the statistical experiment is required.
+
+With $a_{(1)}\ge\cdots\ge a_{(d)}$ the ordered widths, put
+\begin{equation}\label{eq:v3-contact-profile}
+ S=\sum_{j=1}^d\min\{a_j^2,v_j^{2/k_j}\},\qquad
+ Q_M=\max_{1\le l\le d}
+       \left(\frac{\prod_{i=1}^l a_{(i)}}M\right)^{2/l}.
+\end{equation}
+Write $\mathcal R_M$ for the minimax squared Euclidean parameter risk
+in \eqref{eq:v3-pair}, with estimates projected onto $\Theta$.
+Let $\omega_l$ denote the volume of the Euclidean unit ball in $\R^l$.
+
+\begin{theorem}[Correlated, nonseparable contact and label law]
+\label{thm:v3-contact}
+Under \eqref{eq:v3-contact-metric}, for every integer $M\ge1$,
+\begin{equation}\label{eq:v3-contact-law}
+ c_{d,\Lambda}(S+Q_M)\le\mathcal R_M
+       \le 2K_{m,\lambda}S+8dQ_M,
+ \qquad K_{m,\lambda}=\max\{1,4m/\lambda^2\}.
+\end{equation}
+One may take
+\[
+ c_{d,\Lambda}=\frac12\min\left\{
+ \frac{3c^2}{32},\
+ \min_{1\le l\le d}\frac12(2\omega_l)^{-2/l}\right\},
+ \qquad c=\min\{1/2,1/(2\Lambda)\}.
+\]
+The comparison constants are independent of the contact orders, widths,
+noise scales, label budget, and unknown calibration. A deterministic
+minimum-distance estimate followed by one fixed product codebook attains
+the upper bound.
+\end{theorem}
+\begin{proof}
+The squared loss is bounded on $\Theta$, so
+Theorem~\ref{thm:v3-quotient} reduces the minimax problem exactly to
+$D\sim N(f(\theta),V)$.
+
+\emph{Estimation.} Choose a measurable minimizer
+\[
+ \widetilde\theta\in\argmin_{u\in\Theta}
+          \norm{V^{-1/2}(D-f(u))}_2.
+\]
+The minimum exists by compactness. For an explicit Borel selection,
+subdivide the parameter box dyadically. At each level choose the first
+closed child of the previously chosen box on which the minimum equals
+the global minimum. Such a child exists. The minimum over any fixed
+compact box is continuous in $D$, so all these finitely many equality
+tests are Borel. The selected nested boxes have diameters tending to zero;
+their unique limiting point is a Borel minimizer. For $G=V^{-1/2}(D-f(\theta))\sim N(0,I_m)$,
+minimality and the triangle inequality imply
+\[
+ \norm{V^{-1/2}(f(\widetilde\theta)-f(\theta))}_2\le2\norm G_2.
+\]
+It follows from \eqref{eq:v3-contact-metric} and
+$|x-y|^{k_j}\le|x^{k_j}-y^{k_j}|$ for nonnegative $x,y$ that
+\[
+ |\widetilde\theta_j-\theta_j|^2
+ \le\min\{a_j^2,(2v_j\norm G_2/\lambda)^{2/k_j}\}.
+\]
+Since $\E\norm G_2^{2/k_j}\le m^{1/k_j}$, summing gives
+$\sup_\theta\E\norm{\widetilde\theta-\theta}_2^2
+\le K_{m,\lambda}S$.
+
+\emph{Compression.} Set $\delta=2\sqrt{Q_M}$ and divide coordinate
+$j$ into $n_j=\max\{1,\lfloor a_j/\delta\rfloor\}$ equal intervals.
+Their product has at most $M$ cells: if $l$ widths exceed $\delta$,
+then $\prod_j n_j\le\prod_{i\le l}a_{(i)}/\delta^l\le M/2^l$,
+and the case $l=0$ uses one cell. Each side length is at most $2\delta$.
+The midpoint codebook therefore has squared radius at most $4dQ_M$.
+Quantize $\widetilde\theta$ to it. The squared triangle inequality
+proves the upper bound in \eqref{eq:v3-contact-law}.
+
+\emph{Statistical lower bound.} Set
+$r_j=\min\{a_j,v_j^{1/k_j}\}$ and use the $2^d$ parameter vertices
+$\theta_j(\xi)=cr_j\xi_j$, $\xi\in\{0,1\}^d$.
+For adjacent vertices differing only in coordinate $j$,
+\eqref{eq:v3-contact-metric} bounds their Gaussian relative entropy by
+\[
+ \tfrac12\Lambda^2(cr_j)^{2k_j}/v_j^2
+       \le\tfrac12\Lambda^2c^{2k_j}\le\tfrac18.
+\]
+Their total variation distance is at most $1/4$. Thresholding an estimate
+at $cr_j/2$ gives a test of bit $j$; an incorrect bit entails squared
+error at least $c^2r_j^2/4$. Pairing adjacent vertices gives average
+error probability at least $3/8$, even after compression. Summing over
+$j$ yields a minimax lower bound $3c^2S/32$.
+
+\emph{Representation lower bound.} Put uniform probability on $\Theta$.
+For each independent public seed an averaged decoder has at most $M$
+centres, whatever noisy observation produced its label. Projection onto
+the $l$ widest coordinates shows that $M$ balls of radius $r$ cover at
+most $M\omega_l r^l/\prod_{i\le l}a_{(i)}$ of the parameter mass.
+With $r=(\prod_{i\le l}a_{(i)}/(2M\omega_l))^{1/l}$, at least half
+the mass has squared error at least $r^2$. Maximizing over $l$ and
+integrating over the seed gives
+$\mathcal R_M\ge[\min_l\tfrac12(2\omega_l)^{-2/l}]Q_M$.
+Combining this bound with the statistical bound proves the stated lower
+constant.
+\end{proof}
+
+\begin{example}[Nonseparable contact observations]\label{ex:v3-coupled}
+In two dimensions let
+\[
+ b(\theta)=(\theta_1^2/v_1,\theta_2^3/v_2),\qquad
+ H(x_1,x_2)=(x_1,x_2+\alpha\sin x_1),\qquad
+ f(\theta)=V^{1/2}H(b(\theta)).
+\]
+Both $H$ and its inverse have Lipschitz constant at most $1+|\alpha|$.
+Thus \eqref{eq:v3-contact-metric} holds with
+$\lambda=(1+|\alpha|)^{-1}$ and $\Lambda=1+|\alpha|$.
+Theorem~\ref{thm:v3-contact} gives a matched law with statistical term
+$\min(a_1^2,v_1)+\min(a_2^2,v_2^{2/3})$ and the two-dimensional
+anisotropic label floor, despite the coupling of the two mean coordinates.
+For an actual correlated pair with any chosen positive definite $V$, take
+independent Gaussian variables $\xi_D\sim N(0,V)$ and
+$\xi_R\sim N(0,R)$, with $R>0$, and any matrix $A$. Set
+$\varepsilon_W=A\xi_D+\xi_R$ and
+$\varepsilon_Y=(I+A)\xi_D+\xi_R$. The joint noise covariance is
+positive definite, and its observed difference has exactly covariance $V$.
+\end{example}
+
+For a scalar channel, correlation coefficient $\rho$ gives
+$V=\sigma^2+\tau^2-2\rho\sigma\tau$. Ignoring the cross covariance
+can therefore change the resolution scale. The independent-coordinate
+experiment, including its zero-noise endpoints, remains
+Theorem~\ref{thm:v2-singular}. The positive definite hypothesis here is
+used for the exact Gaussian regression and does not replace those
+previously proved endpoints.
+
+The observation map and covariance in this section are specified parts
+of the experiment. The unknown quantity is the additive calibration,
+not an arbitrary unknown map $f$ or an unknown covariance. The theorem
+derives the statistical and label rates from the two-sided contact
+geometry; it does not infer that geometry from a finite derivative rank.
