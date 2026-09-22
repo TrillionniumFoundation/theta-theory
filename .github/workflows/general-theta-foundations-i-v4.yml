@@ -1,0 +1,145 @@
+name: General Theta Foundations I v4 revision
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v4-2026-09-22
+    paths:
+      - '.github/workflows/general-theta-foundations-i-v4.yml'
+      - '.github/revision-inputs/gtf-i-v4/**'
+      - 'papers/GTF-I-v4/**'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: gtf-i-v4-publication-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  native-source-and-review-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Recover exact native revision sources
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import base64, hashlib, io, lzma, tarfile
+          from pathlib import Path, PurePosixPath
+          parts = Path('.github/revision-inputs/gtf-i-v4')
+          encoded = b''.join((parts / ('part%d.b64' % i)).read_bytes() for i in range(6))
+          packed = base64.b64decode(encoded, validate=True)
+          expected = 'af9fcdeb9959ef8616b86eca364466239f5f312aab16d334700b60ffa9b8999b'
+          if hashlib.sha256(packed).hexdigest() != expected:
+              raise SystemExit('Native source transfer digest mismatch')
+          with tarfile.open(fileobj=io.BytesIO(lzma.decompress(packed)), mode='r:') as archive:
+              entries = archive.getmembers()
+              if len(entries) != 16:
+                  raise SystemExit('Unexpected source member count')
+              seen = set()
+              for entry in entries:
+                  path = PurePosixPath(entry.name)
+                  if (not entry.isfile() or path.is_absolute() or '..' in path.parts
+                      or path.parts[:2] != ('papers', 'GTF-I-v4') or entry.name in seen):
+                      raise SystemExit('Unsafe or duplicate source member: ' + entry.name)
+                  seen.add(entry.name)
+                  data = archive.extractfile(entry).read()
+                  target = Path(entry.name)
+                  if target.exists() and target.read_bytes() != data:
+                      raise SystemExit('Refusing to replace differing native source: ' + entry.name)
+                  target.parent.mkdir(parents=True, exist_ok=True)
+                  target.write_bytes(data)
+          print('Verified and recovered 16 exact native source files')
+          PY
+      - name: Commit native mathematical source snapshot
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add papers/GTF-I-v4
+          if ! git diff --cached --quiet; then
+            git commit -m 'paper(GTF-I v4): posterior-orbit realization, noisy expansion, critical window and collision strata'
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
+          echo "GTF_SOURCE_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - name: Install native TeX build dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended texlive-science lmodern poppler-utils
+      - name: Rebuild and verify exact source edition
+        run: python3 papers/GTF-I-v4/build.py
+      - name: Write referee handoff index
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          r = json.loads(Path('papers/GTF-I-v4/evidence/BUILD_RECEIPT.json').read_text())
+          lines = [
+              '# General Theta Foundations I — fourth revision',
+              '',
+              '**Author:** Qian Qi. **Date:** 22 September 2026.',
+              '**Complete manuscript:** [paper.pdf](papers/GTF-I-v4/paper.pdf), %s pages.' % r['pdf_pages'],
+              '',
+              'Revision branch: `revision/general-theta-foundations-i-v4-2026-09-22`.',
+              'The referee-ready branch is frozen separately after the published artifact is checked.',
+              '',
+              '## Read this edition',
+              '',
+              '| Material | Location |',
+              '|---|---|',
+              '| Integrated manuscript | [paper.pdf](papers/GTF-I-v4/paper.pdf) |',
+              '| Native TeX | [main.tex](papers/GTF-I-v4/main.tex) |',
+              '| Every v3 objection and technical comment | [RESPONSE_TO_REFEREE.md](papers/GTF-I-v4/RESPONSE_TO_REFEREE.md) |',
+              '| Statements, assumptions and proof dependencies | [PROOF_LEDGER.md](papers/GTF-I-v4/PROOF_LEDGER.md) |',
+              '| Entire eleven-paper pipeline and modern A1/A2 context | [HISTORY_AUDIT.md](papers/GTF-I-v4/HISTORY_AUDIT.md) |',
+              '| Theorem-level primary literature comparison | [LITERATURE_AUDIT.md](papers/GTF-I-v4/LITERATURE_AUDIT.md) |',
+              '| Hash-bound complete rebuild archive | [COMPILED_SOURCES.zip](papers/GTF-I-v4/evidence/COMPILED_SOURCES.zip) |',
+              '| Executed evidence | [BUILD_RECEIPT.json](papers/GTF-I-v4/evidence/BUILD_RECEIPT.json) |',
+              '',
+              '## Mathematical revision',
+              '',
+              'Theorem 2.2 gives a posterior-orbit converse for noisy renewal observations and an Nn+1-state realization of an N-centre depth-n code. Corollary 2.3 identifies the causal quantization exponent under stretched-exponential renewal tails. Proposition 2.4 treats autonomous shift closure, and Example 2.5 separates orbit quantization from same-cardinality realizability.',
+              '',
+              'Theorem 3.1 gives matched bounds for noisy expanding torus experiments in every dimension with bounded mean residual renewal life. Corollaries 3.3–3.4 separate the noise floor and establish the uniform expansion–renewal critical crossover. Proposition 3.5 transfers the experiment to conjugate nonconstant-slope maps.',
+              '',
+              'Theorem 4.1 proves global and separated-cluster minimax laws for calibrated observations of colliding-root moments. Lemmas 4.2–4.3 derive the singular modulus and matching alternatives from Newton identities and polynomial root geometry.',
+              '',
+              'All v3 quantitative bodies, the v2 quantitative body, and the first-edition foundational proofs remain in the compiled article. Previous source editions and reviews are not modified. No unresolved historical spectral, LDP, operator or phase theorem is used as a premise.',
+              '',
+              '## Exact source and executed build',
+              '',
+              '- Controlling v3 review commit: `%s`.' % r['review_commit'],
+              '- Native mathematical source commit: `%s`.' % r['source_commit'],
+              '- GitHub Actions run: `%s`.' % r['run_id'],
+              '- PDF SHA-256: `%s`.' % r['pdf_sha256'],
+              '- Complete source archive SHA-256: `%s`.' % r['compiled_source_archive_sha256'],
+              '- TeX passes: %s; retained resolved mathematical labels: %s.' % (r['compiler_passes'], r['retained_mathematical_labels']),
+              '- Complete archive input files: %s.' % r['compiled_source_archive_files'],
+              '- Ordinary and optimized diagnostics agree; four negative controls rejected in both modes; inherited v1/v2/v3 diagnostics passed.',
+              '- No unresolved references or overfull boxes; preserved historical source trees checked against their pinned Git identities.',
+              '',
+              'Build evidence identifies and checks the submitted object. It is not a formal proof certificate, independent referee approval, or journal acceptance. The publication commit is the commit containing this index and the generated PDF; the mathematical source commit above is its separately recorded predecessor.',
+              ''
+          ]
+          Path('GTF_I_V4_INDEX.md').write_text('\n'.join(lines))
+          PY
+      - name: Publish compiled manuscript and evidence
+        shell: bash
+        run: |
+          git add -f papers/GTF-I-v4/paper.pdf papers/GTF-I-v4/evidence GTF_I_V4_INDEX.md
+          if ! git diff --cached --quiet; then
+            git commit -m 'paper(GTF-I v4): publish complete referee manuscript and exact-source build receipts'
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
+          echo "Published commit: $(git rev-parse HEAD)" >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gtf-i-v4-referee-build
+          path: |
+            papers/GTF-I-v4/paper.pdf
+            papers/GTF-I-v4/evidence
+            GTF_I_V4_INDEX.md
+          retention-days: 30
