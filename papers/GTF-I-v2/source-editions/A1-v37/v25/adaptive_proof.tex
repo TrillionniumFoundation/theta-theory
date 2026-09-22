@@ -1,0 +1,167 @@
+\section{A converse under adaptive order selection}\label{sec:v25-adaptive-proof}
+\subsection{Regular acquired boxes}
+The inverse chart used to acquire a flag has two-sided Jacobian bounds.
+Recording the upper bound as well as the earlier lower bound permits
+arbitrary measurable restrictions of histories.
+
+\begin{lemma}[One regular box for all prefixes]\label{lem:v25-regular-box}
+At an edge's active checkpoint put $p=p_e$. For every calibration and
+node ordering there is a measurable subset $\Omega_e$ of the first
+$n_e$ command cube such that its uniform-command measure is bounded
+below by a positive uniform constant. On the all-failure word, the
+pushforward of this restricted command measure to
+$z_e=(\E[g_i^{a^{(e)}}\mid h])_{i\le p}$ has a density bounded above
+and below by positive uniform constants on a translated $p$-box of
+fixed positive side length. For every $\ell\le p$ with
+$d_{e,\ell}>0$, its pushforward to $(d_{e,i}z_{e,i})_{i\le\ell}$
+has density at most $C/D_{e,\ell}$. The same $\Omega_e$ works for all
+these prefixes. No density of the latent prior is required.
+\end{lemma}
+\begin{proof}
+Let $u_0$ be the common interior binomial command tuple from
+Lemma~\ref{lem:newton-attainment}, and let $b=n_eJ_e$ be the command
+dimension. That lemma gives a positive uniform least row singular value
+for $J=D(z_{e,1},\ldots,z_{e,p})(u_0)$, including exact collisions,
+and uniform first- and second-derivative bounds near $u_0$.
+Take a matrix $K$ whose rows are an orthonormal basis of $\ker J$.
+The square map
+\[
+ F(u)=(z_{e,1}(u),\ldots,z_{e,p}(u),K(u-u_0))
+\]
+has an invertible derivative at $u_0$ with uniformly bounded norm and
+inverse norm: its two row spaces are orthogonal. On a uniform interior
+ball, its derivative differs from the central derivative by at most
+half the latter's least singular value. The quantitative inverse
+argument therefore supplies a translated product box $B\times C$,
+of fixed positive side lengths, whose inverse lies inside that ball.
+Here $\dim B=p$ and $\dim C=b-p$; a zero-dimensional factor has
+volume one. On this inverse image both $\|DF\|$ and $\|(DF)^{-1}\|$
+are uniformly bounded. Consequently
+\[
+ 0<c_0\le |\det DF^{-1}(z,w)|\le C_0<\infty.
+\]
+Set $\Omega_e=F^{-1}(B\times C)$. Change variables in the constant
+uniform-command density and integrate all the $w$ coordinates. This
+gives both density bounds on $B$ and the lower bound on the command
+mass of $\Omega_e$. Integrate the last $p-\ell$ coordinates of $B$
+and scale the first $\ell$ by their positive $d_{e,i}$. The Jacobian
+of this diagonal scaling is $D_{e,\ell}$, proving the last bound.
+At zero scales no inverse is taken. Compactness and the finitely many
+node permutations make all constants uniform; no measure on latent
+parameters was differentiated.
+\end{proof}
+
+\subsection{A common event before the order is selected}
+Use the complete edge tapes of \eqref{eq:v25-risk-definitions}.
+For each edge choose the box in Lemma~\ref{lem:v25-regular-box} with
+its Leja order and full cap $p_e$. Let $\mathcal A_a$ be the event
+that the first command block of every edge belongs to $\Omega_e$ and
+that \emph{all} $T$ reports on the complete tape are failures. The
+completion commands remain unrestricted. Conditional on all commands,
+the probability of this report word is
+\[
+ \prod_{e\in E}\mu_e\left(\prod_{i=1}^{N_e}
+                                  L_{e,i,\mathrm{fail}}\right).
+\]
+Each factor is an actual evidence, and this product belongs to
+$[\kappa^T,1]$ for a common positive report margin $\kappa$.
+Independence of the command tapes and the regular-box mass bounds give
+\begin{equation}\label{eq:v25-common-mass}
+ \Prob(\mathcal A_a)\ge\beta>0
+\end{equation}
+uniformly in calibration. This event and its mass are independent of
+the scheduler and coding seed. The use of unrevealed reports in defining
+a subevent for a lower bound does not reveal them to the controller.
+
+For any edge set $F$ and positive allocation $(\ell_e)_{e\in F}$ of
+total $k$, define the potential first-block coordinates
+\[
+ X_{F,\ell}=(d_{e,i}z_{e,i})_{e\in F,\ i\le\ell_e},\qquad
+ D_{F,\ell}=\prod_{e\in F}D_{e,\ell_e}.
+\]
+They are defined by the first-block commands and all-failure formula
+whether or not that block has yet been revealed. On $\mathcal A_a$,
+if $F$ is an active cut, these are precisely the corresponding
+coordinates of the actual posterior. From the upper density bound in
+Lemma~\ref{lem:v25-regular-box}, the product input law, and the bound
+of one on the full word evidence, we obtain for every Borel set
+$U\subset\R^k$
+\begin{equation}\label{eq:v25-restricted-density}
+ \Prob\{\mathcal A_a,\ X_{F,\ell}\in U\}
+                  \le \frac{C}{D_{F,\ell}}\operatorname{vol}_k(U).
+\end{equation}
+Indeed, change variables in every first block, integrate all complementary
+coordinates and all completion commands, and bound the report likelihood
+by one. The constants are uniform over the finite list of edge sets and
+allocations. This is an upper bound for a restricted \emph{subprobability}
+measure, not an independence claim conditional on an adaptive event.
+
+\begin{proof}[Proof of Theorem~\ref{thm:v25-adaptive}]
+If $E=\varnothing$ every query has a known answer. Otherwise every
+permutation has a nonempty cut, and $Q=Q_G(M,a)>0$, since
+$V_{e,1}=1$. The deterministic construction in
+Proposition~\ref{prop:v25-fixed-order}, applied to an order minimizing
+\eqref{eq:v25-width-profile}, proves the upper bound, including the
+maximum-tape criterion. The middle inequality follows directly from
+\eqref{eq:v25-risk-definitions}.
+
+For the converse fix all independent coding seeds. The controller and
+decoder are now deterministic functions of their admitted inputs. We
+may allow the scheduler its full revealed past and allow the decoder
+the finite order prefix as extra information. There are at most $v!$
+possible complete vertex traces. For each possible permutation $\pi$,
+choose a boundary $j(\pi)$ maximizing its cut profile and a positive
+allocation attaining that profile. Denote its total by $k_\pi$ and
+its Newton product by $D_\pi$. The factorial comparisons imply
+\begin{equation}\label{eq:v25-bottleneck-volume}
+ (D_\pi/M)^{2/k_\pi}\ge c_1 Q,
+\end{equation}
+with a uniform $c_1>0$. These choices depend on $M,a,\pi$, not on
+which tape produces that trace.
+
+At this fixed trace and boundary the decoder has at most $M$ query
+prediction vectors. Apply the tensor recovery map and the appropriate
+leading nonzero Newton inverse, then project to the selected coordinates.
+These maps are defined on arbitrary centres with a uniform norm bound.
+On $\mathcal A_a$, if the loss at that boundary is at most $r^2$,
+then $X_\pi$ lies in the union of the resulting $M$ balls of radius
+$C_2r$. The order prefix and its menu are fixed when $\pi$ is fixed;
+there is no extra continuously indexed family of centres.
+By \eqref{eq:v25-restricted-density}, without conditioning on the
+trace event,
+\[
+ \begin{split}
+ &\Prob\{\mathcal A_a,\ \text{trace}=\pi,
+                       \max_{1\le j<v}\mathcal L_j\le r^2\}\\
+ &\hspace{15mm}\le C_3 M r^{k_\pi}/D_\pi
+               \le C_4(r^2/Q)^{k_\pi/2}.
+ \end{split}
+\]
+The trace classes may be arbitrary measurable sets. Summing over them,
+and taking $r^2=c_2Q$ with $c_2>0$ sufficiently small, makes the sum
+at most $\beta/2$, since $1\le k_\pi\le\sum_ep_e$ and there are
+at most $v!$ terms. Equation~\eqref{eq:v25-common-mass} gives
+\[
+ \E_\tau\sum_{j=1}^{v-1}\mathcal L_j(\tau,\xi)
+ \ge \E_\tau\max_j\mathcal L_j(\tau,\xi)
+ \ge \tfrac12\beta c_2 Q.
+\]
+All constants are independent of the fixed coding seeds. Integrate them
+and use that the maximum of $v-1$ expectations is at least their sum
+divided by $v-1$. Thus every controller satisfies
+$\max_j\E_{\tau,\xi}\mathcal L_j\ge cQ$. Taking its infimum proves
+the converse. Fixing decoder randomness above is legitimate: a finite
+menu permits pre-sampling a seed for each possible query. Alternatively,
+conditional averaging of decoder predictions only improves squared loss.
+The tape law is independent of every such seed.
+
+The full trace was only an index in a finite union bound. No future
+trace or report is supplied to the implemented predictor, and no
+conditional-history law was substituted for the actual acquisition law.
+\end{proof}
+
+The lower-bound constant may depend on the number of traces and on all
+fixed block horizons. Thus the theorem is uniform across calibration
+collisions and memory budgets, not an assertion uniform in graph size.
+It compares optimal orders and finite-state predictors; it does not
+provide a polynomial-time algorithm for constructing either.

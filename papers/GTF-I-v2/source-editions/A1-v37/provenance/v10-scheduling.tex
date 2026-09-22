@@ -1,0 +1,203 @@
+\section{Additive bit profiles and the effect of observation order}\label{sec:scheduling}
+The preceding theorem determines not only the exponent at a fixed
+calibration but the cost of reallocating one memory through a schedule.
+For $0<\varepsilon\le1$ define the nonnegative block function
+\begin{equation}\label{eq:block-bit-function}
+ b_b(n,\varepsilon,a^{(b)})=
+ \max_{0\le\ell\le p_b(n,N_b-n)}
+ \left\{\frac{\ell}{2}\log_2\frac1\varepsilon
+             +\log_2 V_{b,\ell}\right\}.
+\end{equation}
+Here the volumes are at the checkpoint $(n,N_b-n)$; the $\ell=0$
+term is zero, and a zero positive-index volume contributes $-\infty$.
+Thus $b_b(0,\varepsilon,a^{(b)})=b_b(N_b,\varepsilon,a^{(b)})=0$.
+Set
+\[
+ L_b(\varepsilon,a^{(b)})=
+       \max_{0\le n\le N_b}b_b(n,\varepsilon,a^{(b)}).
+\]
+These are real-valued comparison profiles; they are not rounded integer
+budgets for a separately allocated machine.
+
+\begin{lemma}[Merging the attained scales]\label{lem:merged-scales}
+At a checkpoint, sort the union of the first $p_b$ Leja scales from all
+active blocks into $\delta_1\ge\cdots\ge\delta_{P_s}\ge0$. Then
+\begin{equation}\label{eq:merged-scales}
+ A_{s,k}\asymp\prod_{j=1}^k\delta_j\quad(1\le k\le P_s),
+ \qquad
+ b_b(n_b,\varepsilon,a^{(b)})=
+ \sum_{j=1}^{p_b}\left[\log_2\frac{d_{b,j}}{\sqrt\varepsilon}\right]_+
+       +O(1).
+\end{equation}
+Zero scales contribute zero to the positive-part sum. All constants are
+uniform in calibration and $\varepsilon$. Thus the resolved axes under
+composition are the union of the attained block axes, not the products
+of all ambient tensor axes.
+\end{lemma}
+\begin{proof}
+Within every block the scales are nonincreasing. With a tie rule respecting
+predecessors, the largest $k$ members of their union form an initial
+segment in each block. They are therefore a feasible allocation in
+\eqref{eq:composition-volumes} after $V_{b,\ell}$ is replaced by
+$D_{b,\ell}$. No other selection of $k$ scales has a larger product.
+The bounds $D_{b,\ell}\le V_{b,\ell}\le\ell!D_{b,\ell}$ give
+the first comparison, also when its two sides vanish. They change the
+maximum logarithmic expression for a block by a bounded amount. With
+$D_{b,\ell}$ that expression is the maximum of initial partial sums
+of the nonincreasing sequence
+$\log_2(d_{b,j}/\sqrt\varepsilon)$. It equals the sum of its positive
+terms, with the empty partial sum allowed. Zero scales can be omitted
+before taking logarithms. This proves the second assertion.
+\end{proof}
+
+\begin{theorem}[Direct sum of persistent bit requirements]\label{thm:shared-bits}
+Let $B_\omega^*(\varepsilon,a)$ be the smallest nonnegative integer
+number of persistent bits with which one stage-compatible transducer
+has maximum-history, maximum-checkpoint regret at most $\varepsilon$
+in the product experiment. Then
+\begin{equation}\label{eq:shared-bit-law}
+ B_\omega^*(\varepsilon,a)=
+     \max_{0\le s\le T}\sum_{b=1}^B
+       b_b(n_b(s),\varepsilon,a^{(b)})+O(1).
+\end{equation}
+The same formula holds for the maximum unconditional checkpoint
+criterion. The bounded remainder is uniform for all
+$0<\varepsilon\le1$, all calibrations and all schedules of the fixed
+block horizons. In particular, arbitrary joint coding cannot decrease
+the right side by an unbounded number of bits.
+\end{theorem}
+\begin{proof}
+For $M=2^j$, solving all the inequalities
+$(A_{s,k}/M)^{2/k}\le\varepsilon$ gives
+\[
+ j\ge
+ F_\omega(\varepsilon,a):=
+ \max_{s,\,0\le k\le P_s}
+       \left\{\frac{k}{2}\log_2\frac1\varepsilon
+                            +\log_2 A_{s,k}(a)\right\}.
+\]
+The $k=0$ term is zero. By \eqref{eq:composition-volumes}, the
+maximization at a fixed $s$ is exactly
+\[
+ \begin{split}
+ &\max_{0\le\ell_b\le p_b}
+       \sum_b\left\{\frac{\ell_b}{2}\log_2\frac1\varepsilon
+                                        +\log_2V_{b,\ell_b}\right\}\\
+ &\hspace{25mm}=\sum_b b_b(n_b(s),\varepsilon,a^{(b)}).
+ \end{split}
+\]
+Terms with a zero factor are omitted on both sides, and each independent
+choice has its feasible zero index, so this separation is valid at exact
+collisions as well.
+
+The constants $c,C$ in Theorem~\ref{thm:shared-state} replace
+$\varepsilon$ by a fixed constant multiple of $\varepsilon$ in these
+inequalities. Every slope is at most $\max_sP_s/2$, a fixed number;
+such a replacement changes $F_\omega$ by a bounded amount. Integer
+rounding costs at most one additional bit, and a state class with fewer
+than $2^j$ labels can be padded with unused labels. Applying both the
+upper and lower comparisons in \eqref{eq:shared-streaming} proves
+\eqref{eq:shared-bit-law} for either criterion. This uses the joint
+converse of that theorem, not a restriction to product codes.
+\end{proof}
+
+At a single checkpoint the equivalent expression is
+$\sum_{j=1}^{P_s}[\log_2(\delta_j/\sqrt\varepsilon)]_++O(1)$.
+Consequently, up to bounded additive bits, composition introduces no
+new accuracy thresholds beyond those in the attained block scale lists.
+This concerns a fixed count vector; a change in which checkpoint is
+worst can of course introduce an additional transition in the maximum
+in \eqref{eq:shared-bit-law}. Neither statement identifies exact
+finite-budget thresholds or leading distortion constants.
+
+\begin{theorem}[Serial and overlapping schedules]\label{thm:schedule-extrema}
+Let $\mathcal W$ be the finite set of schedules with the prescribed
+block horizons. Uniformly for $\varepsilon\in(0,1]$ and
+$a\in\prod_bK_b$,
+\begin{equation}\label{eq:schedule-extrema}
+ \begin{split}
+ \min_{\omega\in\mathcal W} B_\omega^*(\varepsilon,a)
+      &=\max_b L_b(\varepsilon,a^{(b)})+O(1),\\
+ \max_{\omega\in\mathcal W} B_\omega^*(\varepsilon,a)
+      &=\sum_b L_b(\varepsilon,a^{(b)})+O(1).
+ \end{split}
+\end{equation}
+Every serial schedule, completing each block before starting the next,
+attains the first formula. The same fixed serial schedule works for all
+calibrations and accuracies; it need not be selected anew. For the second
+formula one can choose a schedule that visits a count vector in which
+each block attains its own maximum. These assertions also hold for the
+unconditional bit criterion. For exact continuous memory, the corresponding
+identities hold without remainders:
+\begin{equation}\label{eq:exact-schedule-extrema}
+ \min_{\omega\in\mathcal W}D_\omega(a)=\max_bD_{A_b}(N_b),
+ \qquad
+ \max_{\omega\in\mathcal W}D_\omega(a)=\sum_bD_{A_b}(N_b).
+\end{equation}
+\end{theorem}
+\begin{proof}
+Every schedule traverses every integer local count $0\le n\le N_b$
+of every block. Since the functions in \eqref{eq:block-bit-function}
+are nonnegative, its maximum sum is at least $\max_bL_b$. In a
+serial schedule, at any checkpoint only one block can have a count
+strictly between its endpoints. The remaining blocks are either untouched
+or completed and have bit profile zero. Its maximum sum is therefore
+exactly $\max_bL_b$.
+
+For every schedule the sum at every checkpoint is at most $\sum_bL_b$.
+Choose $n_b^*$ maximizing the finite list for block $b$, and first execute
+$n_b^*$ trials in each block, in any fixed block order. Then execute all
+remaining trials. This is an admitted schedule and visits the count
+vector $(n_b^*)_b$, where the sum is exactly $\sum_bL_b$. These are
+exact extrema for the real-valued profiles. Theorem~\ref{thm:shared-bits}
+transfers them to integer bit budgets with a uniform bounded remainder.
+A maximizing schedule may depend on calibration and accuracy, unlike the
+serial minimizing schedule. The identical argument with the nonnegative
+integer functions $d_{A_b}(n,N_b-n)$ and
+Theorem~\ref{thm:product-dimension} proves
+\eqref{eq:exact-schedule-extrema} without a remainder.
+\end{proof}
+
+\begin{corollary}[An order-dependent change of the sharp exponent]\label{cor:concurrency-exponent}
+Fix integers $B,h\ge1$. In each of $B$ independent blocks take
+$A_b=\{0,1\}$, $N_b=2h$, any fixed full-support prior, and the two
+positive cells
+\[
+ k_0(t)=\tfrac12+\tfrac14t,\qquad
+ k_1(t)=\tfrac12-\tfrac14t.
+\]
+Use a fixed admitted command cube in each block. A serial schedule has
+exact continuous peak dimension $h$ and streaming regret
+$\asymp M^{-2/h}$. A schedule that first brings every block to count
+$h$ has peak dimension $Bh$ and streaming regret
+$\asymp M^{-2/(Bh)}$. Both use exactly $2Bh$ raw trials, one shared
+$M$-label memory, and the full tensor query protocol. The comparison
+holds for both regret criteria.
+\end{corollary}
+\begin{proof}
+The cells sum to one, lie in $[1/4,3/4]$, and have a coefficient
+matrix of rank two. Each block has
+$d_{A_b}(n,2h-n)=\min(n,2h-n)$ and peak $h$.
+Theorem~\ref{thm:schedule-extrema} gives the two stated exact peaks,
+the latter being attained at the simultaneous count vector $(h,\ldots,h)$.
+At this fixed calibration the positive determinant volumes are fixed
+positive numbers up to the number of distinct sites. Hence the largest
+nonzero index in \eqref{eq:composition-volumes} at a checkpoint is
+$\sum_b d_{A_b}(n_b,m_b)$. For $M\ge1$ the corresponding profile
+has order $M^{-2/d_\omega(s,a)}$ when the dimension is positive.
+Taking its maximum and applying Theorem~\ref{thm:shared-state} proves
+the two regret laws. All trial counts and memory conventions are exactly
+those in the product experiment; no separate memories or uncharged
+copies of previous block histories are used.
+\end{proof}
+
+The serial saving has a precise operational reason: once a block has no
+remaining trial, its posterior cannot affect a future-only query, and
+independence prevents it from changing the untouched blocks' priors.
+The conclusion does not authorize erasing a statistic that is explicitly
+requested by a retrospective payoff. It also makes no assertion about
+unknown calibration, dependent priors, adaptive schedule selection, or a
+horizon-uniform arithmetic implementation. Within the stated protocol,
+the upper and lower bounds nevertheless concern the unrestricted joint
+persistent state, rather than a prescribed allocation of separate block
+memories.

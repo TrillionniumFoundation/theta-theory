@@ -1,0 +1,174 @@
+\section{Causal quantization with feedback and stopping}\label{sec:emulation}
+\subsection{Admissible state domains}
+Consider a predictive realization $s_t(h_t)$ with a known initial state
+$s_0$. Let $(D_t,d_t)$ be admissible metric state domains containing every
+attainable state. They may also contain normalized beliefs that are not
+attained at that precise time. This causes no problem if all updates and
+readouts are genuinely defined on $D_t$. What is forbidden is evaluating an
+update at an artificial point where it has no experimental meaning or no
+stated extension.
+
+Assume common action availability on each domain, or work within a fixed
+continuation-interface component. For each input $(a,y)$, let
+$F_t(\cdot,a,y):D_t\to D_{t+1}$ be Borel and satisfy
+\begin{equation}\label{eq:update-lip}
+ d_{t+1}(F_t(s,a,y),F_t(\tilde s,a,y))\le L_td_t(s,\tilde s).
+\end{equation}
+The known-calibration formulas implementing $F_t$ are independent of the
+unknown parameter. If there is a parameterized law, write the next-report
+kernel as $g_t^\lambda(dy\mid s,a)$ and assume
+\begin{equation}\label{eq:report-lip}
+ \norm{g_t^\lambda(\cdot\mid s,a)-g_t^\lambda(\cdot\mid\tilde s,a)}_{\TV}
+ \le\kappa_td_t(s,\tilde s)
+\end{equation}
+uniformly over the relevant parameter domain. The same Borel state update
+must represent every law for a parameter-uniform statement. For a single
+prepared Bayesian experiment there is no additional parameter supremum.
+
+Choose finite representative sets $C_t\subset D_t$ with $|C_t|\le M_t$
+and Borel quantizers $q_t:D_t\to C_t$ satisfying
+$d_t(s,q_ts)\le r_t$. A numerical update
+$\widetilde F_t(c,a,y)\in D_{t+1}$ may replace the exact update at a
+representative, with
+\begin{equation}\label{eq:update-numerics}
+ d_{t+1}(\widetilde F_t(c,a,y),F_t(c,a,y))\le\eta_{t+1}.
+\end{equation}
+Set $\hat s_0=s_0$ and implement
+\begin{equation}\label{eq:finite-machine}
+ \hat s_{t+1}=q_{t+1}\widetilde F_t(\hat s_t,a_t,y_{t+1}).
+\end{equation}
+The persistent state is only the index of $\hat s_t$ in $C_t$.
+
+\begin{theorem}[Finite-state emulation]\label{thm:emulation}
+Under \eqref{eq:update-lip}--\eqref{eq:update-numerics}, define
+\begin{equation}\label{eq:error-b}
+ b_0=0,\quad b_{t+1}=L_tb_t+r_{t+1}+\eta_{t+1},\quad
+ b_t=\sum_{j=1}^t(r_j+\eta_j)\prod_{i=j}^{t-1}L_i.
+\end{equation}
+Then the following assertions hold.
+
+\textup{(i)} On every admitted common command/report sequence,
+$d_t(s_t,\hat s_t)\le b_t$. If the physical prediction readout is
+$K_t$-Lipschitz, its excess squared error is at most $K_t^2b_t^2$.
+
+\textup{(ii)} Define the finite-state reference experiment to use the same
+representative update \eqref{eq:finite-machine}, but to draw its next
+report from $g_t^\lambda(\cdot\mid\hat s_t,a_t)$. For any common causal
+feedback controller, the visible path laws of the actual experiment with
+the representative machine and of this finite-state reference experiment
+satisfy
+\begin{equation}\label{eq:emulation-TV}
+ \norm{P_{N,\lambda}^{\alpha}-\widehat P_{N,\lambda}^{\alpha}}_{\TV}
+ \le \min\left\{1,\sum_{t=0}^{N-1}\kappa_tb_t\right\}.
+\end{equation}
+The histories here include the applied actions, reports, and retained
+labels. A shared visible stopping rule replaces the deterministic sum by
+$\E_{P^\alpha_\lambda}\sum_{t<\sigma\wedge N}\kappa_tb_t$.
+
+\textup{(iii)} Any additional causal simulator is charged as in
+Theorem~\ref{thm:composition}. A feedback controller with $D_t$ own states
+is implemented with at most $D_tM_t$ persistent pairs. For a common bounded
+path-dependent loss, the risk-transfer error is at most its range times the
+right side of \eqref{eq:emulation-TV}.
+\end{theorem}
+\begin{proof}
+For \textup{(i)}, insert successively the exact update from the retained
+representative and its numerical approximation. The triangle inequality,
+\eqref{eq:update-lip}, the numerical error, and the covering radius give
+\[
+ d_{t+1}(s_{t+1},\hat s_{t+1})
+ \le L_td_t(s_t,\hat s_t)+\eta_{t+1}+r_{t+1}.
+\]
+Induction proves \eqref{eq:error-b}. The physical readout bound follows
+by its Lipschitz property and the conditional squared-loss identity.
+This argument remains valid when the actions depend on the retained label:
+it compares the exact posterior and the representative along the actual
+same sequence of applied commands and reports.
+
+For \textup{(ii)}, at any common visible prefix the applied controller has
+the same action kernel. The representative $\hat s_t$ is the same
+measurable function of that prefix in both experiments. In the actual law,
+the exact predictive state is $s_t$; in the finite-state reference law, the
+next-report kernel is evaluated at $\hat s_t$. Their conditional
+variation distance is at most $\kappa_tb_t$ by \textup{(i)} and
+\eqref{eq:report-lip}. The next label is a common deterministic function
+of the action, report, and current label, so appending it does not increase
+the conditional variation distance. Apply Lemma~\ref{lem:telescoping}.
+Stopping makes the conditional kernels identical after the stopping time,
+which gives the predictable active-step bound.
+
+For \textup{(iii)}, pair the retained representative with the controller's
+internal state. Each next action and update then reads only this pair and
+current inputs. The state cardinality is bounded by the product. The
+bounded-loss and extra-simulator statements are precisely the conclusions
+of Theorem~\ref{thm:composition}.
+\end{proof}
+
+The theorem is a directional emulation statement. It does not construct a
+reverse kernel from the finite-state reference experiment to the raw
+physical data. It therefore does not claim two-sided Le Cam equivalence.
+Nor does it estimate an unknown predictive update. The implemented update
+and representatives are known; uniformity over a statistical family is
+available only under the explicitly common update conditions above.
+
+\subsection{What feedback does and does not require}
+There are two different uses of a finite filter. One can predict on an
+arbitrarily selected actual input sequence; this uses only
+Theorem~\ref{thm:emulation}\textup{(i)}. One can also use a compressed
+controller to choose inputs. That still gives accurate filtering along its
+own actual run, but comparison with the original full-information optimal
+controller is another problem. Part \textup{(ii)} compares a common
+controller across two experiments and so supplies a valid route through
+experiment simulation. It does not require the controller to be Lipschitz,
+because identical prefixes produce identical action laws. A discontinuous
+policy evaluated at two different approximate states is not being assumed
+to choose the same action.
+
+For example, minimizing a terminal common decision loss over all
+$D_t$-state controllers in the finite-state reference experiment gives a
+source controller with $D_tM_t$ states and the corresponding
+\eqref{eq:emulation-TV} risk allowance. This need not approximate the
+unrestricted optimal source policy, whose comparison would require a
+separate richness theorem for the controller class.
+
+\subsection{Uniform prediction and finite-horizon path comparison}
+\begin{corollary}[Contractive implementation]\label{cor:contractive}
+If $L_t\le\rho<1$, $r_t\le r$, and $\eta_t\le\eta$ uniformly, then
+\[
+ \sup_td_t(s_t,\hat s_t)\le\frac{r+\eta}{1-\rho}.
+\]
+For a bounded physical readout with uniform Lipschitz constant $K$, the
+prediction excess is at most $K^2(r+\eta)^2/(1-\rho)^2$ at every time.
+If also $\kappa_t\le\kappa$, the path-law error on $N$ steps is at most
+$\min\{1,N\kappa(r+\eta)/(1-\rho)\}$.
+\end{corollary}
+\begin{proof}
+Sum the geometric series in \eqref{eq:error-b}, then apply the two parts of
+Theorem~\ref{thm:emulation}.
+\end{proof}
+
+A uniform per-checkpoint prediction bound is not uniform total-variation
+closeness of two infinite path laws. The last display may grow with $N$.
+Two processes that are arbitrarily close at each step can remain
+statistically distinguishable from a sufficiently long record.
+If a general construction uses a different arbitrary codebook at each
+time, it is a time-indexed machine description, not automatically a finite
+uniform program. The dynamic construction in the next section uses one
+fixed invariant domain and one fixed codebook, so that distinction does
+not obstruct its infinite-time statement.
+
+\subsection{Model or calibration perturbations}
+Suppose an implementable reference update $F_t^0$ has
+$d(F_t(s,a,y),F_t^0(s,a,y))\le\delta_{t+1}$ on the relevant domain, and its
+report law differs by at most $\zeta_t$ at the same state. Repeating the
+proof replaces $r_j+\eta_j$ by $r_j+\eta_j+\delta_j$ in
+\eqref{eq:error-b} and $\kappa_tb_t$ by $\kappa_tb_t+\zeta_t$ in
+\eqref{eq:emulation-TV}. This is a deterministic certificate, not an
+unpaid pilot. If a preliminary estimate yields such bounds only on an event
+of probability $1-p$, bounded risks receive an additional allowance of at
+most their range times $p$, and the pilot's data and persistent state must
+be charged.
+
+The perturbation must remain in the same physical metric and admissible
+domain. A reparametrization with an unbounded inverse near a degeneracy
+cannot be inserted while keeping the old constants.

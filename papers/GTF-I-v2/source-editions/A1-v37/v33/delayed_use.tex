@@ -1,0 +1,184 @@
+\section{A positive delayed-use experiment with exact causal risk}
+\label{sec:v32-delayed}
+
+The compatibility equations have an elementary test in which two schedules
+are both admissible and local prediction costs are strictly positive.
+The calculation below also records the effect of \emph{not} supplying a
+persistent public seed. It is a separate finite positive experiment,
+not a substitute for the general collision theorem.
+
+Fix $0<\gamma\le1/8$ and $0<e\le \gamma/2$. Let
+$Z_1,Z_2,V_1,V_2$ be independent symmetric signs. The four acquisition
+reports $X_1,X_2,U_1,U_2$ are conditionally independent, with
+\[
+ \Pr(X_j=x\mid Z_j=z)=\tfrac12(1+xz/2),\qquad
+ \Pr(U_j=u\mid V_j=v)=\tfrac12(1+uv/2).
+\]
+All acquisition probabilities are at least $1/4$, and the reports are
+independent symmetric signs unconditionally. Query $j$ is a Bernoulli
+trial of latent success probability
+\[
+             \tfrac12+2\gamma Z_j+2eV_j.
+\]
+Its success and failure probabilities are at least $1/8$. Once its two
+reports have been acquired, the full-history conditional mean is
+\begin{equation}\label{eq:v32-delayed-target}
+              \tfrac12+\gamma X_j+eU_j.
+\end{equation}
+
+There are two public, deterministic admissible schedules. The
+\emph{early} schedule reads all four acquisition reports as one block
+before checkpoint 1; no informative acquisition occurs between the
+checkpoints. The \emph{just-in-time} schedule reads $(X_1,U_1)$ before
+checkpoint 1 and $(X_2,U_2)$ before checkpoint 2. In both schedules
+memory is charged after each acquisition block and at each checkpoint;
+there are two retained labels, the clock is free, no public seed is
+retained, and no score or past prediction is available for later updates.
+Each report is acquired exactly once. Only one independently selected
+checkpoint query is executed. All four scheduled acquisition trials are
+completed even when checkpoint 1 is scored, and the score is not fed back.
+Thus both schedules use four acquisition reports and one scored query.
+Queries at unselected checkpoints are not additional observations. The block-boundary charging
+rule is part of this example; it is not the per-report rule of the scalar
+monomial theorem.
+
+Let $V_{\rm early}(e)$ and $V_{\rm jit}(e)$ denote the infimum of the
+maximum of the two expected squared excesses over the full-history
+predictors. Private update randomization is allowed in both infima.
+
+\begin{theorem}[Exact unseeded delayed-use law]\label{thm:v32-delayed}
+For the experiment and resource convention just specified,
+\begin{equation}\label{eq:v32-delayed-exact}
+ \begin{split}
+ V_{\rm jit}(e)&=e^2,\\
+ V_{\rm early}(e)&=\gamma^2+e^2-
+       \max\left\{\frac{\gamma^2}{3},
+                       \frac{(2\gamma+e)^2}{15}\right\}.
+ \end{split}
+\end{equation}
+Both values are attained by deterministic two-label encoders and fixed
+stage-dependent decoders. In particular,
+\[
+ \frac{V_{\rm early}(e)}{V_{\rm jit}(e)}\longrightarrow\infty
+                         \quad\hbox{as }e\downarrow0.
+\]
+This comparison is between two admissible common-controller designs with
+the same total acquisition count, the same query protocol and the same
+retained-label and seed convention. It is not a comparison with
+incompatible checkpoint-specific initial designs.
+\end{theorem}
+
+\begin{proof}
+We work with the centered targets
+$Y_j=\gamma X_j+eU_j$, whose variances are $\gamma^2+e^2$.
+For a single current target the four values are
+$-\gamma-e,-\gamma+e,\gamma-e,\gamma+e$, all with probability $1/4$.
+For squared loss an optimum two-center scalar quantizer partitions an
+ordered set into contiguous cells: assigning each point to a nearest
+center cannot increase loss. The middle split has distortion $e^2$.
+The two extreme splits have explained variance $(\gamma+e)^2/3$, whereas
+the middle split has explained variance $\gamma^2$. Since
+$e\le \gamma/2$ implies $(\gamma+e)^2/3\le3\gamma^2/4$, the middle split is
+optimal. A fresh current pair is independent of all earlier retained
+information, which cannot enlarge the two available reconstruction
+values at that checkpoint. Resetting to the sign $X_j$ therefore attains
+$e^2$ at both checkpoints, and the one-block lower bound proves the
+just-in-time formula.
+
+For the early schedule, later private transitions without new information
+cannot improve on decoding directly from the first retained label.
+Indeed, conditional on that label, averaging any later random prediction
+cannot increase squared loss, and its conditional expectation is a
+function of that label alone. Thus every early controller is dominated
+by a stochastic binary encoder of the four-report word followed by two
+fixed decoders.
+
+Write $Q\in[0,1]$ for the conditional probability of label 1 given that
+word, let $p=\mathbb E Q$, and put $v_j=\mathbb E(Y_jQ)$. If
+$0<p<1$, centroid decoding makes checkpoint $j$'s risk
+\begin{equation}\label{eq:v32-binary-centroid}
+ \gamma^2+e^2-\frac{v_j^2}{p(1-p)}.
+\end{equation}
+A constant encoder explains no variance. Independent reflection of either
+coordinate pair $(X_j,U_j)$ changes the sign of $v_j$ without changing
+$p$ or the objective. We may therefore take $v_1,v_2\ge0$.
+Replacing $Q$ by the average of itself and its coordinate-swapped version
+preserves $p$ and changes both $v_j$ to $(v_1+v_2)/2$. This cannot
+decrease their smaller square. It is an allowed private randomized
+encoder, not a public mixture of decoders. We may consequently optimize
+over encoders with $v_1=v_2$.
+
+Put $S=Y_1+Y_2$. At a fixed $p$, the largest possible value of
+$\mathbb E(SQ)$ is obtained by taking an upper tail of $S$, randomizing
+only at a tied threshold. This follows by transferring any positive
+assignment mass from a smaller value of $S$ to a larger one. Symmetric
+assignment within ties gives equal coordinate correlations. Relabeling
+and joint reflection reduce the range to $0<p\le1/2$.
+On an interval between successive tail masses, write
+$\mathbb E(SQ)=A+sp$, where $s\ge0$ and $A\ge0$. Apart from a
+positive constant, the explained variance is
+\[
+                       \frac{(A+sp)^2}{p(1-p)}.
+\]
+Its derivative has the sign of $(s+2A)p-A$ whenever its numerator is
+nonzero. It therefore has no interior strict maximum. It is enough to
+consider the finite tail endpoints, including a half-mass endpoint.
+
+The sixteen values of $S$ are sums of
+$\gamma(X_1+X_2)+e(U_1+U_2)$. For $e\le \gamma/2$, the sums of the
+largest $n$ values, $1\le n\le8$, are the following $A_n$:
+\begin{center}
+\begin{tabular}{c c c}
+\toprule
+$n$ & $A_n$ & explained variance $A_n^2/[4n(16-n)]$\\
+\midrule
+1 & $2\gamma+2e$ & $(\gamma+e)^2/15$\\
+2 & $4\gamma+2e$ & $(2\gamma+e)^2/28$\\
+3 & $6\gamma+2e$ & $(3\gamma+e)^2/39$\\
+4 & $8\gamma$ & $\gamma^2/3$\\
+5 & $8\gamma+2e$ & $(4\gamma+e)^2/55$\\
+6 & $8\gamma+4e$ & $(2\gamma+e)^2/15$\\
+7 & $8\gamma+4e$ & $4(2\gamma+e)^2/63$\\
+8 & $8\gamma+4e$ & $(2\gamma+e)^2/16$\\
+\bottomrule
+\end{tabular}
+\end{center}
+Ties at $e=\gamma/2$ do not change these sums. Rows 1 and 2 are bounded
+by row 6, and rows 7 and 8 are also bounded by row 6. Row 3 is bounded
+by row 4, since
+$4\gamma^2-6\gamma e-e^2\ge3\gamma^2/4$.
+For row 5, if $e\le \gamma/4$ then
+$7\gamma^2-24\gamma e-3e^2\ge13\gamma^2/16>0$, so row 4 dominates.
+If $e\ge \gamma/4$, then
+$-\gamma^2+5\gamma e+2e^2\ge3\gamma^2/8>0$, so row 6 dominates.
+Thus the largest explained variance is the maximum in
+\eqref{eq:v32-delayed-exact}.
+
+Both remaining candidates are attained without encoder randomization.
+The four-word tail is $\{X_1=X_2=1\}$. Its two conditional centered
+means are $(\gamma,\gamma)$ and $(-\gamma/3,-\gamma/3)$.
+The six-word tail adds
+$\{X_1=-X_2,\ U_1=U_2=1\}$. Its centered means in either coordinate
+are $(2\gamma+e)/3$ and $-(2\gamma+e)/5$. Add $1/2$ to obtain the allowed
+prediction probabilities. These two encoders attain the computed maximum
+of the explained variances, proving the exact formula. Finally,
+$V_{\rm early}(e)\to2\gamma^2/3>0$ while $V_{\rm jit}(e)=e^2$.
+\end{proof}
+
+The active branch changes at $e=(\sqrt5-2)\gamma$. The formula is an
+analytic solution of the private-randomization minimax problem, not merely
+an enumeration of deterministic partitions. A retained public coin gives
+a different decision problem and need not have this value. For example,
+a fair public coin that selects which large sign $X_j$ to retain gives
+risk $\gamma^2/2+e^2$ at each checkpoint. This observation is an admissible
+upper bound only in that enlarged resource convention. It is not used in
+Theorem~\ref{thm:v32-delayed}.
+
+At each checkpoint the currently scored marginal law is the same in the
+two schedules, and its two-label distortion is $e^2$. Nevertheless, the
+common early controller must preserve competing directions for later
+use. Equations~\eqref{eq:v32-compatible} retain that constraint. The
+example exhibits its consequence in a model with positive likelihoods and
+positive local risks; the uniform approximation and relative certificate
+results address the whole prescribed monomial family, rather than this
+one finite test alone.

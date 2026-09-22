@@ -1,0 +1,132 @@
+\subsection{The global attainable law}
+\begin{theorem}[Collision-uniform checkpoint classification]\label{thm:intrinsic-checkpoint}
+Under the assumptions of this section there are $0<c\le C<\infty$
+such that, for every $a\in K$ and integer $M\ge1$,
+\begin{equation}\label{eq:intrinsic-checkpoint}
+ c\Psi_{n,m}(M,a)\le\overline R_{M;n,m}^{a}
+ \le R_{M;n,m}^{a,\max}\le C\Psi_{n,m}(M,a).
+\end{equation}
+The unconditional lower law uses independent uniform acquisition commands.
+The upper code is deterministic, has at most $M$ reachable representatives,
+and works on every admitted history. The lower law permits the independent
+coding randomization of Definition~\ref{def:finite-state}. Constants may
+depend on $K,C,\eta,\mu,n,m$, but not on $a$ or $M$.
+\end{theorem}
+\begin{proof}
+Let $D_a=\operatorname{diag}(d_j)$. For one report word each coordinate
+of $z_a(h)$ has the form $N_j(u)/Z(u)$, with numerator and evidence
+polynomials of degree at most $n$ in the command variables and
+$Z(u)\ge\kappa^n$. Thus
+\[
+ S_a=\{D_az_a(h):|h|=n\}
+\]
+is compact and has coefficient-independent bounded semialgebraic format:
+it is a finite union of projections of the formulas
+$Z(u)y_j=d_jN_j(u)$ on the command cube. Prior integrals and node
+values are real coefficients in these formulas. They need not depend
+semialgebraically on $a$.
+
+Individually normalizing the $n$ report factors puts them in affine
+hyperplanes of dimension $r-1$. The moment map is rational in those
+coordinates. Hence $\dim S_a\le p$. Lemma~\ref{lem:newton-attainment}
+also gives $|z_{a,j}|\le B$, so $S_a$ lies in the rectangle with
+half-widths $Bd_1\ge\cdots\ge Bd_{q_m}$. By
+Lemma~\ref{lem:tame-rectangle}, it has at most $M$ reachable
+representatives with covering radius bounded by
+\[
+ C\max_{\ell\le p}
+       \left(M^{-1}\prod_{j\le\ell}d_j\right)^{1/\ell}.
+\]
+The physical metric equivalence follows from \eqref{eq:leja-metric}
+and the full-column-rank product-probe matrix $G_m$. A fixed tie rule
+makes nearest-representative encoding Borel. Squaring and applying
+\eqref{eq:leja-volume} gives the upper bound in
+\eqref{eq:intrinsic-checkpoint}, with the integer budget already enforced
+by Lemma~\ref{lem:tame-rectangle}.
+
+For the lower bound, first average any randomized decoder conditional on
+its label; squared loss cannot increase. Orthogonally project its query
+centers onto the affine physical query span, apply a fixed left inverse
+of $G_m$, and then the inverse of the leading nonzero block of $L_a$.
+These maps have uniformly bounded norms. Projection onto any first
+$\ell\le\min(p,s)$ coordinates reduces the squared-error problem to
+the marginal of the cube in Lemma~\ref{lem:newton-attainment}, scaled
+by $d_1,\ldots,d_\ell$. The probability that $M$ radius-$b$ balls
+cover this uniform rectangle is at most
+\[
+ C_\ell M b^\ell/(d_1\cdots d_\ell).
+\]
+Choose $b=c_\ell(d_1\cdots d_\ell/M)^{1/\ell}$ with the
+constant small enough that at least half the minorized mass remains.
+Its mean squared error is at least a fixed multiple of $b^2$.
+An encoder's randomized assignment cannot improve upon the distance to
+the nearest of its centers. Independent public coding randomness can be
+fixed and then averaged, since it does not generate the acquisition law.
+Maximize over $\ell$. For $\ell>s$ the determinant volume is zero,
+so no additional term is needed. Equation~\eqref{eq:leja-volume}
+now gives the lower bound. The unconditional optimum is bounded above
+by the minimax optimum, completing the proof.
+\end{proof}
+
+\begin{theorem}[Causal classification across all collision strata]\label{thm:intrinsic-streaming}
+For the same fixed experiment and horizon, there exist $c,C>0$ such that
+for every known $a\in K$ and every integer $M\ge1$ there exists a
+\emph{single, stage-compatible} deterministic $M$-state transducer with
+maximum-history, maximum-checkpoint regret at most $C\Xi_N(M,a)$.
+Every $M$-state transducer has maximum unconditional checkpoint regret at
+least $c\Xi_N(M,a)$ under one common independent uniform exploration law.
+Equivalently,
+\begin{equation}\label{eq:intrinsic-streaming}
+ c\Xi_N(M,a)\le\mathfrak R_{M,N}^{a,\mathrm{av}}
+ \le\mathfrak R_{M,N}^{a,\max}\le C\Xi_N(M,a).
+\end{equation}
+The transducer may depend on $a$ and $M$. Constants are uniform in both;
+codebooks are not asserted to be calibration-blind. It stores only its
+representative index. The clock, known calibration and fixed real-valued
+program are read-only, as in Definition~\ref{def:finite-state}.
+\end{theorem}
+\begin{proof}
+At stage $n$ let $m=N-n$ and store a representative in the reachable
+\emph{raw} moment image indexed by $\Lambda_m$, including the constant
+coordinate $v_{me_0}=1$. For a new factor
+$f(t)=\sum_i f_i(g,x)t^{a_i}$, the exact update is
+\begin{equation}\label{eq:formal-multiindex-update}
+ v'_\alpha=
+ \frac{\sum_i f_i(g,x)v_{\alpha+e_i}}
+      {\sum_i f_i(g,x)v_{e_i+(m-1)e_0}},
+ \qquad \alpha\in\Lambda_{m-1}.
+\end{equation}
+Every index on the right belongs to $\Lambda_m$. Coincident labels
+have equal moment values and cause no ambiguity. On the segment joining
+any two reachable moment vectors, the denominator is a report probability
+under a posterior mixture and is at least $\kappa$. Coefficients are
+uniformly bounded and raw moments belong to $[0,1]$. Differentiating the
+quotient gives a Lipschitz constant independent of all exponent gaps.
+
+At every stage Theorem~\ref{thm:intrinsic-checkpoint} provides a raw
+reachable codebook of cardinality at most $M$ and covering radius at most
+$C_n\Psi_{n,N-n}(M,a)^{1/2}$. Update a representative by
+\eqref{eq:formal-multiindex-update}, then quantize in the next reachable
+codebook. Updating a reachable representative produces a reachable next
+state, so this quantizer is always evaluated on its domain. If $e_n$
+is the raw error, then
+\[
+ e_0=0,\qquad e_{n+1}\le L_ne_n+
+        C_{n+1}\Psi_{n+1,N-n-1}(M,a)^{1/2}.
+\]
+The finite recurrence bounds every $e_n$ by
+$C_N\Xi_N(M,a)^{1/2}$. The query matrix converts this to the
+asserted squared-regret bound. The exact prefix appears only in this
+error analysis, not in the transducer. No divided-difference coordinate,
+reciprocal pivot or stored command tape is used in a transition.
+
+Conversely, at each checkpoint the streaming index is an $M$-message
+encoder of the prefix. All command laws used in
+Theorem~\ref{thm:intrinsic-checkpoint} are prefixes of one common
+exploration law. Each transducer therefore satisfies every checkpoint
+lower bound; taking their maximum and then the infimum proves the lower
+bound in \eqref{eq:intrinsic-streaming}. Finitely many checkpoint
+constants can be replaced by their positive minimum. One checkpoint
+and its remaining query trials are executed in a run, as before.
+\end{proof}
+

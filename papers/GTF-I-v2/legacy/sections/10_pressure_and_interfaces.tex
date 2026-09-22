@@ -1,0 +1,201 @@
+\section{Exponential transforms and conditional limit interfaces}\label{sec:pressure}
+\subsection{Random channels have nonlinear exponential pullbacks}
+For a Markov kernel $G:X\rightsquigarrow Y$, bounded measurable $f:Y\to\R$,
+and a fixed $\beta>0$, define
+\begin{equation}\label{eq:exponential-pullback}
+ \mathcal T_{G,\beta}f(x)
+ =\beta^{-1}\log\int e^{\beta f(y)}G(dy\mid x).
+\end{equation}
+For a probability $P$ on $X$ put
+$\mathcal P_{P,\beta}(h)=\beta^{-1}\log P(e^{\beta h})$.
+These expressions concern finite experiments and bounded sources; no
+long-time limit is presumed.
+
+\begin{theorem}[Exponential composition and entropy duality]
+\label{thm:pressure}
+For $H:Y\rightsquigarrow Z$ and bounded $f$,
+\begin{align}
+ \mathcal T_{GH,\beta}f
+ &=\mathcal T_{G,\beta}(\mathcal T_{H,\beta}f),\label{eq:exp-compose}\\
+ \mathcal P_{PG,\beta}(f)
+ &=\mathcal P_{P,\beta}(\mathcal T_{G,\beta}f),\label{eq:exp-push}\\
+ \mathcal P_{P,\beta}(h)
+ &=\sup_{Q\ll P}\{Qh-\beta^{-1}D(Q\|P)\}.
+ \label{eq:entropy-dual}
+\end{align}
+The supremum is attained at
+$dP^h/dP=e^{\beta h}/P(e^{\beta h})$. The source derivatives are
+\begin{equation}\label{eq:pressure-derivative}
+ D\mathcal P_{P,\beta}(h)[u]=P^hu,
+ \qquad
+ D^2\mathcal P_{P,\beta}(h)[u,v]
+ =\beta\Cov_{P^h}(u,v).
+\end{equation}
+\end{theorem}
+\begin{proof}
+Exponentiate \eqref{eq:exp-compose}. Its right side becomes
+$G(H(e^{\beta f}))$, which is the definition of the composed kernel's
+exponential integral. Integrating the same identity against $P$ proves
+\eqref{eq:exp-push}. For any $Q\ll P$ of finite entropy,
+\[
+ D(Q\|P^h)=D(Q\|P)-\beta Qh+\log P(e^{\beta h})\ge0.
+\]
+Rearrangement gives the upper inequality in \eqref{eq:entropy-dual}, and
+$Q=P^h$ attains equality. Measures of infinite entropy do not improve the
+supremum for bounded $h$. Finally boundedness permits differentiation of
+the exponential integral in the directions $u,v$; one quotient rule gives
+the mean and the second gives the covariance with the factor $\beta$.
+\end{proof}
+
+If $G$ is the deterministic map $g$, the exponential pullback is exactly
+$f\circ g$. If $G$ is random, it is generally not $Gf$. Jensen gives
+$\mathcal T_{G,\beta}f\ge Gf$, with equality precisely when $f$ is
+constant $G(\cdot\mid x)$-almost surely at each relevant $x$.
+The entropy variational principle is classical
+\cite{DupuisWang2007}; the proof fixes its conventions for this experiment
+category rather than asserting a new variational principle.
+
+\begin{proposition}[Second-order chain rule for a random channel]
+\label{prop:pressure-chain}
+Put $h=\mathcal T_{G,\beta}f$ and
+\[
+ G_f(dy\mid x)=\frac{e^{\beta f(y)}G(dy\mid x)}{G(e^{\beta f})(x)}.
+\]
+Then the tilted joint law is $P^h(dx)G_f(dy\mid x)$ and
+\begin{align*}
+ D\mathcal T_{G,\beta}(f)[u]&=G_fu,\\
+ D^2\mathcal T_{G,\beta}(f)[u,v]&=\beta\Cov_{G_f}(u,v),\\
+ D^2\mathcal P_{PG,\beta}(f)[u,v]
+ &=\beta\Cov_{P^h}(G_fu,G_fv)
+   +\beta\E_{P^h}\Cov_{G_f}(u,v).
+\end{align*}
+The last expression is $\beta\Cov_{P^hG_f}(u,v)$.
+\end{proposition}
+\begin{proof}
+Multiplying the two tilted densities cancels $G(e^{\beta f})(x)$ and
+produces the original joint law multiplied by $e^{\beta f(y)}$ and its
+single total normalizer. Differentiation of the conditional normalizer
+gives the first two formulas just as in
+\eqref{eq:pressure-derivative}. Apply the ordinary second-order chain
+rule to \eqref{eq:exp-push}. Its first term is the covariance of
+conditional means and its second is the mean of conditional covariances.
+The total covariance formula gives the final identity.
+\end{proof}
+
+The conditional covariance term is essential. Discarding it would treat a
+random observation as a deterministic projection. This connects the
+positive-kernel and source-response layers exactly, while keeping them
+distinct from Fisher information for a model parameter.
+
+\subsection{A finite risk-sensitive recursion}
+Consider a known prepared predictive model with finite action sets, state
+update $F_t(s,a,y)$, report kernel $g_t(dy\mid s,a)$, bounded observed
+stage cost $c_t(s,a,y)$, and bounded terminal cost $v_N$. The cost here is
+an optimization objective, not an undeclared memory resource. For
+$\beta>0$ define
+\begin{equation}\label{eq:risk-sensitive-dp}
+ v_t(s)=\min_{a\in A_t}\frac1\beta\log\int
+ \exp\{\beta[c_t(s,a,y)+v_{t+1}(F_t(s,a,y))]\}
+ g_t(dy\mid s,a).
+\end{equation}
+
+\begin{proposition}[Finite-horizon exponential dynamic programming]
+\label{prop:exp-dp}
+The value \eqref{eq:risk-sensitive-dp} is the least value of
+$\beta^{-1}\log\E\exp(\beta[\sum_{j=t}^{N-1}c_j+v_N])$
+over all causal strategies from $s$. A deterministic Borel minimizing
+policy exists with a fixed tie rule.
+\end{proposition}
+\begin{proof}
+Write $w_t=e^{\beta v_t}>0$. Conditional expectation over the next report
+and then the future gives the multiplicative recursion
+$w_t(s)=\min_a\int e^{\beta c_t(s,a,y)}w_{t+1}(F_t(s,a,y))g_t(dy\mid s,a)$.
+At the last step this is the exact conditional objective. Induct backwards;
+future randomized strategies cannot improve the already minimized
+continuation, and mixing current actions produces a convex combination
+of their positive objective values, no less than their minimum. Finite
+Borel action comparisons give a Borel first minimizer. Taking logarithms
+recovers \eqref{eq:risk-sensitive-dp}.
+\end{proof}
+
+This recursion needs a state sufficient for the future experiment and its
+cost. It cannot be applied to an arbitrary lossy statistic without proving
+closure. Compact infinite action sets would require appropriate existence
+and selection hypotheses; they are not needed for this proposition.
+
+\subsection{Deterministic LDP contractions}
+We record a conditional interface for later work. Suppose a sequence
+$P_n$ on a Polish space has a good large-deviation principle with speed
+$a_n\to\infty$ and rate $I$. If $T$ is continuous into another Polish
+space, its pushforward has rate
+\begin{equation}\label{eq:ldp-contraction}
+ I_T(y)=\inf_{T(x)=y}I(x).
+\end{equation}
+For an open or closed target set its inverse image has the same property,
+so the LDP lower and upper bounds give \eqref{eq:ldp-contraction}.
+Goodness follows because each finite-rate infimum is attained on compact
+sublevels and the sublevels of $I_T$ are continuous images of those of
+$I$. This is the standard contraction principle
+\cite{VaradhanNotes}. It is not a consequence of the raw experiment axioms.
+
+For a random channel one needs the joint law, a conditional rate, or a
+separate exponential approximation theorem. A small total-variation
+simulation defect does not supply these ingredients; an explicit example
+is given in Section~\ref{sec:boundaries}.
+
+\subsection{Regular quadratic and labelled-phase interfaces}
+\begin{proposition}[Quadratic constrained reduction]\label{prop:quadratic}
+If $H>0$ and $A$ has full row rank, then
+\[
+ \inf_{Ah=z}\frac12h^{\mathsf T}Hh
+ =\frac12z^{\mathsf T}(AH^{-1}A^{\mathsf T})^{-1}z.
+\]
+\end{proposition}
+\begin{proof}
+The Lagrange equations give
+$h=H^{-1}A^{\mathsf T}(AH^{-1}A^{\mathsf T})^{-1}z$.
+The constraint matrix in parentheses is positive definite. Substitution
+gives the value, and strict convexity gives the unique minimizer.
+\end{proof}
+
+Only if a separate probabilistic theorem identifies $H^{-1}$ with the
+appropriate Gaussian covariance does this become a covariance contraction
+statement. Existence of an LDP alone is not that theorem.
+
+For finitely many labelled components with common speed $a_n$, suppose
+component rates are $I_j$ and their positive weights satisfy
+$-a_n^{-1}\log w_{n,j}\to c_j$, with $\min_jc_j=0$. The joint
+labelled rate is $c_j+I_j$ and the unlabelled rate is
+$\min_j(c_j+I_j(x))$. To verify the bounds, bound a finite sum above by
+the number of summands times its largest summand and below by each summand;
+then apply the component LDPs. Compactness follows from the finite union
+of component compact sublevels. Dynamic prediction may still require the
+posterior over labels. A marginal log-sum is not automatically a Markov
+semigroup.
+
+\subsection{Closure and finite-dimensional memory}
+For a Markov kernel $P$ and state map $q$, an exact reduced kernel $\bar P$
+satisfies
+\[
+ P(f\circ q)=(\bar Pf)\circ q.
+\]
+Iterating this identity proves every finite-time identity, including the
+corresponding exponential transforms. If it fails, the projected state need
+not be Markov.
+For a finite-dimensional linear evolution split as
+\[
+ \dot u=A_{PP}u+A_{PQ}v,\qquad
+ \dot v=A_{QP}u+A_{QQ}v,
+\]
+variation of constants in the second equation gives exactly
+\begin{equation}\label{eq:memory}
+ \begin{split}
+ \dot u(t)={}&A_{PP}u(t)+A_{PQ}e^{tA_{QQ}}v(0)\\
+ &+\int_0^t A_{PQ}e^{(t-s)A_{QQ}}A_{QP}u(s)\,ds.
+ \end{split}
+\end{equation}
+The unresolved initial-state term is not optional. Unbounded generators,
+common form domains, and differentiable operator transports require
+separate analytic results; the finite-dimensional identity does not prove
+them. This is the precise boundary at which the history and memory
+program of \cite{QiC2} can be connected to the present foundations.
