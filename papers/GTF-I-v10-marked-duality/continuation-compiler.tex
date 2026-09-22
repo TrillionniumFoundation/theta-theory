@@ -1,0 +1,135 @@
+\section{Synthesis from continuation spaces}
+\label{sec:v10-synthesis}
+
+The continuation quotient can be computed without first expanding
+all controlled histories. Its linear dimension and its number of
+positive states are different quantities; the algorithm uses the
+former to test equivalence and the latter to bound its output.
+
+Assume the finite marked instrument of Section~\ref{sec:v10-marked}
+has rational data. At time $t$ write $n_t=|\Theta|\,|Z_t|$ and
+$n=\max_t n_t$. Its block-diagonal transition matrices are
+\[
+ M_{t,a,y}((\theta,z),(\theta',z'))
+ =\1_{\{\theta=\theta'\}}K_{\theta,t}(z',y\mid z,a).
+\]
+The terminal columns are
+$e_{\theta,w}(\theta',z)=\1_{\{\theta=\theta'\}}
+L_\theta(w\mid z)$. Define rational continuation spaces backwards:
+\begin{equation}\label{eq:v10-spaces}
+ V_T=\operatorname{span}\{e_{\theta,w}:\theta,w\},\qquad
+ V_t=\operatorname{span}\{M_{t,a,y}v:a,y,\ v\in V_{t+1}\}.
+\end{equation}
+They have dimensions at most $n_t$, and contain the all-ones column.
+For the latter assertion sum the terminal columns, and then use
+$\sum_yM_{t,a,y}\1=\1$ for any fixed $a$.
+
+\begin{lemma}[Finite linear test for a marked class]\label{lem:v10-span}
+Two normalized posterior rows $\alpha_t(h),\alpha_t(h')$ determine
+the same marked continuation class if and only if they agree on
+$V_t$. It suffices to compare their evaluations on any rational basis
+$B_t$ of that space.
+\end{lemma}
+\begin{proof}
+The probability of a specified future report word and terminal pair
+$(\theta,w)$ under an action word is the row $\alpha_t(h)$ applied
+to the column
+\[
+ M_{t,a_t,y_{t+1}}\cdots M_{T-1,a_{T-1},y_T}e_{\theta,w}.
+\]
+These columns span exactly $V_t$, by induction in
+\eqref{eq:v10-spaces}. Equality of all these probabilities is precisely
+Definition~\ref{def:v10-continuation}. Equality on their span is
+equivalent to equality on a basis.
+\end{proof}
+
+\begin{theorem}[Output-sensitive exact synthesis]\label{thm:v10-synthesis}
+Let $B$ be the total binary length of the rational source description,
+including any finite target augmentation and the positive reference
+prior. The marked quotient, one representative posterior per class,
+and its deterministic transition tables can be constructed in time
+polynomial in
+\[
+ B+T+n+\sum_t|A_t|\,|Y_{t+1}|+\sum_{t=0}^TK_t.
+\]
+No factor equal to the number of expanded histories is required.
+The stored transition table has
+$\sum_{t<T}K_t|A_t||Y_{t+1}|$ entries, including null entries.
+A bit-serial implementation retains
+$\lceil\log_2K_t\rceil$ state bits, with finite transient workspace
+and a finite table-lookup running-time bound determined by this table.
+This is an exact-state synthesis theorem, not a polynomial-time
+algorithm for optimal lossy common-encoder design.
+\end{theorem}
+\begin{proof}
+Compute the spaces \eqref{eq:v10-spaces} backwards by rational
+elimination. At each stage there are at most
+$|A_t||Y_{t+1}|n$ candidate columns. Retain independent columns, rather
+than repeatedly replacing the basis by arbitrary normalized linear
+combinations. Each retained column is then a product of at most $T$
+input matrices with a terminal column. A common denominator for all
+input probabilities bounds the binary length of its entries by a
+polynomial in $B,T,n$. Fraction-free elimination, or determinant
+bounds for rational elimination, therefore takes polynomial bit time.
+
+Start at the initial posterior $\alpha_0=(\pi(\theta)\nu_\theta(z))$.
+At stage $t$ maintain one posterior representative $\alpha$ for each
+class found. For every $a,y$, form
+\[
+ r=\alpha M_{t,a,y}\1.
+\]
+If $r=0$, record the null transition. Otherwise form
+$\alpha'=\alpha M_{t,a,y}/r$, evaluate $\alpha'B_{t+1}$, and compare
+this vector with the stored keys at $t+1$. Reuse its label if equal;
+otherwise store a new label and the representative $\alpha'$.
+By Lemma~\ref{lem:v10-span}, the key is the marked continuation class.
+The successor result ensures that all histories represented by
+$\alpha$ have this same transition, even though their full hidden
+posteriors can differ. Thus retaining one representative loses no
+reachable class. Induction over $t$ proves that precisely the $K_t$
+classes are generated.
+
+There are only the displayed number of transitions to examine.
+Every representative is the normalized posterior of some history of
+length at most $T$. The numerator and denominator are finite sums
+of products of rational input probabilities. Their binary lengths
+are polynomial in $B,T,n$, even if their magnitudes are very small.
+Exact comparison of keys, either by pairwise search or rational
+sorting, and all matrix operations consequently take polynomial
+bit time in the stated input and output parameters.
+
+The executor needs only the class label and a fixed time-indexed
+table. A sequential scan of that finite table, with binary counters
+and the current action/report held transiently, is one explicit
+implementation. It has program length bounded by the table length
+times the binary length of an entry, and polynomial transient
+workspace and scan time in the table description. A more efficient
+random-access convention may improve this bound, but is not needed
+for finite effectivity. Report acquisition remains a separate
+interface cost.
+\end{proof}
+
+The invariant-space computation is the classical weighted-automaton
+equivalence method; see Kiefer~\cite{Kiefer2020}, Proposition 2.1 and
+Theorem 2.3, and Tzeng~\cite{Tzeng1992}. What is being synthesized
+here is a \emph{positive, normalized, marked causal quotient}, not a
+minimal signed linear representation. Linear dimension alone would
+not give its persistent-state cost.
+
+\begin{example}[Small linear rank and growing positive width]
+\label{ex:v10-bernoulli}
+Let $\Theta\in\{0,1\}$ have positive prior and, conditional on it,
+let the reports be independent Bernoulli variables with parameters
+$p\ne q$ in $(0,1)$. Retain $\Theta$ as a terminal mark. The hidden
+linear dimension is two at every time. After $t$ reports, the posterior
+odds for a history with $k$ successes are the initial odds multiplied by
+\[
+ (q/p)^k\bigl((1-q)/(1-p)\bigr)^{t-k}.
+\]
+These $t+1$ values are distinct since $p\ne q$. The parameter posterior
+is a marginal of the marked continuation law, and conditional future
+laws depend only on this posterior. Hence $K_t=t+1$, whereas the
+expanded report tree has $2^t$ leaves. The algorithm constructs the
+quotient in polynomial time in $T$, without mistaking rank two for
+width two.
+\end{example}

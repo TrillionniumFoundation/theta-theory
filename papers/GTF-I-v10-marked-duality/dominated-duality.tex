@@ -1,0 +1,347 @@
+\section{Compact duality for dominated causal experiments}
+\label{sec:v10-compact}
+
+We begin with a nonfinite experiment. The observation spaces in this
+section need not be locally compact, and the encoder kernels need not
+be continuous in the observation. The hypothesis used in place of such
+regularity is domination of the complete marked observation law.
+
+\subsection{The experiment and its information pattern}
+Fix a horizon $T$, finite control sets $A_t$, nonempty finite registers
+$I_t=[S_t]$, and a finite task set $D$. Task $d$ has a finite decision
+set $B_d$. Let $Y_t$ and $W$ be standard Borel spaces, with probability
+reference measures $\mu_t$ and $\nu$, and write
+$\mu=\bigotimes_{t=1}^T\mu_t$. The mark $W$ is the actual terminal
+quantity on the source probability space; it is not a reconstructed
+sample with the same marginal distribution.
+
+A causal experiment is specified by a consistent family of laws of
+$(Y_1,\ldots,Y_T,W)$ under open-loop action words
+$a=(a_0,\ldots,a_{T-1})$, indexed by a parameter $\theta\in\Theta$.
+Consistency means that the marginal law of $Y_{1:t}$ is independent of
+$a_t,\ldots,a_{T-1}$, and that feedback laws are obtained by inserting
+their conditional action probabilities in the open-loop laws. Suppose
+that these laws have densities
+\begin{equation}\label{eq:v10-density}
+ p_{\theta,a}(y,w)\quad\hbox{with respect to }\mu(dy)\nu(dw).
+\end{equation}
+This hypothesis is satisfied by dominated hidden Markov instruments,
+including continuous observation models. It excludes, for example, an
+unnoised repeated real observation supported on a diagonal of product
+Lebesgue measure. We do not replace domination by an unproved closure
+claim for arbitrary strategic measures.
+
+The encoder is a single family
+\[
+ q_0\in\mathcal P(I_0),\qquad
+ q_t(i'\mid i,a,y)\in\mathcal P(I_{t+1}),\quad 0\le t<T,
+\]
+where $y\in Y_{t+1}$. It is common to every task and every parameter.
+The task controller and terminal rule are
+$g_{td}(a\mid i)$ and $v_d(b\mid i)$; neither depends on $\theta$.
+The task is known to the controller, not supplied as an additional
+argument to $q_t$. The current control and observation are transient
+inputs. Between updates, the only private retained state is $i\in I_t$.
+Time and the prescribed tables are part of the fixed program.
+All private draws are fresh and conditionally independent given their
+arguments. A retained independent public seed, when allowed, is a
+separate resource. These conventions rule out both a hidden controller
+transcript and an uncharged retained random tape.
+
+Let $J=D\times\Theta$ be compact metrizable, with $D$ discrete and
+$\Theta$ compact metrizable. More generally the argument works for a
+compact row set with a continuous map into the finite task set. For
+$j=(d,\theta)$ and $b\in B_d$, let $0\le\ell_j(w,b)\le1$ be measurable.
+Our regularity condition is
+\begin{equation}\label{eq:v10-effect}
+ f_{j,a,b}(y):=\int\ell_j(w,b)p_{\theta,a}(y,w)\nu(dw),
+ \qquad j\longmapsto f_{j,a,b}\ \hbox{continuous in }L^1(\mu)
+\end{equation}
+on each task component, for every $a,b$. A continuous baseline
+$b_0\in C(J)$ is fixed. A full-history minimax baseline for task $d$
+is constant on its parameter rows, and is one permitted choice; a
+parameterwise oracle is a different baseline and is not substituted
+for it.
+
+Write $K_{\bf S}$ for the space of all such private designs
+$k=(q_0,q,g,v)$. The risk of a design is
+\begin{align}\label{eq:v10-risk}
+ R_j(k)=\sum_{i_0,\ldots,i_T}\sum_{a,b}
+ q_0(i_0)v_d(b\mid i_T)
+ \prod_{t=0}^{T-1}g_{td}(a_t\mid i_t)
+ \int f_{j,a,b}(y)
+ \prod_{t=0}^{T-1}q_t(i_{t+1}\mid i_t,a_t,y_{t+1})\mu(dy).
+\end{align}
+The sums over $b$ are in $B_d$. This expression follows by first fixing
+the control and register paths in the causal law. In particular it does
+not optimize the parameter rows separately.
+
+\subsection{The topology and an executable realization}
+Each encoder row is a simplex-valued element of a finite product of
+$L^\infty(\mu_{t+1})$, endowed with its weak star topology. Positivity
+and the constraint that its coordinates sum to one are weak star
+closed: test them against nonnegative $L^1$ functions. Banach--Alaoglu
+therefore makes the row space compact. Since the probability space is
+standard Borel, $L^1$ is separable, and this compact space is metrizable.
+Give the finite controller, initialization and decoder simplices their
+usual topologies, and $K_{\bf S}$ the product topology.
+
+\begin{lemma}[Tensor testing]\label{lem:v10-tensor}
+Suppose $u_{tn},u_t\in L^\infty(\mu_t)$ have absolute value at most one
+and $u_{tn}\to u_t$ weak star, for each $t$. Then
+\[
+ \int F(y)\prod_t u_{tn}(y_t)\mu(dy)
+ \longrightarrow \int F(y)\prod_t u_t(y_t)\mu(dy)
+\]
+for every $F\in L^1(\mu)$. Convergence is uniform over every compact
+subset of $L^1(\mu)$.
+\end{lemma}
+\begin{proof}
+For $F(y)=\prod_t F_t(y_t)$ with $F_t\in L^1(\mu_t)$ the integrals
+factor, and each factor converges by the definition of the topology.
+Finite sums of these tensors are dense in $L^1(\mu)$: rectangular
+simple functions generate the product sigma field, and a monotone
+class argument followed by truncation gives the density statement.
+An $L^1$ error of $\epsilon$ in the test function changes either
+integral by at most $\epsilon$. This proves convergence for one $F$.
+A finite $\epsilon$-net of a compact family proves the uniform assertion.
+\end{proof}
+
+\begin{lemma}[Jointly measurable representatives]\label{lem:v10-representatives}
+The encoder row space has a choice of representatives $(q,y)\mapsto
+\widehat q(y)$ that is jointly Borel, is simplex valued at every $y$,
+and represents each equivalence class $q$ almost everywhere. Consequently
+a Borel probability on $K_{\bf S}$ can be sampled as one independent
+public seed and implemented by measurable causal update rules.
+\end{lemma}
+\begin{proof}
+Choose increasing finite measurable partitions generating the report
+sigma field modulo completion. The coordinates of
+$\E[q\mid\mathcal F_n](y)$ are finite sums of functions of the form
+\[
+ \1_C(y)\frac{\int_C q\,d\mu_t}{\mu_t(C)},\qquad \mu_t(C)>0.
+\]
+On each zero-measure partition cell use one fixed probability vector.
+Their coefficients are weak star continuous in $q$, so these functions
+are jointly Borel. For fixed $q$, the bounded martingale convergence
+theorem gives coordinatewise convergence to a representative of $q$
+almost everywhere. On the jointly Borel set where all coordinates
+converge use their limit, and elsewhere use one fixed probability
+vector. Every finite-stage vector is in the simplex, so is the limit.
+There are only finitely many rows. A sampled $k$ is thus executable
+by inverse transforms with fresh independent uniform variables.
+Domination ensures that exceptional report sets have zero probability
+for every actual action path and parameter. Compact metrizability also
+ensures that every probability on $K_{\bf S}$ is the law of a Borel
+function of a uniform seed. The sampled design is retained publicly;
+this last retention is not free private memory.
+\end{proof}
+
+\begin{theorem}[Nonfinite common-encoder duality]\label{thm:v10-compact}
+Under \eqref{eq:v10-density}--\eqref{eq:v10-effect}, the map
+$R:K_{\bf S}\to C(J)$ is continuous in the uniform norm. The attainable
+shared-seed risk set and its upper extension are
+\[
+ \mathcal A_{\bf S}=
+ \left\{\int R(k)\lambda(dk):\lambda\in\mathcal P(K_{\bf S})\right\},
+ \qquad \mathcal U_{\bf S}=\mathcal A_{\bf S}+C(J)_+.
+\]
+The first is compact and convex and the second is closed and convex.
+Set
+\[
+ h_{\bf S}(w)=\min_{k\in K_{\bf S}}\int_J R_j(k)w(dj),
+ \qquad w\in\mathcal P(J).
+\]
+Then $u\in\mathcal U_{\bf S}$ if and only if
+$\int u\,dw\ge h_{\bf S}(w)$ for every $w\in\mathcal P(J)$, and
+\begin{equation}\label{eq:v10-duality}
+ \min_{\lambda\in\mathcal P(K_{\bf S})}
+ \max_{j\in J}\left\{\int R_j(k)\lambda(dk)-b_0(j)\right\}
+ =\max_{w\in\mathcal P(J)}
+ \left\{h_{\bf S}(w)-\int b_0\,dw\right\}.
+\end{equation}
+Both extrema are attained. The private minimax optimum is also
+attained, but its attainable risk set is $R(K_{\bf S})$, not its
+convex hull.
+\end{theorem}
+\begin{proof}
+Compactness of $K_{\bf S}$ was proved above. Apply
+Lemma~\ref{lem:v10-tensor} to each term of \eqref{eq:v10-risk}.
+The effect functions form finitely many compact subsets of $L^1$,
+by \eqref{eq:v10-effect}. Thus convergence of designs gives uniform
+convergence of all row risks. This proves the first assertion without
+enumerating deterministic encoders.
+
+For completeness, the barycenter map is continuous from weak convergence
+of $\lambda$ to norm convergence in $C(J)$. Approximate the continuous
+map $R$ uniformly on compact $K_{\bf S}$ by a finite-valued continuous
+partition-of-unity interpolation. Integrals of the finitely many
+continuous coefficients converge; the uniform approximation controls
+the remainder. The image of compact $\mathcal P(K_{\bf S})$ is therefore
+compact. Lemma~\ref{lem:v10-representatives} identifies this image with
+executable public mixtures, rather than only a formal relaxed set.
+Convexity follows by mixing the public seed.
+
+If $u_n=a_n+c_n\to u$, $a_n\in\mathcal A_{\bf S}$ and $c_n\ge0$,
+pass to a convergent subsequence of $a_n$. Its limit $a$ satisfies
+$u-a\ge0$, proving closedness of $\mathcal U_{\bf S}$. A separating
+continuous functional for a point outside this closed convex upper
+set must be nonnegative: otherwise translating an attainable risk
+in a nonnegative direction contradicts its lower separating bound.
+By the Riesz representation theorem this functional is integration
+against a finite positive measure, which may be normalized to a
+probability. Minimizing it over the upper set gives $h_{\bf S}$.
+This proves the support characterization.
+
+The bilinear payoff
+\[
+ F(\lambda,w)=\int_J\int_{K_{\bf S}}R_j(k)\lambda(dk)w(dj)
+             -\int_J b_0(j)w(dj)
+\]
+is continuous separately on the two compact convex probability spaces.
+The classical convex minimax theorem gives equality of the two extrema.
+For fixed $w$, a linear functional on probabilities has minimum at a
+Dirac probability, which gives the inner minimum in
+\eqref{eq:v10-duality}. The left objective is continuous and the right
+objective, as an infimum of continuous functions of $w$, is upper
+semicontinuous. Compactness gives attainment. Finally the private
+objective is continuous on compact $K_{\bf S}$. No convexification
+was used for that assertion.
+\end{proof}
+
+The use of policy topologies and static reduction belongs to stochastic
+team theory; see Saldi~\cite{Saldi2017Topology}, especially the weak star
+construction and continuity/existence results, and
+Y\"uksel--Saldi~\cite{YukselSaldi2017}, who explain why conditional
+independence is not generally closed under weak convergence. Here the
+product domination and finite action-path expansion supply the needed
+continuity, while the same encoder coordinates remain coupled across
+all tasks and unknown-parameter rows. Convex separation and minimax
+are classical tools, not additional novelty claims.
+
+\begin{corollary}[Effect formulation with arbitrary marks]\label{cor:v10-effects}
+Theorem~\ref{thm:v10-compact} still holds when there is no common
+reference measure for $W$, provided each open-loop report marginal
+is dominated by $\mu$ and the signed effect measures
+\[
+ C\longmapsto\int_{C\times W}\ell_j(w,b)\,P_{\theta,a}(dy,dw)
+\]
+have $L^1(\mu)$ densities satisfying \eqref{eq:v10-effect}.
+The actual joint marked laws, not arbitrarily selected couplings,
+are used to define these effects.
+\end{corollary}
+\begin{proof}
+Boundedness of the loss and report domination give absolute
+continuity of each effect measure. Disintegration of the actual
+marked law, or simply integration first in that measure, gives
+\eqref{eq:v10-risk}. All compactness and separation arguments in the
+theorem use only these effects. Report domination still makes the
+jointly measurable representatives executable. No common measure
+on $W$ is needed in any of these steps. By contrast, the marked
+total-variation approximation theorem below retains its stronger
+joint-density hypothesis.
+\end{proof}
+
+\begin{corollary}[Countably many tasks]\label{cor:v10-countable}
+Suppose that the task-row set is countable, every row has the dominated
+representation above, and every task has finitely many controller and
+decoder entries. No uniform continuity across rows is required. For a
+bounded baseline sequence, the shared optimum is attained and
+\[
+ \min_\lambda\sup_j\{\E_\lambda R_j-b_0(j)\}
+ =\sup_{w\in\mathcal P_f(J)}
+   \left\{\min_k\sum_jw_jR_j(k)-\sum_jw_jb_0(j)\right\},
+\]
+where $\mathcal P_f(J)$ denotes the finitely supported probabilities.
+The right side is a supremum, not an asserted maximum.
+\end{corollary}
+\begin{proof}
+The countable product of the task-controller and decoder simplices
+with the common encoder space is compact metrizable. Each risk is
+continuous by the tensor lemma; the representative construction is
+unchanged. On $\mathcal P(K_{\bf S})$, the objective is a supremum of
+continuous functions, hence lower semicontinuous and attains its
+minimum. If every finite subset of row constraints
+$\E R_j-b_0(j)\le r$ is feasible, compactness and the finite intersection
+property make all constraints feasible simultaneously. Finite-row
+convex minimax therefore gives the displayed identity, by taking
+$r$ strictly above its right side and then decreasing $r$ to the
+infimum. This argument makes no uniform finite-seed assertion.
+\end{proof}
+
+\begin{corollary}[The price of a finite mixture]\label{cor:v10-seeds}
+In Theorem~\ref{thm:v10-compact}, put
+\[
+ \omega(\delta)=\sup_{k,\ d_J(j,j')\le\delta}
+                   |R_j(k)-R_{j'}(k)|.
+\]
+Then $\omega(\delta)\to0$. If $J$ has a $\delta$-net of size $N$,
+every attainable shared risk can be approximated within $2\omega(\delta)$
+in uniform norm by a mixture of at most $N+1$ private designs.
+Such a mixture has a private implementation with registers
+$(N+1)S_t$, including initialization. If its weights are approximated
+by a probability vector with denominator $2^p$, an additional error
+at most $(N+1)2^{-p}$ suffices.
+\end{corollary}
+\begin{proof}
+The compact subset $R(K_{\bf S})$ of $C(J)$ is equicontinuous.
+Carath\'eodory's theorem applied to its evaluations on the net gives
+$N+1$ designs whose mixture agrees there with the prescribed risk.
+Move an arbitrary row to the net; each of the two risks changes by at
+most $\omega(\delta)$. Store the chosen design index with the register
+label for the private implementation. Approximate weights by rounding
+down the first $L-1$ coordinates and putting the remainder in the last,
+where $L\le N+1$. Their total variation distance is at most $L2^{-p}$,
+which bounds the change of every $[0,1]$-valued risk. This approximation
+can be sampled with $p$ fair bits; exact non-dyadic weights do not have
+an asserted fixed worst-case fair-bit cost.
+\end{proof}
+
+\subsection{Finite observation approximations, uniformly in memory}
+Let $\mathcal F_{tn}$ be increasing finite partitions generating $Y_t$,
+and retain the actual mark $W$. The finite-report experiment $E_n$
+reports only the cell of each observation. Its reverse report channel
+samples independently from $\mu_t$ conditioned on that cell. Cells of
+zero reference measure are assigned arbitrary outputs and have zero
+probability in the experiment. Write
+\[
+ p^{(n)}_{\theta,a}
+ =\E_{\mu\otimes\nu}
+   [p_{\theta,a}\mid\bigotimes_t\mathcal F_{tn}\otimes\mathcal B(W)],
+ \quad
+ \delta_n=\frac12\sum_a\sup_\theta
+             \norm{p_{\theta,a}-p^{(n)}_{\theta,a}}_1.
+\]
+
+\begin{theorem}[Width-uniform approximation]\label{thm:v10-approximation}
+If each family $\{p_{\theta,a}:\theta\in\Theta\}$ is compact in
+$L^1(\mu\otimes\nu)$, then $\delta_n\to0$. For every width vector,
+private or shared randomness, and every task family with losses in
+$[0,1]$, the raw minimax risks of $E$ and $E_n$ differ by at most
+$\delta_n$. The same comparison of excess risks costs at most
+$2\delta_n$ when the full-history baselines are recomputed. The
+simulations neither add persistent states nor reveal the mark.
+\end{theorem}
+\begin{proof}
+Conditional expectations on the generating partitions converge in
+$L^1$ for each density. Their norms are at most one as operators on
+$L^1$, so a finite-net argument gives uniform convergence on each
+compact family. There are finitely many action words.
+
+Reporting the cell is an exact causal channel from $E$ to $E_n$.
+After the reverse channel, the open-loop joint density of synthetic
+reports and the actual $W$ is $p^{(n)}_{\theta,a}$. Under an arbitrary
+adaptive policy and encoder, expand the joint law by its action and
+register paths. The conditional rule multiplying each density is
+between zero and one. Summing the absolute differences over action
+words, and integrating over the register randomization, bounds the
+total variation of the marked output laws by $\delta_n$. This bound
+is uniform over policies, tasks, seeds and widths. Composition of
+any code with either report channel needs only the original register:
+cell conversion or within-cell sampling is a current-report operation.
+Thus every code transfers with the stated risk error in the reverse
+direction, and with zero error in the forward direction. Taking
+minima and worst rows proves the raw comparison. The same argument
+without a width bound compares full-history baselines, and the triangle
+inequality gives the excess-risk bound.
+\end{proof}

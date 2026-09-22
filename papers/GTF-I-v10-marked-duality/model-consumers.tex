@@ -1,0 +1,401 @@
+\section{Positive observation models and history reduction}
+\label{sec:v10-positive-models}
+
+We give explicit model consequences in which the marked law,
+continuity and contraction hypotheses can be checked from primitive
+data. These results concern the models specified here. They do not
+identify a finite-state model with an unconstructed microscopic
+billiard or kinetic model.
+
+Let $Z_t\in[n]$, $a\in A$ with $A$ finite, and suppose
+\begin{equation}\label{eq:v10-positive-data}
+ \epsilon\le P_a(z,z')\le M,\qquad
+ Y_{t+1}=m_{a,Z_{t+1}}+\sigma_{a,Z_{t+1}}\xi_{t+1},
+ \qquad \xi_t\sim N(0,1),
+\end{equation}
+where $0<\epsilon<M$, $|m_{a,z}|\le m_*$ and
+$0<\sigma_-\le\sigma_{a,z}\le\sigma_+$. All primitive coefficients
+may depend continuously on a compact unknown parameter, with the
+same bounds. The initial hidden probabilities and any finite marking
+kernel also depend continuously on this parameter. The observation is of the \emph{new} state. Its joint
+transition/report kernel is
+\[
+ K_a(z',dy\mid z)=P_a(z,z')g_{a,z'}(y)\,dy.
+\]
+Finite terminal or path marks are permitted.
+
+\begin{theorem}[A continuous-report consumer]\label{thm:v10-hmm}
+For every fixed horizon, the instruments
+\eqref{eq:v10-positive-data} satisfy the compact dominated hypotheses
+of Theorem~\ref{thm:v10-compact} for bounded losses continuous in the
+primitive parameter. Their common-encoder minimax problems have
+attaining private designs and attaining shared mixtures.
+
+Partition $[-R,R]$ into intervals of length at most $h$, where $R>m_*$,
+and use two additional tail cells. Reconstruction is uniform on
+interior intervals and uses any fixed probability density on each
+tail. For every memory width and every admissible controller, the
+resulting marked finite-report approximation has risk error at most
+$T e(h,R)$, where
+\begin{equation}\label{eq:v10-bin-error}
+ e(h,R)=\frac{h}{2\sigma_-}\sqrt{\frac2\pi}
+       +2\exp\left(-\frac{(R-m_*)^2}{2\sigma_+^2}\right).
+\end{equation}
+The corresponding excess-risk error is at most $2T e(h,R)$ when
+baselines are recomputed.
+\end{theorem}
+\begin{proof}
+Use a positive Gaussian probability as the reference measure on each
+report space and counting probability on finite marks. With an
+open-loop action word fixed, the joint marked density is a finite
+sum over hidden paths of products of transition probabilities,
+Gaussian densities and terminal marking probabilities. Gaussian
+location-scale densities depend continuously in $L^1$ on their
+parameters when the variance is bounded away from zero. This follows,
+for example, by pointwise convergence and equality of their integrals,
+or directly by truncating uniformly Gaussian tails and using uniform
+continuity on a compact interval. Products of probability densities
+are continuous in $L^1$ by telescoping, and so are finite mixtures.
+Compactness of the primitive parameter set gives compactness of the
+path-density family in $L^1$. Multiplication by bounded continuously
+parameterized losses preserves the required effect continuity.
+Theorem~\ref{thm:v10-compact} applies.
+
+If $I$ is an interval of length at most $h$ and $\bar g_I$ is its
+average density, the fundamental theorem of calculus gives
+\[
+ \int_I|g-\bar g_I|\le h\int_I|g'|.
+\]
+Indeed average $|g(x)-g(y)|$ over $y\in I$ and bound the difference
+by the integral of $|g'|$ between $x,y$. For a Gaussian density,
+$\int|g'|=\sqrt{2/\pi}/\sigma$. On the two tails, replacing a
+conditional density changes total variation by at most their total
+probability, bounded by the exponential term in
+\eqref{eq:v10-bin-error}. Thus each conditional observation channel
+has total variation error at most $e(h,R)$ uniformly in hidden state,
+control and parameter. Couple the hidden transition identically and
+maximally couple the original and reconstructed observations. As
+long as observations and random tapes have matched, both controllers
+make the same decisions. The probability of a first mismatch during
+$T$ steps is at most $Te(h,R)$. On its complement the entire hidden
+path, all reports and the actual mark agree. Bounded losses change
+by at most this probability. The report conversions are transient
+operations, so the memory width is unchanged. Comparing the
+unrestricted baselines in the same way finishes the proof.
+\end{proof}
+
+\subsection{A proved forgetting estimate}
+For positive probability rows $u,v$, put
+\[
+ d_H(u,v)=\max_i\log(u_i/v_i)-\min_i\log(u_i/v_i).
+\]
+Multiplying both rows by the same positive diagonal matrix and then
+normalizing leaves $d_H$ unchanged. We use the elementary positive
+matrix contraction in its explicit form.
+
+\begin{lemma}[Positive-matrix contraction]\label{lem:v10-hilbert}
+If the entries of a matrix $P$ belong to $[\epsilon,M]$, then
+\[
+ d_H(uP,vP)\le\rho d_H(u,v),\qquad
+ \rho=\frac{M-\epsilon}{M+\epsilon}<1.
+\]
+For arbitrary nonnegative probability rows, the first images satisfy
+$d_H(uP,vP)\le2\log(M/\epsilon)$.
+\end{lemma}
+\begin{proof}
+Set $x_i=\log(u_i/v_i)$ and interpolate $v_i\exp(sx_i)$,
+$0\le s\le1$. The derivative of the logarithm of output coordinate
+$j$ is the expectation of $x_i$ under weights proportional to
+$v_i\exp(sx_i)P_{ij}$. For two output coordinates $j,k$, the likelihood
+ratio of their normalized weight distributions has maximum divided
+by minimum at most $(M/\epsilon)^2$. If two probability distributions
+have likelihood ratios in an interval $[a,b]$ with $b/a\le C$, their
+total variation is at most $(\sqrt C-1)/(\sqrt C+1)$.
+To verify this bound, put all ratios below one at the lower endpoint
+and all ratios above one at the upper endpoint; the mass constraint
+makes the resulting variation at most
+$(1-a)(b-1)/(b-a)$. Maximizing over $b/a\le C$, $a\le1\le b$,
+gives $a=C^{-1/2}$, $b=C^{1/2}$ and the displayed value.
+Differences of the two derivative expectations are therefore at
+most $\rho\osc(x)$. Integrate in $s$ and maximize over $j,k$.
+At $s=0$ all output log ratios vanish, proving the first claim.
+For the second, every coordinate of either probability row times
+$P$ lies in $[\epsilon,M]$; its coordinatewise ratio lies in
+$[\epsilon/M,M/\epsilon]$.
+\end{proof}
+
+\begin{theorem}[Uniform finite-history recovery]\label{thm:v10-forgetting}
+Fix the primitive parameter. Two filters for
+\eqref{eq:v10-positive-data}, started with arbitrary initial
+probabilities and fed the same actions and observations for $L\ge1$
+steps, satisfy
+\[
+ \TV(\pi_L,\widetilde\pi_L)
+ \le \frac12\log(M/\epsilon)\rho^{L-1}.
+\]
+In particular a last-$L$-history filter, initialized with a fixed
+probability at its left endpoint, approximates the full filter with
+this error uniformly in the earlier history. With $N$ report cells,
+a literal suffix implementation uses at most $(|A|N)^L$ labels,
+besides a finite beginning-of-stream convention. For any $[0,1]$-valued terminal loss on the current hidden state,
+an optimal suffix-based action has risk at
+most twice this filtering error above the full-filter optimum.
+\end{theorem}
+\begin{proof}
+Prediction multiplies a posterior row by $P_a$. Conditioning on the
+current report multiplies it by the positive diagonal matrix with
+entries $g_{a,z'}(y)$ and normalizes. The latter operation preserves
+$d_H$, and Lemma~\ref{lem:v10-hilbert} contracts the former. The first
+prediction gives diameter at most $2\log(M/\epsilon)$ and the next
+$L-1$ predictions give the factor $\rho^{L-1}$. For probability rows,
+$\TV(u,v)\le\tanh(d_H(u,v)/4)\le d_H(u,v)/4$; the first inequality
+follows from the same two-endpoint likelihood-ratio bound in the
+lemma. Restart the truncated filter with the fixed prior at time
+$t-L$ and apply this result to obtain the suffix estimate.
+Its raw suffix is updated by shifting and appending the current
+control/report cell. Finally every $[0,1]$ loss expectation changes
+by at most the total variation of the two posteriors. Compare the
+optimal action under each posterior through the other posterior,
+which costs at most twice that distance.
+\end{proof}
+
+This contraction is not asserted for arbitrary past-path target marks:
+augmenting the hidden state to retain such a mark can destroy strict
+positivity. The general marked duality retains these marks without
+using the forgetting assertion.
+
+The parameter must be fixed in this forgetting assertion. A static
+unknown phase need not be forgotten, and applying the assertion to
+its posterior would be false. The compact robust theorem applies to
+the unknown-parameter experiment without that extra assertion. Also,
+summable variations alone have not been used to infer exponential
+decay: here it follows from the explicit positive-matrix contraction.
+The distinction is important for history-kernel applications.
+
+\section{Nonlinear finite-state semigroups}
+\label{sec:v10-nisio}
+
+Let $Q^a$ be conservative generators on $[n]$, $a\in A$ finite, and
+let $v_i^a$ be bounded potentials. Define on $\R^n$
+\begin{equation}\label{eq:v10-nisio}
+ H_i(u)=\max_{a\in A}
+ \left\{v_i^a+\sum_{j\ne i}q_{ij}^a
+                 \bigl(e^{u_j-u_i}-1\bigr)\right\}.
+\end{equation}
+This is a nonlinear Hamiltonian. The following proof does not apply
+a linear resolvent identity to it.
+
+\begin{theorem}[Global semigroup and nonlinear resolvent]
+\label{thm:v10-nisio}
+The equation $\dot u=H(u)$ has a global solution for every initial
+condition and defines a semigroup $S_t$ that is order preserving,
+additively homogeneous and nonexpansive in the sup norm. If
+$V=\max_{i,a}|v_i^a|$, then
+$\norm{S_tu}_\infty\le\norm u_\infty+tV$.
+For every $\lambda>0$ the equation
+\[
+ u-\lambda H(u)=f
+\]
+has a unique solution $J_\lambda f$. The resolvent is order preserving,
+additively homogeneous and nonexpansive. In particular $H$ is
+maximal dissipative with this sign convention.
+\end{theorem}
+\begin{proof}
+The map $H$ is locally Lipschitz as the maximum of finitely many
+smooth functions. If $u_i-v_i=\max_j(u_j-v_j)$, then
+$u_j-u_i\le v_j-v_i$ for every $j$, and hence $H_i(u)\le H_i(v)$.
+The upper right derivative of the maximum coordinate of the
+difference of two solutions is therefore nonpositive. Applying the
+same argument to the reverse difference proves sup-norm contraction
+and comparison. Since $H(u+c\1)=H(u)$, uniqueness gives additive
+homogeneity. Comparing with the time-dependent constant barriers
+$(\max_i u_i+tV)\1$ and $(\min_i u_i-tV)\1$ gives the norm bound.
+It prevents finite-time escape, so the locally defined solution is
+global; uniqueness gives the semigroup law.
+
+For the resolvent, consider the damped equation
+$\dot u=f-u+\lambda H(u)$. The interval of constant barriers
+\[
+ (\min_i f_i-\lambda V)\1\le u\le
+ (\max_i f_i+\lambda V)\1
+\]
+is invariant. At a maximal difference between two solutions the
+upper derivative is at most the negative of that difference.
+Thus its flow contracts distances by $e^{-t}$. At time one this is
+a strict contraction of a complete invariant rectangle into itself,
+so it has a unique fixed point. Commutation with the flow shows
+that the fixed point is stationary: every later image is another
+fixed point of the time-one map. It therefore solves the resolvent
+equation. The same maximal-coordinate comparison applied to two
+resolvent equations gives
+$\max_i(u_i-\widetilde u_i)\le\max_i(f_i-\widetilde f_i)$,
+which proves uniqueness, comparison and nonexpansiveness.
+Translation by constants proves homogeneity.
+\end{proof}
+
+\begin{theorem}[Marked mesh approximation and stability]
+\label{thm:v10-nisio-mesh}
+Define the log-moment Bellman step
+\[
+ (F_\Delta u)_i
+ =\max_a\log\left( e^{\Delta(Q^a+\diag v^a)}e^u\right)_i.
+\]
+For fixed $t$ and bounded initial $u$, with $\Delta=t/m$,
+$F_\Delta^m u\to S_tu$ with error $O(\Delta)$, uniformly on bounded
+sets. Each mesh problem, after acquisition of the initial state, has
+finite report and control spaces and a bounded actual path-reward mark.
+Its bounded moment effects therefore have the common-encoder
+risk-body duality of Corollary~\ref{cor:v10-effects}, for compact
+continuously parameterized primitive data. The seed average is taken on these
+moments before taking a logarithm.
+
+If $\widetilde Q^a,\widetilde v^a$ are another such family and
+\[
+ \delta_Q=\max_{i,a}\sum_{j\ne i}|q_{ij}^a-\widetilde q_{ij}^a|,
+ \qquad \delta_v=\max_{i,a}|v_i^a-\widetilde v_i^a|,
+\]
+then on a common oscillation bound $B$ for the trajectories,
+\[
+ \norm{S_tu-\widetilde S_tu}_\infty
+ \le t\{\delta_v+(e^B+1)\delta_Q\}.
+\]
+For the resolvents the same bound holds with $t$ replaced by
+$\lambda$ and $B$ bounding their solutions.
+\end{theorem}
+\begin{proof}
+The matrix exponential is a positive Feynman--Kac operator. On a
+bounded set of $u$, its Taylor expansion and the logarithm give
+$F_\Delta u=u+\Delta H(u)+O(\Delta^2)$, uniformly for the finite
+family of generators. Positivity makes $F_\Delta$ order preserving,
+and $F_\Delta(u+c\1)=F_\Delta u+c\1$. These two properties imply
+sup-norm nonexpansiveness. Its iterates and the exact flow remain
+in the same bounded region up to time $t$, by the constant barriers.
+The local flow expansion has the same first-order term and a uniform
+$O(\Delta^2)$ remainder. Telescope the errors over $m$ steps using
+nonexpansiveness; the bound is $mO(\Delta^2)=O(t\Delta)$.
+
+For a fixed control during one interval, the positive kernel
+$e^{\Delta(Q^a+\diag v^a)}$ is the expectation of the exponential
+integrated reward with the terminal state indicator. Keeping the
+actual bounded reward integral as a mark, rather than interpreting
+this nonstochastic matrix as a transition probability, gives its
+proper probabilistic representation. Concatenation gives the mesh
+instrument. Finite sampled states and controls have a finite report
+representation; continuous reward marks can be integrated into its
+bounded effect functions. For this reward-maximizing problem, use a decreasing affine
+normalization of the bounded moment as a loss in $[0,1]$ when applying
+the risk theorem. This reverses the optimization in the required way. For finite state/action
+paths this integration needs no assumption that reward marks have a
+common density: Corollary~\ref{cor:v10-effects} applies directly.
+For finite parameter and task sets, one may also augment the finite
+hidden state by the sampled state/control path and replace the moment
+loss by its conditional expectation given that path. This gives a
+finite instrument with exactly the same moment risks, to which
+Theorem~\ref{thm:v9-minimax} applies. It is an equivalence for these
+moment effects, not a finite-state realization of every continuous
+reward mark. Continuity of the effects on a compact primitive family
+follows from continuity of the finite matrix exponentials and products.
+
+On $\osc(u)\le B$, direct subtraction of \eqref{eq:v10-nisio} gives
+$\norm{H(u)-\widetilde H(u)}_\infty
+\le\delta_v+(e^B+1)\delta_Q$. The maximal-coordinate comparison used
+above now bounds the upper derivative of the solution difference by
+this constant. Integration proves the flow estimate. Subtracting
+the two resolvent equations at a maximizing coordinate proves its
+resolvent counterpart. The logarithm of an average exponential
+moment is not an average of logarithms; none of these steps changes
+that ordering.
+\end{proof}
+
+The semigroup construction is a finite-state instance of the
+logarithmic control-semigroup method of Nisio~\cite{Nisio1976} and risk-sensitive
+control. Its role here is an explicit nonlinear consumer with a
+proved range condition and a marked finite-mesh interface, not a
+claim that finite-dimensional comparison settles the domain and
+coercivity questions of an infinite-dimensional kinetic generator.
+
+\section{Hidden phases and risk-sensitive continuation}
+\label{sec:v10-phases}
+
+Let $C$ be a finite latent phase chosen once with positive initial
+weights, and let $Z_t$ follow a controlled hidden model conditional
+on $C$. Its joint transition/report densities are
+$K_{c,a}(z',y\mid z)$ with respect to a probability measure $\mu(dy)$.
+Let $r_{c,a}(z,z')$ and the terminal reward $h_c(z)$ be bounded, and
+fix $\gamma>0$. One controller must choose each action without
+observing $C$. The objective in this section is to minimize the
+positive exponential moment. A logarithm may be applied afterwards.
+
+The exponential information-state mechanism is classical; see
+B\"auerle and Rieder~\cite{BauerleRieder2017}. We use the following
+explicit unnormalized version so that no phasewise policy is hidden
+in the notation. Define a nonnegative row $\eta$ on $(c,z)$ and the tilted update
+\begin{equation}\label{eq:v10-tilt}
+ (\eta K_a^\gamma(y))(c,z')
+ =\sum_z\eta(c,z)K_{c,a}(z',y\mid z)
+                         e^{\gamma r_{c,a}(z,z')}.
+\end{equation}
+Unlike an ordinary phase posterior, $\eta$ includes the accumulated
+reward weight. Its total mass must not be discarded without a
+corresponding multiplicative value factor.
+
+\begin{theorem}[One-policy phase recursion]\label{thm:v10-phase}
+For full-history controls, the minimum remaining exponential moment
+has the recursion
+\[
+ V_T(\eta)=\sum_{c,z}\eta(c,z)e^{\gamma h_c(z)},\qquad
+ V_t(\eta)=\min_{a\in A}\int
+          V_{t+1}(\eta K_a^\gamma(y))\mu(dy).
+\]
+The value is positively homogeneous and Borel, and an optimal
+measurable selector exists. The minimum is outside the phase sum:
+replacing it by separate phasewise minima is in general incorrect.
+For finite-register common encoders, the exact moment risk body is
+instead obtained from the coupled design of
+Theorem~\ref{thm:v10-compact} (or its finite specialization), not by
+providing $\eta$ as free online memory. The model satisfies that
+theorem whenever its marked path densities and bounded effects
+satisfy the stated domination and continuity hypotheses; in
+particular finite phases with positive Gaussian observations and
+bounded finite-path rewards do so for fixed primitives, or for compact
+continuous primitive families as in Theorem~\ref{thm:v10-hmm}, using
+Corollary~\ref{cor:v10-effects} when only effect domination is needed.
+\end{theorem}
+\begin{proof}
+For a fixed report/action history, $\eta_t(c,z)$ is the joint density
+of phase, current state and that report history, multiplied by the
+exponential accumulated reward and summed over past hidden states.
+This interpretation is true initially and propagates exactly by
+\eqref{eq:v10-tilt}. At the terminal time summing the remaining
+exponential terminal factor gives $V_T$. At time $t$ the action is
+one measurable choice from the current history; it cannot depend on
+an unobserved phase. For a fixed choice $a$, integrate the remaining
+value of the updated density against the reference observation law.
+Backward induction gives the recursion. The minimum of finitely
+many Borel integrals is Borel and the least-index minimizer is a
+measurable selector. Induction also gives positive homogeneity.
+This is the unnormalized information-state form of risk-sensitive
+dynamic programming; it accounts for the probability and reward
+weights together.
+
+For a finite-register design, fix its action and register paths and
+expand the true marked path law. Its exponential reward is a bounded
+positive loss after affine rescaling. The same encoder kernels appear
+in every task and phase row, so the compact risk theorem applies
+without giving the controller the unbounded-dimensional history or
+an uncharged exact real vector. The Gaussian model's domination and
+compactness follow from the finite mixture proof in
+Theorem~\ref{thm:v10-hmm}. This proves the last assertion.
+\end{proof}
+
+\begin{example}[Strict failure of phasewise optimization]
+\label{ex:v10-phase}
+There is no observation. The equally likely phase is $C\in\{0,1\}$,
+the action is $a\in\{0,1\}$, and the cost is $\1_{\{a\ne C\}}$.
+The best actual exponential moment is $(1+e^\gamma)/2$, for any
+mixture of the two actions. Its logarithmic value is
+$\gamma^{-1}\log((1+e^\gamma)/2)$. Choosing $a=C$ separately in each
+hidden phase would give moment one, but is not an admissible policy.
+The tilted recursion and the common-encoder risk body both retain
+the actual value.
+\end{example}

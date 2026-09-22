@@ -1,0 +1,232 @@
+\section{The minimal marked continuation quotient}
+\label{sec:v10-marked}
+
+We now address exact state reduction. A statistic sufficient for the
+parameter need not be sufficient for a latent decision target. The
+correct terminal datum is the joint conditional law of the parameter
+and the designated mark. We give both an intrinsic operational
+characterization and a finite construction.
+
+Consider a finite hidden instrument with initial law $\nu_\theta$,
+transition/report probabilities $K_{\theta,t}(z',y\mid z,a)$, and a
+terminal mark channel $L_\theta(w\mid z_T)$ on a finite set $\mathsf W$.
+Here $K$ uses the new state $z'$ and the report jointly; no old-state
+observation channel is silently substituted. A finite collection of
+path targets can be included by adjoining their necessary finite
+memory to $z$. This augmentation, when used, is part of the input size.
+Fix a reference prior $\pi(\theta)>0$. For every supported controlled
+history $h=(a_0,y_1,\ldots,a_{t-1},y_t)$, let
+$\alpha_t(h)$ be the posterior row on $(\Theta,Z_t)$ under the
+reference prior and the indicated past actions. Control probabilities
+cancel in Bayes' formula; histories of zero reference probability are
+assigned an arbitrary existing label. No extra retained label is needed
+for events that have probability zero under every parameter.
+
+\begin{definition}[Continuation experiment]\label{def:v10-continuation}
+For each future open-loop action word $v=a_t\cdots a_{T-1}$, let
+$\mathcal C_t(h;v)$ be the conditional law of
+$(\Theta,Y_{t+1:T},W)$ given $h$, with future actions $v$.
+Two supported histories are equivalent, written $h\equiv_t h'$, if
+$\mathcal C_t(h;v)=\mathcal C_t(h';v)$ for every such $v$.
+Denote their class by $c_t(h)$ and the number of classes by $K_t$.
+\end{definition}
+
+This definition compares experiments rather than lists of selected
+coordinates. At $T$ it reduces to equality of
+$\mathcal L(\Theta,W\mid h)$, not only equality of
+$\mathcal L(\Theta\mid h)$. Since the parameter set is finite and the
+prior is strictly positive, changing the reference prior applies an
+invertible positive reweighting to every continuation law. The
+classes are consequently independent of this choice.
+
+\begin{lemma}[Controlled continuation]\label{lem:v10-continuation}
+The classes satisfy
+\[
+ h\equiv_t h'\ \Longrightarrow\
+ hay\equiv_{t+1}h'ay
+\]
+for every $a,y$ of positive conditional probability. The probability
+of $y$ is itself constant on a class. Equality of the open-loop
+continuation laws implies equality under every randomized feedback
+policy using the subsequent report history.
+\end{lemma}
+\begin{proof}
+The marginal of the first future report is a marginal of any
+continuation law beginning with $a$. It is the same for $h,h'$.
+Condition the joint law of $(\Theta,Y_{t+1:T},W)$ on that report
+being $y$. Its positive common denominator is the first-report
+probability, and its remaining numerator is the continuation law
+from $hay$ or $h'ay$. Varying the remaining action word gives the
+successor assertion. For a feedback policy, multiply each open-loop
+path probability by the product of its conditional control
+probabilities along that path and sum over action words. These
+factors depend only on the displayed future reports and on independent
+randomization. Equality is preserved. Null successors have zero
+probability under every parameter of positive reference prior.
+\end{proof}
+
+\subsection{An operational necessity theorem}
+The category in which a minimality claim is made matters. At a
+checkpoint $t$, a \emph{restart preparation} chooses a supported past
+history $H$ with an arbitrary law $\eta$, and then runs its conditional
+continuation experiment. The candidate statistic is obtained by
+consuming that same history through a channel $Q_t(dm\mid h)$.
+It does not resample a new history or replace the actual target $W$.
+A restart prediction task fixes a future action word $v$ and an event
+$A\subseteq\Theta\times Y_{t+1:T}\times\mathsf W$. Immediately at the
+checkpoint, before the continuation is observed, the decision maker
+predicts the indicator of $A$ with an action in $[0,1]$ and squared
+loss. The full-history optimal prediction is
+$p_A^v(h)=\mathcal C_t(h;v)(A)$.
+
+Call a source-consuming causal statistic \emph{restart-decision
+complete} when it preserves the full-history Bayes risk in every one
+of these tasks, for every preparation $\eta$ and every checkpoint.
+The definition requires equality of operational risks. It does not
+require any posterior coordinate to be explicitly stored.
+
+\begin{theorem}[Marked operational minimality]\label{thm:v10-minimal}
+A privately randomized finite-valued statistic $M_t$ is restart-decision complete at $t$
+if and only if $c_t(H)$ is recoverable as a function of $M_t$ on every
+supported history. In particular any complete randomized causal
+machine has at least $K_t$ retained states at checkpoint $t$.
+The deterministic quotient $(c_t)$ is simultaneously complete at all
+checkpoints, has exactly these widths, and is minimal in this category.
+For a public seed $U$, the corresponding criterion is recovery of
+$c_t(H)$ from $(U,M_t)$, not from $M_t$ alone. The same lower bound
+on the number of private register labels holds in either signature.
+\end{theorem}
+\begin{proof}
+The optimal Brier risks before and after compression differ by
+\begin{equation}\label{eq:v10-brier}
+ \E_\eta\left[
+   \bigl(p_A^v(H)-\E_\eta[p_A^v(H)\mid M_t]\bigr)^2\right].
+\end{equation}
+Indeed $\E[\1_A\mid H,M_t]=p_A^v(H)$, since the statistic's
+randomization is independent of the actual continuation given $H$.
+Orthogonal projection in $L^2$ proves the identity. There are only
+finitely many histories and cylinder events in the present finite
+experiment. Choose a preparation with positive mass on every
+supported history. Vanishing of \eqref{eq:v10-brier} for every $v,A$
+forces $p_A^v(h)=p_A^v(h')$ whenever both histories give positive
+probability to a common value $m$. Thus $h\equiv_t h'$. Each retained
+value has support in one equivalence class, so the class is a function
+of that value and there must be at least $K_t$ values.
+
+Conversely, if the class is recoverable, every $p_A^v(H)$ is measurable
+from $M_t$, and \eqref{eq:v10-brier} is zero for every preparation.
+Lemma~\ref{lem:v10-continuation} implements the classes by deterministic
+causal updates. It also proves equality for feedback continuations.
+For an independent public seed $U$, apply the same argument to
+$(U,M_t)$; if the declared width bounds only $M_t$, a free retained
+$U$ is a genuinely different signature. In an exact complete public
+scheme with finite widths, zero nonnegative excess also holds for
+almost every fixed seed, so the lower bound $S_t\ge K_t$ remains
+valid. One cannot use a seed to merge distinguishable histories while
+preserving all these zero-loss differences.
+\end{proof}
+
+\begin{proposition}[A quantitative separation]\label{prop:v10-overlap}
+Suppose a continuation event has probabilities differing by $\Delta$
+at $h,h'$. For the equal two-history preparation, any randomized
+statistic has Brier excess at least
+\[
+ \frac{\Delta^2}{4}
+ \bigl(1-\TV(Q_t(\cdot\mid h),Q_t(\cdot\mid h'))\bigr).
+\]
+\end{proposition}
+\begin{proof}
+Write $x_m=Q_t(m\mid h)$ and $y_m=Q_t(m\mid h')$. Direct evaluation
+of the conditional variance in \eqref{eq:v10-brier} gives
+$\frac{\Delta^2}{2}\sum_m x_my_m/(x_m+y_m)$, with zero terms omitted.
+Since $xy/(x+y)\ge\min(x,y)/2$ and
+$\sum_m\min(x_m,y_m)=1-\TV(x,y)$, the result follows.
+\end{proof}
+
+This is not a minimality assertion for an arbitrary independent
+simulator with unpriced memory. Nor is it an assertion that a chosen
+small list of losses separates every latent feature. The restart
+family is decision complete for the stated marked continuation
+experiment; its loss tests force the necessary state rather than
+assuming a posterior coordinate representation in the definition.
+The continuation and linear-representation aspects have classical
+antecedents in automata and predictive-state theory
+\cite{Nerode1958,ShaliziCrutchfield2001,Kiefer2020}; the target mark and
+the source-consuming operational category are essential here.
+
+\subsection{Two exact marked causal channels}
+Let $k^0_t(y\mid c,a)$ be the reference next-report probability and
+$F_t(c,a,y)$ the successor class. Define
+\[
+ H^0_t(c'\mid c,a)=
+ \sum_{y:F_t(c,a,y)=c'}k^0_t(y\mid c,a),\qquad
+ \lambda_\theta(c)=\mathbb P_\pi(\Theta=\theta\mid c).
+\]
+On the support of parameter $\theta$, Bayes' formula gives
+\begin{equation}\label{eq:v10-ratio}
+ k_{\theta,t}(y\mid c,a)
+ =k^0_t(y\mid c,a)
+   \frac{\lambda_\theta(F_t(c,a,y))}{\lambda_\theta(c)}.
+\end{equation}
+The marked terminal channel is
+$G_\theta(w\mid c_T)=\mathbb P_\pi(W=w\mid\Theta=\theta,c_T)$.
+It is part of the quotient; it is not discarded.
+
+\begin{theorem}[Exact marked reconstruction]\label{thm:v10-reconstruction}
+The original instrument and the class instrument admit causal
+channels in both directions preserving the joint law of the reported
+transcript and the actual terminal mark, under every parameter and
+admissible feedback policy. The reverse report kernel is
+\begin{equation}\label{eq:v10-reconstruct}
+ L_t(y\mid c,a,c')=
+ \frac{\1_{\{F_t(c,a,y)=c'\}}k^0_t(y\mid c,a)}
+      {H^0_t(c'\mid c,a)}
+\end{equation}
+when the denominator is positive. It is independent of $\theta$.
+The class instrument uses transitions
+$H_{\theta,t}(c'\mid c,a)
+=H^0_t(c'\mid c,a)\lambda_\theta(c')/\lambda_\theta(c)$
+and terminal channel $G_\theta$. Thus the channels preserve every
+bounded loss on the declared marked experiment, not just parameter
+likelihoods.
+\end{theorem}
+\begin{proof}
+The forward channel consumes each actual report and updates $c$ by
+$F_t$; its current class is a finite register. For the reverse channel,
+first observe the new class $c'$, then draw $y$ by
+\eqref{eq:v10-reconstruct}. Multiplying this kernel by
+$H_{\theta,t}$ gives exactly \eqref{eq:v10-ratio}. The terminal
+conditional distribution of $W$ given the full original history and
+$\theta$ is $G_\theta(\cdot\mid c_T)$ by the definition of the terminal
+class. Consequently the product of transition factors, report
+reconstruction factors and this terminal mark factor is the original
+joint density of $(Y_{1:T},W)$, for each open-loop action word.
+The feedback factors can be inserted before summing action words,
+as in Lemma~\ref{lem:v10-continuation}. This proves the claimed joint,
+parameter-uniform identity. Cases with zero $\lambda_\theta$ or zero
+transition probability lie outside that parameter's support and may
+be assigned arbitrary kernels. The positive reference prior makes
+these conventions consistent across parameters.
+
+A reverse transducer needs the previous class, the new class and the
+current action while forming its report. Between updates it retains
+only the previous class. Composing it with an $S_t$-state machine is
+therefore possible with at most $K_tS_t$ retained labels at time $t$;
+the new input is transient. These resource costs are separate from
+the bare exact-simulation identity.
+\end{proof}
+
+\begin{example}[A parameter-sufficient statistic that loses its mark]
+\label{ex:v10-xor}
+Let $\mathbb P(\Theta=0)=9/10$, let $Y$ be an independent fair bit,
+and put $W=Y\mathbin{\oplus}\Theta$. The parameter posterior is
+constant in $Y$. A terminal quotient that keeps only that posterior
+has one class. Yet the Bayes error in guessing the actual $W$ is
+$1/10$ with $Y$ and $1/2$ with that class alone. The marked terminal
+laws $\mathcal L(\Theta,W\mid Y=0)$ and
+$\mathcal L(\Theta,W\mid Y=1)$ differ, so the marked quotient has two
+classes. Its reverse channel preserves the relation
+$W=Y\mathbin{\oplus}\Theta$, not merely the marginal fair-bit law of
+$Y$. This example explains why an exact reconstruction theorem for
+reports alone cannot be used for arbitrary latent-target losses.
+\end{example}

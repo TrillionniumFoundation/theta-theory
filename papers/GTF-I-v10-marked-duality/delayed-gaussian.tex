@@ -1,0 +1,148 @@
+\section{A Gaussian experiment with a genuine temporal penalty}
+\label{sec:v9-delayed}
+The append-register Gaussian theorem in the supporting development
+concerns a terminal vector experiment. The following experiment instead
+forces information to survive until the question that uses it arrives.
+Its final target is scalar, but its causal exponent depends on the
+number of coordinates acquired before that question.
+
+Fix $d\ge2$ and $\sigma>0$. Let $\theta_1,\ldots,\theta_d$ be independent
+and uniform on $[-1,1]$, and observe sequentially
+\[
+                  X_j=\theta_j+\sigma Z_j,\qquad 1\le j\le d,
+\]
+where the $Z_j$ are independent standard Gaussians. After these
+observations have been discarded, an independent uniform query
+$J\in\{1,\ldots,d\}$ is revealed. The machine then updates its register
+and estimates $\theta_J$. There is no external observation transcript.
+The query is an input to that final update, not an additional persistent
+decoder register. The cost is squared loss, bounded by four after
+projecting the answer onto $[-1,1]$. Write
+\[
+ m(x)=\E[\theta_1\mid X_1=x],\qquad
+ \beta=\E\Var(\theta_1\mid X_1).
+\]
+Let $\mathcal E_S$ be the infimal excess above $\beta$ when the total
+register has at most $S$ states at every stage. Independent shared
+randomness is permitted; the same conclusions hold without it.
+
+\begin{definition}[Delayed-query information signature]\label{def:v10-gaussian-signature}
+There are $d$ sequential scalar-acquisition updates
+$I_j=F_j(I_{j-1},X_j,U_j)$, followed by one query update
+$I_{d+1}=F_{d+1}(I_d,J,U_{d+1})$ and a terminal output
+$\widehat\theta=D(I_{d+1},U_{d+2})$. Each register has at most $S$
+values. The $U_j$ are independent private draws; an optional
+independent retained public seed may be an argument of every rule.
+The query is independent of the pre-query history, and neither $J$
+nor an old report is available to the terminal decoder except through
+$I_{d+1}$. The cardinality signature permits arbitrary measurable
+real arithmetic. Proposition~\ref{prop:v10-gaussian-precision} gives
+a distinct finite-acquisition and finite-table implementation.
+\end{definition}
+
+\begin{theorem}[Delayed Gaussian query law]\label{thm:v9-delayed}
+There are constants $0<c_{d,\sigma}\le C_{d,\sigma}<\infty$ such that
+for every $S\ge2^d$,
+\begin{equation}
+             c_{d,\sigma}S^{-2/d}\le\mathcal E_S
+                          \le C_{d,\sigma}S^{-2/d}.
+ \label{eq:v9-delayedrate}
+\end{equation}
+The same order holds for the maximum over the $d$ individual coordinate
+query risks, with a common encoder before the query.
+
+In contrast, an encoder which receives the query together with the full
+observation vector at its sole checkpoint has excess of order $S^{-2}$.
+Thus the scalar terminal target has a strictly worse cardinality
+exponent under the delayed-query causal constraint. The lower bound
+uses the register \emph{before} the query and is not a final-output
+dimension bound.
+\end{theorem}
+\begin{proof}
+The posterior density on $[-1,1]$ is proportional to
+$\exp(-(x-u)^2/(2\sigma^2))$. Differentiation under the integral on this
+compact interval gives
+\begin{equation}
+                     m'(x)=\frac{\Var(\theta_1\mid X_1=x)}{\sigma^2}>0.
+ \label{eq:v9-posteriorderivative}
+\end{equation}
+The posterior variance is positive because its density is positive on
+an interval. The function $m$ is smooth, odd, and strictly increasing.
+Choose $b>0$ and put $a=m(b)>0$. The density of $X_1$ is positive and
+continuous, and $m'$ is positive and continuous on $[-b,b]$. The
+change-of-variables formula therefore gives a density for $m(X_1)$
+which is bounded below by a positive constant on $[-a,a]$. Independence
+implies that $M=(m(X_1),\ldots,m(X_d))$ has density bounded below by a
+positive constant on the cube $Q=[-a,a]^d$.
+
+We record an elementary volume bound. If $c_1,\ldots,c_S$ are arbitrary
+points in $\R^d$, and $v_d$ is the volume of the unit ball, choose
+$r=(|Q|/(2Sv_d))^{1/d}$. The union of their radius-$r$ balls has volume
+at most $|Q|/2$. Consequently
+\begin{equation}
+ \int_Q\min_{i\le S}\|x-c_i\|^2\,dx
+       \ge\frac{|Q|}{2}\left(\frac{|Q|}{2Sv_d}\right)^{2/d}.
+ \label{eq:v9-volumebound}
+\end{equation}
+This bound does not require cells to be convex or centres to lie in $Q$.
+
+Consider any admissible machine and condition on its independent shared
+random seed, when present. Its pre-query register $I_d$ has at most
+$S$ values. Subsequent private updates and readouts can do no better than
+being given $(I_d,J)$ and using its conditional posterior mean. Let
+$c_i=(\E[\theta_j\mid I_d=i])_{j=1}^d$, with the seed included in all
+these conditional expectations. The Markov relation from the full
+observation to the register, and independence of the random seed,
+imply $c_i=\E[M\mid I_d=i]$. Orthogonality of conditional expectation
+shows that the resulting excess for the uniform query is
+\[
+              \frac1d\E\|M-c_{I_d}\|^2
+       \ge \frac1d\E\min_{i\le S}\|M-c_i\|^2.
+\]
+For each fixed seed the law of $M$ is unchanged. Its density lower bound
+on $Q$ and \eqref{eq:v9-volumebound} give
+$c_{d,\sigma}S^{-2/d}$. Averaging the seed preserves this lower bound.
+The argument permits randomized private encoding: replacing its selected
+centre by the nearest centre is only a lower bound, not an assumption
+that the encoding is deterministic. The maximum coordinate risk is at
+least the uniform average, proving its lower bound as well.
+
+For the upper bound put $L=\lfloor S^{1/d}\rfloor\ge2$ and partition
+$[-1,1]$ into $L$ equal intervals. At observation $j$ compute the interval
+label of $m(X_j)$ and append it in base $L$ to the stored labels. At that
+time there are at most $L^j\le S$ states. After the query, replace the
+whole label by the interval label of the requested coordinate; the
+terminal decoder outputs its midpoint. This last update leaves only
+$L$ possible labels and retains no separate query. Its squared excess
+in every coordinate is at most $L^{-2}\le4S^{-2/d}$. Conditional
+orthogonality again subtracts the same full-observation baseline $\beta$.
+The construction is deterministic and works with or without a shared
+seed.
+
+For the noncausal checkpoint comparison, the encoder sees $(X,J)$ and
+quantizes only $m(X_J)$ into $S$ equal intervals. This has excess at most
+$S^{-2}$. The one-dimensional version of the same density lower bound
+and \eqref{eq:v9-volumebound} gives the matching lower bound, even with
+randomized encoding and a shared seed. Its $S$ terminal centres are
+arbitrary real answers in $[-1,1]$, so no additional discreteness
+assumption has entered. This proves all assertions.
+\end{proof}
+
+The theorem is a Bayesian slice of the parameterized Gaussian experiment
+with the specified product prior, not a claim about uniform deficiency
+over the whole Gaussian family. Its constants depend on $d$ and
+$\sigma$. It controls persistent cardinality and finite acquisition
+count, not the arithmetic cost of evaluating the real posterior mean.
+Under a finite numerical signature, an approximation of $m$ requires a
+separate accuracy and computation bound. The obstruction nevertheless
+holds for every such implementation, since it was proved for the larger
+unrestricted-arithmetic class.
+
+The lower bound is the same conditional-variance geometry as
+Corollary~\ref{cor:v9-quadratic}, now evaluated directly for a continuous
+history law. In the finite theorem, successor compatibility determines
+which cells can be executed. Here the late query forces all coordinate
+readouts to factor through the same pre-query cell, and the volume bound
+computes its cost. This explains both the lossless append-only regime
+and a regime where forgetting before a future question changes the
+exponent, without identifying either one with static terminal dimension.

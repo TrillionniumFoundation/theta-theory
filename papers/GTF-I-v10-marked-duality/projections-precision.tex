@@ -1,0 +1,167 @@
+\section{Marked projections and finite numerical acquisition}
+\label{sec:v10-projections}
+
+The common object behind the decision problems is the attainable
+family of joint laws under one admissible encoder, with its task
+controllers and its actual target marks. Evaluating a bounded loss is
+a linear projection of this family. A risk body for one selected task
+family is therefore a projection, not by itself a classification of
+the whole experiment. We record the exact links to the quantitative
+regimes used later in the article.
+
+\begin{proposition}[Quadratic and metric projections]\label{prop:v10-projections}
+For an uncontrolled standard Borel history $H$ and a square-integrable
+Hilbert-valued target $U$, write $m(H)=\E[U\mid H]$. Any statistic $I$
+formed from $H$ with independent randomization has optimal quadratic
+excess
+\begin{equation}\label{eq:v10-variance}
+ \E\norm{m(H)-\E[m(H)\mid I]}^2.
+\end{equation}
+For finitely many such tasks the common-encoder weighted support
+problem is the conditional variance of the direct sum of their
+posterior means multiplied by the square roots of their task weights.
+On finite histories this is precisely the compatible-partition
+functional in Corollary~\ref{cor:v9-quadratic}. On the predictive trees
+of Theorem~\ref{thm:v7-tree}, its within-cell variances are comparable
+to the retained tree-energy sums under the hypotheses of that theorem.
+
+For a revealed law $\pi\in\mathcal P([0,1])$, take as actual target
+$\pi$ and as output a realized probability law $\widehat\pi$.
+The loss $W_1(\pi,\widehat\pi)$ yields exactly the law-presentation
+profile of Theorem~\ref{thm:v8-measureentropy}. Replacing the output by
+a sample, and testing only its marginal, is a different task and does
+not preserve this profile.
+\end{proposition}
+\begin{proof}
+Conditional on $(H,I)$ the target mean is $m(H)$. Orthogonal
+projection gives
+\[
+ \E\norm{U-a(I)}^2=
+ \E\norm{U-m(H)}^2+\E\norm{m(H)-a(I)}^2.
+\]
+The second term is minimized by $a(I)=\E[m(H)\mid I]$, proving
+\eqref{eq:v10-variance}. Weighted sums are squared norms in the
+Hilbert direct sum. For a deterministic finite partition, conditioning
+on $I$ is averaging over its cell, giving the stated finite functional.
+The lower and upper comparisons with tree energy are exactly the
+separation and diameter estimates of Theorem~\ref{thm:v7-tree}; no
+new equality between energy and variance is asserted. The continuous
+Gaussian volume argument is another evaluation of
+\eqref{eq:v10-variance}, not an invocation of the finite-history
+partition theorem on a continuous history space.
+
+For the second assertion, the joint output loss of an encoder and
+its random decoder is, by definition,
+$\E W_1(\pi,D(Q(\pi)))$. The decoder must output a law on each run.
+This is the profile in \eqref{eq:v8-lawprofile}, whose minimax order
+is $1/\log(S+1)$ under its stated common-code convention. The
+single-marginal probe in Proposition~\ref{prop:v8-probe} has a
+different output and a different rate. Integrating out the realized
+law before applying the distance changes the loss, so does not
+commute with this projection.
+\end{proof}
+
+The revealed-law family is generally nondominated. It belongs to the
+marked-spectrum definition, but is not being smuggled into the
+product-dominated compactness theorem. Conversely the latter has a
+proved closed attainable body, whereas a general infinite family of
+tasks need not have one without hypotheses. Terminal statistical
+deficiency uses the decision-complete task family and compactness
+specified in Theorem~\ref{thm:v8-duality}; a finite selection of task
+supports is not sufficient to infer Blackwell equivalence. These
+distinctions allow the tree, Wasserstein, finite Gaussian and count
+bounds to be used together without equating their output spaces.
+
+\subsection{A finite table for the delayed Gaussian problem}
+Retain the notation and information pattern of
+Definition~\ref{def:v10-gaussian-signature}. The following bound
+separates acquisition, numerical evaluation and persistent storage.
+
+\begin{proposition}[Finite-precision Gaussian implementation]
+\label{prop:v10-gaussian-precision}
+Let $L=\lfloor S^{1/d}\rfloor\ge2$. An acquisition interface returns
+one of the interior bins of a grid of width at most $h$ on $[-R,R]$
+and two tail symbols, where $R>1$. Let the stored table approximate
+$m(x)$ at each interior bin midpoint to error at most $\varepsilon$,
+with values clipped to $[-1,1]$. Quantize those approximations into
+$L$ equal intervals and store the resulting labels in the base-$L$
+register. Then the squared excess in every coordinate is at most
+\begin{equation}\label{eq:v10-gaussian-precision}
+ \left(L^{-1}+\frac{h}{2\sigma^2}+\varepsilon\right)^2
+ +8\exp\left(-\frac{(R-1)^2}{2\sigma^2}\right).
+\end{equation}
+For fixed computable $\sigma>0$, there are rational uniform-grid
+choices with $1/(2L)\le h\le1/L$, $\varepsilon\le1/L$, and
+$1+\sigma\sqrt{6\log L}\le R\le2+2\sigma\sqrt{6\log L}$
+that give excess $O_{\sigma}(L^{-2})$.
+The number of acquisition symbols is $O_\sigma(L\sqrt{\log L})$,
+the table has $O_\sigma(L(\log L)^{3/2})$ bits, and each scalar
+acquisition uses $O_\sigma(\log L)$ report bits. For rational
+$\sigma^2$ the table is computable by a terminating certified
+rational procedure. Its offline evaluation cost is separate from
+the bit-serial lookup and register-update costs.
+\end{proposition}
+\begin{proof}
+Equation~\eqref{eq:v9-posteriorderivative} and $|\theta|\le1$ imply
+$0<m'(x)\le\sigma^{-2}$. An interior-bin midpoint differs from $X$
+by at most $h/2$, so its posterior mean differs by at most
+$h/(2\sigma^2)$. Table evaluation and the final equal-interval
+quantization add at most $\varepsilon$ and $1/L$. On a tail event,
+any clipped output differs from $m(X)$ by at most two. Since
+$X=\theta+\sigma Z$ and $|\theta|\le1$,
+\[
+ \mathbb P(|X|>R)\le
+ 2\exp(-(R-1)^2/(2\sigma^2)).
+\]
+The conditional-variance identity subtracts the same full-observation
+baseline and gives \eqref{eq:v10-gaussian-precision}. This estimate
+holds coordinatewise; no union bound over all coordinates is needed
+for a single queried coordinate. The pre-query and post-query
+register updates are exactly the base-$L$ construction of
+Theorem~\ref{thm:v9-delayed}.
+
+There are $O(R/h)$ interior bins. Only their final labels in $[L]$
+need be stored after certified preprocessing; thus the table uses
+$O((R/h)\log L)$ bits. One may include the rational grid endpoints
+and the two prescribed tail labels in the fixed program. Choosing
+rational upper and lower approximations with constant-factor slack
+gives the asserted bounds without requiring an exact logarithm or
+square root in the online machine. A sequential lookup scans the
+finite table; binary arithmetic then appends or extracts a base-$L$
+digit. It uses $O(d\log L+\log(R/h))$ transient bits besides the
+read-only program and polynomial time in the table length and the
+register bit length. The physical analog-to-bin acquisition is an
+explicit interface operation, not claimed to be implemented for free
+by the register machine.
+
+For completeness, certified values of $m$ are available without an
+exact real oracle when $\sigma^2$ and the grid are rational. They are
+ratios of the integrals
+\[
+ \int_{-1}^1 u e^{-(x-u)^2/(2\sigma^2)}du,
+ \qquad
+ \int_{-1}^1 e^{-(x-u)^2/(2\sigma^2)}du.
+\]
+The denominator is at least
+$2e^{-(R+1)^2/(2\sigma^2)}>0$ for $|x|\le R$. Rational Taylor bounds
+for the exponential, combined with Riemann-sum error bounds from
+uniform derivative bounds on the compact rectangle, give rational
+intervals for both integrals of arbitrarily small width. Refine until
+the quotient interval has width at most $\varepsilon$, and choose
+its rational midpoint. If it lies near an equal-interval threshold,
+either adjacent label still has error at most
+$1/L+\varepsilon$ after enlarging the certified tolerance by a fixed
+factor, or the rational midpoint may simply be compared exactly to
+the rational thresholds. Termination follows from the denominator
+lower bound. The same construction for fixed computable $\sigma$
+uses certified intervals for it. No polynomial bound in the
+unspecified description of a general computable real is asserted.
+\end{proof}
+
+The cardinality converse remains valid for this finite numerical
+signature because its implementations form a subclass of the
+unrestricted measurable machines used in that converse. Finite
+acquisition therefore preserves the delayed-query exponent when
+its error parameters are scaled as above, while displaying the
+additional resources that the cardinality theorem alone does not
+price.
