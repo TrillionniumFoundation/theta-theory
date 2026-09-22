@@ -1,0 +1,233 @@
+\section{One variational principle: occupancies, Bayes envelopes and pressure}
+\label{sec:v9-variational}
+The support function in Theorem~\ref{thm:v9-minimax} can be computed
+without first constructing a quotient or listing full decision trees.
+The relevant state for this calculation is an \emph{offline} joint
+occupancy. It is not an additional observation available during execution.
+
+\subsection{An exact support-function recursion}
+For $w\in\Delta_J$ put
+\[
+ z_0^{d\theta}(z,i)=\1_{\{i=1\}}\nu_\theta(z)
+              \sum_{j:d(j)=d}w_j\kappa_j(\theta).
+\]
+For arbitrary nonnegative arrays $z=(z^{d\theta}(x,i))$, a prescription
+consists of actions $a^d(i)$ and a \emph{single} table $f(i,a,y)$.
+Define its linear occupancy update by
+\begin{equation}
+ (\mathcal T_{a,f}z)^{d\theta}(x',i')
+  =\sum_{x,i,y}z^{d\theta}(x,i)
+       K_{\theta,t}(x',y\mid x,a^d(i))
+       \1_{\{f(i,a^d(i),y)=i'\}}.
+ \label{eq:v9-occupancy}
+\end{equation}
+The time $t$ is understood from the two spaces in this formula. Define
+\begin{align}
+ V_T(z)&=\min_{b^d(i)\in B_d}
+                \sum_{d,\theta,x,i}z^{d\theta}(x,i)
+                          \ell_{d\theta}(x,b^d(i)),\label{eq:v9-terminalbellman}\\
+ V_t(z)&=\min_{a,f}V_{t+1}(\mathcal T_{a,f}z),
+                                     \qquad t=T-1,\ldots,0.
+ \label{eq:v9-bellman}
+\end{align}
+\begin{theorem}[Occupancy representation of the spectrum]
+\label{thm:v9-occupancy}
+For the finite controlled instrument,
+\begin{equation}
+ h_E({\bf S};w)=V_0(z_0(w)),\qquad
+ \Theta_{\rm sh}({\bf S};D)
+       =\max_{w\in\Delta_J}\{V_0(z_0(w))-w\cdot b\}.
+ \label{eq:v9-occupancyspectrum}
+\end{equation}
+Every $V_t$ is a positively homogeneous, concave, piecewise-linear
+function on its nonnegative occupancy cone. A minimizing sequence of
+prescriptions compiles into an actual common-encoder design with the
+specified widths. No realized task index or hidden parameter is
+supplied to $f$.
+\end{theorem}
+\begin{proof}
+Fix a deterministic sequence of prescriptions. Induction in
+\eqref{eq:v9-occupancy} shows that $z_t^{d\theta}$ is the joint law of
+$(Z_t,I_t)$ under that task and parameter, multiplied by its initial
+weight. Its terminal linear cost is therefore $w\cdot R(\omega)$.
+At the last time the terminal tables in
+\eqref{eq:v9-terminalbellman} give precisely all legal terminal rules:
+$b^d(i)$ is common to every $\theta$ in task $d$.
+
+At an earlier time, choosing $a^d(i)$ and one common $f$ determines the
+entire next occupancy. Conversely every possible first prescription of
+a deterministic continuation has this form. Backward induction therefore
+proves that \eqref{eq:v9-bellman} minimizes over exactly all legal future
+designs. This proves the first equality in
+\eqref{eq:v9-occupancyspectrum}; Theorem~\ref{thm:v9-minimax} proves the
+second. For any fixed continuation the cost is linear in the initial
+occupancy. There are finitely many continuations, so $V_t$ is the minimum
+of finitely many linear forms. The stated geometric properties follow.
+
+The occupancy is propagated during design, starting at the known array
+$z_0(w)$. Once a sequence of minimizing tables is chosen, its future
+occupancies are deterministic functions of that sequence. Only the
+finite tables and the actual label are used online. In particular,
+one must not store the occupancy array without charging its size, nor
+allow a different prescription for the unobserved realized parameter.
+\end{proof}
+
+This recursion is a designer's dynamic programme with coupled information
+constraints. Common-information prescriptions and belief-state dynamic
+programming have substantial antecedents
+\cite{NayyarMahajanTeneketzis2013,Witsenhausen1979}.
+In the cited common-information preprint, Corollary~5 already treats
+absent common memory and finite local memories; its unconditional
+information state is an offline occupancy. The additional assertion
+here is the exact equality with the
+\emph{common-encoder minimax spectrum}, including its dual adversarial
+weights, controlled continuation constraint and explicit seed cost.
+The recursion does not assert polynomial complexity: the number of
+linear pieces and the number of finite designs can be very large.
+
+\subsection{The common quadratic task family}
+There is a particularly transparent intrinsic form when reports are
+uncontrolled. Let the finite history law $p_t(h)$ be fixed, let
+$U_{dt}$ be square-integrable Hilbert-valued targets, and let
+$\alpha_{dt}\ge0$. Task $d$ has loss
+$\sum_t\alpha_{dt}\|U_{dt}-\widehat U_{dt}\|^2$.
+The decoder's answers do not affect later observations or updates.
+Set $m_{dt}(h)=\E[U_{dt}\mid H_t=h]$. For a successor-compatible
+partition family $\mathcal P$, define
+\begin{equation}
+ D_d(\mathcal P)=\sum_t\alpha_{dt}\sum_{C\in\mathcal P_t}
+       \sum_{h\in C}p_t(h)\|m_{dt}(h)-\overline m_{dt,C}\|^2,
+ \qquad
+ \overline m_{dt,C}=\frac{\sum_{h\in C}p_t(h)m_{dt}(h)}{p_t(C)}.
+ \label{eq:v9-vectorvariance}
+\end{equation}
+Zero-mass cells are omitted. Define the single weighted geometry
+\[
+ M_{w,t}(h)=\big(\sqrt{w_d\alpha_{dt}}\,m_{dt}(h)\big)_{d\in D}
+
+\]
+to lie in the Hilbert direct sum of the target spaces.
+\begin{corollary}[Common-encoder variance duality]\label{cor:v9-quadratic}
+For a shared independent seed and the declared widths,
+\begin{align}
+ \Theta_{\rm sh}({\bf S};D)
+ &=\min_{\lambda\in\Delta(\mathcal P)}
+                       \max_d\sum_{\mathcal P}\lambda_{\mathcal P}
+                                                   D_d(\mathcal P)\nonumber\\
+ &=\max_{w\in\Delta_D}\min_{\mathcal P}
+        \sum_t\E\left\|M_{w,t}(H_t)
+                -\E[M_{w,t}(H_t)\mid\mathcal P_t]\right\|^2.
+ \label{eq:v9-quadraticdual}
+\end{align}
+The minima range over \emph{one} successor-compatible family of width
+at most $S_t$ at each time. This is an exact characterization of the
+maximum over tasks, not a statement only about one scalarized loss.
+Its private version lies between the values given by this formula at
+$S$ and by its implementation with $(|D|+1)S$ states.
+\end{corollary}
+\begin{proof}
+Conditional expectation gives the orthogonal decomposition of each
+squared risk into its full-history Bayes risk and prediction of
+$m_{dt}(H_t)$. On a deterministic state cell its unique optimal readout
+is the displayed cell mean. All tasks can use their respective means
+simultaneously without changing the common encoder. Thus the
+coordinatewise best risk vector of a deterministic partition is exactly
+$D(\mathcal P)$. There are finitely many history partitions, although
+the target Hilbert spaces need not be finite dimensional.
+
+Conditioning on an independent seed gives a distribution of these
+partitions; conversely their mixtures are executable under the shared
+convention. The proof of Theorem~\ref{thm:v9-minimax} now applies to this
+finite vector set. The identity
+$\sum_dw_dD_d(\mathcal P)=\sum_t\E\|M_{w,t}-\E(M_{w,t}\mid\mathcal P_t)\|^2$
+is the direct-sum norm formula. Storing the mixture index proves the
+last assertion exactly as in \eqref{eq:v9-seedprice}.
+\end{proof}
+
+For $|D|=1$, \eqref{eq:v9-quadraticdual} reduces to the earlier
+conditional-variance characterization, Theorem~\ref{thm:v8-congruence}.
+For several tasks it supplies its missing minimax convexification. The
+outer maximizing weight is common to every time; selecting a separate
+favourable weight or encoder at each checkpoint is not permitted.
+Compatible predictive trees are one class of feasible partitions of this
+same functional. Their energy estimates in the supporting theory supply
+quantitative bounds for that class; they are not hypotheses of
+Theorems~\ref{thm:v9-minimax} or \ref{thm:v9-occupancy}.
+
+\begin{corollary}[A1: maximum over finite query and checkpoint tasks]
+\label{cor:v9-a1}
+Consider the actual finite-command accepted-cell/failure protocol of
+Corollary~\ref{cor:v8-a1}, with its fixed prior, finite horizon and
+parameter-independent command laws. Fix any finite family of weighted
+quadratic query/checkpoint tasks. Its optimal shared-seed common causal
+encoder is given by \eqref{eq:v9-quadraticdual}, using the accepted and
+\emph{summed failure} likelihoods of that protocol. At most $|D|+1$
+partition designs are needed. Retaining their index gives the same
+optimum with at most $(|D|+1)S$ private states.
+\end{corollary}
+\begin{proof}
+The observation likelihoods and posterior means are derived in
+Corollary~\ref{cor:v8-a1} from $g_jk_j(\theta)$ on acceptance and
+$\sum_j(1-g_j)k_j(\theta)$ on the one failure report. These give one
+finite history law for all tasks. Insert its posterior query means in
+\eqref{eq:v9-vectorvariance} and apply Corollary~\ref{cor:v9-quadratic}.
+The unseen failed raw-cell label is never used in a partition update.
+Unlike the earlier scalarization, the present formula retains the
+maximum over the whole prescribed task family.
+\end{proof}
+
+\subsection{Exponential criteria and hidden-phase control}
+The same support calculation has a multiplicative form. Let $\gamma>0$
+and let $C_{d\theta}$ be a bounded cumulative cost on the finite
+trajectory, including a terminal decision. Put
+\[
+ M_j(\omega)=\sum_\theta\kappa_j(\theta)
+                       \E_\theta^{\omega,d(j)}e^{\gamma C_{d(j)\theta}}.
+\]
+For task $d$ the risk is $\gamma^{-1}\log\max_{j:d(j)=d}M_j$;
+a Bayesian task has its single prior row. Let $\beta_d^{\exp}$ denote
+its corresponding full-history baseline.
+\begin{corollary}[Risk-sensitive common-encoder duality]
+\label{cor:v9-pressure}
+The shared-seed excess under these exponential risks equals
+\begin{equation}
+ \Theta^{\exp}_{\rm sh}({\bf S};D)
+ =\frac1\gamma\log\left[
+   \max_{w\in\Delta_J}\min_{\omega\in\Omega_{\bf S}}
+       \sum_jw_j e^{-\gamma\beta_{d(j)}^{\exp}}M_j(\omega)\right].
+ \label{eq:v9-pressure}
+\end{equation}
+For additive costs, the inner minimum is computed by
+\eqref{eq:v9-occupancy}--\eqref{eq:v9-bellman} after replacing the
+transition by $K_{\theta,t}e^{\gamma c_{d\theta,t}}$ and the terminal
+loss by $e^{\gamma c_{d\theta,T}}$. The initial row weights are multiplied
+by $e^{-\gamma\beta_d^{\exp}}$. These are nonnegative occupancies,
+not normalized posterior probabilities.
+\end{corollary}
+\begin{proof}
+For a mixture of designs, the exponential moment is
+$\sum_\omega\lambda_\omega M_j(\omega)$. It is \emph{not} the exponential
+of an average of logarithmic risks. Since logarithm is increasing,
+subtracting the baseline and maximizing rows gives
+\[
+ \frac1\gamma\log\max_j
+       \left[e^{-\gamma\beta_{d(j)}^{\exp}}
+                      \sum_\omega\lambda_\omega M_j(\omega)\right].
+\]
+Minimize over $\lambda$ and apply finite minimax to the bracketed
+positive moment table. This proves \eqref{eq:v9-pressure}.
+Expanding the product of transition weights proves the Feynman--Kac
+occupancy assertion by the same induction as before. Positivity, not
+normalization, is what that induction requires.
+\end{proof}
+
+For example, let an unobserved phase $\theta\in\{0,1\}$ have probabilities
+$1/2,1/2$, provide no report, and charge $C=\1_{\{a\ne\theta\}}$.
+Every observation-admissible action, randomized or not, has moment
+$(1+e^\gamma)/2$ and risk
+$\gamma^{-1}\log((1+e^\gamma)/2)>0$. Optimizing separately within each
+phase would instead give zero. The single $a^d(i)$ in the occupancy
+recursion forbids precisely that exchange. This supplies a finite-model
+resolution of the common-policy issue arising in phase mixtures; it does
+not presume that a latent phase decomposition of a microscopic system
+has already been constructed.

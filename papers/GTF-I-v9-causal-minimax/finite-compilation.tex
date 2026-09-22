@@ -1,0 +1,134 @@
+\section{Finite compilation and several charged resources}
+\label{sec:v9-compilation}
+The finite variational principle also has an effective implementation.
+This is a separate source of multi-resource control from the energy
+oracle used in the predictive-tree construction. The price of synthesis
+is explicit and can be large; it is not moved into a free online oracle.
+
+Use the finite instrument and finite decision alphabets of
+Section~\ref{sec:v9-minimax}, with rational probabilities and losses.
+Let $S=\max_tS_t$, $Y=\max_t|Y_t|$, $B=\max_d|B_d|$, and $m=|D|$.
+A table implementation of one deterministic design has description
+length bounded, up to an absolute coding constant, by
+\begin{align}
+ P_0={}&\sum_{t=0}^{T-1} S_t|A||Y_{t+1}|
+                                      \lceil\log_2(S_{t+1}+1)\rceil
+                                                        \nonumber\\
+ &+m\sum_{t=0}^{T-1}S_t\lceil\log_2(|A|+1)\rceil
+   +mS_T\lceil\log_2(B+1)\rceil
+   +O((T+m)\log_2(T+S+|A|+Y+B+2)).
+ \label{eq:v9-tablebits}
+\end{align}
+Unused states and forbidden controller actions can simply be retained
+as redundant table entries. The externally specified time index is the
+same clock convention as in \eqref{eq:v8-register}. If no external clock
+is permitted, its $T+1$ values must also be included in the register.
+
+\begin{theorem}[Effective finite-source realization]
+\label{thm:v9-compiler}
+An optimal shared-seed common-encoder scheme for the rational finite
+instrument can be synthesized by a finite exact calculation. It can use
+$k\le M+1$ deterministic tables with rational mixing weights. For every
+integer $p\ge1$ there is a dyadic implementation whose excess is at most
+\begin{equation}
+                  \Theta_{\rm sh}({\bf S};D)+k\,2^{-p}.
+ \label{eq:v9-compileerror}
+\end{equation}
+Its fixed description has $O(kP_0+kp)$ bits. Initialization uses exactly
+$p$ independent fair bits; no random bits are required subsequently.
+With an explicitly permitted read-only shared seed its persistent
+register has width at most $S$. Without that convention the same scheme
+has width at most $kS$, including the stored design index.
+
+Each update reads one supplied finite-alphabet report. On a bit-serial
+table implementation, transient space can be bounded by
+$O(p+\log(P_0k+2)+\log(S+|A|+Y+B+T+m+2))$ bits and the running time of
+an update or initialization by $O(kP_0+kp+p+1)$ bit operations, after
+increasing the universal coding constant. No unit-cost access to an
+arbitrary real constant is required. Reading the physical report itself
+remains an input cost, rather than a claim about how an underlying
+continuous measurement was acquired.
+\end{theorem}
+\begin{proof}
+Enumerate the finite deterministic designs. Their risks are rational
+numbers obtained from finite products and sums of rational transition
+entries and losses. Full-history baselines can likewise be computed by
+enumerating full-history policies and solving their finite minimax
+linear programmes; for a Bayesian task their minimum is already a
+finite linear optimization. Thus the primal programme
+\eqref{eq:v9-primal} has rational data and has a rational optimal basic
+solution. Rational linear algebra and the usual elimination of affine
+dependence among its risk vectors give a rational optimal mixture of at
+most $M+1$ designs. This gives a finite synthesis algorithm, not a bound
+polynomial in the horizon or the number of reports. Integer determinants
+of the finite rational constraint matrix give finite bit bounds for all
+weights, so synthesis does not require a probability oracle.
+
+Let its weights be $\lambda_1,\ldots,\lambda_k$. For $r<k$ set
+$\widetilde\lambda_r=2^{-p}\lfloor2^p\lambda_r\rfloor$ and let the
+last weight be the nonnegative remainder. Then
+\[
+ \|\lambda-\widetilde\lambda\|_{\rm TV}
+       =\sum_{r<k}(\lambda_r-\widetilde\lambda_r)
+       \le(k-1)2^{-p}.
+\]
+For every row, its risk lies in $[0,1]$, so the difference of its mixed
+risks is at most this total variation. Taking the maximum and subtracting
+the unchanged baseline proves \eqref{eq:v9-compileerror}.
+
+A uniform $p$-bit integer, compared to the cumulative integer weights,
+selects the dyadic design exactly. Its deterministic tables then
+implement the scheme. There are $k$ copies of the tables counted in
+\eqref{eq:v9-tablebits} and $k$ integer weights of at most $p+1$ bits,
+which proves the description bound. In the private implementation the
+index is part of $(r,I_t)$ and hence multiplies the width by $k$. In the
+shared implementation the seed is explicitly allowed throughout the run;
+its index can instead be reread from that permitted input. A modified or
+data-dependent seed would not qualify for this exception.
+
+For a conservative machine model, store the immutable description as a
+sequential binary table with self-delimited addresses. Locate an update,
+a controller action, or a terminal answer by scanning it. Counters need
+only logarithmic space in its length and in the finite alphabet sizes.
+Comparing the $p$-bit initialization integer with its cumulative weights
+requires $O(p)$ extra space and $O(kp)$ time by a sequential scan.
+Copying the selected finite answer and updating the label has the same
+bounds. Thus the displayed time and space bounds are valid without a
+random-access assumption. They are deliberately not optimized.
+\end{proof}
+
+\begin{proposition}[Stability of finite synthesis]\label{prop:v9-stability}
+Suppose two finite instruments have matched alphabets, losses and timing.
+Their initial hidden laws have total variation distance at most $\eta_0$
+for every parameter, and the corresponding transition--report rows have
+distance at most $\eta_t$ uniformly in hidden state and control. Then,
+for every admissible common-encoder/controller design, the difference
+of each bounded-loss risk is at most
+$\varepsilon=\min\{1,\eta_0+\sum_{t<T}\eta_t\}$.
+Their full-history baselines differ by at most $\varepsilon$, and their
+shared or private excess spectra at the same signature differ by at most
+$2\varepsilon$. An additional uniform error $\zeta$ in the loss adds
+$2\zeta$ to this last bound.
+\end{proposition}
+\begin{proof}
+Couple the initial hidden states maximally. Until the two trajectories
+first disagree, choose the same controls, report-driven updates and
+random bits in both executions. Couple the corresponding hidden/report
+transition rows maximally. The probability of a disagreement by the last
+time is at most $\eta_0+\sum\eta_t$. A bounded loss changes in expectation
+by at most that probability. This argument is uniform over every
+parameter and every legal controller, including full-history controllers.
+Infima over controllers and common encoders, and maxima over tasks or
+parameters, are nonexpansive in uniform error. Apply that observation
+once to the constrained risk and once to its baseline. A uniformly
+perturbed loss changes each of these by at most $\zeta$.
+\end{proof}
+
+This provides a multi-resource finite theorem with computable synthesis,
+finite randomization, finite description and finite execution cost.
+Together with Theorem~\ref{thm:v9-saturation}, it also makes finite
+sufficient reconstruction effective whenever the expanded finite source
+is given rationally. It does not compute multiplicative energies for an
+arbitrary infinite predictive tree, nor does it turn a merely measurable
+sufficient statistic into a finite algorithm. Those are different input
+classes with different resource signatures.

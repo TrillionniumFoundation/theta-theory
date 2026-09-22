@@ -1,0 +1,186 @@
+\section{The least saturated finite quotient}
+\label{sec:v9-saturation}
+The variational theorem does not require a sufficient statistic. When
+such a statistic is desired, the finite instrument admits a direct
+construction. It distinguishes the cost of prediction from the cost of
+preserving the whole parameter experiment.
+
+Fix the finite instrument of Section~\ref{sec:v9-minimax}. For an
+action--report history $h=(a_0,y_1,\ldots,a_{t-1},y_t)$ define the
+unnormalized forward vector by
+\begin{align}
+ u_{\theta,0}(z)&=\nu_\theta(z),\nonumber\\
+ u_{\theta,t+1}(hay,z')
+   &=\sum_z u_{\theta,t}(h,z)K_{\theta,t}(z',y\mid z,a),
+   \qquad L_\theta(h)=\sum_z u_{\theta,t}(h,z).
+ \label{eq:v9-forward}
+\end{align}
+Choose a reference prior $\pi_\theta>0$. A history is supported if
+$\overline L(h):=\sum_\theta\pi_\theta L_\theta(h)>0$. On supported
+histories put
+\begin{align}
+ \lambda_\theta(h)&=\pi_\theta L_\theta(h)/\overline L(h),\nonumber\\
+ k_t(y\mid h,a)&=\overline L(hay)/\overline L(h).
+ \label{eq:v9-finitepredict}
+\end{align}
+The likelihoods in these formulae do not contain action-selection
+probabilities. Under any parameter-independent observation-based policy,
+those probabilities cancel from the posterior and from likelihood ratios.
+Thus the formulae apply to every policy on its supported histories, not
+only to a policy used to explore the history tree.
+
+A history coordinate $s_t(h)$ is called \emph{saturated and predictive}
+if it determines $\lambda(h)$, determines every vector
+$k_t(\cdot\mid h,a)$, and has a deterministic update from $(s_t,a,y)$ on
+supported continuations. At time $T$ only the first condition is imposed.
+This is the finite, terminal-parameter version of the three conditions
+in Section~\ref{sec:v8-sufficiency}. Additional latent-target marks
+require the corresponding conditional kernels as further decorations;
+parameter sufficiency alone does not imply their sufficiency.
+
+Construct partitions backwards. At level $T$ group histories with the
+same vector $\lambda(h)$. Having constructed the class map $c_{t+1}$,
+let $c_t(h)$ be the class determined by the finite tuple
+\begin{equation}
+ \left(\lambda(h),\,
+   \big(k_t(y\mid h,a),\,c_{t+1}(hay)\big)_{a,y}\right).
+ \label{eq:v9-saturatedkey}
+\end{equation}
+For an unsupported continuation its class entry is one fixed cemetery
+symbol. Let $K_t$ be the number of classes at level $t$.
+
+\begin{theorem}[Constructive minimal saturation]
+\label{thm:v9-saturation}
+For every finite controlled instrument the partitions
+\eqref{eq:v9-saturatedkey} form a saturated predictive coordinate. Every
+other such deterministic history coordinate refines them at each level.
+Consequently $K_t$ is its least possible width, simultaneously at every
+level. The partitions, as equivalence relations on supported histories,
+are independent of the choice of the strictly positive reference prior.
+
+There is a parameter-independent finite reconstruction kernel
+$L_t(y\mid c,a,c')$ which, from successive quotient classes and the
+chosen controls, reconstructs the report stream under every admissible
+policy. The original and quotient instruments have mutually exact
+causal simulations. Their additional persistent state is at most
+$\max_tK_t$ labels, so composing either simulation with an $S$-state
+encoder costs at most $(\max_tK_t)S$ states.
+
+If the instrument and prior have rational entries, the classes and
+reconstruction kernels can be computed by exact finite arithmetic.
+The calculation is polynomial in the size of the \emph{expanded finite
+history tree} and its rational input length. That tree, and the least
+width $K_t$, may grow exponentially with the horizon.
+\end{theorem}
+\begin{proof}
+Equality of the keys at level $t$ implies equality of the posterior
+vectors, of all reference predictive probabilities, and of the class of
+every common positive-probability successor. Sending $(c,a,y)$ to that
+successor class therefore defines an update. Unsupported continuations
+may be assigned arbitrarily. This proves the three required properties.
+
+For minimality, at time $T$ any saturated coordinate separates unequal
+posterior vectors, so its fibres refine $c_T$. Suppose the assertion has
+been proved at $t+1$. Equal coordinates at time $t$ have equal posterior
+and predictive vectors. Their supported successors under any fixed
+$(a,y)$ have equal next coordinates by recursion, and hence equal
+$c_{t+1}$ by the induction hypothesis. Their complete keys
+\eqref{eq:v9-saturatedkey} coincide. Backward induction proves the
+claimed simultaneous refinement, rather than just a bound on a terminal
+statistic.
+
+To check prior independence, first observe that equality of posterior
+vectors under a positive prior is equivalent to proportionality of the
+nonnegative likelihood vectors $(L_\theta(h))_\theta$. This relation is
+independent of the prior. For a fixed parameter with
+$\lambda_\theta(h)>0$, the actual next-report probabilities are
+\begin{equation}
+ P_\theta(y\mid h,a)
+   =k_t(y\mid h,a)\frac{\lambda_\theta(hay)}{\lambda_\theta(h)}.
+ \label{eq:v9-finitechangeofmeasure}
+\end{equation}
+In an existing class the right side is constant on histories for every
+supported successor, because the successor class determines its
+posterior. The set of parameters with positive likelihood is also
+constant on the class. Under a different positive prior, its new
+posterior weights are functions of its old posterior weights; averaging
+these common parameter-specific predictive kernels therefore gives a
+common new reference predictive kernel. The existing partition is
+saturated, predictive and recursive for the new prior. Minimality in
+both directions proves equality of the two partitions.
+
+For reconstruction, write $F_t(c,a,y)$ for the class update and define
+\begin{align*}
+ H_t^0(c'\mid c,a)&=\sum_{y:F_t(c,a,y)=c'}k_t(y\mid c,a),\\
+ L_t(y\mid c,a,c')&=
+ \frac{\1_{\{F_t(c,a,y)=c'\}}k_t(y\mid c,a)}{H_t^0(c'\mid c,a)}
+                 \quad\text{if }H_t^0(c'\mid c,a)>0.
+\end{align*}
+Choose an arbitrary probability vector when the denominator is zero.
+The posterior at the next class is constant over the summed reports.
+Equation~\eqref{eq:v9-finitechangeofmeasure} thus factors the actual
+joint law of report and next class into this same $L_t$ and the
+parameter-specific class-transition probability. Conditioning further
+on the next class cancels the likelihood factor. This gives a single
+parameter-independent report reconstruction, including when parameters
+have different supports. Histories having zero likelihood under a
+parameter are not visited under that parameter.
+
+Starting from the initial class, the reconstruction stores the previous
+class, receives the next class after the actual chosen action, samples
+its report using $L_t$, and replaces its stored class. A target policy
+then chooses its next action from the reconstructed reports. Induction
+in time proves equality of the resulting action--report laws for every
+parameter and policy. In the other direction, apply $F_t$ to the original
+reports. Product registers give the displayed storage bound; neither
+simulation presumes a cost-free transcript.
+
+Finally, \eqref{eq:v9-forward} enumerates the rational forward vectors
+on a finite tree. Formulae \eqref{eq:v9-finitepredict} and
+\eqref{eq:v9-saturatedkey} use only finite sums, products, divisions by
+positive numbers, and equality tests of rational tuples. Class labels
+can be assigned by sorting those tuples backwards. To see the stated
+bit-complexity bound, take a common denominator for all rational input
+entries. Its bit length is at most their total input length. At level
+$t$, a forward entry can be represented with the $t$th power of this
+denominator times the initial denominator; sums add at most the bit
+length of the number of summands at each step. Thus every intermediate
+integer has bit length polynomial in horizon and input length.
+Posterior divisions and tuple comparisons preserve a polynomial bound.
+There are only as many forward and backward steps as nodes and edges
+of the expanded tree, times its finite hidden and parameter dimensions.
+This proves effectivity without any oracle for exact real comparisons.
+\end{proof}
+
+The theorem constructs the object assumed by the causal factorization
+in this finite class. Its minimality is among the \emph{specified}
+likelihood-saturated, raw-report-predictive coordinates. It is not a claim
+that every exact simulator, or every task-specific lossy encoder, must
+use these coordinates. The variational principle optimizes the latter
+directly and may use substantially less memory.
+
+\begin{example}[Saturation can have an exponential price]
+\label{ex:v9-saturationcost}
+Let the parameter range over $\{0,1\}^d$, and reveal it noiselessly one
+bit at a time during the first $d$ observations. Thereafter all reports
+are independent fair bits. At time $d$ all future-report predictions
+coincide, so the future-report predictive quotient has one class.
+Nevertheless the posterior on the parameter is a different point mass
+for each word. Every saturated coordinate at that time has at least
+$2^d$ classes, and the construction above has exactly $2^d$.
+Predictive closure alone therefore supplies no controlled-cost
+parameter saturation. This is a cost calculation in a concrete model,
+not an assumption that the missing saturation has bounded size.
+\end{example}
+
+\begin{example}[Likelihoods alone need not close prediction]
+\label{ex:v9-predictioncost}
+There is one parameter. Let $Y_1$ be a fair bit and put $Y_2=Y_1$.
+The constant coordinate is recursive and contains every parameter
+likelihood, but its one-step predictive law at time $1$ is not a function
+of that coordinate. The least saturated predictive widths are
+$(K_0,K_1,K_2)=(1,2,1)$. The last quotient class can discard the bit,
+because reconstruction of $Y_2$ still uses the previous class. This
+example separates the hypotheses of the factorization theorem; it does
+not assert impossibility of other simulators with other charged resources.
+\end{example}
