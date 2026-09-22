@@ -31,6 +31,17 @@ if pages < 20:
     raise SystemExit(f"unexpectedly short principal article: {pages} pages")
 pdf_sha=hashlib.sha256(pdf.read_bytes()).hexdigest()
 
+rendered_pages=0
+for i,page in enumerate(doc):
+    pix=page.get_pixmap(matrix=fitz.Matrix(0.5,0.5),alpha=False)
+    if pix.width <= 0 or pix.height <= 0 or len(pix.samples) == 0:
+        raise SystemExit(f"PDF render failed on page {i+1}")
+    if not page.get_text("text").strip():
+        raise SystemExit(f"unexpected text-empty principal page {i+1}")
+    rendered_pages += 1
+if rendered_pages != pages:
+    raise SystemExit("PDF render page count mismatch")
+
 expected_logs=[
     ROOT/"evidence"/"exact_k3.log",
     ROOT/"evidence"/"exact_corank_two.log",
@@ -80,6 +91,8 @@ receipt={
     "exact_k3_witness_passed":True,
     "exact_corank_two_regression_passed":True,
     "stratified_rank_two_regression_passed":True,
+    "pdf_render_verify_passed":True,
+    "rendered_pages":rendered_pages,
     "general_proof_machine_certified":False,
     "priority_certified":False,
     "ballico_1993_complete_text_read":False,
