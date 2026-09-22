@@ -1,0 +1,108 @@
+name: A2 v120 source-bound build and publish
+on:
+  push:
+    branches:
+      - revision/a2-v120-loewy-boundary-primary-2026-09-22
+    paths:
+      - papers/A2-v17-boundary-information-coarsening/article/v120/**
+      - .github/workflows/a2-v120-build-publish.yml
+      - A2_REVISION_V120_INDEX.md
+permissions:
+  contents: write
+concurrency:
+  group: a2-v120-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  manuscript:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      P: papers/A2-v17-boundary-information-coarsening/article/v120
+      BRANCH: revision/a2-v120-loewy-boundary-primary-2026-09-22
+      REVIEW: b409ec5eb4dfbb75850d90bff69a78604d3a512b
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          sparse-checkout: |
+            papers/A2-v17-boundary-information-coarsening/article/v120
+            .github/workflows
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern python3-sympy poppler-utils
+          echo /usr/bin >> "$GITHUB_PATH"
+      - name: Bind the actual mathematical source and check isolation
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = "$BRANCH"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git fetch --depth=1 origin "$BRANCH"
+          test "$(git rev-parse FETCH_HEAD)" = "$GITHUB_SHA"
+          git fetch --depth=1 origin "$REVIEW"
+          test -f "$P/geometry.tex"
+          test -f "$P/parts/03c-loewy-boundary-primary.tex"
+          test -f "$P/inherited-v118/verify_revision.py"
+          mkdir -p "$P/evidence"
+          git diff --name-only "$REVIEW" HEAD > "$P/evidence/CHANGED_PATHS.txt"
+          python3 - <<'PY'
+          from pathlib import Path
+          import os
+          p=os.environ['P']
+          paths=Path(p+'/evidence/CHANGED_PATHS.txt').read_text().splitlines()
+          allowed={'.github/workflows/a2-v120-build-publish.yml','A2_REVISION_V120_INDEX.md'}
+          bad=[x for x in paths if not x.startswith(p+'/') and x not in allowed]
+          assert not bad, ('Changes outside the new revision',bad)
+          PY
+          echo "MATHEMATICAL_SOURCE_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - name: Exact old and new checks and all reading editions
+        run: |
+          set -euo pipefail
+          bash "$P/build.sh"
+          git diff --exit-code -- "$P/*.tex" "$P/*.py" "$P/*.sh" "$P/parts" "$P/checks" "$P/inherited-v119" "$P/inherited-v118"
+      - name: Publish products without overwriting concurrent work
+        run: |
+          set -euo pipefail
+          git fetch --depth=1 origin "$BRANCH"
+          test "$(git rev-parse FETCH_HEAD)" = "$MATHEMATICAL_SOURCE_SHA"
+          git add -f -- "$P/geometry.pdf" "$P/paper.pdf" "$P/applications.pdf" "$P/geometry.log" "$P/paper.log" "$P/applications.log" "$P/evidence" "$P/crossrefs"
+          git commit -m 'build(a2): publish v120 source-bound PDFs and exact regression receipts'
+          export PRODUCT_COMMIT="$(git rev-parse HEAD)"
+          python3 - <<'PY'
+          from pathlib import Path
+          import json, os
+          p=Path(os.environ['P'])
+          receipt=json.loads((p/'evidence/BUILD_RECEIPT.json').read_text())
+          data={'revision':120,'branch':os.environ['BRANCH'],
+                'mathematical_source_commit':os.environ['MATHEMATICAL_SOURCE_SHA'],
+                'pdf_product_commit':os.environ['PRODUCT_COMMIT'],
+                'controlling_review_commit':os.environ['REVIEW'],
+                'workflow_run_id':os.environ['GITHUB_RUN_ID'],
+                'workflow_run_url':'https://github.com/'+os.environ['GITHUB_REPOSITORY']+'/actions/runs/'+os.environ['GITHUB_RUN_ID'],
+                'products':receipt['products'],
+                'build_and_diagnostics_completed':True,
+                'earlier_revision_paths_mutated':False,
+                'proof_certification':False,'priority_certification':False,
+                'note':'This pointer is committed after the product commit; consult the workflow conclusion for final publication success.'}
+          (p/'evidence/PUBLISHED.json').write_text(json.dumps(data,indent=2)+'\n')
+          PY
+          git add -f -- "$P/evidence/PUBLISHED.json"
+          git commit -m 'audit(a2): bind v120 mathematical and PDF product commits'
+          git push origin "HEAD:refs/heads/$BRANCH"
+      - name: Package current source, products and logs
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/a2-v120-artifact
+          printf '%s\n' "${MATHEMATICAL_SOURCE_SHA:-$GITHUB_SHA}" > /tmp/a2-v120-artifact/source_commit.txt
+          git rev-parse HEAD > /tmp/a2-v120-artifact/packaged_head.txt
+          git status --short > /tmp/a2-v120-artifact/worktree_status.txt
+          tar -czf /tmp/a2-v120-artifact/a2-v120-review-bundle.tar.gz "$P"
+          sha256sum /tmp/a2-v120-artifact/a2-v120-review-bundle.tar.gz > /tmp/a2-v120-artifact/bundle.sha256
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: a2-v120-source-bound-review
+          path: /tmp/a2-v120-artifact/
+          retention-days: 30
