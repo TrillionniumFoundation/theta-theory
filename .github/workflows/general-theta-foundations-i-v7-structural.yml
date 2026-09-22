@@ -1,0 +1,151 @@
+name: General Theta Foundations I v7 structural revision
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v7-structural-2026-09-22
+    paths:
+      - '.github/workflows/general-theta-foundations-i-v7-structural.yml'
+      - '.github/revision-inputs/gtf-i-v7-structural/**'
+      - 'papers/GTF-I-v7-structural/**'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: gtf-i-v7-structural-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  native-source-and-review-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Recover hash-verified native mathematical sources
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import base64, hashlib, io, lzma, tarfile
+          from pathlib import Path, PurePosixPath
+          root = Path('.github/revision-inputs/gtf-i-v7-structural')
+          encoded = b''.join((root / ('part%d.b64' % i)).read_bytes() for i in range(7))
+          if len(encoded) != 80032:
+              raise SystemExit('Unexpected transfer length')
+          packed = base64.b64decode(encoded, validate=True)
+          if hashlib.sha256(packed).hexdigest() != '7eac2dc937a180e5a4fac8fefbaf65d4ce0cf9f91e44abeb2c2491df2f9b9609':
+              raise SystemExit('Native source transfer digest mismatch')
+          with tarfile.open(fileobj=io.BytesIO(lzma.decompress(packed)), mode='r:') as archive:
+              entries = archive.getmembers()
+              if len(entries) != 25:
+                  raise SystemExit('Unexpected source member count')
+              seen = set()
+              for entry in entries:
+                  path = PurePosixPath(entry.name)
+                  if (not entry.isfile() or path.is_absolute() or '..' in path.parts
+                      or path.parts[:2] != ('papers', 'GTF-I-v7-structural') or entry.name in seen):
+                      raise SystemExit('Unsafe or duplicate source member: ' + entry.name)
+                  seen.add(entry.name)
+                  data = archive.extractfile(entry).read()
+                  target = Path(entry.name)
+                  if target.exists() and target.read_bytes() != data:
+                      raise SystemExit('Refusing to replace differing native source: ' + entry.name)
+                  target.parent.mkdir(parents=True, exist_ok=True)
+                  target.write_bytes(data)
+          print('Recovered 25 hash-verified native source files')
+          PY
+      - name: Commit exact native source snapshot
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add papers/GTF-I-v7-structural
+          if ! git diff --cached --quiet; then
+            git commit -m 'paper(GTF-I v7): resource morphisms, two-orientation predictive trees, measure filters and sharp experiment budgets'
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
+          echo "GTF_SOURCE_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - name: Install native TeX dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended texlive-science lmodern poppler-utils
+      - name: Build canonical article and complete development
+        run: python3 papers/GTF-I-v7-structural/build.py
+      - name: Write precise referee handoff index
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('papers/GTF-I-v7-structural')
+          r = json.loads((root / 'evidence/BUILD_RECEIPT.json').read_text())
+          main, full = r['outputs']['main'], r['outputs']['development']
+          lines = [
+              '# General Theta Foundations I — seventh structural revision',
+              '',
+              '**Author:** Qian Qi. **Date:** 22 September 2026.',
+              '**Canonical article:** [paper.pdf](papers/GTF-I-v7-structural/paper.pdf), %s pages.' % main['pages'],
+              '**Complete preserved development:** [complete-development.pdf](papers/GTF-I-v7-structural/complete-development.pdf), %s pages.' % full['pages'],
+              '',
+              'Working branch: `revision/general-theta-foundations-i-v7-structural-2026-09-22`.',
+              'The frozen referee branch is created separately after the published artifacts are verified.',
+              '',
+              'This revision answers the latest v6 Markov report at `%s`. It does not repeat the old v4/v5 responses.' % r['review_commit'],
+              '',
+              '## Read this revision',
+              '',
+              '| Material | Location |',
+              '|---|---|',
+              '| Canonical paper | [paper.pdf](papers/GTF-I-v7-structural/paper.pdf) |',
+              '| All preceding mathematical bodies | [complete-development.pdf](papers/GTF-I-v7-structural/complete-development.pdf) |',
+              '| Native source | [main.tex](papers/GTF-I-v7-structural/main.tex), [development.tex](papers/GTF-I-v7-structural/development.tex), [README.md](papers/GTF-I-v7-structural/README.md) |',
+              '| Point-by-point response | [RESPONSE_TO_REFEREE.md](papers/GTF-I-v7-structural/RESPONSE_TO_REFEREE.md) |',
+              '| Proof assumptions and dependencies | [PROOF_LEDGER.md](papers/GTF-I-v7-structural/PROOF_LEDGER.md) |',
+              '| Entire-pipeline consultation | [HISTORY_AUDIT.md](papers/GTF-I-v7-structural/HISTORY_AUDIT.md), [HISTORY_INPUT_MANIFEST.json](papers/GTF-I-v7-structural/HISTORY_INPUT_MANIFEST.json) |',
+              '| Closest primary literature | [LITERATURE_AUDIT.md](papers/GTF-I-v7-structural/LITERATURE_AUDIT.md) |',
+              '| Standalone source archive | [COMPILED_SOURCES.zip](papers/GTF-I-v7-structural/evidence/COMPILED_SOURCES.zip) |',
+              '| Executed build | [BUILD_RECEIPT.json](papers/GTF-I-v7-structural/evidence/BUILD_RECEIPT.json) |',
+              '',
+              '## Mathematical revision',
+              '',
+              'Sections 2–3 restore the positive-experiment, predictive-quotient and resource-typed causal-morphism chain. Theorem 4.1 abstracts the energy-tree mechanism with both deletion and continuing-observation insertion realizations. Its applications include the retained Markov-renewal class and a genuinely nonregenerative infinite hidden shift with a sharp finite-state excess-risk law. Section 6 gives a charged Wasserstein-net implementation of a measure-valued filter and a nonlinear example without finite polynomial-moment closure.',
+              '',
+              'Theorem 7.1 proves a matched M^(-2/r) Le Cam approximation law for compact r-dimensional Gaussian shifts, with a lower bound over all experiments having at most M outputs. Theorem 8.1 gives explicit Poisson/Gaussian, covariance, boundary-crossing and positive-reconstruction proofs, yielding N^(-1/2)+J/sqrt(N)+J^(-2). In its joint range this matches M^(-2/r), and attaining N^(-1/5) requires and suffices with order N^(r/10) labels.',
+              '',
+              'All old theorem/proof bodies remain in the complete development. There is one canonical paper, not a second competing principal edition. Both outputs compile from the same core source.',
+              '',
+              '## Source and execution',
+              '',
+              '- Native mathematical source: `%s`.' % r['source_commit'],
+              '- GitHub Actions run: `%s`.' % r['run_id'],
+              '- Canonical PDF SHA-256: `%s`.' % main['sha256'],
+              '- Complete-development PDF SHA-256: `%s`.' % full['sha256'],
+              '- Source archive SHA-256: `%s`.' % r['compiled_source_archive_sha256'],
+              '- Archive inputs: %s; retained mathematical labels: %s; shared identically numbered core labels: %s.' % (r['compiled_source_archive_files'],r['retained_mathematical_labels'],r['core_labels']),
+              '- Finite deterministic checks: %s; ordinary/optimized outputs agree; six negative controls rejected in both modes.' % r['finite_diagnostics']['finite_checks'],
+              '- Inherited v1–v6 diagnostics passed. Both PDFs stabilize in three TeX passes without unresolved references or overfull boxes.',
+              '- Exact current source HEAD, controlling review blob, preserved Git trees and additions-only source changes verified.',
+              '',
+              'The publication commit is the commit containing the generated PDFs and this index. Downloaded-artifact and rendering verification is recorded separately after publication. Build evidence is not mathematical proof, independent referee approval or journal acceptance.',
+              ''
+          ]
+          Path('GTF_I_V7_STRUCTURAL_INDEX.md').write_text('\n'.join(lines))
+          PY
+      - name: Publish manuscripts and exact-source evidence
+        shell: bash
+        run: |
+          git add -f papers/GTF-I-v7-structural/paper.pdf papers/GTF-I-v7-structural/complete-development.pdf papers/GTF-I-v7-structural/evidence GTF_I_V7_STRUCTURAL_INDEX.md
+          if ! git diff --cached --quiet; then
+            git commit -m 'paper(GTF-I v7): publish canonical article, complete development and exact-source build records'
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
+          echo "Published commit: $(git rev-parse HEAD)" >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gtf-i-v7-structural-referee-build
+          path: |
+            papers/GTF-I-v7-structural/paper.pdf
+            papers/GTF-I-v7-structural/complete-development.pdf
+            papers/GTF-I-v7-structural/evidence
+            GTF_I_V7_STRUCTURAL_INDEX.md
+          retention-days: 30
