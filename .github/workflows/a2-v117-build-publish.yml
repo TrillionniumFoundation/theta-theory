@@ -1,0 +1,88 @@
+name: A2 v117 build and publish
+on:
+  push:
+    branches: [revision/a2-v117-finite-quotient-primary-structure-2026-09-22]
+    paths:
+      - .github/workflows/a2-v117-build-publish.yml
+      - papers/A2-v17-boundary-information-coarsening/article/v117/**
+permissions:
+  contents: write
+concurrency:
+  group: a2-v117-finite-quotient-publication
+  cancel-in-progress: false
+jobs:
+  revision:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      P: papers/A2-v17-boundary-information-coarsening/article/v117
+      REVISION_BRANCH: revision/a2-v117-finite-quotient-primary-structure-2026-09-22
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: revision/a2-v117-finite-quotient-primary-structure-2026-09-22
+          fetch-depth: 64
+          sparse-checkout: |
+            papers/A2-v17-boundary-information-coarsening/article/v116
+            papers/A2-v17-boundary-information-coarsening/article/v117
+            reviews/a2-v116-primary-contact-independent-harsh-top4-2026-09-22
+            .github/workflows
+      - name: Verify the isolated review ancestry
+        run: |
+          test "$(git branch --show-current)" = "$REVISION_BRANCH"
+          git merge-base --is-ancestor a65e0e92b24fe6882e60ebcf678bb2f9f5048312 HEAD
+          git diff --exit-code fadcfaa11a1939625177eb12e97569b63b7a1a9d -- papers/A2-v17-boundary-information-coarsening/article/v116
+      - name: Install the native mathematical toolchain
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern python3-sympy poppler-utils
+      - name: Materialize and commit the full mathematical source
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          python3 "$P/prepare_revision.py"
+          python3 "$P/verify_revision.py"
+          git add -f -- "$P"
+          if ! git diff --cached --quiet; then
+            git commit -m 'feat(a2): materialize v117 finite-quotient manuscript with full v116 preservation [skip ci]'
+            git push origin "HEAD:refs/heads/$REVISION_BRANCH"
+          fi
+          git rev-parse HEAD > source_commit.txt
+      - name: Build all reading copies and source-bound receipts
+        run: bash "$P/build.sh"
+      - name: Publish actual PDFs and verified evidence
+        run: |
+          git add -f -- "$P"
+          if ! git diff --cached --quiet; then
+            git commit -m 'build(a2): publish actual v117 PDFs diagnostics and source receipts [skip ci]'
+            git push origin "HEAD:refs/heads/$REVISION_BRANCH"
+          fi
+          git rev-parse HEAD > published_head.txt
+          git ls-remote --heads origin "$REVISION_BRANCH" > remote_ref.txt
+          test "$(cut -f1 remote_ref.txt)" = "$(cat published_head.txt)"
+          git diff --name-only a65e0e92b24fe6882e60ebcf678bb2f9f5048312 HEAD > changed_paths.txt
+          python3 - <<'PY'
+          from pathlib import Path
+          paths=Path('changed_paths.txt').read_text().splitlines()
+          allowed=('papers/A2-v17-boundary-information-coarsening/article/v117/', '.github/workflows/a2-v117-build-publish.yml', 'A2_REVISION_V117_INDEX.md')
+          assert paths and all(p.startswith(allowed) for p in paths), paths
+          print('Verified isolated publication:',len(paths),'paths')
+          PY
+      - name: Package the actual revision tree
+        if: always()
+        run: |
+          tar --exclude='__pycache__' -czf a2-v117-review-bundle.tar.gz "$P"
+          sha256sum a2-v117-review-bundle.tar.gz > bundle.sha256
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: a2-v117-source-bound-review
+          retention-days: 30
+          path: |
+            a2-v117-review-bundle.tar.gz
+            bundle.sha256
+            source_commit.txt
+            published_head.txt
+            remote_ref.txt
+            changed_paths.txt
