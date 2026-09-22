@@ -10,7 +10,7 @@
 
 ## 1. Executive assessment
 
-This is a materially stronger manuscript than the earlier General Theta Foundations revisions. The seventh revision finally contains several nontrivial theorem chains that can be evaluated independently of the repository's historical program: the predictive-tree realization theorem, a measure-valued contracting-filter approximation, an (M^{-2/r}) finite-experiment approximation theorem for Gaussian location experiments, and a Poisson count-to-contact application with a joint sample/register window. The paper is no longer merely a language layer over previous theta-theory material.
+This is a materially stronger manuscript than the earlier General Theta Foundations revisions. The seventh revision finally contains several nontrivial theorem chains that can be evaluated independently of the repository's historical program: the predictive-tree realization theorem, a measure-valued contracting-filter approximation, an $M^{-2/r}$ finite-experiment approximation theorem for Gaussian location experiments, and a Poisson count-to-contact application with a joint sample/register window. The paper is no longer merely a language layer over previous theta-theory material.
 
 That progress is real. It is not, however, enough for a top-four mathematics journal in the present form.
 
@@ -167,7 +167,7 @@ This point matters for the whole eleven-paper pipeline: if General Theta Foundat
 
 ## 8. Major objection VI: the deletion model contains an extremely strong observation interface
 
-In the deletion interpretation of `thm:v7-tree`, an acquisition reveals an entire (omegainOmega) exactly at a renewal time, after which the register stores only a finite tree state and later deletes symbols.
+In the deletion interpretation of `thm:v7-tree`, an acquisition reveals an entire $\omega\in\Omega$ exactly at a renewal time, after which the register stores only a finite tree state and later deletes symbols.
 
 This is an unusual and very strong interface. Mathematically it is coherent, but resource-theoretically it is doing substantial work: an infinite or arbitrarily long symbolic object is exposed to the update map at one event.
 
@@ -181,7 +181,7 @@ At minimum, the theorem statement should explicitly say that the raw acquisition
 
 Theorem `thm:v7-filter` is essentially:
 
-1. build an explicit (W_1) net of (mathcal P([0,1]));
+1. build an explicit $W_1$ net of $\mathcal P([0,1])$;
 2. assume every true update is uniformly (ho)-contractive;
 3. quantize after each update;
 4. iterate the one-step error.
@@ -193,7 +193,7 @@ Therefore the theorem is not evidence that the broader General Theta architectur
 If the theorem is to remain central, the paper needs something substantially sharper, for example:
 
 - optimal or near-optimal metric entropy dependence for broad classes of posterior measures;
-- lower bounds matching the (O(1/log M)) approximation scale in a natural nonlinear class;
+- lower bounds matching the $O((\log M)^{-1})$ approximation scale in a natural nonlinear class;
 - contraction in a quotient metric derived intrinsically from executable tests;
 - stability under controls and policy dependence, not just a fixed report mechanism;
 - a theorem explaining when no finite-dimensional exact recursion exists but a finite-register approximation does.
@@ -212,7 +212,7 @@ A top-four version must explain this mathematically. Possibilities include:
 
 - prove a dynamic/causal version of the finite-output Gaussian obstruction;
 - derive the Gaussian theorem as a local tangent theorem of the predictive quotient;
-- show that the (M^{-2/r}) exponent is an intrinsic local dimension of an attainable quotient and is monotone under the causal morphisms;
+- show that the $M^{-2/r}$ exponent is an intrinsic local dimension of an attainable quotient and is monotone under the causal morphisms;
 - or separate the Gaussian/A2 result into a different paper.
 
 At present, “same vocabulary” is not enough integration.
@@ -278,9 +278,9 @@ Right now, the paper proves nontrivial things, but the novelty map is not mature
 
 Several statements move between:
 
-- an (M)-state persistent register;
-- an experiment with at most (M) terminal outcomes;
-- a deterministic statistic with (J^rle M) labels;
+- an $M$-state persistent register;
+- an experiment with at most $M$ terminal outcomes;
+- a deterministic statistic with $J^r\le M$ labels;
 - a decoder with external randomization.
 
 These are related but not identical resource models.
@@ -301,11 +301,11 @@ Otherwise future papers in the pipeline will almost certainly reuse the wrong re
 Theorem `thm:v7-a2` proves:
 
 - an upper bound for the specific deterministic statistic (T_{N,J});
-- a universal lower bound for every (M)-outcome experiment approximating the limiting Gaussian family.
+- a universal lower bound for every $M$-outcome experiment approximating the limiting Gaussian family.
 
-This does support a matched (M^{-2/r}) law in the displayed joint window.
+This does support a matched $M^{-2/r}$ law in the displayed joint window.
 
-However, phrases such as “achieving distance (N^{-1/5}) requires and is achieved by (N^{r/10}) labels” should always name the target experiment and the admissible class. The lower bound is a cardinality obstruction for approximating the Gaussian limit, not a universal lower bound on every conceivable finite-(N) physical objective one might call “A2 error.”
+However, phrases such as “achieving distance $N^{-1/5}$ requires and is achieved by $N^{r/10}$ labels” should always name the target experiment and the admissible class. The lower bound is a cardinality obstruction for approximating the Gaussian limit, not a universal lower bound on every conceivable finite-$N$ physical objective one might call “A2 error.”
 
 This is a statement-scope issue, not a refutation of the theorem.
 
@@ -314,8 +314,8 @@ This is a statement-scope issue, not a refutation of the theorem.
 The manuscript currently has many quantities:
 
 - predictive quotient;
-- (e_M^2);
-- greedy energy (G_M);
+- $e_M^2$;
+- greedy energy $G_M$;
 - Wasserstein approximation radius;
 - Le Cam distance;
 - Fisher information loss;
@@ -378,19 +378,19 @@ The source manifests, 48,851 checks, pixel identity, branch lineage, and build r
 
 ## 18. Minor comments
 
-1. The phrase “canonical metrizable realization as a subset of (mathbb R^{mathbb N})” is fine under the stated compact/countable-continuous assumptions, but the paper should emphasize that this is a realization of the quotient image, not a canonical coordinate system in any stronger categorical sense.
+1. The phrase “canonical metrizable realization as a subset of $\mathbb R^{\mathbb N}$” is fine under the stated compact/countable-continuous assumptions, but the paper should emphasize that this is a realization of the quotient image, not a canonical coordinate system in any stronger categorical sense.
 
 2. In the predictive-tree section, it would help to state explicitly whether the constants in (G_{lceil B_0Mceil}asymp G_M) can be tracked uniformly over a family of models. The present theorem is modelwise.
 
-3. The hidden-shift exponent is clear, but the notation (alpha=(1-s)/s) should be related explicitly to the fair-case exponent (-2log r/log2) in one displayed line.
+3. The hidden-shift exponent is clear, but the notation $\alpha=(1-s)/s$ should be related explicitly to the fair-case exponent $-2\log r/\log 2$ in one displayed line.
 
 4. The nonlinear filter example proves nonclosure of finite polynomial moments, not nonexistence of all finite-dimensional exact sufficient statistics. The prose mostly respects this distinction; keep it that way.
 
 5. The Gaussian lower bound uses one bounded squared-error decision problem. It would be useful to say explicitly that this is sufficient because deficiency controls every bounded decision problem, while one carefully chosen problem suffices for a lower bound.
 
-6. The Poisson normal constant (10^8e^{64}) is intentionally enormous. That is acceptable for existence but visually distracting. The paper should state once that constants are nonoptimized and avoid emphasizing their numerical value.
+6. The Poisson normal constant $10^8e^{64}$ is intentionally enormous. That is acceptable for existence but visually distracting. The paper should state once that constants are nonoptimized and avoid emphasizing their numerical value.
 
-7. The A2 section should distinguish “order-optimal in (M) within the joint window” from “sample-size optimal in (N).” The final paragraph does this; the theorem statement should be equally explicit.
+7. The A2 section should distinguish “order-optimal in $M$ within the joint window” from “sample-size optimal in $N$.” The final paragraph does this; the theorem statement should be equally explicit.
 
 8. If the term “theta” is intended to denote a specific invariant, deformation parameter, or universality class, that object should appear in the canonical paper. At present the title “General Theta Foundations” is historical branding more than a mathematically defined term.
 
