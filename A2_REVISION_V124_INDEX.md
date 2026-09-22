@@ -17,7 +17,7 @@ Revision 123 remains unchanged in this branch as the complete historical source/
 
 ## Mathematical changes relative to v123
 
-Revision 124 keeps the polarized reconstruction theorem and the fixed-tensor calculations, but reorganizes them around one intrinsic invariant of the nonreduced failure scheme.  If `N` is its nilradical, the closed schemes
+Revision 124 keeps the polarized reconstruction theorem and the fixed-tensor calculations, but reorganizes them around one intrinsic invariant of the nonreduced failure scheme and an exact residual block presentation valid on every projection-rank stratum.  If `N` is its nilradical, the closed schemes
 
 [
   Z_j = V(\operatorname{Ann}(N^j))
@@ -55,7 +55,7 @@ The main correspondence is:
 
 - **E123.1 / P123.1 (Ballico):** theorem-level crosswalk against Ballico 1996 plus a sharply limited statement about the inaccessible 1993 text.
 - **E123.2 / M123.4 (Reye/Enriques):** classical 9-dimensional Reye geometry isolated explicitly; theorem residue restated.
-- **E123.3 / M123.3 (corank two):** full residual presentation on the entire rank-two stratum, collision stratification, discriminant class, intrinsic gluing, and nilpotent-depth support.
+- **E123.3 / M123.3 (higher corank):** exact block presentation on every projection-rank stratum; on rank two, collision stratification, discriminant class, intrinsic gluing, and nilpotent-depth support.
 - **E123.4 (unification):** new global nilpotent-depth theorem.
 - **E123.5 (moduli concept):** geometric Reye/nodal-Enriques factorization and tangent-space interpretation; determinant retained only as exact witness.
 - **E123.6 / M123.1 (finite ambiguity):** the finite ambiguity is interpreted as a finite web/Reye-structure fibre on the recovered polarized K3; the manuscript makes no unsupported degree-one claim.
