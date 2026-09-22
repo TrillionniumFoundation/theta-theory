@@ -33,120 +33,26 @@ jobs:
           from pathlib import Path
           root=Path('/tmp/a2-v123-stage')
           allowed=('A2_REVISION_V123_INDEX.md','papers/A2-v17-boundary-information-coarsening/article/v123/')
-          for p in root.rglob('*'):
-              if not p.is_file():
-                  continue
+          files=[p for p in root.rglob('*') if p.is_file()]
+          if not files:
+              raise SystemExit('Empty A2 v123 packet')
+          for p in files:
               rel=p.relative_to(root).as_posix().lstrip('./')
               if rel != allowed[0] and not rel.startswith(allowed[1]):
                   raise SystemExit(f'Unexpected packet path: {rel}')
+          print(f'Validated {len(files)} packet files')
           PY
           cp -a /tmp/a2-v123-stage/A2_REVISION_V123_INDEX.md ./
           mkdir -p papers/A2-v17-boundary-information-coarsening/article
           rm -rf papers/A2-v17-boundary-information-coarsening/article/v123
           cp -a /tmp/a2-v123-stage/papers/A2-v17-boundary-information-coarsening/article/v123 papers/A2-v17-boundary-information-coarsening/article/
-      - name: Install source-bound publication workflow
-        shell: bash
-        run: |
-          mkdir -p .github/workflows
-          cat > .github/workflows/a2-v123-polarized-k3.yml <<'YAML'
-name: A2 v123 polarized K3 publication
-on:
-  push:
-    branches:
-      - revision/a2-v123-polarized-k3-corank-two-2026-09-23
-    paths:
-      - 'A2_REVISION_V123_INDEX.md'
-      - 'papers/A2-v17-boundary-information-coarsening/article/v123/**'
-      - '.github/workflows/a2-v123-polarized-k3.yml'
-  workflow_dispatch:
-permissions:
-  contents: write
-concurrency:
-  group: a2-v123-polarized-k3-publication
-  cancel-in-progress: false
-jobs:
-  publish:
-    if: github.ref == 'refs/heads/revision/a2-v123-polarized-k3-corank-two-2026-09-23'
-    runs-on: ubuntu-latest
-    timeout-minutes: 35
-    env:
-      REVISION: papers/A2-v17-boundary-information-coarsening/article/v123
-      BASE: papers/A2-v17-boundary-information-coarsening/article
-      TARGET_BRANCH: revision/a2-v123-polarized-k3-corank-two-2026-09-23
-      SOURCE_COMMIT_SHA: ${{ github.sha }}
-      PYTHONDONTWRITEBYTECODE: '1'
-      OPENBLAS_NUM_THREADS: '1'
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-          sparse-checkout: |
-            A2_REVISION_V123_INDEX.md
-            papers/A2-v17-boundary-information-coarsening/article/v122
-            papers/A2-v17-boundary-information-coarsening/article/v123
-      - name: Verify committed revision source lock
-        run: |
-          python3 - <<'PY'
-          import hashlib, json, os
-          from pathlib import Path
-          d = Path(os.environ['REVISION'])
-          lock = json.loads((d / 'SOURCE_LOCK.json').read_text())
-          for relative, expected in lock['sha256'].items():
-              p = (d / relative).resolve()
-              actual = hashlib.sha256(p.read_bytes()).hexdigest()
-              if actual != expected:
-                  raise SystemExit(f'Source mismatch: {relative}: {actual} != {expected}')
-          print(f"Verified {len(lock['sha256'])} source inputs")
-          PY
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install mathematical build dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern
-          python -m pip install 'sympy==1.14.0' 'numpy==2.3.5' 'PyMuPDF==1.26.7'
-      - name: Run exact checks and compile review editions
-        run: bash "$REVISION/build.sh" --receipt evidence/REBUILD_RECEIPT.json
-      - name: Mark the source-bound publication receipt
-        run: |
-          python3 - <<'PY'
-          import json, os
-          from pathlib import Path
-          p = Path(os.environ['REVISION']) / 'evidence' / 'REBUILD_RECEIPT.json'
-          r = json.loads(p.read_text())
-          r['remote_push_performed_by_this_environment'] = True
-          r['remote_revision_source_commit'] = os.environ['SOURCE_COMMIT_SHA']
-          p.write_text(json.dumps(r, indent=2) + '\n')
-          PY
-      - name: Confirm historical revision 122 is unchanged
-        run: git diff --exit-code -- "$BASE/v122"
-      - name: Publish source-bound PDFs and evidence on this branch only
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add --sparse -f -- "$REVISION/geometry.pdf" "$REVISION/paper.pdf" "$REVISION/evidence"
-          if git diff --cached --quiet; then
-            echo 'No generated publication changes to commit.'
-          else
-            git commit -m "A2 v123: source-bound PDFs and evidence built from $SOURCE_COMMIT_SHA [skip ci]"
-            git push origin "HEAD:$TARGET_BRANCH"
-          fi
-      - name: Package complete reproducible referee bundle
-        run: tar -czf a2-v123-review-bundle.tar.gz A2_REVISION_V123_INDEX.md "$BASE/v122" "$REVISION"
-      - uses: actions/upload-artifact@v4
-        with:
-          name: a2-v123-source-bound-review
-          path: a2-v123-review-bundle.tar.gz
-          retention-days: 30
-          YAML
       - name: Commit materialized revision source
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -- A2_REVISION_V123_INDEX.md papers/A2-v17-boundary-information-coarsening/article/v123 .github/workflows/a2-v123-polarized-k3.yml
+          git add -- A2_REVISION_V123_INDEX.md papers/A2-v17-boundary-information-coarsening/article/v123
           if git diff --cached --quiet; then
             echo 'Revision source already materialized.'
             exit 0
