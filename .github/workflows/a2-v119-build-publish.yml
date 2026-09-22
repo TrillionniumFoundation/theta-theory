@@ -1,0 +1,57 @@
+name: A2 v119 materialize build publish
+on:
+  push:
+    branches:
+      - revision/a2-v119-codimension-primary-conductor-2026-09-22
+    paths:
+      - .revision-bootstrap/a2-v119/**
+      - .github/workflows/a2-v119-build-publish.yml
+permissions:
+  contents: write
+concurrency:
+  group: a2-v119-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  manuscript:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      P: papers/A2-v17-boundary-information-coarsening/article/v119
+      BRANCH: revision/a2-v119-codimension-primary-conductor-2026-09-22
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install reproducible build dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern python3-sympy python3-pip
+          python3 -m pip install --break-system-packages pymupdf
+      - name: Materialize and freeze mathematical sources
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = "$BRANCH"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          if [[ ! -f "$P/geometry.tex" ]]; then
+            python3 .revision-bootstrap/a2-v119/materialize.py
+            python3 "$P/make_preservation.py"
+            git add A2_REVISION_V119_INDEX.md "$P"
+            git commit -m 'source(a2): freeze v119 codimension-primary-conductor revision'
+            git push origin "HEAD:refs/heads/$BRANCH"
+          fi
+          echo "MATHEMATICAL_SOURCE_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - name: Exact checks and all reading editions
+        run: |
+          set -euo pipefail
+          bash "$P/build.sh"
+          git diff --exit-code -- "$P/geometry.tex" "$P/paper.tex" "$P/applications.tex" "$P/parts" "$P/*.py" "$P/*.sh"
+          git diff --exit-code -- papers/A2-v17-boundary-information-coarsening/article/v118 reviews
+      - name: Publish source-bound products
+        run: |
+          set -euo pipefail
+          git add -f -- "$P/geometry.pdf" "$P/paper.pdf" "$P/applications.pdf" "$P/evidence" "$P/crossrefs" "$P/geometry.log" "$P/paper.log" "$P/applications.log"
+          if ! git diff --cached --quiet; then
+            git commit -m 'build(a2): publish v119 source-bound PDFs and receipts'
+            git push origin "HEAD:refs/heads/$BRANCH"
+          fi
