@@ -1,0 +1,318 @@
+\section{State-costed comparison and complete-state fusion}
+\label{sec:v11-comparison}
+
+An experiment is not identified with an implementation of its observation
+channel. Two equivalent experiments can expose the same information at
+different times. The cost of carrying that information between those times
+is the subject of this section. All losses in this section take values in
+$[0,1]$; a bound $L$ multiplies every error term by $L$.
+
+\subsection{The information interface and priced randomness}
+Fix a finite horizon $T$, finite control and terminal decision alphabets,
+a parameter set, a common marked target $W$, and a family $J$ of decision
+rows. A row specifies a parameter and a task. The task is available to its
+controller and terminal decision rule, but not to the common encoder.
+The parameter is unavailable to all three. The timing is the timing of
+Section~\ref{sec:v8-spectrum}: a report is consumed once, and only the
+retained register is passed to the next checkpoint. Any current side
+observation supplied afresh by the instrument is part of the interface and
+is specified separately. It is not silently included in the register.
+
+Write $S=(S_0,\ldots,S_T)$ for the private register bounds. A \emph{public
+seed of size $q$} is an independent random variable with at most $q$ values,
+retained and readable by the encoder and the controllers. Its law is chosen
+as part of the design. Fresh private randomization remains available.
+The notation $q=\infty$ permits one independent uniform random variable
+on $[0,1]$, with no bound on its information content. A seed is never
+allowed to depend on the source or parameter. Let
+\[
+ \mathcal R_E(S,q)=\{(r_j(\pi))_{j\in J}:\pi
+      \text{ is an admissible common-encoder design on }E\}.
+\]
+For continuous risk functions on compact $J$, put
+\[
+ \mathcal U_E(S,q)=\mathcal R_E(S,q)+C(J)_+,
+ \qquad
+ h_E(S,q;w)=\inf_{r\in\mathcal R_E(S,q)}\int_Jr_j\,w(dj),
+ \quad w\in\mathcal P(J).
+\]
+The lower support value $h$ does not assert convexity of the private risk
+set. In particular, $q=1$ is not replaced by $q=\infty$ in this notation.
+
+\begin{definition}[Primitive marked simulator]
+\label{def:v11-simulator}
+A simulator $\Gamma:E\longrightarrow F$ consumes the reports of $E$ and
+produces the reports of $F$ with the same timing and control interface.
+At checkpoint $t$ it retains $J_t\in\{1,\ldots,K_t\}$, and it uses a public
+seed with at most $r$ values. Its update and report kernels depend only on
+its old state, the current input, the currently supplied side observations,
+and the issued control. They do not depend on the task or parameter.
+The simulator has error $\varepsilon$ when, for every parameter and every
+admissible randomized feedback strategy at the output interface, the total
+variation distance between the simulated and true joint laws of the
+output transcript and the \emph{actual} mark $W$ is at most $\varepsilon$.
+The same requirement applies after adjoining independent randomization
+used by the output strategy. The simulator neither observes an unavailable
+mark nor replaces it by an independent draw.
+\end{definition}
+
+This definition is a constraint on a causal channel, not a claim that a
+channel exists whenever certain decision inequalities hold. It is often
+verified by a parameter-uniform coupling or by factoring the actual marked
+law. The abstract simulation hypothesis of Theorem~\ref{thm:v8-spectrum}
+is thereby supplied with an explicit machine and a charged state space.
+
+\begin{theorem}[Resource-costed comparison]
+\label{thm:v11-comparison}
+Suppose $\Gamma:E\longrightarrow F$ is a primitive simulator of cost
+$(K,r)$ and error $\varepsilon$. Then, for every target width $S$ and seed
+bound $q$, every target design has a source implementation retaining only
+reachable pairs $(J_t,I_t)$. In particular its width is at most $K_tS_t$
+and its public seed has at most $rq$ values. Its risk differs from the
+target risk by at most $\varepsilon$ in every row. Consequently
+\begin{align}
+ \mathcal U_F(S,q)+\varepsilon\1
+       &\subseteq\mathcal U_E(KS,rq), \label{eq:v11-upper}\\
+ h_E(KS,rq;w)&\le h_F(S,q;w)+\varepsilon.
+ \label{eq:v11-support}
+\end{align}
+Products involving $\infty$ have their natural meaning.
+Two composable simulators of costs $(K,r)$ and $(L,s)$ and errors
+$\varepsilon,\eta$ have a composite of cost $(KL,rs)$ and error at most
+$\min(1,\varepsilon+\eta)$. Identity simulators have cost $(\1,1)$ and
+error zero.
+\end{theorem}
+
+\begin{proof}
+Keep $(J_{t-1},I_{t-1})$ and the two independent seed indices. The target
+controller uses $I_{t-1}$ to issue the next control. The simulator consumes
+the source input, draws its synthetic report and new internal state, and
+passes that report to the target encoder. The encoder draws $I_t$ and
+then discards the report. This is one transition on the finite product
+state space; no earlier input is retained. The common encoder remains
+common because the simulator does not use the task and the only task
+information entering its transition is the legitimately issued control.
+Unreachable pairs may be removed, which proves the stated sharper
+implementation bound as well as the product bound.
+
+Definition~\ref{def:v11-simulator} applies to this feedback strategy.
+Applying a bounded terminal loss, or a bounded measurable loss of the
+specified marked transcript, changes its expectation by at most total
+variation. The same simulated design works for all rows; it is not chosen
+after the row is known. This proves the risk assertion. If $r_E$ and $r_F$
+are the resulting risks, then $r_F+\varepsilon\1-r_E\ge0$, which gives
+\eqref{eq:v11-upper}; integration and an infimum give
+\eqref{eq:v11-support}.
+
+For composition retain both simulator states and both seed indices.
+Compare the composite first with the second simulator fed by the exact
+intermediate experiment. Data processing does not increase the first
+error. The second comparison costs at most $\eta$. This argument is valid
+under the feedback of the final consumer, since that consumer and the
+second simulator together are an admissible feedback strategy at the
+intermediate interface. The triangle inequality proves the error bound.
+\end{proof}
+
+\begin{remark}[Local error certificates]
+\label{rem:v11-local}
+If the two conditional transition laws can be coupled at step $t$ with
+failure probability at most $e_t$, conditional on every previously matched
+history, and the terminal conditional mark can be coupled with failure
+probability at most $e_W$, then the simulator error is at most
+$1-(1-e_W)\prod_t(1-e_t)$. Indeed the probability that all couplings succeed
+is at least the product. A bound only for uncontrolled one-step marginals
+is not such a certificate: the conditional and feedback quantifiers are
+necessary.
+\end{remark}
+
+\subsection{Deficiency frontiers and spectra}
+Define $\delta_{K,r}(E,F)$ as the infimum of the errors of the simulators in
+Definition~\ref{def:v11-simulator} with the indicated cost bounds. Set the
+value to $+\infty$ when there is no such simulator. No attainment is
+presupposed.
+
+\begin{corollary}[Composition and decision witnesses]
+\label{cor:v11-frontier}
+For compatible interfaces,
+\[
+ \delta_{KL,rs}(E,G)
+ \le \delta_{K,r}(E,F)+\delta_{L,s}(F,G).
+\]
+Moreover each choice of $S,q,w$ gives the lower bound
+\[
+ \delta_{K,r}(E,F)\ge
+ \bigl[h_E(KS,rq;w)-h_F(S,q;w)\bigr]_+.
+\]
+If the two upper risk sets under consideration are closed and convex,
+\eqref{eq:v11-upper} is equivalent to \eqref{eq:v11-support} for every
+$w\in\mathcal P(J)$. This last equivalence concerns risk sets, and is not
+an inverse theorem constructing a simulator.
+\end{corollary}
+
+\begin{proof}
+Use simulators within an arbitrary positive tolerance of each finite
+infimum, apply Theorem~\ref{thm:v11-comparison}, and let the tolerance
+decrease to zero. For the risk-set assertion, separate a point outside
+the closed convex upper set from that set. Any separating continuous
+linear functional must be nonnegative on $C(J)_+$, since the set is upper.
+It is therefore integration against a finite positive measure. Normalize
+its mass to one. The resulting separation contradicts the asserted lower
+support inequalities. The other implication is immediate.
+\end{proof}
+
+For a fixed bounded loss family, let $b_{E,j}$ be the full-history Bayes
+risk with the same observation timing and parameter-blind decision rules,
+and define the centered minimax spectrum
+\[
+ \Theta_E(S,q)=\inf_{r\in\mathcal R_E(S,q)}\sup_{j\in J}(r_j-b_{E,j}).
+\]
+When the unrestricted baseline is defined using a prior rather than a
+single parameter row, the same argument applies to that prior throughout.
+If exact full-history simulation is possible in both directions, these
+baselines agree. More generally, forward and reverse simulation errors
+$\varepsilon,\eta$ imply $b_{F,j}-b_{E,j}\le\eta$, and hence
+\begin{equation}
+ \Theta_E(KS,rq)\le\Theta_F(S,q)+\varepsilon+\eta.
+ \label{eq:v11-centered}
+\end{equation}
+Here the baseline inequality follows by simulating any source
+full-history rule on the target and taking its infimum. Thus neither a
+parameter oracle nor a change of timing enters the centering.
+For a fixed horizon and two exact simulations with fixed finite costs,
+a scalar budget $B$ controlling all $S_t$ and the charged finite seed
+index is changed by at most constant factors. Whenever a positive
+spectrum has a power exponent, the inequalities in both directions
+preserve that exponent. A growing horizon with growing $K_t$ is not covered
+by this constant-factor assertion.
+
+\begin{proposition}[Public-to-private conversion and finite seed cost]
+\label{prop:v11-seed}
+A design with a $q$-valued public seed has an exactly equivalent privately
+randomized implementation of width $qS_t$: store the sampled index with
+the private state. Suppose, in addition, that a family of risks satisfies
+$|r_j(\pi)-r_{j'}(\pi)|\le\omega(d(j,j'))$ for all private designs, where
+$J$ is compact. For an ideal public design and any $h,\zeta>0$, there is a
+public mixture of at most $N(J,h)+1$ private designs whose uniform risk
+error is at most $\zeta+2\omega(h)$. Charging this index gives private
+width at most $(N(J,h)+1)S_t$.
+\end{proposition}
+
+\begin{proof}
+The exact conversion samples the seed before observing the source and
+makes its index part of every register. Since the controller reads that
+register, all the original kernels can be executed. This is not a claim
+that $qS_t$ is always necessary.
+
+Choose an $h$-net of $N=N(J,h)$ rows. At these rows the risk vector of the
+ideal design is an expectation of vectors in $[0,1]^N$, and hence belongs
+to the closure of their convex hull. Approximate it within $\zeta$ by a
+finite convex combination. Caratheodory's theorem reduces this combination
+to at most $N+1$ actual private designs without changing those $N$
+coordinates. Move from an arbitrary row to a net row in the target and
+the approximation; each move costs at most $\omega(h)$. This proves the
+claim without assuming that the private risk set itself is closed.
+\end{proof}
+
+\subsection{The marked quotient as a zero-overhead object}
+For this subsection use the finite marked instrument of
+Section~\ref{sec:v10-marked}. Let $c_t(h)$ be its marked continuation class,
+$K_t$ the number of supported classes, and $Q(E)$ the class experiment of
+Theorem~\ref{thm:v10-reconstruction}. It has class update
+$F_t(c,a,y)$ and the parameter-independent reverse report kernel
+$L_t(y\mid c,a,c')$ constructed there.
+
+\begin{definition}[Complete retained design]
+\label{def:v11-complete}
+A design is complete when, at every checkpoint, there is a map
+$\phi_t$ such that
+$c_t(H_t)=\phi_t(U,I_t)$ almost surely for every supported preparation
+and open-loop control word. With a finite instrument the same maps can be
+chosen outside one seed-null set, simultaneously for all supported
+histories. On $Q(E)$ the corresponding condition is
+$C_t=\phi_t(U,I_t)$. Let $\mathcal R^{\mathrm c}$ denote the risk body
+restricted to these designs.
+\end{definition}
+
+Completeness is equivalent to preserving all the restart Brier risks of
+Theorem~\ref{thm:v10-minimal}. It is not imposed on an arbitrary finite
+list of decision tasks.
+
+\begin{theorem}[Complete-state fusion]
+\label{thm:v11-fusion}
+For the finite marked instrument, every width vector and seed signature
+satisfy
+\begin{equation}
+ \mathcal R_E^{\mathrm c}(S,q)=
+ \mathcal R_{Q(E)}^{\mathrm c}(S,q).
+ \label{eq:v11-fusion}
+\end{equation}
+Both sides are empty if $S_t<K_t$ at any required checkpoint. For general,
+not necessarily complete, designs the two exact simulations give instead
+\begin{align*}
+ \mathcal U_{Q(E)}(S,q)&\subseteq\mathcal U_E(KS,q),\\
+ \mathcal U_E(S,q)&\subseteq\mathcal U_{Q(E)}(KS,q).
+\end{align*}
+Thus exact marked equivalence is resource-neutral on complete retained
+designs, while on arbitrary task designs it has an explicitly charged
+state distortion.
+\end{theorem}
+
+\begin{proof}
+Consider first a complete design on $E$ to be run on $Q(E)$. At the start
+of a step recover the old class $c$ from $(U,I_{t-1})$. When the class
+instrument supplies $c'$, sample $y$ from $L_t(\cdot\mid c,a,c')$ and
+perform the original encoder update with $y$. The factorization in
+Theorem~\ref{thm:v10-reconstruction} shows that this report has the correct
+conditional law, jointly with the actual future marked experiment.
+In particular every positive-probability updated register symbol has
+class $c'$, by completeness of the original design. The new register
+therefore again recovers the new class. The sampled report and the old
+class need not be retained separately. Induction gives an implementation
+with precisely the original private labels and the original seed.
+
+Conversely, start with a complete design on $Q(E)$ and an actual report
+$y$ from $E$. Recover $c$ from the old register, compute
+$c'=F_t(c,a,y)$, and apply the class encoder with that input. Its new
+register recovers $c'$. The class update and terminal marked channel are
+exactly those of the class experiment, so induction again proves equality
+of all marked risks. At the initial checkpoint use the stipulated initial
+class (or the same class construction after the initial report). Neither
+construction inserts an additional persistent state.
+
+The lower bound is Theorem~\ref{thm:v10-minimal}, applied conditionally on
+the independent seed; the finite supported-history set permits a common
+null set. Finally, without completeness one retains $c$ separately.
+The forward class tracker and the reverse report transducer each need at
+most $K_t$ states, and Theorem~\ref{thm:v11-comparison} gives the last two
+inclusions.
+\end{proof}
+
+\begin{example}[A sharp temporal state charge]
+\label{ex:v11-repetition}
+Let $X$ be uniform on $\{1,\ldots,k\}$ and let $W=X$. Experiment $E$
+reports $X$ at time one and a constant at time two; experiment $F$ reports
+$X$ at both times. These marked experiments simulate each other exactly.
+The forward simulator $E\longrightarrow F$ stores $X$ between reports;
+the reverse one is stateless. At widths $(S_1,S_2)=(s,k)$, the terminal
+error for identifying $W$ is zero on $F$, whereas on $E$ it is at least
+$1-s/k$ when $s\le k$, with equality attainable.
+Indeed, for a private message channel $Q(m\mid x)$, its maximal guessing
+success is
+\[
+ \frac1k\sum_m\max_x Q(m\mid x)\le\frac{s}{k}.
+\]
+Independent public randomization averages this bound and cannot improve
+it. Partitioning the $k$ inputs into $s$ nonempty cells attains it.
+The same argument applied to a simulator which must reproduce the second
+report shows that its exact intermediate state count is at least $k$.
+The marked continuation quotient has $k$ states. A complete consumer
+already carries them, and Theorem~\ref{thm:v11-fusion} eliminates the
+additional factor for exactly that reason.
+\end{example}
+
+Theorem~\ref{thm:v11-comparison}, the lower support characterization in
+Corollary~\ref{cor:v11-frontier}, and Theorem~\ref{thm:v11-fusion} are the
+resource-aware comparison statement of this article. The compactness
+results below supply cases in which its dual risk invariant is attained;
+the task-completion results identify which exact state requirement a
+particular decision family imposes.

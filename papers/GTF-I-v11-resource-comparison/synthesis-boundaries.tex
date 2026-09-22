@@ -1,0 +1,114 @@
+\section{Positive-state growth and task-synthesis complexity}
+\label{sec:v11-complexity}
+
+The continuation-space algorithm of Theorem~\ref{thm:v10-synthesis}
+separates two quantities: the linear dimension used to test equality,
+and the number of positive normalized classes that must actually be
+retained. We give polynomial and exponential families at fixed linear
+dimension, and distinguish both from task-optimal synthesis.
+
+\begin{proposition}[Count-controlled positive-state growth]
+\label{prop:v11-counts}
+Let $\theta$ be a static hidden variable with finite support. Conditional
+on $\theta$, reports produced under a control $a$ have time-homogeneous
+probabilities $p_\theta(y\mid a)$ and are independent. Suppose the terminal
+mark depends only on $\theta$, through a fixed channel. For
+$r=|\mathcal A|\,|\mathcal Y|$, the marked continuation quotient satisfies
+\[
+ K_t\le {t+r-1\choose r-1}.
+\]
+For fixed $r$, rational input, and unary horizon $T$, exact positive-state
+synthesis is polynomial in the horizon and input bit length.
+\end{proposition}
+
+\begin{proof}
+The posterior weight of $\theta$ after a supported history is proportional
+to
+$\pi_\theta\prod_{a,y}p_\theta(y\mid a)^{n_{a,y}}$, where
+$n_{a,y}$ is the number of occurrences of that control--report pair.
+Its future marked law depends only on this posterior, so histories with
+the same count vector are equivalent. There are
+${t+r-1\choose r-1}$ nonnegative count vectors with total $t$.
+This is an upper bound; different counts can give the same posterior.
+Products of $t$ rational input entries have bit length at most linear in
+$t$ times the input bit bound, and normalization and equality testing
+preserve a polynomial bit bound. Enumerating the count vectors and their
+successors therefore gives the claimed synthesis bound. Alternatively
+apply the output-sensitive compiler to the same polynomial output bound.
+\end{proof}
+
+\begin{proposition}[Exponential positive width at linear rank two]
+\label{prop:v11-exponential}
+There are strictly positive rational binary-report instruments with two
+hidden states, polynomial description length in $T$, and continuation
+rank two for which $K_t=2^t$ at every checkpoint $t\le T$.
+\end{proposition}
+
+\begin{proof}
+Let $\theta\in\{0,1\}$ have a strictly positive rational prior and let
+$W=\theta$. There are no controls. Choose distinct primes
+$p_1,\ldots,p_T$, and conditionally independently set
+\[
+ \Pp(Y_i=1\mid\theta=0)=\tfrac12,
+ \qquad
+ \Pp(Y_i=1\mid\theta=1)=\frac{p_i}{1+p_i}.
+\]
+The posterior odds after $y_1,\ldots,y_t$ equal the prior odds times
+\[
+ \prod_{i=1}^t\frac{2}{1+p_i}\;
+                    \prod_{i=1}^t p_i^{y_i}.
+\]
+Unique factorization makes the last products distinct for all binary
+words. Since the continuation contains the mark $\theta$, different
+posterior odds imply different marked continuation laws. All $2^t$
+words have positive probability, proving the exact count.
+
+The hidden linear state space has dimension two. The terminal marked
+vectors are the two coordinate vectors, and their positive diagonal
+backward images remain independent, so the continuation rank is exactly
+two, not merely bounded by two. The first $T$ primes have bit length
+$O(T)$, for example by the elementary bound obtained by successive use
+of Bertrand's postulate. Thus the rational description has polynomial
+length. The exponential output is not concealed in exponentially long
+input probabilities.
+\end{proof}
+
+\begin{theorem}[Zero-excess task synthesis contains graph coloring]
+\label{thm:v11-coloring}
+For finite rational one-checkpoint marked decision problems, deciding
+whether three retained labels suffice to attain every task's full-history
+Bayes risk is NP-complete. This remains true when all task action sets
+are binary and private and independent public randomization are allowed.
+\end{theorem}
+
+\begin{proof}
+Given a finite graph $G=(V,E)$, let the observed history $X$ be uniform
+on $V$ and let $W=X$. For each edge $e=\{u,v\}$ make one binary task.
+At $u$ its loss is zero only for action zero; at $v$ it is zero only for
+action one; at every other vertex both actions have zero loss. The
+full-history Bayes risk is zero for each task. A set of histories is
+compatible in the sense of \eqref{eq:v11-compatible} precisely when it
+contains no edge of $G$. Compatible covers are therefore covers by
+independent sets, equivalently colorings after assigning each vertex to
+one containing set. Theorem~\ref{thm:v11-taskcover} gives
+$\tau_D=\chi(G)$ even for randomized encoders. This is a polynomial
+reduction from three-colorability.
+
+For general explicitly tabulated rational losses, a certificate consists
+of a label for each history and one optimal action for each task and
+label. Check all nonempty cells against the conditional minima by exact
+rational comparisons. The certificate has polynomial size and can be
+checked in polynomial time. Randomization does not enlarge the class of
+yes instances by Theorem~\ref{thm:v11-taskcover}. This proves membership
+in NP and completes the proof.
+\end{proof}
+
+Graph-coloring descriptions of zero-error information problems have
+classical antecedents, notably \cite{Witsenhausen1976}; the reduction above
+is given to specify the precise common-task loss formulation, not to
+claim that the connection with coloring is new. Likewise linear
+continuation equivalence is classical \cite{Tzeng1992,Kiefer2020}.
+The distinction established here is between polynomial linear tests,
+possibly exponential positive-state output, and a separate task-optimal
+combinatorial problem. None of these three should be described as a
+polynomial solution to the other two.

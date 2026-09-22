@@ -1,0 +1,188 @@
+\section{Task-indexed exact compression and its completion}
+\label{sec:v11-tasks}
+
+The least state preserving a finite set of optimal decisions need not be
+the least state preserving their entire joint experiment. Even at one
+checkpoint, the former object is generally a compatible cover rather than
+a quotient. We first give its exact operational characterization, then
+identify the condition under which it becomes a causal quotient.
+
+\subsection{Finite decision families}
+Let $\mathcal H$ be a finite supported-history set at a restart checkpoint,
+and let $\eta(h)>0$ be a preparation. A task $d\in D$ has a finite action
+set $B_d$ and conditional loss $\ell_d(h,b)$. The latter is obtained by
+conditioning the actual marked continuation law and integrating the
+specified bounded loss; any prescribed continuation protocol is part of
+the task. Define
+\[
+ m_d(h)=\min_{b\in B_d}\ell_d(h,b),\qquad
+ A_d(h)=\{b:\ell_d(h,b)=m_d(h)\}.
+\]
+The full-history benchmark for this restart problem is
+$\sum_h\eta(h)m_d(h)$. A subset $C\subseteq\mathcal H$ is \emph{compatible}
+when
+\begin{equation}
+ \bigcap_{h\in C}A_d(h)\ne\varnothing\quad\hbox{for every }d\in D.
+ \label{eq:v11-compatible}
+\end{equation}
+Let $\tau_D$ be the smallest number of compatible sets covering
+$\mathcal H$. Empty sets are irrelevant.
+
+\begin{theorem}[Exact common-task width]
+\label{thm:v11-taskcover}
+The least number of labels in a source-consuming randomized statistic
+which attains the full-history benchmark for every task is exactly
+$\tau_D$. Independent public randomization does not reduce this number.
+The answer is independent of the choice of strictly positive preparation.
+If all the conditional losses factor through a marked continuation
+quotient with $K$ classes, then
+\[
+ \max_{d\in D}\tau_{\{d\}}\le\tau_D
+       \le\min\left\{K,\prod_{d\in D}|B_d|\right\}.
+\]
+These are checkpoint widths. Separate checkpoint optima are not asserted
+to be implementable by one causal machine.
+\end{theorem}
+
+\begin{proof}
+Let $Q(m\mid h)$ be the common message channel and $v_d(b\mid m)$ the
+task decoder. Its excess risk is
+\begin{equation}
+ \sum_{h,m,b}\eta(h)Q(m\mid h)v_d(b\mid m)
+                    [\ell_d(h,b)-m_d(h)].
+ \label{eq:v11-nonnegative}
+\end{equation}
+Every summand is nonnegative. Equality to zero implies that the support
+of $v_d(\cdot\mid m)$ is contained in $A_d(h)$ for every $h$ with
+$Q(m\mid h)>0$. Thus each message support
+$C_m=\{h:Q(m\mid h)>0\}$ is compatible. These supports cover
+$\mathcal H$, and so there are at least $\tau_D$ labels.
+
+Conversely, from a compatible cover choose one containing cell for each
+history, and encode that cell deterministically. For each task and cell
+choose one action in the intersection in \eqref{eq:v11-compatible}.
+Every excess term is then zero. The argument uses only positivity of
+$\eta$, proving preparation independence. With a public seed condition
+\eqref{eq:v11-nonnegative} on that seed. Its conditional value is
+nonnegative, and its integral is zero for each of the finitely many tasks.
+For almost every seed all these equalities therefore hold, so the same
+cover lower bound applies.
+
+The lower bound by individual tasks follows by removing constraints.
+Each marked class is compatible whenever the losses factor through the
+class. For the other upper bound, choose at each history an optimal
+action for each task and group histories by the resulting action vector.
+There are at most $\prod_d|B_d|$ vectors.
+\end{proof}
+
+\begin{example}[Compatibility is not pairwise equality]
+For one task with three actions, suppose three histories have optimal
+sets $\{1,2\},\{2,3\},\{1,3\}$. Every pair is compatible, but the three
+histories together are not. The exact width is two, not one. Consequently
+pairwise indistinguishability alone does not describe general finite-task
+compression. This is the obstruction to replacing
+Theorem~\ref{thm:v11-taskcover} by an arbitrary task-indexed equivalence
+relation.
+\end{example}
+
+\subsection{Prediction tasks and a canonical completion}
+For an event $A$ in a marked continuation experiment with a fixed
+open-loop word $v$, put $p_{A,v}(h)=\Pp(A\mid h,v)$. The Brier task asks
+for $a\in[0,1]$ with loss $(a-\1_A)^2$. Its conditional excess is exactly
+$(a-p_{A,v}(h))^2$. Although its action space is not finite, the same
+nonnegative-summand argument applies because the minimizer is unique.
+
+\begin{corollary}[Finite features and universal completion]
+\label{cor:v11-completion}
+For finitely many Brier tasks with probability vector
+$s(h)=(p_1(h),\ldots,p_m(h))$, the least checkpoint width, with arbitrary
+private or independent public randomization, equals
+$|s(\mathcal H)|$. Taking all marked continuation event tasks gives
+exactly the marked continuation quotient of
+Theorem~\ref{thm:v10-minimal}. For finite instruments, a finite subfamily
+already distinguishes all its classes.
+\end{corollary}
+
+\begin{proof}
+If one retained label is possible at two histories, zero excess forces
+all their probabilities $p_i$ to agree. Conversely storing the probability
+vector attains all the benchmarks. Equality for all events and words is
+equality of the finite marked continuation laws, which is the definition
+of the universal quotient. For each pair of distinct classes choose one
+word and event whose probabilities differ. There are finitely many pairs,
+so these choices give a finite determining family. The public-seed
+argument is the same conditional zero-excess argument as before.
+\end{proof}
+
+The completion in this corollary does not enlarge a finite task list by
+fiat. It identifies precisely the extra tests that turn task-optimal
+compression into marked-experiment sufficiency. The possible gap is
+arbitrarily large: if all declared losses have the same optimal constant
+action, $\tau_D=1$, even when $K$ is arbitrarily large.
+
+\subsection{A task-indexed causal quotient}
+We now impose strict positivity of each next-report probability for every
+supported history and issued control. This makes all common continuations
+available and avoids identifying a null continuation with a supported one.
+At checkpoint $t$ let $s_t(h)$ be a finite vector of conditional Brier
+probabilities for the specified restart tasks. Define signatures backward:
+\begin{align}
+ \sigma_T(h)&=s_T(h),\nonumber\\
+ \sigma_t(h)&=\left(s_t(h),
+       (\sigma_{t+1}(hay))_{a\in\mathcal A_t,\,y\in\mathcal Y_{t+1}}
+             \right),\qquad t<T.
+ \label{eq:v11-signature}
+\end{align}
+Histories with equal signatures form a right congruence, so a register
+containing $\sigma_t$ can be updated from its old value and $(a,y)$.
+Denote the number of distinct signatures at time $t$ by $K_t^D$.
+
+\begin{theorem}[Exact causal prediction width]
+\label{thm:v11-causal-tasks}
+Among causal source-consuming machines that preserve the specified
+restart Brier risks at every checkpoint and for all supported open-loop
+control histories, the coordinatewise least width profile is
+$(K_t^D)_{t=0}^T$. Private or independent public randomization does not
+improve it. These signatures form the coarsest right congruence refining
+the probability features $s_t$. For the decision-complete family of all
+marked continuation event tasks, the signature quotient is the universal
+marked continuation quotient.
+\end{theorem}
+
+\begin{proof}
+If one register symbol has positive probability at two histories, zero
+Brier excess forces equality of their current feature vectors. At time
+$T$ this proves equality of signatures. Suppose the corresponding claim
+is proved at $t+1$, and a symbol $m$ is possible at histories $h,h'$ at
+time $t$. Issue the same control $a$ and consider the same report $y$.
+Strict positivity ensures that $hay$ and $h'ay$ are both supported. The
+machine uses the same next-register kernel at $(m,a,y)$; at least one of
+its outputs $m'$ has positive probability. Thus the next-register
+supports overlap at these two successor histories. By backward
+induction their signatures at time $t+1$ are equal. Doing this for all
+$(a,y)$ and using equality of $s_t$ proves equality of $\sigma_t$.
+Hence disjoint signatures require disjoint nonempty register supports,
+which gives the lower bound $K_t^D$ simultaneously at each time.
+
+The deterministic signature tracker attains the entire profile, because
+\eqref{eq:v11-signature} makes its update well defined. Any right
+congruence refining the current features must also refine all successor
+features, and backward induction shows it refines $\sigma_t$; this proves
+the coarsest assertion. For a public seed there are only finitely many
+histories and specified tests, so all zero-excess and overlap statements
+hold outside one null set, where the preceding proof applies.
+
+For the complete event family, equality of present features is already
+equality of marked continuation law, and the latter is a right congruence
+by Lemma~\ref{lem:v10-continuation}. The backward refinement therefore
+makes no further identifications or distinctions.
+\end{proof}
+
+\begin{remark}
+With zero report probabilities, the backward construction can be performed
+on a suitably specified partial transition system, but the preceding
+randomized lower-bound proof cannot simply compare unsupported successor
+histories. The theorem deliberately states its positivity hypothesis.
+The unrestricted universal result, including its treatment of supports,
+remains Theorem~\ref{thm:v10-minimal}.
+\end{remark}
