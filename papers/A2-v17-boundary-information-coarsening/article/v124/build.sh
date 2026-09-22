@@ -3,6 +3,18 @@ set -euo pipefail
 cd -- "$(dirname -- "${BASH_SOURCE[0]}")"
 export OPENBLAS_NUM_THREADS=1
 mkdir -p evidence
+dump_failure_logs() {
+  status=$?
+  echo "v124 build failed with status $status" >&2
+  for f in evidence/*.log; do
+    if [ -f "$f" ]; then
+      echo "===== tail $f =====" >&2
+      tail -n 120 "$f" >&2 || true
+    fi
+  done
+  exit "$status"
+}
+trap dump_failure_logs ERR
 for command in python pdflatex; do
   command -v "$command" >/dev/null || { echo "Missing $command" >&2; exit 1; }
 done
