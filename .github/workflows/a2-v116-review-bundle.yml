@@ -1,0 +1,30 @@
+name: A2 v116 pinned review bundle
+on:
+  push:
+    branches: [revision/a2-v116-primary-contact-structure-2026-09-22]
+    paths: [.github/workflows/a2-v116-review-bundle.yml]
+permissions:
+  contents: read
+jobs:
+  bundle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            papers/A2-v17-boundary-information-coarsening/article/v115
+            papers/A2-v17-boundary-information-coarsening/article/v114
+            reviews/a2-v115-independent-harsh-top4-2026-09-22
+            reviews/a2-v114-independent-harsh-top4-2026-09-22
+          fetch-depth: 1
+      - name: Package only the reviewed A2 material
+        run: |
+          tar -czf a2-v115-pinned-review-sources.tar.gz papers/A2-v17-boundary-information-coarsening/article/v115 papers/A2-v17-boundary-information-coarsening/article/v114 reviews/a2-v115-independent-harsh-top4-2026-09-22
+          sha256sum a2-v115-pinned-review-sources.tar.gz > bundle.sha256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: a2-v115-pinned-review-sources
+          path: |
+            a2-v115-pinned-review-sources.tar.gz
+            bundle.sha256
+          retention-days: 7
