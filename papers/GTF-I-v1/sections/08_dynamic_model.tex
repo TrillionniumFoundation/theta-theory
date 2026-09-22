@@ -1,0 +1,364 @@
+\section{A dynamic model with a uniform memory law}\label{sec:refreshing}
+\subsection{The experiment and its resource convention}
+Fix $d\ge1$, let $E_d=\{0,1,\ldots,d\}$, and write
+$\nu_i=1/(d+1)$. The known parameters satisfy
+\begin{equation}\label{eq:refresh-range}
+ 4/5\le\gamma\le1,\qquad 0\le\epsilon\le1/4.
+\end{equation}
+Prepare $X_0\sim\nu$. At each acquisition step the hidden state is updated
+by the transition matrix
+\begin{equation}\label{eq:refresh-transition}
+ P_\gamma(i,j)=(1-\gamma)\1_{\{i=j\}}+\gamma\nu_j.
+\end{equation}
+A command $u_t\in[-1,1]^d$, chosen before the report, gives a binary report
+$Y_t\in\{-1,1\}$ with likelihoods
+\begin{equation}\label{eq:refresh-likelihood}
+ \ell_y(u,i)=\begin{cases}
+ 1/2,&i=0,\\
+ (1+y\epsilon\tanh u_i)/2,&1\le i\le d.
+ \end{cases}
+\end{equation}
+Conditional on the hidden path and commands, the report randomizations are
+independent. The resulting joint transition/report kernel is
+$P_\gamma(i,j)\ell_y(u,j)$. It is an instance of
+Definition~\ref{def:experiment}; all report probabilities lie between
+$3/8$ and $5/8$.
+
+For the acquisition lower bound the commands are independent uniform on
+$[-1,1]^d$, independent of the hidden process and coding randomness. The
+upper-bound filter will work on every admitted command/report sequence,
+including adaptively chosen commands. It does not change the fixed
+exploration law used for the lower bound.
+
+At any selected time $t\ge1$ the acquisition can stop and one terminal
+probe is executed without an intervening refresh. After the retained label
+is formed, draw $J$ uniformly from $\{1,\ldots,d\}$. Probe $j$ produces
+$Z\in\{0,1\}$ with
+\begin{equation}\label{eq:refresh-probe}
+ \Pp(Z=1\mid X_t=i,J=j)=1/2+\tau\1_{\{i=j\}},
+ \qquad \tau=1/4.
+\end{equation}
+This is one noisy binary readout, not observation of $X_t$ or of the full
+posterior. Its choice is independent of the acquisition. Each acquisition
+and the terminal probe costs one recorded experimental step. Evaluating
+maximum-checkpoint risk means that a run executes only its selected probe;
+it does not execute counterfactual probes at all times.
+
+Let $p_t=\Law(X_t\mid H_t)$, and write $p_{t,+}=(p_{t,1},\ldots,p_{t,d})$.
+The probe's full-history success probability is $1/2+\tau p_{t,j}$.
+If a decoder uses candidate coordinates $c_j$, its excess loss is
+\begin{equation}\label{eq:refresh-distortion}
+ \frac{\tau^2}{d}\norm{p_{t,+}-c}_2^2.
+\end{equation}
+Arbitrary probe predictions are allowed; projecting them onto the interval
+$[1/2,1/2+\tau]$ cannot worsen loss. Thus the decoder coordinate formulation
+loses no candidates for the infimum.
+
+Let $R_{M,t}^{\rm av}$ and $R_{M,t}^{\rm max}$ be optimal checkpoint risks
+under the stated exploration and over all admitted histories, respectively.
+Let $\mathfrak R_{M,N}^{\rm av}$ and $\mathfrak R_{M,N}^{\rm max}$ be the
+corresponding best maximum risks for one causal $M$-label encoder at times
+$1,\ldots,N$. The clock, $d,\gamma,\epsilon$, and the finite read-only
+program are known; no history or unknown calibration is stored in those
+constants. At time zero one fixed initial state is allowed. For $N=\infty$
+replace maxima by suprema and use one machine for all times.
+
+\begin{theorem}[Refreshing experiment memory law]\label{thm:refresh}
+For every fixed $d\ge1$, constants $0<c_d\le C_d<\infty$ exist such that,
+for every \eqref{eq:refresh-range}, every integer $M\ge1$, every
+$N\in\N\cup\{\infty\}$, and every $1\le t\le N$,
+\begin{align}
+ c_d\epsilon^2M^{-2/d}
+ &\le R_{M,t}^{\rm av}\le R_{M,t}^{\rm max}
+ \le C_d\epsilon^2M^{-2/d},\label{eq:refresh-checkpoint}\\
+ c_d\epsilon^2M^{-2/d}
+ &\le\mathfrak R_{M,N}^{\rm av}
+ \le\mathfrak R_{M,N}^{\rm max}
+ \le C_d\epsilon^2M^{-2/d}.
+ \label{eq:refresh-causal}
+\end{align}
+The upper bounds are realized by one deterministic finite-label filter
+using a fixed codebook for all positive times. The lower bounds allow
+independent public and private coding randomization. At $\epsilon=0$ all
+four risks are zero with one label. Constants are uniform in time, horizon,
+calibration within \eqref{eq:refresh-range}, and the integer budget.
+\end{theorem}
+
+The proof will derive the cover, the actual attained density, and the
+stable update separately. This also supplies a concrete dynamic realization
+of the general emulation theorem.
+
+\subsection{Explicit posterior recursion}
+Set $p_0=\nu$. Given the previous posterior $p$, the distribution just before
+the next report is
+\begin{equation}\label{eq:refresh-q}
+ q=(1-\gamma)p+\gamma\nu,
+ \qquad q_i\ge m_*:=\frac{4}{5(d+1)}.
+\end{equation}
+For a command and report put
+\[
+ r_0=1,\quad r_i=1+y\epsilon\tanh u_i\ (i\ge1),
+ \quad D_y=q_0+\sum_{i=1}^dq_ir_i.
+\]
+Then the probability of that report is $D_y/2$, and
+\begin{equation}\label{eq:refresh-update}
+ F(p,u,y)_0=\frac{q_0}{D_y},
+ \qquad F(p,u,y)_i=\frac{q_ir_i}{D_y}\quad(i\ge1).
+\end{equation}
+Every denominator belongs to $[1-\epsilon,1+\epsilon]$. These formulas
+hold for every belief in the full simplex and every admitted input.
+Predictable actions reveal no further hidden-state information once their
+past is conditioned upon, as in Proposition~\ref{prop:bayes}.
+
+\begin{lemma}[Uniform contraction]\label{lem:refresh-contraction}
+For any two simplex beliefs and the same $(u,y)$,
+\begin{equation}\label{eq:refresh-contraction}
+ \norm{F(p,u,y)-F(\tilde p,u,y)}_1
+ \le\rho\norm{p-\tilde p}_1,
+ \quad
+ \rho=2\frac{1+\epsilon}{1-\epsilon}(1-\gamma)\le\frac23.
+\end{equation}
+\end{lemma}
+\begin{proof}
+For fixed positive likelihood vector $r$, write $B_r(q)=\diag(r)q/(q^Tr)$.
+Subtract the two normalized vectors by adding and subtracting
+$\diag(r)\tilde q/(q^Tr)$. The first term has norm at most
+$(r_{\max}/r_{\min})\norm{q-\tilde q}_1$. The second has norm
+$|q^Tr-\tilde q^Tr|/(q^Tr)$, at most the same bound. Thus
+$\Lip_1(B_r)\le2r_{\max}/r_{\min}$.
+Equation~\eqref{eq:refresh-q} multiplies differences by $1-\gamma$.
+Use $r_{\max}\le1+\epsilon$, $r_{\min}\ge1-\epsilon$, and
+\eqref{eq:refresh-range} to obtain the result.
+\end{proof}
+
+\begin{lemma}[An invariant shrinking domain]\label{lem:refresh-domain}
+Let
+\begin{equation}\label{eq:refresh-radius}
+ a_\epsilon=\frac{2\epsilon}{\gamma(1-\epsilon)},
+ \qquad
+ D_\epsilon=\{p\in\Delta_d:\norm{p-\nu}_1\le a_\epsilon\}.
+\end{equation}
+Then $\nu\in D_\epsilon$, $F(D_\epsilon,u,y)\subset D_\epsilon$, and
+$a_\epsilon\le(10/3)\epsilon$. Every attainable posterior belongs to
+$D_\epsilon$, for every time and every admitted history.
+\end{lemma}
+\begin{proof}
+For any pre-report belief $q$,
+\[
+ \norm{B_r(q)-q}_1
+ =\sum_iq_i\frac{|r_i-q^Tr|}{q^Tr}
+ \le\frac{2\epsilon}{1-\epsilon}.
+\]
+Consequently
+\[
+ \norm{F(p,u,y)-\nu}_1
+ \le(1-\gamma)\norm{p-\nu}_1
+          +\frac{2\epsilon}{1-\epsilon}.
+\]
+The right side is at most $a_\epsilon$ when $p\in D_\epsilon$, by its
+definition. The numerical bound follows from
+$\gamma\ge4/5$ and $1-\epsilon\ge3/4$. Start the induction at $\nu$.
+\end{proof}
+
+The set $D_\epsilon$ is a compact convex polytope for each fixed
+calibration. Its representatives need not all be attainable at a particular
+time; they are normalized beliefs with valid updates and belong to a proved
+invariant domain. No extrapolation outside the probability simplex is used.
+At $\epsilon=0$ the domain is the singleton $\{\nu\}$.
+
+\subsection{The actual acquisition density}
+Fix a preceding history, so its pre-report belief $q$ is fixed with
+\eqref{eq:refresh-q}. For $\epsilon>0$ and a fixed sign $y$, the command
+map
+\[
+ \Phi_{q,y}:u\longmapsto F(p,u,y)_+\in\R^d
+\]
+is one-to-one. Indeed its odds satisfy
+\begin{equation}\label{eq:refresh-odds}
+ \frac{p_i'}{p_0'}=\frac{q_i}{q_0}(1+y\epsilon\tanh u_i),
+\end{equation}
+so $u_i$ is recovered by applying $\operatorname{artanh}$ to
+$\{p_i'q_0/(p_0'q_i)-1\}/(y\epsilon)$. The image of the command interior
+has a smooth inverse. Boundary commands have zero probability under the
+uniform acquisition law.
+
+\begin{lemma}[Posterior Jacobian and unconditional density]\label{lem:refresh-density}
+For $\epsilon>0$,
+\begin{equation}\label{eq:refresh-jacobian}
+ \left|\det D\Phi_{q,y}(u)\right|
+ =\frac{q_0\prod_{i=1}^dq_i}{D_y^{d+1}}
+       \epsilon^d\prod_{i=1}^d\sech^2u_i.
+\end{equation}
+Under independent uniform commands and actual reports, the law of
+$p_{t,+}$ has a Lebesgue density bounded by $B_d\epsilon^{-d}$ at every
+$t\ge1$, where one possible uniform constant is
+\begin{equation}\label{eq:refresh-density-constant}
+ B_d=2^{-d}(5/4)^{d+2}m_*^{-(d+1)}\cosh^{2d}(1).
+\end{equation}
+The bound is conditional on every preceding history as well as
+unconditional.
+\end{lemma}
+\begin{proof}
+Write $r_i'=y\epsilon\sech^2u_i$. In the $d$ nonzero-state coordinates,
+\[
+ D\Phi_{q,y}
+ =\diag\left(\frac{q_ir_i'}{D_y}\right)
+      -\left(\frac{q_ir_i}{D_y}\right)_i
+       \left(\frac{q_jr_j'}{D_y}\right)_j^{\mathsf T}.
+\]
+The determinant lemma gives the determinant of the diagonal matrix times
+\[
+ 1-\sum_{i=1}^d\frac{q_ir_i}{D_y}=\frac{q_0}{D_y}.
+\]
+Taking absolute values gives \eqref{eq:refresh-jacobian}.
+
+Before any conditioning on the sign, the joint density of the uniform
+command and that sign is
+$2^{-d}D_y/2$. Change variables through the injective command map. Its
+contribution to the posterior density is
+\[
+ \frac{2^{-(d+1)}D_y^{d+2}}
+ {q_0\prod_{i=1}^dq_i\,\epsilon^d\prod_{i=1}^d\sech^2u_i}
+ \le 2^{-(d+1)}(5/4)^{d+2}
+        m_*^{-(d+1)}\cosh^{2d}(1)\epsilon^{-d}.
+\]
+Sum the two signs, allowing their images to overlap, to obtain
+\eqref{eq:refresh-density-constant}. Finally integrate the conditional
+bounds against the actual preceding-history law. The same bound survives
+because it is independent of that history. Thus no event probability or
+complementary command volume is discarded.
+\end{proof}
+
+This is a full-density upper bound for the actual law, which is sufficient
+for a quantization lower bound. It is stronger than merely exhibiting a
+nonzero differential at one command, but it does not assert that every
+point of the invariant polytope is attained. Those are different statements.
+
+\subsection{A fixed codebook and the proof of the theorem}
+Project $D_\epsilon$ to its $d$ coordinates $p_+$. It lies in the cube
+$\nu_++[-a_\epsilon,a_\epsilon]^d$. Partition this cube into
+$k^d$ cells, $k=\lfloor M^{1/d}\rfloor$, and select one belief in
+$D_\epsilon$ from each occupied cell. Fix those representatives once and
+for all, along with a first-minimum tie convention. Empty cells need no
+label. The discarded coordinate satisfies $p_0=1-\sum_{i=1}^dp_i$.
+Hence within a cell the full-simplex $\ell^1$ distance is at most twice
+the $\ell^1$ distance of its $d$ coordinates. The resulting codebook has
+at most $M$ points and covering radius
+\begin{equation}\label{eq:refresh-cover}
+ r_M\le\frac{4da_\epsilon}{k}
+ \le\frac{80d}{3}\epsilon M^{-1/d}.
+\end{equation}
+Choose the nearest representative in full $\ell^1$ distance. This preserves
+the covering bound and is Borel. The initial state is exactly $\nu$;
+thereafter the same codebook and the same update apply at every step.
+
+\begin{proof}[Proof of Theorem~\ref{thm:refresh}]
+For $\epsilon>0$, use \eqref{eq:refresh-update} at the retained belief and
+then quantize with \eqref{eq:refresh-cover}. Lemmas~\ref{lem:refresh-contraction}
+and \ref{lem:refresh-domain} justify the whole procedure on every history.
+By Corollary~\ref{cor:contractive},
+\begin{equation}\label{eq:refresh-error}
+ \sup_{t\ge1}\norm{p_t-\hat p_t}_1
+ \le3r_M\le80d\epsilon M^{-1/d}.
+\end{equation}
+Equation~\eqref{eq:refresh-distortion} bounds the excess by
+$(\tau^2/d)(80d)^2\epsilon^2M^{-2/d}$. This proves a pathwise upper bound
+for one machine, hence all the required mean and worst-history upper bounds.
+A checkpoint encoder can use the same final nearest-centre procedure.
+
+For the lower bound, Lemma~\ref{lem:refresh-density} and
+Lemma~\ref{lem:small-ball} give
+\[
+ \inf_{c_1,\ldots,c_M}\E\min_j\norm{p_{t,+}-c_j}_2^2
+ \ge \tfrac12(2B_dv_d)^{-2/d}\epsilon^2M^{-2/d}.
+\]
+Multiply by $\tau^2/d$ and use Theorem~\ref{thm:quantization}. The bound
+holds for every $t\ge1$ under the one fixed exploration law, with coding
+randomness allowed. Every causal encoder is a checkpoint encoder at each
+time, proving the causal lower bound for finite or infinite horizons.
+The inequality between mean and worst-history risks is immediate.
+When $\epsilon=0$, both reports have probability $1/2$ independent of the
+state and command. Refreshing preserves the uniform preparation, so
+$p_t=\nu$ on every history. A single label predicts the terminal probe
+exactly relative to the full-history oracle. This proves the zero case and
+completes the uniform statement.
+\end{proof}
+
+\begin{corollary}[Persistent bits and double attenuation]\label{cor:double-attenuation}
+For $b$ persistent bits, take $M=2^b$ in
+\eqref{eq:refresh-causal}. With the fixed terminal probe the squared
+excess has order $\epsilon^2 2^{-2b/d}$. If the actual terminal probe is
+instead
+\[
+ \Pp(Z=1\mid X_t=i,J=j)=1/2+\tau\epsilon\1_{\{i=j\}},
+\]
+the order is $\epsilon^4 2^{-2b/d}$, with the same uniformity and the
+same filter. At $\epsilon=0$, zero bits suffice in both models.
+\end{corollary}
+\begin{proof}
+The first assertion substitutes the number of labels. In the second
+experiment the physical readout difference is multiplied by $\epsilon$,
+while the acquisition process, posterior law, and filter are unchanged.
+Its squared excess is therefore multiplied by $\epsilon^2$. For the lower
+bound the same scaling applies to arbitrary decoder centres after clipping
+to the physical mean interval. The zero case was established above.
+\end{proof}
+
+\subsection{Feedback-uniform emulation in this model}
+For fixed command $u$, the probability of the positive report under belief
+$p$ is
+\[
+ g_+(p,u)=\tfrac12\left(1+
+   \epsilon\sum_{i=1}^d((1-\gamma)p_i+\gamma\nu_i)\tanh u_i\right).
+\]
+For binary laws their total variation is the difference of their positive
+probabilities. Thus
+\begin{equation}\label{eq:refresh-report-lip}
+ \norm{g(\cdot\mid p,u)-g(\cdot\mid\tilde p,u)}_{\TV}
+ \le\tfrac12\epsilon(1-\gamma)\norm{p-\tilde p}_1.
+\end{equation}
+By Theorem~\ref{thm:emulation}, the actual report-path law and the
+finite-state reference report-path law obey
+\begin{equation}\label{eq:refresh-path-TV}
+ \norm{P_N^\alpha-\widehat P_N^\alpha}_{\TV}
+ \le\min\{1,40dN\epsilon^2(1-\gamma)M^{-1/d}\}
+\end{equation}
+for every common feedback controller. This statement is uniform over
+controllers but is finite-horizon; it does not identify infinite path laws.
+If a terminal probe is included in the compared observed path, its
+additional conditional error is at most
+$\tau\norm{p_t-\hat p_t}_1$, averaged over its random index. This term
+is to be added to \eqref{eq:refresh-path-TV}. Prediction regret for that
+probe instead uses its squared error, as in
+\eqref{eq:refresh-distortion}; the two claims are different.
+
+The bound vanishes for the acquisition report law when $\gamma=1$:
+each new state is independently uniform, so previous belief errors have
+no effect on the next acquisition report. The current posterior can still
+have nontrivial geometry and require finite prediction memory for the
+immediate terminal probe. This limiting case is a useful check on the
+meaning of each estimate.
+
+\subsection{Calibration and finite precision}
+The theorem is uniform over \eqref{eq:refresh-range}, but the codebook and
+update may use the known values of $\gamma$ and $\epsilon$. It is not a
+calibration-blind theorem. Numerically approximating each belief update by
+an admissible belief within $\eta$ in $\ell^1$ changes
+\eqref{eq:refresh-error} to $3(r_M+\eta)$. The physical excess is at most
+$9\tau^2(r_M+\eta)^2/d$. Thus choosing $\eta$ proportional to
+$\epsilon M^{-1/d}$ preserves the order. This is an accuracy requirement;
+it does not assert zero workspace or a universal bit-complexity bound for
+computing the update.
+
+For rational calibration one can specify the invariant polytope by rational
+linear inequalities. Representatives can be selected in its occupied grid
+cells by a finite feasibility procedure; centres and a membership/tie rule
+form a finite read-only program. With nonrational calibration the theorem
+uses the declared calibrated real-number model; a numerical implementation
+must supply its own certified approximation. The only persistent acquired
+information after a report is its representative label.
+
+Finally, the refresh lower bound and the fixed positive state floor are
+substantive. If $\gamma$ tends to zero, the constant $2/3$ need not remain
+valid and the argument does not give a horizon-uniform theorem. That case
+is not hidden in the calibration interval.

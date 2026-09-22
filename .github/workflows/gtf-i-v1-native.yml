@@ -1,0 +1,95 @@
+name: GTF I v1 exact-source PDF
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v1-2026-09-22
+    paths:
+      - papers/GTF-I-v1/PUBLISH_REQUEST.json
+permissions:
+  contents: write
+concurrency:
+  group: gtf-i-v1-native-publication
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/revision/general-theta-foundations-i-v1-2026-09-22'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact request commit
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 1
+      - name: Verify native source and preserved outline
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          root=Path('papers/GTF-I-v1')
+          manifest=json.loads((root/'SOURCE_MANIFEST.json').read_text())
+          for name,expected in manifest['compiled_and_executable_inputs'].items():
+              actual=hashlib.sha256((root/name).read_bytes()).hexdigest()
+              if actual!=expected:
+                  raise SystemExit('Source hash mismatch: '+name)
+          outline=manifest['master_outline']
+          data=Path(outline['path']).read_bytes()
+          if len(data)!=outline['bytes'] or hashlib.sha256(data).hexdigest()!=outline['sha256']:
+              raise SystemExit('Preserved outline hash mismatch')
+          print('Native inputs and original master outline verified')
+          PY
+      - name: Install TeX and PDF tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-fonts-recommended lmodern poppler-utils
+      - name: Compile and execute diagnostics
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 papers/GTF-I-v1/build.py --output "$RUNNER_TEMP/gtf-i-build"
+      - name: Bind generated products to this checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib,json,os,shutil
+          from pathlib import Path
+          root=Path('papers/GTF-I-v1'); output=Path(os.environ['RUNNER_TEMP'])/'gtf-i-build'
+          receipt=json.loads((output/'BUILD_RECEIPT.json').read_text())
+          manifest=json.loads((root/'SOURCE_MANIFEST.json').read_text())
+          if receipt['source_sha256']!=manifest['compiled_and_executable_inputs']:
+              raise SystemExit('Executed sources differ from pinned manifest')
+          shutil.copy2(output/'main.pdf',root/'paper.pdf')
+          shutil.copy2(output/'BUILD_RECEIPT.json',root/'evidence/GITHUB_ACTIONS_BUILD_RECEIPT.json')
+          record={'source_commit':os.environ['GITHUB_SHA'],
+                  'run_id':os.environ['GITHUB_RUN_ID'],
+                  'run_attempt':os.environ['GITHUB_RUN_ATTEMPT'],
+                  'run_url':os.environ['GITHUB_SERVER_URL']+'/'+os.environ['GITHUB_REPOSITORY']+'/actions/runs/'+os.environ['GITHUB_RUN_ID'],
+                  'pdf_sha256':hashlib.sha256((root/'paper.pdf').read_bytes()).hexdigest(),
+                  'pdf_pages':receipt['pdf_pages'],
+                  'scope':'Executed runner build and finite diagnostics; not independent peer review or formal proof verification.'}
+          (root/'evidence/GITHUB_PUBLICATION.json').write_text(json.dumps(record,indent=2,sort_keys=True)+'\n')
+          PY
+      - name: Publish only generated products to the same revision branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          branch='revision/general-theta-foundations-i-v1-2026-09-22'
+          test "$GITHUB_REF" = "refs/heads/$branch"
+          git fetch origin "$branch" --depth=1
+          test "$(git rev-parse FETCH_HEAD)" = "$GITHUB_SHA"
+          git add -- papers/GTF-I-v1/paper.pdf papers/GTF-I-v1/evidence/GITHUB_ACTIONS_BUILD_RECEIPT.json papers/GTF-I-v1/evidence/GITHUB_PUBLICATION.json
+          python3 - <<'PY'
+          import subprocess
+          expected={'papers/GTF-I-v1/paper.pdf','papers/GTF-I-v1/evidence/GITHUB_ACTIONS_BUILD_RECEIPT.json','papers/GTF-I-v1/evidence/GITHUB_PUBLICATION.json'}
+          actual=set(subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines())
+          if not actual or not actual.issubset(expected):
+              raise SystemExit('Unexpected staged publication paths: '+repr(actual))
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'GTF I v1: publish exact-source PDF and executed runner receipts [skip ci]'
+          git push origin "HEAD:refs/heads/$branch"

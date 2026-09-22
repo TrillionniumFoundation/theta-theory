@@ -1,0 +1,181 @@
+\section{Executable reductions and charged resources}\label{sec:reductions}
+\subsection{Finite-state implementations}
+A synchronized causal machine between experiments has an internal state
+$r_t$. At a target step it receives the target action $a_t'$, chooses a
+source action according to a parameter-independent kernel depending on
+$(r_t,a_t')$, receives the source report, and outputs a target report while
+updating $r_t$. Random seeds are independent of the parameter and physical
+preparation. A stored seed that encodes previous reports is part of $r_t$.
+Every raw source step and every retained state is charged.
+
+This synchronized model suffices for the results below. A macro-step that
+uses a random number of source steps requires an explicit causal stopping
+protocol and its preparation certificate. Such a protocol can be included,
+but a bound for one synchronized source step is not silently reused for it.
+
+A target controller with state $z_t$ receives the target reports and updates
+$z_t$. Its joint implementation with the machine stores $(r_t,z_t)$. Thus
+$|r_t|\le R_t$ and $|z_t|\le M_t$ give the direct product bound $R_tM_t$.
+This is an upper bound for one realization, not a claim that no smaller
+implementation is possible.
+
+\begin{definition}[Causal reduction certificate]\label{def:reduction}
+For experiments over a common parameter space, a certificate
+$\Gamma:\cE\to\cF$ consists of a parameter-independent causal machine,
+a lift $\mathsf L_\Gamma$ of every admitted target controller to its source
+implementation, and a monotone resource map $\rho_\Gamma$. Under target
+controller $\alpha$, write $\widehat P_{\lambda}^{\Gamma,\alpha}$ for
+the simulated target-history law obtained from the joint machine/source
+execution. An $\varepsilon$-certificate satisfies
+\begin{equation}\label{eq:simulation-error}
+ \sup_{\lambda,\alpha}
+ \norm{\widehat P_{\lambda}^{\Gamma,\alpha}
+       -P_{\cF,\lambda}^{\alpha}}_{\TV}\le\varepsilon,
+\end{equation}
+and implementing a target budget $B$ costs at most $\rho_\Gamma(B)$.
+The default certificate is pathwise. Expected-cost and tail-budget
+certificates are different types and must be stated separately.
+\end{definition}
+
+For randomized strategy lifts, the right object is the joint causal
+execution. It need not be representable by a terminal kernel on the raw
+source history alone that is independent of the controller. Once the lift
+and controller are fixed, its visible pushforward is unambiguous. This
+avoids a misleading notation that would hide feedback inside a supposedly
+static garbling.
+
+An exact certificate has $\varepsilon=0$. The identity machine gives the
+identity reduction. A reparametrization $r:\Lambda'\to\Lambda$ pulls back
+an experiment family and is kept separate from data reduction. If the
+reparametrization is not injective it introduces parameter redundancy;
+it is not loss of observed data.
+
+\subsection{The path-kernel estimate}
+We use the convention
+$\norm{P-Q}_{\TV}=\sup_B|P(B)-Q(B)|$. For $0\le f\le L$ this implies
+$|Pf-Qf|\le L\norm{P-Q}_{\TV}$.
+
+\begin{lemma}[Predictable telescoping]\label{lem:telescoping}
+Let $P$ and $Q$ be laws on the same finite visible history tree, with the
+same initial law and the same feedback action kernels. Suppose their
+conditional report kernels at history $h_t$ and action $a_t$ are
+$p_t(\cdot\mid h_t,a_t)$ and $q_t(\cdot\mid h_t,a_t)$. If
+\[
+ \norm{p_t(\cdot\mid h_t,a_t)-q_t(\cdot\mid h_t,a_t)}_{\TV}
+ \le d_t(h_t,a_t),
+\]
+then
+\begin{equation}\label{eq:telescoping}
+ \norm{P-Q}_{\TV}
+ \le\min\left\{1,\E_P\sum_{t=0}^{N-1}d_t(H_t,A_t)\right\}.
+\end{equation}
+If both systems become absorbing under the same visible stopping rule
+$\sigma$, the summand can be multiplied by $\1_{\{t<\sigma\}}$.
+\end{lemma}
+\begin{proof}
+Fix a terminal measurable test $0\le f\le1$. Replace the report kernels
+one at a time, using a $P$-prefix and a $Q$-suffix. The suffix conditional
+expectation of $f$ is a measurable function between zero and one. The
+change at step $t$, after integrating the common feedback action kernel,
+is therefore bounded in absolute value by
+$\E_P d_t(H_t,A_t)$. Summing the telescoping differences proves the bound
+for $f$. Take the supremum over event indicators. After the visible rule
+has stopped, the kernels are the same absorbing kernel and their local
+error is zero. Histories of zero probability under $P$ contribute nothing;
+the kernels are nevertheless specified on all admitted histories so that
+all intermediate laws exist.
+\end{proof}
+
+The expectation is under the actual reference experiment. In particular a
+rare report carrying a large conditional error is not automatically charged
+as if it occurred at every time. No maximal-coupling measurability theorem is
+needed for this proof. The action policy may be discontinuous: the same
+kernel is applied on the same history in each telescoping term.
+
+\begin{theorem}[Composition and risk transfer]\label{thm:composition}
+Suppose $\Gamma_1:\cE\to\cF$ and $\Gamma_2:\cF\to\cG$ have
+certificates $(\varepsilon_1,\rho_1)$ and
+$(\varepsilon_2,\rho_2)$ uniformly over the controller classes needed by
+the lifts. Their serial implementation has certificate
+\[
+ \bigl(\min\{1,\varepsilon_1+\varepsilon_2\},\,
+       \rho_1\circ\rho_2\bigr).
+\]
+Exact reductions compose associatively as executions, up to relabeling of
+product states. For a common target $\tau(\lambda)$ and bounded loss
+$0\le\ell\le L$,
+\begin{equation}\label{eq:risk-transfer}
+ \mathfrak R_{\cE}(\rho_\Gamma(B))
+ \le \mathfrak R_{\cF}(B)+L\varepsilon
+\end{equation}
+for either minimax risk or risk under a common prior.
+\end{theorem}
+\begin{proof}
+Execute the second machine as a controller of the first. Their stored
+states form a product and their source actions remain nonanticipative and
+parameter independent. The first certificate applies to this enlarged
+controller class by hypothesis. The subsequent machine/controller
+execution is a Markov postprocessing of its visible history together with
+its independent randomization, so it contracts total variation. Compare
+first with an exact $\cF$ run and then with the intended $\cG$ run. The
+triangle inequality gives the displayed defect. Budget maps compose in the
+same order because they map target requirements to source requirements.
+Regrouping three nested machine states changes only their names, proving
+associativity.
+
+For a target procedure within budget $B$, run its source implementation
+and use the same final decision. Its risk at each parameter differs by at
+most $L\varepsilon$. The resource certificate makes it admissible under
+$\rho_\Gamma(B)$. Take the supremum over parameters, or integrate against
+the common prior, and then take the infimum over target procedures. An
+approximating sequence of procedures suffices if an optimum is not attained.
+\end{proof}
+
+A risk certificate concerns the same decision target and loss on both sides.
+It does not compare excess errors relative to different full-history
+predictors. An expected preparation constraint cannot be transported by a
+pathwise certificate without checking its type. Conversely, total-variation
+closeness alone does not transfer an unbounded cost expectation.
+
+\subsection{Checking an exact state reduction locally}
+\begin{proposition}[One-step realization]\label{prop:one-step}
+Let $r_t:X_t\to X_t'$, $g_t:Y_t\to Y_t'$, and an action lift
+$\iota_t:A_t'\to A_t$ be measurable. Suppose the preparations push forward
+correctly and, for every admitted source state and target action,
+\begin{equation}\label{eq:intertwining}
+ (r_{t+1},g_{t+1})_\#
+ K_t^\lambda(\cdot\mid x,\iota_ta')
+ =K_t^{\prime\lambda}(\cdot\mid r_tx,a').
+\end{equation}
+Suppose also that continuation interfaces, recorded costs, and designated
+readouts match. Then applying the lifted actions and report maps gives an
+exact causal reduction for every target feedback strategy.
+\end{proposition}
+\begin{proof}
+At time zero the reduced state laws agree. Conditional on a source state and
+on a lifted action, \eqref{eq:intertwining} gives the joint reduced
+next-state/report law. Integrate against the common current reduced law.
+Since the target controller reads the reduced history, its next action law
+is the same in both systems. Induction proves equality on all finite
+cylinders, and hence on the path sigma field. Readout and cost matching give
+the asserted experiment and resource identity.
+\end{proof}
+
+The state map need not be observable to implement the reduction: the
+machine only needs the action lift and report map. The hidden-state map is
+a proof device for the law identity. If the proposed lift instead requires
+the unobserved state, it is not an executable reduction of this type.
+
+\subsection{Terminal and causal equivalence}
+For a fixed terminal family, a garbling $G$ is reversible if there exists a
+parameter-independent kernel $R$ such that $P_\lambda GR=P_\lambda$.
+This is statistical equivalence. Requiring $R$ to operate causally and
+charging its memory gives a stronger notion. Requiring suitable bounds in
+both directions gives resource-aware causal equivalence. These notions are
+not identified by definition.
+
+Independent parallel experiments may be implemented by product machines
+when their preparations and physical randomness are genuinely independent
+conditional on the parameter. Persistent cardinalities multiply and costs
+add. Shared nuisance variables or coupled preparations require the joint
+experiment; replacing them by an independent product changes the object.

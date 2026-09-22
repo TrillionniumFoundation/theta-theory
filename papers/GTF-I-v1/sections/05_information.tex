@@ -1,0 +1,172 @@
+\section{Posterior geometry and information loss}\label{sec:information}
+\subsection{Posterior barycentres}
+The following statements concern a common preparation. Let $Z$ be a hidden
+target, $Y$ an original observation, and $W$ a parameter-independent
+postprocessing of $Y$. Conditional independence is denoted by the Markov
+chain $Z\to Y\to W$.
+
+\begin{theorem}[Posterior barycentre and convex order]\label{thm:barycentre}
+For bounded measurable $f_1,\ldots,f_q$ of $Z$, put
+\[
+ p_Y=(\E[f_i(Z)\mid Y])_i,
+ \qquad p_W=(\E[f_i(Z)\mid W])_i.
+\]
+Then
+\begin{equation}\label{eq:barycentre}
+ p_W=\E[p_Y\mid W].
+\end{equation}
+Consequently $\E\varphi(p_W)\le\E\varphi(p_Y)$ for every convex function
+for which the expectations are defined. Moreover,
+\begin{equation}\label{eq:barycentre-variance}
+ \Cov(p_Y)-\Cov(p_W)=\E\Cov(p_Y\mid W)\succeq0.
+\end{equation}
+\end{theorem}
+\begin{proof}
+The Markov property gives
+$\E[f_i(Z)\mid Y,W]=\E[f_i(Z)\mid Y]$. Taking conditional expectation
+with respect to $W$ proves \eqref{eq:barycentre}. Conditional Jensen yields
+the convex-order inequality. Subtract the common mean and expand the
+orthogonal decomposition
+$p_Y-\E p_Y=(p_Y-p_W)+(p_W-\E p_W)$; its cross covariance is zero by
+conditioning on $W$. This gives \eqref{eq:barycentre-variance}.
+\end{proof}
+
+For a measure-valued posterior, the same identity holds against every
+bounded test. It is a conditional barycentre, not a function sending each
+original posterior to a single coarser posterior. In particular the image
+of a finite set of original posteriors may generate a continuous family of
+conditional barycentres. This is why convex-order monotonicity is not a
+statement about the cardinality of a predictive representation.
+
+\subsection{Relative entropy and recovery}
+For $P\ll Q$, set
+$D(P\|Q)=\int\log(dP/dQ)\,dP$, allowing $+\infty$; set it to infinity
+otherwise. Let $G:X\rightsquigarrow W$ be a Markov kernel and form the
+joint laws $\bar P(dx,dw)=P(dx)G(dw\mid x)$ and
+$\bar Q(dx,dw)=Q(dx)G(dw\mid x)$.
+
+\begin{theorem}[Entropy loss and a common recovery kernel]\label{thm:entropy-gap}
+If $D(P\|Q)<\infty$, then
+\begin{equation}\label{eq:entropy-gap}
+ D(P\|Q)=D(PG\|QG)+
+ \int D(\bar P(dx\mid w)\|\bar Q(dx\mid w))\,PG(dw).
+\end{equation}
+In particular, entropy decreases under $G$. Suppose a family $P_\lambda$
+is dominated by one $P_0$, every $D(P_\lambda\|P_0)$ is finite, and
+\[
+ D(P_\lambda G\|P_0G)=D(P_\lambda\|P_0)
+ \quad\text{for every }\lambda.
+\]
+Then $R(w,dx)=\bar P_0(dx\mid w)$ is a parameter-independent recovery
+kernel satisfying $P_\lambda GR=P_\lambda$ for every $\lambda$.
+\end{theorem}
+\begin{proof}
+The joint likelihood ratio is $d\bar P/d\bar Q(x,w)=dP/dQ(x)$.
+Disintegrating both joint laws gives the factorization into the marginal
+likelihood ratio on $W$ and the conditional likelihood ratio on $X$.
+Take logarithms and integrate. Standard truncation of the densities
+justifies the formula when logarithms are not bounded; finite total
+entropy makes the nonnegative conditional entropy integrable. This proves
+\eqref{eq:entropy-gap}. Alternatively the marginal ratio is the conditional
+expectation under $\bar Q$ of $dP/dQ$, and conditional Jensen proves the
+inequality directly, also for infinite entropy.
+
+For the family, equality makes the conditional entropy vanish
+$P_\lambda G$-almost everywhere. Hence the two conditional distributions
+coincide there. The conditional law under the one reference $P_0$ is the
+same measurable kernel for all parameters; $P_\lambda G\ll P_0G$ handles
+its null-set convention. Integrating that conditional law against
+$P_\lambda G$ recovers $P_\lambda$.
+\end{proof}
+
+This is a sufficient recovery criterion under a common reference. An
+isolated equality for one pair does not certify an unrelated parameter
+family. Nor does it make the recovery kernel causal or memory free.
+
+\subsection{Scores and Fisher information}
+To avoid hiding regularity in notation, first take a finite observation
+space with $p_\lambda(y)>0$ and continuously differentiable probabilities
+on an open parameter domain in $\R^k$. Let
+\[
+ s_\lambda(y)=\nabla_\lambda\log p_\lambda(y),
+ \qquad\mathcal I_\lambda=\E_\lambda[s_\lambda s_\lambda^{\mathsf T}].
+\]
+If $G(w\mid y)$ is a parameter-independent finite channel, restrict to
+output symbols having positive probability; identically impossible symbols
+can be removed.
+
+\begin{theorem}[Score projection]\label{thm:score}
+The processed score and information satisfy
+\begin{align}
+ s_\lambda^G(W)&=\E_\lambda[s_\lambda(Y)\mid W],\label{eq:score-proj}\\
+ \mathcal I_\lambda-\mathcal I_\lambda^G
+ &=\E_\lambda\Cov_\lambda(s_\lambda(Y)\mid W)\succeq0.
+ \label{eq:fisher-gap}
+\end{align}
+For a direction $v$, equality of information in that direction is equivalent
+to $v^{\mathsf T}s_\lambda(Y)$ being determined by $W$ almost surely.
+\end{theorem}
+\begin{proof}
+Differentiate $q_\lambda(w)=\sum_y p_\lambda(y)G(w\mid y)$ and divide by
+$q_\lambda(w)$. The coefficients are precisely the conditional
+probabilities of $Y$ given $W$, proving \eqref{eq:score-proj}.
+Differentiating $\sum_y p_\lambda(y)=1$ gives $\E_\lambda s_\lambda=0$.
+The conditional variance identity now gives \eqref{eq:fisher-gap}.
+Its quadratic form in $v$ is the mean conditional variance of
+$v^{\mathsf T}s_\lambda$, which vanishes exactly under the stated
+measurability condition.
+\end{proof}
+
+The same proof works in a dominated differentiable model if differentiation
+under the integral is justified and the score lies in $L^2$. More generally,
+the QMD version is the classical score-projection theorem described by
+Pollard~\cite{Pollard2013}; when it is invoked, quadratic-mean
+differentiability is an additional statistical hypothesis. The raw
+experiment axioms by themselves impose no differentiability.
+
+Information equality in \eqref{eq:fisher-gap} is a statement at a parameter
+point. It is not the recovery conclusion of Theorem~\ref{thm:entropy-gap}.
+Even information preservation throughout a model need not make a statistic
+sufficient without stronger assumptions; see \cite{Pollard2013}.
+
+Under a smooth parameter map $\lambda=r(\zeta)$, the information pulls
+back as $Dr^{\mathsf T}\mathcal I\,Dr$. Under a deterministic linear
+map of a random vector, its covariance pushes forward as $A\Sigma A^{\mathsf T}$.
+These are different operations on different objects. Neither formula says
+that an arbitrary covariance equals inverse Fisher information.
+
+\subsection{Sequential information in finite positive models}
+A useful controlled specialization follows without differentiating the
+controller. Suppose the conditional report probabilities are finite,
+positive, and differentiable, and the feedback policy has no explicit
+unknown-parameter dependence. Along a history define the local score
+\[
+ \xi_{t+1}=\nabla_\lambda\log
+ p_\lambda(Y_{t+1}\mid H_t,A_t).
+\]
+The policy factors contribute no score. Conditional normalization gives
+$\E_\lambda[\xi_{t+1}\mid H_t,A_t]=0$.
+
+\begin{proposition}[Sequential score decomposition]\label{prop:sequential-score}
+If the local scores are square integrable, the path score is
+$S_N=\sum_{t<N}\xi_{t+1}$, and
+\begin{equation}\label{eq:sequential-info}
+ \E_\lambda[S_NS_N^{\mathsf T}]
+ =\sum_{t<N}\E_\lambda[
+ \xi_{t+1}\xi_{t+1}^{\mathsf T}].
+\end{equation}
+For bounded stopping, each term is restricted to active steps. No
+independence of successive reports is required.
+\end{proposition}
+\begin{proof}
+The likelihood factors into conditional report probabilities and
+parameter-independent policy factors. Its logarithmic derivative is the
+displayed sum. For $s<t$, $\xi_{s+1}$ is measurable before $\xi_{t+1}$,
+so their cross moment is zero by the conditional mean-zero property.
+Expanding the square proves \eqref{eq:sequential-info}. A bounded stopping
+indicator is predictable for the next increment; the same argument applies.
+\end{proof}
+
+This is an information identity for the actual controlled law. It does not
+make an information-optimal strategy automatically prediction-memory
+optimal, and it does not supply an asymptotic normal approximation.

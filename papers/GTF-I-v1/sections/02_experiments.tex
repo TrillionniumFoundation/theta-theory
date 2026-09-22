@@ -1,0 +1,172 @@
+\section{Positive causal experiments}\label{sec:experiments}
+\subsection{Types and primitive data}
+A standard Borel space is a measurable space isomorphic to a Borel subset of
+a Polish space. All primitive spaces below are standard Borel. Time is
+initially $t=0,\ldots,N$, with the countable-time extension stated
+separately. The unknown parameter is $\lambda\in\Lambda$; it is not a
+random variable until a prior is supplied. The hidden state, applied action,
+and next report have spaces $X_t,A_t,Y_{t+1}$. A visible history is
+\[
+ h_t=(a_0,y_1,\ldots,a_{t-1},y_t)\in H_t.
+\]
+A public initial report, clock increments, and observed cost records can be
+included in this notation. An action-availability rule, when present, is
+part of the interface. We usually write a common action space to avoid
+encoding that rule repeatedly.
+
+\begin{definition}[Raw experiment]\label{def:experiment}
+A raw experiment consists of a parameter space $\Lambda$, preparations
+$\mu_\lambda\in\cP(X_0)$, and jointly measurable probability kernels
+\begin{equation}\label{eq:raw-kernel}
+ K_t^\lambda(dx',dy,dc\mid x,a)
+\end{equation}
+on $X_{t+1}\times Y_{t+1}\times\mathcal C$, together with a class of
+executable future tests and a resource interface. The nonnegative vector
+$c$ records charged increments, such as raw preparations or physical time.
+When it is observed, it is included in $y$; when it is not observed, it is
+integrated in the visible law but is still counted in the resource account.
+Every kernel has total mass one. A failed measurement and a terminating
+measurement are reports, not missing mass.
+\end{definition}
+
+The following six requirements will be referred to as the foundational
+axioms. They specify the admissible language rather than analytic conclusions.
+
+\begin{description}
+\item[A0 (measurable interfaces).] Primitive spaces are standard Borel;
+histories and continuation availability are specified.
+\item[A1 (positive experiment).] Preparation and transition--observation
+kernels are nonnegative and normalized as in \eqref{eq:raw-kernel}.
+\item[A2 (causality).] The next action uses only the visible past and
+permitted independent randomness. Stopping is nonanticipative.
+\item[A3 (executable tests).] The designated future tests have actual
+protocols and are closed under the one-step extensions needed for prediction.
+\item[A4 (preparation and accounting).] Average risks and acquisition laws
+refer to a declared preparation and exploration strategy. Failures, pilots,
+and accepted-event probabilities are not removed from their costs.
+\item[A5 (charged implementation).] Persistent labels, numerical precision,
+workspace, read-only calibration, and simulator state have separate accounts.
+\end{description}
+
+In particular these axioms do not assert strict positivity of each report,
+finite-dimensionality, stationarity, differentiability, a spectral gap, or a
+large-deviation principle. If the physical state is not Markov in the
+coordinates initially proposed, its entire necessary past can be included in
+$X_t$. This does not prove closure for a smaller observable state.
+
+\subsection{Strategies, paths, and stopping}
+A strategy is a sequence of measurable kernels
+$\alpha_t(da\mid h_t)$ supported on available actions. It cannot depend on
+the unknown true parameter. A finite-state strategy may have an additional
+explicit internal state; an unrestricted history strategy need not satisfy a
+finite-memory budget.
+
+\begin{proposition}[Path construction]\label{prop:paths}
+For every parameter and causal strategy there is a unique consistent
+finite-dimensional path law with iterated-kernel expression
+\begin{equation}\label{eq:path-law}
+ \mu_\lambda(dx_0)\prod_{t=0}^{N-1}
+ \alpha_t(da_t\mid h_t)
+ K_t^\lambda(dx_{t+1},dy_{t+1},dc_{t+1}\mid x_t,a_t).
+\end{equation}
+For countably many discrete times these laws extend uniquely to the product
+path sigma field. Deterministic evolution and deterministic observations
+are included by taking Dirac kernels.
+\end{proposition}
+\begin{proof}
+For finite $N$, integrate bounded measurable cylinder functions from the
+last variable backwards. At each step measurability follows from the kernel
+property, positivity is preserved, and the integral of one is one. The
+resulting probability measures have consistent marginals because the last
+kernel integrates to one. The standard kernel-extension theorem gives the
+countable product law; this is the Ionescu--Tulcea construction, as treated
+in \cite{Kallenberg2021}. Uniqueness follows first on cylinder events and
+then on their generated sigma field. A Dirac kernel makes the corresponding
+integral substitution along the deterministic trajectory, without changing
+the remaining preparation or measurement randomness.
+\end{proof}
+
+A bounded stopping time is implemented by an absorbing stopped symbol and
+zero subsequent increments. Thus the same construction handles optional
+termination. For an unbounded stopping time, an almost-surely finite stopped
+path can be considered by truncation; quantitative infinite-horizon error
+bounds still require a summable bound or a separate limiting argument.
+A random number of collisions is not silently substituted for a
+deterministic large-deviation speed.
+
+\subsection{Prepared and parameter-uniform questions}
+For statistical decision theory we retain the whole family
+$(P_\lambda^\alpha)_\lambda$. A decision rule is one rule, independent of
+the true parameter. For Bayesian prediction we instead specify a prior
+$\eta(d\lambda)$ and use the joint hidden state $(\lambda,x_t)$ with
+preparation $\eta(d\lambda)\mu_\lambda(dx_0)$. Fixed known calibration is
+permitted, but it is not a substitute for an unknown parameter.
+
+This distinction also applies to infima over encoders. The infimum for a
+fixed preparation need not be achieved by the same encoder for all priors.
+Likewise, a family of codebooks indexed by a known experimental calibration
+is not an estimator of an unknown calibration. Every quantitative theorem
+below states which situation is intended.
+
+\subsection{Instruments and evidence}
+After a preparation has been fixed, write the hidden state simply as $x$.
+For a report event $B\subset Y_{t+1}$, define the positive instrument
+\[
+ (\mathsf T_{t,a,B}f)(x)
+ =\int \1_B(y)f(x')K_t(dx',dy\mid x,a).
+\]
+It is countably additive in $B$ for nonnegative $f$, positive in $f$, and
+$\mathsf T_{t,a,Y}1=1$. With finite reports write
+$\mathsf T_{t,a,y}=\mathsf T_{t,a,\{y\}}$.
+Starting with $b_0=\mu$, define the unnormalized history functional by
+\begin{equation}\label{eq:unnormalized}
+ b_{t+1}(f)=b_t(\mathsf T_{t,a_t,y_{t+1}}f),
+ \qquad Z_t=b_t(1).
+\end{equation}
+These functionals do not include the probability of the chosen command.
+They are likelihood/evidence functionals conditional on the realized
+command sequence; the actual joint history law also includes the strategy
+kernels in \eqref{eq:path-law}.
+
+\begin{proposition}[Normalized update]\label{prop:bayes}
+For finite reports and $Z_t>0$, let $\pi_t=b_t/Z_t$. If
+$q_t(y\mid\pi_t,a)=\pi_t(\mathsf T_{t,a,y}1)>0$, then
+\begin{equation}\label{eq:bayes}
+ \pi_{t+1}(f)=
+ \frac{\pi_t(\mathsf T_{t,a,y}f)}
+      {\pi_t(\mathsf T_{t,a,y}1)},
+ \qquad
+ Z_{t+1}=Z_tq_t(y\mid\pi_t,a).
+\end{equation}
+The formula remains valid for adaptive actions. When the evidence is zero,
+the unnormalized functional is zero and no normalized posterior is specified
+by this formula.
+\end{proposition}
+\begin{proof}
+Divide \eqref{eq:unnormalized} by its value at one. Positivity shows that a
+positive functional of total mass zero vanishes on every bounded test.
+For adaptive actions, condition on the visible history: the strategy's
+probability of the current action is fixed by that history and is independent
+of the hidden state conditional on it. This factor cancels in the posterior.
+An induction in \eqref{eq:path-law} verifies the conditional expectation
+identity for every bounded hidden-state test.
+\end{proof}
+
+For a non-atomic report space, conditioning is by disintegration of the
+joint next-state/report law, not by dividing the mass of a singleton. Under
+a fixed preparation a standard Borel conditional distribution exists almost
+everywhere. A single Borel update jointly in all proposed states, inputs,
+and reports is additional implementation data, or must be justified by an
+applicable parametrized disintegration theorem. We will not use a
+simultaneous version across a nondominated parameter family without that
+justification. All explicit quantitative models below have finite reports
+and Borel formulas.
+
+\subsection{Preparing a conditional experiment}
+If an event has acceptance probability $p>0$, independently repeating a
+preparation until acceptance implements the conditional law. Its preparation
+count $T$ satisfies $\Pp(T>n)=(1-p)^n$ and $\E T=1/p$. A cap $B$ instead
+creates an abort symbol with probability $(1-p)^B$. This is a different
+experiment from exact conditioning. The cap is necessary for a uniform
+pathwise preparation budget. No lower bound or implementation claim below
+replaces an actual report word by a probability-one conditioning event.

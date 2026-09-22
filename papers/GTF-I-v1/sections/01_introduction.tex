@@ -1,0 +1,181 @@
+\section{Introduction}
+An observer does not retain a physical state merely by naming it. The observer
+receives a history, chooses actions, and stores a representation from which
+future decisions or predictions must be made. There are consequently three
+different questions. Which future laws are determined by that history? Which
+parts of those laws can a second experiment reproduce? How much persistent
+state is required to reproduce them causally? The answers need not be ordered
+by a single notion of information.
+
+This paper starts with a positive causal experiment and separates these three
+questions. The starting data are a preparation, transition--observation
+kernels, executable future tests, admissible interventions, and a resource
+interface. A posterior, a predictive quotient, and the law of attained
+predictions are derived from these data. Smooth structures, information
+matrices, asymptotic rates, and operator realizations are additional
+structures, not axioms of the experiment.
+
+The distinction is already visible in a binary example. If a hidden bit is
+observed exactly, two persistent labels retain its posterior prediction
+without loss. Adding independent Gaussian noise makes the observation less
+informative in the statistical order, but the posterior then ranges
+continuously between zero and one. No fixed finite number of labels preserves
+all of those posterior predictions exactly. There is no violation of data
+processing: the two excess losses use different full-observation oracles.
+The complete calculation appears in Section~\ref{sec:boundaries}.
+
+\subsection{The quantitative results}
+Our first quantitative result concerns a prepared predictive-state model.
+Let $s_t$ be its exact state and let
+\[
+ s_{t+1}=F_t(s_t,a_t,y_{t+1}).
+\]
+Suppose the same-input update is $L_t$-Lipschitz on a common admissible
+domain. Cover that domain by $M_t$ representatives with radius $r_t$,
+and allow an implementation error $\eta_t$ in each update. One causal
+label machine then has error bounded by the deterministic recurrence
+\begin{equation}\label{eq:intro-recursion}
+ b_0=0,\qquad b_{t+1}=L_tb_t+r_{t+1}+\eta_{t+1}.
+\end{equation}
+The same machine also defines a finite-state model, provided the next-report
+law is Lipschitz in the state. If its total-variation Lipschitz constant is
+$\kappa_t$, the entire visible-path laws differ by at most
+\begin{equation}\label{eq:intro-path-error}
+ \min\left\{1,\sum_{t=0}^{N-1}\kappa_tb_t\right\},
+\end{equation}
+uniformly over the common feedback policy class. The policies need not be
+continuous. They agree on equal observed histories, which is enough for the
+kernel telescoping proof. For stopped experiments, the sum is charged only
+while the reference experiment remains active. A policy that itself retains
+$D_t$ states yields a controller with at most $D_tM_t$ states, not $M_t$.
+This is Theorem~\ref{thm:emulation}. It distinguishes same-input prediction
+accuracy from closed-loop comparison instead of inferring the latter from
+the former.
+
+The second result supplies the geometry and the actual acquisition law in a
+dynamic model rather than postulating them. Fix $d\ge1$ and let the hidden
+state take values in $\{0,\ldots,d\}$. Between observations it stays put with
+probability $1-\gamma$ and is replaced by an independent uniform state with
+probability $\gamma$, where $4/5\le\gamma\le1$. A command
+$u\in[-1,1]^d$ produces a binary report $y\in\{-1,1\}$ with
+\begin{equation}\label{eq:intro-sensor}
+ \Pp(y\mid X=i,u)=
+ \begin{cases}
+  1/2,&i=0,\\
+  (1+y\epsilon\tanh u_i)/2,&1\le i\le d,
+ \end{cases}
+ \qquad 0\le\epsilon\le1/4.
+\end{equation}
+At a selected checkpoint, a terminal query is drawn only after the label has
+been formed. Query $i$ returns one binary outcome of mean
+$1/2+\tau\1_{\{X=i\}}$, where $\tau=1/4$ and $1\le i\le d$.
+All acquisition reports, both signs, are retained in the preparation law.
+Only one selected terminal query is executed in a run.
+
+Let $R_{M,t}^{\rm chk}$ be the optimal checkpoint excess squared loss under
+independent uniform commands, and let $\mathfrak R_{M,N}$ be the best
+maximum-checkpoint excess attainable by one causal machine with at most
+$M$ labels after each acquisition. Theorem~\ref{thm:refresh} proves
+\begin{equation}\label{eq:intro-refresh-law}
+ c_d\epsilon^2M^{-2/d}
+ \le R_{M,t}^{\rm chk}
+ \le \mathfrak R_{M,N}
+ \le C_d\epsilon^2M^{-2/d},\qquad 1\le t\le N.
+\end{equation}
+The middle inequality is understood for the optimal maximum risk, so it
+holds for each fixed checkpoint. The same upper-bound machine works at every
+time, and its pathwise prediction error is bounded uniformly over all
+command and report sequences. Thus the maximum can be replaced by a
+supremum over all positive times. The constants depend on $d$ and the fixed
+terminal probe, not on $N,t,M,\epsilon$, or $\gamma$ in the displayed
+ranges. At $\epsilon=0$, one label is exact.
+
+The proof is elementary but combines obligations that should not be
+suppressed. Refreshing gives an interior lower bound for the pre-observation
+belief. Bayes updating is uniformly contractive after refreshing. Its entire
+reachable set lies within distance $O(\epsilon)$ of the uniform belief.
+The command-to-posterior Jacobian has determinant of order
+$\epsilon^d$, uniformly over every previous history. It follows that the
+actual posterior law has a density bounded above by $C_d\epsilon^{-d}$.
+This gives a lower bound against all $M$-label encoders, including independent
+public or private coding randomization. A finite cover of an invariant
+belief domain gives the matching causal construction. No stationary law of
+the filter and no asymptotic quantization formula is assumed.
+
+This model has a genuinely evolving latent state. It is not the static
+latent-variable, conditionally independent acquisition problem of
+\cite{QiA1}. Its nonpolynomial command coordinate is convenient, not an
+intrinsic novelty claim: the change $v_i=\tanh u_i$ makes the likelihood
+affine in $v$. The additional conclusion relative to that manuscript's stated
+finite-horizon scope is the time-uniform bound obtained here from explicit
+refreshing contraction. If the terminal query is also multiplied by
+$\epsilon$, its physical metric changes and the order becomes
+$\epsilon^4M^{-2/d}$ (Corollary~\ref{cor:double-attenuation}).
+
+\subsection{Objects and reductions}
+A statistical comparison acts first on a family of probability laws. We use
+$\Gamma:\cE\to\cF$ to mean that the source experiment $\cE$ can implement
+$\cF$ by a parameter-independent causal machine. A reduction includes its
+strategy lift, state, observation interface, and resource certificate.
+Serial composition adds total-variation defects and composes budget maps.
+For a common bounded decision loss, this gives a risk inequality. It does
+not assert that two different posterior oracles have ordered coding losses.
+
+The minimal predictive quotient is defined by equality of all designated
+future tests, with equal continuation interfaces. It is an exact semantic
+object. In a finite-state realization its updates are explicit; for a
+general measurable quotient, standard Borel realizability is a separate
+obligation. We give a compact continuous realization theorem rather than
+assuming that every quotient is a smooth state space.
+
+\subsection{Relation to established theories}
+Kernel composition, disintegration, sufficiency, and their categorical
+organization are established foundations; see Fritz~\cite{Fritz2020} and
+Fritz--Gonda--Perrone--Rischel~\cite{FGPR2023}. Blackwell's comparison
+of experiments~\cite{Blackwell1953} concerns decision performance under
+garbling. Our directional simulation inequalities use that classical idea;
+we retain the timing and state required to implement a garbling.
+The introduction of a new project name does not make these results new.
+
+Predictive-state and causal-state representations already define state by
+future distributions, including action-conditional versions
+\cite{ShaliziCrutchfield2001,LittmanSuttonSingh2002,BarnettCrutchfield2015}.
+Our quotient theorem specializes to that principle. The present presentation
+makes the future test class, preparation, zero-evidence convention, and
+resource interface explicit, and supplies sufficient conditions for a
+measurable realization.
+
+Quantized nonlinear filtering and finite model approximation have an
+extensive literature; examples include
+\cite{PagesPham2005,KalogeriasPetropulu2016,SaldiYukselLinder2017}.
+Approximating a signal on a finite grid while storing an arbitrary vector of
+posterior weights is not the same resource as storing one of $M$ complete
+prediction labels. Conversely, the cardinality bounds proved here are not
+bounds on all numerical workspace or on the size of a read-only program.
+The state error recurrence and the path-kernel comparison use standard
+stability and telescoping arguments. The contribution of
+Theorem~\ref{thm:emulation} is their explicit joint statement under feedback,
+stopping, numerical defects, and simulator-state accounting. No assertion is
+made that these abstract ingredients have no antecedents.
+
+The preservation of Fisher information is local and need not imply
+sufficiency, as explained by Pollard~\cite{Pollard2013}. We prove the
+finite-model score formula and state the exact QMD interface. Exponential
+integral--entropy duality is classical; its proof is included to fix the
+risk parameter and the nonlinear pullback under a random channel.
+The contact-fibre calculation of \cite{QiA2} is connected through linear
+observations of positive functionals, not identified with an entire
+statistical experiment.
+
+\subsection{Reading the paper}
+Sections~\ref{sec:experiments}--\ref{sec:reductions} establish the objects,
+quotients, and executable reductions. Section~\ref{sec:information} fixes
+the Bayesian, entropic, and score identities.
+Sections~\ref{sec:checkpoint}--\ref{sec:refreshing} contain the quantitative
+results and their full proofs. Sections~\ref{sec:response} and
+\ref{sec:pressure} connect normalized response and exponential transforms.
+Section~\ref{sec:boundaries} gives explicit limitations, and
+Section~\ref{sec:interfaces} states the interfaces with subsequent geometry
+and dynamical work. The appendices contain measurable and finite-experiment
+details used in the proofs. There is no dependence on an unproved theorem
+of a later installment.

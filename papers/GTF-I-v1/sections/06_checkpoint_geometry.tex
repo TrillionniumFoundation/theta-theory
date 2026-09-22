@@ -1,0 +1,150 @@
+\section{Attained prediction and checkpoint quantization}\label{sec:checkpoint}
+\subsection{The physical loss}
+Fix a preparation and an exploration law, independently of coding
+randomness. At time $t$ choose a future query $J$ independently after the
+label is formed, with probabilities $w_j>0$, $\sum_jw_j=1$. Conditional on
+history and query, a bounded response $Z_j$ has mean $m_j(h)$. Squared loss
+is used, and only the selected query is executed. Set
+\[
+ p(h)=(\sqrt{w_j}m_j(h))_{j=1}^q,
+ \qquad \nu=\Law(p(H_t)).
+\]
+The weighted decoder vector is denoted by $c$. Subtracting the complete
+history predictor's risk leaves $\norm{p(h)-c}^2$.
+
+An $M$-label checkpoint encoder reads the complete prefix once and retains
+one of $M$ symbols. Its decoder receives the label and the subsequent query,
+not the discarded history or the acquisition commands. A public seed may
+specify a codebook but is independent of the preparation. Private coins are
+allowed and are either discarded or included in the retained label. We
+assume a bounded closed convex prediction domain containing all $p(h)$;
+projection into it can only improve squared error.
+
+\begin{theorem}[Exact checkpoint identity]\label{thm:quantization}
+The optimal mean checkpoint excess risk equals
+\begin{equation}\label{eq:quantization}
+ R_M^{\rm chk}=e_M^2(\nu):=
+ \inf_{c_1,\ldots,c_M}
+ \int\min_{1\le j\le M}\norm{p-c_j}^2\,\nu(dp).
+\end{equation}
+Independent public or private coding randomization does not decrease this
+infimum. An arbitrarily near-optimal deterministic nearest-centre encoder
+is measurable.
+\end{theorem}
+\begin{proof}
+Condition on history, query, and the code randomness. The elementary
+identity
+\[
+ \E[(Z_j-a)^2\mid h,J=j]
+ =\Var(Z_j\mid h,J=j)+(m_j(h)-a)^2
+\]
+reduces the loss to the displayed Euclidean distortion. For each label,
+replace a randomized decoder by its conditional mean over decoder coins;
+convexity of squared norm does not increase the loss. Given fixed decoder
+centres, random assignment by the encoder is no better than the nearest
+centre. Hence every fixed public-seed codebook has risk at least the
+right-hand side of \eqref{eq:quantization}; averaging over the independent
+seed preserves this inequality.
+
+Conversely choose centres within any prescribed positive tolerance of the
+infimum. Encode by the first index attaining the least distance. Finite
+comparisons of continuous distance functions make this rule Borel. The
+resulting distortion is the integrand in \eqref{eq:quantization}. Let the
+tolerance decrease to zero. A codebook indexed by an unknown true parameter
+is not produced by this argument: $\nu$ is the one declared preparation law.
+\end{proof}
+
+For worst-history loss the analogous deterministic checkpoint quantity is
+a covering radius, not the integral in \eqref{eq:quantization}. The mean
+and worst-history laws have the same order only under additional geometric
+and mass conditions.
+
+\subsection{A small-ball lower bound}
+\begin{lemma}[Mass obstruction]\label{lem:small-ball}
+Suppose a probability law $\nu$ in $\R^d$ satisfies
+$\nu(B(c,r))\le A r^d$ for every centre $c$ and radius $r>0$.
+Then for every integer $M\ge1$,
+\begin{equation}\label{eq:small-ball}
+ e_M^2(\nu)\ge\frac12(2AM)^{-2/d}.
+\end{equation}
+In particular, a Lebesgue density bounded by $B\epsilon^{-d}$ gives
+$e_M^2(\nu)\ge c_{d,B}\epsilon^2M^{-2/d}$ for $\epsilon>0$.
+\end{lemma}
+\begin{proof}
+The union of $M$ balls of radius $r=(2AM)^{-1/d}$ has probability at most
+one half. On its complement every centre is at least distance $r$ away.
+Integrating the nearest-centre squared distance gives at least $r^2/2$.
+For the density assertion use $A=Bv_d\epsilon^{-d}$, where $v_d$ is the
+volume of the Euclidean unit ball.
+\end{proof}
+
+The lemma permits centres outside the support and therefore already
+covers arbitrary decoders. It does not condition away a small probability
+of reaching the difficult region. If the useful density lower geometry
+instead occurs only on an event of probability $\beta$, the eventual risk
+lower bound must carry that mass.
+
+\begin{lemma}[A positive attained chart]\label{lem:attained-chart}
+Suppose a coordinate projection of a prediction law dominates
+$\beta$ times uniform probability on a $d$-dimensional cube of side $a$,
+with $\beta,a>0$. If that projection has operator norm at most $L$, then
+\[
+ e_M^2(\nu)\ge c_d\beta a^2L^{-2}M^{-2/d}.
+\]
+\end{lemma}
+\begin{proof}
+For any centres in the original prediction space, project the centres onto
+the cube's coordinate space. Distances there are at most $L$ times the
+original distances. The uniform cube law has density $a^{-d}$ and
+satisfies Lemma~\ref{lem:small-ball}. Domination by $\beta$ and rescaling
+prove the assertion.
+\end{proof}
+
+\subsection{Whole-image covers and all integer budgets}
+Let $D\subset\R^d$ be nonempty, compact, and contained in a cube of side
+$2a$. Divide each coordinate interval into
+$k=\lfloor M^{1/d}\rfloor$ pieces. There are at most $k^d\le M$ cells.
+Choose one point of $D$ in each nonempty cell. Any point is within Euclidean
+distance $2a\sqrt d/k$ of its representative. Since
+$k\ge M^{1/d}/2$, we obtain a radius $4a\sqrt d M^{-1/d}$ for every
+integer $M\ge1$. The corresponding $\ell^1$ bound is $4adM^{-1/d}$.
+Neither a large-budget asymptotic nor an integer-budget relaxation is needed.
+
+More generally, finitely many Lipschitz images of compact cubes have such
+covers with exponent equal to the largest domain dimension. Allocate
+centres between the finitely many charts, use the preceding grid, and enlarge
+the constant for budgets smaller than the number of charts. This is a
+sufficient global description, not a consequence of local rank alone.
+A nonlinear or disconnected image cannot be replaced by a tangent plane
+without checking its entire cover.
+
+\subsection{Causal lower bounds use one exploration law}
+Let $\mathcal C_{\boldsymbol M}$ be causal encoders with at most $M_t$ labels
+at time $t$. Under the fixed exploration strategy, their label is also a
+measurable, possibly randomized, encoding of the complete time-$t$ prefix.
+Therefore
+\begin{equation}\label{eq:causal-lower}
+ \inf_{C\in\mathcal C_{\boldsymbol M}}
+       \max_{1\le t\le N}\E\ell_t^C
+ \ge \max_{1\le t\le N}e_{M_t}^2(\nu_t).
+\end{equation}
+Indeed the checkpoint lower inequality holds for every single $C$ and all
+$t$ before taking the infimum. The same law of exploration supplies all
+marginals $\nu_t$. Changing the exploration strategy with the encoder, or
+with the checkpoint after the infimum, would define another problem.
+
+\subsection{Calibrated anisotropy}
+A useful model interface is provided by \cite{QiA1}. There, under whole-image
+covering, positive attained mass for each initial scale flag, and uniformly
+stable raw updates, the scale profile is
+\[
+ Q_t(M)=\max_{1\le\ell\le p_t}
+   \left(\frac{s_{t,1}\cdots s_{t,\ell}}{M}\right)^{2/\ell}.
+\]
+The physical prediction metric is fixed; small singular values are not
+removed by an unbounded coordinate whitening. The finite-horizon causal
+bound follows by propagating the covering radii, as in the next section.
+We cite this refined profile as a conditional model interface, not as an
+unproved universal consequence of a list of singular values. The dynamic
+model of Section~\ref{sec:refreshing} will establish its own isotropic
+scale, density bound, and invariant cover directly from the experiment.
