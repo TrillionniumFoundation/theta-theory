@@ -2,7 +2,7 @@
 set -euo pipefail
 cd -- "$(dirname -- "${BASH_SOURCE[0]}")"
 export OPENBLAS_NUM_THREADS=1
-mkdir -p evidence
+mkdir -p evidence ../v125/evidence
 
 dump_failure_logs() {
   status=$?
@@ -28,6 +28,9 @@ test -f parts/09a-rees-specialization.tex || { echo 'Missing v126 Rees specializ
 python ../v125/checks/exact_k3.py > evidence/exact_k3.log 2>&1
 python ../v125/checks/exact_corank_two.py > evidence/exact_corank_two.log 2>&1
 python ../v125/checks/stratified_rank_two.py > evidence/stratified_rank_two.log 2>&1
+cp -f ../v125/evidence/K3_CERTIFICATES.json evidence/ 2>/dev/null || true
+cp -f ../v125/evidence/CORANK_TWO_CERTIFICATES.json evidence/ 2>/dev/null || true
+cp -f ../v125/evidence/STRATIFIED_RANK_TWO_CERTIFICATES.json evidence/ 2>/dev/null || true
 
 for pass in 1 2 3; do
   pdflatex -interaction=nonstopmode -halt-on-error geometry.tex > "evidence/geometry-pass-${pass}.log" 2>&1
