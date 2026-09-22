@@ -95,4 +95,4 @@ The classical Reye/nodal-Enriques geometry remains credited as classical context
 
 ## Additional referee hardening
 
-Revision 126 fixes the malformed TeX escape block in the v125 abstract. No reviewed v124 source and no v125 mathematical proof block is deleted or rewritten. The principal driver imports unchanged v123/v125 proofs and adds only the Rees-specialization theorem, its proof, revised front matter, response material, and branch-scoped verification.
+Revision 126 fixes the malformed TeX escape block in the v125 abstract. The historical v124 and v125 branches remain untouched. The v126 principal driver imports the v123/v125 proof architecture and uses a v126-local copy of the depth section whose sole inherited-source repair is the missing display-math delimiters exposed by CI; the mathematical statements and proofs are otherwise preserved. The new mathematical addition is the Rees-specialization theorem and its proof, together with revised front matter, response material, and branch-scoped verification.
