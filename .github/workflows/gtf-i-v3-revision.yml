@@ -1,0 +1,76 @@
+name: GTF I v3 revision build
+on:
+  push:
+    branches: [revision/general-theta-foundations-i-v3-2026-09-22]
+    paths:
+      - .github/workflows/gtf-i-v3-revision.yml
+      - papers/GTF-I-v3/**
+      - '!papers/GTF-I-v3/paper.pdf'
+      - '!papers/GTF-I-v3/evidence/**'
+permissions:
+  contents: write
+concurrency:
+  group: gtf-i-v3-revision
+  cancel-in-progress: false
+jobs:
+  revision:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 1
+      - name: Export complete historical pipeline text and current source inventory
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/gtf-v3-context"
+          mkdir -p "$out/history" "$out/v2"
+          git fetch --depth=1 origin c04845b6613208406703695c9c184ae461f95805
+          git ls-tree -r c04845b6613208406703695c9c184ae461f95805 > "$out/HISTORICAL_GIT_TREE.txt"
+          git archive c04845b6613208406703695c9c184ae461f95805 | tar -x -C "$out/history"
+          find "$out/history" -type f ! \( -name '*.tex' -o -name '*.bib' -o -name '*.md' -o -name '*.json' -o -name '*.py' -o -name '*.txt' -o -name 'Makefile' \) -delete
+          git archive HEAD papers/GTF-I-v2 foundations/general-theta reviews/general-theta-foundations-i-v1-2026-09-22 | tar -x -C "$out/v2"
+          git rev-parse HEAD > "$out/REVISION_BASE.txt"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gtf-i-v3-complete-pipeline-context
+          path: ${{ runner.temp }}/gtf-v3-context
+          retention-days: 14
+      - name: Install native TeX tools
+        if: hashFiles('papers/GTF-I-v3/main.tex') != ''
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-fonts-recommended lmodern poppler-utils
+      - name: Build and check exact mathematical source
+        if: hashFiles('papers/GTF-I-v3/main.tex') != ''
+        run: python3 papers/GTF-I-v3/build.py
+      - name: Upload complete revision execution package
+        if: hashFiles('papers/GTF-I-v3/main.tex') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: gtf-i-v3-review-build
+          path: |
+            papers/GTF-I-v3/paper.pdf
+            papers/GTF-I-v3/evidence
+          retention-days: 30
+      - name: Publish only generated revision products
+        if: hashFiles('papers/GTF-I-v3/main.tex') != ''
+        shell: bash
+        run: |
+          set -euo pipefail
+          branch='revision/general-theta-foundations-i-v3-2026-09-22'
+          test "$GITHUB_REF" = "refs/heads/$branch"
+          git fetch origin "$branch" --depth=1
+          test "$(git rev-parse FETCH_HEAD)" = "$GITHUB_SHA"
+          git add -f -- papers/GTF-I-v3/paper.pdf papers/GTF-I-v3/evidence
+          python3 - <<'PY'
+          import subprocess
+          paths = subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines()
+          if not paths or not all(p == 'papers/GTF-I-v3/paper.pdf' or p.startswith('papers/GTF-I-v3/evidence/') for p in paths):
+              raise SystemExit('Unexpected generated-product write set: ' + repr(paths))
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'GTF I v3: publish exact-source PDF and reproducibility records [skip ci]'
+          git push origin "HEAD:refs/heads/$branch"
