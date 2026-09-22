@@ -71,7 +71,7 @@ Thus the journal-facing geometric sequence is readable without the long statisti
 
 The exact v114 workflow was checked. It failed before compilation with a missing baseline dictionary entry caused by a nested-directory `git ls-tree` pathspec. Revision 115 uses explicit repository-root object paths and checks nonempty baseline retrieval. A temporary-repository regression reproduces the old failure and verifies the corrected behavior without depending on GitHub.
 
-The delivery contains actual compiled PDFs, final logs, source hashes, finite-diagnostic receipts, and a build receipt. Mathematical source and generated evidence are separate local commits. The receipts distinguish the upstream review/source objects from the local patch-generation commits, and state that the revision has not been pushed remotely. The source-only intermediate commit is not described as a completed PDF delivery.
+The delivery contains actual compiled PDFs, final logs, source hashes, finite-diagnostic receipts, and a build receipt. Mathematical source and generated evidence are separate branch commits. The receipts distinguish the upstream review/source objects from the branch source commit and the subsequent generated-evidence commit. The source-only intermediate commit is not described as a completed PDF delivery.
 
 ## 7. Current closure ledger
 
@@ -84,7 +84,7 @@ The delivery contains actual compiled PDFs, final logs, source hashes, finite-di
 | Ballico 1993 theorem comparison | Bibliographic/source-access audit retained; no unsupported novelty claim | Unresolved full-text comparison |
 | All general quadratic excess components/primary ideals | Earlier maximal-component theorem preserved; new family-specific global scheme theorem added | General classification remains unproved |
 | Geometry versus statistics architecture | Geometry reading copy plus full companion, no proof deletion | Implemented |
-| Build/source mismatch | Actual PDFs, root-independent verification, source-bound receipts | Implemented locally |
-| Remote revision branch | Additions-only patch targeting the R114 review commit | Not published remotely in this session |
+| Build/source mismatch | Actual PDFs, root-independent verification, source-bound receipts | Implemented by the revision-branch build workflow |
+| Remote revision branch | Independent additions-only branch rooted at the R114 review commit | Published; generated evidence is committed by source-bound CI |
 
 Finite tests check bounded examples and exact symbolic identities. They are not proofs of the universal theorem statements or substitutes for referee review.

@@ -1,0 +1,58 @@
+name: A2 v115 source-bound build
+
+on:
+  push:
+    branches:
+      - revision/a2-v115-intrinsic-residual-germs-2026-09-22
+    paths:
+      - 'papers/A2-v17-boundary-information-coarsening/article/v115/**'
+      - 'A2_REVISION_V115_INDEX.md'
+      - '.github/workflows/a2-v115-build.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: a2-v115-source-bound-build
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      ARTICLE: papers/A2-v17-boundary-information-coarsening/article/v115
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 64
+
+      - name: Install TeX and diagnostic dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            texlive-latex-extra texlive-fonts-recommended lmodern \
+            poppler-utils python3-sympy
+
+      - name: Build all manuscripts and receipts
+        run: bash "$ARTICLE/build.sh"
+
+      - name: Recheck upstream source boundary
+        run: python3 "$ARTICLE/verify_revision.py" --source-only --git-baseline
+
+      - name: Commit generated PDFs and evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f \
+            "$ARTICLE/paper.pdf" "$ARTICLE/geometry.pdf" "$ARTICLE/applications.pdf" \
+            "$ARTICLE/paper.log" "$ARTICLE/geometry.log" "$ARTICLE/applications.log" \
+            "$ARTICLE/paper.fls" "$ARTICLE/geometry.fls" "$ARTICLE/applications.fls" \
+            "$ARTICLE/crossrefs" "$ARTICLE/evidence"
+          if ! git diff --cached --quiet; then
+            git commit -m 'A2 v115: bind generated PDFs and verification evidence'
+            git push origin "HEAD:refs/heads/${GITHUB_REF_NAME}"
+          fi

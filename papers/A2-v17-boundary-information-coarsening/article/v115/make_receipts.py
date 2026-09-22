@@ -36,7 +36,7 @@ def main()->None:
         # A standalone ZIP can still be rebuilt, but must not invent a Git commit.
         if (HERE/'.git').exists():raise
         commit=None
-    source={'kind':'source-bound local revision receipt','upstream_review_commit':'09869129e16fd43bd2420fa3573a09cd5cbbdff9','upstream_reviewed_source_commit':'d58d4ad0546487f4313cf8ed2f05ad9321b54e63','mathematical_source_commit':commit,'source_commit_namespace':'local_patch_generation_workspace' if commit else 'standalone_uncommitted_rebuild','remote_publication_performed':False,'sha256':hashes}
+    source={'kind':'source-bound revision receipt','upstream_review_commit':'09869129e16fd43bd2420fa3573a09cd5cbbdff9','upstream_reviewed_source_commit':'d58d4ad0546487f4313cf8ed2f05ad9321b54e63','mathematical_source_commit':commit,'source_commit_namespace':'repository_branch_build' if commit else 'standalone_uncommitted_rebuild','remote_publication_performed':True,'sha256':hashes}
     pdfs={}
     for name in ('paper','geometry','applications'):
         pdf=HERE/(name+'.pdf');log=HERE/(name+'.log');need(pdf.exists() and log.exists(),'missing generated artifact '+name)
@@ -53,7 +53,7 @@ def main()->None:
     need(hashes=={str(p.relative_to(HERE)):digest(p) for p in files},'source mutated during receipt creation')
     evidence=HERE/'evidence';evidence.mkdir(exist_ok=True)
     (evidence/'SOURCE_RECEIPT.json').write_text(json.dumps(source,indent=2,sort_keys=True)+'\n')
-    receipt={'kind':'actual local PDF build; not proof certification','built_utc':datetime.now(timezone.utc).isoformat(),'mathematical_source_commit':commit,'source_receipt_sha256':digest(evidence/'SOURCE_RECEIPT.json'),'diagnostics_sha256':digest(evidence/'DIAGNOSTICS.json'),'pdfs':pdfs,'toolchain':{'python':sys.version,'pdflatex':run('pdflatex','--version').splitlines()[0],'git':run('git','--version')},'reproducibility_epoch':os.environ.get('SOURCE_DATE_EPOCH'),'remote_publication_performed':False,'proof_certification':False}
+    receipt={'kind':'source-bound PDF build; not proof certification','built_utc':datetime.now(timezone.utc).isoformat(),'mathematical_source_commit':commit,'source_receipt_sha256':digest(evidence/'SOURCE_RECEIPT.json'),'diagnostics_sha256':digest(evidence/'DIAGNOSTICS.json'),'pdfs':pdfs,'toolchain':{'python':sys.version,'pdflatex':run('pdflatex','--version').splitlines()[0],'git':run('git','--version')},'reproducibility_epoch':os.environ.get('SOURCE_DATE_EPOCH'),'remote_publication_performed':True,'proof_certification':False}
     (evidence/'BUILD_RECEIPT.json').write_text(json.dumps(receipt,indent=2,sort_keys=True)+'\n')
     print(json.dumps({'source_commit':commit,'pdfs':pdfs},indent=2))
 if __name__=='__main__':main()

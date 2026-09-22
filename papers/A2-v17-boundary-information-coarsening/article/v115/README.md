@@ -3,7 +3,7 @@
 **Controlling review:** R114 at `09869129e16fd43bd2420fa3573a09cd5cbbdff9`.  
 **Reviewed mathematical source:** `d58d4ad0546487f4313cf8ed2f05ad9321b54e63`.  
 **Intended new branch:** `revision/a2-v115-intrinsic-residual-germs-2026-09-22`.  
-**Publication state:** local revision and applicable patch; **not pushed to GitHub**.
+**Publication state:** published on the independent revision branch; the source-bound branch workflow compiles and commits the generated PDFs and evidence.
 
 ## Reading order
 
@@ -11,7 +11,7 @@
 
 Start with [the response to R114](RESPONSE_TO_R114.md). The main new global result is Theorem `thm:higher-hyperplane-global`: all higher-product hyperplanes, all failure coranks, saturation away from the evaluation curve, the complete associated-point set for degree at least three, and a growing nilpotency lower bound. The exact nonlinear residual-germ section precedes the retained binary quadratic classification.
 
-The PDFs and build receipts are included in the generated-evidence commit of this package. The earlier source-only commit is intentionally not a PDF delivery. The authoritative final file list and source/PDF hashes are in [BUILD_RECEIPT.json](evidence/BUILD_RECEIPT.json), together with [SOURCE_RECEIPT.json](evidence/SOURCE_RECEIPT.json). A local commit identifier is not represented as an upstream commit identifier.
+The PDFs and build receipts are included in the generated-evidence commit on this revision branch. The earlier source-only commit is intentionally not a PDF delivery. The authoritative final file list and source/PDF hashes are in [BUILD_RECEIPT.json](evidence/BUILD_RECEIPT.json), together with [SOURCE_RECEIPT.json](evidence/SOURCE_RECEIPT.json). A local commit identifier is not represented as an upstream commit identifier.
 
 ## Reproduce
 
@@ -29,4 +29,4 @@ The included `history/v114_source/` is a byte-exact archive of all 19 reviewed T
 
 This is a mathematical revision for independent review, not an assertion of journal acceptance. The new higher-product theorem gives a full support/corank/associated-point classification in the natural hyperplane family. It does not classify the full embedded primary ideal, every higher-product contact configuration, or every smaller component of the general quadratic excess scheme. The Ballico 1993 theorem-level priority comparison remains incomplete because the relevant full text was not obtained. The classical determinantal inputs are explicitly identified in the article and literature audit rather than presented as new discoveries.
 
-No old branch or old manuscript file is overwritten by the supplied patch. See [preservation and proof dependencies](PRESERVATION_AND_DEPENDENCIES.md) and [provenance](AI_ASSISTANCE_AND_PROVENANCE.md).
+No old branch or old manuscript file is overwritten by this independent revision branch. See [preservation and proof dependencies](PRESERVATION_AND_DEPENDENCIES.md) and [provenance](AI_ASSISTANCE_AND_PROVENANCE.md).

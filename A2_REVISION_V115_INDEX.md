@@ -2,7 +2,7 @@
 
 Intended new branch: `revision/a2-v115-intrinsic-residual-germs-2026-09-22`.  
 Controlling review: `09869129e16fd43bd2420fa3573a09cd5cbbdff9`.  
-Status: **local deliverable; remote publication not performed**.
+Status: **published on the independent revision branch; generated PDFs and verification evidence are committed by the source-bound branch workflow**.
 
 [Focused geometry manuscript](papers/A2-v17-boundary-information-coarsening/article/v115/geometry.pdf)  
 [Complete archival manuscript](papers/A2-v17-boundary-information-coarsening/article/v115/paper.pdf)  
@@ -16,4 +16,4 @@ The new global theorem treats all hyperplane subseries in every degree, not just
 
 The full earlier results and proofs are retained. The Ballico 1993 theorem-level comparison and the unrestricted quadratic excess primary/component classification are not marked closed. This revision is for independent mathematical review, not a claim of referee acceptance.
 
-PDF links apply to the final generated-evidence commit included in this package; the intermediate source-only commit is not a compiled delivery. No existing manuscript/review branch is overwritten by the additions-only patch.
+PDF links resolve on the final generated-evidence commit produced by the branch workflow; the intermediate source-only commit is not a compiled delivery. No existing manuscript or review branch is overwritten.
