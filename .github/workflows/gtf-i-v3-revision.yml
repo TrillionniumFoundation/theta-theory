@@ -7,6 +7,8 @@ on:
       - papers/GTF-I-v3/**
       - '!papers/GTF-I-v3/paper.pdf'
       - '!papers/GTF-I-v3/evidence/**'
+      - '!papers/GTF-I-v3/retained-results.tex'
+      - '!papers/GTF-I-v3/references.tex'
 permissions:
   contents: write
 concurrency:
@@ -63,14 +65,15 @@ jobs:
           test "$GITHUB_REF" = "refs/heads/$branch"
           git fetch origin "$branch" --depth=1
           test "$(git rev-parse FETCH_HEAD)" = "$GITHUB_SHA"
-          git add -f -- papers/GTF-I-v3/paper.pdf papers/GTF-I-v3/evidence
+          git add -f -- papers/GTF-I-v3/paper.pdf papers/GTF-I-v3/evidence papers/GTF-I-v3/retained-results.tex papers/GTF-I-v3/references.tex
           python3 - <<'PY'
           import subprocess
           paths = subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines()
-          if not paths or not all(p == 'papers/GTF-I-v3/paper.pdf' or p.startswith('papers/GTF-I-v3/evidence/') for p in paths):
+          allowed = {'papers/GTF-I-v3/paper.pdf','papers/GTF-I-v3/retained-results.tex','papers/GTF-I-v3/references.tex'}
+          if not paths or not all(p in allowed or p.startswith('papers/GTF-I-v3/evidence/') for p in paths):
               raise SystemExit('Unexpected generated-product write set: ' + repr(paths))
           PY
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit -m 'GTF I v3: publish exact-source PDF and reproducibility records [skip ci]'
+          git commit -m 'GTF I v3: publish exact-source PDF, preserved native proofs, and reproducibility records [skip ci]'
           git push origin "HEAD:refs/heads/$branch"
