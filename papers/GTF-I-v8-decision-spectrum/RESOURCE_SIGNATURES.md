@@ -1,0 +1,29 @@
+# Theorem-local resource signatures
+
+The coordinates are `(S,A,L,P,p,W,tau;R)`: persistent states, physical terminal alphabet, raw acquisition-symbol budget, fixed description bits, numerical precision, transient workspace, online time and randomness. “Unrestricted” means no theorem bounds it; it does not mean no physical cost. Exact real constants are free only in a cardinality-only result. A task index is not raw hidden-state information. The decoder sees no discarded report or free accumulated transcript.
+
+| Statement or inherited block | S / A | Acquisition and initialization | Description / precision / computation | Randomness / decoder interface |
+|---|---|---|---|---|
+| Spectrum transport `thm:v8-spectrum` | Full transformer rho; a K-state simulator gives K S | Simulator certificate includes initialization and allowed clock/policy lifting | All resource coordinates transformed as certified | Independent randomization exactly as signature; data-dependent seeds/positions charged |
+| Terminal duality `thm:v8-duality` | At most S physical labels; terminal encoder | One standard Borel observation | Unrestricted | Private encoder and fresh reconstruction randomness; no public side channel |
+| Saturated posterior `thm:v8-sufficient` | Same terminal label count after composing kernels | Full transient observation or posterior coordinate | Mathematical measurable kernel; no algorithmic rate | Private reconstruction permitted; parameter-decision marks only |
+| Causal saturation `thm:v8-causal-sufficiency` | K0 S if quotient width K0; otherwise no finite bound | Previous quotient state retained in simulator; initialized recursion | Unrestricted unless extra certificate supplied | Reconstruction uses current action and successive quotient states, not parameter |
+| Finite-history characterization `thm:v8-congruence` | Width <=S at every time | Finite report alphabets, fixed horizon, one initial label | Finite lookup exists; optimization runtime not bounded | Independent private/public tapes allowed; no extra data-bearing register |
+| Finite-command A1 `cor:v8-a1` | Width <=S, finite task menus | Observed (command, report); shared failure symbol; no raw cell index | Given Borel integrals may require arbitrary real constants | Fixed-Bayes scalarized sum; no change to private-randomized max-risk criterion |
+| Continuation criterion | Index <=S exact stationary deterministic | Finite words, stationary update | Mathematical finite transducer; no uniform construction cost for arbitrary g | No extra public clock/tape in the stationary exact criterion |
+| Certified tree `thm:v8-certified` | V=1+sum actual degrees; V<=S | Frozen snapshot prefix L=O(log S); initialized insertion/delete states counted | P=O(S log S+S d p), p=O(log S), W=O(log S+d p); bit-scan online time stated; offline oracle time separate | Deterministic rational tables; finite bit claim requires effective finite-dimensional readout |
+| Uniform law entropy | S labels; decoded law itself need not have finite alphabet | Transient input prior law | Unrestricted law/quantile operations | Randomization allowed; expected distance of realized law, not its mixture |
+| Nonlinear posterior lower | S labels, all priors at fixed t | Same common code for all unknown priors | Cardinality lower survives unlimited transient work | Even free report word does not invalidate lower; fixed-time factor 5^-t |
+| Nonlinear posterior upper | binomial(2n,n)<=S | Encode initial law to net accuracy, retain codebook index | On codebook, rational update/rounding is exact; no prior oracle complexity bound | Deterministic online tables or rational transient list |
+| Marginal probe proposition | S stored grid labels, one Bernoulli output | One transient sample from input law | Unrestricted sampling/evaluation | Probe independent of realized label/tape; no adaptive or repeated-output assertion |
+| Sequential Gaussian | S persistent states at every time; final A<=S | n sequential r-real observations; discard each after update | Real transforms/quantization unrestricted; no finite arithmetic claim | Private randomization only at terminal interface; no emitted transcript |
+| Preserved v7 predictive tree and instances | Cardinality-only; all vertices charged | Original full-word deletion input; finite-prefix implementation supplied by v8 theorem under extra oracle assumptions | Original exact energy/representative specification unrestricted | Arbitrary randomized converse, deterministic tree upper; initialization cost remains |
+| Preserved v7 generic measure filter | binomial(2n,n) states | Real report/action and initial codebook point | Update defect eta explicitly charged; generic codebook computation unrestricted | Same actual input path; report-law transport needs separate Lipschitz condition |
+| Preserved v7 Gaussian / A2 | M physical outcomes / J^r deterministic labels | Actual unjittered counts in A2; proof-only jitter never physical output | Fixed real compactification/constants; not a bit-complexity claim | Parameter-independent external reconstruction; no extra physical labels |
+
+The modelwise fair hidden-shift exponent in the preserved instance satisfies
+`r^(2s) 2^(1-s)=1`, hence `alpha=(1-s)/s=-2 log(r)/log(2)`.
+Tree fixed-dilation constants are uniform only on families with uniformly bounded child, separation, distortion, alphabet and unary-chain data. A finite report alphabet and a finite state register are different constraints.
+
+
+The explicit current known-mark adapter `cor:v8-a2adapter` has at most `J^r<=S` physical outputs and the joint window `2^r<=S<=K N^(r/6)`. Its raw input count vector, fixed real score weights and transient arithmetic are not assigned a bit-time bound. Reconstruction randomization is private and parameter independent. It is a statistical protocol adapter, not a resource theorem for A2's primary algebraic constructions.

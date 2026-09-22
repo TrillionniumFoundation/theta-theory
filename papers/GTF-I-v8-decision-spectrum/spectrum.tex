@@ -1,0 +1,282 @@
+\section{The marked decision spectrum}\label{sec:v8-spectrum}
+We first fix the object whose finite presentations are to be compared.
+This requires specifying both the decision tasks and the information
+available to the decoder. These specifications cannot be recovered
+from a dimension or a cardinality alone.
+
+\subsection{Experiments, tasks, and signatures}
+An experiment is a standard Borel causal instrument, with an initial law
+and transition--observation kernels indexed by a parameter $\theta$.
+Actions, when present, are chosen before the corresponding transition.
+The same observation-based policy is used at every value of $\theta$.
+A \emph{mark} $d$ specifies a horizon, decision times, action spaces, a
+loss in $[0,1]$, and a risk functional. The latter is either expectation
+under a declared prior or the supremum over a declared parameter set,
+taken after selecting one decoder. A minimax decoder does not know the
+unknown parameter. A mark may instead specify a fixed Bayesian
+prediction problem with an integrable squared loss; assertions involving
+total variation below apply only after a uniform loss bound is supplied.
+When a loss concerns a latent target, the marked experiment includes that
+target, and a simulation must preserve its joint law with the observations.
+Equality of report laws alone does not suffice for such a mark.
+
+An encoder $Q$ is an initialized causal transducer
+\begin{equation}
+ I_t\sim q_t(\,\cdot\mid I_{t-1},Y_t,A_{t-1}),
+ \qquad I_t\in\{1,\ldots,S\}.                         \label{eq:v8-register}
+\end{equation}
+After an update, a decoder sees only $(t,I_t)$ and any explicitly
+declared current side input. It does not see the discarded observation,
+an output transcript, old actions, or a data-dependent random seed.
+All persistent decoder state belongs to $I_t$. Fresh randomization is
+allowed. A public seed, when allowed, is independent of the experiment;
+a data-dependent position or modification of that seed is charged.
+A terminal reconstruction kernel may have a continuous output even when
+the physical statistic has a finite alphabet.
+
+We use the resource signature
+\begin{equation}
+ b=(S,A,L,P,p,W,\tau;\mathsf R).                       \label{eq:v8-signature}
+\end{equation}
+Here $S$ counts persistent states; $A$ counts physical terminal labels;
+$L$ bounds raw symbols read per acquisition; $P$ bounds fixed description
+bits; $p$ is numerical precision; $W$ is transient work space; $\tau$ is
+update time; and $\mathsf R$ records the permitted independent
+randomization. A coordinate $\infty$ means that no bound is asserted.
+For a precision constraint, the order is the order on permitted
+implementations, not the numerical order on an accuracy tolerance.
+The \emph{cardinality signature} constrains only $S$ (and $A$ when
+explicitly stated). In particular, exact real constants in a fixed
+program are free only under that signature. All theorems below state
+which signature they use.
+
+For an encoder admissible at $b$, let $r_E(Q,d)$ be the infimal value of
+the declared risk functional over its allowed decoders. Let $\beta_E(d)$ be the infimal risk using the full
+observation history under the same decision timing. The encoder is
+selected before the mark; its decoder may depend on the mark. For a set
+$\mathcal D$ of marks define
+\begin{align}
+ \mathscr A_E(b)&=\{u\in[0,1]^{\mathcal D}:\text{some admissible }Q
+                  \text{ has }r_E(Q,d)\le u_d\ (d\in\mathcal D)\},
+                                                               \label{eq:v8-riskset}\\
+ \Theta_E(b;\mathcal D)&=\inf_Q\sup_{d\in\mathcal D}
+                         \{r_E(Q,d)-\beta_E(d)\}.       \label{eq:v8-spectrum}
+\end{align}
+Infima need not be attained. We use the displayed attainable sets, not
+their product-topology closure: for an infinite task family, taking that
+closure before a uniform task supremum can change the value. The common
+encoder and the order of quantifiers in \eqref{eq:v8-spectrum} are part
+of the invariant.
+The collection of attainable sets, baselines, and resource signatures is
+the \emph{marked decision spectrum}, denoted $\boldsymbol\Theta(E)$.
+This is the meaning of the symbol $\Theta$ in the present paper. It is a
+profile, not an additional physical parameter. Unbounded squared marks
+are treated separately without restricting the vectors to $[0,1]$.
+
+\begin{example}[The encoder cannot follow the task]\label{ex:v8-quantifiers}
+Let $X=(X_1,X_2)$ consist of two independent fair bits. A terminal
+statistic has two values. The two marks ask, respectively, for $X_1$ and
+$X_2$, with zero--one loss. Each mark separately admits risk zero, but
+one common encoder has worst risk at least $1/4$. Indeed, for each fixed
+independent coding seed and each encoder label, the two optimal answers
+form a word in $\{0,1\}^2$. Two reconstruction words have average Hamming
+distance at least $1/2$ from the four equally likely input words: two
+words may be exact, and each remaining word is at distance at least one.
+Randomization does not lower the average of the two risks. Hence their
+maximum is at least $1/4$. Conversely, with a public fair coin, reveal
+one of the two coordinates and guess the other. Thus the value is $1/4$
+when that coin is permitted, whereas interchanging $\inf_Q$ and the task
+supremum gives zero. No such interchange is made in this paper.
+\end{example}
+
+\subsection{Typed simulations and invariance}
+A certified simulation $\mathsf S:E\Rightarrow F$ consists of initialized
+causal kernels, a monotone resource transformer $\rho_{\mathsf S}$, and
+an error bound $\epsilon_{\mathsf S}(T)$. The kernels do not know $\theta$
+or the latent variables. For every target-side admissible policy and
+every parameter, the simulated marked transcript through horizon $T$
+has total variation distance at most $\epsilon_{\mathsf S}(T)$ from its
+law in $F$. Moreover, composing the simulation with any target encoder
+of signature $b$ produces a source encoder of signature at most
+$\rho_{\mathsf S}(b)$. These are uniform requirements on one simulator,
+not permission to choose a different simulator for each task or policy.
+When marks have different horizons, use the corresponding error for each
+coordinate; a common $\epsilon$ below denotes their supremum.
+
+Two certified simulators represent the same morphism when they have the
+same transformer and error certificate and induce the same marked
+execution laws under every admissible continuation. Internal register
+names are immaterial. We use standard Borel kernels modulo this
+execution equivalence. The exact morphisms have error zero. A
+$K$-state cardinality simulator has the transformer $S\mapsto KS$;
+its own output is not a second free memory register.
+
+\begin{theorem}[Spectrum transport and resource equivalence]
+\label{thm:v8-spectrum}
+For bounded marks and signatures as in \eqref{eq:v8-signature}, certified
+simulations have identities and associative composition up to execution
+equivalence. If $\mathsf S:E\Rightarrow F$ and
+$\mathsf T:F\Rightarrow G$, the composite has transformer
+$\rho_{\mathsf S}\circ\rho_{\mathsf T}$ and error at most
+$\min\{1,\epsilon_{\mathsf S}+\epsilon_{\mathsf T}\}$.
+For every target-admissible $Q$ there is a source-admissible $Q'$ with
+\begin{equation}
+ r_E(Q',d)\le r_F(Q,d)+\epsilon_{\mathsf S},\qquad
+ \beta_E(d)\le\beta_F(d)+\epsilon_{\mathsf S}.          \label{eq:v8-rawtransport}
+\end{equation}
+If a reverse simulation $\mathsf R:F\Rightarrow E$ is also supplied,
+then
+\begin{equation}
+ \Theta_E(\rho_{\mathsf S}(b);\mathcal D)
+ \le\Theta_F(b;\mathcal D)+\epsilon_{\mathsf S}+\epsilon_{\mathsf R}.
+                                                               \label{eq:v8-excesstransport}
+\end{equation}
+In particular, mutually exact finite-state simulations give equal ideal
+baselines and comparable spectra under the two budget dilations.
+Whenever a positive power exponent of either cardinality profile exists,
+the other has the same exponent. These assertions also hold coordinatewise
+for the attainable risk sets, before taking the task supremum.
+\end{theorem}
+\begin{proof}
+Compose the kernels on the product of the two internal states. Fix one
+policy for $G$, regard its composition with $\mathsf T$ as a policy and
+continuation for $F$, and apply the certificate for $\mathsf S$.
+Data processing followed by the certificate for $\mathsf T$ gives the
+sum of the two errors. The composition of transformers is forced by the
+same execution. Associativity follows from iterated kernel integration
+and the canonical reassociation of the triple product of registers;
+execution equivalence is preserved under composition because its
+quantifier includes all continuations. The identity kernel, identity
+transformer, and zero error give identities. This establishes a category
+for exact simulations and the corresponding error calculus for approximate
+ones; it is not an assertion of a new general randomization theorem.
+
+Run $Q$ on the simulated reports and use its decoder. Every loss in
+$[0,1]$ changes in expectation by at most the variation error. Taking
+infima over decoders proves the first inequality in
+\eqref{eq:v8-rawtransport}; an arbitrarily good full-history policy proves
+the second. The reverse simulator implies
+$\beta_F(d)-\beta_E(d)\le\epsilon_{\mathsf R}$. Subtract the baselines,
+take the common task supremum, and only then take the infimum over $Q$.
+This proves \eqref{eq:v8-excesstransport}. No compactness or attainment of
+an optimal encoder is used.
+
+For exact cardinality equivalence with factors $K_1,K_2$, the inequalities
+are $\Theta_E(K_1M)\le\Theta_F(M)$ and
+$\Theta_F(K_2M)\le\Theta_E(M)$. Monotonicity in $M$ and
+$\log(K_iM)/\log M\to1$ sandwich any existing limit of
+$-\log\Theta(M)/\log M$. The same reasoning applies to a single bounded
+squared prediction mark; multiplication by its loss bound changes no
+positive power exponent.
+\end{proof}
+
+The theorem is an invariance statement for a \emph{typed} equivalence.
+Ordinary statistical equivalence without a resource certificate need not
+preserve a causal implementation budget. Conversely, retaining every
+emitted label in an external transcript changes the signature and thus
+changes the spectrum. Products of independent observations and products
+of memories are different operations: the former concern the experiment,
+the latter the implementation.
+
+\begin{proposition}[Forgetting causal and resource structure]
+\label{prop:v8-forgetful}
+Fix a finite horizon and restrict to uncontrolled instruments and
+parameter-decision marks. Sending an instrument to its full transcript
+experiment, and an exact causal simulator to its transcript kernel,
+defines a functor to parameterized statistical experiments with
+parameter-independent kernels modulo equality on every parameter law.
+It preserves identities and composition. It forgets the resource
+certificate; the resulting statistical equivalence alone does not
+supply an equality of causal-register spectra.
+\end{proposition}
+\begin{proof}
+Iterating a simulator's initialized kernels at a fixed input transcript
+gives a parameter-independent Markov kernel from source transcripts to
+target transcripts. Iterated integration identifies the transcript
+kernel of a composite with the composite of these kernels. Execution
+equivalence implies equality on every source parameter law, so this
+assignment is well defined on the stated classes. The identity gives
+the identity transcript kernel. A general inverse transcript kernel
+need not be causal, and a causal inverse may store a nonfinite state;
+neither datum is reconstructed by the forgetful operation.
+\end{proof}
+
+\subsection{The terminal decision-complete slice}
+In this subsection $E=\{P_\theta:\theta\in K\}$ has standard Borel
+observation space $X$, $K$ is compact metric, and $\theta\mapsto P_\theta$
+is continuous in total variation. A terminal encoder is any Markov kernel
+$Q:X\to[S]$. Only its physical alphabet $A\le S$ is constrained; transient
+computation and the reconstruction kernel are unrestricted. Let
+$\mathcal D_{\rm all}$ consist of all finitely supported priors on $K$
+and all finite-action losses in $[0,1]$. For these families we use
+$\delta(F,E)=\inf_R\sup_{\theta\in K}\|RF_\theta-P_\theta\|_{\rm TV}$,
+where $R$ is a parameter-independent reconstruction kernel and
+$\|P-Q\|_{\rm TV}=\sup_B|P(B)-Q(B)|$.
+
+\begin{theorem}[Decision completeness at a fixed common encoder]
+\label{thm:v8-duality}
+For every such $Q$,
+\begin{equation}
+ \sup_{d\in\mathcal D_{\rm all}}\{r_E(Q,d)-\beta_E(d)\}
+       =\delta(QE,E).
+                                                               \label{eq:v8-duality} 
+\end{equation}
+Consequently
+\begin{equation}
+ \Theta_E(S;\mathcal D_{\rm all})
+       =\inf_{Q:X\to[S]}\delta(QE,E).                 \label{eq:v8-terminalprofile}
+\end{equation}
+This is the Blackwell--Le Cam randomization criterion in a compact
+setting, with the common finite encoder kept outside the decision
+supremum. In particular, no new priority is claimed for the
+unconstrained criterion \cite{Blackwell1953,LeCam1964,Torgersen1991}.
+\end{theorem}
+\begin{proof}
+A reconstruction $R$ with variation error $\epsilon$ transfers each
+bounded decision rule, proving that the left side is at most the right
+side. First suppose that both $K$ and $X$ are finite. Put $F=QE$.
+Finite-dimensional convex minimax applied to the row-stochastic matrices
+$R$ and the total-variation dual gives
+\[
+ \delta(F,E)=\sup_{\pi,h}\left[
+ \sum_{\theta,x}\pi_\theta h_{\theta x}P_\theta(x)
+ -\sup_R\sum_{\theta,i,x}\pi_\theta F_\theta(i)
+                         R(i,x)h_{\theta x}\right],
+\]
+where $\pi$ is a prior and $0\le h_{\theta x}\le1$. To justify convexity
+of the dual domain, write its variables as
+$u_{\theta x}=\pi_\theta h_{\theta x}$ with
+$0\le u_{\theta x}\le\pi_\theta$ and $\sum\pi_\theta=1$.
+Regard $h$ as a reward with action set $X$. The first term is the reward
+of the identity decision in $E$, bounded above by its optimal reward;
+the second is the optimal reward in $F$. Thus every dual expression is
+at most one of the optimal reward differences. Changing reward to loss
+proves equality.
+
+Here is the approximation needed for general $X,K$. A dense sequence
+$(\theta_j)$ and positive weights with sum one give
+$m=\sum_jw_jP_{\theta_j}$ dominating every $P_\theta$; domination follows
+by total-variation continuity. The set of densities
+$\{dP_\theta/dm:\theta\in K\}$ is compact in $L^1(m)$. Given $\eta>0$,
+choose a finite $L^1$ net and approximate its elements by simple
+functions on a common finite partition $\mathcal C$ of $X$. Conditional
+expectation onto $\mathcal C$ is an $L^1$ contraction, so the cell
+reconstruction $R_{\mathcal C}(\cdot\mid C)=m(\cdot\mid C)$ satisfies
+\[
+ \sup_\theta\|R_{\mathcal C}\mathcal C P_\theta-P_\theta\|_{\rm TV}
+ \le\eta
+\]
+after choosing the net and approximations sufficiently accurately.
+Zero-mass cells are irrelevant. Hence
+$\delta(F,E)\le\delta(F,\mathcal CE)+\eta$.
+Now choose a finite parameter net on which both $F$ and $\mathcal CE$
+vary by at most $\eta$ in total variation. The supremum reconstruction
+error on $K$ differs from that on the net by at most $2\eta$, uniformly
+in the reconstruction. Apply the finite result to this net. Its priors
+are allowed priors on $K$, and observing $X$ is at least as informative
+as observing $\mathcal C(X)$, so the resulting decision differences for
+$E$ dominate those for $\mathcal CE$. It follows that the left side of
+\eqref{eq:v8-duality} is at least $\delta(F,E)-3\eta$. Let $\eta\downarrow0$.
+Equation \eqref{eq:v8-terminalprofile} now follows by taking the infimum
+over $Q$, with no exchange of quantifiers.
+\end{proof}

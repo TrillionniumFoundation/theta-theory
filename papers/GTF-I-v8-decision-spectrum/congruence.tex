@@ -1,0 +1,197 @@
+\section{A necessity theorem for causal realization}\label{sec:v8-congruence}
+We now characterize the causal constraint without imposing a tree
+geometry. The time dependence of a machine is retained, so the result
+does not replace a free clock by an uncharged stationary-state assumption.
+Fix a horizon $T$, finite report alphabets, one Bayesian law, and
+square-integrable Hilbert targets $U_t$. There is no control in this
+section. Let $\mathcal H_t$ be the finite set of positive-probability
+histories, $p_t(h)=\Pp(H_t=h)$, and
+$m_t(h)=\E[U_t\mid H_t=h]$. Let $\beta_t\ge0$ be fixed weights.
+
+A family of partitions $(\mathcal P_t)_{t=0}^T$, with
+$\mathcal P_0=\{\emptyw\}$, is \emph{successor compatible} if
+\begin{equation}
+ h,h'\in C\in\mathcal P_t,\quad hy,h'y\in\mathcal H_{t+1}
+ \quad\Longrightarrow\quad
+ hy,h'y\text{ belong to the same cell of }\mathcal P_{t+1}.
+                                                               \label{eq:v8-congruence}
+\end{equation}
+Only common positive-probability continuations enter this condition.
+For $C\in\mathcal P_t$ put
+$\overline m_C=p_t(C)^{-1}\sum_{h\in C}p_t(h)m_t(h)$ and define
+\begin{equation}
+ \mathcal V(\mathcal P)=
+ \sum_{t=1}^T\beta_t\sum_{C\in\mathcal P_t}
+              \sum_{h\in C}p_t(h)\|m_t(h)-\overline m_C\|^2.
+                                                               \label{eq:v8-variancefunctional}
+\end{equation}
+
+\begin{theorem}[Recursive partition characterization]
+\label{thm:v8-congruence}
+For the cardinality signature, allowing randomized time-dependent
+updates and decoders and independent public randomness, the optimal
+weighted excess over the full-history Bayes risk equals
+\begin{equation}
+ \inf_{\#I_t\le S}
+ \sum_{t=1}^T\beta_t\E\|m_t(H_t)-\widehat U_t\|^2
+ =\min_{\substack{\mathcal P\ \mathrm{successor\ compatible}\\
+                         |\mathcal P_t|\le S}}
+                         \mathcal V(\mathcal P).       \label{eq:v8-exact-congruence}
+\end{equation}
+Thus same-order realization of a sequence of static checkpoint optima
+is equivalent to the existence of successor-compatible partitions
+with the corresponding widths and variance bounds. This is a necessary
+as well as a sufficient condition. It is invariant under relabelling of
+histories; suffix closure is one sufficient construction of these
+partitions, not a necessary choice of coordinates.
+\end{theorem}
+\begin{proof}
+A deterministic initialized machine partitions $\mathcal H_t$ according
+to $I_t$. Its update depends only on $(t,I_t,y)$, so its partitions satisfy
+\eqref{eq:v8-congruence}. Given a state cell, the mean $\overline m_C$
+minimizes its squared error by Hilbert orthogonality. The resulting
+excess is precisely \eqref{eq:v8-variancefunctional}.
+
+Conversely, label each partition's cells by at most $S$ labels. For each
+cell $C$ and symbol $y$, send its label to the cell containing $hy$ for
+any supported $h\in C$ with supported extension $hy$. Compatibility
+makes the answer independent of the choice of $h$. If there is no such
+extension, define the update arbitrarily. At time $t$ decode the label
+as $\overline m_C$. Induction identifies the actual label with the cell
+of the actual history. There are finitely many partition families, so
+the minimum exists.
+
+To include randomization, realize the finitely many update and decoder
+kernels by independent uniforms, and condition on their entire tape.
+For each tape, the rule is a deterministic time-dependent $S$-state
+machine. Independence of the tape and the experiment preserves the
+history law and conditional means. The average of its weighted costs
+cannot be smaller than the deterministic minimum. Public independent
+randomness is handled in the same way. This freezing argument concerns
+one fixed Bayesian sum; it does not interchange a minimax task supremum
+with the average over tapes.
+
+Unrestricted checkpoint encoders correspond to arbitrary partitions at
+each time, without \eqref{eq:v8-congruence}. Hence they have cost
+$\sum_t\beta_t e_S^2(m_t(H_t))$. Formula
+\eqref{eq:v8-exact-congruence} gives exactly the asserted equivalence of
+order comparisons, including the case when a static cost is zero.
+\end{proof}
+
+\begin{corollary}[Finite-command cell instruments]
+\label{cor:v8-a1}
+Let $k_1,\ldots,k_J$ be Borel functions on a parameter space with
+$k_j\ge0$ and $\sum_jk_j=1$, and fix a prior $\mu$. At each time the
+raw cell is drawn independently conditional on the parameter. A command
+$g$ from a prescribed finite menu in $[\eta,1-\eta]^J$, $0<\eta<1/2$,
+has a prescribed parameter-independent law $\nu_t$. Cell $j$ is
+reported as $j$ with probability $g_j$ and otherwise as the single
+failure symbol $\dagger$. Only the command and the reported symbol are
+observed. Fix a finite horizon, finite future-query menus with known
+likelihoods $H_{tq}\in[0,1]$, independent query weights $\omega_{tq}$,
+and nonnegative checkpoint weights $\beta_t$.
+
+For the persistent-cardinality signature, the optimal common causal
+encoder for the weighted sum of quadratic prediction excesses is exactly
+\eqref{eq:v8-exact-congruence}, with the finite history law and query
+means computed from the actual cell likelihoods. This applies to the
+finite-command specialization of the A1 finite-cell protocol
+\cite{QiA1v37}. It is an exact scalarized criterion, not an asserted
+solution of the different maximum-over-checkpoints criterion with
+private randomization.
+\end{corollary}
+\begin{proof}
+For the observed pair $(g,x)$ define
+\[
+ \lambda_{g,x}(\theta)=
+ \begin{cases}
+ g_x k_x(\theta),&x\in\{1,\ldots,J\},\\
+ \sum_j(1-g_j)k_j(\theta),&x=\dagger.
+ \end{cases}
+\]
+For a history $h=((g_s,x_s))_{s\le t}$ its probability is
+$\prod_{s\le t}\nu_s(g_s)$ times
+$\int\prod_{s\le t}\lambda_{g_s,x_s}\,d\mu$. On positive-probability
+histories the mean of query $q$ is
+\[
+ m_{tq}(h)=
+ \frac{\int H_{tq}(\theta)\prod_{s\le t}\lambda_{g_s,x_s}(\theta)
+                    \,\mu(d\theta)}
+      {\int\prod_{s\le t}\lambda_{g_s,x_s}(\theta)\,\mu(d\theta)}.
+\]
+Take the Hilbert prediction vector with coordinates
+$\sqrt{\omega_{tq}}\,m_{tq}(h)$ and apply
+Theorem~\ref{thm:v8-congruence}. All histories are finite, and the law
+used there is exactly the actual acquisition law above. A failure
+history contains $\dagger$, not the unobserved cell $j$; the successor
+compatibility condition therefore requires one common update for that
+report. Integration of the given Borel likelihoods may require arbitrary
+real constants or offline work. Neither is claimed finite under the
+cardinality signature. Zero-evidence histories are omitted rather than
+given artificial posteriors.
+\end{proof}
+
+\begin{corollary}[Continuation obstruction]\label{cor:v8-continuation}
+Let $g$ be a bounded readout on all finite words over a finite alphabet.
+For stationary deterministic machines required to reproduce $g$ on every
+word, an exact $S$-state realization exists if and only if the relation
+\begin{equation}
+ h\equiv_g h'\quad\Longleftrightarrow\quad
+                g(hw)=g(h'w)\text{ for every finite }w
+                                                               \label{eq:v8-nerode}
+\end{equation}
+has at most $S$ classes. More generally put
+$d_*(h,h')=\sup_w\|g(hw)-g(h'w)\|$. Every stationary deterministic
+realization with uniform error at most $\epsilon$ has state fibres of
+$d_*$-diameter at most $2\epsilon$, and thus at least as many states as
+any $2\epsilon$-separated set of histories.
+\end{corollary}
+\begin{proof}
+Histories in one machine state have the same state after every common
+continuation. Exact output equality implies \eqref{eq:v8-nerode}; for
+approximate outputs the triangle inequality gives the diameter bound.
+The relation \eqref{eq:v8-nerode} is a right congruence. Its classes,
+updated by appending the new symbol, form an exact machine, whose output
+is $g(h)$, well defined by the empty continuation. This is the output
+version of the classical finite-automaton congruence argument
+\cite{Nerode1958}; the finite-horizon, weighted-distortion characterization
+in Theorem~\ref{thm:v8-congruence} is the form needed here.
+\end{proof}
+
+\begin{example}[A two-valued checkpoint requiring exponentially many
+persistent states]\label{ex:v8-index}
+At the first time observe a uniformly distributed word
+$X\in\{0,1\}^d$. At the second time observe an independent uniform index
+$J\in\{1,\ldots,d\}$ and predict $U=X_J$. The raw first acquisition costs
+$d$ bits; it is not called a one-bit observation. The full-history
+conditional mean at the second checkpoint has only two values, so its
+static two-label error is zero. Nevertheless a causal exact predictor
+requires $S\ge2^d$. Two different first-stage words in one state differ
+in a coordinate which can be queried with positive probability. The
+second-stage update cannot separate them. Retaining the whole word is
+sufficient.
+
+There is also a quantitative obstruction. If $e$ is the smallest error
+probability of an $S$-state predictor, $2\le S\le2^d$, then
+\begin{equation}
+ e\ge h_2^{-1}\!\left(1-\frac{\log_2 S}{d}\right),     \label{eq:v8-index-fano}
+\end{equation}
+where $h_2$ is the binary entropy and its inverse takes values in
+$[0,1/2]$. Indeed, condition also on every independent public coding
+variable $R$. Since the first register has at most $S$ values,
+$H(X\mid I_1,R)\ge d-\log_2 S$. Predicting each coordinate optimally
+from $(I_1,R)$ gives errors $e_j\le1/2$, and the binary entropy inequality
+and concavity give
+\[
+ H(X\mid I_1,R)\le\sum_{j=1}^d H(X_j\mid I_1,R)
+             \le\sum_{j=1}^d h_2(e_j)
+             \le d\,h_2\!\left(d^{-1}\sum_j e_j\right).
+\]
+The average on the right is a lower bound for any actual queried-bit
+error. This proves \eqref{eq:v8-index-fano}. If squared loss is used
+instead, its optimal value is at least $e/2$, since
+$p(1-p)\ge\min(p,1-p)/2$. Thus the discrepancy persists for the
+Hilbert-loss slice of the spectrum. It is a temporal obstruction, not
+poor scalar quantization. The query must be answered after the update;
+$J$ is not an additional persistent decoder input.
+\end{example}

@@ -1,0 +1,167 @@
+\section{The measure-valued slice: sharp presentation entropy}
+\label{sec:v8-measures}
+The decoder's output type is part of a mark. In particular, outputting a
+probability law close in expected Wasserstein distance is stronger than
+simulating one randomly chosen observation from that law. This
+separation is important for a genuinely measure-valued predictive state.
+
+Let $\mathcal M=\mathcal P([0,1])$ with $W_1$. A \emph{uniform law
+presentation} receives $\pi\in\mathcal M$ as a transient input and
+returns one of $S$ persistent labels. Its decoder outputs a law
+$\widehat\pi$. The fixed code, including its representative laws, is
+chosen once for all $\pi$. In particular the unknown input is not
+inserted into the decoder's free program constants. Let
+\begin{equation}
+ H_S=\inf_{Q,D}\sup_{\pi\in\mathcal M}
+                           \E W_1(\pi,D(Q(\pi))).     \label{eq:v8-lawprofile}
+\end{equation}
+Both maps may use independent private or public randomness. The
+criterion is the expected distance of the \emph{realized} decoded law.
+Only persistent cardinality is charged here; the input-law interface
+and general real-law computation are unrestricted. Regard $\pi$ as the
+unknown parameter and the uncompressed observation as $\pi$ itself.
+Then $H_S$ is the spectrum of the single bounded minimax law-presentation
+mark, with full-observation baseline zero. It is not a supremum of
+point-prior Bayes risks: such a prior would reveal the unknown law to
+the decoder and change the problem.
+
+\begin{theorem}[Uniform presentation of a probability measure]
+\label{thm:v8-measureentropy}
+There are absolute $c,C>0$ such that
+\begin{equation}
+                \frac{c}{\log(S+1)}\le H_S
+                      \le\frac{C}{\log(S+1)},\qquad S\ge1.
+                                                        \label{eq:v8-measureentropy}
+\end{equation}
+Moreover no continuous map from $\mathcal M$ into a fixed $\R^k$ can
+be an exact coordinate sufficient to evaluate every bounded Lipschitz
+integral on all of $\mathcal M$. This statement does not exclude
+noncontinuous Borel encodings of a standard Borel space into one real
+coordinate.
+\end{theorem}
+\begin{proof}
+For the upper bound use the explicit net in Lemma~\ref{lem:v7-wasserstein-net}
+below: equally weighted $n$-point empirical laws with points on the grid
+$\{0,1/n,\ldots,1\}$, in increasing order. There are
+$\binom{2n}{n}\le4^n$ such laws. Quantile discretization followed by grid
+rounding gives covering radius $3/(2n)$. Taking
+$n=\lfloor\log S/\log4\rfloor$ proves the upper bound for $S\ge4$;
+increase $C$ for smaller $S$.
+
+For the lower bound, partition $[0,1]$ into $n$ equal intervals. In each
+interval put mass $1/n$ at either its quarter point or its three-quarter
+point. Denote the resulting law by $\pi_\omega$,
+$\omega\in\{0,1\}^n$. Their quantile functions give the exact identity
+\begin{equation}
+ W_1(\pi_\omega,\pi_{\omega'})
+                   =\frac{d_H(\omega,\omega')}{2n^2}. \label{eq:v8-wasserstein-code}
+\end{equation}
+Greedily choose binary words and delete Hamming balls of radius
+$\lfloor n/4\rfloor$. The selected words have mutual distance greater
+than $n/4$, and their number is at least
+$2^{c_0 n}$, where $c_0=1-h_2(1/4)>0$. Indeed
+$\sum_{j\le n/4}\binom nj\le2^{n h_2(1/4)}$, as follows by bounding
+these binomial terms using the binomial expansion at parameter $1/4$.
+Thus the selected measures have mutual $W_1$ distance greater than
+$1/(8n)$.
+
+Choose $n\le C_0\log(S+1)$ sufficiently large that the packing has at
+least $2S$ members. Give it the uniform prior. For any $S$ proposed law
+centres, their open balls of radius $1/(16n)$ contain at most $S$ packing
+members in total. At least half the prior therefore incurs distance at
+least $1/(16n)$, no matter how it is encoded. Fixing all independent
+coding randomness gives this same bound for each tape; integration
+preserves it. The worst input risk is at least the uniform prior risk,
+which proves the lower bound in \eqref{eq:v8-measureentropy}.
+
+For the last assertion, bounded Lipschitz integrals separate probability
+measures, so a sufficient coordinate map must be injective. The measures
+supported on any $k+2$ distinct points form a $(k+1)$-simplex. A small
+sphere about its barycentre lies in its relative interior and is
+homeomorphic to $S^k$. By the Borsuk--Ulam theorem every continuous map
+of this sphere to $\R^k$ identifies two antipodal points
+\cite{Matousek2003}. Hence no such injective coordinate exists. For
+$k=0$ two distinct measures already give the contradiction.
+\end{proof}
+
+The entropy mechanism is consistent with the power-exponential
+geometry of Wasserstein spaces studied in \cite{Kloeckner2012}; the
+packing argument is supplied here because the exact presentation loss,
+including randomization, matters for the result.
+
+\begin{corollary}[A nonlinear posterior class with a matching bound]
+\label{cor:v8-nonlinear}
+Consider the nonlinear binary instrument of Corollary~\ref{cor:v7-nonlinear}
+below, with
+\[
+ h_0(x)=x/5+x^2/50,\qquad h_1(x)=3/5+h_0(x),\qquad
+ \Phi_y\pi=\tfrac34(h_y)_\#\pi+\tfrac14(h_{1-y})_\#\pi.
+\]
+For each fixed report $y$,
+\begin{equation}
+ \tfrac15W_1(\pi,\nu)\le W_1(\Phi_y\pi,\Phi_y\nu)
+                      \le\tfrac6{25}W_1(\pi,\nu).     \label{eq:v8-bilipfilter}
+\end{equation}
+Consequently, for every fixed $t$, a single finite-register scheme that
+must present the posterior for every input prior has worst expected
+$W_1$ error at least $c5^{-t}/\log(S+1)$ at time $t$, even if the decoder
+is additionally told the reports. A uniform recursive presentation has
+error $O(1/\log(S+1))$ at all times, when the initial law is encoded at
+the same accuracy and the update error is of that order. No fixed
+finite-dimensional \emph{continuous} exact predictive coordinate exists
+on this all-priors posterior class. Constants in the lower bound are
+not asserted uniform as $t\to\infty$ for one fixed preparation.
+\end{corollary}
+\begin{proof}
+The images of $h_0$ and $h_1$ lie in two disjoint ordered intervals.
+The mixture weights for a fixed $y$ agree for $\pi$ and $\nu$.
+Quantile coupling therefore gives
+\[
+ W_1(\Phi_y\pi,\Phi_y\nu)
+ =\tfrac34 W_1((h_y)_\#\pi,(h_y)_\#\nu)
+  +\tfrac14 W_1((h_{1-y})_\#\pi,(h_{1-y})_\#\nu).
+\]
+The derivatives of both increasing maps lie between $1/5$ and $6/25$,
+proving \eqref{eq:v8-bilipfilter}. Iterate it along any length-$t$
+report word and apply the same packing as in the preceding proof.
+The reports of this instrument are independent fair bits, with a law
+independent of the initial prior. Conditioning on the report word thus
+does not change the uniform packing prior. The centre-counting lower
+bound survives even with this word supplied freely to the decoder;
+integrating it over words and coding tapes proves the assertion for
+the actual, less informed decoder.
+
+The recursive upper bound follows from Theorem~\ref{thm:v7-filter} with
+$\rho=6/25$, initializing by a net point rather than by an arbitrary
+fixed law. The initial error is at most $3/(2n)$ and the accumulated
+error is bounded by $[3/(2n)+\eta]/(1-6/25)$.
+Every fixed-word map on laws is continuous and injective by the lower
+bound in \eqref{eq:v8-bilipfilter}. Its restriction to the compact
+simplex used above is a homeomorphism onto its image. Applying the
+same sphere argument proves the coordinate obstruction.
+\end{proof}
+
+\begin{proposition}[Marginal-probe simulation is a different presentation problem]
+\label{prop:v8-probe}
+Suppose only one Bernoulli probe is required: after compression a
+function $g:[0,1]\to[0,1]$ with Lipschitz constant at most one is
+specified, and the desired output law is $\operatorname{Bern}(\pi g)$.
+The probe is fixed independently of the realized encoder randomness.
+For $S\ge2$ there is a common $S$-label encoder whose output-law error
+is at most $1/[2(S-1)]$, uniformly in $\pi,g$. Thus this marginal
+simulation mark cannot be substituted for the realized-law mark in
+\eqref{eq:v8-lawprofile}.
+\end{proposition}
+\begin{proof}
+Sample $X\sim\pi$ transiently, store the nearest point $Z$ of the
+$S$-point uniform grid, and discard $X$. On receiving $g$, output a
+Bernoulli variable with parameter $g(Z)$. Its unconditional law is
+Bernoulli with parameter $\E g(Z)$, and
+$|\E g(Z)-\pi g|\le\E|Z-X|\le1/[2(S-1)]$.
+The encoder is chosen before $g$. It does not produce a realized law
+close to $\pi$ in $W_1$: its natural decoded law is $\delta_Z$.
+Nor does the argument cover probes chosen after observing $Z$, or an
+unlimited transcript of independent samples. Those are different tasks
+and interfaces. This output-law simulation criterion is not identified
+with a realized-law decision loss.
+\end{proof}

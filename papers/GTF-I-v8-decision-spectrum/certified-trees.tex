@@ -1,0 +1,168 @@
+\section{Finite-prefix, finite-description realization}
+\label{sec:v8-certified}
+The recursive partition theorem isolates a necessity condition.
+Predictive-energy trees provide a verifiable sufficient construction.
+The full tree theorem and its geometric hypotheses are proved in
+Section~\ref{sec:v7-trees} below. We now strengthen its implementation:
+exact ordering of nearly tied real energies is unnecessary, and the raw
+acquisition need not expose an infinite word.
+
+Use the factorial legal language, stationary cylinder masses $p_v$,
+energies $a_v$, scales $D_v=(a_v/p_v)^{1/2}$, and constants
+$a_-,\rho,U,C_0,c_0$ of that theorem. In particular $a_\emptyw=1$,
+$a_{vi}\le\rho a_v$ with $\rho<1$, $a_{vi}\ge a_-a_v$,
+$D_{vi}\le D_v$, and $a_{uv}<a_v$ for nonempty $u$.
+Legality and the child list are decidable. Suppose an oracle returns a
+positive rational upper estimate $u_v$ satisfying, for a fixed
+$\kappa\ge1$,
+\begin{equation}
+                         a_v\le u_v\le\kappa a_v.     \label{eq:v8-oracle}
+\end{equation}
+No uniform cost for this oracle is hidden in a cardinality assertion.
+Set
+\begin{equation}
+ \overline a_v=\min\{u_w:w\text{ is a contiguous factor of }v,
+                              \text{ including }\emptyw\}.      \label{eq:v8-factor-envelope}
+\end{equation}
+For $0<\eta<1$, split precisely the legal vertices for which
+$\overline a_v>\eta$. Retain all their legal children. Denote the resulting
+full finite tree by $\mathcal T_\eta$, its leaf cut by $\mathcal C_\eta$,
+and its number of leaves by $l_\eta$.
+
+\begin{theorem}[Robust tree realization with charged acquisition]
+\label{thm:v8-certified}
+The rational-threshold construction is finite, suffix closed, and
+supports both deletion and prepend-and-parse insertion. Its depth and
+state count satisfy
+\begin{align}
+ D_\eta&\le1+\left\lceil
+                    \frac{\log(\kappa/\eta)}{|\log\rho|}\right\rceil,
+                                                        \label{eq:v8-depth}\\
+ V_\eta&=1+\sum_{v\text{ internal}}\deg^+(v)
+                      \le (U+1)(2l_\eta-1).             \label{eq:v8-vertices}
+\end{align}
+For constants depending only on the displayed structural bounds and
+$\kappa$,
+\begin{equation}
+ \sum_{v\in\mathcal C_\eta}a_v
+                 \asymp e_{l_\eta}^2(Z)\asymp G_{l_\eta}.
+                                                        \label{eq:v8-threshold-optimal}
+\end{equation}
+In the deletion experiment, at most $D_\eta$ symbols of a snapshot
+acquisition suffice; no later access to that snapshot is used. The
+same average-risk order as the exact greedy construction follows.
+For every sufficiently large state budget $S$, a dyadic threshold can
+be selected with $V_\eta\le S$, $l_\eta\ge cS$, and
+$D_\eta=O(\log(S+1))$.
+
+If the online readouts are in a fixed bounded subset of $\R^d$ and
+representatives can be computed to prescribed accuracy, the selected
+machine has a finite rational presentation. Readout precision
+$p=O(\log(S+1))$ suffices to retain the risk order. A word list, transition
+table and readout table have total description
+\begin{equation}
+ P=O\bigl(S\log(S+1)+Sd\,p\bigr)                     \label{eq:v8-description}
+\end{equation}
+for a fixed alphabet. Its online persistent storage is one of at most
+$S$ states; a transition-table implementation uses transient storage
+$O(\log(S+1)+dp)$ bits. An acquisition uses $O(\log(S+1))$ symbol queries.
+Online table accesses can be implemented in word-RAM time proportional
+to these query counts; a sequential bit-table implementation gives the
+conservative bound $O(S(\log(S+1)+dp)\log(S+1))$ bit operations per
+acquisition. Offline oracle time is separate. The Hilbert-space
+cardinality assertion does not, by itself, encode an infinite-dimensional
+readout in finitely many bits.
+\end{theorem}
+\begin{proof}
+If $w$ is a factor of $v$, removing a prefix and then a suffix cannot
+decrease energy. Consequently
+\begin{equation}
+ a_v\le\overline a_v\le\kappa a_v,
+ \qquad \overline a_{iv},\overline a_{vi}\le\overline a_v.
+                                                        \label{eq:v8-envelopebounds}
+\end{equation}
+The second assertion follows by inclusion of factor sets and requires
+no accurate comparison between two distinct true energies. Thus the
+internal vertices form a prefix-closed and suffix-closed set. Each
+internal vertex is split into all its legal children. A proper suffix
+of a leaf is a legal child of a suffix of its parent, hence is present;
+repeating this argument proves full suffix closure. If $iv$ had no
+leaf prefix when $v$ is a leaf, it would be internal, forcing its suffix
+$v$ to be internal, a contradiction. These are exactly the two update
+operations required.
+
+At depth $n$, $\overline a_v\le\kappa\rho^n$, which proves finiteness
+and \eqref{eq:v8-depth}. Every nonroot leaf has an internal parent, so
+\begin{equation}
+                  a_-\eta/\kappa<a_v\le\eta.          \label{eq:v8-threshold-balance}
+\end{equation}
+The exact vertex count follows by counting edges; contracting unary
+chains gives \eqref{eq:v8-vertices} as in the full-tree lemma below.
+
+Here is a lower bound not depending on exact greedy ordering. Refine
+all leaves by $h=3(U+1)$ further legal levels. Each leaf has at least
+$2^3$ descendants at that level, because there are at most $U$
+consecutive unary vertices. The resulting incomparable cylinders
+number at least $8l_\eta$. Every one has energy at least
+$a_-^{h+1}\eta/\kappa$. The separation hypothesis and monotonicity of
+$D$ make the open tubes of radii $\delta D_w$ about their images
+disjoint for $2\delta<c_0$. At most $l_\eta$ tubes can contain one of
+$l_\eta$ arbitrary proposed Hilbert centres. Each unoccupied cylinder
+contributes at least $\delta^2a_w$ to the squared error. Hence
+$e_{l_\eta}^2(Z)\ge c l_\eta\eta$. One representative per original leaf
+gives $e_{l_\eta}^2(Z)\le C_0^2\sum a_v$, and
+\eqref{eq:v8-threshold-balance} proves the first comparison in
+\eqref{eq:v8-threshold-optimal}. The second is the static conclusion of
+Theorem~\ref{thm:v7-tree}, whose proof does not use the present theorem.
+Its oscillation estimate in the deletion orientation, or its cylinder
+diameter estimate in the insertion orientation, also proves the stated
+risk bounds for this cut.
+
+A prefix parser stops on reaching a leaf, after at most $D_\eta$
+queries. It never reads or stores the rest of the snapshot. This is a
+finite-latency acquisition convention: the snapshot is available during
+that update and the prediction deadline permits these microsteps. No
+claim is made for a moving physical state observed after an unmodelled
+read delay. Insertion and deletion then use the already proved closure.
+
+For budget selection, use $\eta_j=2^{-j}$ and take the last threshold
+with $V_{\eta_j}\le S$. There is a constant bound on
+$V_{\eta_{j+1}}/V_{\eta_j}$. In fact, beneath a leaf at threshold $\eta$,
+all descendants at depth $k$ have estimated energy at most
+$\kappa\rho^k\eta$, and so the next threshold adds at most $k$ levels
+once $\kappa\rho^k\le1/2$. The ratio is bounded by a fixed geometric
+sum of powers of the alphabet size. It follows that the chosen
+$V_\eta$ is at least a fixed multiple of $S$, and then
+\eqref{eq:v8-vertices} gives $l_\eta\ge cS$.
+For completeness, a leaf at depth $n$ has $a_v\ge a_-^n$, so
+$n\ge\log(1/\eta)/|\log a_-|$. Every legal path branches at least once
+in $U+1$ levels. The complete cut therefore has at least
+$2^{\lfloor\log(1/\eta)/((U+1)|\log a_-|)\rfloor}$ leaves.
+Since $l_\eta\le S$, this bounds $\log(1/\eta)$ by $O(\log(S+1))$.
+Combine with \eqref{eq:v8-depth}. Fixed-dilation comparison for $G$
+then converts \eqref{eq:v8-threshold-optimal} into the same-$S$ order.
+
+Finally replace each finite-dimensional readout by a rational vector
+within Euclidean distance $\delta$. Pointwise squared loss is at most
+twice its previous value plus $2\delta^2$. Take $\delta^2\le\eta$ and
+use $\sum a_v\ge a_-l_\eta\eta/\kappa$. Bounded readouts require
+$p=O(\log(1/\eta)+\log(d+1))$ binary digits per coordinate. Store all
+vertex words, their legal child/deletion/insertion transitions, and these
+rational vectors. There are $O(S)$ transitions for a fixed alphabet,
+each state index costs $O(\log(S+1))$ bits, and the word-list depth is
+$O(\log(S+1))$. This proves \eqref{eq:v8-description}. A streaming
+parser uses only its current vertex index during the acquisition;
+no prefix string survives the update. The stated time bounds follow
+by random access, or by a full sequential scan for each table access.
+The number and precision of the offline queries can be listed, but
+\eqref{eq:v8-oracle} alone gives no uniform running-time bound for
+answering them. This is why offline time is not absorbed into
+\eqref{eq:v8-description}.
+\end{proof}
+
+The use of all factors in \eqref{eq:v8-factor-envelope} is essential.
+Independent relative approximations $u_v$ need not respect suffix
+monotonicity, even when the true energies do. Thresholding the raw
+approximations can therefore produce a tree that cannot execute its own
+suffix update. The envelope repairs that defect while changing energies
+by at most the fixed factor $\kappa$.

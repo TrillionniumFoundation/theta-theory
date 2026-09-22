@@ -1,0 +1,136 @@
+\section{A dynamic finite-experiment consequence}\label{sec:v8-gaussian}
+The decision-complete slice of the same spectrum has a different
+geometry. We first make its temporal register convention explicit, and
+then connect it to the physical count experiment.
+
+Fix $n,r\ge1$, a compact $K\subset\R^r$ with nonempty interior, and a
+positive definite covariance $\Gamma$. At successive times observe
+independent
+\begin{equation}
+ Y_t\sim N(\theta_t,\Gamma),\qquad
+                 \theta=(\theta_1,\ldots,\theta_n)\in K^n.
+                                                        \label{eq:v8-seqgaussian}
+\end{equation}
+Each $Y_t$ is discarded after the update. No earlier output labels are
+retained outside the register. At the terminal time only its final label
+is supplied to a parameter-independent reconstruction kernel. This is
+not an $S$-symbol channel whose entire transcript is available.
+
+\begin{theorem}[Sequential accumulation under a total register budget]
+\label{thm:v8-seqgaussian}
+For the cardinality signature with persistent $S$ states and at most
+$S$ terminal outcomes, the decision-complete terminal spectrum of
+\eqref{eq:v8-seqgaussian} satisfies
+\begin{equation}
+ c_n S^{-2/(nr)}\le
+ \Theta_{G^{(n)}}(S;\mathcal D_{\rm all})
+ \le C_n S^{-2/(nr)}.                                 \label{eq:v8-seqgaussianrate}
+\end{equation}
+The infimum is over causal encoders obeying the total state budget at
+\emph{every} time. Lower bounds include arbitrary randomized,
+time-dependent encoders. A deterministic causal encoder attains the
+upper order. Constants are for fixed $n,r,K,\Gamma$, not uniform in a
+growing horizon. The readout/reconstruction randomness is external and
+fresh and private, while the physical alphabet and the persistent
+register remain finite. No public tape or other side information is
+supplied alongside the final label in this theorem.
+\end{theorem}
+\begin{proof}
+The full observation vector is a Gaussian location experiment of
+dimension $nr$, with compact mean set $K^n$ and covariance
+$I_n\otimes\Gamma$. Every final register gives an experiment with at
+most $S$ outcomes, regardless of its causal implementation. The lower
+bound of Theorem~\ref{thm:v7-gaussian-budget}, proved below, applies to
+all such experiments. Because a register is a garbling of the full
+observation, its forward deficiency is zero. Theorem~\ref{thm:v8-duality}
+therefore identifies its reverse deficiency with its worst normalized
+Bayes regret, proving the lower bound in \eqref{eq:v8-seqgaussianrate}.
+
+For the upper bound put $J=\lfloor S^{1/(nr)}\rfloor$. At time $t$
+compactify each coordinate of $Y_t$ by
+$\tau(x)=1/2+\arctan(x)/\pi$, quantize into $J$ cells per coordinate,
+and append the resulting $r$-tuple of cell indices to the current
+register word. At that time there are $J^{rt}\le J^{rn}\le S$
+possible words. The known absolute time determines their length; it
+carries no data-dependent information. Thus a single $S$-value
+register, not $n$ separately uncharged registers, implements the rule.
+At the final time apply the positive tensor-hat reconstruction of
+Lemma~\ref{lem:v7-hat} in dimension $nr$. For $J\ge2$ its error is
+$O(J^{-2})=O(S^{-2/(nr)})$. Enlarge the constant for the remaining
+finite budget range. This proves the upper bound using a genuine causal
+encoder. Its real-valued input computation has no finite-time claim
+under this signature.
+\end{proof}
+
+If instead the sequence of emitted cell labels were supplied to the
+terminal decoder, its alphabet would be their product. In that different
+model a small current register could leave a large data-bearing
+transcript. The lower bound above is about the total retained experiment,
+not the size of the most recent communication symbol. This is one reason
+zero-delay channel coding and total-register coding require separate
+resource signatures \cite{LinderYuksel2014,WoodLinderYuksel2017}.
+
+\subsection{A theorem-level downstream arrow}
+We now give the adapter in the coordinates of the retained known-mark
+exposure protocol, rather than identifying all of the algebraic paper
+with this statistical subexperiment.
+\begin{corollary}[Known-mark exposure adapter]\label{cor:v8-a2adapter}
+Fix positive exposure centre $\lambda^0$, known marks, a derivative
+matrix $D$ of full row rank, and $\Lambda=\diag(\lambda^0)$. Put
+$\Sigma=D\Lambda D^{\mathsf T}$ and
+$B_*=\Lambda D^{\mathsf T}\Sigma^{-1}$. Let $L$ be a fixed
+normal-compression map of rank $r\ge1$, let $F$ be an orthonormal
+frame for its range, and set
+\[
+ C=F^{\mathsf T}LD,\qquad A=F^{\mathsf T}L,\qquad
+ \Gamma=C\Lambda C^{\mathsf T}.
+\]
+On a fixed compact index set $H$, observe independent counts of
+means $N\lambda_N(h)$, where
+$\lambda_N(h)=\lambda^0+N^{-1/2}B_*h$.
+If $AH$ contains an $r$-dimensional ball, the deterministic unjittered
+statistic $T_{N,J}$ of Section~\ref{sec:v7-a2}, applied to the score
+$C(N_\cdot-N\lambda^0)/\sqrt N$, has at most $J^r\le S$ outputs. For
+$\mathcal G=\{N(Ah,\Gamma):h\in H\}$, it satisfies
+\begin{equation}
+ c S^{-2/r}\le\Delta(\mathcal E_{N,J},\mathcal G)
+             \le C_K S^{-2/r},\qquad
+ J=\lfloor S^{1/r}\rfloor,\quad
+ 2^r\le S\le K N^{r/6}.                 \label{eq:v8-a2scope}
+\end{equation}
+Only the physical output cardinality and the stated joint sample/register
+window are bounded here. Reconstruction randomization is external,
+parameter independent and private; no finite-bit complexity of the raw
+real score computation is asserted.
+\end{corollary}
+\begin{proof}
+$DB_*=I$, so $CB_*=A$. Since $F^{\mathsf T}L$ has row rank $r$
+and $D$ is surjective, $C$ has row rank $r$ and $\Gamma>0$.
+The compact local alternatives have uniformly positive exposures for
+all sufficiently large $N$. Thus every hypothesis of
+Theorem~\ref{thm:v7-a2} is verified with these actual score weights,
+mean set and covariance. That theorem supplies both inequalities in
+\eqref{eq:v8-a2scope}; its lower bound allows every experiment with at
+most $S$ outcomes, not only this statistic. Theorem~\ref{thm:v8-duality}
+gives the all-decision interpretation of the limiting obstruction, and
+Theorem~\ref{thm:v8-spectrum} transports each bounded task through the
+comparison kernels. No algebraic primary-decomposition theorem is a
+premise of this argument.
+\end{proof}
+The left inequality concerns every experiment with at most $S$
+terminal outputs approximating this specified Gaussian family, and
+therefore also the physical statistic. The upper inequality concerns
+that explicit statistic and its positive reconstruction kernel.
+In particular, achieving Gaussian-family distance at most
+$C N^{-1/5}$ forces $S\ge cN^{r/10}$, and budgets of that order suffice
+for this statistic. These are label-budget statements in the displayed
+joint window; they are not a sample-optimality theorem over all
+finite-$N$ physical objectives.
+
+Theorem~\ref{thm:v8-duality} supplies a decision interpretation of the
+limiting experiment's finite-output obstruction, while
+Theorem~\ref{thm:v8-spectrum} transports each bounded task through the
+Poisson comparison kernels. These are genuine arrows between specified
+experiments. They neither require nor assert a Sinai local limit theorem,
+a particle path large-deviation principle, or a physical phase
+construction.
