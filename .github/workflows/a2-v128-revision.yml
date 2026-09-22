@@ -1,0 +1,87 @@
+name: A2 v128 effective Pieri and primary atlas referee build
+
+on:
+  push:
+    branches:
+      - revision/a2-v128-effective-pieri-relative-primary-atlas-2026-09-23
+    paths:
+      - 'A2_REVISION_V128_INDEX.md'
+      - 'papers/A2-v17-boundary-information-coarsening/article/v128/**'
+      - '.github/workflows/a2-v128-revision.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: a2-v128-referee-build
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      REVISION: papers/A2-v17-boundary-information-coarsening/article/v128
+      V127: papers/A2-v17-boundary-information-coarsening/article/v127
+      V126: papers/A2-v17-boundary-information-coarsening/article/v126
+      V125: papers/A2-v17-boundary-information-coarsening/article/v125
+      V123: papers/A2-v17-boundary-information-coarsening/article/v123
+      REVIEW_BASE: origin/review/a2-v127-independent-harsh-top4-2026-09-23
+      TARGET_BRANCH: revision/a2-v128-effective-pieri-relative-primary-atlas-2026-09-23
+      PYTHONDONTWRITEBYTECODE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch controlling review ref
+        run: git fetch origin review/a2-v127-independent-harsh-top4-2026-09-23
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install mathematical build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern
+          python -m pip install 'sympy==1.14.0' 'numpy==2.3.5' 'PyMuPDF==1.26.7'
+
+      - name: Confirm reviewed source and report remain untouched
+        run: |
+          git diff --exit-code "$REVIEW_BASE" -- "$V127"
+          git diff --exit-code "$REVIEW_BASE" -- "$V126"
+          git diff --exit-code "$REVIEW_BASE" -- "$V125"
+          git diff --exit-code "$REVIEW_BASE" -- "$V123"
+          git diff --exit-code "$REVIEW_BASE" -- reviews/a2-v127-independent-harsh-top4-2026-09-23/REFEREE_REPORT.md
+
+      - name: Run exact regressions and compile principal article
+        run: bash "$REVISION/build.sh"
+
+      - name: Publish source-bound PDF and evidence on v128 only
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f -- "$REVISION/geometry.pdf" "$REVISION/evidence"
+          if git diff --cached --quiet; then
+            echo 'No generated publication changes to commit.'
+          else
+            git commit -m "A2 v128: source-bound referee PDF and evidence [skip ci]"
+            git push origin "HEAD:$TARGET_BRANCH"
+          fi
+
+      - name: Package referee bundle
+        run: |
+          tar -czf a2-v128-referee-bundle.tar.gz \
+            A2_REVISION_V128_INDEX.md \
+            reviews/a2-v127-independent-harsh-top4-2026-09-23/REFEREE_REPORT.md \
+            "$REVISION"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: a2-v128-referee-bundle
+          path: a2-v128-referee-bundle.tar.gz
+          retention-days: 30
