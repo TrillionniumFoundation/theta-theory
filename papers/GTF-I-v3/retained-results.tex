@@ -1,0 +1,858 @@
+\section{Acquired geometry and nonuniform causal resolution}
+\label{sec:v2-resolution}
+\subsection{The experiment, the metric, and the resource}
+Let $D_t$ be separable metric spaces with metrics $d_t$ and their Borel
+sigma fields. A prepared experiment has a known initial predictive state
+$s_0$ and jointly Borel updates
+\[
+ s_{t+1}=F_t(s_t,a_t,y_{t+1}),\qquad
+ F_t(D_t,a,y)\subset D_{t+1}.
+\]
+All actions admitted at a time have a common continuation interface on
+$D_t$. The maps must be defined at every representative used below, not
+only almost surely under the exact experiment. The current input may
+include a publicly observed mode, but its past realizations are not
+available to a decoder unless charged to the retained label.
+
+The physical prediction is $z_t=\Pi_t(s_t)\in\R^{q_t}$, with
+\[
+ \norm{\Pi_t(s)-\Pi_t(s')}_2\le K_t d_t(s,s').
+\]
+For a finite query distribution, coordinates are multiplied by the square
+roots of the query probabilities. The excess squared prediction loss is
+then exactly $\norm{z_t-\widehat z_t}_2^2$. This follows by conditioning
+on the full acquisition history; the cross term with the future outcome
+has conditional mean zero. The query is drawn only after compression.
+
+Fix an exploration law independent of coding randomness and denote the
+resulting acquired law of $z_t$ by $\mu_t$. A lower bound always refers to
+this law. An upper bound may hold for a larger family of feedback policies;
+in that case its stability hypotheses must hold for that family. A
+parameter-uniform statement requires the same implemented update for all
+parameters, as in Section~\ref{sec:emulation}. Alternatively, a Bayesian
+unknown parameter can be included in the predictive state.
+
+For each $t$, choose a fixed Borel quantizer $q_t:D_t\to C_t\subset D_t$,
+where $|C_t|\le M_t$ and
+\[
+ d_t(s,q_t(s))\le r_t\quad(s\in D_t).
+\]
+Finite covers with a first-minimum tie rule give such maps. Let the
+implemented update $\widetilde F_t$ take values in $D_{t+1}$ and have
+uniform error at most $\eta_{t+1}$ at representatives. The machine is
+\begin{equation}\label{eq:v2-machine}
+ \widehat s_0=s_0,\qquad
+ \widehat s_{t+1}=q_{t+1}\widetilde F_t(\widehat s_t,a_t,y_{t+1}).
+\end{equation}
+Only the index of $\widehat s_t$ persists. A prescribed sequence of
+arbitrary codebooks is not automatically a finite uniform program. An
+infinite-time finite-program assertion below uses a fixed codebook, a
+periodic finite list, or a separately specified finite algorithm generating
+and decoding the codebooks.
+
+For a fixed visible input word, let $\Phi_{j,t}:D_j\to D_t$ be the exact
+composition of updates from time $j$ to time $t$, and $\Phi_{t,t}=\id$.
+Assume specified measurable bounds $\Lambda_{j,t}\ge0$ satisfy
+\begin{equation}\label{eq:v2-suffix}
+ d_t(\Phi_{j,t}(x),\Phi_{j,t}(x'))
+ \le\Lambda_{j,t}d_j(x,x'),\qquad \Lambda_{t,t}=1.
+\end{equation}
+The bounds can depend on that word. Taking an uncountable supremum and
+silently declaring it measurable is unnecessary. The hypothesis is on
+specified measurable bounds valid for every pair of states in the domain.
+
+\subsection{A resolution theorem}
+Write $[x]_+=\max(x,0)$. If $\nu\le\mu_t$ is a subprobability measure of
+mass $b$, put
+\[
+ A_\nu(r)=\sup_{c\in\R^{q_t}}\nu(B(c,r)),\qquad
+ \mathcal L_t(M)=\sup_{\nu\le\mu_t,\ r>0}
+          r^2[b-MA_\nu(r)]_+.
+\]
+One may use any collection of specified submeasures in place of the
+supremum over all of them; no existence of an optimizing submeasure is
+asserted or required.
+
+\begin{theorem}[Acquired-law resolution and exact-suffix stability]
+\label{thm:v2-resolution}
+Under the preceding hypotheses the following statements hold.
+
+\textup{(i)} Every checkpoint encoder with at most $M$ labels, including
+independent public and private coding randomization, has expected excess
+at least $\mathcal L_t(M)$. Consequently every one-machine procedure with
+stage budgets $M_t$ has maximum expected excess at least
+$\sup_t\mathcal L_t(M_t)$.
+
+\textup{(ii)} Along every admitted common input word the machine
+\eqref{eq:v2-machine} satisfies
+\begin{equation}\label{eq:v2-hybrid}
+ d_t(s_t,\widehat s_t)
+ \le\sum_{j=1}^t\Lambda_{j,t}(r_j+\eta_j).
+\end{equation}
+In particular its expected checkpoint excess is at most
+\begin{equation}\label{eq:v2-mean-upper}
+ K_t^2\left\|\sum_{j=1}^t\Lambda_{j,t}(r_j+\eta_j)\right\|_{L^2}^2
+ \le K_t^2\left(\sum_{j=1}^t
+               \|\Lambda_{j,t}\|_{L^2}(r_j+\eta_j)\right)^2.
+\end{equation}
+The probability and all the norms in this assertion are those of the
+actual run of the implemented controller.
+
+\textup{(iii)} Suppose the same integer budget $M$ is used at every time.
+Let $\psi_t(M)>0$. If fixed constants $a,A,b>0$ give covers with
+$r_t+\eta_t\le A\psi_t(M)$ and acquired submeasures $\nu_t$ of mass
+at least $b$ such that
+\[
+ M A_{\nu_t}(a\psi_t(M))\le b/2,
+ \qquad
+ \sup_{t,M}\sum_{j=1}^t
+ K_t\|\Lambda_{j,t}\|_{L^2}\frac{\psi_j(M)}{\psi_t(M)}\le G<\infty,
+\]
+then checkpoint expected risks are bounded below by
+$ba^2\psi_t(M)^2/2$, and one causal machine has expected excess at most
+$A^2G^2\psi_t(M)^2$ at each time. Thus the optimal maximum expected
+checkpoint risk is comparable to $\sup_t\psi_t(M)^2$. Replacing the
+$L^2$ bounds by bounds valid for all histories gives the analogous
+worst-history upper assertion.
+\end{theorem}
+\begin{proof}
+Condition on an independent public seed. Averaging a randomized decoder
+conditional on its label and that seed cannot increase squared loss.
+There are at most $M$ prediction centres $c_1,\ldots,c_M$. Randomized
+assignment cannot improve on the distance to the nearest centre. The
+$\nu$-mass of their $r$-balls is at most $MA_\nu(r)$; all remaining mass
+has squared error at least $r^2$. This proves (i), first for a fixed seed
+and then after integration. The seed is independent of the acquired law.
+Every causal label is a checkpoint encoding of the entire prefix, so the
+same lower bounds hold before taking the infimum over causal machines.
+
+For (ii), freeze the actual input word and set
+$w_j=\Phi_{j,t}(\widehat s_j)$ for $0\le j\le t$. Then $w_0=s_t$,
+$w_t=\widehat s_t$, and
+\[
+ w_{j-1}=\Phi_{j,t}
+   \bigl(F_{j-1}(\widehat s_{j-1},a_{j-1},y_j)\bigr).
+\]
+The two arguments compared here belong to $D_j$. Their distance is at
+most $r_j+\eta_j$. Applying \eqref{eq:v2-suffix} and summing the $t$
+triangle inequalities proves \eqref{eq:v2-hybrid}. No hypothetical
+controller is reevaluated at a different state: all suffixes use the same
+actual word. The Lipschitz readout and the triangle inequality in $L^2$
+give \eqref{eq:v2-mean-upper}. The finite-sum argument also applies at
+each time of an infinite run. Substituting the hypotheses of (iii) into
+(i) and (ii) proves (iii). In particular the conclusion is
+$\sup_t\E L_t$, not $\E\sup_t L_t$.
+\end{proof}
+
+The theorem deliberately separates the upper and lower geometries.
+A small-dimensional chart can supply a converse without covering the
+whole domain; conversely, a small cover does not imply that the experiment
+acquires mass at that scale. Certified perturbations of the model enter
+$\eta_j$ only when measured on the stated domain in its stated metric.
+
+\begin{corollary}[Finite-horizon anisotropic transfer]\label{cor:v2-a1}
+Assume the global geometry, acquired rectangular marginals, and causal
+compatibility hypotheses \textup{(G)}, \textup{(A)}, \textup{(C)} of the
+attainable-geometry theorem in \cite{QiA1}. Its all-integer-budget
+checkpoint profile and its finite-horizon causal conclusion follow from
+Theorem~\ref{thm:v2-resolution}. Explicitly, with its notation,
+\[
+ Q_t(M)=\max_{1\le\ell\le p_t}
+ \left(M^{-1}\prod_{i=1}^{\ell}s_{t,i}\right)^{2/\ell},
+ \qquad
+ d_t(s_t,\widehat s_t)\le C\sum_{j=1}^t
+       \left(\prod_{i=j}^{t-1}L_i\right)Q_j(M_j)^{1/2}.
+\]
+The resulting comparison constants are those of the fixed horizon.
+\end{corollary}
+\begin{proof}
+The bounded-format thin-rectangle covering lemma of \cite{QiA1}, whose
+statement and proof are reproduced in the source supplement, gives
+$r_t(M)\le C\sqrt{Q_t(M)}$ with representatives in the reachable set.
+To recall the integer-budget step, its entropy bound is
+$C\sum_{j=0}^{p_t}r^{-j}\prod_{i\le j}s_{t,i}$.
+At $r=L\sqrt{Q_t(M)}$, all terms of positive degree sum to at most
+$M/2$ for a sufficiently large fixed $L$. For $M\ge2C$ the constant
+term fits the other half; the remaining finitely many budgets are
+covered by one point and the bound $\sqrt{Q_t(M)}\ge s_{t,1}/M$.
+
+For each acquired rectangular marginal in (A), the mass in a union of
+$M$ balls of radius $r$ is at most
+$C_\ell Mr^\ell/\prod_{i\le\ell}s_{t,i}$ of its normalized mass.
+Choose $r$ a sufficiently small multiple of
+$(\prod_{i\le\ell}s_{t,i}/M)^{1/\ell}$. A fixed fraction of the
+actual subprobability remains. The bounded left inverse of the physical
+query map and the bounded coordinate transformation transfer this
+lower bound to prediction error. Maximizing over $\ell$ gives $cQ_t$.
+Zero products need no converse; if every scale vanishes the domain is a
+singleton. Causal compatibility gives
+$\Lambda_{j,t}\le\prod_{i=j}^{t-1}L_i$.
+Apply (ii), and use the finite number of times for the maximum-risk bound.
+This reproduces the transfer conclusion; the experiment-specific proofs
+of (G) and (A) remain those of \cite{QiA1}.
+\end{proof}
+
+\subsection{Intermittent contraction}
+Let $\mathcal H_t$ contain the visible past through time $t$. The next
+criterion is useful when some steps are not contracting at all.
+
+\begin{theorem}[A conditional block criterion]\label{thm:v2-blocks}
+Assume each same-input map is nonexpansive. Fix an integer $b\ge1$ and
+$0<p\le1$, $0\le\rho<1$. Starting at any deterministic time $j$, partition
+the subsequent inputs into consecutive blocks of length $b$. For each
+block starting at $k$, suppose there is an event $E_k\in\mathcal H_{k+b}$
+with
+\[
+ \Pr(E_k\mid\mathcal H_k)\ge p,
+ \qquad \Lip(\Phi_{k,k+b})\le\rho\ \text{on }E_k,
+\]
+and the block is nonexpansive otherwise. These hypotheses refer to the
+actual policy or hold uniformly over the specified policy family.
+Set $q=1-p(1-\rho^2)$. Then valid suffix bounds satisfy
+\[
+ \|\Lambda_{j,t}\|_{L^2}
+ \le q^{\lfloor(t-j)/b\rfloor/2},\qquad
+ \sum_{j=1}^t\|\Lambda_{j,t}\|_{L^2}
+ \le\frac{b}{1-\sqrt q}.
+\]
+Thus a fixed radius-$r$ codebook, with numerical defect at most $\eta$,
+gives
+\[
+ \sup_{t\ge1}\E d_t(s_t,\widehat s_t)^2
+ \le\frac{b^2(r+\eta)^2}{(1-\sqrt q)^2}.
+\]
+No independence between blocks is required. If every block contracts by
+$\rho$ on every history, the corresponding pathwise bound is
+$b(r+\eta)/(1-\rho)$.
+\end{theorem}
+\begin{proof}
+For a complete block use the factor
+$Z_k=\rho\1_{E_k}+\1_{E_k^c}$. Its conditional second moment is at
+most $q$. For the first $m$ complete blocks after $j$,
+\[
+ \E\prod_{\ell=0}^{m-1}Z_{j+\ell b}^2\le q^m.
+\]
+Indeed the product through the penultimate block is measurable at the
+start of the last, so conditional expectation removes the last factor
+with multiplier at most $q$; induction completes the argument. The
+unfinished final block is nonexpansive. Products of these factors
+therefore give the required measurable suffix bounds. Each possible
+value of the integer part occurs at most $b$ times in the sum over $j$.
+Sum the geometric series and apply \eqref{eq:v2-mean-upper} with the
+identity readout. The deterministic assertion is the same calculation
+without expectations.
+\end{proof}
+
+Arbitrarily long strings of unsuccessful blocks have positive probability
+in many examples satisfying this theorem. A uniform expected checkpoint
+bound therefore cannot be reinterpreted as a pathwise bound by suppressing
+the norm in the hypothesis. Conversely, expansion at individual steps is
+allowed by Theorem~\ref{thm:v2-resolution} whenever the exact suffix bounds
+are summable; the nonexpansive block criterion is a sufficient condition,
+not the definition of the general class.
+
+\section{Positive and intermittent hidden Markov experiments}
+\label{sec:v2-hmm}
+\subsection{Projective stability}
+For positive probability vectors define
+\[
+ h(p,q)=\max_i\log(p_i/q_i)-\min_i\log(p_i/q_i).
+\]
+It is a metric on the interior of the simplex. For a positive likelihood
+vector $r$, normalization of $r_ip_i$ does not change these log-ratios
+apart from a common additive constant. Bayes multiplication is consequently
+an isometry in $h$.
+
+\begin{lemma}[Positive-matrix contraction]\label{lem:v2-projective}
+For a positive matrix $A$, put
+\[
+ R(A)=\max_{i,j,k,l}\frac{A_{ik}A_{jl}}{A_{il}A_{jk}},
+ \qquad \vartheta(A)=\frac{\sqrt{R(A)}-1}{\sqrt{R(A)}+1}.
+\]
+The normalized map $p\mapsto Ap/(\1^{\mathsf T}Ap)$ is
+$\vartheta(A)$-Lipschitz in $h$. A nonnegative matrix mapping positive
+vectors to positive vectors is nonexpansive. Also
+$\norm{p-q}_1\le h(p,q)$.
+\end{lemma}
+\begin{proof}
+We include the finite-dimensional argument for the classical projective
+estimate \cite{Bushell1973}. Write $p_i=e^{x_i}/\sum e^{x_l}$.
+The derivative of $\log\sum_k A_{ik}e^{x_k}$ is the probability row
+$w_{ik}=A_{ik}e^{x_k}/\sum_l A_{il}e^{x_l}$. For two rows $i,j$, the
+ratio $w_{ik}/w_{jk}$ has maximum divided by minimum at most $R(A)$.
+If probability vectors $u,v$ have ratios in $[m,M]$, with $m\le1\le M$,
+convexity of $|x-1|$ gives
+\[
+ \|u-v\|_{\TV}\le\frac{(M-1)(1-m)}{M-m}.
+\]
+Subject to $M/m\le R$, the right side is at most
+$(\sqrt R-1)/(\sqrt R+1)$: increasing the endpoint ratio and then
+putting $M=Rm$ reduces the maximization to $m=R^{-1/2}$.
+Consequently the difference of two derivative rows applied to a vector
+$v$ is at most $\vartheta(A)\operatorname{osc}(v)$ in absolute value.
+Integrate along the segment joining two log-coordinate vectors and take
+the maximum difference between rows. Normalization subtracts a common
+constant and does not change oscillation. This proves the contraction.
+For nonnegative matrices the same derivative argument uses only
+$\|w_i-w_j\|_{\TV}\le1$.
+
+For the last assertion join $q$ to $p$ by the normalized exponential
+path with logarithmic increment $v_i=\log(p_i/q_i)$. Its derivative has
+coordinates $p_i(s)(v_i-\sum_l p_l(s)v_l)$, whose $\ell^1$ norm is at
+most $\operatorname{osc}(v)$. Integrating gives the assertion.
+\end{proof}
+
+Use the experiment and physical terminal probe in
+Section~\ref{sec:refreshing}, now with
+\begin{equation}\label{eq:v2-range}
+ d\ge1,\qquad 0<\gamma\le1,\qquad 0\le\epsilon\le1/4.
+\end{equation}
+All known constants and both binary report signs retain their original
+meaning. Write $n=d+1$, $\tau=1/4$, and define
+\begin{align}
+ \rho_{d,\gamma}&=\frac{1-\gamma}{1-\gamma+2\gamma/n},&
+ B_\epsilon&=\log\frac{1+\epsilon}{1-\epsilon},&
+ R_\epsilon&=\frac{B_\epsilon}{1-\rho_{d,\gamma}},\label{eq:v2-Hconst}\\
+ D_{d,\gamma}&=2^{-d}(5/4)^{d+2}(n/\gamma)^{d+1}\cosh^{2d}(1).
+ \label{eq:v2-Dconst}
+\end{align}
+Let $v_d$ denote the volume of the Euclidean unit ball in $\R^d$.
+
+\begin{theorem}[The memory law for every positive refresh rate]
+\label{thm:v2-refresh}
+For \eqref{eq:v2-range}, every integer $M\ge1$, and every $t\ge1$,
+\begin{align*}
+ c_{d,\gamma}\epsilon^2M^{-2/d}
+ &\le R_{M,t}^{\rm av}\le R_{M,t}^{\rm max}
+       \le C_{d,\gamma}\epsilon^2M^{-2/d},\\
+ c_{d,\gamma}\epsilon^2M^{-2/d}
+ &\le\mathfrak R_{M,\infty}^{\rm av}
+       \le\mathfrak R_{M,\infty}^{\rm max}
+       \le C_{d,\gamma}\epsilon^2M^{-2/d}.
+\end{align*}
+One possible choice is
+\begin{equation}\label{eq:v2-explicit-constants}
+ c_{d,\gamma}=\frac{\tau^2}{2d}(2v_dD_{d,\gamma})^{-2/d},\qquad
+ C_{d,\gamma}=\frac{\tau^2}{d}\left(\frac{64}{3}\right)^2
+                    (1-\rho_{d,\gamma})^{-4}.
+\end{equation}
+One deterministic fixed-codebook machine gives the upper bounds for all
+histories and all times. The lower bounds use independent uniform
+commands and allow independent coding randomization. At $\epsilon=0$,
+one label is exact. If the terminal amplitude is multiplied by $\epsilon$,
+all bounds acquire the additional factor $\epsilon^2$.
+\end{theorem}
+\begin{proof}
+Put $a=1-\gamma$, $b=\gamma/n$. The transition matrix has diagonal
+entries $a+b$ and off-diagonal entries $b$. Its maximum cross-ratio is
+$((a+b)/b)^2$, attained by two distinct diagonal positions. Lemma
+\ref{lem:v2-projective} gives coefficient $a/(a+2b)=\rho_{d,\gamma}$.
+Multiplication by the likelihood does not alter $h$. Since $P_\gamma\nu=\nu$,
+\[
+ h(F(p,u,y),\nu)\le\rho_{d,\gamma}h(p,\nu)+B_\epsilon.
+\]
+Thus $D=\{p:h(p,\nu)\le R_\epsilon\}$ is an invariant compact subset
+of the positive simplex. The initialization $\nu$ belongs to $D$.
+
+In log-odds coordinates $x_i=\log(p_i/p_0)$, the domain is exactly
+$\operatorname{osc}(0,x_1,\ldots,x_d)\le R_\epsilon$ and lies in
+$[-R_\epsilon,R_\epsilon]^d$. Divide this cube into $k^d$ equal cells,
+$k=\lfloor M^{1/d}\rfloor$. Select one point of $D$ in each occupied
+cell. Two points in a cell have projective distance at most
+$4R_\epsilon/k$, so the fixed codebook has radius
+$r_M\le8R_\epsilon M^{-1/d}$. Its points are admissible normalized
+beliefs, although they need not be reachable at a particular time.
+Quantize after each exact update. The suffix bound is
+$\rho_{d,\gamma}^{t-j}$, whence
+\[
+ \sup_t h(p_t,\widehat p_t)
+ \le\frac{8B_\epsilon}{(1-\rho_{d,\gamma})^2}M^{-1/d}.
+\]
+For $0\le\epsilon\le1/4$, integration of $2/(1-\epsilon^2)$ gives
+$B_\epsilon\le(8/3)\epsilon$. The physical loss is
+$(\tau^2/d)\norm{p_{t,+}-\widehat p_{t,+}}_2^2$ and is at most
+$(\tau^2/d)h(p_t,\widehat p_t)^2$. This proves the upper constant.
+
+For the converse the pre-report coordinates satisfy $q_i\ge\gamma/n$.
+The command-to-posterior Jacobian in
+Lemma~\ref{lem:refresh-density}, with this floor in place of $m_*$,
+gives a density bounded by $D_{d,\gamma}\epsilon^{-d}$ for $p_{t,+}$.
+For clarity, the actual joint density of command and sign is
+$2^{-(d+1)}D_y$ and
+\[
+ |\det D_uF(p,u,y)_+|
+ =\frac{q_0\prod_{i=1}^dq_i}{D_y^{d+1}}
+       \epsilon^d\prod_{i=1}^d\sech^2u_i.
+\]
+The odds $p_i'/p_0'=q_i(1+y\epsilon\tanh u_i)/q_0$ make each sign's
+map injective. Changing variables, summing the two signs, and integrating
+over every previous history gives exactly \eqref{eq:v2-Dconst}; no
+conditioning cost is removed. The mass of $M$ Euclidean balls of radius
+$r$ is at most $Mv_dD_{d,\gamma}\epsilon^{-d}r^d$. Take
+$r=\epsilon(2Mv_dD_{d,\gamma})^{-1/d}$.
+At least half the mass remains, and the physical factor is $\tau^2/d$.
+This proves the lower constant and, by checkpoint relaxation, its causal
+version. At zero signal the posterior stays $\nu$. Scaling the terminal
+probe scales its squared loss, proving the last assertion.
+\end{proof}
+
+The dependence on mixing and dimension in
+\eqref{eq:v2-explicit-constants} is part of the statement. Since
+$1-\rho_{d,\gamma}=2\gamma/[n(1-\gamma)+2\gamma]$, the upper constant
+is explicit even for weak refresh. The theorem is uniform in $M,t$ and
+$\epsilon$ for each positive $\gamma$; it does not assert matching powers
+of $\gamma$ in a simultaneous $\gamma\downarrow0$ limit. This is a
+strict enlargement of the refresh interval, not a relabeling of the old
+$\ell^1$ estimate. At zero refresh the finite-horizon theorem remains
+available whenever its separate geometry and stability hypotheses hold.
+
+\subsection{An experiment with unbounded noncontracting intervals}
+At each time first draw an observed mode $I_t$, independently of the
+hidden state and of all past variables, with $\Pr(I_t=1)=p>0$.
+For $I_t=1$ execute the preceding refresh and commanded observation.
+For $I_t=0$ apply any prescribed permutation of the hidden states and
+return an uninformative fair sign. Commands are independent uniform for
+the converse. The upper construction accepts every admitted command word.
+The mode is read in the current update, then discarded except for its
+effect on the retained label. The terminal probe is unchanged.
+
+\begin{corollary}[Intermittent-refresh expected resolution]
+\label{cor:v2-intermittent}
+In this experiment, for every integer $M\ge1$,
+\[
+ p c_{d,\gamma}\epsilon^2M^{-2/d}
+ \le\mathfrak R_{M,\infty}^{\rm av}
+ \le\frac{\tau^2}{d}
+ \frac{(64/3)^2\epsilon^2M^{-2/d}}
+ {(1-\rho_{d,\gamma})^2
+  (1-\sqrt{1-p(1-\rho_{d,\gamma}^2)})^2}.
+\]
+The same lower bound holds at every positive checkpoint. The upper bound
+uses one fixed codebook. For $0<p<1$, arbitrarily long noncontracting
+intervals are admitted.
+\end{corollary}
+\begin{proof}
+Permutations fix $\nu$ and preserve $h$; hence the invariant domain $D$
+and its cover from the preceding proof work in both modes. A good step
+contracts by $\rho_{d,\gamma}$, a bad step is an isometry.
+Theorem~\ref{thm:v2-blocks} with $b=1$ gives the upper bound. Conditional
+on the current good mode, the density calculation in the preceding proof
+is uniform over the prior history. The good-mode submeasure has mass $p$
+and density at most $pD_{d,\gamma}\epsilon^{-d}$. The same balls leave
+at least $p/2$ of its mass, proving the lower bound. Independent Bernoulli
+modes permit every finite string of bad steps.
+\end{proof}
+
+\subsection{Discrete and singular acquisition}
+For a finite command alphabet of size $K$, a fixed time $t$ has at most
+$(2K)^t$ command/sign histories in the ordinary refreshing experiment.
+Its checkpoint prediction is therefore exactly encodable at that budget.
+This elementary fact precludes a positive $M^{-2/d}$ lower bound for all
+$M$ at fixed $t$ in that different experiment.
+
+A singular command law has a different outcome. Let $d=1$, $\gamma=1$,
+and let $u=2V-1$, where $V$ is the standard middle-thirds Cantor random
+variable. Set $s=\log2/\log3$. The hidden state is freshly prepared at
+each step, but the binary command observation and the terminal probe are
+still physical observations as above.
+
+\begin{proposition}[A singular acquired dimension]\label{prop:v2-cantor}
+For this experiment there are constants $0<c<C<\infty$ such that
+for every $t\ge1$, $M\ge1$, and $0\le\epsilon\le1/4$,
+\[
+ c\epsilon^2M^{-2/s}\le R_{M,t}^{\rm av}
+ \le\mathfrak R_{M,\infty}^{\rm max}
+ \le C\epsilon^2M^{-2/s}.
+\]
+Here worst histories use commands in the support of the prescribed Cantor
+law. One fixed codebook attains the upper bound.
+\end{proposition}
+\begin{proof}
+A level-$m$ Cantor cylinder has length $3^{-m}$ and mass $2^{-m}$.
+At that scale an interval of length comparable to $3^{-m}$ meets only
+a bounded number of cylinders. Thus the mass of an interval of radius
+$r$ is at most $C r^s$, while the support has a cover by $2^m$ intervals
+of length $3^{-m}$. Affine rescaling to $[-1,1]$ changes only constants.
+
+For either sign the posterior coordinate is
+$(1+y\epsilon\tanh u)/(2+y\epsilon\tanh u)$.
+Its derivative in absolute value is
+$\epsilon\sech^2u/(2+y\epsilon\tanh u)^2$, between two fixed positive
+multiples of $\epsilon$ when $\epsilon>0$. Each sign therefore gives a
+bi-Lipschitz image at scale $\epsilon$. The actual sign weight is between
+$3/8$ and $5/8$. The sum of the two image measures has concentration at
+most $C(r/\epsilon)^s$; each image has the corresponding covers. Allocate
+half the available centres to each image, adjusting the fixed constant
+for the finitely many budgets below four. The acquired-law lower bound
+and this cover give the asserted rate. Since $\gamma=1$, the new
+posterior does not depend on the old label. The same quantizer is an exact
+one-step causal construction at every time. At $\epsilon=0$ it is constant.
+\end{proof}
+
+Neither the domain dimension of the command nor a Jacobian rank alone
+determines these three rates. For a mixture with finitely many additional
+atoms, assign one centre to each atom and use the remaining centres for
+the singular component; the submeasure converse retains its actual
+mixture weight. More generally Theorem~\ref{thm:v2-resolution} uses the
+full concentration profile without assigning a single dimension.
+
+\section{Singular statistical resolution with measured calibration}
+\label{sec:v2-statistics}
+We now change the target and the loss explicitly. Let
+$\theta\in\Theta=\prod_{j=1}^d[0,a_j]$, $a_j>0$, and let
+$\eta\in\R^d$ be an unrestricted unknown additive calibration. Fix
+integers $k_j\ge1$. The experiment consists of the $2d$ observations
+\begin{equation}\label{eq:v2-paired}
+ Y_j=\theta_j^{k_j}+\eta_j+\sigma_jZ_j,
+ \qquad W_j=\eta_j+\tau_jZ'_j,
+ \qquad 1\le j\le d,
+\end{equation}
+with independent standard normal variables and known
+$\sigma_j,\tau_j\ge0$. A procedure observes the pair, retains one of
+$M$ labels, and decodes an estimate of $\theta$. Only the label and
+independent public coding randomness are available to the decoder.
+Both $Y$ and $W$ count as acquisitions. In particular $W$ is not a free
+read-only value of $\eta$.
+
+Put $v_j=(\sigma_j^2+\tau_j^2)^{1/2}$, and let
+$a_{(1)}\ge\cdots\ge a_{(d)}$ be the ordered widths. Define
+\begin{equation}\label{eq:v2-statprofile}
+ S=\sum_{j=1}^d\min\{a_j^2,v_j^{2/k_j}\},\qquad
+ Q_M=\max_{1\le\ell\le d}
+       \left(M^{-1}\prod_{i=1}^{\ell}a_{(i)}\right)^{2/\ell}.
+\end{equation}
+The risk here is squared parameter error, not the prediction excess used
+in the preceding sections.
+
+\begin{theorem}[A matched contact, calibration, and label law]
+\label{thm:v2-singular}
+For the actual experiment \eqref{eq:v2-paired}, write
+\[
+ \mathcal R_M=\inf_{\text{$M$-label procedures}}\sup_{\theta\in\Theta,\eta\in\R^d}
+      \E_{\theta,\eta}\norm{\widehat\theta-\theta}_2^2.
+\]
+For every integer $M\ge1$,
+\begin{equation}\label{eq:v2-statlaw}
+ c_d(S+Q_M)\le\mathcal R_M\le2S+8dQ_M,
+\end{equation}
+where one may take
+\[
+ c_d=\tfrac12\min\left\{\frac3{128},
+   \min_{1\le\ell\le d}\frac12(2\omega_\ell)^{-2/\ell}\right\},
+\]
+where $\omega_\ell$ denotes the volume of the Euclidean unit ball in $\R^\ell$.
+The constants are independent of $a_j,k_j,\sigma_j,\tau_j,M$ and the
+unknown calibration. The upper construction is deterministic. The lower
+bound allows independent public and private randomization.
+\end{theorem}
+\begin{proof}
+\emph{Estimation before compression.}
+The actually observed differences $D_j=Y_j-W_j$ have laws
+$N(\theta_j^{k_j},v_j^2)$ independent of $\eta$. Define
+\[
+ \widetilde\theta_j=
+  \bigl(\operatorname{proj}_{[0,a_j^{k_j}]}D_j\bigr)^{1/k_j}.
+\]
+For nonnegative $x,y$, $|x^{1/k}-y^{1/k}|\le|x-y|^{1/k}$.
+Projection cannot increase the distance to $\theta_j^{k_j}$.
+Concavity of $x^{1/k_j}$ and $\E Z^2=1$ consequently give
+\[
+ \E|\widetilde\theta_j-\theta_j|^2
+ \le\min\{a_j^2,v_j^{2/k_j}\E|Z|^{2/k_j}\}
+ \le\min\{a_j^2,v_j^{2/k_j}\}.
+\]
+This is a finite-sample bound, including degenerate zero-noise coordinates.
+
+\emph{An integer-budget cover.}
+Set $\delta=2\sqrt{Q_M}$ and partition coordinate $j$ into
+$n_j=\max\{1,\lfloor a_j/\delta\rfloor\}$ equal intervals.
+Let $\ell$ be the number of widths greater than $\delta$.
+If $\ell=0$ the product of the $n_j$ is one. Otherwise
+\[
+ \prod_jn_j\le\prod_{i\le\ell}a_{(i)}/\delta^\ell
+ \le M/2^\ell\le M.
+\]
+Every interval has length at most $2\delta$, so its midpoint product
+codebook has squared covering radius at most $d\delta^2=4dQ_M$.
+Quantize $\widetilde\theta$ to this codebook. The squared triangle
+inequality proves the upper bound in \eqref{eq:v2-statlaw}.
+
+\emph{The statistical obstruction with unknown calibration.}
+Write $r_j=\min\{a_j,v_j^{1/k_j}\}$. Coordinates with $r_j=0$ contribute
+zero and can be omitted from this step. For $\omega\in\{0,1\}^d$, set
+\[
+ \theta_j(\omega)=\tfrac12r_j\omega_j,\qquad
+ m_j=(r_j/2)^{k_j},\qquad
+ \eta_j(\omega)=-\frac{\tau_j^2}{v_j^2}m_j\omega_j.
+\]
+These are admissible alternatives in the same unknown-calibration
+experiment. Adjacent vertices differ in the mean pair at coordinate $j$
+by $(m_j\sigma_j^2/v_j^2,-m_j\tau_j^2/v_j^2)$.
+Their Gaussian divergence is
+\[
+ \frac12\left(\frac{m_j^2\sigma_j^2}{v_j^4}
+             +\frac{m_j^2\tau_j^2}{v_j^4}\right)
+ =\frac{m_j^2}{2v_j^2}\le\frac18.
+\]
+A zero-variance channel in this expression has identical means and is
+simply omitted. Pinsker's inequality bounds the variation distance by
+$1/4$. Any estimate determines a test of bit $j$ by thresholding at
+$r_j/4$. An incorrect test has squared coordinate error at least
+$r_j^2/16$. Pair adjacent vertices and average: their average error
+probability is at least $(1-1/4)/2=3/8$. Summing over coordinates gives
+average squared risk at least $3\sum_jr_j^2/128$. Compression and
+independent randomization cannot improve the testing distance. Since
+maximum risk dominates this finite average, $\mathcal R_M\ge3S/128$.
+
+\emph{The representation obstruction.}
+Fix $\eta=0$ and put uniform probability on the parameter box. At each
+fixed public seed an averaged decoder has at most $M$ centres. Regardless
+of what noisy observations led to the label, its error at $\theta$ is
+at least the distance to the nearest centre. Project onto the $\ell$
+widest coordinates. The fraction of this rectangular uniform law covered
+by $M$ balls of radius $r$ is at most
+$M\omega_\ell r^\ell/\prod_{i\le\ell}a_{(i)}$.
+Choose $r=(\prod_{i\le\ell}a_{(i)}/(2M\omega_\ell))^{1/\ell}$.
+At least half the mass has squared error at least $r^2$. Maximize over
+$\ell$ and integrate over the seed. This proves
+$\mathcal R_M\ge[\min_\ell\tfrac12(2\omega_\ell)^{-2/\ell}]Q_M$.
+Combining the two lower bounds by $\max(x,y)\ge(x+y)/2$ proves the result.
+\end{proof}
+
+The testing alternatives explain why the calibration variance adds to the
+signal variance. Holding the nuisance artificially fixed in that step
+would prove only the weaker obstruction from $\sigma_j$, and would miss
+the cost of measuring calibration. The encoder never reads the unknown
+nuisance. Its read-only constants are the specified noise levels, contact
+orders, and parameter box.
+
+For $d=1$, $a_1=1$, and $v_1\asymp N^{-1/2}$, the theorem gives
+$\mathcal R_M\asymp N^{-1/k_1}+M^{-2}$. Hence the statistical amplitude
+scale is $N^{-1/(2k_1)}$, and order $N^{1/(2k_1)}$ labels suffice to
+reach it. When $k_1=2$, this recovers the quadratic-contact amplitude
+scale in the physical-ray result of \cite{QiA2}, now with an explicit
+finite-label constraint and an actually measured unrestricted additive
+calibration in \eqref{eq:v2-paired}. It is a comparison of rates in these
+specified experiments, not an assertion of their Le Cam equivalence.
+The nonnegative branch is part of the parameter space: an even-power
+observation on a signed branch would have an additional identifiability
+obstruction.
+
+\section{Optimization under a retained-label constraint}
+\label{sec:v2-control}
+The following result supplies a policy comparison in addition to the
+common-controller statements of Section~\ref{sec:emulation}. Let $D$ be
+a compact metric predictive-state domain and $\mathcal A$ a finite action
+set. The report kernel is $g(dy\mid s,a)$ and the state update is
+$F(s,a,y)\in D$. Assume these are Borel, and, uniformly in $a,y$,
+\[
+ 0\le c(s,a)\le C_0,\quad
+ |c(s,a)-c(s',a)|\le L_c d(s,s'),\quad
+ d(F(s,a,y),F(s',a,y))\le l d(s,s'),
+\]
+\[
+ \|g(\cdot\mid s,a)-g(\cdot\mid s',a)\|_{\TV}\le\kappa d(s,s').
+\]
+The current conditional expected physical cost is $c(s,a)$. The predictive
+state is sufficient for future costs and experiments under all admitted
+policies. Thus the belief-state dynamic program represents the optimum
+among all history-dependent policies. Fix discount $0<\beta<1$ with
+$\beta l<1$, and define
+\[
+ L_* =\frac{L_c+\beta\kappa C_0/(1-\beta)}{1-\beta l}.
+\]
+Let $\mathcal C\subset D$ have at most $M$ points and a radius-$r$ Borel
+quantizer $q$. Assume the initial state is in $\mathcal C$; it can be
+reserved as a centre. The finite reference decision process uses cost
+$c(c,a)$ and next state $qF(c,a,y)$ with report distribution $g(dy\mid c,a)$.
+It has an optimal stationary policy $\widehat a(c)$ because its state and
+action spaces are finite. Its transition probabilities are the specified
+integrals of these kernels; numerical approximation is addressed below.
+
+\begin{theorem}[A finite reference policy versus unrestricted control]
+\label{thm:v2-control}
+Implement $a_t=\widehat a(\widehat s_t)$ in the actual experiment and
+update $\widehat s_{t+1}=qF(\widehat s_t,a_t,y_{t+1})$. Let $V^*$ be
+the unrestricted optimal discounted value and $J(\widehat a)$ the actual
+cost of this retained-label controller. Then
+\begin{equation}\label{eq:v2-control-bound}
+ 0\le J(\widehat a)-V^*(s_0)
+ \le2L_*\sum_{t\ge0}\beta^t\E d(s_t,\widehat s_t)
+           +\frac{2\beta L_*r}{(1-\beta)^2}.
+\end{equation}
+In particular, if the fixed-codebook construction has
+$\sup_t\E d(s_t,\widehat s_t)\le Gr$, the upper bound is
+$2L_*Gr/(1-\beta)+2\beta L_*r/(1-\beta)^2$.
+Only one of $M$ labels persists; no exact value function or full history
+is an input to the implemented policy.
+\end{theorem}
+\begin{proof}
+The exact Bellman operator on bounded Borel functions is
+\[
+ TV(s)=\min_a\{c(s,a)+\beta\int V(F(s,a,y))g(dy\mid s,a)\}.
+\]
+It is a contraction in the uniform norm. Starting at zero, its iterates
+have values in $[0,C_0/(1-\beta)]$. If an iterate has Lipschitz constant
+$L$, the next has constant at most
+$L_c+\beta lL+\beta\kappa C_0/(1-\beta)$: compare the same report
+argument first and then the two report laws, using the range bound on
+$V$. The minimum over the same finite action set preserves the bound.
+It follows that $V^*$ is $L_*$-Lipschitz, and each optimal action-value
+function $Q^*(\cdot,a)$ is also $L_*$-Lipschitz.
+
+Let $\widehat V$ be the finite reference value. At a centre, replacing
+$F(c,a,y)$ by $qF(c,a,y)$ in $V^*$ changes a Bellman expression by at
+most $\beta L_*r$. The finite Bellman contraction therefore implies
+\[
+ \sup_{c\in\mathcal C}|\widehat V(c)-V^*(c)|
+ \le\frac{\beta L_*r}{1-\beta}=:D_0.
+\]
+For every centre and action, the exact action value and the finite
+reference action value differ by at most
+$\beta(L_*r+D_0)=\beta L_*r/(1-\beta)=D_0$.
+Minimizing the latter consequently yields
+\[
+ Q^*(c,\widehat a(c))-V^*(c)\le2D_0.
+\]
+For an actual state $s$ and retained centre $c$, Lipschitz continuity of
+both $Q^*$ and $V^*$ gives
+$Q^*(s,\widehat a(c))-V^*(s)\le2L_*d(s,c)+2D_0$.
+
+Along the actual trajectory, the conditional definition of $Q^*$ makes
+the discounted sum of these residuals equal to
+$J(\widehat a)-V^*(s_0)$. More explicitly the finite sum telescopes,
+and its final term has absolute value at most
+$\beta^{T+1}C_0/(1-\beta)$, tending to zero. Sum the bound and let
+$T$ increase. This proves \eqref{eq:v2-control-bound}.
+The policy is a finite table indexed by the retained representative.
+The exact value entered only this comparison proof.
+\end{proof}
+
+A stationary centre may be reserved at a cost of one label: for $M\ge2$
+use the preceding covers with $M-1$ centres and add $s_0$. A power-law
+covering rate is unchanged up to its stated fixed factor; for $M=1$ the
+bounded-cost estimate is available. If an implemented finite table is
+within $\xi$ in each action value of the exact reference table, choosing
+its minimizing action adds at most $2\xi/(1-\beta)$ to the bound.
+This numerical certificate is separate from computing that table.
+Theorems~\ref{thm:v2-resolution} and \ref{thm:v2-blocks} provide $G$
+when their assumptions hold under the lifted policy. A prediction lower
+bound is not a matching lower bound for every control cost; no such
+identification is used here.
+
+\section{Finite descriptions and numerical implementation}
+\label{sec:v2-resources}
+We distinguish five resource coordinates: persistent labels, program
+description, transient workspace, numerical error, and physical acquisitions.
+The first coordinate is determined by the resolution laws; the others
+are not silently identified with it. We give a finite-description
+construction for the positive-refresh upper bound, so its codebook does
+not require an independently stored list of $M$ arbitrary real vectors.
+
+Suppose $\gamma,\epsilon$ are rational known inputs and $\epsilon>0$.
+Choose a rational $R'$ with $R_\epsilon\le R'\le2R_\epsilon$.
+Such a number is computable from the displayed elementary formula.
+For an integer $k\ge1$, set $\delta=R'/k$ and use the log-odds grid
+\begin{equation}\label{eq:v2-grid}
+ \mathcal J_k=\{j\in\{-k,\ldots,k\}^d:
+       \operatorname{osc}(0,j_1,\ldots,j_d)\le k\},\qquad
+ p_i(j)=\frac{e^{\delta j_i}}{1+\sum_{l=1}^d e^{\delta j_l}},
+\end{equation}
+with $p_0$ the reciprocal denominator. Its domain is the invariant ball
+of radius $R'$.
+
+\begin{proposition}[An implicit codebook]\label{prop:v2-program}
+There is a finite-description codebook in this ball with at most $M$
+representatives and projective radius at most $12R'M^{-1/d}$. Its
+persistent state uses at most $\lceil\log_2M\rceil$ bits. Its read-only
+description consists of $d$, the rational calibration, $R'$, an integer
+$k$, and fixed algorithms for enumeration and elementary functions; it
+contains no list of $M$ arbitrary real numbers. Certified update error
+$\eta$ and quantization error at most $r+\eta$ give projective filtering
+error at most $(r+2\eta)/(1-\rho_{d,\gamma})$.
+\end{proposition}
+\begin{proof}
+For $M\ge3^d$ choose
+$k=\lfloor(M^{1/d}-1)/2\rfloor$. Then $(2k+1)^d\le M$ and
+$k\ge M^{1/d}/6$. Round each log-odds coordinate toward zero in
+multiples of $\delta$. The result remains in the oscillation ball:
+when both signs occur, both extreme absolute values decrease; when all
+coordinates have one sign, their extreme absolute value decreases.
+Each coordinate changes by at most $\delta$, so projective distance
+changes by at most $2\delta\le12R'M^{-1/d}$. For $M<3^d$ use only
+$\nu$; its radius $R'$ is at most $3R'M^{-1/d}$.
+Lexicographic enumeration of the finite integer set labels the grid.
+The model and this enumeration are finite descriptions of all its
+representatives. The stated error is the geometric-series estimate,
+with total one-step defect $r+2\eta$.
+\end{proof}
+
+All log-odds and softmax functions in this construction are computable
+on their compact domains. With digitally represented commands, interval
+arithmetic can evaluate the update and finitely many distances until a
+representative within $r+\eta$ is certified, for any prescribed positive
+rational $\eta$. The fixed positive slack ensures termination even at a
+tie; exact comparison of two computable reals is not required. This is
+an existence and accuracy construction, not a uniform polynomial-time
+claim. The bound charges the counter needed to enumerate the grid and
+the precision of the computed numbers as transient workspace. The
+required precision can depend on $d,\gamma,\epsilon,M,\eta$.
+
+A command rounded with coordinate error at most $h$ changes each log
+likelihood by at most $\epsilon h/(1-\epsilon)$ and hence changes the
+posterior projective distance by at most
+$2\epsilon h/(1-\epsilon)$. This supplies an explicit additional
+one-step defect. It does not replace the analog acquisition law in the
+lower bound by a finite alphabet while keeping the same converse. The
+sampling law and the numerical interface must be declared separately.
+For a noncomputable real calibration, an exact read-only real convention
+would be a different resource model. The finite-description assertion
+above uses rational calibration and a numerical certificate instead.
+
+The paired singular experiment uses $2d$ scalar measurements and one
+terminal label. Its box codebook is generated by $d$ integer subdivision
+counts rather than an arbitrary centre list. Computing the differences
+and roots uses transient numerical workspace. A controller in
+Theorem~\ref{thm:v2-control} additionally has a read-only policy table;
+its construction and precision are not included in the label count.
+
+\section{Comparison of results and mathematical dependencies}
+\label{sec:v2-comparison}
+The relationship to earlier work is most precise at the level of the
+conclusion and the retained information.
+
+\begin{center}\small
+\begin{tabular}{p{.22\textwidth}p{.33\textwidth}p{.34\textwidth}}
+\toprule
+Antecedent & Existing conclusion used for comparison & Conclusion proved here\\
+\midrule
+\cite{QiA1}, attainable-geometry transfer & Anisotropic acquired-law profile and a compatible finite-horizon label machine & Exact-suffix bounds and intermittent infinite-horizon resolution; the old transfer is Corollary~\ref{cor:v2-a1}\\[3pt]
+\cite{PagesPham2005} & Quantization methods for nonlinear filtering & A matching converse for acquired prediction labels, not merely a finite signal grid\\[3pt]
+\cite[Theorems 12, 16, 17]{KaraYuksel2022} & Finite-memory policy approximation from filter stability & A policy computed on a finite representative model with an explicit retained-label budget and actual-state error term\\[3pt]
+\cite[Theorems 9, 27]{SSSM2022} & Approximate information states and approximate dynamic programs with performance bounds & Theorem~\ref{thm:v2-control} is a specialized quantitative policy-transfer result, used together with the acquired-law converse\\[3pt]
+\cite{QiA2}, physical-ray and score experiments & Quadratic-contact scale, Gaussian comparison, information retained by contact scores & Finite-sample contact orders, unrestricted measured additive calibration, and a matched label floor in one specified experiment\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Recent finite-window developments include continuous-space approximations
+\cite{KBY2024} and refined window-policy bounds \cite{DKY2024}.
+The fixed-policy belief-cost comparison in \cite{Kim2026} is another
+nearby, but distinct, target. None is replaced by a claim that the
+stability recurrence, quantization principle, or Bellman comparison was
+invented here. The specific mathematical assertions to compare are the
+joint hypotheses and conclusions of
+Theorems~\ref{thm:v2-resolution}, \ref{thm:v2-blocks},
+\ref{thm:v2-refresh}, and \ref{thm:v2-singular}.
+
+There is no backward dependence on a later theta manuscript. The only
+model-specific imported geometric estimate used in a corollary is the
+bounded-format covering result of the fixed A1 edition; the new principal
+theorems have proofs here. The A2 comparisons keep its physical cone and
+noise experiment distinct from \eqref{eq:v2-paired}. The earlier
+Sinai/vector-roof, particle large-deviation, kinetic-semigroup, unbounded
+operator, and labelled-phase problems keep their original dependency
+order. A proof of finite-label filtering does not assert any of those
+model-specific conclusions. The contribution to those chains is a
+proved resolution and decision interface, usable after their own
+experiment and domain hypotheses have been established.
