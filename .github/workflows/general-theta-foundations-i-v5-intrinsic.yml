@@ -1,0 +1,151 @@
+name: General Theta Foundations I v5 intrinsic revision
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v5-intrinsic-2026-09-22
+    paths:
+      - '.github/workflows/general-theta-foundations-i-v5-intrinsic.yml'
+      - '.github/revision-inputs/gtf-i-v5-intrinsic/**'
+      - 'papers/GTF-I-v5-intrinsic/**'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: gtf-i-v5-intrinsic-publication-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  native-source-and-review-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Recover hash-verified native revision sources
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import base64, hashlib, io, lzma, tarfile
+          from pathlib import Path, PurePosixPath
+          parts = Path('.github/revision-inputs/gtf-i-v5-intrinsic')
+          encoded = b''.join((parts / ('part%d.b64' % i)).read_bytes() for i in range(5))
+          packed = base64.b64decode(encoded, validate=True)
+          expected = '3eb45c55f206b7c953bf8b53f96a5631642b29efe784eb7f484683f1707dff83'
+          if hashlib.sha256(packed).hexdigest() != expected:
+              raise SystemExit('Native source transfer digest mismatch')
+          with tarfile.open(fileobj=io.BytesIO(lzma.decompress(packed)), mode='r:') as archive:
+              entries = archive.getmembers()
+              if len(entries) != 22:
+                  raise SystemExit('Unexpected source member count')
+              seen = set()
+              for entry in entries:
+                  path = PurePosixPath(entry.name)
+                  if (not entry.isfile() or path.is_absolute() or '..' in path.parts
+                      or path.parts[:2] != ('papers', 'GTF-I-v5-intrinsic') or entry.name in seen):
+                      raise SystemExit('Unsafe or duplicate source member: ' + entry.name)
+                  seen.add(entry.name)
+                  data = archive.extractfile(entry).read()
+                  target = Path(entry.name)
+                  if target.exists() and target.read_bytes() != data:
+                      raise SystemExit('Refusing to replace differing native source: ' + entry.name)
+                  target.parent.mkdir(parents=True, exist_ok=True)
+                  target.write_bytes(data)
+          print('Verified and recovered 22 exact native source files')
+          PY
+      - name: Commit native mathematical source snapshot
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add papers/GTF-I-v5-intrinsic
+          if ! git diff --cached --quiet; then
+            git commit -m 'paper(GTF-I v5): intrinsic Gibbs pressure, exact suffix closure and dependent acquisition proofs'
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
+          echo "GTF_SOURCE_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - name: Install native TeX build dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended texlive-science lmodern poppler-utils
+      - name: Rebuild both reading editions and verify exact sources
+        run: python3 papers/GTF-I-v5-intrinsic/build.py
+      - name: Write referee handoff index
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('papers/GTF-I-v5-intrinsic')
+          r = json.loads((root / 'evidence/BUILD_RECEIPT.json').read_text())
+          lines = [
+              '# General Theta Foundations I — fifth intrinsic revision',
+              '',
+              '**Author:** Qian Qi. **Date:** 22 September 2026.',
+              '**Complete preserved article:** [paper.pdf](papers/GTF-I-v5-intrinsic/paper.pdf), %s pages.' % r['outputs']['main']['pages'],
+              '**Same-source principal reading edition:** [principal-paper.pdf](papers/GTF-I-v5-intrinsic/principal-paper.pdf), %s pages.' % r['outputs']['principal']['pages'],
+              '',
+              'Working branch: `revision/general-theta-foundations-i-v5-intrinsic-2026-09-22`.',
+              'A separate referee snapshot is frozen after the downloaded publication is checked.',
+              '',
+              'This edition responds to the v4 referee report, not merely the preceding v3 report. The full article retains all preceding mathematical bodies; the principal reading edition compiles the same new proofs and their full causal dependencies.',
+              '',
+              '## Read this edition',
+              '',
+              '| Material | Location |',
+              '|---|---|',
+              '| Complete article | [paper.pdf](papers/GTF-I-v5-intrinsic/paper.pdf) |',
+              '| Principal argument | [principal-paper.pdf](papers/GTF-I-v5-intrinsic/principal-paper.pdf) |',
+              '| Native TeX and build instructions | [README.md](papers/GTF-I-v5-intrinsic/README.md) |',
+              '| Every current referee objection | [RESPONSE_TO_REFEREE.md](papers/GTF-I-v5-intrinsic/RESPONSE_TO_REFEREE.md) |',
+              '| Proof dependencies and quantifiers | [PROOF_LEDGER.md](papers/GTF-I-v5-intrinsic/PROOF_LEDGER.md) |',
+              '| Historical pipeline consultation | [HISTORY_AUDIT.md](papers/GTF-I-v5-intrinsic/HISTORY_AUDIT.md) |',
+              '| Primary-literature comparison | [LITERATURE_AUDIT.md](papers/GTF-I-v5-intrinsic/LITERATURE_AUDIT.md) |',
+              '| Complete standalone source archive | [COMPILED_SOURCES.zip](papers/GTF-I-v5-intrinsic/evidence/COMPILED_SOURCES.zip) |',
+              '| Executed checks | [BUILD_RECEIPT.json](papers/GTF-I-v5-intrinsic/evidence/BUILD_RECEIPT.json) |',
+              '',
+              '## Principal mathematical changes',
+              '',
+              'Theorem 2.1 identifies optimal causal risk and weighted-orbit quantization with a directly constructed greedy cylinder profile for separated nonlinear expanding repellers with stationary Gibbs laws. Lemma 3.4 proves exact suffix closure of the whole greedy tree, using (bL-1)/(b-1) states for L leaves, rather than a logarithmic age expansion.',
+              '',
+              'Theorem 2.2 computes the exponent from two pressure roots: spatial contraction and acquisition survival. Corollary 4.2 gives entropy/energy ratios, Proposition 4.3 gives certified finite-cylinder pressure enclosures, and Corollary 4.4 gives Perron-root formulas for nonuniform Markov branches. Example 4.5 has genuinely nonlinear branches and unequal fixed-point multipliers.',
+              '',
+              'Theorem 5.1 treats hidden state persisting across acquisitions through a stationary minorized transition, with general observation kernels. Corollaries 5.2 and 5.3 transfer the intrinsic pressure law and the noisy expanding profile. The proof does not replace the full dependent posterior by the latest-observation posterior.',
+              '',
+              'The complete article preserves the earlier root-collision, calibration, filtering, control and foundational proofs. The principal edition is a second reading view, not deletion of these results. No unresolved historical spectral, LDP, kinetic, operator or phase gate is asserted to be proved by preservation.',
+              '',
+              '## Exact source and build',
+              '',
+              '- Controlling review: `%s`.' % r['review_commit'],
+              '- Native mathematical source commit: `%s`.' % r['source_commit'],
+              '- GitHub Actions run: `%s`.' % r['run_id'],
+              '- Complete PDF SHA-256: `%s`.' % r['outputs']['main']['sha256'],
+              '- Principal PDF SHA-256: `%s`.' % r['outputs']['principal']['sha256'],
+              '- Source archive SHA-256: `%s`.' % r['compiled_source_archive_sha256'],
+              '- Archive inputs: %s; retained mathematical labels: %s; shared core labels: %s.' % (r['compiled_source_archive_files'], r['retained_mathematical_labels'], r['core_labels']),
+              '- Finite deterministic checks: %s. Ordinary and optimized runs agree; five wrong variants are rejected in both modes.' % r['finite_diagnostics']['finite_checks'],
+              '- Both editions compile in three stable passes, with no undefined references or overfull boxes. The core statement numbers agree between editions. All inherited diagnostic suites pass.',
+              '',
+              'The publication commit containing this index is separate from the mathematical source commit above. Build and finite-regression records identify the submitted object; they are not a formal proof certificate, independent referee approval, priority determination, or journal acceptance.',
+              ''
+          ]
+          Path('GTF_I_V5_INTRINSIC_INDEX.md').write_text('\n'.join(lines))
+          PY
+      - name: Publish manuscripts and exact-source evidence
+        shell: bash
+        run: |
+          git add -f papers/GTF-I-v5-intrinsic/paper.pdf papers/GTF-I-v5-intrinsic/principal-paper.pdf papers/GTF-I-v5-intrinsic/evidence GTF_I_V5_INTRINSIC_INDEX.md
+          if ! git diff --cached --quiet; then
+            git commit -m 'paper(GTF-I v5): publish complete and principal referee editions with exact-source receipts'
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
+          echo "Published commit: $(git rev-parse HEAD)" >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gtf-i-v5-intrinsic-referee-build
+          path: |
+            papers/GTF-I-v5-intrinsic/paper.pdf
+            papers/GTF-I-v5-intrinsic/principal-paper.pdf
+            papers/GTF-I-v5-intrinsic/evidence
+            GTF_I_V5_INTRINSIC_INDEX.md
+          retention-days: 30
