@@ -1,0 +1,67 @@
+name: A2 v121 primary flags publication
+on:
+  push:
+    branches:
+      - revision/a2-v121-determinantal-flags-elliptic-boundary-2026-09-22
+    paths:
+      - '.revision-bootstrap/a2-v121/**'
+      - '.github/workflows/a2-v121-primary-flags.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: a2-v121-primary-flags-publication
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/revision/a2-v121-determinantal-flags-elliptic-boundary-2026-09-22'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      REVISION: papers/A2-v17-boundary-information-coarsening/article/v121
+      OLD_REVISION: papers/A2-v17-boundary-information-coarsening/article/v120
+      TARGET_BRANCH: revision/a2-v121-determinantal-flags-elliptic-boundary-2026-09-22
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          sparse-checkout: |
+            .revision-bootstrap/a2-v121
+            papers/A2-v17-boundary-information-coarsening/article/v120
+            papers/A2-v17-boundary-information-coarsening/article/v121
+      - name: Verify overlay and materialize new revision
+        run: python3 .revision-bootstrap/a2-v121/materialize.py
+      - name: Commit the mathematical source before building
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git diff --exit-code -- "$OLD_REVISION"
+          git add --sparse -f -- "$REVISION" A2_REVISION_V121_INDEX.md
+          git commit -m 'A2 v121: determinantal primary flags and non-isotrivial elliptic boundary'
+          git push origin "HEAD:$TARGET_BRANCH"
+          echo "SOURCE_COMMIT_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install mathematical build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+          python -m pip install sympy==1.14.0
+      - name: Run retained regressions and compile all reading editions
+        run: bash "$REVISION/build.sh"
+      - name: Publish source-bound PDFs and evidence
+        run: |
+          git diff --exit-code -- "$OLD_REVISION"
+          git add --sparse -f -- "$REVISION/paper.pdf" "$REVISION/geometry.pdf" "$REVISION/applications.pdf" "$REVISION/paper.log" "$REVISION/geometry.log" "$REVISION/applications.log" "$REVISION/evidence" "$REVISION/crossrefs"
+          git commit -m "A2 v121: referee PDFs and evidence built from $SOURCE_COMMIT_SHA"
+          git push origin "HEAD:$TARGET_BRANCH"
+      - name: Package complete reproducible review bundle
+        run: |
+          tar -czf a2-v121-review-bundle.tar.gz "$REVISION" "$OLD_REVISION" A2_REVISION_V121_INDEX.md
+      - uses: actions/upload-artifact@v4
+        with:
+          name: a2-v121-source-bound-review
+          path: a2-v121-review-bundle.tar.gz
+          retention-days: 30
