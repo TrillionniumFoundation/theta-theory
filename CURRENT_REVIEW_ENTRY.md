@@ -1,9 +1,7 @@
-# Current A2 revision entry: 131
+# Current A2 revision: 143
 
-See `A2_REVISION_V131_INDEX.md`.
+Native manuscript: `papers/A2-v17-boundary-information-coarsening/article/v143/geometry.tex`.
 
-Principal manuscript: `papers/A2-v17-boundary-information-coarsening/article/v131/geometry.tex`.
-Referee response: `papers/A2-v17-boundary-information-coarsening/article/v131/RESPONSE_TO_REFEREE_V130.md`.
-Controlling review: `reviews/a2-v130-independent-harsh-top4-2026-09-23/REFEREE_REPORT.md` at `57c70a882150cc6e44d85ad6f68043b7327d8a10`.
+The controlling report is the second v141 report at `3afecca5e65d7fe9c6784020ea6e813122938140`, reviewing `8cd389f4048a1047be9aa8e8e4f642595175a555`. The v142 predecessor is `4deb7a35f4488a0c8b686261569ce4ef324ca750`.
 
-This branch preserves the entire reviewed source and review history. Build status is given only by the source-bound receipt in the v131 evidence directory, not by this entry file. Structural proofs remain subject to independent mathematical review.
+Build publication is pending. The subsequent source-bound SOURCE_LOCK_V143.json and BUILD_RECEIPT_V143.json will identify the exact native source SHA and generated PDFs. No prior receipt certifies this source.
