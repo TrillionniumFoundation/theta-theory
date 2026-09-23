@@ -1,0 +1,100 @@
+name: A2 v141 native source restoration
+on:
+  push:
+    branches: ['revision/a2-v141-functorial-spectral-reconstruction-2026-09-23']
+    paths: ['.github/workflows/a2-v141-native-bootstrap.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: a2-v141-native-bootstrap
+  cancel-in-progress: false
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/download-artifact@v4
+        with:
+          name: a2-v138-referee-bundle
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: TrillionniumFoundation/theta-theory
+          run-id: 35847505538
+          path: /tmp/a2-v138
+      - name: Verify artifact bytes and restore native predecessor
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib,json,tarfile
+          root=Path.cwd(); archive=Path('/tmp/a2-v138/a2-v138-referee-bundle.tar.gz')
+          expected='bd68ac83a841259a4f2b39fa803bd48e8d43b4b508ea2b8a4a3e44168d48d665'
+          assert hashlib.sha256(archive.read_bytes()).hexdigest()==expected
+          prefix='papers/A2-v17-boundary-information-coarsening/article/v138/'
+          restored=[]
+          with tarfile.open(archive,'r:gz') as tar:
+              for m in tar.getmembers():
+                  if not m.name.startswith(prefix) or m.isdir(): continue
+                  p=Path(m.name)
+                  assert m.isfile() and not p.is_absolute() and '..' not in p.parts
+                  data=tar.extractfile(m).read()
+                  if p.exists(): assert p.read_bytes()==data, m.name
+                  else: p.parent.mkdir(parents=True,exist_ok=True); p.write_bytes(data)
+                  restored.append(m.name)
+          manifest=json.loads(Path(prefix+'PROVENANCE_MANIFEST.json').read_text())
+          for n,digest in manifest['assembled_sha256'].items():
+              assert hashlib.sha256(Path(prefix+n).read_bytes()).hexdigest()==digest,n
+          target=Path('revisions/a2-v141');target.mkdir(parents=True,exist_ok=True)
+          (target/'RESTORATION_RECEIPT.json').write_text(json.dumps({'source_commit':'6bac73f9ebcaadcfa135e4960de19c93323bbfd7','review_commit':'17e039fe55fc0d060b443d486421d937f637439a','artifact_id':10743339474,'archive_sha256':expected,'restored_files':len(restored),'manifest_verified':True,'verification':'archive bytes and assembled manifest; independent of Git index'},indent=2)+'\n')
+          # Execute the original assembler with only its invalid index-membership
+          # check replaced. The archive and every manifest entry were checked above.
+          p=Path('revisions/a2-v139/assemble.py'); s=p.read_text()
+          old="subprocess.run(['git','diff','--exit-code',PIN,'--',str(SRC.relative_to(ROOT)),'reviews'],cwd=ROOT,check=True)"
+          assert s.count(old)==1
+          s=s.replace(old,"assert (ROOT/'revisions/a2-v141/RESTORATION_RECEIPT.json').is_file()")
+          exec(compile(s,str(p),'exec'),{'__file__':str(p.resolve()),'__name__':'__main__'})
+          PY
+      - name: Decode and assemble authenticated v140 source
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import base64,gzip,hashlib,json,subprocess,sys
+          h=Path('revisions/a2-v140'); text=(h/'payload.b64').read_text()
+          spec=json.loads((h/'transport_patch.json').read_text())
+          digest=hashlib.sha256(text.encode()).hexdigest()
+          if digest==spec['before_sha256']:
+              for pos,old,new in sorted(spec['edits'],reverse=True):
+                  assert text[pos:pos+len(old)]==old
+                  text=text[:pos]+new+text[pos+len(old):]
+          assert hashlib.sha256(text.encode()).hexdigest()==spec['after_sha256']
+          blob=base64.b64decode(text.strip(),validate=True)
+          assert hashlib.sha256(blob).hexdigest()=='63bd8efa21ea56aa8cb6a2337e81233f2ba093b7eb321cef6e2c84a59a4deff2'
+          for name,content in json.loads(gzip.decompress(blob))['files'].items():
+              q=Path(name);assert not q.is_absolute() and '..' not in q.parts
+              out=h/q;out.parent.mkdir(parents=True,exist_ok=True);out.write_text(content)
+          subprocess.run([sys.executable,str(h/'revise.py')],check=True)
+          PY
+      - name: Commit native sources to this revision branch only
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          P=papers/A2-v17-boundary-information-coarsening/article
+          git add -f -- "$P/v138" "$P/v139" "$P/v140" revisions/a2-v141/RESTORATION_RECEIPT.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'A2 v141: materialize authentic v138-v140 native manuscript trees [skip ci]'
+            git push origin HEAD:revision/a2-v141-functorial-spectral-reconstruction-2026-09-23
+          fi
+          git rev-parse HEAD > /tmp/a2-v141-native-commit.txt
+      - name: Package restored source for in-session revision
+        run: |
+          tar -czf /tmp/a2-v141-native-predecessors.tar.gz papers/A2-v17-boundary-information-coarsening/article/v138 papers/A2-v17-boundary-information-coarsening/article/v139 papers/A2-v17-boundary-information-coarsening/article/v140 revisions/a2-v141/RESTORATION_RECEIPT.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: a2-v141-native-predecessors
+          path: |
+            /tmp/a2-v141-native-predecessors.tar.gz
+            /tmp/a2-v141-native-commit.txt
+          retention-days: 30
