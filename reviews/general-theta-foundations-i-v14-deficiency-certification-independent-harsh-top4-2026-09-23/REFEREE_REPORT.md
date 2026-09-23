@@ -3,14 +3,14 @@
 **Manuscript:** *General Theta Foundations I: Intrinsic Causal Deficiency and Finite-State Decisions*  
 **Author:** Qian Qi  
 **Repository:** TrillionniumFoundation/theta-theory  
-**Reviewed frozen revision:** `revision/general-theta-foundations-i-v14-deficiency-certification-referee-ready-2026-09-23`  
-**Reviewed frozen branch HEAD:** `52c7049ea50f5964598797b59e738ff127ab6846`  
-**Exact mathematical source checkout recorded by the revision:** `a9b8731647f54f6d8fa457cb0ae944f58287d8a8`  
-**PDF/evidence publication commit:** `b0fb0e7a8e377d8d29df4fdc5a1e0ea9177fe32e`  
-**Immediate mathematical parent (v13):** `e8a5354659a65c3c909cd927c2f4f628ea1b1a6c`  
-**Controlling predecessor report:** commit `a03a574936230aedbe1a8d3f4cb5b1fbd9c8ceb3`, report blob `69fd7069f0902ef6d17790c388fd51322407b7bf`  
-**Canonical article:** `papers/GTF-I-v14-deficiency-certification/paper.pdf`, 24 pages  
-**Complete preserved development:** `papers/GTF-I-v14-deficiency-certification/complete-development.pdf`, 215 pages  
+**Reviewed frozen revision:** revision/general-theta-foundations-i-v14-deficiency-certification-referee-ready-2026-09-23  
+**Reviewed frozen branch HEAD:** 52c7049ea50f5964598797b59e738ff127ab6846  
+**Exact mathematical source checkout recorded by the revision:** a9b8731647f54f6d8fa457cb0ae944f58287d8a8  
+**PDF/evidence publication commit:** b0fb0e7a8e377d8d29df4fdc5a1e0ea9177fe32e  
+**Immediate mathematical parent (v13):** e8a5354659a65c3c909cd927c2f4f628ea1b1a6c  
+**Controlling predecessor report:** commit a03a574936230aedbe1a8d3f4cb5b1fbd9c8ceb3, report blob 69fd7069f0902ef6d17790c388fd51322407b7bf  
+**Canonical article:** papers/GTF-I-v14-deficiency-certification/paper.pdf, 24 pages  
+**Complete preserved development:** papers/GTF-I-v14-deficiency-certification/complete-development.pdf, 215 pages  
 **Review date:** 23 September 2026  
 **Standard requested:** external-referee standard appropriate to Annals of Mathematics / Inventiones Mathematicae / Journal of the AMS / Acta Mathematica
 
@@ -42,15 +42,15 @@ For those reasons I would return the paper again at Annals / Inventiones / JAMS 
 
 I reviewed the exact frozen v14 referee branch, not a moving working branch. I inspected in particular:
 
-- `GENERAL_THETA_FOUNDATIONS_I_V14_REVIEW_READY.md`;
-- `frontmatter.tex`, `introduction.tex`, `core.tex`, `development.tex` and `preserved-core.tex`;
-- the inherited v13 `intrinsic-deficiency.tex`, `endogenous-tasks.tex`, `regenerative-risks.tex` and `active-hard-spheres.tex`;
-- the new `local-certificates.tex` and `residual-certificates.tex`;
-- `RESPONSE_TO_REFEREE.md`;
-- `PROOF_LEDGER.md`;
-- `LITERATURE_COMPARISON.md`;
-- `HISTORY_AUDIT.md`;
-- `PIPELINE_GRAPH.json`;
+- GENERAL_THETA_FOUNDATIONS_I_V14_REVIEW_READY.md;
+- frontmatter.tex, introduction.tex, core.tex, development.tex and preserved-core.tex;
+- the inherited v13 intrinsic-deficiency.tex, endogenous-tasks.tex, regenerative-risks.tex and active-hard-spheres.tex;
+- the new local-certificates.tex and residual-certificates.tex;
+- RESPONSE_TO_REFEREE.md;
+- PROOF_LEDGER.md;
+- LITERATURE_COMPARISON.md;
+- HISTORY_AUDIT.md;
+- PIPELINE_GRAPH.json;
 - the v14 README and review-ready source/publication identities;
 - the exact v13-to-v14 repository comparison;
 - the controlling independent v12 report; and
@@ -68,13 +68,9 @@ A new harsh report should not recycle objections that have been answered.
 
 ## 2.1 The resource quantity is now intrinsic
 
-The most important v12 request was to stop treating (K) as an externally supplied implementation label and define the actual least simulation error at a prescribed resource.
+The most important v12 request was to stop treating K as an externally supplied implementation label and define the actual least simulation error at a prescribed resource.
 
-The inherited v13 theorem does this. It defines private deficiency
-[
-delta^{m p}_K(E,F)
-]
-by minimizing over the common finite-state causal transducer itself, and separately defines fixed-cardinality hidden and visible selector variants. The distinction is not cosmetic. The delayed three-symbol example shows that hidden convexification can change the zero set at the same private width, while visible selection has the private zero set once the selector is included in the compared joint interface.
+The inherited v13 theorem does this. It defines the private quantity delta_p(K; E,F) by minimizing over the common finite-state causal transducer itself, and separately defines fixed-cardinality hidden and visible selector variants. The distinction is not cosmetic. The delayed three-symbol example shows that hidden convexification can change the zero set at the same private width, while visible selection has the private zero set once the selector is included in the compared joint interface.
 
 The composition theorem also tracks the state width multiplicatively rather than dropping it from the comparison.
 
@@ -82,7 +78,7 @@ This is a substantive response to E12.1.
 
 ## 2.2 The private nonconvexity is no longer hidden behind a convex hull
 
-Theorem 2.7 / `thm:v14-local` addresses exactly the problem raised by the v12 report.
+Theorem 2.7, stable label thm:v14-local, addresses exactly the problem raised by the v12 report.
 
 For a fixed private or finite-selector resource signature, every fixed feedback/event discrepancy is separately affine in the stochastic rows. A rational clipped-simplex cover is placed on the actual policy space. On each cell, one chooses a testing inequality and uses the exact vertex minimum of that fixed separately affine test. The lower certificate therefore stays on the nonconvex private image. The upper certificate is an actual rational row table at the same width.
 
@@ -100,11 +96,7 @@ This is a much more convincing answer to the previous request for an endogenous 
 
 ## 2.4 The average-risk extension is truly nonsummable, within its reset signature
 
-The average criterion is not a relabeled summable infinite-horizon problem. The joint physical-register kernel has an explicit reset component
-[
-P^pi_j=eta N_j+(1-eta)Q^pi_j
-]
-and the reset clears both the physical preparation and the within-policy register. This gives a genuine average-risk theorem for singular or deterministic between-reset physical dynamics.
+The average criterion is not a relabeled summable infinite-horizon problem. The joint physical-register kernel has the explicit form P = eta N + (1-eta) Q, and the reset clears both the physical preparation and the within-policy register. This gives a genuine average-risk theorem for singular or deterministic between-reset physical dynamics.
 
 The scope is narrow — I return to that below — but the theorem is correctly described as nonsummable under the declared regenerative signature.
 
@@ -128,17 +120,9 @@ This substantially answers the old architectural objection. I would **not** ask 
 
 I stress this because the report below is severe for top-four reasons, not because I found an elementary contradiction.
 
-Let
-[
-delta=min_{qinmathcal P}F(q),qquad F(q)=max_{iin I}f_i(q).
-]
-For the finite causal experiment, the test set (I) is finite, including deterministic feedback trees and marked events. Along a complete path a time-indexed simulator row is encountered at most once. Therefore each (f_i) is separately affine in the row blocks even though (F) generally is not.
+The finite theorem has the form delta = min over policies q of F(q), with F(q) equal to the maximum of finitely many feedback/event discrepancies f_i(q). For the finite causal experiment, the test index set is finite, including deterministic feedback trees and marked events. Along a complete path a time-indexed simulator row is encountered at most once. Therefore each fixed f_i is separately affine in the row blocks even though F generally is not.
 
-For a product cell (C), separate affinity gives
-[
-min_{qin C}f_i(q)=min_{vin V(C)}f_i(v).
-]
-This justifies the local lower witness. The upper witness is a true policy vertex, not a mixture of designs.
+For a product policy cell C, separate affinity gives an exact vertex formula for the minimum of a fixed test over C. This justifies the local lower witness. The upper witness is a true policy vertex, not a mixture of designs.
 
 The oscillation proof is also plausible. Two rows in one mesh cell have bounded total variation. Maximal coupling at each time, conditional on previous agreement, gives the product survival bound. Hidden and visible selectors are treated differently; in particular the visible bound contains the second selector contribution because the reference joint experiment changes with the selector distribution as well.
 
@@ -165,15 +149,13 @@ Theorem 5.5 gives a two-sided stateless marked comparison bound between the exac
 
 But the manuscript does **not** supply the next bridge needed to invoke Theorem 2.7 on the physical approximation.
 
-The paper itself says this explicitly in Corollary 5.6:
-
-> a finite-dimensional vector model is not automatically a finite report experiment; a further finite-report bridge must actually be proved before invoking the rational local testing algorithm.
+The paper itself says this explicitly in Corollary 5.6: a finite-dimensional vector model is not automatically a finite report experiment; a further finite-report bridge must actually be proved before invoking the rational local testing algorithm.
 
 That sentence is mathematically responsible. It is also an admission that the headline physical “a posteriori realization” does not yet instantiate the headline local certificate theorem.
 
 A top-four version centered on certification should close this gap.
 
-At minimum I would require a theorem of the following form.
+At minimum I would require a theorem with the following chain:
 
 1. Starting from the finite-dimensional Gaussian acquisition presentation, construct a finite-report marked causal experiment by a declared quantization/truncation scheme.
 2. Prove a two-sided **feedback** deficiency bound for that report discretization, uniformly over the fixed consumer resource budget and preserving the actual mark.
@@ -193,12 +175,7 @@ The active section contains two logically distinct positive statements.
 
 The inherited graph-core theorem proves strong convergence of the controlled-word approximations for each fixed horizon. Hence the true acquisition deficiency tends to zero.
 
-The new residual theorem gives, for a **particular** finite subspace (V), an a posteriori majorant computed from
-[
-R=((I-P)Liota)^*((I-P)Liota),qquad
-S_a=((I-P)C_aiota)^*((I-P)C_aiota)
-]
-and the corresponding finite-dimensional word defects.
+The new residual theorem gives, for a **particular** finite subspace V, an a posteriori majorant computed from graph and intervention residual matrices and the corresponding finite-dimensional word defects.
 
 These are both useful. But the manuscript explicitly states that the residual majorants need not converge to zero along every graph-core sequence. Cancellation can make the actual orbit error small even when the residual bound stays large.
 
@@ -225,11 +202,7 @@ The v14 solution is to localize. This works mathematically.
 
 But the cost of localization is enormous. A certificate assigns one test to every product cell of the row-simplex cover. The number of cells grows roughly like a power of the mesh size in the total row dimension, and the total row dimension itself grows with the number of time/state/action/source-report row blocks. The available tests range over parameters, deterministic feedback trees and marked events; the event family alone is exponential in the finite transcript cardinality.
 
-The theorem's modulus
-[
-1-prod_t(1-ho_t(M))
-]
-does not depend on the number of histories. That is a useful stability fact. It must not be confused with history-independent certificate size or synthesis complexity.
+The theorem's causal modulus does not depend on the number of histories. That is a useful stability fact. It must not be confused with history-independent certificate size or synthesis complexity.
 
 The README is candid that enumeration can be large and that the code rejects rather than truncates an oversized cover. The article should make the distinction equally sharp whenever “effective”, “executable” or “complete certificate” is used.
 
@@ -282,13 +255,9 @@ I therefore regard E12.5 as still open and editorially blocking.
 
 The regenerative average theorem is a real answer to the word “nonsummable.” It deserves credit.
 
-But its compactness and stability come from the explicit Doeblin-type structure
-[
-P=eta N+(1-eta)Q
-]
-with a physically supplied reset that also clears the controller register.
+But its compactness and stability come from the explicit Doeblin-type structure P = eta N + (1-eta) Q with a physically supplied reset that also clears the controller register.
 
-This immediately yields uniform total-variation contraction by (1-eta), an explicit invariant law, uniform Cesaro and Abelian bounds, and a geometric cycle decomposition.
+This immediately yields uniform total-variation contraction by 1-eta, an explicit invariant law, uniform Cesaro and normalized-discount bounds, and a geometric cycle decomposition.
 
 There is nothing wrong with that. The authors state the scope honestly.
 
@@ -318,13 +287,11 @@ I view this section as a good finite decision-theoretic consumer of the intrinsi
 
 The current pipeline graph is admirably explicit.
 
-For all eleven historical components A1, A2, A3, A4, B1, B2, B3, B4, C1, C2 and D1, the field
-`full_historical_target_closed_by_v14`
-is false.
+For all eleven historical components A1, A2, A3, A4, B1, B2, B3, B4, C1, C2 and D1, the field full_historical_target_closed_by_v14 is false.
 
 In particular:
 
-- the primary A2 chain remains `independent_not_consumed`;
+- the primary A2 chain remains independent_not_consumed;
 - A4 retains an operator-domain consumer but not the historical Sinai spectral/left-strip closure;
 - B4 receives the new active microscopic residual consumer, but explicitly not the nonlinear action-sublevel, BBGKY/Boltzmann–Grad or kinetic closure; and
 - C2 retains only an operator-domain compression edge, not the broader form/optional-projection targets.
@@ -343,15 +310,10 @@ This point deserves a separate positive section because it changes my assessment
 
 The 24-page v14 canonical article has a visible spine:
 
-[
-	ext{intrinsic fixed-resource deficiency}
-longrightarrow
-	ext{local private certificates}
-longrightarrow
-	ext{endogenous / regenerative decisions}
-longrightarrow
-	ext{active physical comparison}.
-]
+intrinsic fixed-resource deficiency  
+to local private certificates  
+to endogenous / regenerative decisions  
+to active physical comparison.
 
 The 215-page development preserves history without forcing the canonical submission to reproduce every predecessor introduction and model.
 
@@ -369,13 +331,13 @@ The remaining architectural request is more mathematical: close the missing brid
 
 The error modulus is independent of the number of histories. The certificate cardinality is not.
 
-A theorem or proposition should bound the number of cells and inequalities in terms of the number of row blocks, row alphabet sizes, mesh (M), feedback-tree count and transcript/event cardinalities.
+A theorem or proposition should bound the number of cells and inequalities in terms of the number of row blocks, row alphabet sizes, mesh M, feedback-tree count and transcript/event cardinalities.
 
 Even a crude bound would prevent readers from reading “history-independent modulus” as “history-independent certification cost.”
 
 ## 12.2 Separate strict finite certificates from exact boundary decision
 
-For (delta>arepsilon) and (delta<arepsilon), the mesh certificates are finite and explicit.
+For delta > epsilon and delta < epsilon, the mesh certificates are finite and explicit.
 
 For equality at a rational tolerance, the proof invokes general real quantifier elimination. The shipped certificate program does not implement that algorithm.
 
@@ -399,7 +361,7 @@ Only after that can the local certificate be honestly called a physical resource
 
 ## 12.4 Certified Gram entries need an analytic source
 
-The residual formulas become rigorous only when the inner products involving (f,phi_i,Lphi_i,C_aphi_i) have certified enclosures.
+The residual formulas become rigorous only when the inner products involving f, phi_i, L phi_i and C_a phi_i have certified enclosures.
 
 The manuscript correctly says floating-point matrices are insufficient.
 
@@ -417,7 +379,7 @@ This would materially strengthen Section 5.
 
 ## 12.6 Clarify finite versus compact parameter/task sets across the paper
 
-The local deficiency theorem uses finite (Theta) and a finite test family. The regenerative section allows a compact row set (J). The physical preparation notation also permits a family (p_	heta).
+The local deficiency theorem uses finite Theta and a finite test family. The regenerative section allows a compact row set J. The physical preparation notation also permits a family p_theta.
 
 High-level summaries should not blur these different index classes.
 
