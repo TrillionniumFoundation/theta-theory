@@ -1,0 +1,172 @@
+\section{A finite-register certificate transported through the microscopic limit}
+\label{sec:v19-certificate}
+The general empirical audit in Theorem~\ref{thm:v18-audit} treats every
+coordinate of a marked row as unknown. The private continuation constraint
+in the collision experiment forces a smaller family. Exploiting this
+constraint yields a much smaller executable auditor, without granting it
+knowledge of the candidate law.
+
+In the all-on row of Section~\ref{sec:v18-microscopic}, every private
+width-one candidate emits two independent bits with parameters $p,q$,
+independently of the fair actual mark $W$. Put
+\[
+ a=(1-p)(1-q),\qquad c=pq.
+\]
+The ideal target $Q_*$ is supported on $000,001,110,111$, with respective
+masses $5/16,3/16,3/16,5/16$. The candidate masses on these atoms are
+$a/2,a/2,c/2,c/2$. Every other atom has target mass zero and cannot improve
+the maximizing event for $Q_*-b$.
+
+\begin{lemma}[Two-count audit and its exact register implementation]
+\label{lem:v19-counter}
+In $n$ independent all-on candidate trials let $C_0,C_1$ count report
+pairs $00,11$, respectively, ignoring the training mark. On the four
+supported atoms use the empirical masses
+$C_0/(2n),C_0/(2n),C_1/(2n),C_1/(2n)$, and select exactly those atoms
+whose target mass is strictly greater than this empirical mass. Call the
+resulting event $A_C$. For every $p,q\in[0,1]$,
+\begin{equation}\label{eq:v19-countregret}
+ \E\{Q_*(A_C)-b(A_C)\}\ge\|Q_*-b\|_{\rm TV}-n^{-1/2}.
+\end{equation}
+For $n=400$, the rule is implemented by the two truncated counts
+$\min(C_0,250),\min(C_1,250)$, with comparisons to $150$ and $250$.
+Including execution of complete transcripts and the two independent
+validation trials, it has a deterministic streaming realization with at
+most $504008$ retained states at any scheduled epoch. Thus a nineteen-bit
+register suffices. The schedule clock is free; no other history store is
+free. The table description and transition evaluation cost are not asserted
+to be bounded by nineteen bits.
+\end{lemma}
+\begin{proof}
+On any supported atom let $x=Q_*(w)-b(w)$ and let $\widehat x$ be the
+empirical discrepancy. If the sign rule selects a different event from
+an exact maximizing event, the lost contribution is at most
+$|x-\widehat x|$. On unsupported atoms both rules can omit the atom.
+Summing gives regret at most
+\[
+ |C_0/n-a|+|C_1/n-c|.
+\]
+The two counts need not be independent. Their marginal binomial variances
+and Cauchy--Schwarz give expected regret at most
+\[
+ \frac{\sqrt{a(1-a)}+\sqrt{c(1-c)}}{\sqrt n}\le\frac1{\sqrt n}.
+\]
+This proves \eqref{eq:v19-countregret}.
+
+For the $00$ pair, select both marked atoms when $C_0<150$, only the
+atom of target mass $5/16$ when $150\le C_0<250$, and neither when
+$C_0\ge250$. The same rule applies to $11$, with the other mark being
+the atom of larger target mass. At equality the zero empirical discrepancy
+is excluded. Increasing a count beyond $250$ cannot change the final
+choice. Two registers with $251$ possibilities each therefore implement
+the rule, with at most nine possible final event masks.
+
+A buffer with eight possibilities is sufficient to execute and record a
+completed two-bit-plus-mark transcript. During training the pair of
+truncated counts and this buffer use at most $8\cdot251^2=504008$ states.
+After training, discard the counts and retain the event mask. During
+validation at most nine masks, one target-event indicator with two values,
+and the same eight-state transcript buffer are needed, a total of $144$
+states. The final signed score takes three values. Since the epoch is
+known, labels can be reused between these phases; their state counts need
+not be multiplied. The update maps and threshold comparisons are
+parameter-independent deterministic maps. They are thus stochastic rows
+with entries zero or one, or equivalently a compatible continuation cover
+by Theorem~\ref{thm:v18-continuation}. Fresh sampling randomness belongs to
+the specified reset experiments, not to an uncharged auditor register.
+Finally $504008<2^{19}$.
+\end{proof}
+
+\begin{theorem}[Finite-register microscopic certification and global transport]
+\label{thm:v19-composition}
+Consider the marked hard-sphere family of
+Theorem~\ref{thm:v18-microscopic}, with $d\in[9/10,11/10]$ and
+$0<\sigma\le1/24$. There is one rational streaming audit, independent of
+$d,\sigma,p,q$, using $400$ candidate training resets and one independent
+candidate and target validation trial, whose expected signed score is
+strictly greater than $2/5$ against every private width-one candidate.
+It uses at most $504008$ retained auditor states. The candidate remains
+private width one; the auditor's register is a distinct, charged resource.
+The physical deficiencies still satisfy
+\[
+ \dpr>9/20,\qquad \dvi_r>9/20\ (r\ge1),\qquad \dhi_2<13/100.
+\]
+For $d\le2/5$ all three finite-experiment deficiencies vanish.
+
+Fix a positive $\sigma$ and a sequence $d_k\to d$ within the collision
+interval. Put
+\[
+ \rho_k=|d_k-d|+2700|d_k-d|^2,\qquad
+ \epsilon_k=\min\{1,\sqrt{\rho_k}/(2\sigma)\}.
+\]
+The same $400$-reset rule changes its expected score by at most
+$\epsilon_k$ under this perturbation. At the same time the microscopic
+paths, full and projected likelihoods, posteriors, and bounded entropic
+values have the joint convergence of
+Theorem~\ref{thm:v18-microscopic}. Their innovations, backward integrands
+and backward martingale integrals additionally have all the global
+conclusions of Theorem~\ref{thm:v19-global}, with $T=3$, $M=1$,
+$\eta_k^2\le\rho_k$, and $\varepsilon_k\le\epsilon_k$.
+On compact parameter sets bounded away from zero noise, the same audit
+has the effective probability-enclosure and rational-verification
+properties of Theorem~\ref{thm:v18-microscopic}(d).
+\end{theorem}
+\begin{proof}
+The private width-one continuation restriction gives precisely the
+candidate family used in Lemma~\ref{lem:v19-counter}; the actual mark is
+not available to its transition rows. The exact finite separation in
+Theorem~\ref{thm:v17-markedgap} gives
+\[
+ \min_{p,q}\|Q_*-b(p,q)\|_{\rm TV}
+             =d_*:=\sqrt{5/2}-9/8.
+\]
+The scattering and observation estimates proved in
+Theorem~\ref{thm:v18-microscopic} put the physical marked target within
+$1/300$ of $Q_*$, uniformly in all stated parameters. Train the two-count
+rule against the fixed rational $Q_*$, but use the actual physical target
+for validation. Each selected event's target probability changes by less
+than $1/300$. Hence its actual expected score is greater than
+\begin{equation}\label{eq:v19-physicalscore}
+ d_*-\frac1{20}-\frac1{300}>\frac25.
+\end{equation}
+The last strict inequality is exact: it is equivalent to
+$\sqrt{5/2}>947/600$, whose squared margin is $3191/360000$.
+The rule's executable memory bound was proved in
+Lemma~\ref{lem:v19-counter}. Its total trial count is $402$, not $400$
+once validation is included. The private, hidden and visible deficiency
+bounds and the no-collision control are inherited from the same physical
+theorem, rather than inferred from an auditor whose signature was changed.
+
+For changing $d_k$, Lemma~\ref{lem:v18-movingcollision} supplies the
+signal modulus $\rho_k$ and the pathwise $J_1$ bound
+$100|d_k-d|$. Theorem~\ref{thm:v18-gaussian} gives the joint marked
+variation bound $\epsilon_k$ and the likelihood/posterior convergence.
+The candidate source is blind and its behavior does not depend on $d$.
+Thus training laws and candidate validation laws are unchanged, and
+Proposition~\ref{prop:v18-audittransport} has $\alpha=0$ and
+$\beta=\epsilon_k$. There is no factor of $400$ in this transport cost.
+The same preparation and signal bounds verify every hypothesis of
+Theorem~\ref{thm:v19-global}, proving the global backward assertions.
+Finally the audit uses rational thresholds and finitely many deterministic
+row maps. The positive-noise enclosure theorem therefore applies directly;
+an additional target-presentation error $\zeta$ reduces its score by at
+most $\zeta$.
+\end{proof}
+
+The two-count construction is specific to the private behavior family. A
+hidden mixture can destroy the independence of its two reports, and its
+mark relation must still be checked. The bound is therefore not asserted
+against the hidden class. The visible lower bound has its separate
+fiberwise proof; an arbitrarily large visible alphabet is not silently
+stored in the nineteen-bit auditor. The certificate concerns expected
+score, not a confidence statement about a single realized validation pair.
+Repeating validation for statistical confidence would incur an additional
+sample and storage budget.
+
+The theorem uses a single mechanism: the continuation restriction fixes
+the feasible candidate laws and permits the compressed audit; scattering
+supplies its marked separation; common-preparation variation transports the
+same executable test and the global conditional-law consumer through a
+change in the microscopic trajectory. The collision transduces a prepared
+impact variable into a signal. It does not create the prepared correlation
+between that variable and the mark, and it is not a particle-number limit.
