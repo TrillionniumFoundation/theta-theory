@@ -1,0 +1,62 @@
+name: A2 v133 universal readout and exceptional fibres
+on:
+  push:
+    branches:
+      - revision/a2-v133-schur-readout-exceptional-fibres-2026-09-23
+    paths:
+      - 'revisions/a2-v133/**'
+      - '.github/workflows/a2-v133-revision.yml'
+      - 'A2_REVISION_V133_INDEX.md'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: a2-v133-referee-build
+  cancel-in-progress: false
+jobs:
+  build:
+    if: github.ref == 'refs/heads/revision/a2-v133-schur-readout-exceptional-fibres-2026-09-23'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      REVISION: papers/A2-v17-boundary-information-coarsening/article/v133
+      TARGET_BRANCH: revision/a2-v133-schur-readout-exceptional-fibres-2026-09-23
+      PYTHONDONTWRITEBYTECODE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Assemble the immutable reviewed source and verify every transferred byte
+        run: python revisions/a2-v133/assemble.py
+      - name: Install the pinned mathematical build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern
+          python -m pip install 'sympy==1.14.0' 'numpy==2.3.5' 'PyMuPDF==1.26.7'
+      - name: Run all eight exact scripts and compile the complete article
+        run: bash "$REVISION/build.sh"
+      - name: Verify preservation of the reviewed paper and all reports
+        run: git diff --exit-code d76f34db1aaa8e196a7b50f4ec04be381d45236e -- papers/A2-v17-boundary-information-coarsening/article/v132 reviews
+      - name: Publish source PDF and the executed receipt on v133 only
+        run: |
+          test "${GITHUB_REF#refs/heads/}" = "$TARGET_BRANCH"
+          find "$REVISION" -type d -name __pycache__ -prune -exec rm -rf {} +
+          rm -f "$REVISION/geometry.aux" "$REVISION/geometry.out" "$REVISION/geometry.log"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f -- "$REVISION"
+          if ! git diff --cached --quiet; then
+            git commit -m 'A2 v133: full manuscript PDF and executed source-bound evidence [skip ci]'
+            git push origin "HEAD:$TARGET_BRANCH"
+          fi
+      - name: Package complete manuscript response and controlling review
+        run: tar -czf a2-v133-referee-bundle.tar.gz A2_REVISION_V133_INDEX.md revisions/a2-v133 reviews/a2-v132-independent-harsh-top4-2026-09-23/REFEREE_REPORT.md "$REVISION"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: a2-v133-referee-bundle
+          path: a2-v133-referee-bundle.tar.gz
+          retention-days: 30
