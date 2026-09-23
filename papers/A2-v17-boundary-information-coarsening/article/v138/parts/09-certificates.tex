@@ -1,0 +1,95 @@
+\section{An explicit system and exact certificate specifications}
+\label{sec:certificates}
+The rational system used throughout is the following. It is the same
+relation system as in the preceding manuscript's exact smoothness
+example, now used for a differential and a higher-corank calculation.
+\begin{align*}
+q_{0}&=x_{0}^{2} + 2 x_{0} x_{1} - 2 x_{0} x_{2} + 2 x_{0} x_{3} + x_{1} x_{2} + x_{1} x_{3} + x_{2} x_{3}\\
+q_{1}&=- x_{0} x_{1} - x_{0} x_{3} + x_{1}^{2} - x_{1} x_{2} - x_{1} x_{3} - 2 x_{2} x_{3}\\
+q_{2}&=2 x_{0} x_{1} - x_{0} x_{2} - 2 x_{0} x_{3} + 2 x_{1} x_{2} + x_{2}^{2} + x_{2} x_{3}\\
+q_{3}&=x_{0} x_{2} + x_{1} x_{2} - 2 x_{2} x_{3} + x_{3}^{2}
+\end{align*}
+For a compact complete specification of its quartic, list the $35$
+degree-four exponent tuples in descending lexicographic order, starting
+with $(4,0,0,0)$ and ending with $(0,0,0,4)$. The coefficients of
+$F=\det(\partial q_i/\partial x_j)$ in that order are the rows of
+\[
+\begin{pmatrix}-8 & -4 & -20 & 16 & 20 & 0 & -28\\-2 & -36 & 40 & 20 & -50 & -20 & -26\\72 & -6 & 0 & -66 & -6 & 30 & 4\\-14 & -4 & -6 & -12 & 28 & 18 & -56\\28 & 6 & -18 & 8 & -2 & 16 & 2\end{pmatrix}.
+\]
+Thus this display, together with the fixed monomial order, specifies
+every coefficient, including zeros. Alternatively, the determinant
+of the displayed four quadrics is its coordinate-free recipe.
+
+For any list of homogeneous forms $f_1,\ldots,f_s$ define the degree-$d$
+Macaulay coefficient matrix $\mathcal M_d(f)$ as follows. Rows are
+all degree-$d$ monomials in the same descending lexicographic order.
+Columns are the forms $x^\beta f_i$, with $i$ outermost and all
+$\beta$ of degree $d-\deg f_i$ in descending lexicographic order
+innermost. The entry in row $\alpha$ is the coefficient of $x^\alpha$.
+All entries for this example are integers.
+
+\begin{center}
+\begin{tabular}{llll}
+\toprule
+Matrix & Size & Certified rank & Minor modulo $101$\\
+\midrule
+$[F,G_{01},\ldots,G_{36}]$ & $35\times25$ & $25$ & $41$\\
+$\mathcal M_5(q_0,q_1,q_2,q_3)$ & $56\times80$ & $56$ & $44$\\
+$\mathcal M_9(F_{x_0},F_{x_1},F_{x_2},F_{x_3})$ & $220\times336$ & $220$ & $79$\\
+\bottomrule
+\end{tabular}
+\end{center}
+The differential minor consists of the first $25$ rows and all columns;
+its full integer value is \eqref{eq:exact-differential-det}.
+The following deterministic rule specifies the other two minors without
+printing large matrices. Reduce the displayed coefficient matrix modulo
+$101$. Scan columns from left to right. At the next pivot step choose
+the first remaining row with nonzero entry, exchange it with the next
+pivot row, normalize that row, and eliminate below. Skip a column if
+there is no nonzero remaining entry. Record the original row indices
+in the order selected and the pivot columns. The square submatrix of
+the \emph{original}, unreduced matrix with exactly these row and column
+orders has the residue in the final column of the table. Full recorded
+index lists, along with the coefficient-generating program, are included
+in \texttt{evidence/K3\_CERTIFICATES.json} and
+\texttt{checks/exact\_k3.py}.
+
+Every step is finite-field arithmetic on integer data. A nonzero
+residue of a specified square minor proves that integer minor is nonzero,
+so it proves a rank statement over $\Q$, not merely a rank in one
+numerical specialization. The Macaulay rank statements imply the
+homogeneous ideal containments used in Lemma~\ref{lem:differential}.
+The exact integer determinant is also recomputed independently with
+rational-domain elimination. No floating-point rank, tolerance, or
+unverified smoothness inference is used.
+
+For the corank-two quotient in \eqref{eq:BC-witness}, one may reproduce
+its quotient map by multiplying the six-dimensional quadratic quotient
+by
+\[
+ \begin{pmatrix}
+ 0&-1/2&-1&1&0&0\\
+ 0&-1/2&-1&0&1&0\\
+ 0&-3/2&-2&0&0&1
+ \end{pmatrix}.
+\]
+This matrix annihilates the three columns of $\Sym^2H$ and has rank
+three. It yields the displayed $B_H,C_H$ and the quartic
+\eqref{eq:h-witness} by ordinary multiplication. The factor $2$ in
+the coefficient of $uv$ is essential: it records the square of
+$u x_2+v x_3$, not a divided-power convention.
+
+An additional exact regression test uses the normalized matrix
+\eqref{eq:residual-matrix} with
+\[
+ C=\begin{pmatrix}0&1&0\\0&0&0\\0&1/2&-3\end{pmatrix}.
+\]
+Then $h(u,v)=uv(u-v)(u-2v)$, so the four ideals are
+$(a,b)$, $(c,d)$, $(a-c,b-d)$, and $(a-2c,b-2d)$.
+Elimination computes both sides of \eqref{eq:main-coranktwo} over
+$\Q$, and mutual Gr\"obner reduction verifies their equality. It also
+checks that $\delta^2$ is nonzero, that every element of
+$\mathfrak m\delta^2$ vanishes, and that $\delta^3=0$.
+This test checks a concrete instance; the general coefficient-ring
+proof is Lemma~\ref{lem:cone-ideal} and
+Theorem~\ref{thm:coranktwo-proof}, not an extrapolation from that instance.
