@@ -2,10 +2,10 @@
 
 **Manuscript:** *Intrinsic reconstruction of webs from nonreduced multiplication-failure schemes*  
 **Author:** Qian Qi  
-**Reviewed branch:** \`revision/a2-v135-structural-support-proof-2026-09-23\`  
-**Reviewed branch head:** \`003fb13458c8ed11e2973963493a662f31c700c0\`  
-**Source commit recorded by the build:** \`390ae3a73f097fdbdc0a84771fd35e155ad79ed8\`  
-**Previous controlling report:** \`reviews/a2-v134-independent-harsh-top4-2026-09-23/REFEREE_REPORT.md\`, commit \`a08b157800c27c0f73f0c5c9a52155265ef4f395\`  
+**Reviewed branch:** `revision/a2-v135-structural-support-proof-2026-09-23`  
+**Reviewed branch head:** `003fb13458c8ed11e2973963493a662f31c700c0`  
+**Source commit recorded by the build:** `390ae3a73f097fdbdc0a84771fd35e155ad79ed8`  
+**Previous controlling report:** `reviews/a2-v134-independent-harsh-top4-2026-09-23/REFEREE_REPORT.md`, commit `a08b157800c27c0f73f0c5c9a52155265ef4f395`  
 **Date of this report:** 23 September 2026
 
 This is an independent owner-requested, AI-assisted mathematical referee report. It is not a decision issued by a journal.
@@ -31,7 +31,7 @@ I would therefore not recommend acceptance, nor a routine minor revision. The pa
 
 ### 2.1 The singular contraction-kernel proof is now substantially adequate
 
-The new Lemma \`lem:shear-descent\` is the correct kind of repair.
+The new Lemma `lem:shear-descent` is the correct kind of repair.
 
 For \(V=A\oplus B\), the manuscript records the actual weights of the \(B\)-scaling torus on
 \[
@@ -60,7 +60,7 @@ This is a real proof, not a computational proxy for one.
 
 ### 2.2 The nondegenerate determinant-character step is now auditable
 
-The new Lemma \`lem:orthogonal-exterior-cube\` gives
+The new Lemma `lem:orthogonal-exterior-cube` gives
 \[
 \begin{aligned}
 \bigwedge^3\operatorname{Sym}^2V\simeq{}&
@@ -88,7 +88,7 @@ I regard the v134 objection on this point as closed.
 
 ### 2.3 The exact exterior-support table is internally clean
 
-Given the contraction-kernel theorem, Proposition \`prop:exact-schur-support\` is efficient and convincing.
+Given the contraction-kernel theorem, Proposition `prop:exact-schur-support` is efficient and convincing.
 
 For a quartic with essential-variable space \(H\) of dimension \(d<4\), the annihilating singular bilinear forms are exactly those with \(H\subset\operatorname{rad}(q)\), hence a space of dimension
 \[
@@ -179,7 +179,7 @@ Exterior duality then identifies these two coefficient lines with the \(175\)- a
 
 ### 3.4 One common projective change of coordinates
 
-The \`common-g\` lemma is indispensable: recovering two projective lines independently would not reconstruct a web unless the same projective transformation transports both.
+The `common-g` lemma is indispensable: recovering two projective lines independently would not reconstruct a web unless the same projective transformation transports both.
 
 The present proof uses the oriented Segre bundle to obtain an isomorphism of the \(V\)-factor, then argues that the corresponding map
 \[
@@ -211,8 +211,8 @@ This is no longer a side remark.
 
 The manuscript itself records
 
-- \`Ballico_1993_full_text_obtained=false\`;
-- \`priority_certified=false\`; and
+- `Ballico_1993_full_text_obtained=false`;
+- `priority_certified=false`; and
 - the six theorem-level comparison axes remain unverified.
 
 The relevant paper is
@@ -290,7 +290,7 @@ I would not require an exhaustive history of all alternating-tensor orbit classi
 
 ## 6. Serious issue S135.1: make the common-\(g\) step intrinsically bundle-theoretic
 
-I regard Lemma \`lem:common-g-functoriality\` as plausible, but it is still the most conceptually delicate step in the inverse theorem.
+I regard Lemma `lem:common-g-functoriality` as plausible, but it is still the most conceptually delicate step in the inverse theorem.
 
 The proof presently says that preservation of the projectively trivial ruling yields a morphism
 \[
@@ -346,7 +346,7 @@ That is the conceptual theorem statement a general algebraic geometer needs.
 
 ## 9. The new reduced support-pullback proposition is useful, but its scheme-theoretic limit must remain explicit
 
-Proposition \`prop:schur-subspace-pullbacks\` is a worthwhile geometric reformulation:
+Proposition `prop:schur-subspace-pullbacks` is a worthwhile geometric reformulation:
 \[
 j^{-1}\operatorname{Sub}^{\wedge}_4
 =\operatorname{Sub}^{\mathrm{sym}}_1,
@@ -408,7 +408,7 @@ The exact scripts should remain exactly what the manuscript now says they are: f
 
 ### 12.1 The focused article is the right submission object
 
-The 24-page \`geometry.pdf\` is coherent enough to be reviewed as a paper. The 86-page \`complete.pdf\` should not be presented as the main article to a general top-four journal. It is useful as an archival build.
+The 24-page `geometry.pdf` is coherent enough to be reviewed as a paper. The 86-page `complete.pdf` should not be presented as the main article to a general top-four journal. It is useful as an archival build.
 
 The 66-page supplement contains substantial independent mathematics. Depending on the venue, it may be better as a separate companion article rather than a formal supplement whose length is almost three times the principal paper.
 
