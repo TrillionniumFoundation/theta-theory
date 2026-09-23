@@ -6,6 +6,7 @@ on:
   workflow_dispatch:
 permissions:
   contents: write
+  actions: read
 concurrency:
   group: a2-v140-spectral-revision
   cancel-in-progress: false
@@ -57,25 +58,49 @@ jobs:
               out=h/q;out.parent.mkdir(parents=True,exist_ok=True);out.write_text(content)
           (h/'PAYLOAD_SHA256').write_text(got+'\n')
           PY
-      - name: Restore missing pinned ancestor files without replacing existing files
+      - name: Download authentic complete predecessor artifact
+        if: hashFiles('revisions/a2-v140/ancestor-v138.tar.gz') == ''
+        uses: actions/download-artifact@v4
+        with:
+          name: a2-v138-referee-bundle
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: TrillionniumFoundation/theta-theory
+          run-id: 35847505538
+          path: /tmp/a2-v138-referee-bundle
+      - name: Restore and verify the complete predecessor source
         run: |
           python - <<'PY'
           from pathlib import Path
-          import subprocess,json
-          pin='cf4925b91608b806580bc0cd4fd8ce2441870c08'
-          prefixes=['papers/A2-v17-boundary-information-coarsening/article/v138','reviews']
-          raw=subprocess.check_output(['git','ls-tree','-r','--name-only','-z',pin,'--',*prefixes])
-          restored=[]
-          for b in raw.split(b'\0'):
-              if not b:continue
-              n=b.decode();p=Path(n)
-              if not p.exists():
-                  p.parent.mkdir(parents=True,exist_ok=True)
-                  p.write_bytes(subprocess.check_output(['git','show',pin+':'+n]));restored.append(n)
-          subprocess.run(['git','diff','--exit-code',pin,'--',*prefixes],check=True)
-          Path('revisions/a2-v140/RESTORED_ANCESTOR_FILES.json').write_text(json.dumps({'pin':pin,'restored':restored},indent=2)+'\n')
+          import hashlib,json,shutil,subprocess,tarfile
+          h=Path('revisions/a2-v140'); archive=h/'ancestor-v138.tar.gz'
+          if not archive.exists():
+              shutil.copyfile('/tmp/a2-v138-referee-bundle/a2-v138-referee-bundle.tar.gz',archive)
+          expected='bd68ac83a841259a4f2b39fa803bd48e8d43b4b508ea2b8a4a3e44168d48d665'
+          assert hashlib.sha256(archive.read_bytes()).hexdigest()==expected
+          prefix='papers/A2-v17-boundary-information-coarsening/article/v138/'
+          restored=[]; verified=[]
+          with tarfile.open(archive,'r:gz') as t:
+              for m in t.getmembers():
+                  if not m.name.startswith(prefix) or m.isdir():continue
+                  p=Path(m.name)
+                  assert m.isfile() and not p.is_absolute() and '..' not in p.parts
+                  data=t.extractfile(m).read()
+                  if p.exists():
+                      assert p.read_bytes()==data, 'predecessor conflict: '+m.name
+                      verified.append(m.name)
+                  else:
+                      p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(data);restored.append(m.name)
+          assert Path(prefix+'frontmatter.tex').is_file()
+          manifest=json.loads(Path(prefix+'PROVENANCE_MANIFEST.json').read_text())
+          for n,digest in manifest['assembled_sha256'].items():
+              assert hashlib.sha256(Path(prefix+n).read_bytes()).hexdigest()==digest,n
+          (h/'RESTORED_ANCESTOR_FILES.json').write_text(json.dumps({'source_run':35847505538,'artifact_id':10743339474,'archive_sha256':expected,'restored':restored,'verified_existing':verified,'manifest_verified':True},indent=2)+'\n')
+          print('Authentic v138 source and assembled manifest verified:',len(restored)+len(verified),'files',flush=True)
+          subprocess.run(['git','diff','--exit-code','cf4925b91608b806580bc0cd4fd8ce2441870c08','--','reviews'],check=True)
           PY
-          python revisions/a2-v139/assemble.py
+          if [ ! -f papers/A2-v17-boundary-information-coarsening/article/v139/PROVENANCE_MANIFEST.json ]; then
+            python revisions/a2-v139/assemble.py
+          fi
           python revisions/a2-v140/revise.py
       - name: Install build dependencies
         run: |
@@ -101,8 +126,7 @@ jobs:
           PY
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -A -- "$P/v138" reviews
-          git add -f -- "$P/v139" "$P/v140" revisions/a2-v140 A2_REVISION_V140_INDEX.md
+          git add -f -- "$P/v138" "$P/v139" "$P/v140" revisions/a2-v140 A2_REVISION_V140_INDEX.md
           if ! git diff --cached --quiet; then
             git commit -m 'A2 v140: verified spectral reconstruction, flat specialization and native referee PDFs [skip ci]'
             git push origin HEAD:revision/a2-v140-intrinsic-pencil-moduli-2026-09-23
