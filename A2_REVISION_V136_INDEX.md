@@ -36,5 +36,9 @@ Run `python revisions/a2-v136/unpack.py`, `python revisions/a2-v136/assemble.py`
 Local preflight: principal article 30 pages; supplement 66 pages; complete archive 92 pages. All build checks passed; no overfull boxes or out-of-page text blocks were detected. This local preflight is distinct from the remote run recorded below.
 
 <!-- REMOTE_BUILD_START -->
-Remote build: awaiting branch-specific execution. The existence of this index alone is not evidence of a completed remote build.
+Remote build completed successfully: [GitHub Actions run](https://github.com/TrillionniumFoundation/theta-theory/actions/runs/35834394351).
+
+Source commit: `6827ef5933a66fc920a9cb39737e4597e5561f19`.
+
+PDF pages: geometry 30, supplement 66, complete 92. All eleven exact-script executions, source-preservation checks, reference checks, and PDF-bounds checks passed. Full details and hashes are in the source-bound build receipt.
 <!-- REMOTE_BUILD_END -->
