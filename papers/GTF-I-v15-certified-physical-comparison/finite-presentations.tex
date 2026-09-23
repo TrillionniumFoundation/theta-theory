@@ -1,0 +1,206 @@
+\section{Finite rational presentations of Gaussian acquisitions}
+\label{sec:v15-finite}
+We now join finite resource certification to the actual marked physical
+experiment. The intermediate model is allowed to have a nonfinite latent
+state. Its reports, not merely its observable coordinates, must eventually
+be finite. Throughout this section the parameter, action and mark alphabets
+are finite, the horizon is finite, and the mark is drawn with the initial
+state. An initial report, when present, is treated as one additional
+acquisition. All channels below are parameter blind and task blind.
+
+\subsection{A stateless report channel}
+Let $(X,\mu)$ be a probability space, let the preparations be
+$p_\theta\mu$ with $\|p_\theta\|_2\le D$, and let
+$\gamma(dw\mid x)$ be the actual initial-mark channel. For each action
+word $w\in A^k$, let $m_{k,w}\in L^2(\mu)$ be a real mean function.
+The report at time $k$ is
+\[
+ Y_k=m_{k,a_{1:k}}(x)+\sigma_k\xi_k,\qquad \sigma_k>0,
+\]
+where the noises are independent standard Gaussians, independent of
+$(x,W)$. Actions may be selected from all previously emitted reports.
+The finite-dimensional models in the preceding section have this form;
+so do the enriched approximations in Section~\ref{sec:v15-enriched}.
+Put
+\[
+ B_k=\left(\sum_{w\in A^k}\|m_{k,w}\|_2^2\right)^{1/2}.
+\]
+Choose $R>0$ and a finite interval partition of $[-R,R]$ with maximum
+cell length $h$. Adjoin the two tail cells. Let $Q$ return the cell of
+a real report. Let $H$ reconstruct an interior cell uniformly and
+reconstruct the tail cells at $-R$ and $R$, respectively. The endpoints
+may be assigned arbitrarily to adjacent cells. These maps use no
+persistent memory, seed, parameter or mark. Fresh randomness in $H$
+is transient. Denote by $F^{R,h}$ the physical acquisition with the
+report $Q(Y_k)$; its latent state and actual mark are unchanged.
+
+\begin{lemma}[Uniform marked report quantization]\label{lem:v15-quantization}
+The channel $Q$ simulates $F^{R,h}$ from $F$ exactly. The reverse
+channel $H$ has marked feedback error at most
+\begin{equation}\label{eq:v15-quantization}
+ \beta(R,h)=1\wedge\sum_{k=1}^T
+ \left\{\frac{h}{\sigma_k\sqrt{2\pi}}
+       +\frac{2DB_k}{R}+\frac{4\sigma_k^2}{R^2}\right\}.
+\end{equation}
+The comparison includes the joint law of every independent exposed
+selector and is uniform over every finite consumer width. In particular
+$h\downarrow0$ and $R\uparrow\infty$ give two-sided stateless marked
+comparison with error tending to zero.
+\end{lemma}
+\begin{proof}
+For an absolutely continuous density $g$ and an interval $I$ of length
+at most $h$, write $g_I=|I|^{-1}\int_Ig$. The fundamental theorem of
+calculus and Fubini give
+\[
+ \int_I|g-g_I|\le |I|^{-1}\int_{I^2}|g(u)-g(v)|\,du\,dv
+                  \le h\int_I|g'|.
+\]
+Consequently the variation error of the interior histogram is at most
+$\frac h2\int|g'|$. For a Gaussian of variance $\sigma^2$ the latter
+integral is $\sqrt{2/\pi}/\sigma$. Replacement of the tails costs at
+most their total probability, even though the reconstruction is atomic.
+For any mean $m$, this probability is at most
+\[
+ \1_{\{|m|>R/2\}}+\Pp\{|\sigma\xi|>R/2\}
+ \le \frac{2|m|}{R}+\frac{4\sigma^2}{R^2}.
+\]
+Thus the conditional report error, given the original $x$ and the
+selected action word, has the three terms in
+\eqref{eq:v15-quantization} before integration.
+
+Couple the exact and reconstructed systems with the same original
+$(x,W)$ and independent selector. Before their first emitted-report
+mismatch use the same controller randomness and maximally couple the
+next reports. Matched-history weights of different words at time $k$
+sum to at most one. Therefore the mean term is bounded by
+\[
+ \frac2R\int p_\theta(x)\max_{w\in A^k}|m_{k,w}(x)|\,d\mu(x)
+ \le \frac{2D}{R}\left(\sum_w\|m_{k,w}\|_2^2\right)^{1/2}.
+\]
+This uses the original preparation, not an assumed bound for a
+feedback-conditioned posterior. Sum the first-mismatch bounds.
+On the matching event the complete emitted transcript, controls,
+mark and selector agree. This proves the reverse comparison. Applying
+$Q$ to each original report is the exact forward simulation, also
+under feedback. Conditioning on the exposed selector throughout proves
+the joint assertion. Composition never enlarges a retained register.
+\end{proof}
+
+The bound is deliberately an elementary certified bound; Gaussian tail
+integrals or higher moments may improve it. No uniform bound on the
+pointwise means is needed. The quantity $B_k$ can grow with the number
+of action words. Uniformity in memory width is not uniformity in the
+size of the finite instrument being constructed.
+
+\subsection{Rationalization without a small-prefix denominator}
+Let $G$ now be a finite-report acquisition of this form. For each
+$\theta$, write
+\[
+ \pi_\theta(w)=\Pp_\theta(W=w),\qquad
+ p_\theta(w,h;y\mid a)
+       =\Pp_\theta(W=w,\,Y_{1:k-1}=h_y,\,Y_k=y
+                         \mid a_{1:k-1}=h_a,a_k=a)
+\]
+for its joint marked prefix masses under the indicated open-loop
+control word. Here $h=(h_y,h_a)$, and the conditioning on controls means
+intervention, not conditioning on the probability of choosing a control.
+Causality and the initial-mark convention imply
+\[
+ \sum_y p_\theta(w,h;y\mid a)=p_\theta(w,h)
+\]
+independently of the current action $a$. A parameterized latent
+history-tree instrument may use these masses; its latent dependence
+on $\theta$ is part of the experiment, not information given to a
+simulator.
+
+Suppose nonnegative rational arrays $t_\theta(w)$ and
+$t_\theta(w,h;y\mid a)$ approximate the indicated joint masses.
+Normalize $t_\theta(w)$ to obtain a rational initial-mark law. At each
+node $(w,h,a)$ normalize its vector of children to obtain a rational
+report kernel. If a normalizing sum is zero, use a fixed rational
+probability vector, for example the uniform vector. This defines a
+coherent finite rational marked causal experiment $G_{\mathbb Q}$.
+Its prefix probabilities need not equal the originally rounded joint
+masses; they are the probabilities generated by these normalized
+kernels. That distinction is essential.
+
+\begin{lemma}[Weighted normalization]\label{lem:v15-normalization}
+If $u,v\in[0,\infty)^b$, $s=\sum u_j$, and $\bar u=u/s$ when $s>0$,
+then, for $\bar v=v/\sum v_j$ with an arbitrary probability vector
+chosen when its denominator vanishes,
+\begin{equation}\label{eq:v15-normalization}
+ s\|\bar u-\bar v\|_{\rm TV}\le\sum_j|u_j-v_j|.
+\end{equation}
+For $s=0$ the left side is defined to be zero.
+\end{lemma}
+\begin{proof}
+If both sums are positive, the triangle inequality gives
+\[
+ \sum_j|u_j-s\bar v_j|
+ \le\sum_j|u_j-v_j|+|\sum_jv_j-s|
+ \le2\sum_j|u_j-v_j|.
+\]
+If $\sum v_j=0$, the left side of \eqref{eq:v15-normalization} is
+at most $s=\sum|u_j-v_j|$. The remaining case is immediate.
+\end{proof}
+
+\begin{theorem}[Rational causal tree bridge]\label{thm:v15-rational}
+The identity report channels compare $G$ and $G_{\mathbb Q}$ in both
+directions, including the actual marks, with feedback error at most
+\begin{align}\label{eq:v15-rational}
+ \rho=1\wedge\max_\theta\bigg[&\sum_w|\pi_\theta(w)-t_\theta(w)|\\[-2mm]
+ &+\sum_{k=1}^T\sum_{w,h,a,y}
+       |p_\theta(w,h;y\mid a)-t_\theta(w,h;y\mid a)|\bigg].\nonumber
+\end{align}
+Here the finite sum includes all open-loop histories at the specified
+time, not only the histories reached by a particular controller. The
+bound is independent of simulator and consumer memory. It remains
+valid with a visible selector and its joint reference law.
+
+If every joint mass has computable rational enclosures of arbitrarily
+small width, the construction is effective and produces $\rho\to0$.
+No lower bound for any nonzero prefix probability, and no decision
+whether a prefix has exactly zero probability, is required.
+\end{theorem}
+\begin{proof}
+Couple the initial marks by their normalized laws. Lemma~\ref{lem:v15-normalization}
+bounds the initial failure probability by the first sum in
+\eqref{eq:v15-rational}. Use the same controller and selector on both
+sides. Conditional on a matched marked history, maximally couple the
+next reports. Under the original instrument, the probability of
+reaching a particular marked history under any deterministic controller
+is either zero or the corresponding open-loop prefix mass; for a
+randomized controller it is at most that mass. The probability of
+reaching it with the coupling still matched is smaller still. Thus
+its first-mismatch contribution is bounded by the original prefix
+mass times the conditional variation distance. Applying
+\eqref{eq:v15-normalization} at that node bounds this product by the
+sum of joint child-mass errors. Sum over all nodes and times. The
+coupling inequality gives the asserted joint variation distance.
+The estimate is symmetric as a comparison of the two emitted laws;
+identity channels require no state in either direction.
+
+For effectiveness, take a nonnegative rational lower endpoint of a
+certified enclosure for every mass, clipping a negative lower endpoint
+at zero. If there are $M$ mass entries for a parameter and every
+interval has width at most $\eta/M$, the displayed bound is at most
+$\eta$. Normalization uses only rational arithmetic. A zero rounded
+sum invokes the declared fallback. The weighted bound, rather than a
+bound on a ratio at an individual rare history, proves convergence.
+Conditioning on an independent visible selector leaves every bound
+unchanged. The mark is part of the finite tree and is never redrawn
+independently of its reports.
+\end{proof}
+
+For the Gaussian acquisition its required masses are explicitly
+\begin{equation}\label{eq:v15-mass-integral}
+ \int_X p_\theta(x)\gamma(w\mid x)
+       \prod_{j=1}^k
+       \Pp\{m_{j,a_{1:j}}(x)+\sigma_j\xi_j\in I_{y_j}\}\,d\mu(x).
+\end{equation}
+This is an integration problem for a specified preparation and trial
+family. The theorem does not infer its effective solvability from the
+mere words ``standard Borel''. Rigorous enclosures for
+\eqref{eq:v15-mass-integral} are part of the effective data specification
+in Theorem~\ref{thm:v15-main}; explicit physical families are treated in
+Section~\ref{sec:v15-physical-data}.
