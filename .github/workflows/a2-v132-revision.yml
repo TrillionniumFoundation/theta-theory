@@ -1,0 +1,62 @@
+name: A2 v132 packet descent and intrinsic web reconstruction
+on:
+  push:
+    branches:
+      - revision/a2-v132-galois-descent-higher-residual-2026-09-23
+    paths:
+      - 'revisions/a2-v132/**'
+      - '.github/workflows/a2-v132-revision.yml'
+      - 'A2_REVISION_V132_INDEX.md'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: a2-v132-referee-build
+  cancel-in-progress: false
+jobs:
+  build:
+    if: github.ref == 'refs/heads/revision/a2-v132-galois-descent-higher-residual-2026-09-23'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      REVISION: papers/A2-v17-boundary-information-coarsening/article/v132
+      TARGET_BRANCH: revision/a2-v132-galois-descent-higher-residual-2026-09-23
+      PYTHONDONTWRITEBYTECODE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Assemble immutable reviewed source and verify transferred hashes
+        run: python revisions/a2-v132/assemble.py
+      - name: Install mathematical build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern
+          python -m pip install 'sympy==1.14.0' 'numpy==2.3.5' 'PyMuPDF==1.26.7'
+      - name: Execute all seven exact scripts and compile full article
+        run: bash "$REVISION/build.sh"
+      - name: Check preservation of the reviewed source and all reviews
+        run: git diff --exit-code f0ac12d5ce2084fffec3a6245e3cbe8c2e2b39ff -- papers/A2-v17-boundary-information-coarsening/article/v131 reviews
+      - name: Publish full source PDF and actual receipt on v132 only
+        run: |
+          test "${GITHUB_REF#refs/heads/}" = "$TARGET_BRANCH"
+          find "$REVISION" -type d -name __pycache__ -prune -exec rm -rf {} +
+          rm -f "$REVISION/geometry.aux" "$REVISION/geometry.out" "$REVISION/geometry.log"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f -- "$REVISION"
+          if ! git diff --cached --quiet; then
+            git commit -m 'A2 v132: complete manuscript PDF and executed source-bound evidence [skip ci]'
+            git push origin "HEAD:$TARGET_BRANCH"
+          fi
+      - name: Package the complete referee bundle
+        run: tar -czf a2-v132-referee-bundle.tar.gz A2_REVISION_V132_INDEX.md reviews/a2-v131-independent-harsh-top4-2026-09-23/REFEREE_REPORT.md "$REVISION"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: a2-v132-referee-bundle
+          path: a2-v132-referee-bundle.tar.gz
+          retention-days: 30
