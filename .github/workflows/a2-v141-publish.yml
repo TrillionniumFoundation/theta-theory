@@ -1,0 +1,94 @@
+name: A2 v141 native manuscript publication
+on:
+  push:
+    branches: ['revision/a2-v141-functorial-spectral-reconstruction-2026-09-23']
+    paths: ['.github/workflows/a2-v141-publish.yml', 'revisions/a2-v141/payload.part*.xz']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: a2-v141-publication
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Materialize and verify the complete native manuscript
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib,json,lzma,shutil,subprocess,sys
+          h=Path('revisions/a2-v141');p=Path('papers/A2-v17-boundary-information-coarsening/article')
+          raw=b''.join((h/f'payload.part{i}.xz').read_bytes() for i in range(5))
+          assert hashlib.sha256(raw).hexdigest()=='0768a6cf99d8fcb5c058ec9a2685c39ed7b8c387c7ea387bf16eb7391c0f2bfd'
+          data=json.loads(lzma.decompress(raw)); overlay=h/'overlay'
+          def safe(name):
+              q=Path(name)
+              assert not q.is_absolute() and '..' not in q.parts and q.parts
+              return q
+          for name,text in data['files'].items():
+              q=overlay/safe(name);q.parent.mkdir(parents=True,exist_ok=True);q.write_text(text)
+          for name,diff in data['patches'].items():
+              rel=safe(name);q=overlay/rel;q.parent.mkdir(parents=True,exist_ok=True)
+              shutil.copyfile(p/'v140'/rel,q)
+              subprocess.run(['patch','--batch','--forward','--fuzz=0',str(q)],input=diff,text=True,check=True)
+          (h/'assemble.py').write_text(data['assemble.py'])
+          if not (p/'v141').exists():
+              subprocess.run([sys.executable,str(h/'assemble.py')],check=True)
+          m=p/'v141/PROVENANCE_MANIFEST_V141.json'
+          assert hashlib.sha256(m.read_bytes()).hexdigest()=='d236654da2784b0508315fba30407c00bebe93cdd0d80131108a737815c3fdcb'
+          for n,digest in json.loads(m.read_text())['source_sha256'].items():
+              assert hashlib.sha256((p/'v141'/n).read_bytes()).hexdigest()==digest,n
+          print('Complete native source agrees byte-for-byte with the successful local build.')
+          PY
+      - name: Commit native source on this branch only
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          P=papers/A2-v17-boundary-information-coarsening/article/v141
+          git add -f -- "$P" revisions/a2-v141/assemble.py revisions/a2-v141/overlay
+          if ! git diff --cached --quiet; then
+            git commit -m 'A2 v141: native universal neighbourhoods, spectral strata and totally real likelihood theorem [skip ci]'
+            git push origin HEAD:revision/a2-v141-functorial-spectral-reconstruction-2026-09-23
+          fi
+          echo "A2_SOURCE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install reproducible build dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern
+          python -m pip install sympy==1.14.0 numpy==2.3.5 PyMuPDF==1.26.7
+      - name: Execute all seventeen checks and compile three referee PDFs
+        run: |
+          bash papers/A2-v17-boundary-information-coarsening/article/v141/build.sh | tee /tmp/a2-v141-publication-build.log
+      - name: Commit the successful native PDF and evidence package
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json,os
+          p=Path('papers/A2-v17-boundary-information-coarsening/article/v141/evidence/BUILD_RECEIPT_V141.json')
+          r=json.loads(p.read_text());assert r['ok'] and r['source_commit']==os.environ['A2_SOURCE_COMMIT']
+          assert len(r['executed_scripts'])==17
+          PY
+          P=papers/A2-v17-boundary-information-coarsening/article/v141
+          git add -f -- "$P/geometry.pdf" "$P/supplement.pdf" "$P/complete.pdf" "$P/evidence"
+          if ! git diff --cached --quiet; then
+            git commit -m 'A2 v141: publish 55-page article, 66-page supplement, 118-page complete text and seventeen-check receipt [skip ci]'
+            git push origin HEAD:revision/a2-v141-functorial-spectral-reconstruction-2026-09-23
+          fi
+          git rev-parse HEAD > /tmp/a2-v141-publication-commit.txt
+          tar --exclude='__pycache__' --exclude='*.aux' --exclude='*.out' --exclude='*.toc' --exclude='*.log' -czf /tmp/a2-v141-referee-bundle.tar.gz "$P"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: a2-v141-native-referee-bundle
+          path: |
+            /tmp/a2-v141-referee-bundle.tar.gz
+            /tmp/a2-v141-publication-commit.txt
+            /tmp/a2-v141-publication-build.log
+          retention-days: 30
