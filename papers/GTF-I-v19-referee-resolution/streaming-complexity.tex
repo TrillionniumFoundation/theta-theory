@@ -1,0 +1,168 @@
+\section{Continuation complexity of a finite-data test}
+\label{sec:v19-streaming}
+The reset budget does not by itself bound the auditor's retained memory.
+We now impose both constraints. At scheduled epoch $t$ a streaming auditor
+reads one letter $x_t$ from a finite alphabet $X_t$, updates a register,
+and emits no information to any auxiliary store. It makes its decision on
+reading the last letter. Transition rows may depend on the epoch; the clock
+is free. All other information crossing a cut belongs to the register.
+Fresh randomization is allowed. An independent persistent selector, when
+allowed, selects a complete auditor before any letters are read.
+
+For a Boolean decision $\psi:X_1\times\cdots\times X_n\to\{-1,1\}$,
+let $u\sim_t v$ mean that
+\[
+ \psi(us)=\psi(vs)\quad\hbox{for every }s\in X_{t+1}\times\cdots\times X_n.
+\]
+Write $r_t(\psi)$ for the number of equivalence classes of prefixes of
+length $t$, for $0\le t<n$. These are the deterministic continuation
+responses. The terminal decision is emitted on the last transition, so no
+terminal register is needed. In particular, $r_0=1$. The equivalence is a
+finite-horizon version of the classical residual-state construction
+\cite{Nerode1958}. The following quantitative statement will also measure
+the loss when a statistical auditor has fewer states than this construction.
+
+\begin{theorem}[Exact continuation width and a quantitative cut obstruction]
+\label{thm:v19-residual}
+A stochastic streaming auditor computes $\psi$ exactly on every word with
+width profile $(K_t)_{0\le t<n}$ if and only if
+$K_t\ge r_t(\psi)$ at every cut. The profiles are attained simultaneously
+by a deterministic auditor. Independent persistent randomization does not
+reduce these widths for exact computation.
+
+More generally, at a cut with $r=r_t(\psi)\ge2$, every stochastic auditor
+of width $K$ satisfies
+\begin{equation}\label{eq:v19-cuterror}
+ \sum_{w\in X_1\times\cdots\times X_n}
+       e_\psi(w)\ \ge\ \frac{(r-K)_+}{r-1},
+\end{equation}
+where $e_\psi(w)$ is its probability of an incorrect Boolean decision on
+input $w$. The inequality also holds after averaging over an independent
+selector whose conditional auditors each have width at most $K$.
+\end{theorem}
+\begin{proof}
+From a prefix $u$ let $e_u(m)$ be the distribution of the retained state.
+From state $m$ and suffix $s$ let $a_m(s)$ be the probability of terminal
+answer $+1$. Exact computation says
+\[
+ \sum_m e_u(m)a_m(s)=\frac{1+\psi(us)}2.
+\]
+The right side is zero or one. Every state of positive $e_u$-mass must
+therefore have precisely that zero--one continuation response for all $s$.
+Distinct prefix classes have disjoint positive supports. Hence $K_t\ge r_t$.
+Conversely, retain the prefix class. Appending the same letter to two
+equivalent prefixes gives equivalent new prefixes; thus every transition
+is well defined. At the last transition the class and the last letter
+determine $\psi$. This realizes every width $r_t$ simultaneously.
+For a persistent independent selector, a zero average error on each of the
+finitely many words implies zero conditional error on all words outside a
+single null set of selector values. The preceding bound applies there.
+
+For the quantitative claim choose representative prefixes $u_1,\ldots,u_r$,
+one per class, and put $e_i(m)=e_{u_i}(m)$. Define
+\[
+ o_{ij}=\sum_{m=1}^K\min\{e_i(m),e_j(m)\}.
+\]
+For nonnegative numbers $a_1,\ldots,a_r$, ordering them shows that
+$\sum_{i<j}\min(a_i,a_j)\ge\sum_i a_i-\max_i a_i$.
+Apply this at each state. Since every $e_i$ has mass one and each
+$\max_i e_i(m)\le1$, it follows that
+\begin{equation}\label{eq:v19-overlap}
+ \sum_{i<j}o_{ij}\ge r-K.
+\end{equation}
+Choose a suffix $s_{ij}$ distinguishing $u_i,u_j$. Conditional on a common
+state and this suffix, the two desired answers are opposite. Their error
+probabilities, weighted by $e_i(m),e_j(m)$, have sum at least
+$\min\{e_i(m),e_j(m)\}$. Thus
+\[
+ e_\psi(u_i s_{ij})+e_\psi(u_j s_{ij})\ge o_{ij}.
+\]
+On summing, each complete word on the left occurs at most $r-1$ times:
+its prefix identifies a single representative, which participates in
+$r-1$ pairs. Nonnegativity of all other word errors and
+\eqref{eq:v19-overlap} prove \eqref{eq:v19-cuterror}. When $r\le K$ the
+claim is just nonnegativity. Finally apply the bound conditional on a
+selector and integrate. Independence ensures that conditioning has not
+changed the input experiment.
+\end{proof}
+
+The exact part is also the extremal zero--one case of
+Theorem~\ref{thm:v18-continuation}. Its content is a simultaneous width
+profile, rather than separate unrelated factorizations at different cuts.
+The error bound does not assert that its constant is optimal for every
+Boolean function. Its use below is to convert a continuation obstruction
+into a strict loss of the attainable statistical value.
+
+\subsection{The width required to attain the binary reset value}
+Fix $0<h<1/2$ and the binary candidate class $B_h$ of
+Theorem~\ref{thm:v18-auditlower}. A terminal decision $+1$ chooses the
+singleton event appropriate to the $+$ candidate, and $-1$ the complementary
+event. A zero-score event can equivalently be replaced by an independent
+fair choice of these decisions. The expected payoffs are therefore
+$h\E_+d$ and $-h\E_-d$, where $d\in[-1,1]$ is the conditional mean
+decision and $P_\pm=\operatorname{Ber}(1/2\pm h)^{\otimes n}$.
+Let $v_{n,K}$ be the supremum of the smaller of these two payoffs over
+streaming auditors with the declared width profile. The final validation
+interface is unchanged; the widths here count training and selection only.
+
+\begin{theorem}[Exact memory threshold for optimal binary auditing]
+\label{thm:v19-binarywidth}
+Let $n=2m+1$ be odd. The unconstrained reset value is
+$v_n=h\|P_+-P_-\|_{\rm TV}$. It is attained at the profile
+\begin{equation}\label{eq:v19-majorityprofile}
+ r_t=\min\{t+1,n-t+2\},\qquad 0\le t<n,
+\end{equation}
+and $v_{n,K}=v_n$ if and only if $K_t\ge r_t$ for all these cuts.
+For every cut with $r_t\ge2$ one has the explicit deficit
+\begin{equation}\label{eq:v19-memorydeficit}
+ v_n-v_{n,K}\ \ge\
+ 2h^2(1/4-h^2)^m\frac{(r_t-K_t)_+}{r_t-1}.
+\end{equation}
+These conclusions remain valid when an independent persistent selector
+chooses auditors of the same conditional widths. For $n\ge3$ the least
+peak training width attaining $v_n$ is $m+2$; for $n=1$ it is one.
+\end{theorem}
+\begin{proof}
+The sign of $P_+(w)-P_-(w)$ is the majority decision $\psi(w)$, with no
+zero difference since $n$ is odd. Complementing every bit interchanges the
+two laws and reverses the decision. Consequently majority has equal
+payoffs and attains $h\|P_+-P_-\|_{\rm TV}$, as also proved in
+Theorem~\ref{thm:v18-auditlower}.
+
+A prefix with $k$ ones requires at least $m+1-k$ ones in its remaining
+$n-t$ places. Thresholds at most zero give the constant positive response;
+thresholds greater than $n-t$ give the constant negative response; the
+remaining thresholds give different nonconstant responses. Counting them
+for $0\le k\le t$ gives \eqref{eq:v19-majorityprofile}. The exact
+realization in Theorem~\ref{thm:v19-residual} implements majority at all
+these widths.
+
+For an arbitrary randomized decision, its smaller payoff is bounded by
+the equal-prior average. The deficit of this average from the majority
+value is exactly
+\begin{equation}\label{eq:v19-weightedregret}
+ h\sum_w |P_+(w)-P_-(w)|e_\psi(w).
+\end{equation}
+Put $a=1/2+h$ and $b=1/2-h$. A word with $k\ge m+1$ ones has absolute
+likelihood difference
+$(ab)^{n/2}\{(a/b)^{k-n/2}-(a/b)^{-(k-n/2)}\}$, which increases with
+$k$. Symmetry treats the other half of the words. The smallest difference
+is therefore attained at $k=m,m+1$ and equals
+\[
+ a^{m+1}b^m-b^{m+1}a^m=2h(1/4-h^2)^m.
+\]
+Substitution of \eqref{eq:v19-cuterror} into
+\eqref{eq:v19-weightedregret} gives \eqref{eq:v19-memorydeficit}.
+Any deficient cut gives a strictly positive loss; all sufficiently wide
+profiles implement majority. Maximizing \eqref{eq:v19-majorityprofile}
+proves the peak-width assertion. The same average-payoff argument works
+conditional on an independent selector and hence after averaging.
+\end{proof}
+
+The result identifies the exact memory needed to attain the optimal value,
+not the memory needed for a prescribed approximate value uniformly in $h$.
+The quantitative deficit can be small for large $n$. In particular it is
+not a sharp joint asymptotic tradeoff in sample size, state size and error.
+It complements, rather than replaces, the uniform sampling exponent in
+Theorem~\ref{thm:v18-auditlower}. No minimax interchange on the generally
+nonconvex set of fixed-width auditors has been used.
