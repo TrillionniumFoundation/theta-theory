@@ -1,0 +1,130 @@
+name: GTF-I v16 constructive causal certification
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v16-constructive-causal-certification-2026-09-23
+    paths:
+      - 'papers/GTF-I-v16-constructive-causal-certification/RELEASE_MANIFEST.json'
+      - '.github/workflows/gtf-i-v16-constructive-causal-certification.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: gtf-i-v16-constructive-causal-certification
+  cancel-in-progress: false
+jobs:
+  revise-and-verify:
+    if: github.ref == 'refs/heads/revision/general-theta-foundations-i-v16-constructive-causal-certification-2026-09-23'
+    runs-on: ubuntu-latest
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 128
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate and materialize the exact revision sources
+        shell: bash
+        run: |
+          git merge-base --is-ancestor 09d5540897d592a5e434f7431bfff470b4ebad1a HEAD
+          git fetch --no-tags --depth=1 origin 87955c68505e76f6d8a7c64fc336af478078bde3
+          python - <<'PYCODE'
+          import base64, hashlib, io, json, lzma, pathlib, re, zipfile
+          root = pathlib.Path('papers/GTF-I-v16-constructive-causal-certification')
+          manifest = json.loads((root/'RELEASE_MANIFEST.json').read_text())
+          base = '09d5540897d592a5e434f7431bfff470b4ebad1a'
+          if manifest['base_commit'] != base or manifest['compression'] != 'lzma':
+              raise RuntimeError('Unexpected source base or codec')
+          encoded = []
+          for part in manifest['parts']:
+              if not re.fullmatch(r'RELEASE_PART_[0-9]{2}\.b64', part['file']):
+                  raise RuntimeError('Invalid transport part name')
+              data = (root/part['file']).read_bytes()
+              if hashlib.sha256(data).hexdigest() != part['sha256']:
+                  raise RuntimeError('Transport part digest mismatch: '+part['file'])
+              encoded.append(data.decode('ascii').strip())
+          compressed = base64.b64decode(''.join(encoded), validate=True)
+          if hashlib.sha256(compressed).hexdigest() != manifest['compressed_sha256']:
+              raise RuntimeError('Compressed digest mismatch')
+          raw = lzma.decompress(compressed)
+          if hashlib.sha256(raw).hexdigest() != manifest['raw_sha256']:
+              raise RuntimeError('Bundle digest mismatch')
+          bundle = json.loads(raw)
+          if bundle['base_commit'] != base or len(bundle['files']) != manifest['files']:
+              raise RuntimeError('Unexpected source bundle')
+          for name, specification in bundle['files'].items():
+              rel = pathlib.PurePosixPath(name)
+              if rel.is_absolute() or len(rel.parts) != 1 or rel.suffix not in {'.tex','.md','.py','.json','.txt'}:
+                  raise RuntimeError('Out-of-scope source path: '+name)
+              if isinstance(specification, str):
+                  text = specification
+              else:
+                  original = pathlib.PurePosixPath(specification['base'])
+                  if original.is_absolute() or '..' in original.parts or original.parts[:2] != ('papers','GTF-I-v15-certified-physical-comparison'):
+                      raise RuntimeError('Invalid delta base')
+                  data0 = pathlib.Path(original).read_bytes()
+                  if hashlib.sha256(data0).hexdigest() != specification['base_sha256']:
+                      raise RuntimeError('Delta base digest mismatch: '+str(original))
+                  if specification.get('derive') == 'v15-labels':
+                      labels = {m.group(1):{'number':m.group(2),'page':int(m.group(3))} for m in re.finditer(r'\\newlabel\{([^}]+)\}\{\{([^}]*)\}\{(\d+)\}', data0.decode('utf-8'))}
+                      value = {'source_commit':'eae6e2dfe0c42313585ab6d19eafc3c8df466bf1','auxiliary_sha256':specification['base_sha256'],'labels':labels}
+                      text = json.dumps(value,indent=2)+'\n'
+                  elif specification.get('derive') == 'v15-inherited':
+                      with zipfile.ZipFile(io.BytesIO(data0)) as archive:
+                          files = {p:hashlib.sha256(archive.read(p)).hexdigest() for p in archive.namelist()}
+                      value = {'source_commit':base,'mathematical_source':'eae6e2dfe0c42313585ab6d19eafc3c8df466bf1','archive_sha256':specification['base_sha256'],'files':files}
+                      text = json.dumps(value,indent=2)+'\n'
+                  else:
+                      lines = data0.decode('utf-8').splitlines(keepends=True)
+                      pieces = []
+                      for op in specification['ops']:
+                          if isinstance(op,str):
+                              pieces.append(op)
+                          elif isinstance(op,list) and len(op)==2 and all(isinstance(i,int) for i in op) and 0 <= op[0] <= op[1] <= len(lines):
+                              pieces.append(''.join(lines[op[0]:op[1]]))
+                          else:
+                              raise RuntimeError('Invalid delta operation')
+                      text = ''.join(pieces)
+              data = text.encode('utf-8')
+              if hashlib.sha256(data).hexdigest() != bundle['sha256'][name]:
+                  raise RuntimeError('Source digest mismatch: '+name)
+              (root/name).write_bytes(data)
+          print('Validated plaintext source files:', len(bundle['files']))
+          PYCODE
+          git config user.name 'GTF revision build'
+          git config user.email 'gtf-build@users.noreply.github.com'
+          git add papers/GTF-I-v16-constructive-causal-certification
+          if ! git diff --cached --quiet; then
+            git commit -m 'revise(GTF-I v16): nonlinear testing certificates and collective collision experiment'
+            git push origin HEAD:revision/general-theta-foundations-i-v16-constructive-causal-certification-2026-09-23
+          fi
+          echo "GTF_SOURCE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - name: Install verification and typesetting dependencies
+        run: |
+          python -m pip install -r papers/GTF-I-v16-constructive-causal-certification/requirements.txt
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+      - name: Verify and compile both source-bound manuscript views
+        run: python papers/GTF-I-v16-constructive-causal-certification/build.py
+      - name: Publish PDFs and evidence on this branch only
+        run: |
+          python - <<'PYCODE'
+          import json, os, pathlib
+          p = pathlib.Path('papers/GTF-I-v16-constructive-causal-certification/evidence/REMOTE_BUILD.json')
+          p.write_text(json.dumps({'source_commit':os.environ['GTF_SOURCE_COMMIT'], 'workflow_run':os.environ['GITHUB_RUN_ID'], 'branch':os.environ['GITHUB_REF_NAME'], 'build_command_completed':True, 'scope':'Source and build identity; not an analytic proof certificate, independent referee approval or journal acceptance.'}, indent=2)+'\n')
+          PYCODE
+          git add -f papers/GTF-I-v16-constructive-causal-certification/paper.pdf papers/GTF-I-v16-constructive-causal-certification/complete-development.pdf papers/GTF-I-v16-constructive-causal-certification/evidence
+          if ! git diff --cached --quiet; then
+            git commit -m 'publish(GTF-I v16): full manuscripts, exact certificates and source-bound build evidence'
+            git push origin HEAD:revision/general-theta-foundations-i-v16-constructive-causal-certification-2026-09-23
+          fi
+      - name: Upload revision package
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gtf-i-v16-constructive-causal-certification-${{ github.run_id }}
+          path: papers/GTF-I-v16-constructive-causal-certification
+          retention-days: 30
