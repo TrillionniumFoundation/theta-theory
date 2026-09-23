@@ -31,5 +31,9 @@ The closer plethysm, harmonic and Piola statements are compared at specified the
 Reproduce from the repository root with `python revisions/a2-v137/unpack.py`, `python revisions/a2-v137/assemble.py`, and `bash papers/A2-v17-boundary-information-coarsening/article/v137/build.sh`. The checksummed transport expands into readable sources; the workflow runs twelve exact scripts, compiles all three PDFs and publishes only on this branch. Local mathematical-source preflight: 37-page article, 66-page supplement and 99-page complete manuscript; all checks passed. The completed remote run is recorded separately below.
 
 <!-- REMOTE_BUILD_START -->
-Remote source-bound build has not yet been recorded.
+Remote build completed successfully: [GitHub Actions run](https://github.com/TrillionniumFoundation/theta-theory/actions/runs/35841446114).
+
+Source commit: `45cff45710d6174560a5ec0034d9a7223952bd67`.
+
+PDF pages: geometry 37, supplement 66, complete 99. Twelve exact scripts, all inherited mathematical labels, source hashes, references, page bounds and absence of overfull boxes passed. Structural proofs and historical priority are not machine-certified.
 <!-- REMOTE_BUILD_END -->
