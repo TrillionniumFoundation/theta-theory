@@ -3,11 +3,11 @@
 **Manuscript:** *Universal determinant completion, effective Pieri multiplication, and intrinsic primary boundary laws in multiplication failure*  
 **Author:** Qian Qi  
 **Repository:** TrillionniumFoundation/theta-theory  
-**Reviewed revision:** \`revision/a2-v131-relative-primary-filtrations-2026-09-23\`  
-**Reviewed head:** \`1b3a82d09970ad6545c750733c80ff728a347cd4\`  
-**Principal referee-facing source:** \`papers/A2-v17-boundary-information-coarsening/article/v131/geometry.tex\`  
-**Controlling previous report:** \`reviews/a2-v130-independent-harsh-top4-2026-09-23/REFEREE_REPORT.md\`  
-**Previous review commit:** \`57c70a882150cc6e44d85ad6f68043b7327d8a10\`  
+**Reviewed revision:** `revision/a2-v131-relative-primary-filtrations-2026-09-23`  
+**Reviewed head:** `1b3a82d09970ad6545c750733c80ff728a347cd4`  
+**Principal referee-facing source:** `papers/A2-v17-boundary-information-coarsening/article/v131/geometry.tex`  
+**Controlling previous report:** `reviews/a2-v130-independent-harsh-top4-2026-09-23/REFEREE_REPORT.md`  
+**Previous review commit:** `57c70a882150cc6e44d85ad6f68043b7327d8a10`  
 **Date:** 23 September 2026
 
 ## Status of this report
@@ -40,7 +40,7 @@ A referee should not continue charging the manuscript with objections that have 
 
 ## 1.1 E130.1 is repaired on the splitting cover
 
-Proposition \`prop:relative-primary-models\` is a real improvement over the v130 packet argument.
+Proposition `prop:relative-primary-models` is a real improvement over the v130 packet argument.
 
 On the geometric generic fibre the manuscript chooses an irredundant primary decomposition
 \[
@@ -78,7 +78,7 @@ I therefore regard the old local reverse-inclusion objection as closed **after p
 
 ## 1.2 E130.2 is repaired in substance
 
-Proposition \`prop:no-new-packet-torsion\` introduces the right relative object.
+Proposition `prop:no-new-packet-torsion` introduces the right relative object.
 
 On the split generic fibre it chooses
 \[
@@ -197,7 +197,7 @@ This directly addresses the v130 request for a concrete \(2\rightsquigarrow3\rig
 
 # 2. Decisive proof-completeness issue E131.1 — the packet descent from the splitting cover is not proved
 
-The main remaining correctness issue is now concentrated in a single passage of Lemma \`lem:finite-geometric-assassin-stratification\`.
+The main remaining correctness issue is now concentrated in a single passage of Lemma `lem:finite-geometric-assassin-stratification`.
 
 The local primary model is constructed after a finite faithfully flat cover of a dense open. On that cover there are actual ideals \(\mathfrak p_i\), actual primary quotients \(Q_i\), the diagonal injection, and the associated-element injections. So far, the proof is concrete.
 
@@ -252,7 +252,7 @@ The manuscript has already solved exhaustion **upstairs** by the diagonal inject
 
 The abstract states a theorem for finite-presentation families, not merely for families after an unspecified finite cover. The universal corollary similarly claims a finite stratification of the original surjection parameter space \(\mathcal U\).
 
-Clause (2) of Theorem \`thm:bounded-principal-colon-stratification\` asserts closed relative support packets
+Clause (2) of Theorem `thm:bounded-principal-colon-stratification` asserts closed relative support packets
 \[
 Z_{q,\nu}\subset\operatorname{Spec}A_{S_\alpha}
 \]
@@ -354,7 +354,7 @@ For top-four significance, the most compelling next result would be to identify 
 
 # 5. Structural issue S131.2 — the quotient-induced family is exact but not the missing top-four theorem by itself
 
-Theorem \`thm:quotient-induced-primary-law\` is a useful exact control family.
+Theorem `thm:quotient-induced-primary-law` is a useful exact control family.
 
 For
 \[
@@ -431,7 +431,7 @@ I do not treat this as a mathematical correctness blocker. I do treat it as an u
 
 The self-contained source is mechanically clean, but not every inherited sentence has been updated to the new theorem hierarchy.
 
-For example, \`parts/09a-rees-specialization.tex\` still says that projection corank three has an “exact index-five/index-six dichotomy” from the corank-three theorem.
+For example, `parts/09a-rees-specialization.tex` still says that projection corank three has an “exact index-five/index-six dichotomy” from the corank-three theorem.
 
 In v131 the theorem now says that on \(G_4^\circ\)
 \[
