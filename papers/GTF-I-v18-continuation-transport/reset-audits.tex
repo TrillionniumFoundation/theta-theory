@@ -1,0 +1,232 @@
+\section{Finite-data testing on the original behavior image}
+\label{sec:v18-audit}
+\subsection{The reset interface}
+Let $B\subset\prod_{j=1}^J\Delta(\Omega_j)$ be compact, and let
+$Q=(Q_j)$ be fixed. Set $d_j=|\Omega_j|$, $D=\sum_j(d_j-1)$,
+$\mathcal I=\{(j,A):A\subseteq\Omega_j\}$, and
+$f_{j,A}(b)=Q_j(A)-b_j(A)$. Include the empty event. No convexity of $B$
+is assumed.
+
+A candidate $b$ is fixed for the whole audit. The auditor obtains $n$
+independent samples of each $b_j$, with independence between rows.
+In a causal experiment, row $j$ means a specified parameter and deterministic
+feedback tree; the reset interface supplies that row. It is an additional
+experimental interface, not information available to the online simulator.
+A complete sample contains the terminal mark. Private randomness and any
+per-run hidden selector are reset between runs. The design of the candidate
+is not resampled.
+
+Write $C_{j,w}$ for the counts, and $\mathcal N_n$ for all count arrays
+with $\sum_wC_{j,w}=n$. Their probability is the polynomial
+\[
+ p_C(b)=\prod_j\frac{n!}{\prod_w C_{j,w}!}
+                    \prod_w b_j(w)^{C_{j,w}}.
+\]
+A randomized audit is an array $c=(c_{C,i})$ with $c_C\in\Delta(\mathcal I)$.
+After training it chooses $i=(j,A)$ according to $c_C$. Independent candidate
+and target validation runs give the signed score
+$\1_A(\hbox{target})-\1_A(\hbox{candidate})$. Its expected value is
+\begin{equation}\label{eq:v18-auditpayoff}
+ g_c(b)=\sum_{C,i}p_C(b)c_{C,i}f_i(b),\qquad
+ \vaudit_n(B,Q)=\max_c\min_{b\in B}g_c(b).
+\end{equation}
+Thus every audit payoff is polynomial of total degree at most $Jn+1$ in
+the behavior coordinates. The probability of a large observed score in a
+single audit is not asserted to equal its expectation; additional
+independent validation would be required for a specified confidence level.
+
+\begin{theorem}[Reset-audit duality and finite-sample approximation]
+\label{thm:v18-audit}
+Let $\delta=\min_{b\in B}\max_i f_i(b)$. Then all the extrema below are
+attained, and
+\begin{align}
+ \vaudit_n(B,Q)
+ &=\min_{\mu\in\mathcal P(B)}
+       \sum_{C\in\mathcal N_n}\max_{i\in\mathcal I}
+                  \int_B p_C(b)f_i(b)\,d\mu(b),
+                    \label{eq:v18-auditdual}\\
+ 0&\le\delta-\vaudit_n(B,Q)\le\sqrt{D/n}.
+                    \label{eq:v18-auditrate}
+\end{align}
+The values are nondecreasing in $n$. If $a=\dim\aff B$, a minimizing
+measure in \eqref{eq:v18-auditdual} can be supported on at most
+$\binom{a+Jn+1}{a}$ points.
+
+An explicit feasible audit attaining the lower bound
+$\delta-\sqrt{D/n}$ chooses an event maximizing
+$Q_j(A)-C_j(A)/n$, with a fixed deterministic tie rule. If the rational
+target probabilities are given, this is a rationally specified finite
+rule. With a free schedule clock, a conservative retained-state bound is
+\[
+ H(|\mathcal I|+1)(n+1)^{\sum_jd_j},
+\]
+where $H$ is the number of states needed to execute and record one causal
+transcript. This budget is charged to the auditor, not to the simulator.
+\end{theorem}
+\begin{proof}
+The coefficient arrays form a compact convex product of finite simplexes.
+The integrand is continuous in $b$ and affine in $c$. The probability
+measures on compact $B$ form a compact convex set for weak convergence.
+The minimum over $b$ equals the minimum over such measures for fixed $c$.
+Finite-dimensional minimax (or its compact measure version) therefore
+exchanges the two extrema. Maximization over each independent coefficient
+simplex selects its largest coordinate integral, giving
+\eqref{eq:v18-auditdual}. Continuity and compactness give attainment.
+This step uses measures on the original $B$, not feasible private
+realizations of their barycenters.
+
+For any audit, $g_c(b)\le F(b)=\max_i f_i(b)$. At a minimizer of $F$ this
+gives $\vaudit_n\le\delta$. The zero event gives $\vaudit_n\ge0$.
+For the stated explicit rule put $\widehat b_j=C_j/n$ and
+$\rho=\max_j\|\widehat b_j-b_j\|_{\rm TV}$. Comparing the empirical
+maximizer with a true maximizing event gives the pointwise regret bound
+\[
+ F(b)-f_{i(C)}(b)\le2\rho.
+\]
+For a multinomial empirical measure,
+\[
+ \E\|\widehat b_j-b_j\|_{\rm TV}^2
+ \le\frac{d_j}{4}\sum_w\E(\widehat b_j(w)-b_j(w))^2
+ =\frac{d_j(1-\sum_wb_j(w)^2)}{4n}
+ \le\frac{d_j-1}{4n}.
+\]
+Consequently $\E\rho\le(\sum_j\E\|\widehat b_j-b_j\|_{\rm TV}^2)^{1/2}
+\le\sqrt{D/n}/2$. Averaging the regret uniformly over $B$ proves
+\eqref{eq:v18-auditrate}.
+
+From $n+1$ unordered samples in each row, discard one uniformly at random.
+The remaining counts have exactly the $n$-sample law, independently across
+rows. This realizes every $n$-sample audit as a randomized $(n+1)$-sample
+audit and proves monotonicity.
+
+Choose affine coordinates on $\aff B$. All the functions $p_C f_i$ lie
+in the span of monomials of total degree at most $Jn+1$, a space of
+dimension at most $s=\binom{a+Jn+1}{a}$ including the constant. The moment
+vector of a probability measure is in the convex hull of the evaluation
+vectors; their constant coordinate is one, so their affine dimension is
+at most $s-1$. Eliminating affine dependencies gives a representation by
+at most $s$ points. It preserves every integral in
+\eqref{eq:v18-auditdual}, and hence preserves the objective.
+
+Finally, each count is in $\{0,\ldots,n\}$. The indicated product register
+stores all counts, the within-run state, and the selected event for
+validation. Only the latter event and the within-run buffer need survive
+once training ends, so the product bound is conservative. Randomizing an
+event uses fresh randomness. The schedule, reset access and terminal mark
+readout were declared before the theorem. No private simulator state is
+read by this implementation.
+\end{proof}
+
+The dual measure chooses a candidate once, after which its samples are
+independent conditional on that candidate. Replacing it by
+$\bar b=\int b\,d\mu$ would replace $\int p_C(b)f_i(b)d\mu$ by
+$p_C(\bar b)f_i(\bar b)$, generally a different quantity. It would also
+replace the joint replicated law by a product of its marginals. Neither
+operation is part of the theorem. This is the operational meaning of the
+moment side, rather than a same-budget convexification theorem.
+
+\begin{proposition}[Both sides sampled]
+\label{prop:v18-paired}
+Suppose the target reference $Q^b$ varies with the candidate, as it does
+when visible-selector weights are design variables. Supply independent
+training samples from both $b$ and $Q^b$, and use their empirical
+difference. If their row dimensions are $D_P,D_Q$, the same construction
+has regret at most
+$\sqrt{D_P/n}+\sqrt{D_Q/n}$. Minimax and attainment hold on the compact
+image of pairs $(b,Q^b)$. In particular a variable reference law must not
+be treated as known fixed input to Theorem~\ref{thm:v18-audit}.
+\end{proposition}
+\begin{proof}
+The error in any event discrepancy is at most the sum of the maximal
+row variations of the two empirical tables. Apply the preceding second
+moment bound separately and then the empirical-maximizer regret inequality.
+Count probabilities are products for the two tables. They are continuous
+polynomials on the compact image of pairs, so the same minimax argument
+applies without changing the simulator signature.
+\end{proof}
+
+\subsection{A matching uniform sampling obstruction}
+\begin{theorem}[Binary reset lower bound]
+\label{thm:v18-auditlower}
+Take one binary row with target $\operatorname{Ber}(1/2)$ and candidate
+class $B_h=\{\operatorname{Ber}(1/2-h),\operatorname{Ber}(1/2+h)\}$,
+where $0<h<1/2$. Then
+\begin{equation}\label{eq:v18-binaryaudit}
+ \delta=h,\qquad
+ \vaudit_n=h\left\|\operatorname{Ber}(1/2+h)^{\otimes n}
+               -\operatorname{Ber}(1/2-h)^{\otimes n}\right\|_{\rm TV}.
+\end{equation}
+For every $n\ge1$, choosing $h=1/(8\sqrt n)$ gives
+\[
+ \delta-\vaudit_n\ge\frac1{16\sqrt n}.
+\]
+Thus the exponent in \eqref{eq:v18-auditrate} is sharp uniformly over
+compact candidate classes, already at affine dimension one. This does
+not assert a degree lower bound for revealed-behavior polynomials, nor
+that this two-point class equals an unrestricted private-row image.
+\end{theorem}
+\begin{proof}
+Only the two complementary singleton events and the zero event matter.
+A randomized choice is a statistic $d$ in $[-1,1]$. The two expected
+payoffs are $h\E_+d$ and $-h\E_-d$. Their minimum is at most half their
+sum, which is at most $h\|P_+^n-P_-^n\|_{\rm TV}$. Conversely take the
+sign of the likelihood difference, assigning zero at a tie. Complementing
+every sample interchanges $P_+^n$ and $P_-^n$ and changes that sign.
+The two payoffs are equal, and their average attains the variation bound.
+The statistic depends only on the count, so it is an admissible audit.
+The symmetric measure on the two candidates attains the dual value.
+Every Dirac measure has dual objective $h$, whereas for finite $n$ the two
+product laws are equivalent and their variation is strictly less than one.
+Thus no dual minimizer is a Dirac measure. Their barycenter is the target
+law, but replacing the dual by that barycenter would incorrectly give
+value zero instead of the strictly positive value in
+\eqref{eq:v18-binaryaudit}.
+
+For $h\le1/8$, elementary integration of $(1-u^2)^{-1}$ gives
+\[
+ \KL(\operatorname{Ber}(1/2+h)\,\|\,\operatorname{Ber}(1/2-h))
+ =2h\log\frac{1+2h}{1-2h}\le16h^2.
+\]
+The product relative entropy is at most $16nh^2$. Pinsker's inequality
+bounds its total variation by $\sqrt{8nh^2}$. At the specified $h$ this
+is less than $1/2$. Substituting in \eqref{eq:v18-binaryaudit} proves the
+claim. The inequality uses the classical two-point testing mechanism;
+the restriction being measured is the reset budget of the present game.
+\end{proof}
+
+\subsection{Transport of one fixed audit}
+\begin{proposition}[Reset cost under model perturbation]
+\label{prop:v18-audittransport}
+Let $q$ range over the same compact set of executable row designs in two
+models. Suppose uniformly in $q,j$ that
+\[
+ \|P_j^q-\widetilde P_j^q\|_{\rm TV}\le\alpha,\qquad
+ \|Q_j-\widetilde Q_j\|_{\rm TV}\le\beta.
+\]
+For the same coefficient rule $c$, evaluated with each model's own target
+validation,
+\begin{equation}\label{eq:v18-audittransport}
+ |g_c(q)-\widetilde g_c(q)|\le(2Jn+1)\alpha+\beta.
+\end{equation}
+The deficiencies themselves differ by at most $\alpha+\beta$, at the
+same resource budget. If the source behavior is unchanged, a fixed audit
+loses at most $\beta$, independently of its reset count.
+\end{proposition}
+\begin{proof}
+A product coupling of the $Jn$ training runs fails with probability at
+most $Jn\alpha$. Taking counts and choosing the event are contractions.
+A score with fixed target discrepancies lies in $[-1,1]$, so the change
+in its expectation from this training-law perturbation is at most
+$2Jn\alpha$. At each event the discrepancy changes by at most
+$\alpha+\beta$. This proves \eqref{eq:v18-audittransport}. For deficiency,
+every row variation changes by at most $\alpha+\beta$; taking the maximum
+and then the minimum preserves that bound. No new simulator is inserted.
+\end{proof}
+
+For a rational polynomial image, a rational rule and a rational threshold,
+strict positivity of $g_c(q)$ above that threshold is a first-order formula
+over the original row simplexes. Real quantifier elimination decides it.
+The same is true of an existential rule followed by this universal
+condition. This is an exact finite verification statement, not an efficient
+algorithm. The explicit empirical rule below will be verified by a uniform
+analytic inequality, rather than by storing its enormous complete table.

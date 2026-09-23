@@ -1,0 +1,153 @@
+\section{Continuation geometry and an exact memory obstruction}
+\label{sec:v18-continuation}
+\subsection{Normalized continuation laws}
+We first separate the transducer from the source to which it is attached.
+There are $L$ epochs with finite input alphabets $X_t$ and output alphabets
+$Z_t$. A causal kernel $p(z_{1:L}\mid x_{1:L})$ is nonnegative, normalized
+for every input word, and has output-prefix marginals independent of later
+inputs. The current input can include both a source report and the current
+control. It never includes an unavailable parameter, a terminal mark, or
+an earlier output not retained by the machine.
+
+Let $\mathcal C_t$, $0\le t\le L$, be the finite-dimensional polytope of
+normalized causal kernels from $x_{t+1:L}$ to $z_{t+1:L}$; put
+$\mathcal C_L=\{1\}$. For $v\in\mathcal C_t$ define the shift
+\[
+ (S_{x,z}v)(z_{t+2:L}\mid x_{t+2:L})
+   =v(z,z_{t+2:L}\mid x,x_{t+2:L}).
+\]
+Its total mass $v(z\mid x)$ is independent of the future input word. A
+zero shift is allowed.
+
+\begin{definition}[Compatible continuation polytopes]
+\label{def:v18-cover}
+A continuation cover of width $K=(K_0,\ldots,K_L)$ consists of lists
+$V_t=(v_{t,m})_{m\le K_t}$ in $\mathcal C_t$ such that, for every $m,x,z$,
+\begin{equation}\label{eq:v18-shift}
+ S_{x,z}v_{t,m}\in\operatorname{cone} V_{t+1}.
+\end{equation}
+It covers $p$ when $p\in\conv V_0$. Lists may repeat generators and may
+contain unreachable generators. Thus unused states can be adjoined.
+\end{definition}
+
+\begin{theorem}[Continuation realization with a width profile]
+\label{thm:v18-continuation}
+A causal kernel $p$ has a stochastic transducer realization with an initial
+$K_0$-valued register and $K_t$ retained states after epoch $t$ if and only
+if it has a compatible continuation cover of width $K$. Initial
+randomization is part of the charged initial register. With a deterministic
+initial state the condition is $p=v_{0,1}$ and $K_0=1$.
+
+Consequently the set of feasible width profiles depends only on the causal
+kernel and its declared input interface, not on a row presentation or a
+labeling of the hidden states. Every matrix of conditional continuation
+probabilities at cut $t$ has nonnegative rank at most $K_t$. Individual
+rank bounds do not replace the simultaneous shift conditions
+\eqref{eq:v18-shift}.
+\end{theorem}
+\begin{proof}
+Given a transducer, let $v_{t,m}$ be the suffix response when its register
+at time $t$ equals $m$. The remaining rows define this response even for
+an unreachable state. If the next row is
+$q_{t+1}(z,m'\mid m,x)$, conditioning on its output and new state gives
+\[
+ S_{x,z}v_{t,m}=\sum_{m'}q_{t+1}(z,m'\mid m,x)v_{t+1,m'}.
+\]
+The initial state distribution expresses $p$ as a convex combination of
+$V_0$.
+
+Conversely choose nonnegative coefficients in every cone membership in
+\eqref{eq:v18-shift}. There are only finitely many choices to make. Since
+every generator on the right has mass one for each future input word,
+the sum of the coefficients for a fixed $m,x,z$ is $v_{t,m}(z\mid x)$.
+Summing over $z$ gives one. The coefficients are therefore stochastic
+rows $q_{t+1}(z,m'\mid m,x)$. Choose an initial distribution representing
+$p$ in $\conv V_0$. Backward induction from $\mathcal C_L=\{1\}$ proves
+that the constructed machine has exactly the response $v_{t,m}$ from
+each register state. In particular its initial response is $p$. Equality
+for open-loop input words implies equality under adaptive input selection:
+at each node of an input--output history tree, the same causal conditional
+probability is used on the two sides.
+
+For the rank assertion, condition on any positive-probability observed
+history at the cut. Its continuation response is a convex combination of
+$v_{t,m}$ with weights equal to the posterior register distribution.
+Stack these responses as rows, and use all future input--output pairs as
+columns. This is a nonnegative factorization through $K_t$ generators.
+The converse construction required the same generator families at adjacent
+cuts and all their shifts; an unrelated factorization of each cut matrix
+provides no such compatibility. The characterization, being stated entirely
+in terms of these response polytopes, also proves the asserted invariance.
+\end{proof}
+
+Attach such a causal kernel to a marked source experiment. The output law
+is obtained by contraction with the source's causal instruments, while its
+actual mark is retained. Hence zero private deficiency is equivalently the
+existence of a compatible continuation cover whose contraction equals the
+target marked behavior in every parameter and feedback row. This is the
+geometric form of the factorization in Theorem~\ref{thm:v13-main}; no
+conditional dependence on the mark is introduced.
+
+A hidden selector chooses one such cover independently of the source.
+It is a convex combination of complete realizations, not a convexification
+inside every retained-state simplex at the original width. Its private
+implementation uses the disjoint union of the covers and keeps the selector
+in the state. A visible selector keeps those fibers in the compared law.
+The nonnegative fiber argument in Theorem~\ref{thm:v13-main} therefore
+continues to give equality of the visible and private zero sets.
+
+\subsection{An erasure cut}
+A simple family makes the width obstruction exact, including its error.
+Let $X$ take values in $[N]$ with law $\pi$. Before a specified cut the
+source reveals $X$. After the cut it has no reports correlated with $X$.
+The controller has no feedback channel carrying $X$ across the cut, and
+all earlier emitted reports are prescribed constants. The only permitted
+cross-cut information of the simulator is its $K$-valued register and any
+independent selector explicitly included in its signature. The terminal
+mark is the actual $W=X$. The target's terminal report is $X$.
+All memory at other checkpoints is unrestricted.
+
+\begin{theorem}[Exact cut spectrum]
+\label{thm:v18-cut}
+For this experiment, for private, hidden and visible signatures alike,
+\begin{equation}\label{eq:v18-cutvalue}
+ \delta_K=1-\sum_{i=1}^{\min(K,N)}\pi_{(i)}.
+\end{equation}
+For uniform $X$, $\delta_K=(1-K/N)_+$. Thus an erasure cut for $m$
+unbiased bits requires $K\ge(1-\epsilon)2^m$ whenever its error is at most
+$\epsilon$. The bound holds for every surrounding width profile; equality
+is attained when the other checkpoints are unrestricted. If every
+$\pi_x>0$, exact transmission has nonnegative cut rank $N$.
+\end{theorem}
+\begin{proof}
+With all post-cut randomness averaged into the decoder, any private
+machine gives kernels $e(m\mid x)$ and $d(z\mid m)$. Its joint terminal
+law is $\pi_x\sum_m e(m\mid x)d(z\mid m)$. Since the target law is
+$\pi_x\1_{z=x}$, total variation is exactly one minus the correct-decoding
+probability. Put $u_x=\max_m d(x\mid m)$. Then
+\[
+ 0\le u_x\le1,\qquad \sum_xu_x\le K,\qquad
+ \Pp(Z=X)\le\sum_x\pi_xu_x
+                  \le\sum_{i=1}^{\min(K,N)}\pi_{(i)}.
+\]
+The last inequality follows by moving mass in $u$ from a smaller weight
+to a larger one until the $K$ largest weights are filled. To attain it,
+retain distinct labels for those letters and decode them deterministically;
+all other letters are mapped to any retained label. Before the cut one may
+use the unrestricted memory to compute this encoding.
+
+For a hidden selector, condition on its value. It is independent of $X$,
+so every conditional correct-decoding probability obeys the same bound;
+averaging cannot improve it. For a visible selector, variation is the
+average of the fiber variations, with the same conclusion. The private
+construction works for both signatures. Finally, the exact joint cut
+matrix is diagonal with its $N$ positive diagonal entries $\pi_x$.
+Its ordinary rank is $N$, so its nonnegative rank is at least $N$ and
+its diagonal factorization attains $N$.
+\end{proof}
+
+The absence of an auxiliary cross-cut feedback channel is essential. An
+unpriced controller storing $X$ and returning it as a later control would
+change the experiment, not disprove the cut bound. Likewise a selector
+correlated with $X$ is not an independent hidden selector. These distinctions
+are the same ones needed in the collision certificate below.
