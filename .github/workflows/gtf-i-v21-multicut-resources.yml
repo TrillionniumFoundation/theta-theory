@@ -1,0 +1,125 @@
+name: GTF-I v21 multicut resources
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v21-multicut-resources-2026-09-24
+    paths:
+      - 'papers/GTF-I-v21-multicut-resources/**'
+      - '.github/workflows/gtf-i-v21-multicut-resources.yml'
+permissions:
+  contents: write
+concurrency:
+  group: gtf-i-v21-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Materialize verified sources without modifying predecessor paths
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import base64,hashlib,json,lzma,shutil
+          from pathlib import Path
+          p=Path('papers/GTF-I-v21-multicut-resources')
+          chunks=sorted((p/'bootstrap').glob('source.part*.b64'))
+          if len(chunks)!=7:
+              raise RuntimeError('Expected exactly seven source-package parts')
+          data=base64.b64decode(''.join(f.read_text().strip() for f in chunks),validate=True)
+          expected='cb3d9bb3a01434fb0afd54f206c5480bfaed319f2a2ae0e1fc7c182cd39b7ea5'
+          if hashlib.sha256(data).hexdigest()!=expected:
+              raise RuntimeError('Source-package digest mismatch')
+          sources=json.loads(lzma.decompress(data))
+          if len(sources)!=26:
+              raise RuntimeError('Authored-source manifest is incomplete')
+          for name,text in sources.items():
+              if Path(name).name!=name or not isinstance(text,str):
+                  raise RuntimeError('Unexpected source path or encoding')
+              (p/name).write_text(text,encoding='utf-8')
+          manifest=json.loads((p/'INHERITANCE.json').read_text())
+          old=Path(manifest['predecessor_directory'])
+          for name,digest in manifest['unchanged_math_modules'].items():
+              f=old/name
+              if hashlib.sha256(f.read_bytes()).hexdigest()!=digest:
+                  raise RuntimeError('Frozen predecessor source mismatch: '+name)
+              shutil.copyfile(f,p/name)
+          (p/'bootstrap'/'SOURCE_PACKAGE_RECEIPT.json').write_text(json.dumps({
+              'xz_sha256':expected,'authored_files':sorted(sources),
+              'unchanged_mathematical_inputs':sorted(manifest['unchanged_math_modules']),
+              'review_base_commit':manifest['review_commit'],
+              'predecessor_commit':manifest['base_commit'],
+              'old_paths_modified':[],'old_paths_deleted':[]},indent=2)+'\n')
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f -- papers/GTF-I-v21-multicut-resources
+          if ! git diff --cached --quiet; then
+            git commit -m 'source(GTF-I v21): materialize full manuscript, referee response and preserved inputs [skip ci]'
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
+          echo "GTF_SOURCE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - name: Install numerical and typesetting inputs
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq texlive-latex-extra texlive-fonts-recommended lmodern
+          python -m pip install -r papers/GTF-I-v21-multicut-resources/requirements.txt
+      - name: Build complete manuscript and verify every retained predecessor page
+        run: |
+          set -euo pipefail
+          python papers/GTF-I-v21-multicut-resources/build.py | tee "$RUNNER_TEMP/gtf-v21-build-receipt.json"
+      - name: Publish the complete new revision only
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path('papers/GTF-I-v21-multicut-resources')
+          r=json.loads((p/'evidence/BUILD_RECEIPT.json').read_text())
+          if r['canonical_sources_sha256']!='aa0b0451aa69cca53a1a865ae08b912f4cab50e79960c1bb3653457dafeb97d7':
+              raise RuntimeError('Remote canonical sources differ from the locally verified manuscript')
+          text='# General Theta Foundations I — v21 referee package\n\n'
+          text+='**Multicut Continuation Complexity and Stable Causal Certification**\n\n'
+          text+=f"Source commit: `{r['source_commit']}`. Executed build run: `{os.environ['GITHUB_RUN_ID']}`.\n\n"
+          text+='Review baseline: `14bcfe767940f8cbd196637049524d0b14eaee19`; reviewed v20 publication: `b488b2f28bec42a555999070759d715678b87db8`.\n\n'
+          text+=f"Canonical English article: **{r['canonical_pages']} pages**. Complete development: **{r['complete_pages']} pages**, including all **{r['predecessor_pages']} predecessor pages** with identical text and raster rendering.\n\n"
+          text+='Directory: `papers/GTF-I-v21-multicut-resources/`.\n\n'
+          text+='## Referee entry points\n\n'
+          text+='- [Full English article](papers/GTF-I-v21-multicut-resources/paper.pdf) and [LaTeX entry point](papers/GTF-I-v21-multicut-resources/main.tex).\n'
+          text+='- [Point-by-point response](papers/GTF-I-v21-multicut-resources/RESPONSE_TO_REFEREE.md).\n'
+          text+='- [Complete preserved development](papers/GTF-I-v21-multicut-resources/complete-development.pdf).\n'
+          text+='- [Executed build receipt](papers/GTF-I-v21-multicut-resources/evidence/BUILD_RECEIPT.json), [theorem locations](papers/GTF-I-v21-multicut-resources/evidence/THEOREM_LOCATIONS.json), and [portable submission sources](papers/GTF-I-v21-multicut-resources/evidence/SUBMISSION_SOURCES.zip).\n'
+          text+='- [Resource ledger](papers/GTF-I-v21-multicut-resources/RESOURCE_LEDGER.md), [proof status](papers/GTF-I-v21-multicut-resources/PROOF_STATUS.json), [historical audit](papers/GTF-I-v21-multicut-resources/HISTORY_AUDIT.md), and [literature crosswalk](papers/GTF-I-v21-multicut-resources/LITERATURE_CROSSWALK.md).\n\n'
+          text+='## Main revision\n\n'
+          text+='The revision develops the referee\'s general multicut route rather than reducing the original program. For a fixed finite alphabet of size d, strict decision-continuation complexity kappa and full-trial peak width W satisfy kappa <= W <= W_rational <= 12*d*kappa in the explicitly clocked model. Training, random-bit generation, decision, and validation cuts are included; the training length, read-only precision, and autonomous clock multiplier are separately priced. Approximate causal realization and feedback-stable resource transfer, shared-capacity multicut residual bounds, dimension-growing examples, and confidence-level tests are proved in the article.\n\n'
+          text+='For the same positive-noise collision experiment, the exact three-state decision-cut result is preserved. A new full-trial twelve-state construction gives 3 <= W_physical <= 12. It uses much longer but explicitly finite training; it is not an exact peak optimum or a matched memory/sample frontier. The original 399-training-reset construction remains in full as an alternative resource regime.\n\n'
+          text+='The source-preserving transport estimate has no training multiplier only when training preparations are unchanged. Perturbed training laws receive their explicit accumulated defect. Confidence amplification accounts for every validation pair and counter state.\n\n'
+          text+=f"Executed finite diagnostics: **{r['finite_diagnostic_checks']:,}**, comprising **{r['new_finite_diagnostic_checks']:,}** new and **{r['inherited_finite_diagnostic_checks']:,}** inherited checks. Normal and optimized Python results agree. All **{r['negative_control_executions']}** negative-control executions were detected. LaTeX has no undefined references or overfull boxes.\n\n"
+          text+='The original Norberg proof-level crosswalk remains incomplete because the original full proof text was not obtained. The manuscript does not claim the global B4/C2 historical program has been proved or make the independent A2 chain depend on this revision. Analytic proofs are supplied for independent review; successful computation and compilation are not independent mathematical certification or journal acceptance.\n\n'
+          text+='No predecessor manuscript, report, or other historical path was modified or deleted by this revision.\n'
+          Path('GENERAL_THETA_FOUNDATIONS_I_V21_REVIEW_READY.md').write_text(text,encoding='utf-8')
+          PY
+          git add -f -- papers/GTF-I-v21-multicut-resources GENERAL_THETA_FOUNDATIONS_I_V21_REVIEW_READY.md
+          if ! git diff --cached --quiet; then
+            git commit -m 'publish(GTF-I v21): full revision, referee response, preserved history and executed evidence [skip ci]'
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
+          echo "PUBLICATION_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GTF-I-v21-multicut-resources
+          path: papers/GTF-I-v21-multicut-resources/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Publication identities
+        run: |
+          echo "Source commit: $GTF_SOURCE_COMMIT" >> "$GITHUB_STEP_SUMMARY"
+          echo "Publication commit: $PUBLICATION_COMMIT" >> "$GITHUB_STEP_SUMMARY"
+          echo "Independent analytic review remains necessary; build success is not journal acceptance." >> "$GITHUB_STEP_SUMMARY"
