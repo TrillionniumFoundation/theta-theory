@@ -32,9 +32,9 @@ The full smooth-web theorem is retained without extra genericity. The polar-syst
 Local preflight completed: principal article 42 pages, supplement 66 pages, complete manuscript 105 pages; all thirteen exact scripts and the source/label/reference/layout checks passed. This is finite reproducibility and build evidence, not machine certification of the general proofs.
 
 <!-- REMOTE_BUILD_START -->
-Remote build completed successfully: [GitHub Actions run](https://github.com/TrillionniumFoundation/theta-theory/actions/runs/35846673709).
+Remote build completed successfully: [GitHub Actions run](https://github.com/TrillionniumFoundation/theta-theory/actions/runs/35847505538).
 
-Source commit: `b4448e6735457100b884d05977354d995bf88a70`.
+Source commit: `f1e4b59f72618917a6995081a222e7513c629e6e`.
 
 PDF pages: geometry 42, supplement 66, complete 105. Thirteen exact scripts, 292 inherited mathematical labels, source hashes, references, page bounds and absence of overfull boxes passed. Structural proofs and historical priority are not machine-certified.
 <!-- REMOTE_BUILD_END -->

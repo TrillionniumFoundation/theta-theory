@@ -1,11 +1,11 @@
-# A2 revision 137
+# A2 revision 138
 
-**Intrinsic reconstruction from nonreduced failure schemes** — Qian Qi.
+Principal article: `geometry.pdf` (editable driver `geometry.tex`). Technical supplement: `supplement.pdf`. Complete mathematical compilation: `complete.pdf`.
 
-The principal manuscript is `geometry.pdf` (editable driver `geometry.tex`). The technical supplement is `supplement.pdf`; `complete.pdf` compiles all mathematical material. `RESPONSE_TO_REFEREES_V136.md` gives the point-by-point response, `LITERATURE_AUDIT_V137.md` records inspected sources and the unresolved Ballico full-text comparison, and `ISSUE_MATRIX.json` separates documentary from mathematical status.
+Read `RESPONSE_TO_REFEREES_V137.md` for the point-by-point response and `LITERATURE_AUDIT_V138.md` for actual primary-source comparisons. `ISSUE_MATRIX.json` does not mark the unread Ballico 1993 comparison closed.
 
-The branch is `revision/a2-v137-intrinsic-coefficient-torelli-2026-09-23`, based on review commit `d15c9bcabdfc31070b773e2c8014601e75d4e641`. The predecessor manuscript and review directories are not modified. Every inherited mathematical label remains in the compiled complete manuscript; overwritten sources are archived verbatim.
+New proofs: `parts/18-natural-pencils.tex`. Operator comparison: `parts/19-operator-comparison.tex`. The accepted smooth-web theorem is unchanged. All predecessor mathematical labels are retained; modified sources are archived verbatim in `history/v137-modified-source/`.
 
-From the repository root run `python revisions/a2-v137/unpack.py`, then `python revisions/a2-v137/assemble.py`, then `bash papers/A2-v17-boundary-information-coarsening/article/v137/build.sh`. The build executes twelve exact scripts, compiles all three PDFs, checks references, source hashes, preservation and page bounds, and writes a source-bound `evidence/BUILD_RECEIPT.json`. General proofs, historical priority and journal acceptance are not machine-certified.
+From the repository root, run `python revisions/a2-v138/unpack.py`, `python revisions/a2-v138/assemble.py`, then `bash papers/A2-v17-boundary-information-coarsening/article/v138/build.sh`. The assembler verifies the immutable v137 source hashes at review commit `ba24a0b2d062897ee2d7a6b02add81c504fe0e71`. It alters only the new revision directory. The build runs all twelve inherited exact scripts plus `revision138_exact.py`, compiles the three PDFs, and emits `evidence/BUILD_RECEIPT.json`.
 
-The original four-dimensional smooth-locus theorem is retained. The arbitrary-dimensional component-pair theorem is not misrepresented as the original failure-scheme theorem in every dimension. A separate structural criterion and polar-system family now establish an additional intrinsic failure-scheme reconstruction result for every n >= 2 and d >= 1.
+The receipt certifies executed finite checks and build integrity, not general proofs, historical priority, or journal acceptance. The complete 1993 Ballico article was not obtained in this revision.
