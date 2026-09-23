@@ -22,7 +22,7 @@ def main():
  E.mkdir(exist_ok=True)
  manuscript=''.join(f.name+' '+sha(f)+'\n' for f in sorted(P.glob('*.tex')))
  manuscript_hash=hashlib.sha256(manuscript.encode()).hexdigest()
- need(manuscript_hash=='3835b09eb368c65ef453d28e3c9f2ea59cdab1c84391ac8f4a33770f844ca788','Canonical source differs from inspected local manuscript')
+ need(manuscript_hash=='fa27a4e69e6c854b7db6434cdb326a20d71aefb1aca3e1a2c70e7de93f9ff67d','Canonical source differs from inspected local manuscript')
  source=run(['git','rev-parse','HEAD'],ROOT,False)
  commit=source.stdout.strip() if source.returncode==0 else None
  if os.getenv('GITHUB_ACTIONS')=='true':need(commit==os.getenv('GTF_SOURCE_COMMIT') and bool(commit),'Source commit mismatch')
@@ -77,7 +77,7 @@ def main():
    body=match.group();identifier=re.search(r'\\label\{([^}]+)\}',body)
    if not identifier:continue
    identifier=identifier.group(1);need(identifier in labels,'Unresolved statement '+identifier)
-   row={'id':identifier,'source_file':file.name,'source_sha256':sha(file),'statement_sha256':hashlib.sha256(body.encode()).hexdigest(),'source_commit':commit,'compiled_location':labels[identifier],'version_credit':'new_v19' if identifier.startswith(('thm:v19','lem:v19','prop:v19','cor:v19'))else 'inherited','current_status':'proof_supplied_in_manuscript','review_status':'independent_review_pending' if ':v19-' in identifier else 'inherited_status_not_upgraded_by_reproduction','upstream_dependencies':dependencies.get(identifier,old_rows.get(identifier,{}).get('upstream_dependencies',[]))}
+   row={'id':identifier,'source_file':file.name,'source_sha256':sha(file),'statement_sha256':hashlib.sha256(body.encode()).hexdigest(),'source_commit':commit,'compiled_location':labels[identifier],'version_credit':'new_v19' if identifier.startswith(('thm:v19','lem:v19','prop:v19','cor:v19'))else 'inherited','current_status':('definition_stated' if match.group(1)=='definition' else 'example_argument_supplied' if match.group(1)=='example' else 'proof_supplied_in_manuscript'),'review_status':'independent_review_pending' if ':v19-' in identifier else 'inherited_status_not_upgraded_by_reproduction','upstream_dependencies':dependencies.get(identifier,old_rows.get(identifier,{}).get('upstream_dependencies',[]))}
    if identifier in old_rows:row['inherited_status_record']=old_rows[identifier]
    statements.append(row)
  need(len({r['id']for r in statements})==len(statements),'Duplicate statement identity')

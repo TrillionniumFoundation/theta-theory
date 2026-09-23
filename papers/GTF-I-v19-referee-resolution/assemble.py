@@ -45,5 +45,5 @@ for f in sorted(O.glob('*.tex')):
  identical=(P/f.name).exists()and h(P/f.name)==h(f)
  rows.append({'source':str(f.relative_to(P.parents[1])),'source_sha256':h(f),'canonical_copy':f.name if identical else None,'disposition':'reproduced_verbatim'if identical else 'reorganized_with_full_original_preserved_in_companion','original_commit':BASE})
 dump(P/'PRESERVATION_MAP.json',{'base_commit':BASE,'files':rows,'unchanged_companion_pages':294,'companion_sha256':'f4a0c5d719b679bdb7d44111ddc3e9e36158744907b086448e0800900504cf7a','old_paths_modified':False})
-(P/'requirements.txt').write_text('PyMuPDF==1.26.4\n')
+(P/'requirements.txt').write_bytes((O/'requirements.txt').read_bytes())
 print('Assembled local canonical inputs; no predecessor paths changed.')
