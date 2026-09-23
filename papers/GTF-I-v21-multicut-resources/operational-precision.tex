@@ -1,0 +1,63 @@
+\section{Finite precision and charged randomization}
+\label{sec:v21-precision}
+We distinguish the number of persistent labels from the description of a
+transition and from the clock that selects it. An observation in a finite
+alphabet is initially an atomic input. Every random bit used after that
+input is a separate, charged epoch. Section~\ref{sec:v21-resources}
+gives the additional cost of splitting the observation itself.
+
+\begin{lemma}[Dyadic rows and finite randomizers]\label{lem:v21-dyadic}
+A probability vector on $s$ points has a dyadic approximation with
+denominator $2^r$ at total variation distance at most $(s-1)2^{-r}$.
+It can be sampled using exactly $r$ independent fair bits and at most
+$2s-1$ persistent labels at each intermediate bit epoch. The label count
+uses the bit position supplied by the schedule. No partial random integer
+is retained outside these labels.
+\end{lemma}
+\begin{proof}
+Round down the first $s-1$ coordinates and assign the remaining mass to
+the last coordinate. The positive and negative parts of the change have
+equal mass, at most $(s-1)2^{-r}$. For sampling, partition
+$\{0,\ldots,2^r-1\}$ into consecutive intervals of the prescribed integer
+lengths. A binary prefix describes a dyadic interval. If that interval is
+contained in one output interval, keep the output label and ignore the
+remaining bits. Otherwise keep the prefix interval. At a fixed depth,
+every unresolved interval contains a partition boundary in its interior;
+there are at most $s-1$ such intervals. Together with at most $s$ resolved
+outputs this gives $2s-1$ labels. The children and their resolved labels
+are fixed by the read-only partition and the depth. Thus the construction
+is an actual finite transition table, not a real-valued random seed.
+Zero-length intervals cause no difficulty.
+\end{proof}
+
+\begin{proposition}[Rational decision continuations]\label{prop:v21-rational}
+Let $d=|\Omega|$. A list of $K$ responses in $[0,1]^\Omega$ can be
+replaced by dyadic responses of denominator $2^r$, losing at most
+$2^{1-r}$ in its uniform score envelope. After a decision cut retaining
+$K$ labels, the randomized event for the chosen dyadic response can be
+drawn using $r$ fair bits, at most $K(2d+1)$ labels during this draw, and
+at most $K(d+1)$ labels afterwards. Keeping the event through one
+candidate and one target validation requires at most $2K(d+1)$ labels
+at the intervening atomic-observation cuts. Its final signed score has
+three values.
+\end{proposition}
+\begin{proof}
+Round every coordinate down. The sup-norm error is at most $2^{-r}$,
+and $\sum_w|Q(w)-b(w)|\le2$. This proves the envelope estimate.
+For a fixed rounded response $h$, draw a uniform dyadic integer $U$ and
+choose $A_U=\{w:U<2^rh(w)\}$. These events are nested and have at most
+$d+1$ distinct values. Their mean response is exactly $h$. Apply
+Lemma~\ref{lem:v21-dyadic} to their interval lengths, retaining the
+chosen response index during sampling. Afterwards the event label and
+the candidate-event indicator suffice; the target indicator emits their
+difference. All event masks are read-only data fixed before observing
+the candidate.
+\end{proof}
+
+For $K$ responses, their rounded coordinates require $Kd(r+1)$ bits in
+a direct read-only representation. These bits are not charged as
+persistent sample-dependent labels, but are not declared costless
+precision. A construction using them records both quantities. In
+particular, the proposition turns every strict response-cover margin
+into a finite-randomness implementation; it says nothing about exact
+attainment of an irrational boundary value.

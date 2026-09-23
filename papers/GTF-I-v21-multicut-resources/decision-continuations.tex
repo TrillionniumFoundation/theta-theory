@@ -1,0 +1,230 @@
+\section{Decision continuation spectra}
+\label{sec:v20-spectrum}
+The memory at an experimental cut has a different role from the memory
+needed to reach that cut. We first identify its exact asymptotic value.
+This will give both an obstruction and a construction for the same physical
+audit, rather than a lower bound for an auxiliary binary problem.
+
+\subsection{A charged training--validation interface}
+Let $\Omega$ be a finite marked alphabet, $d=|\Omega|$, let
+$B\subset\Delta(\Omega)$ be nonempty and compact, and fix
+$Q\in\Delta(\Omega)$. A candidate $b\in B$ is fixed throughout the
+experiment. Training consists of $n$ independent observations from $b$.
+At the end of training the auditor retains a register $M\in[K]$.
+Everything depending on the training observations or on an earlier random
+seed must pass through this register. In particular, there is no external
+copy of the training history and no uncharged persistent selector.
+
+After this cut, fresh independent randomness may select an event $A$ using
+$M$. The event is chosen before independent candidate and target validation
+observations $X\sim b$ and $Y\sim Q$ are drawn. The score is
+$\1_A(Y)-\1_A(X)$. The downstream register needed to keep $A$ and to
+compute this score is distinct from the register at the specified cut.
+The upstream and downstream widths will be stated separately in concrete
+implementations. This is the reset interface of
+Section~\ref{sec:v18-audit}, with one additional charged checkpoint.
+The actual mark is part of a completed observation; it is not an input to
+the private candidate's online transition rows.
+
+Write $\mathcal H=[0,1]^\Omega$ and
+\[
+ f_h(b)=\sum_{w\in\Omega}(Q(w)-b(w))h(w),\qquad h\in\mathcal H.
+\]
+Every randomized event has a response $h(w)=\Pr(w\in A)$. Conversely,
+every $h\in\mathcal H$ is the response of a random event: include each
+atom independently with its specified probability. This is a finite
+probability distribution on $2^\Omega$. Only its mean response matters
+for expected signed score. The event itself must still be retained during
+validation.
+
+\begin{definition}[Decision continuation spectrum]
+\label{def:v20-spectrum}
+The $K$-state decision continuation value is
+\begin{equation}\label{eq:v20-spectrum}
+ \mathfrak V_K(B,Q)=
+ \max_{h_1,\ldots,h_K\in\mathcal H}
+ \min_{b\in B}\max_{m\le K} f_{h_m}(b).
+\end{equation}
+Let $v_{n,K}(B,Q)$ be the supremum of the worst-case expected score of
+$n$-sample auditors at the preceding interface. Only the designated cut
+has width $K$ in this definition; all other widths are finite but
+unrestricted. For $c\in\R$, let $\kappa_c(B,Q)$ be the least $K$ for
+which $\mathfrak V_K(B,Q)>c$, with value $+\infty$ when no such $K$
+exists.
+\end{definition}
+The definition uses only the marked behavior image and its target, not a
+parameterization of $B$ or a labeling of candidate states. No convex hull
+of $B$ is taken. A response list is a list of conditional validation
+continuations; it is not a mixture of feasible private candidates.
+
+\begin{theorem}[Operational classification at a decision cut]
+\label{thm:v20-spectrum}
+All extrema in \eqref{eq:v20-spectrum} are attained. For every $n\ge1$,
+\begin{equation}\label{eq:v20-rate}
+ 0\le \mathfrak V_K(B,Q)-v_{n,K}(B,Q)
+ \le \min\left\{\sqrt{\frac{d-1}{n}},
+                    \sqrt{\frac{2\log(2K)}{n}}\right\}.
+\end{equation}
+Consequently $v_{n,K}\to\mathfrak V_K$. Every auditor with $K$ states
+at the designated cut, at any finite training length, has worst-case
+score at most $\mathfrak V_K$. If $\mathfrak V_K>c$, some finite-sample
+auditor with $K$ states at that cut has worst-case score greater than $c$.
+Thus $\kappa_c$ is exactly the minimum cut width permitting such a strict
+certificate with sufficiently many training samples.
+
+Equivalently, $\kappa_c$ is the least number of response half-spaces
+\begin{equation}\label{eq:v20-halfspaces}
+ \{b\in B:f_h(b)>c\},\qquad h\in\mathcal H,
+\end{equation}
+that cover $B$. If two parameterized behavior families satisfy, uniformly
+in their common parameter $q$,
+\[
+ \|b(q)-\widetilde b(q)\|_{\rm TV}\le\alpha,
+ \qquad \|Q-\widetilde Q\|_{\rm TV}\le\beta,
+\]
+then
+\begin{equation}\label{eq:v20-spectrumstable}
+ |\mathfrak V_K(B,Q)-\mathfrak V_K(\widetilde B,\widetilde Q)|
+ \le\alpha+\beta.
+\end{equation}
+\end{theorem}
+\begin{proof}
+For a fixed response list, the inner objective is continuous in $b$.
+Its variation when the list changes is bounded uniformly over $b$ by
+$2\max_m\|h_m-\widetilde h_m\|_\infty$. Its minimum over compact $B$
+is therefore continuous in the list. Compactness of $\mathcal H^K$
+proves attainment.
+
+Condition on the retained state of any admissible auditor. Its conditional
+post-cut event law depends only on that state and fresh randomness, and
+has a response $h_m$. Independence of validation from training gives
+\[
+ g(b)=\sum_{m=1}^K \Pr_b(M=m)f_{h_m}(b)
+                         \le\max_m f_{h_m}(b).
+\]
+Taking the minimum over $b$, and then the supremum over auditors, proves
+the upper bound. This argument permits arbitrary stochastic training and
+arbitrary finite upstream memory. An extra training-dependent decoder
+would invalidate its first conditioning step and is excluded by the
+interface, not silently supplied.
+
+For the reverse bound fix an optimal list. Let $\widehat b$ be the
+empirical measure and choose the first index maximizing
+$f_{h_m}(\widehat b)$. Retain that index and discard the empirical table.
+If $m_*$ maximizes the true score, then pointwise
+\begin{equation}\label{eq:v20-regret}
+ \max_m f_{h_m}(b)-f_{h_{\widehat m}}(b)
+ \le2\max_{m\le K}|(\widehat b-b)h_m|.
+\end{equation}
+The maximum is at most $\|\widehat b-b\|_{\rm TV}$, since
+$0\le h_m\le1$. Cauchy--Schwarz and the multinomial variances give
+\[
+ \E\|\widehat b-b\|_{\rm TV}^2
+ \le\frac{d}{4n}\left(1-\sum_w b(w)^2\right)
+ \le\frac{d-1}{4n}.
+\]
+This proves the first rate.
+
+For completeness, if $V$ takes values in an interval of length one, then
+$\log\E e^{s(V-\E V)}\le s^2/8$. Indeed the second derivative of the
+logarithmic moment generating function is the variance under the
+exponentially tilted law, at most $1/4$; its value and first derivative
+vanish at zero. Integrating twice proves the inequality for both signs
+of $s$. Independence consequently gives
+$\E e^{s(\widehat b-b)h_m}\le e^{s^2/(8n)}$. For $s>0$,
+\[
+ \E\max_m|(\widehat b-b)h_m|
+ \le\frac{\log(2K)}s+\frac{s}{8n}.
+\]
+Minimizing in $s$ gives $\sqrt{\log(2K)/(2n)}$ and proves the second
+rate in \eqref{eq:v20-rate}. The empirical table has finitely many
+values; the construction is therefore a finite-state auditor, with only
+the chosen index surviving the specified cut. Real response coefficients
+are allowed here; the physical construction below has deterministic
+rational transitions.
+
+A finite cover in \eqref{eq:v20-halfspaces} says that the continuous
+function $b\mapsto\max_m f_{h_m}(b)$ is greater than $c$ everywhere on
+compact $B$. Its attained minimum is then greater than $c$. This proves
+the covering characterization in both directions. It also proves the
+strict-threshold assertion; no claim about finite-sample attainment at
+the boundary $c=\mathfrak V_K$ is needed.
+
+Finally $|(Q-b)h-(\widetilde Q-\widetilde b)h|\le\alpha+\beta$
+for every response. Taking maxima, minima over the common parameter set,
+and maxima over lists preserves this uniform bound, proving
+\eqref{eq:v20-spectrumstable}.
+\end{proof}
+
+\begin{corollary}[Compression by a finite decision dictionary]
+\label{cor:v20-dictionary}
+Suppose responses $h_1,\ldots,h_K$ satisfy
+$\min_{b\in B}\max_m f_{h_m}(b)\ge c+\eta$ for $\eta>0$.
+An empirical selector with $n>2\log(2K)/\eta^2$ achieves score greater
+than $c$ and retains only $K$ states at the decision cut. If these
+responses depend on a finite statistic $T:\Omega\to\Xi$, the training
+selector can count $T(X)$ instead of $X$. A sufficient upstream register
+has at most $\binom{n+|\Xi|-1}{|\Xi|-1}$ states at the last training
+checkpoint, and the corresponding time-dependent count registers suffice
+at earlier checkpoints.
+\end{corollary}
+\begin{proof}
+Use the second bound in \eqref{eq:v20-rate}. Empirical expectations of
+$h_m$ depend only on the histogram of $T(X)$. At time $t$, that histogram
+has $\binom{t+|\Xi|-1}{|\Xi|-1}$ possibilities. Its update and the final
+maximization are deterministic. No statistical sufficiency for estimating
+all of $b$ is required; sufficiency for the specified responses is enough.
+\end{proof}
+
+This corollary supplies an intermediate principle between a full marked
+histogram and a problem-specific compressed counter. The invariant is the
+number and geometry of validation continuations needed to cover the
+original candidate image at the desired score. It is not the algebraic
+dimension of a chosen parameterization. The empirical upper bound need
+not be sample-optimal, and a minimum decision-cut width is not a minimum
+of the largest width over the entire acquisition schedule.
+
+\subsection{Several feedback rows}
+The classification does not require that the declared experiment have
+only one feedback row. For the row-indexed interface of
+Section~\ref{sec:v18-audit}, let
+$\mathcal I=\{(j,A):A\subseteq\Omega_j\}$ and define
+\[
+ f_\lambda(b)=\sum_{i\in\mathcal I}\lambda_i f_i(b),
+ \qquad \lambda\in\Delta(\mathcal I).
+\]
+A post-cut continuation is now a probability distribution on row--event
+pairs; it is not an arbitrary test on a joint product of validation rows.
+Put
+\[
+ \mathfrak V^{\rm rows}_K(B,Q)=
+ \max_{\lambda_1,\ldots,\lambda_K\in\Delta(\mathcal I)}
+       \min_{b\in B}\max_m f_{\lambda_m}(b).
+\]
+\begin{corollary}[Row-indexed classification]
+\label{cor:v20-rows}
+With $n$ training samples per row, the row-indexed decision-cut value
+converges to $\mathfrak V^{\rm rows}_K$, and its deficit is at most
+\[
+ \min\{\sqrt{D/n},\sqrt{2\log(2K)/n}\},
+ \qquad D=\sum_j(|\Omega_j|-1).
+\]
+The strict half-space cover characterization holds with $f_\lambda$.
+The upper bound by $\mathfrak V^{\rm rows}_K$ applies also to any other
+finite training schedule, including adaptive row selection.
+\end{corollary}
+\begin{proof}
+Conditioning on the cut state gives the same convex-mixture upper bound
+as before; its proof places no restriction on how that state was reached.
+For empirical selection among an optimal list,
+$|(\widehat b-b)\lambda_m|\le\max_j
+\|\widehat b_j-b_j\|_{\rm TV}$. Sum the rowwise second moments to
+obtain the first rate. To obtain the second, align the $r$th independent
+training sample from each row into a tuple and write its response as
+$\sum_{j,A}\lambda_{m,j,A}\1_A(X_{j,r})$. This random variable belongs
+to $[0,1]$, and its sample mean is the empirical candidate mean for that
+continuation. The logarithmic moment-generating argument in
+Theorem~\ref{thm:v20-spectrum} therefore gives the same finite-list rate.
+Each chosen row--event distribution can be drawn using fresh randomness
+after the cut. Compactness and the covering argument are unchanged.
+\end{proof}
