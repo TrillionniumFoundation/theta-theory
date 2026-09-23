@@ -1,0 +1,95 @@
+name: A2 v136 uniform support and intrinsic reconstruction
+on:
+  push:
+    branches:
+      - revision/a2-v136-functorial-support-reconstruction-2026-09-23
+    paths:
+      - 'revisions/a2-v136/**'
+      - '.github/workflows/a2-v136-revision.yml'
+      - 'A2_REVISION_V136_INDEX.md'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: a2-v136-referee-build
+  cancel-in-progress: false
+jobs:
+  build:
+    if: github.ref == 'refs/heads/revision/a2-v136-functorial-support-reconstruction-2026-09-23'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      REVISION: papers/A2-v17-boundary-information-coarsening/article/v136
+      TARGET_BRANCH: revision/a2-v136-functorial-support-reconstruction-2026-09-23
+      PYTHONDONTWRITEBYTECODE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify source transport and assemble immutable reviewed manuscript
+        run: |
+          python revisions/a2-v136/unpack.py
+          python revisions/a2-v136/assemble.py
+      - name: Install mathematical build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern
+          python -m pip install 'sympy==1.14.0' 'numpy==2.3.5' 'PyMuPDF==1.26.7'
+      - name: Execute eleven exact scripts and compile three complete manuscripts
+        run: bash "$REVISION/build.sh"
+      - name: Check PDF page bounds and record completed remote build
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import fitz, json, os, re
+          p=Path(os.environ['REVISION'])
+          receipt=json.loads((p/'evidence/BUILD_RECEIPT.json').read_text())
+          assert receipt['ok'] and all(receipt['checks'].values())
+          bounds={}
+          for name in ('geometry','supplement','complete'):
+              doc=fitz.open(p/(name+'.pdf')); bad=[]
+              for i,page in enumerate(doc):
+                  for b in page.get_text('blocks'):
+                      if b[0]<0 or b[1]<0 or b[2]>page.rect.width+1 or b[3]>page.rect.height+1:
+                          bad.append({'page':i+1,'bounds':list(b[:4])})
+              bounds[name]={'pages':len(doc),'outside_page_blocks':bad}
+              assert not bad, (name,bad)
+          (p/'evidence/PDF_BOUNDS.json').write_text(json.dumps(bounds,indent=2)+'\n')
+          url=f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}"
+          status='Remote build completed successfully: [GitHub Actions run]('+url+').\n\n'
+          status+='Source commit: `'+receipt['source_commit']+'`.\n\n'
+          status+='PDF pages: '+', '.join(name+' '+str(v['pages']) for name,v in receipt['pdfs'].items())+'. '
+          status+='All eleven exact-script executions, source-preservation checks, reference checks, and PDF-bounds checks passed. '
+          status+='Full details and hashes are in the source-bound build receipt.\n'
+          index=Path('A2_REVISION_V136_INDEX.md')
+          text=index.read_text()
+          text,n=re.subn(r'<!-- REMOTE_BUILD_START -->.*?<!-- REMOTE_BUILD_END -->',
+              '<!-- REMOTE_BUILD_START -->\n'+status+'<!-- REMOTE_BUILD_END -->',text,flags=re.S)
+          assert n==1
+          index.write_text(text)
+          PY
+      - name: Verify reviewed manuscript and historical reports remain untouched
+        run: git diff --exit-code 9fb3a5b9b27d4f6c6df2f3e557b4fc709c3a546d -- papers/A2-v17-boundary-information-coarsening/article/v135 reviews
+      - name: Publish editable sources PDFs and executed evidence on v136 only
+        run: |
+          test "${GITHUB_REF#refs/heads/}" = "$TARGET_BRANCH"
+          find "$REVISION" revisions/a2-v136 -type d -name __pycache__ -prune -exec rm -rf {} +
+          rm -f "$REVISION"/*.aux "$REVISION"/*.out "$REVISION"/*.log "$REVISION"/*.toc
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f -- "$REVISION" revisions/a2-v136 A2_REVISION_V136_INDEX.md
+          if ! git diff --cached --quiet; then
+            git commit -m 'A2 v136: three complete manuscripts and executed source-bound evidence [skip ci]'
+            git push origin "HEAD:$TARGET_BRANCH"
+          fi
+      - name: Package the complete referee revision bundle
+        run: tar -czf a2-v136-referee-bundle.tar.gz A2_REVISION_V136_INDEX.md revisions/a2-v136 "$REVISION"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: a2-v136-referee-bundle
+          path: a2-v136-referee-bundle.tar.gz
+          retention-days: 30
