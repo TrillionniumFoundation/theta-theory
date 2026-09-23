@@ -1,0 +1,119 @@
+name: A2 v140 spectral revision
+on:
+  push:
+    branches: ['revision/a2-v140-intrinsic-pencil-moduli-2026-09-23']
+    paths: ['revisions/a2-v140/**', '.github/workflows/a2-v140-revision.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: a2-v140-spectral-revision
+  cancel-in-progress: false
+jobs:
+  revision:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Record incoming transport
+        run: |
+          mkdir -p /tmp/a2-v140-transport
+          cp revisions/a2-v140/payload.b64 /tmp/a2-v140-transport/
+          git rev-parse HEAD > /tmp/a2-v140-transport/HEAD.txt
+          sha256sum revisions/a2-v140/payload.b64 > /tmp/a2-v140-transport/SHA256.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: a2-v140-transport
+          path: /tmp/a2-v140-transport/
+          retention-days: 14
+      - name: Decode checksum-bound UTF-8 source package
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import base64,gzip,hashlib,json
+          h=Path('revisions/a2-v140'); p=h/'payload.b64'; text=p.read_text()
+          patch=h/'transport_patch.json'
+          if patch.exists():
+              spec=json.loads(patch.read_text())
+              digest=hashlib.sha256(text.encode()).hexdigest()
+              if digest==spec['before_sha256']:
+                  for pos,old,new in sorted(spec['edits'],reverse=True):
+                      assert text[pos:pos+len(old)]==old
+                      text=text[:pos]+new+text[pos+len(old):]
+                  assert hashlib.sha256(text.encode()).hexdigest()==spec['after_sha256']
+                  p.write_text(text)
+              else:
+                  assert digest==spec['after_sha256'], 'unexpected transport version'
+          blob=base64.b64decode(text.strip(),validate=True)
+          got=hashlib.sha256(blob).hexdigest()
+          print('Decoded source payload:',len(blob),'bytes; SHA256',got,flush=True)
+          assert got=='63bd8efa21ea56aa8cb6a2337e81233f2ba093b7eb321cef6e2c84a59a4deff2', 'source checksum mismatch'
+          payload=json.loads(gzip.decompress(blob))
+          for name,content in payload['files'].items():
+              q=Path(name)
+              assert not q.is_absolute() and '..' not in q.parts
+              out=h/q;out.parent.mkdir(parents=True,exist_ok=True);out.write_text(content)
+          (h/'PAYLOAD_SHA256').write_text(got+'\n')
+          PY
+      - name: Restore missing pinned ancestor files without replacing existing files
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import subprocess,json
+          pin='cf4925b91608b806580bc0cd4fd8ce2441870c08'
+          prefixes=['papers/A2-v17-boundary-information-coarsening/article/v138','reviews']
+          raw=subprocess.check_output(['git','ls-tree','-r','--name-only','-z',pin,'--',*prefixes])
+          restored=[]
+          for b in raw.split(b'\0'):
+              if not b:continue
+              n=b.decode();p=Path(n)
+              if not p.exists():
+                  p.parent.mkdir(parents=True,exist_ok=True)
+                  p.write_bytes(subprocess.check_output(['git','show',pin+':'+n]));restored.append(n)
+          subprocess.run(['git','diff','--exit-code',pin,'--',*prefixes],check=True)
+          Path('revisions/a2-v140/RESTORED_ANCESTOR_FILES.json').write_text(json.dumps({'pin':pin,'restored':restored},indent=2)+'\n')
+          PY
+          python revisions/a2-v139/assemble.py
+          python revisions/a2-v140/revise.py
+      - name: Install build dependencies
+        run: |
+          sudo apt-get -qq update
+          sudo apt-get install -y -qq texlive-latex-extra texlive-fonts-recommended lmodern
+          python -m pip install numpy sympy pymupdf
+      - name: Execute all fifteen audits and compile the three manuscript objects
+        run: bash papers/A2-v17-boundary-information-coarsening/article/v140/build.sh
+      - name: Publish canonical native sources, PDFs and evidence
+        run: |
+          set -euo pipefail
+          P=papers/A2-v17-boundary-information-coarsening/article
+          python - <<'PY'
+          from pathlib import Path
+          import json,shutil
+          p=Path('papers/A2-v17-boundary-information-coarsening/article/v140')
+          r=json.loads((p/'evidence/BUILD_RECEIPT_V140.json').read_text())
+          assert r['ok']
+          for q in p.glob('*.log'):q.unlink()
+          for ext in ('*.aux','*.out','*.toc'):
+              for q in p.rglob(ext):q.unlink()
+          for q in p.rglob('__pycache__'):shutil.rmtree(q)
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A -- "$P/v138" reviews
+          git add -f -- "$P/v139" "$P/v140" revisions/a2-v140 A2_REVISION_V140_INDEX.md
+          if ! git diff --cached --quiet; then
+            git commit -m 'A2 v140: verified spectral reconstruction, flat specialization and native referee PDFs [skip ci]'
+            git push origin HEAD:revision/a2-v140-intrinsic-pencil-moduli-2026-09-23
+          fi
+          mkdir -p /tmp/a2-v140-delivery
+          git rev-parse HEAD > /tmp/a2-v140-delivery/COMMIT.txt
+          tar czf /tmp/a2-v140-delivery/A2_v140_referee_bundle.tar.gz A2_REVISION_V140_INDEX.md "$P/v140"
+          cp "$P/v140/evidence/BUILD_RECEIPT_V140.json" /tmp/a2-v140-delivery/
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: a2-v140-referee-bundle
+          path: /tmp/a2-v140-delivery/
+          retention-days: 30
