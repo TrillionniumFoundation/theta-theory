@@ -1,0 +1,75 @@
+name: GTF-I v18 publication
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v18-continuation-transport-2026-09-23
+    paths:
+      - papers/GTF-I-v18-continuation-transport/transport/**
+      - .github/scripts/gtf18_materialize.py
+      - .github/scripts/gtf18_publish.py
+      - .github/workflows/gtf18-publication.yml
+permissions:
+  contents: write
+concurrency:
+  group: gtf18-publication-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      P: papers/GTF-I-v18-continuation-transport
+    steps:
+      - name: Check out the revision branch
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref_name }}
+      - name: Materialize and commit hash-bound plaintext sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = revision/general-theta-foundations-i-v18-continuation-transport-2026-09-23
+          python3 .github/scripts/gtf18_materialize.py
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- "$P"/*.tex "$P"/*.md "$P"/*.json "$P"/*.py "$P/requirements.txt"
+          if ! git diff --cached --quiet; then
+            git commit -m 'feat(GTF-I v18): materialize complete theorem-proof revision [skip ci]'
+          fi
+          echo "GTF_SOURCE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          git push origin "HEAD:$GITHUB_REF_NAME"
+      - name: Install the publication toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils python3-venv
+          python3 -m venv "$RUNNER_TEMP/gtf18-venv"
+          "$RUNNER_TEMP/gtf18-venv/bin/pip" install -r "$P/requirements.txt"
+          echo "$RUNNER_TEMP/gtf18-venv/bin" >> "$GITHUB_PATH"
+      - name: Build the manuscript and execute the evidence suite
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$P/build.py" | tee "$RUNNER_TEMP/gtf18-build-receipt.json"
+      - name: Publish source-bound PDFs and the referee entry point
+        shell: bash
+        run: |
+          set -euo pipefail
+          python .github/scripts/gtf18_publish.py
+          git add -- GENERAL_THETA_FOUNDATIONS_I_V18_REVIEW_READY.md
+          git add -f -- "$P/paper.pdf" "$P/complete-development.pdf" "$P/evidence"
+          python .github/scripts/gtf18_publish.py --check-index
+          git add -f -- "$P/evidence/PRESERVATION_GIT_DIFF.json"
+          git commit -m 'build(GTF-I v18): publish source-bound PDFs and review evidence [skip ci]'
+          git push origin "HEAD:$GITHUB_REF_NAME"
+      - name: Archive the published review package
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: GTF-I-v18-continuation-transport
+          path: papers/GTF-I-v18-continuation-transport/
+          if-no-files-found: error
+          retention-days: 30
