@@ -103,6 +103,25 @@ jobs:
                   raise RuntimeError('Source digest mismatch: '+name)
               (root/name).write_bytes(data)
           print('Validated plaintext revision files:',len(bundle['files']))
+          # Keep the inherited local certificates within intrinsic deficiency,
+          # rather than making them subsections of optional-projection stability.
+          core = root/'core.tex'
+          before = core.read_bytes()
+          if digest(before) != 'a5849d4b87ad982c95f4903d5c736538376c80c64088c937ac65029cc6a9c627':
+              raise RuntimeError('Unexpected pre-layout core')
+          lines = before.decode('utf-8').splitlines(keepends=True)
+          core.write_text(''.join(lines[:2]+lines[5:7]+lines[2:5]+lines[7:]),encoding='utf-8')
+          if digest(core.read_bytes()) != 'a2b3ca3ade96abc22752386bb086b525f9c3c7744d638557683c7ba0b307501a':
+              raise RuntimeError('Layout core digest mismatch')
+          sm = root/'SOURCE_MANIFEST.json'
+          if digest(sm.read_bytes()) != 'da34c03e362a3fd05e3fa2d86d0aa8c30d51c9ddbb4cae2e694959a77f411fbf':
+              raise RuntimeError('Unexpected pre-layout manifest')
+          source_manifest = json.loads(sm.read_text())
+          source_manifest['files'][str(core)] = digest(core.read_bytes())
+          sm.write_text(json.dumps(source_manifest,indent=2)+'\n',encoding='utf-8')
+          if digest(sm.read_bytes()) != 'd551f79f9e28fe9bc6905cfa40b80e3c4fb60bca7bcedfc196a460b729cd2c04':
+              raise RuntimeError('Post-layout manifest digest mismatch')
+          print('Validated organization-only module relocation; all theorem files unchanged')
           PYCODE
           git config user.name 'GTF revision build'
           git config user.email 'gtf-build@users.noreply.github.com'
