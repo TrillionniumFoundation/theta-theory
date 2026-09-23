@@ -1,0 +1,73 @@
+name: A2 v142 native manuscript and source-bound build
+on:
+  push:
+    branches: ['revision/a2-v142-fixed-discriminant-spectral-strata-2026-09-24']
+    paths:
+      - 'papers/A2-v17-boundary-information-coarsening/article/v142/**'
+      - '.github/workflows/a2-v142-native-build.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: a2-v142-native-build
+  cancel-in-progress: false
+jobs:
+  verify-and-publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install native build dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+          python -m pip install --disable-pip-version-check sympy==1.14.0 numpy==2.3.5 PyMuPDF==1.26.7 python-flint
+      - name: Execute all inherited and new checks and compile native sources
+        env:
+          A2_SOURCE_COMMIT: ${{ github.sha }}
+          OPENBLAS_NUM_THREADS: '1'
+          SYMPY_GROUND_TYPES: flint
+        run: |
+          set -euo pipefail
+          P=papers/A2-v17-boundary-information-coarsening/article/v142
+          bash "$P/build.sh" 2>&1 | tee /tmp/a2-v142-build.log
+      - name: Publish verified PDFs and receipts to this revision branch only
+        env:
+          SOURCE_COMMIT: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          BRANCH=revision/a2-v142-fixed-discriminant-spectral-strata-2026-09-24
+          P=papers/A2-v17-boundary-information-coarsening/article/v142
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path('papers/A2-v17-boundary-information-coarsening/article/v142')
+          r=json.loads((p/'evidence/BUILD_RECEIPT_V142.json').read_text())
+          assert r['ok'] and r['source_commit']==os.environ['SOURCE_COMMIT']
+          PY
+          test "$(git ls-remote origin "refs/heads/$BRANCH" | cut -f1)" = "$SOURCE_COMMIT"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A -f -- "$P/geometry.pdf" "$P/supplement.pdf" "$P/complete.pdf" "$P/evidence" "$P/PROVENANCE_MANIFEST_V142.json" "$P/NONDELETION_V142.json"
+          git commit -m 'A2 v142: publish verified native PDFs and eighteen-check source-bound receipt [skip ci]'
+          git push origin "HEAD:$BRANCH"
+          git rev-parse HEAD > /tmp/a2-v142-publication-commit.txt
+      - name: Package exact referee reading objects
+        run: |
+          tar --exclude='__pycache__' --exclude='*.pyc' -czf /tmp/a2-v142-referee-bundle.tar.gz papers/A2-v17-boundary-information-coarsening/article/v142
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: a2-v142-native-referee-bundle
+          path: |
+            /tmp/a2-v142-referee-bundle.tar.gz
+            /tmp/a2-v142-publication-commit.txt
+            /tmp/a2-v142-build.log
+            papers/A2-v17-boundary-information-coarsening/article/v142/evidence
+          retention-days: 30
+          if-no-files-found: warn

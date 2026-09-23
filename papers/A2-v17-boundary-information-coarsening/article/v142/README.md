@@ -1,27 +1,29 @@
-# A2 revision 141 — native referee submission
+# A2 revision 142 — native mathematical revision
 
-**Intrinsic reconstruction from nonreduced failure schemes** — Qian Qi — 23 September 2026.
+**Intrinsic reconstruction from nonreduced failure schemes** — Qian Qi — 24 September 2026.
 
-The principal mathematical chain is intrinsic coefficient extraction -> sharp finite reconstruction -> spectral geometry. A new, separately proved real theorem constructs totally real reciprocal likelihood fibres for every definite pencil, proving the assertion formulated as Fevola–Mandelshtam–Sturmfels Conjecture 4.5.
+Read `geometry.tex` / `geometry.pdf` for the principal article, `supplement.tex` / `supplement.pdf` for the full technical supplement, and `complete.tex` / `complete.pdf` for both proof networks. Native sources require no transport decoding or unpublished manuscript.
 
-## Reading objects
+## Exact baselines
 
-`geometry.pdf` / `geometry.tex` is the principal article. `supplement.pdf` / `supplement.tex` retains the full boundary, collision, primary, relative, and historical technical material. `complete.pdf` / `complete.tex` combines both proof networks. Main/supplement references are cross-linked after the build.
+The controlling v141 review is commit `a10f8f1ea938e0ef8ce5a4aca4ee8e4a662ee84c`, assessing restoration-only head `bf0d9be9e2624058d24a57c48b19ec4c38105c1f`. After that review, the v141 branch advanced to substantive native manuscript `8cd389f4048a1047be9aa8e8e4f642595175a555`. This revision retains that later manuscript in full, including its universal spectral family and totally real likelihood theorem. It does not revert to the older reviewed state.
 
-Start with `RESPONSE_TO_REFEREE_V140.md` and `REFEREE_GUIDE_V141.md`. `LITERATURE_AUDIT_V141.md` gives the exact source comparisons and explicitly unverified documentary items. `PROVENANCE_MANIFEST_V141.json` and `NONDELETION_V141.json` bind sources and retained history. Executed checks and actual PDF/page counts appear in `evidence/BUILD_RECEIPT_V141.json`.
+The predecessor artifact came from run 35872058050, artifact 10755263912. ZIP SHA-256: `4da8b77eb6a79f5d65ad5e84c7c8581b3e8d9f0138321d81605ac609157a6a92`; its publication-commit receipt equals the pinned native head. Original review and revision branches remain unchanged.
 
-## Build
+## New mathematical content
 
-From this directory run `bash build.sh`. Requirements: Python 3 with SymPy, NumPy and PyMuPDF; a TeX Live installation containing AMS classes, Latin Modern, microtype, xr-hyper and hyperref. The workflow installs these dependencies and runs the same entry point. Seventeen scripts execute before the three native LaTeX builds and the source/layout audit.
+`parts/24-jacobian-casimir.tex`: mixed Jacobian–contraction identity at every rank, direct singular-kernel proof, exact Casimir Gram identity, complete normalized singular-value spectrum and Moore–Penrose inverse.
 
-The build removes and recreates only this revision's generated `evidence/` directory. It does not modify predecessor manuscripts. Native sources require no prior Actions artifact, transport decoding or unpublished file. `verify_v141.py` records `A2_SOURCE_COMMIT` when supplied, otherwise the actual Git HEAD when available, and otherwise the literal `local-preflight`.
+`parts/25-fixed-spectral-strata.tex`: fixed-discriminant/fixed-reduced-rank classification, necessary and sufficient dominance criterion for fixed-form curve specializations, all allowed transitions realized by flat actual finite-neighbourhood families, and sharp detection at the same order. The first relation is the degree-d first graded Betti space on a marked Hilbert locus. Classical orbit classification is explicitly credited.
 
-## New proof locations
+`parts/01d-operator-strata-overview.tex` and `parts/01e-dependency-map.tex`: theorem overview and dependency map. Every inherited mathematical part and check is retained byte-for-byte; changed wrappers are archived in `history/v141/`. The inherited bibliography is preserved and extended by `references-v142.tex`.
 
-`parts/21-spectral-specialization.tex`: explicit sheaf-to-module/similarity and local-Artinian square-root lemmas.
+## Referee and build objects
 
-`parts/22-relative-spectral-strata.tex`: universal actual finite-neighbourhood family, arbitrary base change, spectral Fitting readout and realization of all Segre closure intersections.
+Read `RESPONSE_TO_REFEREES_V140_V141.md`, `ISSUE_MATRIX.json`, and `LITERATURE_AUDIT_V142.md` for the issue-by-issue response and source comparisons.
 
-`parts/23-real-likelihood.tex`: separated-root score lemma, explicit data for every multiplicity pattern, omitted-axis exclusion, denominator check, Hessian and openness proof.
+Run `bash build.sh` with Python 3, SymPy, NumPy, PyMuPDF and TeX Live (AMS, Latin Modern, microtype, xr-hyper, hyperref). All seventeen inherited scripts plus the new regression suite run before three PDF builds and the source/layout audit. In an isolated local copy, set `A2_PREDECESSOR_DIR` to the pinned v141 directory for nondeletion checks; in the repository it is found automatically.
 
-All earlier theorem statements and proof files remain. Changed predecessor files are archived exactly under `history/v140/`. A build receipt is finite reproducibility evidence, not a formal proof certificate or a journal decision. The Ballico full-text comparison and exhaustive contraction-priority clearance have not been falsely marked complete.
+Actual results and the exact mathematical source commit appear in `evidence/BUILD_RECEIPT_V142.json`; the same audit creates `PROVENANCE_MANIFEST_V142.json` and `NONDELETION_V142.json`. A receipt labelled `local-preflight` is not a remote green run. Inherited receipts describe their own earlier versions only.
+
+The full Ballico 1993 article has not been obtained and exhaustive historical priority has not been certified. These documentary items are not marked closed. No theorem is weakened on that account; no passing script constitutes formal proof or editorial acceptance.
