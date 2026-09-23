@@ -1,24 +1,9 @@
-# Current A2 referee entry: revision 101
+# Current A2 revision entry: 131
 
-**Paper:** *Projective polynomial observations: finite spectral calibration and divisorial entrances*  
-**Revision branch:** `revision/a2-v101-finite-metric-divisorial-contact-2026-09-20`  
-**Controlling review:** `reviews/a2-v100-independent-harsh-top4-2026-09-20/REFEREE_REPORT.md` at `c05195ef73bd3c5c8185928920926baf2d38df2c`  
-**Reviewed manuscript:** v100 at `7407ad098cac70ac07bb7d9d01f562890041cada`
+See `A2_REVISION_V131_INDEX.md`.
 
-The principal entrypoint is `papers/A2-v17-boundary-information-coarsening/rigidity_v101.tex`.
-Its source is `article/v101/paper.tex` under the same paper directory.
-The archival volume `rigidity_v101_archive.tex` preserves the entire v100 complete volume;
-`rigidity_v101_complete.tex` combines the new principal with that archive.
-All inherited mathematical files remain unchanged.
+Principal manuscript: `papers/A2-v17-boundary-information-coarsening/article/v131/geometry.tex`.
+Referee response: `papers/A2-v17-boundary-information-coarsening/article/v131/RESPONSE_TO_REFEREE_V130.md`.
+Controlling review: `reviews/a2-v130-independent-harsh-top4-2026-09-23/REFEREE_REPORT.md` at `57c70a882150cc6e44d85ad6f68043b7327d8a10`.
 
-Read `revisions/a2-v101/RESPONSE_TO_REFEREE.md` for the point-by-point response.
-The finite exact diagnostic is `revisions/a2-v101/EXACT_DIAGNOSTICS.json`.
-The authoritative successful native receipt, if present, is
-`revisions/a2-v101/native/RUNTIME_RECEIPT.json`; a workflow definition,
-a queued run, or a historical PDF is not such a receipt.
-The receipt names the source commit that was built. A later evidence-only commit
-must be checked by the recorded source hashes, not represented as having compiled
-its own self-referential commit hash.
-
-The older root README is historical; this file identifies the review target on
-this revision branch. No main, review, or other manuscript branch is modified.
+This branch preserves the entire reviewed source and review history. Build status is given only by the source-bound receipt in the v131 evidence directory, not by this entry file. Structural proofs remain subject to independent mathematical review.

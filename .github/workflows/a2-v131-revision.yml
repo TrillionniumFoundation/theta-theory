@@ -1,0 +1,64 @@
+name: A2 v131 primary models and sharp global boundary
+on:
+  push:
+    branches:
+      - revision/a2-v131-relative-primary-filtrations-2026-09-23
+    paths:
+      - 'revisions/a2-v131/**'
+      - '.github/workflows/a2-v131-revision.yml'
+      - 'A2_REVISION_V131_INDEX.md'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: a2-v131-referee-build
+  cancel-in-progress: false
+jobs:
+  build:
+    if: github.ref == 'refs/heads/revision/a2-v131-relative-primary-filtrations-2026-09-23'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      REVISION: papers/A2-v17-boundary-information-coarsening/article/v131
+      TARGET_BRANCH: revision/a2-v131-relative-primary-filtrations-2026-09-23
+      PYTHONDONTWRITEBYTECODE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Assemble from immutable reviewed source
+        run: python revisions/a2-v131/assemble.py
+      - name: Install mathematical build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern
+          python -m pip install 'sympy==1.14.0' 'numpy==2.3.5' 'PyMuPDF==1.26.7'
+      - name: Execute regressions and compile full self-contained article
+        run: bash "$REVISION/build.sh"
+      - name: Check historical preservation
+        run: |
+          git diff --exit-code 57c70a882150cc6e44d85ad6f68043b7327d8a10 -- papers/A2-v17-boundary-information-coarsening/article/v129 reviews
+      - name: Publish expanded source, PDF and actual receipt on v131 only
+        run: |
+          test "${GITHUB_REF#refs/heads/}" = "$TARGET_BRANCH"
+          find "$REVISION" -type d -name __pycache__ -prune -exec rm -rf {} +
+          rm -f "$REVISION/geometry.aux" "$REVISION/geometry.out" "$REVISION/geometry.log"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f -- "$REVISION"
+          if ! git diff --cached --quiet; then
+            git commit -m 'A2 v131: self-contained manuscript, PDF and executed evidence [skip ci]'
+            git push origin "HEAD:$TARGET_BRANCH"
+          fi
+      - name: Package referee bundle
+        run: |
+          tar -czf a2-v131-referee-bundle.tar.gz A2_REVISION_V131_INDEX.md reviews/a2-v130-independent-harsh-top4-2026-09-23/REFEREE_REPORT.md "$REVISION"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: a2-v131-referee-bundle
+          path: a2-v131-referee-bundle.tar.gz
+          retention-days: 30
