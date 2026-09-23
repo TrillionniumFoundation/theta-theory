@@ -1,0 +1,102 @@
+name: A2 v143 native revision and nineteen-check publication
+on:
+  push:
+    branches: ['revision/a2-v143-unified-failure-spectral-principle-2026-09-24']
+    paths:
+      - '.revision-bootstrap/a2-v143/**'
+      - 'papers/A2-v17-boundary-information-coarsening/article/v143/**'
+      - '.github/workflows/a2-v143-native-build.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: a2-v143-native-build
+  cancel-in-progress: false
+jobs:
+  verify-and-publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      BRANCH: revision/a2-v143-unified-failure-spectral-principle-2026-09-24
+      P: papers/A2-v17-boundary-information-coarsening/article/v143
+      OPENBLAS_NUM_THREADS: '1'
+      SYMPY_GROUND_TYPES: flint
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Publish the checksum-verified native source before compiling it
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD:reviews/a2-v141-independent-harsh-top4-r2-2026-09-24/REFEREE_REPORT.md)" = a14cd5501c274687c9b2559194682ff8281c2b1a
+          python .revision-bootstrap/a2-v143/assemble.py
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          test "$(git ls-remote origin "refs/heads/$BRANCH" | cut -f1)" = "$GITHUB_SHA"
+          git add -A -f -- "$P" revisions/a2-v143/history README.md CURRENT_REVIEW_ENTRY.md
+          git commit -m 'A2 v143: native finite-failure critical-correspondence revision, complete preserved supplement and point-by-point response [skip ci]'
+          git push origin "HEAD:$BRANCH"
+          SOURCE=$(git rev-parse HEAD)
+          echo "A2_SOURCE_COMMIT=$SOURCE" >> "$GITHUB_ENV"
+          echo "$SOURCE" > /tmp/a2-v143-source-commit.txt
+      - name: Install native compilation and exact-arithmetic dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+          python -m pip install --disable-pip-version-check sympy==1.14.0 numpy==2.3.5 PyMuPDF==1.26.7 python-flint
+      - name: Run nineteen scripts and compile the three native manuscripts
+        run: |
+          set -euo pipefail
+          bash "$P/build.sh" 2>&1 | tee /tmp/a2-v143-build.log
+      - name: Publish source-bound PDFs, canonical routing and immutable source lock
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ['P']);r=json.loads((p/'evidence/BUILD_RECEIPT_V143.json').read_text())
+          assert r['ok'] and r['source_commit']==os.environ['A2_SOURCE_COMMIT']
+          lock=json.loads((p/'SOURCE_LOCK_V143.json').read_text())
+          assert lock['source_commit']==r['source_commit']
+          prefix=str(p)
+          lines=['# Canonical A2 referee entry — revision 143','',
+          '**Native source commit:** `'+r['source_commit']+'`.',
+          '**Controlling second-v141 report:** `3afecca5e65d7fe9c6784020ea6e813122938140`.',
+          '**Manuscript assessed by that report:** `8cd389f4048a1047be9aa8e8e4f642595175a555`.',
+          '**Preserved v142 predecessor:** `4deb7a35f4488a0c8b686261569ce4ef324ca750`.','',
+          'The exact source SHA, not a moving branch name, defines this review object. All three native builds and nineteen executed regression scripts passed in run '+os.environ['GITHUB_RUN_ID']+'. This is not a formal-proof, priority or editorial certificate.','',
+          '[Principal article]('+prefix+'/geometry.pdf) · [Full technical supplement]('+prefix+'/supplement.pdf) · [Complete manuscript]('+prefix+'/complete.pdf)','',
+          '[Source lock]('+prefix+'/SOURCE_LOCK_V143.json) · [Source-bound receipt]('+prefix+'/evidence/BUILD_RECEIPT_V143.json) · [Nondeletion audit]('+prefix+'/NONDELETION_V143.json)','',
+          '[Point-by-point response]('+prefix+'/RESPONSE_TO_REFEREES_V141_R2_V143.md) · [Current issue matrix]('+prefix+'/ISSUE_MATRIX.json) · [Literature audit]('+prefix+'/LITERATURE_AUDIT_V143.md) · [Reading guide]('+prefix+'/REFEREE_GUIDE_V143.md)','',
+          'The complete Ballico 1993 theorem-level six-axis comparison remains documentary-open. Exhaustive historical priority is not certified. All inherited mathematical statements and proofs remain active and unchanged.','',
+          'A subsequent mathematical revision requires a new branch. Earlier root routing files are preserved under revisions/a2-v143/history.']
+          Path('CURRENT_REVIEW_ENTRY.md').write_text('\n'.join(lines)+'\n')
+          PY
+          test "$(git ls-remote origin "refs/heads/$BRANCH" | cut -f1)" = "$A2_SOURCE_COMMIT"
+          git add -A -f -- "$P/geometry.pdf" "$P/supplement.pdf" "$P/complete.pdf" "$P/evidence" "$P/SOURCE_LOCK_V143.json" "$P/PROVENANCE_MANIFEST_V143.json" "$P/NONDELETION_V143.json" CURRENT_REVIEW_ENTRY.md
+          git commit -m 'A2 v143: publish verified native PDFs, nineteen-check receipt and exact canonical review object [skip ci]'
+          git push origin "HEAD:$BRANCH"
+          git rev-parse HEAD > /tmp/a2-v143-publication-commit.txt
+      - name: Package the exact native referee objects
+        if: always()
+        run: |
+          if test -d "$P"; then
+            tar --exclude='__pycache__' --exclude='*.pyc' -czf /tmp/a2-v143-referee-bundle.tar.gz "$P" CURRENT_REVIEW_ENTRY.md
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: a2-v143-native-referee-bundle
+          path: |
+            /tmp/a2-v143-referee-bundle.tar.gz
+            /tmp/a2-v143-source-commit.txt
+            /tmp/a2-v143-publication-commit.txt
+            /tmp/a2-v143-build.log
+            .revision-bootstrap/a2-v143
+          retention-days: 30
+          include-hidden-files: true
+          if-no-files-found: warn
