@@ -1,0 +1,27 @@
+# Proof ledger — v13
+
+This maps statements to complete source arguments. It is not an independent proof certificate. Printed numbering and page positions are supplied by `evidence/BUILD_RECEIPT.json`.
+
+| Stable label / source | Hypotheses | Conclusion and proof mechanism |
+|---|---|---|
+| `thm:v13-main` / intrinsic-deficiency.tex | Finite parameters, horizon, controls, reports and actual mark; task/parameter-blind timed finite-state transducers; full marked feedback comparison | Attained polynomial private/fixed-seed optimization; hidden testing dual with a_K+1 modes; exposed selector objective and zero-set theorem; optimal cost composition and common-risk transport. Multiaffine timed row expansion, compactness, finite minimax, affine elimination, disjoint-seed TV and channel composition are proved explicitly. |
+| `prop:v13-rank` / intrinsic-deficiency.tex | Delayed finite input/output channel with no early output storage | Private zero equals nonnegative rank constraint; sharp identity-channel private/hidden errors and least widths; strict selector-signature separation. Stochastic normalization, prototype counting, trace witness, symmetrization and a singular-value lower bound. |
+| `prop:v13-dimension` / intrinsic-deficiency.tex | Compact C(J) risk image, rank-m linear approximation with error eta | At most m+1 designs with risk error at most 2 eta; exact for m-dimensional affine images; charged implementation. |
+| `lem:v13-regret` / endogenous-tasks.tex | Finite controlled support, task-specific costs, one common encoder | Exact performance-difference identity on the actual controlled path and simultaneous time-indexed table mixture across tasks. |
+| `thm:v13-endogenous` / endogenous-tasks.tex | Same finite model, positive supported initial masses, finite tasks | Exact deterministic/private/seeded feasibility iff reachable task-indexed compatible cover with shared updates. Finite infeasibility margin beta_* mu_* p_*^T gamma_*. No uniform model perturbation margin or positive-value deterministic minimax claim. |
+| `cor:v13-certificate` / endogenous-tasks.tex | Normalized total losses; paired full-history benchmark; two-sided stateless deficiency below g/4 | Cover feasibility detected by a g/2 approximate-risk threshold; one-sided product-cost exact transport. |
+| `thm:v13-average` / regenerative-risks.tex | Standard Borel physical state, finite action/report/memory; stationary common policy; actual synchronous reset; uniform row continuity | Explicit invariant law, uniform Cesaro and vanishing-discount bounds, compact C(J) risk image, attained mixed minimax. Physical kernels may be nondominated. |
+| `thm:v13-cycle` / regenerative-risks.tex | Same reset flag; before-optimization marked cycle comparisons at each age | Geometric averaging transports average risks uniformly over consumer width; pointwise-age convergence suffices. |
+| `lem:v13-words` / active-hard-spheres.tex | Strongly continuous unitary flow, skew-adjoint generator, graph-core finite subspaces, finitely many bounded unitary interventions | Stable resolvent/orbit convergence and fixed controlled-word convergence; no domain invariance under interventions. Classical Trotter theorem credited and core argument proved. |
+| `thm:v13-active` / active-hard-spheres.tex | Fixed finite hard-sphere system, orthogonal velocity kicks, positive Gaussian acquisition noise, original preparations L2-bounded, fixed actual initial-mark channel | Explicit two-sided stateless marked feedback deficiency bound, uniform over every consumer width and exposed seed. Sum over action words under the original preparation, not an unproved posterior bound. |
+| `cor:v13-active-average` / active-hard-spheres.tex | Physical re-preparation/reset, finite partitioned reports, stationary finite-register policies, compact L1-continuous density rows and uniformly continuous bounded costs | Active microscopic Galerkin models converge in every width's average-risk body and common minimax value through the geometric cycle bound. |
+
+## Dependency structure
+
+The finite intrinsic theorem is independent of the historical physical pipeline. The endogenous regret identity and cover theorem feed its decision-certificate corollary. The reset theorem provides the analytic long-time control needed by the active average consumer. The active finite-horizon proof uses only the classical hard-sphere a.e. flow, the proved graph-core/word lemma, elementary Gaussian TV, and the intrinsic theorem's channel transport. No historical nonlinear B4 or Sinai A4 estimate is a hidden premise.
+
+The entire predecessor label set is retained in the companion. The preserved v12 block-resolvent and summable-prefix results are not relabeled as new proofs. The new canonical article does not claim novelty for Bellman identities, Caratheodory, minimax, nonnegative rank, compatible covers, geometric regeneration or Trotter approximation considered separately.
+
+## Boundaries relevant to independent review
+
+The exact finite testing converse is for hidden convexification with a paid selector, not a same-width convex characterization of private finite-state simulation. The nonfinite average theorem is for its specified reset/stationary signature, not arbitrary filtered experiments. The active approximation is fixed-physical-parameter and initial-mark scoped, not a kinetic scaling theorem. Original-source priority against Norberg and Paull–Unger remains unverified at full proof level. Finite diagnostic results do not certify any analytic assertion above.
