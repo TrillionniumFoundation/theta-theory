@@ -1,0 +1,114 @@
+name: GTF-I v20 continuation classification
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v20-continuation-classification-2026-09-23
+    paths:
+      - 'papers/GTF-I-v20-continuation-classification/**'
+      - '.github/workflows/gtf-i-v20-continuation-classification.yml'
+permissions:
+  contents: write
+concurrency:
+  group: gtf-i-v20-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Materialize the verified complete authored source and unchanged mathematical inputs
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import base64,hashlib,json,lzma,shutil
+          from pathlib import Path
+          p=Path('papers/GTF-I-v20-continuation-classification')
+          chunks=sorted((p/'bootstrap').glob('source.part*.b64'))
+          if len(chunks)!=7:
+              raise RuntimeError('Expected exactly seven verified source-package parts')
+          data=base64.b64decode(''.join(f.read_text().strip() for f in chunks),validate=True)
+          expected='4904a01df9cc49f3afaf68ecd37076e05fdf4f8563e8099d22e80a465647a4db'
+          if hashlib.sha256(data).hexdigest()!=expected:
+              raise RuntimeError('Source-package digest mismatch')
+          sources=json.loads(lzma.decompress(data))
+          if len(sources)!=20:
+              raise RuntimeError('Authored-source manifest is incomplete')
+          for name,text in sources.items():
+              if Path(name).name!=name or not isinstance(text,str):
+                  raise RuntimeError('Unexpected source path or encoding')
+              (p/name).write_text(text,encoding='utf-8')
+          manifest=json.loads((p/'INHERITANCE.json').read_text())
+          old=Path('papers/GTF-I-v19-referee-resolution')
+          for name,digest in manifest['unchanged_math_modules'].items():
+              f=old/name
+              if hashlib.sha256(f.read_bytes()).hexdigest()!=digest:
+                  raise RuntimeError('Frozen predecessor source mismatch: '+name)
+              shutil.copyfile(f,p/name)
+          (p/'bootstrap'/'SOURCE_PACKAGE_RECEIPT.json').write_text(json.dumps({
+              'xz_sha256':expected,'authored_files':sorted(sources),
+              'unchanged_mathematical_inputs':sorted(manifest['unchanged_math_modules']),
+              'review_base_commit':manifest['review_commit'],
+              'predecessor_commit':manifest['base_commit'],
+              'old_paths_modified':[]},indent=2)+'\n')
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f papers/GTF-I-v20-continuation-classification
+          if ! git diff --cached --quiet; then
+            git commit -m 'source(GTF-I v20): materialize complete English manuscript and exact inherited inputs [skip ci]'
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
+          echo "GTF_SOURCE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - name: Install numerical and typesetting inputs
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq texlive-latex-extra texlive-fonts-recommended lmodern
+          python -m pip install -r papers/GTF-I-v20-continuation-classification/requirements.txt
+      - name: Build the full article and verify every preserved predecessor page
+        run: |
+          set -euo pipefail
+          python papers/GTF-I-v20-continuation-classification/build.py | tee "$RUNNER_TEMP/gtf-v20-build-receipt.json"
+      - name: Publish the new revision only
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path('papers/GTF-I-v20-continuation-classification')
+          r=json.loads((p/'evidence/BUILD_RECEIPT.json').read_text())
+          text='# General Theta Foundations I — v20 referee package\n\n'
+          text+='**Decision Continuations and Microscopic Certification**\n\n'
+          text+=f"Source commit: `{r['source_commit']}`. Executed build run: `{os.environ['GITHUB_RUN_ID']}`.\n\n"
+          text+=f"Canonical English article: **{r['canonical_pages']} pages**. Complete development: **{r['complete_pages']} pages**, including all **{r['predecessor_pages']} predecessor pages** with identical text and raster rendering.\n\n"
+          text+='Directory: `papers/GTF-I-v20-continuation-classification/`.\n\n'
+          text+='Start with [paper.pdf](papers/GTF-I-v20-continuation-classification/paper.pdf), [RESPONSE_TO_REFEREE.md](papers/GTF-I-v20-continuation-classification/RESPONSE_TO_REFEREE.md), and [BUILD_RECEIPT.json](papers/GTF-I-v20-continuation-classification/evidence/BUILD_RECEIPT.json). The [complete-development.pdf](papers/GTF-I-v20-continuation-classification/complete-development.pdf) retains the entire frozen predecessor development.\n\n'
+          text+='The new organizing chain is: operational decision-continuation spectrum; weighted finite-valued residual obstruction; exact one- and two-continuation values for the collision experiment; a matched three-state decision-cut certificate; exact all-cut realization of the chosen selector; stable microscopic and bounded Gaussian consumers.\n\n'
+          text+='At the designated training/validation cut, two retained states cannot reach score 2/5, while three states do, with an explicit lower bound above 0.4032891. The chosen 399-training-reset selector has exact full-trial peak width 20,301 and a sixteen-bit bitwise realization. The latter is an implementation upper bound, not an optimum over every approximate auditor. One unused reset fits the inherited 402-reset schedule.\n\n'
+          text+=f"Executed finite diagnostics: {r['finite_diagnostic_checks']:,}; negative-control executions: {r['negative_control_executions']}. These are reproducibility evidence, not independent analytic proof certification.\n\n"
+          text+='The source-bound theorem map, complete pointwise response, literature crosswalk, and historical pipeline audit are included. The original Norberg proof-level crosswalk remains unverified because the original full text was not obtained. No global historical B4/C2 closure or dependency of the independent A2 chain is asserted.\n'
+          Path('GENERAL_THETA_FOUNDATIONS_I_V20_REVIEW_READY.md').write_text(text)
+          PY
+          git add -f papers/GTF-I-v20-continuation-classification GENERAL_THETA_FOUNDATIONS_I_V20_REVIEW_READY.md
+          if ! git diff --cached --quiet; then
+            git commit -m 'publish(GTF-I v20): complete revision, referee response, preserved history and executed evidence [skip ci]'
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
+          echo "PUBLICATION_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GTF-I-v20-continuation-classification
+          path: papers/GTF-I-v20-continuation-classification/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Publication identities
+        run: |
+          echo "Source commit: $GTF_SOURCE_COMMIT" >> "$GITHUB_STEP_SUMMARY"
+          echo "Publication commit: $PUBLICATION_COMMIT" >> "$GITHUB_STEP_SUMMARY"
+          echo "Independent analytic review remains necessary; build success is not journal acceptance." >> "$GITHUB_STEP_SUMMARY"
