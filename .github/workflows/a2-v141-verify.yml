@@ -1,0 +1,71 @@
+name: A2 v141 immutable native submission verification
+on:
+  push:
+    branches: ['revision/a2-v141-functorial-spectral-reconstruction-2026-09-23']
+    paths: ['revisions/a2-v141/VERIFY_NATIVE_HEAD.md']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: a2-v141-readonly-verification
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Require a self-contained native submission
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json,hashlib,subprocess,os
+          p=Path('papers/A2-v17-boundary-information-coarsening/article/v141')
+          assert subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()==os.environ['GITHUB_SHA']
+          m=p/'PROVENANCE_MANIFEST_V141.json'
+          assert hashlib.sha256(m.read_bytes()).hexdigest()=='d236654da2784b0508315fba30407c00bebe93cdd0d80131108a737815c3fdcb'
+          for n,h in json.loads(m.read_text())['source_sha256'].items():
+              assert hashlib.sha256((p/n).read_bytes()).hexdigest()==h,n
+          old=json.loads((p/'evidence/BUILD_RECEIPT_V141.json').read_text());assert old['ok']
+          for n,v in old['pdfs'].items():
+              assert hashlib.sha256((p/(n+'.pdf')).read_bytes()).hexdigest()==v['sha256'],n
+          print('All native source and published PDFs present and checksum-bound to their recorded build.')
+          PY
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern
+          python -m pip install sympy==1.14.0 numpy==2.3.5 PyMuPDF==1.26.7
+      - name: Rebuild from the exact immutable source commit without write permission
+        env:
+          A2_SOURCE_COMMIT: ${{ github.sha }}
+        run: |
+          bash papers/A2-v17-boundary-information-coarsening/article/v141/build.sh | tee /tmp/a2-v141-immutable-build.log
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib,json,os,subprocess
+          p=Path('papers/A2-v17-boundary-information-coarsening/article/v141')
+          r=json.loads((p/'evidence/BUILD_RECEIPT_V141.json').read_text())
+          assert r['ok'] and r['source_commit']==os.environ['GITHUB_SHA']
+          assert subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()==os.environ['GITHUB_SHA']
+          assert len(r['executed_scripts'])==17 and r['inherited_label_count']==338 and r['current_label_count']==364
+          assert [r['pdfs'][n]['pages'] for n in ['geometry','supplement','complete']]==[55,66,118]
+          m=json.loads((p/'PROVENANCE_MANIFEST_V141.json').read_text())
+          for n,h in m['source_sha256'].items():assert hashlib.sha256((p/n).read_bytes()).hexdigest()==h,n
+          print('Read-only exact-commit rebuild passed; no source mutations or publication writes.')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: a2-v141-immutable-verification
+          path: |
+            papers/A2-v17-boundary-information-coarsening/article/v141/evidence/BUILD_RECEIPT_V141.json
+            papers/A2-v17-boundary-information-coarsening/article/v141/evidence/REVISION141_SPECTRAL_EXACT.json
+            papers/A2-v17-boundary-information-coarsening/article/v141/evidence/REVISION141_LIKELIHOOD_EXACT.json
+            /tmp/a2-v141-immutable-build.log
+          retention-days: 30
