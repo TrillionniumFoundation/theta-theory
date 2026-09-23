@@ -1,0 +1,25 @@
+# Primary-source comparison and priority boundary — v17
+
+The mathematical introduction cites the following original sources. The distinctions concern statements and information categories, not a claim to have exhausted the literature. No primary paper text is reproduced here.
+
+## Positivity and minimax subtraction
+
+**de Klerk–Laurent (2010), Theorem1.4**, SIAM J. Optim.20,3104–3120, DOI10.1137/100790835. The authors' April2010 original PDF was read at Section1.2 and the Bernstein development; theorem page5 was visually checked. It supplies explicit Handelman/Schmudgen degree and O(1/d) error bounds on the cube. These general constructive positivity ingredients are classical inputs to our row verifier. They do not constitute the claimed new adaptive-test size result. Source: https://optimization-online.org/wp-content/uploads/2010/04/2591.pdf
+
+**Laurent–Slot (2023), Theorem2/Corollary3**, arXiv2109.09528v2; Optim. Lett.17,515–530, DOI10.1007/s11590-022-01922-5. The original version's theorem page2 was visually checked. The Jackson-kernel approach yields O(1/r^2) hierarchy error and O(eta^(-1/2)) degree for the relevant positive perturbation. Our binomial adaptive-regret rate is not an improvement of this positivity rate: it bounds a different simplex-valued test object. Source: https://arxiv.org/pdf/2109.09528
+
+**de Klerk–Vera (2026), Theorem9/Proposition2** in arXiv2404.04190v2 (December2024 version); Numer. Algebra Control Optim.16,84–104, DOI10.3934/naco.2024060. The original HTML theorem statements and surrounding argument relate Chebyshev coefficient 1-norm approximation to effective hypercube certificates. This is a nearer positivity-size antecedent than an uncited assertion that Bernstein is classical. Our metric behavior dimension does not remove their coefficient/verification parameters. Source: https://arxiv.org/html/2404.04190v2
+
+**Sion (1958), Theorem3.4 and its compact variant**, Pacific J. Math.8,171–176, DOI10.2140/pjm.1958.8.171. The minimax exchange is classical. In the finite-level theorem its two compact convex strategy sets are coefficient-simplex arrays and measures on the exact nonconvex behavior set. The latter are revealed candidates; their barycenters are not executable private replacements. Source: https://msp.org/pjm/1958/8-1/pjm-v8-n1-p14-s.pdf
+
+## Filtered comparison
+
+**Weisshaupt (2006), Definition5.1 and Theorems5.1–5.2**, author39-page version, especially pages20–24, DOI10.1556/SScMath.43.2006.4.3. The adapted stochastic operator criterion uses convex closure, with output in finitely additive measures in the stated generality; Remark5.2 explains that scope. A fixed-private finite-register image can fail the convexity required by that separation argument. Our two-report example gives the failed substitution explicitly, while our independent adaptive test changes the verifier's space rather than the simulator's budget. This is a comparison with Weisshaupt, not an inference about every detail of Norberg. Source: https://www.weiszhaupt.at/publications/Randomization.pdf
+
+**Norberg (2002), Comparison of Statistical Experiments with Filtered Probability Spaces**, Statistics & Risk Modeling20,1–28, DOI10.1524/strm.2002.20.14.1. The original proof text remains unavailable in this audit. Publisher PDF routes and the Norwegian National Library catalog record were tried without retrieving the theorem/proof body. A later source's account and the published abstract do not close that gap. The exact original deficiency, operator class, persistent-information convention, timing, equivalent criteria and constrained-proof adaptation must still be checked from the original. No assertion that Norberg omits our precise theorem is made. Publisher route: https://www.degruyterbrill.com/document/doi/10.1524/strm.2002.20.14.1/html
+
+**Paull–Unger (1959)** remains a cited state-minimization antecedent. The prior incomplete original-text audit is not upgraded by this revision; no new compatible-cover priority claim is being made.
+
+## What remains after classical ingredients are removed
+
+The general partition-of-unity argument, minimax exchange, Bernstein degree elevation, Caratheodory support reduction, elastic scattering rule, Bayes identity and martingale maximal inequalities are not claimed as discoveries. The manuscript's proposed contribution is their proved, explicitly budgeted relationship on the original marked causal behavior image: an independent nonlinear test with behavior-dimension degree/support control; a small exact witness invisible to constant tests; a single collision-sensitive marked acquisition with different private/hidden/visible values and effective same-budget physical approximation; and a uniform posterior-process criterion consuming actual marked variation. Each claim is accompanied by a direct proof. The tests reveal a proposed law for verification, not an unavailable runtime mark. The new C2 result has a stated microscopic scope. Absolute priority for this conjunction is not certified by this audit.

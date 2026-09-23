@@ -1,0 +1,249 @@
+\subsection{Local testing at the prescribed private budget}
+\label{sec:v14-local}
+The convex converse in Theorem~\ref{thm:v13-main} has an explicit selector
+price. We now give a different converse that leaves the private register
+unchanged. Its witnesses are finite covers of the policy space by local
+testing inequalities, rather than one separating functional on a convex
+hull. Throughout this subsection the experiments, horizon, and alphabets
+are finite; for effective statements their instrument probabilities are
+rational. The prescribed widths and, when present, selector cardinality
+are fixed.
+
+Let $\mathcal P$ be the product of the row simplexes of the private
+transducer. For a hidden or visible selector with at most $r$ values,
+include its simplex and $r$ copies of the transducer rows in $\mathcal P$.
+Zero selector weights are permitted. The relevant deficiency has the form
+\begin{equation}\label{eq:v14-objective}
+ \delta=\min_{q\in\mathcal P}F(q),\qquad
+ F(q)=\max_{i\in I}f_i(q),\qquad 0\le F\le1.
+\end{equation}
+Here $I$ consists of all parameter, feedback-tree, and marked-event tests.
+The empty event is included. For a visible selector a test specifies a
+feedback tree and event in each selector fiber. Thus
+\[
+ f_i(\lambda,q)=\sum_u\lambda_u
+       \{Q_{\theta,g_u}(B_u)-P^{q^u}_{\theta,g_u}(B_u)\}.
+\]
+For a hidden selector the target term is independent of $\lambda$.
+Every $f_i$ is affine in each row separately, with rational coefficients.
+This follows by expanding complete controlled paths: a time-indexed row
+is used at most once along each path. It holds simultaneously for all
+feedback tests, not just for open-loop words.
+
+For an integer $M\ge1$, intersect a row simplex $\Delta_{d-1}$ with each
+closed coordinate box
+\[
+ \prod_{j=1}^d[b_j/M,(b_j+1)/M],\qquad b_j\in\{0,\ldots,M-1\}.
+\]
+Discard empty intersections. Products of these row polytopes form a
+finite closed cover $\mathcal C_M$ of $\mathcal P$. Overlapping faces
+cause no ambiguity. Write $V(C)$ for the products of row vertices of a
+cell $C$. These are exactly its vertices. They are rational and are
+obtained by setting all but at most one coordinate of each row to a box
+endpoint and imposing that the coordinates sum to one. This prescription
+also includes lower-dimensional cells and one-point rows.
+Define
+\begin{align}
+ \ell(C)&=\max_{i\in I}\min_{v\in V(C)}f_i(v),&
+ u(C)&=\min_{v\in V(C)}F(v),\label{eq:v14-cell}\\
+ L_M&=\min_{C\in\mathcal C_M}\ell(C),&
+ U_M&=\min_{C\in\mathcal C_M}u(C).\label{eq:v14-bounds}
+\end{align}
+
+For time $t$, let $d_t$ be the largest row alphabet cardinality,
+including both emitted symbol and next retained label. Put
+\[
+ \rho_t(M)=\begin{cases}0,&d_t=1,\\
+       \min\{1,d_t/(2M)\},&d_t>1,
+       \end{cases}\qquad
+ b_M=1-\prod_{t=0}^{T}(1-\rho_t(M)).
+\]
+For a selector row set $s_M=0$ if $r=1$, and
+$s_M=\min\{1,r/(2M)\}$ otherwise. The three bounds used below are
+\begin{equation}\label{eq:v14-modulus}
+ \omega_M^{\rm p}=b_M,\qquad
+ \omega_M^{\rm h}=s_M+(1-s_M)b_M,\qquad
+ \omega_M^{\rm v}=\min\{1,2s_M+(1-s_M)b_M\}.
+\end{equation}
+They do not count the number of histories or the number of policy rows.
+The visible-selector bound includes a second selector term because the
+reference joint experiment changes when its selector law changes.
+
+\begin{theorem}[Complete local testing certificates]\label{thm:v14-local}
+For any of the three fixed resource signatures in
+\eqref{eq:v14-objective}, the rational quantities
+\eqref{eq:v14-bounds} satisfy
+\begin{equation}\label{eq:v14-mainbound}
+ 0\le L_M\le\delta\le U_M\le1,\qquad
+ U_M-L_M\le\omega_M.
+\end{equation}
+The upper witness is an executable rational transducer at the prescribed
+widths and selector cardinality. A lower witness consists of one test
+$i_C$ for each cell and its inequalities
+$f_{i_C}(v)\ge L_M$ at all $v\in V(C)$.
+
+For $M=2^n$, the lower bounds increase and the upper bounds decrease to
+$\delta$. In particular,
+\begin{equation}\label{eq:v14-complete}
+ \delta=\sup_n\ \max_{(i_C)_{C\in\mathcal C_{2^n}}}
+           \min_{C\in\mathcal C_{2^n}}\min_{v\in V(C)}f_{i_C}(v)
+       =\inf_n U_{2^n}.
+\end{equation}
+If $\delta>\varepsilon$, a finite local testing certificate eventually
+proves this strict inequality. If $\delta<\varepsilon$, a rational
+original-budget simulator eventually proves feasibility below
+$\varepsilon$. For rational $\varepsilon$, non-strict feasibility,
+including equality, is decidable by real quantifier elimination.
+The optimum is algebraic, and an optimal row table can be chosen with
+real algebraic entries.
+\end{theorem}
+\begin{proof}
+Express each row of $q\in C$ as a convex combination of its row vertices.
+Expand a separately affine $f_i$ in those combinations, one row at a
+time. The resulting weights on $V(C)$ are nonnegative and sum to one.
+Consequently
+\begin{equation}\label{eq:v14-vertex}
+ \min_{q\in C}f_i(q)=\min_{v\in V(C)}f_i(v).
+\end{equation}
+It follows that $\ell(C)\le\min_C F\le u(C)$ and hence
+$L_M\le\delta\le U_M$. No assertion that $F$ itself is separately affine
+has been made. This distinction is essential at a randomized optimum.
+The empty event gives $\ell(C)\ge0$.
+
+We next prove the oscillation estimate used for the gap. Two probability
+rows in the same $M$-cell differ in total variation by at most
+$\rho_t(M)$. Run the two transducers against the same tester and source.
+As long as all earlier emitted symbols and retained labels coincide,
+the controls and source laws agree. Maximally couple the next joint
+output--state row. The conditional chance of a mismatch is at most
+$\rho_t(M)$. Thus the chance of any mismatch through time $T$ is at most
+$b_M$. On the event of no mismatch the source can be coupled identically,
+including its actual mark. This bounds the difference of the probability
+of every marked feedback event by $b_M$, uniformly in the parameter and
+tester. A finite causal instrument provides precisely the conditional
+kernels needed for this coupling.
+
+For a hidden selector first maximally couple its two laws. The selector
+mismatch has probability at most $s_M$; on matched fibers the preceding
+bound is $b_M$. The difference of any fixed test is at most
+$s_M+(1-s_M)b_M$. There is only one executed fiber, so this estimate has
+no extra factor $r$. For a visible selector write its fixed test as the
+expectation of $a_u(q)=Q_{\theta,g_u}(B_u)-P^{q^u}_{\theta,g_u}(B_u)$.
+These numbers lie in $[-1,1]$. On mismatched selector fibers their
+difference is at most two; on matched fibers it is at most $b_M$.
+Thus its oscillation is at most $2s_M+(1-s_M)b_M$. This estimate does not
+forget the selector in either compared experiment.
+
+Choose a vertex $v_*$ minimizing $F$ on $V(C)$ and an active test $i_*$
+there. For every other vertex,
+\[
+ f_{i_*}(v)\ge F(v_*)-\omega'_M=u(C)-\omega'_M,
+\]
+where $\omega'_M$ is the untruncated corresponding oscillation bound.
+It follows that $u(C)-\ell(C)\le\omega'_M$. Since both bounds lie in
+$[0,1]$, truncation by one is valid. Choose a cell attaining $L_M$ to
+obtain $U_M-L_M\le\omega_M$. A vertex attaining $U_M$ is an original
+row table; it is not a mixture of different designs.
+
+Dyadic refinement only replaces each cell by subsets. By
+\eqref{eq:v14-vertex}, its descendants cannot lower the minimum of a
+fixed test and hence cannot lower $L_M$. Every coarse vertex belongs
+to a finer cell and remains an extreme point of that subset; therefore
+the set of available vertices can only increase, and $U_M$ cannot
+increase. The bounds in \eqref{eq:v14-modulus} tend to zero. Independent
+choices of the maximizing test in each of the finitely many cells give
+\eqref{eq:v14-complete} and the two strict-decision assertions.
+
+Finally $q\in\mathcal P$ and $f_i(q)\le\varepsilon$ are finitely many
+polynomial conditions over the rationals. Quantifier elimination over
+real closed fields decides their existential conjunction; this is the
+classical effective Tarski--Seidenberg theorem, not a new elimination
+algorithm \cite[\S2.1, Theorem 2.1]{Basu2014}. The set of feasible
+objective values is a semialgebraic ray with included endpoint $\delta$.
+Its endpoint is algebraic over $\mathbb Q$. The nonempty optimum fiber
+has a point over the real algebraic numbers by the same real-closed-field
+transfer, proving the final assertion.
+\end{proof}
+
+\begin{corollary}[Private feasibility is locally test complete]
+\label{cor:v14-converse}
+At fixed private widths, $\dpr_K(E,F)\le\varepsilon$ if and only if no
+finite dyadic local testing certificate has value greater than
+$\varepsilon$. For any finite prescribed list of resource profiles, all
+strictly feasible and strictly infeasible profiles can be separated by
+rational original-budget witnesses and finite local certificates.
+With rational tolerance, exact feasibility and the minimal elements in
+that finite list are decidable. These assertions require neither a free
+public selector nor a convex private behavior set.
+\end{corollary}
+\begin{proof}
+The first claim is \eqref{eq:v14-complete}. Apply the strict parts of
+Theorem~\ref{thm:v14-local} to each profile in the finite list and its
+quantifier-elimination clause to profiles on the boundary. The partial
+order is coordinatewise state and selector cost. Enumeration of feasible
+profiles then determines the minimal elements. It need not produce a
+single least profile, and no polynomial running time is asserted.
+\end{proof}
+
+For the three-symbol channel $V_*$ in Proposition~\ref{prop:v13-rank},
+$\dmix_2=0$ whereas $\dpr_2\ge1/(4\sqrt3)>1/8$.
+Theorem~\ref{thm:v14-local} therefore eventually gives a finite local
+certificate exceeding $1/8$ at private width two. A single convex
+testing separator cannot have that conclusion, since the hidden
+convex hull already contains the target. This example identifies the
+logical work done by localization; it does not claim a polynomial
+bound on the size of the certificate.
+
+The exact use of row vertices and real algebraic decision procedures
+is classical. So is the unrestricted filtered randomization criterion:
+The precise filtered antecedent is
+\cite[Lemma 1 and Theorem 5]{Weisshaupt2002}, discussed in the introduction. The conclusion here is instead a complete system
+of local tests with executable witnesses at that fixed register, together
+with an explicit feedback modulus. These are different conclusions even
+on the finite delayed-channel slice. The original-source audit records
+separately the still-unverified comparison with Norberg's full proof and
+with the original incomplete-machine minimization papers.
+
+\subsection{Transferring intrinsic certificates across presentations}
+\label{sec:v14-stability}
+For compatible marked experiments write
+$E\simeq_a\widetilde E$ when two stateless, seed-free, marked causal
+channels, one in each direction, have feedback error at most $a$.
+Their report timing and action interfaces are the same. On a visible
+signature they compare the complete joint interface with the independent
+selector. These are assumptions about executable channels, not about
+unseeded marginal distributions.
+
+\begin{theorem}[Original-budget stability of intrinsic certificates]
+\label{thm:v14-stability}
+Suppose $E\simeq_a\widetilde E$ and
+$F\simeq_b\widetilde F$. For private, fixed hidden-selector, and fixed
+visible-selector deficiencies at the same budget,
+\begin{equation}\label{eq:v14-stability}
+ |\delta_K(E,F)-\delta_K(\widetilde E,\widetilde F)|\le a+b.
+\end{equation}
+If the approximating experiments are finite and rational, their local
+certificates consequently give the rigorous interval
+\begin{equation}\label{eq:v14-interval}
+ \max\{0,L_M-a-b\}\ \le\ \delta_K(E,F)\ \le\
+       \min\{1,U_M+a+b\}.
+\end{equation}
+An upper witness consists of the rational transducer and the two
+stateless bridge channels and has the original persistent resource
+budget. A lower certificate excludes every simulator at that budget
+for the original experiments whenever $L_M>a+b+\varepsilon$.
+\end{theorem}
+\begin{proof}
+Compose $E\to\widetilde E$, a near-optimal
+$\widetilde E\to\widetilde F$ transducer, and
+$\widetilde F\to F$. The optimized composition inequality in
+Theorem~\ref{thm:v13-main}, or its identical channel proof on measurable
+carriers, adds the three errors and multiplies the widths by $1,K,1$.
+The bridges introduce no selector, so a prescribed hidden or visible
+cardinality remains unchanged. Reverse the bridges for the opposite
+inequality and take the infima. Equation~\eqref{eq:v14-interval} follows
+from Theorem~\ref{thm:v14-local}. For the last assertion any original
+simulator would, after reverse bridging, contradict the finite lower
+certificate. Thus the lower statement does not assume the existence of
+an optimal simulator on a nonfinite carrier.
+\end{proof}

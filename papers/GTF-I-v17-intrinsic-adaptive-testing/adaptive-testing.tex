@@ -1,0 +1,326 @@
+\section{Adaptive testing on the observable behavior image}
+\label{sec:v17-adaptive}
+
+The obstruction to linear randomization criteria at a fixed private
+register is the nonconvexity of the behavior image, not a failure of
+compactness. We give a variational formulation in which a test is an
+independent function of an observable candidate law. The construction
+does not give the simulator an extra random variable.
+
+\subsection{The testing game}
+Let $B$ be a nonempty compact subset of a finite-dimensional affine
+space, and let $f_1,\ldots,f_m$ be affine real functions, including the
+zero function. Put
+\[
+ F(b)=\max_{i\le m}f_i(b),\qquad \delta=\min_{b\in B}F(b).
+\]
+For the finite comparison problem of Section~\ref{sec:v13-deficiency},
+$b$ is the array of discrepancies between the simulated and target
+marked laws, indexed by parameters, feedback trees and transcripts;
+$f_i$ ranges over their signed event evaluations. In the visible case
+the array includes the selector and its target weights. Thus the target
+coordinate is part of the array when those weights vary. Private,
+fixed-hidden and fixed-visible signatures each give their own compact
+set $B$. No convex hull is taken.
+
+An \emph{adaptive test} is a continuous map $\kappa:B\to\Delta_m$,
+chosen before a candidate $b$. Its score against that candidate is
+\[
+ G(b,\kappa)=\sum_i\kappa_i(b)f_i(b).
+\]
+This is a verification game: the selected candidate law is revealed to
+the evaluator of the already chosen function $\kappa$. It is not a
+one-observation statistical test, and does not make an unavailable
+parameter or mark observable to a physical controller.
+
+\begin{theorem}[Independent adaptive testing duality]
+\label{thm:v17-dual}
+For every such compact behavior image,
+\begin{align}
+ \delta
+ &=\sup_{\kappa\in C(B,\Delta_m)}\min_{b\in B}G(b,\kappa)
+ \label{eq:v17-dual}\\
+ &=\min_{\mu\in\cP(B)}\sup_{\kappa\in C(B,\Delta_m)}
+                \int_B G(b,\kappa)\,d\mu(b).\nonumber
+\end{align}
+The minimization over probability measures is attained. If Borel
+adaptive tests are allowed, the first supremum is attained as well.
+The continuous-test assertion is a supremum; continuous attainment is
+not needed or asserted.
+\end{theorem}
+\begin{proof}
+Fix $\eta>0$. The sets $U_i=\{b:f_i(b)>F(b)-\eta\}$ form an open
+cover of the compact metric space $B$. Choose a continuous partition
+of unity subordinate to this finite cover. The resulting test has
+$F(b)-\eta<G(b,\kappa)\le F(b)$ for all $b$. Consequently the first
+supremum equals $\delta$. The same uniform inequality shows, for every
+probability $\mu$,
+\[
+ \sup_\kappa\int G(b,\kappa)\,d\mu(b)=\int F\,d\mu.
+\]
+Its minimum is $\delta$, attained by a point mass at a minimizer of
+$F$. This also proves the displayed minimax exchange without an
+assumption that $B$ is convex. Equivalently one can apply the usual
+compact-convex minimax theorem to $\cP(B)$ and the convex class of
+continuous tests, with the pairing $\int G\,d\mu$.
+Finally choose the smallest index attaining $F(b)$. Its level sets are
+Borel, and its indicator vector is a Borel test with score exactly
+$F$.
+\end{proof}
+
+The probability $\mu$ here describes a lottery over \emph{revealed
+candidate laws}. The score is $\int G(b,\kappa)\,d\mu(b)$, not
+$G(\int b\,d\mu,\kappa)$. Hiding the candidate and replacing it by its
+barycenter is a different game; in general it lowers the value. This
+distinction is essential for a finite persistent-state budget.
+
+\subsection{A size bound in behavior dimension}
+Factor out directions annihilated by every $f_i-f_i(b_0)$, so that on
+the resulting difference space
+\[
+ \|v\|_* =\max_i|f_i(b_0+v)-f_i(b_0)|
+\]
+is a norm. Denote its dimension by $a$ and let
+$R=\diam_*(B)$. All conclusions below are unaffected by this observable
+quotient. The case $a=0$ is a single constant comparison and requires
+one test. Suppose henceforth that $a\ge1$, so $R>0$.
+
+\begin{lemma}[A bounded behavior chart]
+\label{lem:v17-chart}
+There exist $b_0\in B$ and vectors $v_j\in B-b_0$, $1\le j\le a$,
+forming a basis, such that $\|v_j\|_*\le R$ and every $b\in B$ has
+coordinates $b=b_0+\sum_j t_jv_j$ with $|t_j|\le2$.
+If $B$ is a rational polynomial image of a product of simplexes, the
+points can be chosen rational and can be found effectively.
+\end{lemma}
+\begin{proof}
+Fix $b_0\in B$. In any fixed coordinates on the difference space,
+let $D_0>0$ be the maximum absolute determinant of $a$ vectors in
+$B-b_0$. Compactness and spanning give existence and positivity.
+Choose a tuple with determinant greater than $D_0/2$. Replacing its
+$j$th vector by $b-b_0$ multiplies the determinant by $t_j$; maximality
+gives $|t_j|<2$. The norm bound is the definition of $R$.
+For a rational polynomial image, take $b_0$ at rational rows. Rational
+row images are dense. An affine basis can be found by enumerating
+rational images and testing rational determinants; the true affine
+span and the maximum determinant are semialgebraic data. Quantifier
+elimination decides whether a proposed nonzero determinant exceeds
+half the maximum. Density therefore makes the search terminate. This
+is an effectiveness assertion, not a bit-complexity bound for finding
+the chart.
+\end{proof}
+
+Set $b(x)=b_0+\sum_j(4x_j-2)v_j$ and
+$C=\{x\in[0,1]^a:b(x)\in B\}$. The ambient cube is a coordinate
+box, not an enlargement of the feasible behavior set. Write
+$\ell_i(x)=f_i(b(x))$. Then
+\begin{equation}\label{eq:v17-lipschitz}
+ |\ell_i(x)-\ell_i(y)|\le4R\sum_j|x_j-y_j|.
+\end{equation}
+For $n\ge0$ let $\beta_{\alpha,n}$ be the tensor Bernstein basis of
+coordinatewise degree $n$. A feasible coefficient array has
+$c_{\alpha i}\ge0$ and $\sum_i c_{\alpha i}=1$ for every
+$\alpha\in\{0,\ldots,n\}^a$. It specifies the independent test
+\[
+ \kappa_i^c(x)=\sum_\alpha c_{\alpha i}\beta_{\alpha,n}(x).
+\]
+Define
+\begin{equation}\label{eq:v17-hierarchy}
+ d_n=\max_c\min_{x\in C}
+       \sum_{\alpha,i}c_{\alpha i}\beta_{\alpha,n}(x)\ell_i(x).
+\end{equation}
+
+\begin{theorem}[Intrinsic adaptive degree and support bounds]
+\label{thm:v17-degree}
+The maxima in \eqref{eq:v17-hierarchy} are attained and
+$d_n\le d_{n+1}\le\delta$. For $n\ge1$,
+\begin{equation}\label{eq:v17-rate}
+ 0\le\delta-d_n\le \frac{4Ra}{\sqrt n}.
+\end{equation}
+There is an array with at most $(n+1)^a$ nonzero coefficients, all equal
+to one, whose minimum score is at least $\delta-4Ra/\sqrt n$.
+Its test has coordinatewise degree $n$, and its score degree at most
+$n+1$. Furthermore
+\begin{equation}\label{eq:v17-momentdual}
+ d_n=\min_{\mu\in\cP(C)}
+        \sum_\alpha\max_i\int_C\beta_{\alpha,n}(x)\ell_i(x)\,d\mu(x),
+\end{equation}
+and a minimizing measure can be supported on at most $(n+2)^a$ points.
+In particular a strict level $L<\delta$ admits an adaptive test of
+positive uniform margin with
+$n>(8Ra/(\delta-L))^2$ and at most $(n+1)^a$ occupied coefficient
+entries. These bounds depend on the observable image and its metric,
+not on the number of stochastic rows in a realization.
+\end{theorem}
+\begin{proof}
+The coefficient space is a finite product of compact simplexes, and
+the minimum of a jointly continuous function over compact $C$ is
+continuous in its coefficients. This proves attainment. Bernstein
+degree elevation replaces each coefficient by convex combinations
+of adjacent coefficients, preserving every simplex constraint and the
+represented function. It proves monotonicity. All scores are convex
+combinations of the $\ell_i(x)$, proving the upper bound by $\delta$.
+
+At each grid point $\alpha/n$ choose an index $i_\alpha$ maximizing
+$\ell_i$ there. The choice is made even at infeasible grid points; only
+the final score is minimized over $C$. Give that index coefficient one
+and the others zero. For fixed $x$ let $A_j$ be independent
+$\operatorname{Bin}(n,x_j)$ variables. If $i_*$ maximizes at $x$,
+\begin{align*}
+ \max_i\ell_i(x)-\E\ell_{i_A}(x)
+ &\le\E\{\ell_{i_*}(x)-\ell_{i_*}(A/n)
+             +\ell_{i_A}(A/n)-\ell_{i_A}(x)\}\\
+ &\le8R\sum_j\E|A_j/n-x_j|
+ \le \frac{4Ra}{\sqrt n}.
+\end{align*}
+Here the omitted middle difference is nonpositive, and the last bound
+uses $\Var(A_j/n)\le1/(4n)$. This proves the rate and the sparse
+coefficient assertion.
+
+For the last formula replace the minimum over $C$ by a minimum over
+$\cP(C)$. The pairing is bilinear and continuous, and both feasible
+sets are compact convex, so the compact minimax theorem~\cite{Sion1958} exchanges the extrema. Optimizing each coefficient
+simplex gives \eqref{eq:v17-momentdual}. The integrands are polynomials
+of coordinatewise degree at most $n+1$. Preserve all monomial moments
+of that degree by Carath\'eodory's theorem. There are $(n+2)^a$
+monomials including the constant; their moment vectors lie in an
+affine hyperplane of dimension at most $(n+2)^a-1$. A measure with at
+most $(n+2)^a$ atoms therefore has exactly the same objective. The
+strict-margin assertion follows from the rate with error less than
+$(\delta-L)/2$.
+\end{proof}
+
+The score is a nonlinear function of behavior although each event
+functional is affine. This is the reason the measure in
+\eqref{eq:v17-momentdual} cannot be replaced by its behavior barycenter.
+For $n=0$ it can: $d_0$ is precisely the constant-test convex
+relaxation. In the two-time unmarked example of
+Proposition~\ref{prop:v16-gap}, the target belongs to the convex
+hull of private behaviors, so $d_0=0$, whereas
+$\lim_n d_n=\sqrt2-1$. Thus the hierarchy recovers a gap which every
+constant test misses.
+
+\begin{remark}[What the size bound measures]\label{rem:v17-size}
+The bound counts the nonzero entries of the independent adaptive test
+and controls its behavior-coordinate degree. It does not bound the
+cost of verifying its minimum on the generally nonconvex set $C$,
+the bit lengths of a rational chart, or the size of a description of
+$C$. Distinct row presentations of the same metric behavior image
+satisfy the same existence bound, although their coefficient arrays
+need not coincide. For the private fixed-target law array one may use
+$R\le1$ with the maximum total-variation metric. For the visible
+signed-discrepancy array the uniform bound $R\le2$ is sufficient.
+The old row-cube positivity certificate is a separate verification
+engine, with its own coordinate-dependent complexity.
+\end{remark}
+
+\subsection{A three-weight certificate invisible to constant tests}
+\begin{proposition}[A finite intrinsic nonlinear witness]
+\label{prop:v17-smallcertificate}
+Consider a private width-one simulator producing two independent bits,
+with probabilities $p,q$, for the target which assigns probability
+$1/2$ to each of $00,11$. Put $u=pq$, $v=(1-p)(1-q)$ and
+$J(t)=3t^2-2t^3$. The three behavior-dependent weights
+\[
+ \kappa_1=J(v),\qquad \kappa_2=J(u),\qquad
+ \kappa_3=1-J(u)-J(v)
+\]
+are nonnegative and sum to one. Against the event discrepancies
+$1/2-u,1/2-v,1-u-v$, respectively, their score $G$ satisfies
+\begin{equation}\label{eq:v17-smallcertificate}
+ G\ge \frac25+\frac9{8960}.
+\end{equation}
+The certificate uses cubic weights in observable probabilities,
+a nine-term nonnegative derivative identity, and seventeen positive
+rational Bernstein coefficients in one variable. Every constant
+mixture of event discrepancies has minimum at most zero.
+\end{proposition}
+\begin{proof}
+We have $u+v\le1$. Since $J$ is increasing on $[0,1]$ and
+$J(1-t)=1-J(t)$, the weights are feasible. Their score is
+\[
+ G=1-u-v+J(u)(u-1/2)+J(v)(v-1/2).
+\]
+Set $a=(p+q-1)^2$ and $b=(p-q)^2$. Then $a,b\ge0$ and
+$a+b\le1$. Direct expansion gives
+\begin{align*}
+64G={}&27-12a+38a^2-20a^3-a^4
+ +36b-60ab+36a^2b+4a^3b\\
+ &+6b^2-12ab^2-6a^2b^2-4b^3+4ab^3-b^4.
+\end{align*}
+Let $c=1-a-b$. Another polynomial identity, valid when $a+b+c=1$,
+is
+\begin{align*}
+16\partial_bG={}&4a^3+6a^2c+12ab^2+24abc+12ac^2\\
+ &+8b^3+30b^2c+30bc^2+9c^3\ge0.
+\end{align*}
+Thus $G(a,b)\ge G(a,0)$. The univariate polynomial
+\[
+ G(a,0)-\frac25=\frac7{320}-\frac3{16}a
+                  +\frac{19}{32}a^2-\frac5{16}a^3-\frac1{64}a^4
+\]
+has degree-$16$ Bernstein coefficients $z_k/349440$, where
+\begin{align*}
+(z_0,\ldots,z_{16})={}&(7644,3549,1183,351,855,2494,5064,8358,\\
+ &12166,16275,20469,24529,28233,31356,33670,34944,34944).
+\end{align*}
+The Bernstein basis is nonnegative and sums to one. Its smallest
+coefficient is $351/349440=9/8960$, proving
+\eqref{eq:v17-smallcertificate}. All identities are rational polynomial
+identities; no numerical minimization is used.
+Finally the target is the barycenter of the two feasible deterministic
+laws $00$ and $11$. An affine mixture of signed event discrepancies
+has average zero at these two laws and hence minimum at most zero.
+The empty event supplies the reverse constant-test bound zero.
+\end{proof}
+
+For comparison, the affine weights $v,u,1-u-v$ already give the
+smaller bound $3/8$, with the exact identity
+\[
+ G_{\rm affine}-\frac38
+  =\frac12(p-q)^2+2(p-1/2)^2(q-1/2)^2.
+\]
+Neither certificate changes the private feasible set. The cubic
+certificate is an independent test chosen once for the whole behavior
+image, not a mixture chosen anew by an optimizer's unknown row values.
+Its evaluation does use the revealed behavior, as specified in the
+verification game. The 17-coefficient positivity check is classical;
+the distinction from constant tests is the behavior-dependent feasible
+weight family and its resource-sensitive minimum.
+
+\subsection{Strict certificates and effective physical input}
+Given rational finite instruments, a rational chart and the sparse
+array constructed above, its strict minimum can be certified by real
+quantifier elimination on the original row constraints. Alternatively,
+pull the score back through the original polynomial row map and
+certify its strict positivity using degree-elevated Bernstein
+coefficients. The pullback changes the verification degree and is not
+covered by the behavior-coordinate bound. Generic quantifier
+elimination also decides the exact finite semialgebraic boundary;
+this classical observation does not assert that a finite nonnegative
+Bernstein expansion exists at $L=\delta$.
+
+\begin{proposition}[Uniform effective presentation input]
+\label{prop:v17-effective}
+Suppose a single algorithm, on input $j$, returns rational finite
+instruments $E_j,F_j$ and nonnegative rational error enclosures
+$a_j,c_j$ for two-sided stateless marked feedback presentations of
+$E,F$. Suppose $a_j+c_j\to0$. All alphabets, widths, selector laws and
+finite subroutines must be computable uniformly from $j$ and the
+requested signature. Then, for every positive rational $\eta$, an
+algorithm returns a rational interval of width below $\eta$ containing
+$\delta_{\mathfrak b}(E,F)$ at the same signature.
+\end{proposition}
+\begin{proof}
+Enumerate $j$ until $a_j+c_j<\eta/8$. This terminates without a known
+rate because the rational enclosures themselves tend to zero.
+For the selected finite problem, enumerate rational same-budget upper
+tables and strict rational lower certificates, dovetailing all finite
+checks; include the always valid lower bound zero. Compactness,
+density and strict completeness provide an interval of width below
+$\eta/2$. Enlarge it by $a_j+c_j$ at both ends using stateless
+comparison. The enlarged width is below $3\eta/4$. Every enumeration
+and comparison is uniform by the hypotheses. A mere sequence of
+individually computable presentations without a uniform enumeration
+is not an input satisfying this proposition.
+\end{proof}

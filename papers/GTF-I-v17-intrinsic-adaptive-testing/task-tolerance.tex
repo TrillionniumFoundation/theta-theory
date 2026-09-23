@@ -1,0 +1,120 @@
+\subsection{Task resolution, positive error, and the complete state}
+\label{sec:v15-task}
+We give a quantitative state law at a source-consuming restart. It
+complements the endogenous zero-face theorem; it does not replace the
+causal update constraint by a terminal partition.
+
+Let $\mathcal H$ be a finite set of supported histories at a fixed
+checkpoint. Choose $d$ actual marked continuation-event prediction
+tasks, each including its declared open-loop continuation control word.
+For $h\in\mathcal H$ let $v(h)\in[0,1]^d$ be the vector of their
+conditional probabilities. A source-consuming statistic has rows
+$Q(m\mid h)$, $m\in[K]$. For every preparation $\lambda$ on
+$\mathcal H$, the task is announced after storage and its forecast is
+scored by squared error against the actual event. Define
+\[
+ e(Q)=\sup_\lambda\max_{1\le j\le d}
+       \E_\lambda\Var(v_j(H)\mid M),\qquad
+ e_K=\inf_Q e(Q).
+\]
+The expression is precisely excess Brier risk over the full-history
+forecast: conditional on $H$, event variance is an unavoidable common
+term, and the law of total variance gives the displayed residual.
+Decoders may use the announced preparation and task, but the same
+statistic $Q$ must work for all of them. Let $N(\eta)$ be the maximum
+size of a subset of $v(\mathcal H)$ whose Euclidean pair distances are
+at least $\eta>0$. Let $C(r)$ be the minimum number of sets covering
+$v(\mathcal H)$ with coordinatewise diameter at most $r$.
+
+\begin{theorem}[Positive-error state bounds]\label{thm:v15-task}
+For all positive $K$ and $\eta$,
+\begin{equation}\label{eq:v15-task-packing}
+ e_K\ge\frac{\eta^2}{2d}\left(1-\frac K{N(\eta)}\right)_+.
+\end{equation}
+For $0\le\varepsilon\le1/4$ there is a deterministic statistic of
+width $C(2\sqrt\varepsilon)$ with $e(Q)\le\varepsilon$. Consequently,
+writing $K(\varepsilon)=\min\{K:e_K\le\varepsilon\}$,
+\begin{equation}\label{eq:v15-task-width}
+ N(\eta)\left(1-\frac{2d\varepsilon}{\eta^2}\right)
+       \le K(\varepsilon)\le C(2\sqrt\varepsilon).
+\end{equation}
+At zero error the exact width is $|v(\mathcal H)|$. It is at most the
+universal marked continuation width, and it equals that width when
+the event family separates all distinct marked continuation laws.
+The lower bound also holds when an independent exposed selector is
+available and each selector fiber has at most $K$ private labels;
+in that case the conditional variance is taken given $(U,M)$.
+\end{theorem}
+\begin{proof}
+Choose $n=N(\eta)$ separated histories and prepare them uniformly.
+For an output $m$, write $\pi_h(m)=\Pp(H=h\mid M=m)$. The variance
+identity gives
+\begin{align*}
+ \sum_{j=1}^d\E\Var(v_j(H)\mid M)
+ &=\frac12\sum_m\Pp(M=m)
+        \sum_{h,h'}\pi_h(m)\pi_{h'}(m)\|v(h)-v(h')\|_2^2\\
+ &\ge\frac{\eta^2}{2}
+       \left(1-\sum_m\Pp(M=m)\sum_h\pi_h(m)^2\right).
+\end{align*}
+Furthermore
+\[
+ \sum_m\Pp(M=m)\sum_h\pi_h(m)^2
+ \le\sum_m\Pp(M=m)\max_h\pi_h(m)
+ =\frac1n\sum_m\max_h Q(m\mid h)\le\frac K n.
+\]
+At least one coordinate variance is the average of these $d$ terms
+or larger. Nonnegativity proves \eqref{eq:v15-task-packing}.
+Conditioning on an independent exposed selector gives the identical
+bound on the sum of coordinate variances at every fiber, with the same
+uniform preparation. Average this sum over the selector and only then
+choose a coordinate at least as large as its average. Thus the task
+need not depend on the selector, and the same lower bound follows.
+
+For the upper bound assign each history to a covering set containing
+its feature vector and retain its set index. Every conditional
+coordinate range then has length at most $2\sqrt\varepsilon$.
+A real random variable in $[a,b]$ has variance at most $(b-a)^2/4$:
+$\E(X-a)(b-X)\ge0$ implies
+$\Var X\le(\E X-a)(b-\E X)\le(b-a)^2/4$.
+This proves the upper bound uniformly over preparations.
+
+If two histories with different feature vectors share a retained
+symbol with positive probability, a preparation on just those two
+histories has a strictly positive posterior variance at that symbol
+in a differing coordinate. Therefore zero excess forces disjoint
+retained supports for distinct feature vectors. Conversely the feature
+vector itself is an exact statistic. This proves the zero law.
+Every feature is determined by the universal marked continuation law;
+a finite separating event family distinguishes all its finitely many
+classes. The final assertion follows.
+\end{proof}
+
+\begin{corollary}[A positive-error obstruction for marked simulation]
+\label{cor:v15-task-deficiency}
+Suppose a prescribed source-consuming reverse simulator of width $K$
+compares the stored-state restart to the full-history restart, preserving
+the actual marked continuation experiment with error at most $\delta$
+uniformly over preparations and announced continuation tasks. Then
+\[
+ \delta\ge e_K\ge
+       \frac{\eta^2}{2d}\left(1-\frac K{N(\eta)}\right)_+.
+\]
+\end{corollary}
+\begin{proof}
+Compose the reverse simulator with the full-history optimal Brier
+forecast for each announced task. Squared error belongs to $[0,1]$;
+marked comparison changes its expectation by at most $\delta$.
+The optimal stored-state forecast is no worse than this composed
+forecast. Hence its excess is at most $\delta$ for every preparation
+and task. Apply Theorem~\ref{thm:v15-task}.
+\end{proof}
+
+For several checkpoints these are necessary width bounds at every
+restart. Their simultaneous sufficiency additionally requires that
+the chosen covers admit causal updates on the reached support, exactly
+as in the preceding endogenous theorem. A feature cover alone does
+not construct a reverse channel preserving an arbitrary actual mark.
+For a full separating family the zero-error envelope recovers the
+universal continuation quotient; before completion, the quantitative
+bounds depend on the declared tasks rather than on irrelevant marks
+or unused future controls.
