@@ -1,0 +1,64 @@
+name: A2 v135 structural support proof and reconstruction
+on:
+  push:
+    branches:
+      - revision/a2-v135-structural-support-proof-2026-09-23
+    paths:
+      - 'revisions/a2-v135/**'
+      - '.github/workflows/a2-v135-revision.yml'
+      - 'A2_REVISION_V135_INDEX.md'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: a2-v135-referee-build
+  cancel-in-progress: false
+jobs:
+  build:
+    if: github.ref == 'refs/heads/revision/a2-v135-structural-support-proof-2026-09-23'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      REVISION: papers/A2-v17-boundary-information-coarsening/article/v135
+      TARGET_BRANCH: revision/a2-v135-structural-support-proof-2026-09-23
+      PYTHONDONTWRITEBYTECODE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify transport and assemble immutable reviewed source
+        run: |
+          python revisions/a2-v135/unpack.py
+          python revisions/a2-v135/assemble.py
+      - name: Install mathematical build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern
+          python -m pip install 'sympy==1.14.0' 'numpy==2.3.5' 'PyMuPDF==1.26.7'
+      - name: Execute ten exact scripts and compile all three manuscripts
+        run: bash "$REVISION/build.sh"
+      - name: Verify preservation of reviewed article and every report
+        run: git diff --exit-code a08b157800c27c0f73f0c5c9a52155265ef4f395 -- papers/A2-v17-boundary-information-coarsening/article/v134 reviews
+      - name: Publish complete sources PDFs and executed evidence on v135 only
+        run: |
+          test "${GITHUB_REF#refs/heads/}" = "$TARGET_BRANCH"
+          find "$REVISION" revisions/a2-v135 -type d -name __pycache__ -prune -exec rm -rf {} +
+          rm -f "$REVISION"/*.aux "$REVISION"/*.out "$REVISION"/*.log "$REVISION"/*.toc
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f -- "$REVISION" revisions/a2-v135
+          if ! git diff --cached --quiet; then
+            git commit -m 'A2 v135: three complete PDFs and executed source-bound evidence [skip ci]'
+            git push origin "HEAD:$TARGET_BRANCH"
+          fi
+      - name: Package manuscript response and controlling review
+        run: tar -czf a2-v135-referee-bundle.tar.gz A2_REVISION_V135_INDEX.md revisions/a2-v135 reviews/a2-v134-independent-harsh-top4-2026-09-23/REFEREE_REPORT.md "$REVISION"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: a2-v135-referee-bundle
+          path: a2-v135-referee-bundle.tar.gz
+          retention-days: 30
