@@ -42,41 +42,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Restore hash-checked native mathematical sources
+      - name: Bind the committed native source
         shell: bash
         run: |
-          python - <<'PY'
-          import hashlib,json,lzma
-          from pathlib import Path
-          h=Path('papers/GTF-I-v35-sharp-memory')
-          raw=b''.join((h/'.source-parts'/('part%02d.xz'%i)).read_bytes() for i in range(6))
-          if len(raw)!=34096 or hashlib.sha256(raw).hexdigest()!='be5553f93af25350655445b2616bbb09898fdab46b3744451a8caa68eb9fd510':
-              raise RuntimeError('Source transport integrity failure')
-          payload=json.loads(lzma.decompress(raw))
-          if not isinstance(payload,dict) or len(payload)!=20:
-              raise RuntimeError('Source manifest mismatch')
-          for name,text in payload.items():
-              p=Path(name)
-              if p.name!=name or p.suffix not in {'.tex','.py','.md','.json'} or not isinstance(text,str):
-                  raise RuntimeError('Invalid native source entry')
-              dest=h/name
-              if dest.exists() and dest.read_text()!=text:
-                  raise RuntimeError('Refusing to overwrite modified native source: '+name)
-              dest.write_text(text)
-          print('Restored twenty integrity-checked native source files.')
-          PY
-      - name: Publish native source before building
-        shell: bash
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          test -f papers/GTF-I-v35-sharp-memory/main.tex
+          test -f papers/GTF-I-v35-sharp-memory/packet-compression.tex
           git fetch --depth=1 origin 6016075083626f7c94cfb07912c49fa256fcf9e0
-          test -z "$(git diff --name-only --diff-filter=DMRT 6016075083626f7c94cfb07912c49fa256fcf9e0)"
-          git add -f papers/GTF-I-v35-sharp-memory
-          if ! git diff --cached --quiet; then
-            git commit -m 'revise(GTF-I v35): prove sharp hidden rotation width by independent packet contraction [skip ci]'
-            git push origin HEAD:"$GITHUB_REF_NAME"
-          fi
+          test -z "$(git diff --name-only --diff-filter=DMRT 6016075083626f7c94cfb07912c49fa256fcf9e0 HEAD)"
           echo "GTF_SOURCE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
       - name: Install typesetting and exact arithmetic
         run: |
@@ -94,6 +66,8 @@ jobs:
       - name: Publish only the new package and referee-ready branch
         shell: bash
         run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -f papers/GTF-I-v35-sharp-memory GENERAL_THETA_FOUNDATIONS_I_V35_REVIEW_READY.md
           git commit -m 'publish(GTF-I v35): sharp theorem, response, independent core build and preserved archives [skip ci]'
           test -z "$(git diff --name-only --diff-filter=DMRT 6016075083626f7c94cfb07912c49fa256fcf9e0 HEAD)"
