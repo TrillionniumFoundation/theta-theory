@@ -1,0 +1,138 @@
+\section{Finite coins and stochastic-language conventions}
+\label{sec:implementation}
+\subsection{A separate fair-bit register ledger}
+The exact label counts above refer to atomic stochastic rows. They do
+not include the internal computation of a real-probability sampler. For
+the rational constructions a fully finite implementation is available,
+with an additional cost which can be stated without hiding a counter
+or the current input.
+
+\begin{proposition}[Finite fair-bit implementation of rational rows]
+\label{prop:finite-coins}
+Consider $T$ input stages, an at-most-$m$-label transducer with $m\ge2$,
+and current input alphabet size at most $d$. Suppose every row has a
+common denominator for its entries of size at most $D\ge2$. Put
+$b=\lceil\log_2D\rceil$. In a self-paced protocol which supplies the
+next input only after the preceding update completes, the transducer
+has an exact fair-bit implementation using at most
+\begin{equation}\label{eq:coin-states}
+                2(T+1)md\,2^b
+\end{equation}
+states, including phase, current input, old label, sampler prefix and
+terminal output. Each stage uses fewer than $2b$ fair bits on average.
+Thus its persistent bit cost is at most
+\[
+ \lceil\log_2(T+1)\rceil+\lceil\log_2m\rceil+
+ \lceil\log_2d\rceil+b+2.
+\]
+This changes the implementation model and does not assert preservation
+of the atomic optimum in total states.
+\end{proposition}
+\begin{proof}
+For a row of denominator $D_\rho\le D$, let
+$b_\rho=\lceil\log_2D_\rho\rceil$. Draw $b_\rho$ fair bits to form
+an integer $J$ between zero and $2^{b_\rho}-1$. If $J\ge D_\rho$,
+repeat; otherwise map $J$ through the row's integer cumulative sums to
+the new label. A denominator-one row is deterministic. The acceptance
+probability is $D_\rho/2^{b_\rho}>1/2$, unless it is one, and the
+accepted integer is uniform. This proves exactness and the expectation
+bound.
+
+Retain the phase, old label and current input throughout an attempted
+draw. The proper binary prefixes of length less than $b_\rho$ form a
+tree with $2^{b_\rho}-1\le2^b-1$ nodes. On the last bit, acceptance
+can move directly to the ready state containing the new label;
+rejection returns to the root. Hence a separate leaf or unbounded trial
+counter is unnecessary. There are at most $(T+1)m$ ready states,
+$Tmd(2^b-1)$ sampler states and two final states. Their sum is at most
+\eqref{eq:coin-states}. The input provider waits at an explicit ready
+boundary; the phase is stored, not supplied as a free data-dependent
+clock.
+\end{proof}
+
+For \eqref{eq:U5} the distributions $q_i$ have denominators dividing
+six, and for \eqref{eq:U9} they divide ten. Thus a row at acquisition
+stage $t$ has denominator dividing $6t$ or $10t$, respectively. The
+critical decoders are also rational. More generally the normalized
+matrix tensors in Proposition~\ref{prop:critical-tensor} have rational
+denominators bounded by products of fixed seed denominators; their
+logarithms are $O(\log(n+1))$. The finite-coin implementation of those
+families therefore uses $O(\log(n+1))$ persistent bits, with explicit
+rational row data. This assertion concerns the critical polynomial-size
+matrix families, not efficient construction of a fixed-interior-signal
+exponential codebook.
+
+\subsection{Internal normalization of probabilistic automata}
+\begin{definition}[Proper stochastic-language automaton]
+\label{def:automaton}
+On a finite alphabet $\Sigma$, a proper probabilistic automaton consists
+of a finite state set, an initial probability row $\alpha$, nonnegative
+transition matrices $T_a$ for $a\in\Sigma$, and stopping probabilities
+$\tau_s$, with
+\[
+                  \tau_s+\sum_{a,t}T_a(s,t)=1.
+\]
+Stopping emits no further symbol; a transition emits its label $a$.
+Termination is almost sure from every reachable state. The generated
+stochastic language and state languages are
+\[
+ L(w)=\alpha T_w\tau,\qquad L_s(w)=e_s^TT_w\tau.
+\]
+They are probability distributions on finite words. Unreachable states
+are removed. The automaton is residual if every reachable state language
+is $L_u(w)=L(uw)/L(u\Sigma^*)$ for some positive-mass prefix $u$.
+\end{definition}
+
+These are the conventions used when comparing with probabilistic
+residual automata \cite{ELDD02,DenisEsposito}. If a nonnegative
+representation initially has state continuation masses $h_s\in(0,\infty)$,
+normalization replaces $T_a(s,t)$ by $T_a(s,t)h_t/h_s$, $\tau_s$ by
+$\tau_s/h_s$, and $\alpha_s$ by $\alpha_sh_s$. The identity
+$h_s=\tau_s+\sum_{a,t}T_a(s,t)h_t$ gives stochastic rows. States with
+$h_s=0$ have no contribution to any generated word and are deleted.
+Thus finite nonzero continuation masses can be normalized without
+adding states. Infinite continuation mass is not a stochastic language
+and is not included in this convention.
+
+For completeness, we retain the operational separation with a proof in
+these internal terms. It is a result of the preceding revision, not a
+new succinctness-priority assertion.
+
+\begin{proposition}[A normalized residual/positive separation]
+\label{prop:language}
+For $n\ge2$ and rational $0<\eta\le(2n-1)^{-1}$, define the finite
+language
+\begin{equation}\label{eq:language}
+ L(u_{x_1}\cdots u_{x_n}q_j o_b)
+              =\frac{2^{-n}}n\frac{1+b\eta x_j}{2},
+\end{equation}
+using disjoint input, query and output symbols, and give zero mass to
+all other words. Every residual automaton has at least $2^n$ states.
+A proper rational positive automaton has at most
+$(n+1)(n+2)/2+n(n+1)+1$ states, including phase and query storage.
+\end{proposition}
+\begin{proof}
+The query-phase residuals are the $2^n$ vertices of an affine cube,
+with probabilities $(1+b\eta x_j)/(2n)$ on the two-symbol words
+$q_j o_b$. Conditioning any proper automaton on a supported prefix
+expresses that residual as a convex combination of normalized state
+languages. Nonnegativity forces each used language to be supported on
+those two-symbol words. A residual of \eqref{eq:language} after length
+$t$ is concentrated on length $n+2-t$. Hence a residual state used here
+must itself be one of the query-phase cube vertices. Extremality forces
+a separate state for each of the $2^n$ vertices.
+
+For the upper bound, generate the input bits independently and fairly.
+At phase $t$ use labels $0,1,\ldots,t$. On the next input, retain the
+old label with probability $t/(t+1)$; otherwise replace it by $t+1$
+for a positive bit and zero for a negative bit. After $t$ inputs the
+probability of label $i>0$ is $\1_{\{x_i=1\}}/t$ and the probability
+of zero is the fraction of negative bits. At phase $n$, associate means
+$v_0=-\eta\1$ and $v_i=-\eta\1+2n\eta e_i$. They are in the cube
+when $\eta\le(2n-1)^{-1}$, and their mixture has mean $\eta x$.
+Emit $q_j$ uniformly, store $(s,j)$, emit $o_b$ with mean $v_{s,j}$,
+and terminate. Phase tags require $\sum_{t=0}^n(t+1)$ states, query
+buffers require $n(n+1)$, and one state terminates. Every state language
+is normalized and every row is rational. Multiplication of the three
+stages yields \eqref{eq:language}.
+\end{proof}

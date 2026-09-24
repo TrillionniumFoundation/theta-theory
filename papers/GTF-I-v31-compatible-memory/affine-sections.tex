@@ -1,0 +1,98 @@
+\section{Canonical affine sections of a causal array}
+\label{sec:sections}
+We use finite alphabets and a finite horizon. At a controller stage an
+action is chosen before its next report is received. A terminal answer
+is an action with a dummy following report. A complete normalized causal
+array $C(\mathbf a\mid\mathbf y)$ prescribes the conditional law of all
+actions for every externally supplied report word. Nonanticipation means
+that the marginal of an action prefix depends only on reports preceding
+that prefix. Intermediate buffers that must survive an update are included
+as charged cuts. The rows may depend on the declared time, but not on an
+unrecorded history, schedule variable or persistent random seed.
+
+At a cut $t$, let $\cP_t$ be the polytope of normalized causal arrays on
+the remaining interface. For a controller prefix $h$ whose probability,
+with past reports fixed, is positive, let $R_h\in\cP_t$ be its normalized
+future array. Remove duplicate rows to form the finite residual set
+$\cR_t$. This is a property of $C$, not of a chosen realization. We
+require the full array, including unsupported environmental inputs; an
+almost-sure partial specification is a different completion problem.
+Set
+\begin{equation}\label{eq:slice}
+ A_t=\aff\cR_t,\qquad L_t=A_t\cap\cP_t,\qquad
+ r_t=\dim A_t+1.
+\end{equation}
+The slice $L_t$ is a compact polytope of dimension $r_t-1$, since it
+contains $\cR_t$. Normalization places $A_t$ in a hyperplane not containing
+zero, so $r_t$ is also the ordinary row rank of the normalized residuals.
+
+If $R$ is a future array, write $p_R(a)$ for its next-action probability.
+It is independent of the next report $y$. For $p_R(a)>0$, denote by
+$R^{a,y}$ the normalized continuation after that action and report. For
+an actual residual this is another actual residual at the child cut.
+
+\begin{proposition}[Affine slices are closed under positive shifts]
+\label{prop:slice-shift}
+If $G\in L_t$ and $p_G(a)>0$, then $G^{a,y}\in L_{t+1}$ for every
+next report $y$.
+\end{proposition}
+\begin{proof}
+Write $G=\sum_h c_hR_h$ with real coefficients satisfying $\sum_hc_h=1$.
+Taking an action marginal gives $p_G(a)=\sum_h c_hp_{R_h}(a)$. Restriction
+to $(a,y)$ is linear in the unnormalized arrays, hence
+\[
+ G^{a,y}=\sum_{h:p_{R_h}(a)>0}
+       \frac{c_hp_{R_h}(a)}{p_G(a)}R_h^{a,y}.
+\]
+The coefficients sum to one. They need not be positive: the display
+asserts membership in the affine span at the child, not a convex
+realization. Since $G\in\cP_t$ and $p_G(a)>0$, its normalized shift
+is a valid nonnegative causal array. Thus it lies in both factors
+of \eqref{eq:slice} at the child cut.
+\end{proof}
+
+\begin{theorem}[A canonical sufficient criterion and the rank-two case]
+\label{thm:slice}
+If every $L_t$ is a simplex, a single stochastic clocked machine realizes
+$C$ with exactly $r_t$ labels at cut $t$, simultaneously. No realization
+can use fewer than $r_t$ at that cut. In particular, every complete
+finite causal array with $r_t\le2$ at every cut has a simultaneously
+rank-minimal realization. This includes full-support arrays with
+arbitrary finite action and report alphabets.
+\end{theorem}
+\begin{proof}
+In any realization, conditioning on a prefix expresses $R_h$ as a convex
+combination of the state continuations at cut $t$. Its affine dimension
+therefore forces at least $r_t$ labels.
+
+Choose the vertices of $L_t$ as the states at cut $t$. Every actual
+residual is their convex combination. From vertex $G$, choose the next
+action with probability $p_G(a)$. After the next report, express
+$G^{a,y}\in L_{t+1}$ as a convex combination of the child vertices and
+use those weights as the update row. An action of probability zero may
+have an arbitrary unused update. Proposition~\ref{prop:slice-shift}
+ensures that this construction is possible, and the action probability
+is independent of the unread report. Initialization uses the
+barycentric representation of $C$. Backward induction verifies the entire
+specified future law from every vertex state. A simplex of dimension
+$r_t-1$ has exactly $r_t$ vertices, proving the claim. A zero-dimensional
+slice is a point and a compact one-dimensional slice is a segment, which
+proves the last assertion.
+\end{proof}
+
+This criterion differs from requiring the residual hull itself to be a
+simplex: internal vertices can lie outside that hull. It also differs
+from searching for unknown enclosing simplices and unknown shifts
+simultaneously. The polytope $L_t$ is fixed by linear equations and
+inequalities from the input array; its normalized-shift closure is
+proved, not an additional feasibility hypothesis. For fully listed
+rational arrays, vertices and barycentric rows can be found by rational
+linear algebra and finite polyhedral enumeration. The explicit array
+may already be exponentially large in the horizon. No succinct-input
+polynomial bound, autonomous row-reuse theorem, or universal equality
+between rank and state complexity follows.
+
+The next section shows that the rank-two conclusion is sharp as a
+uniform statement about the maximum cut rank. At rank three, separate
+rank-optimal enclosures need not be causally compatible even for a
+full-support family.

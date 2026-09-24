@@ -1,0 +1,9 @@
+# Historical derivation audit — revision 31
+
+The controlling r15 review is fixed at `cd793fde91fca07958c6c5bc3989e9c51a17540b`, on the v30 publication `a4abeb1c5e0323e5850e7f2446bf96fb1f7d4d8a`. The new remote branch descends from that report.
+
+The current derivation re-read the complete r15 report, the v30 coherence, finite-streaming, normalization and prior proof sources, and the preserved v29 residual/slice route. The frozen `ROUND17_PROOF_DEPENDENCY_LEDGER.md` was fetched directly from the controlling review. Its A2 -> A3 -> A4 -> C2 -> D1 and B2-GC -> B1 -> B2-MC -> B3 -> B4 -> C1/C2 -> D1 chains retain their independent hypotheses.
+
+The new full-support two-cut construction supplies the compatibility obstruction repeatedly requested in the later reports. It uses the earlier parameter/runtime separation and arbitrary-generator factorization, but proves a new exact Pareto region. The additive transfer reuses and generalizes the online replacement idea; unlike the old Hadamard argument, it computes general barycentric laws and does not assume orthogonal decoder means. The five/nine-dimensional static seeds come from the cited external geometry, not from the historical GTF pipeline. The recent RAC comparison corrects the previous unresolved statement about exact checkpoint equality versus worst-case success.
+
+All earlier positive kernels, physical marked saddles, noise identification, fixed-clock scheduling, calibration/transport, entropy and residual-automaton proofs remain at their original repository paths. The entire v30 article and its cumulative mathematical/development volumes are reproduced without alteration in the new package. No claim is made to have independently re-proved every page of the cumulative development during this revision. Hash, page-text and raster comparisons are preservation checks, not historical proof certification.

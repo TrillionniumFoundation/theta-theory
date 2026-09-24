@@ -1,0 +1,129 @@
+\section{Additive encoders admit lossless online synthesis}
+\label{sec:additive}
+The preceding obstruction involves two successive nonlinear choices of
+positive generators. Additivity provides a different situation in which
+the encoding stage can always be made causal without enlarging its
+alphabet.
+
+Let $X_1,\ldots,X_n$ be finite input sets and $S=[m]$ a label set. An
+encoder is a map $\lambda:\prod_iX_i\to\Delta_m$. Call it additive if
+there are vectors $a\in\R^m$ and $f_i(x_i)\in\R^m$ such that
+\begin{equation}\label{eq:additive-encoder}
+               \lambda(x)=a+\sum_{i=1}^nf_i(x_i).
+\end{equation}
+The summands need not be probability vectors or have positive entries.
+All that is assumed is $\lambda(x)\in\Delta_m$ for every product input.
+
+\begin{theorem}[Additive encoding without a persistent selector]
+\label{thm:additive}
+Every encoder \eqref{eq:additive-encoder} has an exact fixed-order
+streaming realization with at most $m$ states after each input. This
+holds for every externally prescribed permutation of the inputs.
+The construction uses only scalar replacement probabilities and fresh
+input-dependent draws on $[m]$; it never retains the index of the chosen
+summand. Rational encoder data give rational transition rows.
+\end{theorem}
+\begin{proof}
+For each label $s$, put
+\[
+ \ell_{i,s}=\min_{x_i\in X_i} f_{i,s}(x_i),\qquad
+ c_s=a_s+\sum_i\ell_{i,s},\qquad
+ g_{i,s}(x_i)=f_{i,s}(x_i)-\ell_{i,s}.
+\]
+Because the input is a full Cartesian product, each scalar minimum can
+be attained independently. Consequently
+$c_s=\min_x\lambda_s(x)\ge0$, and $g_i(x_i)$ is nonnegative.
+Normalization of \eqref{eq:additive-encoder}, with all other coordinates
+fixed, shows that $\sum_s f_{i,s}(x_i)$ is independent of $x_i$.
+Therefore
+\[
+ w_i=\sum_sg_{i,s}(x_i)\ge0
+\]
+is constant in $x_i$. With $w_0=\sum_sc_s$, one has
+$w_0+\sum_iw_i=1$. Delete zero-weight summands. For the others define
+$q_0=c/w_0$ and $q_i(x_i)=g_i(x_i)/w_i$, so
+\begin{equation}\label{eq:mixture-decomposition}
+             \lambda(x)=w_0q_0+\sum_iw_iq_i(x_i).
+\end{equation}
+
+Let $W_t=w_0+\sum_{i\le t}w_i$. If $w_0>0$, initialize from $q_0$.
+At the first positive-weight input when $W_{t-1}=0$, simply draw from
+$q_t(x_t)$; before it a dummy label suffices. When $W_t>0$, retain the
+old label with probability $W_{t-1}/W_t$ and otherwise replace it by
+a fresh draw from $q_t(x_t)$. A zero-weight input leaves the label
+unchanged. Induction gives the state law
+\[
+ \Prb(S_t=s\mid x_{1:t})
+ =\frac{w_0q_0(s)+\sum_{i\le t}w_iq_i(s\mid x_i)}{W_t}.
+\]
+At $t=n$ the denominator is one and the law is exactly $\lambda(x)$.
+Equivalently, each update is the single atomic row
+\begin{equation}\label{eq:additive-transition}
+ T_{t,x_t}(s,s')=\frac{W_{t-1}}{W_t}\1_{\{s=s'\}}
+                   +\frac{w_t}{W_t}q_t(s'\mid x_t).
+\end{equation}
+Only $s'$ persists. The weights and their prefix sums are known program
+data associated with the external clock. The same construction works
+in every prescribed permutation. Minima and arithmetic preserve
+rationality.
+\end{proof}
+
+\begin{corollary}[Rank-saturating additive channels]
+\label{cor:additive-rank}
+Let $C_x$ be a finite family of normalized terminal channels, additive
+in the product coordinates of $x$, with affine dimension $r-1$.
+If $C_x$ can be represented through $r$ legal normalized generators
+at a checkpoint, then it can be acquired sequentially with at most $r$
+labels at every input cut, for any fixed order. Thus its checkpoint and
+acquisition-peak minima agree at $r$. If a final output must be retained,
+the complete peak is at most $\max(r,|B|)$ for output alphabet $B$.
+\end{corollary}
+\begin{proof}
+A convex representation through $r$ generators enclosing a set of affine
+dimension $r-1$ makes those generators affinely independent. Their
+barycentric coordinates are affine functions of $C_x$, hence additive
+in $x$. They are stochastic on all product inputs. Apply
+Theorem~\ref{thm:additive}, then the unchanged terminal decoder. The
+affine-dimension lower bound holds for every acquisition method because
+the complete input must pass through the checkpoint label.
+\end{proof}
+
+For \eqref{eq:query}, a decoder state has a mean vector $v_s\in\cube^n$.
+Conditioning on the state gives
+\begin{equation}\label{eq:cube}
+                    \eta x=\sum_s E(s\mid x)v_s.
+\end{equation}
+Consequently $K_n(\eta)$ is the smallest number of outer-cube points
+whose convex hull contains $\eta\cube^n$. This checkpoint formulation
+is classical random-access geometry in the normalization of
+Section~\ref{sec:rac}. An adaptive acquisition schedule still produces
+one distribution $E(\cdot\mid x)$, with no past-dependent input supplied
+to the decoder, so it obeys the same lower bound.
+
+\begin{theorem}[Every simplex encoder has the same optimal online peak]
+\label{thm:all-simplices}
+Let $n\ge1$ and $\eta>0$. If a simplex with vertices
+$v_0,\ldots,v_n\in\cube^n$ contains $\eta\cube^n$, those very decoder
+vertices admit an exact online encoder with at most $n+1$ states.
+Hence \eqref{eq:threshold-intro} holds for every $n$ and $\eta$.
+No hypothesis concerning a Hadamard matrix is required.
+\end{theorem}
+\begin{proof}
+Write the simplex's affine barycentric coordinates as
+$\lambda_s(z)=a_s+b_s\cdot z$. Then
+$\lambda_s(\eta x)=a_s+\eta\sum_i b_{s,i}x_i$ is an additive stochastic
+encoder on the product cube. Theorem~\ref{thm:additive} computes it
+without expanding the label set. The unchanged binary decoder with
+mean $v_{s,j}$ gives \eqref{eq:query}. Conversely,
+$K_n(\eta)\le W_n^{\rm ad}(\eta)\le W_n^{\rm fo}(\eta)$ and
+$K_n(\eta)\ge n+1$ by affine dimension. A final binary output requires
+no more than $n+1$ labels.
+\end{proof}
+
+The theorem concerns the peak, not simultaneous optimality of the
+individual $t+1$ prefix bounds. Its sampler can occupy all $n+1$ labels
+at an early cut. Nor does it assert online equality for arbitrary
+nonsimplicial checkpoint codebooks: their barycentric encoders need not
+be affine. The rank-three example in Section~\ref{sec:obstruction}
+shows why general static factorizations cannot be promoted to joint
+realizations without additional structure.
