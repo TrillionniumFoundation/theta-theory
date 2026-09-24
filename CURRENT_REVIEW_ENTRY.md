@@ -1,6 +1,6 @@
 # Canonical A2 referee entry — revision 146
 
-Native sources have been assembled. Build success must be read from the source-bound v146 receipt, not inferred from this source commit.
+Native source: `df3d60dd23192108eca7f48cf331ce934b6e49b1`. All 22 executed exact-regression scripts and all three native LaTeX builds passed. See the source-bound receipt; these checks do not certify all proofs or historical priority.
 
 Controlling v144 second report: `d8376b5dbb47422d93a474add8362d39cf2a68c1`. Immediate predecessor: `89edc80cce6fd1801b356313544419d30f377636`.
 
