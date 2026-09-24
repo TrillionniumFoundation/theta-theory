@@ -6,19 +6,106 @@ on:
       - '.github/workflows/a2-v147-revision.yml'
       - 'papers/A2-v17-boundary-information-coarsening/article/v147/**'
 permissions:
-  contents: read
+  contents: write
+concurrency:
+  group: a2-v147-isolated-publication
+  cancel-in-progress: false
 jobs:
-  source-snapshot:
-    runs-on: ubuntu-latest
+  verify-and-publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      P: papers/A2-v17-boundary-information-coarsening/article/v147
+      PREDECESSOR: 855c73b3a0381bebd8d5e0d382fa06125904a73f
+      TARGET_BRANCH: revision/a2-v147-intrinsic-family-descent-2026-09-24
+      OPENBLAS_NUM_THREADS: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
     steps:
       - uses: actions/checkout@v4
-      - name: Export immutable predecessor and reports
-        run: |
-          git fetch --no-tags --depth=1 origin 855c73b3a0381bebd8d5e0d382fa06125904a73f
-          mkdir -p snapshot
-          git archive 855c73b3a0381bebd8d5e0d382fa06125904a73f papers/A2-v17-boundary-information-coarsening/article/v146 reviews/a2-v146-independent-harsh-top4-2026-09-24 | tar -x -C snapshot
-      - uses: actions/upload-artifact@v4
+      - uses: actions/setup-python@v5
         with:
-          name: a2-v147-predecessor-snapshot
-          path: snapshot
-          retention-days: 14
+          python-version: '3.13'
+      - name: Verify exact transfer and unchanged predecessor
+        run: |
+          git fetch --no-tags --depth=1 origin "$PREDECESSOR"
+          git diff --exit-code "$PREDECESSOR" -- papers/A2-v17-boundary-information-coarsening/article/v146
+          python - <<'PY'
+          import hashlib,json,os
+          from pathlib import Path
+          p=Path(os.environ['P'])
+          expected=json.loads((p/'LOCAL_PREFLIGHT_SOURCE_SHA256.json').read_text())
+          errors=[n for n,h in expected.items() if hashlib.sha256((p/n).read_bytes()).hexdigest()!=h]
+          if errors: raise SystemExit('Source-transfer mismatch: '+', '.join(errors))
+          print('All',len(expected),'source overlays match local preflight SHA256 values.')
+          PY
+      - name: Assemble and publish immutable native source
+        run: |
+          python "$P/revision_v147.py" assemble
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f "$P" CURRENT_REVIEW_ENTRY.md
+          python - <<'PY'
+          import os,subprocess
+          p=os.environ['P']+'/'
+          names=subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines()
+          if any(not(n.startswith(p) or n=='CURRENT_REVIEW_ENTRY.md') for n in names):
+              raise SystemExit('Unexpected staged path; refusing publication')
+          PY
+          if ! git diff --cached --quiet; then
+            git commit -m 'source(A2 v147): assemble preserved predecessor and complete revision [skip ci]'
+            git push origin "HEAD:refs/heads/$TARGET_BRANCH"
+          fi
+          echo "A2_SOURCE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - name: Install native mathematics build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+          python -m pip install sympy==1.14.0 numpy==2.3.5
+      - name: Execute all regressions and native PDF builds
+        run: |
+          python "$P/revision_v147.py" build
+          python - <<'PY'
+          import json,os,platform,subprocess,sys
+          from pathlib import Path
+          import sympy,numpy
+          p=Path(os.environ['P'])/'evidence'
+          data={'source_commit':os.environ['A2_SOURCE_COMMIT'],
+                'workflow_run_id':os.environ['GITHUB_RUN_ID'],
+                'python':sys.version,'platform':platform.platform(),
+                'sympy':sympy.__version__,'numpy':numpy.__version__,
+                'pdflatex':subprocess.check_output(['pdflatex','--version'],text=True).splitlines()[:2]}
+          (p/'BUILD_ENVIRONMENT_V147.json').write_text(json.dumps(data,indent=2)+'\n')
+          PY
+      - name: Publish verified PDFs and source-bound evidence
+        run: |
+          git diff --exit-code "$PREDECESSOR" -- papers/A2-v17-boundary-information-coarsening/article/v146
+          git add -f "$P/geometry.pdf" "$P/applications.pdf" "$P/archive-v144.pdf"
+          git add -f "$P/geometry-labels.aux" "$P/applications-labels.aux" "$P/archive-v144-labels.aux"
+          git add -f "$P/evidence" "$P/SOURCE_LOCK_V147.json" "$P/NONDELETION_V147.json" "$P/PROVENANCE_MANIFEST_V147.json" CURRENT_REVIEW_ENTRY.md
+          python - <<'PY'
+          import os,subprocess
+          p=os.environ['P']+'/'
+          names=subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines()
+          if any(not(n.startswith(p) or n=='CURRENT_REVIEW_ENTRY.md') for n in names):
+              raise SystemExit('Unexpected staged path; refusing publication')
+          PY
+          if ! git diff --cached --quiet; then
+            git commit -m "build(A2 v147): publish 24 checks and native PDFs from $A2_SOURCE_COMMIT [skip ci]"
+            git push origin "HEAD:refs/heads/$TARGET_BRANCH"
+          fi
+          mkdir -p publication
+          git archive HEAD "$P" CURRENT_REVIEW_ENTRY.md | tar -x -C publication
+          printf 'source_commit=%s\npublication_commit=%s\n' "$A2_SOURCE_COMMIT" "$(git rev-parse HEAD)" > publication/REMOTE_COMMITS.txt
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: a2-v147-verified-native-publication
+          path: publication
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: a2-v147-failure-diagnostics
+          path: papers/A2-v17-boundary-information-coarsening/article/v147/evidence
+          if-no-files-found: ignore
+          retention-days: 7
