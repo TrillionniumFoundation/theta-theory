@@ -1,0 +1,118 @@
+\section{Machines and observable sections}\label{sec:model}
+We use row vectors for state distributions. Put
+$\Delta_k=\{e\in\R^k:e\ge0,\ e\one=1\}$,
+$S=[-1/10,1/10]^2$, and $D=[-1,1]^2$.
+
+\begin{definition}[Clocked realization]\label{def:machine}
+A realization of \eqref{eq:array} consists of an initialization
+$E_x\in\Delta_{K_0}$, row-stochastic matrices
+$T_{t,c}\in\R_+^{K_t\times K_{t+1}}$ for $0\le t<N$, $c\in\{0,1\}$,
+and decoder means $d_j\in[-1,1]^{K_N}$, satisfying
+\begin{equation}\label{eq:machine}
+ E_xT_{0,c_1}\cdots T_{N-1,c_N}d_j
+                  =e_j^TR_\alpha^{\sum c_t}x/10
+\end{equation}
+for every input word and query. The decoder emits the binary law with
+this conditional mean. The available-label profile is $(K_t)_{t=0}^N$;
+its peak is $\max_tK_t$, and its minimum is $W_N(\alpha)$.
+A final retained binary output can be implemented in two further output
+labels at its own cut and does not change this peak, which is at least three.
+\end{definition}
+
+Only the current register persists. The seed, old commands, random coins,
+and protocol history are not supplied again. The seed and terminal query
+are atomic inputs; commands are external, rather than selected by an
+experimental policy. A row may depend on the external epoch and current
+command, but not on a future symbol. Every row, including an unreachable
+one, is normalized. Available-label counting permits padding and makes
+feasible profiles upward closed. The number of program bits, exact row
+arithmetic, and sampling cost are not part of this width.
+For comparison, a separate minimum at cut $t$ imposes no bound at any
+other cut. It is not the peak of a simultaneously minimal machine.
+
+\begin{definition}[Vector-state realization]\label{def:vector}
+A clocked realization is vector-state if there are vectors
+$z_{t,s}\in D$ satisfying
+\begin{equation}\label{eq:statewise}
+ \sum_s E_x(s)z_{0,s}=x/10,\qquad
+ \sum_{s'}T_{t,c}(s,s')z_{t+1,s'}=R_\alpha^c z_{t,s},
+ \qquad d_j(s)=e_j^Tz_{N,s}.
+\end{equation}
+The middle equality is required at every available state, not only after
+averaging over reachable distributions. The least peak in this subclass
+is $V_N(\alpha)$.
+\end{definition}
+
+Such a machine is equivalent to a sequence of polygons
+$P_t=\conv\{z_{t,s}\}$ with
+\begin{equation}\label{eq:chain}
+ S\subset P_0,\qquad P_t\subset D,\qquad
+                 \conv(P_t\cup R_\alpha P_t)\subset P_{t+1}.
+\end{equation}
+The forward implication follows from \eqref{eq:statewise}; conversely,
+choose the vertices as states and the corresponding barycentric rows.
+Thus the minimum vertex count of a compatible chain is exactly the
+vector-state optimization. No such identification is imposed on $W_N$.
+
+\begin{proposition}[Separate minimum]\label{prop:separate}
+Every internal cut of \eqref{eq:array} has normalized residual rank
+three and separate positive minimum three, for every $N$ and rotation.
+\end{proposition}
+\begin{proof}
+The four prefixes with all commands idle have predictive vectors $x/10$
+and span an affine plane. The two idle-suffix coordinate queries separate
+this plane. All residual arrays are affine functions of a two-dimensional
+predictive vector, so their normalized rank is exactly three.
+The vectors have Euclidean norm $\sqrt2/10$. The triangle with vertices
+\[
+             (1/2,0),\quad(-1/2,1/2),\quad(-1/2,-1/2)
+\]
+contains the disk of this radius: its three supporting lines have
+distances $1/2,1/(2\sqrt5),1/(2\sqrt5)$ from zero, all greater than
+$\sqrt2/10$. Its vertices have norm at most $1/\sqrt2$.
+Consequently every vertex defines a legal entire future continuation
+under all rotations and both queries. Barycentric initialization at the
+selected cut gives a three-generator factorization of all its residuals.
+To embed it into a complete machine, store the raw prefix until the
+selected cut, sample that three-valued label, and then retain the label
+and the remaining finite command count. Other cuts are unrestricted.
+Rank supplies the matching lower bound. This is the inherited separate
+minimum calculation of \cite{GTF32}, included to fix its quantifier.
+\end{proof}
+
+\begin{lemma}[Reachable-section lift]\label{lem:reachable}
+Every realization determines affine sections
+$Q_t=H_t\cap\Delta_{K_t}$ and linear maps $\pi_t$ with
+$P_t=\pi_t(Q_t)$ satisfying \eqref{eq:chain} and
+\begin{equation}\label{eq:face-count}
+                         |\ext P_t|\le2^{K_t}.
+\end{equation}
+For vector-state realizations one may instead use $|\ext P_t|\le K_t$.
+\end{lemma}
+\begin{proof}
+Let $E_h$ denote the state distribution following an actual prefix, and
+set $H_t=\aff\{E_h\}$. Define $\pi_t(e)$ by the two terminal means
+obtained from $e$ after idling all remaining commands. It maps the whole
+simplex into $D$. The identities
+\[
+ E_hT_{t,c}=E_{hc},\qquad
+ \pi_{t+1}(E_hT_{t,c})=R_\alpha^c\pi_t(E_h)
+\]
+extend affinely across $H_t$. Stochasticity then gives
+$Q_tT_{t,c}\subset Q_{t+1}$ and the required observable inclusions.
+The idle command implies $P_t\subset P_{t+1}$, hence every $P_t$
+contains $S$.
+In its affine hull $Q_t$ has at most $K_t$ coordinate inequalities.
+Distinct vertices have distinct active zero-coordinate sets: otherwise
+their difference is a two-sided feasible direction at either vertex.
+There are at most $2^{K_t}$ such sets, and projection cannot increase
+the number of vertices. This is the standard face-count bound for
+extensions \cite{FRT}, not a special new combinatorial principle.
+For the vector-state class, use the polygon in \eqref{eq:chain}.
+\end{proof}
+
+The restriction to $H_t$ is essential. A hidden basis state need not have
+the observable intertwining identity. The proof therefore retains the
+section before projection, as in accessible-space and observable-quotient
+constructions \cite{BF04,MW}. It is this lift that separates the two
+bounds in Lemma~\ref{lem:reachable}.

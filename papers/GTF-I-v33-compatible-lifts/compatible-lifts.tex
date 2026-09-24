@@ -1,0 +1,135 @@
+\section{Static extensions and stochastic compatibility}\label{sec:lifts}
+A polyhedral extension is a polytope followed by an affine projection.
+Its size is the number of inequalities, not the number of projected
+vertices. The distinction is classical \cite{Yannakakis,FRT}. We first
+record exactly what simplex normalization does, and does not, provide.
+
+\begin{proposition}[Normalization of bounded extensions]\label{prop:slack}
+Every positive-dimensional bounded polytope with $f$ facets is affinely
+isomorphic to a section $H\cap\Delta_f$. Thus a bounded extension with
+$f$ facets can be put in simplex-section form without increasing $f$.
+An affine map between two such sections need not extend to a stochastic
+map between their ambient simplices.
+\end{proposition}
+\begin{proof}
+Work in the affine hull and write an irredundant facet description
+$\ell_i(u)=b_i-a_i\cdot u\ge0$, $1\le i\le f$.
+Boundedness implies that the normals positively span the dual space.
+Consequently there are strictly positive $w_i$ with
+$\sum_i w_i a_i=0$. For example, express each $-a_i$ as a nonnegative
+combination of the normals and add these $f$ dependences.
+The positive constant $c=\sum_iw_i b_i$ can be evaluated at a relative
+interior point, where it is a sum of positive slacks. The affine map
+\[
+                     u\longmapsto (w_i\ell_i(u)/c)_{i=1}^f
+\]
+is injective, has coordinate sum one, and sends the polytope onto the
+intersection of its affine image with $\Delta_f$. Injectivity follows
+because the normals span. A point polytope uses $\Delta_1$.
+The last assertion is proved quantitatively in
+Proposition~\ref{prop:extension-gap} below.
+\end{proof}
+
+The projection of a normalized extension is defined on its affine
+section. It need not map the \emph{whole} ambient simplex into the
+observation domain. Nor does normalization produce transition kernels.
+These two additional requirements are not part of static extension
+complexity.
+
+\begin{theorem}[Stochastic extension criterion]\label{thm:extension-dual}
+Let $Q\subset\Delta_k$ be a polytope, let $q^1,\ldots,q^r$ affinely
+span $Q$, and let $F:Q\to\Delta_l$ be affine. Put $E_{hi}=q^h_i$
+and $B_{hj}=F(q^h)_j$. A row-stochastic $k$ by $l$ matrix $T$ satisfying
+$eT=F(e)$ on $Q$ exists if and only if, for every real $r$ by $l$ matrix
+$Z$,
+\begin{equation}\label{eq:dual}
+ \langle Z,B\rangle\le
+             \sum_{i=1}^k\max_{1\le j\le l}(E^TZ)_{ij}.
+\end{equation}
+For fixed rational $E,B$, feasibility and a separating certificate are
+finite linear-programming problems.
+\end{theorem}
+\begin{proof}
+The desired set of image matrices is the compact convex polytope
+$\mathcal B=\{ET:T\ge0,\ T\one=\one\}$. Its support function at $Z$
+is the right side of \eqref{eq:dual}, since the rows of $T$ are
+independent probability vectors. Finite-dimensional separation says
+$B\in\mathcal B$ exactly when all the displayed inequalities hold.
+Equality on the spanning rows extends to $Q$ by affinity. This is the
+ordinary support-function dual of a stochastic post-processing problem;
+it is not a new minimax interchange. The additional point is that the
+same test can be applied to each proposed inter-epoch lift.
+\end{proof}
+
+\begin{proposition}[An exact extension defect]\label{prop:extension-gap}
+On
+\[
+ Q=\{e\in\Delta_4:e_1+e_2=e_3+e_4=1/2\}
+\]
+the affine map $F(e)=(2e_1,2e_2)$ takes values in $\Delta_2$, but has
+no ambient stochastic extension. More precisely,
+\begin{equation}\label{eq:quarter}
+ \min_{T\ge0,\ T\one=\one}\ \max_{e\in Q}\TV(eT,F(e))=\frac14.
+\end{equation}
+\end{proposition}
+\begin{proof}
+Write $u_i=T_{i1}\in[0,1]$. At the four vertices
+$e^{ij}=(e_i+e_j)/2$, $i\in\{1,2\}$, $j\in\{3,4\}$, the desired
+first output probability is one for $i=1$ and zero for $i=2$.
+For fixed $j$, the realized probabilities differ by
+$(u_1-u_2)/2\le1/2$. Their two errors must therefore sum to at least
+$1/2$, and one is at least $1/4$.
+Taking $(u_1,u_2,u_3,u_4)=(1,0,1/2,1/2)$ attains error $1/4$
+at the vertices. Convexity bounds the error everywhere else by the
+vertex maximum. This also gives a finite strict witness for
+\eqref{eq:dual}.
+\end{proof}
+
+\begin{definition}[Compatible stochastic lift]\label{def:dynamic}
+For the mean dynamics in \eqref{eq:array}, a lift of profile $(k_t)$
+consists of nonempty sections $Q_t=H_t\cap\Delta_{k_t}$, affine
+observable maps $\pi_t:Q_t\to D$, seed lifts $E_x\in Q_0$ with
+$\pi_0(E_x)=x/10$, and affine maps $F_{t,c}:Q_t\to Q_{t+1}$ with
+\[
+             \pi_{t+1}F_{t,c}=R_\alpha^c\pi_t.
+\]
+Each $F_{t,c}$ must extend to an ambient row-stochastic matrix.
+For each final query $j$, the map
+$e\mapsto(1+e_j^T\pi_N(e))/2$ must extend to a $[0,1]$-valued affine
+map on the whole simplex, equivalently to a binary stochastic decoder.
+The least possible peak coordinate count is denoted $\cw_N(\alpha)$.
+\end{definition}
+
+\begin{theorem}[Operational meaning of a compatible lift]
+\label{thm:lift-equivalence}
+The complete feasible coordinate profiles of compatible stochastic lifts
+are exactly the feasible hidden-state profiles of \eqref{eq:array}.
+In particular, $\cw_N(\alpha)=W_N(\alpha)$. For supplied finite
+sections and supplied affine lift maps, all stochastic extension
+requirements, including the final decoder requirements, can be tested
+by Theorem~\ref{thm:extension-dual}.
+\end{theorem}
+\begin{proof}
+A machine supplies the sections and idle-suffix maps of
+Lemma~\ref{lem:reachable}. Restrict its actual transition matrices to
+these sections; their observable identity holds there. The final decoder
+already extends to the whole simplex.
+Conversely choose the stochastic extensions and start at the specified
+seed lift. Induction keeps the running distribution in $Q_t$ and its
+observable image equals the desired rotated seed. The final extended
+decoder then gives exactly \eqref{eq:array}. The stochastic maps at
+different cuts are used together, not selected afresh after seeing a
+hidden parameter. Affinely spanning points suffice for each extension
+test; convexity ensures legality throughout a section.
+\end{proof}
+
+The theorem defines the dynamic object and gives a local feasibility
+criterion when its geometry is fixed. It is not an efficient algorithm
+for searching over all lifts. Proposition~\ref{prop:extension-gap} does
+not prove that every logarithmic extension of a regular polygon is
+incompatible with rotation; it proves that compatibility cannot be
+inferred merely from affine positivity on the section. In particular,
+we neither assume nor exclude a logarithmic hidden-state construction
+for \eqref{eq:array}. Static $O(\log m)$ extensions of regular $m$-gons
+\cite{FRT,VGG} remain relevant candidates, but need the inter-epoch and
+readout extension tests.
