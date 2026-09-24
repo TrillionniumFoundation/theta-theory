@@ -1,0 +1,127 @@
+name: GTF-I v32 causal width beyond cutwise rank
+
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v32-causal-width-2026-09-25
+    paths:
+      - 'papers/GTF-I-v32-causal-width/**'
+      - '.github/workflows/gtf-i-v32-causal-width.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gtf-i-v32-causal-width
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/revision/general-theta-foundations-i-v32-causal-width-2026-09-25'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 20
+          sparse-checkout: |
+            papers/GTF-I-v32-causal-width
+            papers/GTF-I-v31-compatible-memory
+            papers/GTF-I-v30-streaming-geometry
+            papers/GTF-I-v29-intrinsic-continuation
+            papers/GTF-I-v28-causal-response
+            papers/GTF-I-v27-resource-saddle
+            papers/GTF-I-v26-controlled-memory-foundations
+            papers/GTF-I-v25-controlled-minimax
+            papers/GTF-I-v24-structural-resources
+            reviews/general-theta-foundations-i-v31-compatible-memory-pipeline-harsh-top4-r16-2026-09-25
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Restore and verify native mathematical sources
+        shell: bash
+        run: |
+          python - <<'PY'
+          import hashlib,json,lzma
+          from pathlib import Path
+          h=Path('papers/GTF-I-v32-causal-width')
+          raw=b''.join((h/'.source-parts'/('part%02d.xz'%i)).read_bytes() for i in range(7))
+          if len(raw)!=37456 or hashlib.sha256(raw).hexdigest()!='9c195ef558d42ae621fe6f41cd3619a4d2773053a439dc4e163be2cb223f568e':
+              raise RuntimeError('Source transport checksum mismatch')
+          payload=json.loads(lzma.decompress(raw))
+          if not isinstance(payload,dict) or len(payload)!=20:
+              raise RuntimeError('Native source manifest mismatch')
+          for name,text in payload.items():
+              p=Path(name)
+              if p.name!=name or p.suffix not in {'.tex','.py','.md','.json'} or not isinstance(text,str):
+                  raise RuntimeError('Unsafe source entry')
+              dest=h/name
+              if dest.exists() and dest.read_text()!=text:
+                  raise RuntimeError('Refusing to replace changed native source: '+name)
+              dest.write_text(text)
+          print('Restored and verified twenty native source files.')
+          PY
+      - name: Publish native source before building
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git fetch --depth=1 origin 0e69fdcfc11067a7de9a6122fc603f6a5e2253d8
+          test -z "$(git diff --name-only --diff-filter=DMRT 0e69fdcfc11067a7de9a6122fc603f6a5e2253d8)"
+          git add -f papers/GTF-I-v32-causal-width
+          if ! git diff --cached --quiet; then
+            git commit -m 'revise(GTF-I v32): fixed-rank unbounded causal width, reachable-section volume budget and exact profile composition [skip ci]'
+            git push origin HEAD:"$GITHUB_REF_NAME"
+          fi
+          echo "GTF_SOURCE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - name: Install typesetting and exact arithmetic
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended lmodern
+          python -m pip install sympy==1.14.0 PyMuPDF==1.26.7
+      - name: Verify and build the complete revision
+        run: python papers/GTF-I-v32-causal-width/build.py
+      - name: Verify the standalone core source package
+        run: |
+          python - <<'PY'
+          import json,subprocess,sys,tempfile,zipfile
+          from pathlib import Path
+          h=Path('papers/GTF-I-v32-causal-width')
+          with tempfile.TemporaryDirectory() as td:
+              zipfile.ZipFile(h/'evidence/CORE_SOURCES.zip').extractall(td)
+              p=Path(td)/h.name
+              subprocess.run([sys.executable,str(p/'build.py'),'--core-only'],check=True)
+              r=json.loads((p/'evidence/BUILD_RECEIPT.json').read_text())
+              if not r['core_only'] or not r['normal_optimized_agreement']:
+                  raise RuntimeError('Standalone core verification failed')
+          print('Standalone core build and exact checks passed without archival inputs.')
+          PY
+      - name: Publish only the new revision and referee-ready branch
+        shell: bash
+        run: |
+          git add -f papers/GTF-I-v32-causal-width GENERAL_THETA_FOUNDATIONS_I_V32_REVIEW_READY.md
+          git commit -m 'publish(GTF-I v32): focused article, explicit stochastic rows, small referee package and preserved mathematical archives [skip ci]'
+          test -z "$(git diff --name-only --diff-filter=DMRT 0e69fdcfc11067a7de9a6122fc603f6a5e2253d8 HEAD)"
+          READY='revision/general-theta-foundations-i-v32-referee-ready-2026-09-25'
+          if git ls-remote --exit-code --heads origin "$READY"; then
+            git fetch origin "$READY"
+            git merge-base --is-ancestor FETCH_HEAD HEAD
+          fi
+          git push origin HEAD:"$GITHUB_REF_NAME" HEAD:"$READY"
+      - name: Upload referee artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: GTF-I-v32-causal-width
+          path: papers/GTF-I-v32-causal-width/
+          retention-days: 30
+      - name: Upload failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: GTF-I-v32-diagnostics
+          path: |
+            papers/GTF-I-v32-causal-width/evidence/
+            papers/GTF-I-v32-causal-width/*.tex
+            papers/GTF-I-v32-causal-width/*.py
+          retention-days: 7
