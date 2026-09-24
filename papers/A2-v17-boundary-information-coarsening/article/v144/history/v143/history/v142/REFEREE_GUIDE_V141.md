@@ -1,0 +1,11 @@
+# Referee entry guide — A2 revision 141
+
+Controlling review: v140 report at `17e039fe55fc0d060b443d486421d937f637439a`. The new branch is `revision/a2-v141-functorial-spectral-reconstruction-2026-09-23`.
+
+1. Read the introduction, `thm:sharp-finite-pencil`, `thm:finite-parameter-immersion`, and `thm:universal-finite-neighbourhood` as the inverse-problem spine. Check that the coefficient bundle is a subbundle before using flatness, and that right-frame equivariance gives the actual ideal-adic family.
+2. Check `lem:spectral-sheaf-similarity`, `lem:artinian-polynomial-square-root`, and `thm:relative-spectral-readout`. In nonreduced families the socle ideal is relative; the absolute nilradical is not substituted for it. Spectral incidence schemes are recovered in the specified relation-space image, not in a claimed moduli space of all unmarked deformations.
+3. Read `thm:totally-real-reciprocal-likelihood` independently. It proves the exact unrestricted-real-data assertion of FMS Conjecture 4.5, with explicit residues. Important checks are the sign in `S=-Q/D`, the two disjoint strings of intervals, the omitted `x=0` axis, all denominators, the Hessian Schur complement, and the open set of data. No generic complex-degree count is assumed in the proof.
+4. The earlier web/K3, all-rank contraction/support, boundary and polar results have not been removed. `NONDELETION_V141.json` maps every changed predecessor file to exact archived bytes. The active manifest's inherited label list is computed from the complete v140 input graph, not copied from an older revision's label count.
+5. `LITERATURE_AUDIT_V141.md` distinguishes proven mathematics from documentary verification. Ballico 1993 full text remains unavailable. The contraction comparison is map-specific but not an exhaustive priority certificate. No claim of journal acceptance, formal proof verification or complete unmarked stack equivalence is made.
+
+Run `bash build.sh` from the native v141 directory. The receipt records actual source commit, runtime, executed scripts, PDF hashes/page counts, preserved labels, and any failed checks. The final remote verification workflow is read-only. The old review branch remains unchanged for independent comparison.
