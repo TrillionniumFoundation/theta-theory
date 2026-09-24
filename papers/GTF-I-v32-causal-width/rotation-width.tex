@@ -1,0 +1,161 @@
+\section{A fixed-alphabet family with unbounded compatibility cost}
+\label{sec:rotation}
+We apply the volume bound with
+\[
+ a=1/10,\quad S=a[-1,1]^2,\quad D=[-1,1]^2,
+ \quad\mathcal L=\{I_2,R\},
+\]
+where $R$ is any planar rotation of infinite order. The terminal array is
+\eqref{eq:channel-intro}. The fixed alphabets have respectively four seed
+symbols, two command symbols, two queries and two outputs. Rotation
+preserves the norm of every actual predictive vector, so the uniform
+full-support bound stated in the introduction holds at every horizon.
+
+\begin{proposition}[All separate positive minima are three]
+\label{prop:static-three}
+At every internal cut of $C_{N,R}$, ordinary normalized row rank and
+separate normalized positive minimum both equal three, for every
+rotation $R$ and every $N\ge0$.
+\end{proposition}
+\begin{proof}
+For a prefix at cut $t$, put $z=R^{c_1+\cdots+c_t}a x$.
+Its entire future response is affine in $z$. The all-idle prefixes
+contain the four seeds, which affinely span $\R^2$, and the all-idle
+suffix with the two coordinate queries distinguishes both coordinates.
+Normalization supplies an independent constant coordinate. Hence the
+residual row rank is exactly three.
+
+Consider the triangle
+\begin{equation}\label{eq:static-triangle}
+ T=\conv\{v_0,v_1,v_2\},\qquad
+ v_0=(1/2,0),\quad v_1=(-1/2,1/2),\quad v_2=(-1/2,-1/2).
+\end{equation}
+It contains the centered disk of radius $1/(2\sqrt5)$, while every
+vertex has norm at most $1/\sqrt2$. All reachable $z$ have norm
+$\sqrt2/10<1/(2\sqrt5)$, and thus lie in $T$.
+Starting from any $v_s$, any future rotation word has both mean
+coordinates in $[-1,1]$. It therefore defines a legal normalized future
+channel. Barycentric decomposition of $z$ in $T$ gives an exact
+three-state factorization of the whole suffix array. This proves
+$\kappa_t=3$; Definition~\ref{def:separate} embeds it in a complete
+machine with finite, unrestricted registers at other cuts.
+\end{proof}
+
+\begin{theorem}[Unbounded width with effective rational data]
+\label{thm:rotation-unbounded}
+For every infinite-order rotation $R$, $W_N(R)\to\infty$. More precisely,
+put $\delta_M=\delta_M(S,D,\{I,R\})$. These numbers are positive for
+$M\ge3$, and every feasible profile satisfies
+\begin{equation}\label{eq:rotation-budget}
+                    \sum_{t=0}^{N-1}\delta_{2^{K_t}}\le\frac{99}{25}.
+\end{equation}
+For $R_0$ in \eqref{eq:rational-rotation}, the target arrays are rational
+and the thresholds excluding a bounded width are effective in the sense
+of Corollary~\ref{cor:effective}.
+\end{theorem}
+\begin{proof}
+An invariant polygon containing $S$ would have nonzero vertices whose
+orbits under $R$ remain in its finite vertex set, since an invertible
+linear map taking a polygon onto itself permutes its vertices. An
+infinite-order planar rotation has no finite orbit away from zero.
+No such polygon exists. The triangle in \eqref{eq:static-triangle} is
+feasible for the definition of $\delta_M$ when $M\ge3$, so these minima
+are positive by Theorem~\ref{thm:volume}. Its volume budget gives
+\eqref{eq:rotation-budget}, since $4-4a^2=99/25$.
+For any $K$, horizons greater than $99/(25\delta_{2^K})$ exclude all
+width-$K$ machines. This proves the asserted divergence.
+
+The eigenvalue $\zeta=(3+4i)/5$ of $R_0$ is not a root of unity. Otherwise
+$\zeta+\zeta^{-1}=6/5$ would be a rational algebraic integer, hence an
+integer. The contradiction proves that $R_0$ has infinite order.
+Rationality of its powers and of the seeds proves rationality of every
+specified channel entry. Corollary~\ref{cor:effective} applies.
+\end{proof}
+
+The divergence does not follow merely by invoking the classical absence
+of a stationary positive realization of an irrational rotation. The
+matrices of a proposed machine may change at every time, and depend on
+$N$. Inequality~\eqref{eq:rotation-budget} excludes these machines as
+well. In particular there is no function of the maximum separate
+positive minimum alone that bounds simultaneous width on this class.
+
+\subsection{Constructive finite realization}
+\begin{theorem}[Exact polygon realization]\label{thm:polygon-upper}
+For any planar rotation $R$ and any $N\ge1$, the channel $C_{N,R}$ has
+an exact realization of peak at most $4\lceil\sqrt{N+1}\rceil$.
+It also has an exact realization of peak $3(N+1)$, with rational rows
+when $R$ has rational entries. Both constructions store finite labels,
+not real predictive vectors.
+\end{theorem}
+\begin{proof}
+Put $M=4\lceil\sqrt{N+1}\rceil$, $u_s=(\cos(2\pi s/M),
+\sin(2\pi s/M))$ for $0\le s<M$, and
+\[
+ \rho_t=\frac{\sqrt2}{10}\sec^{t+1}(\pi/M),\qquad
+ P_t=\conv\{\rho_tu_s:0\le s<M\}\quad(0\le t\le N).
+\]
+The inradius of $P_0$ is $\sqrt2/10$, so $S\subset P_0$.
+The inradius of $P_{t+1}$ is $\rho_t$, and hence
+\begin{equation}\label{eq:polygon-inclusion}
+                         P_t\cup RP_t\subset P_{t+1}.
+\end{equation}
+All these polygons lie in $D$. Indeed, with $L=N+1$,
+\[
+ \cos(\pi/M)\ge1-\frac5{16L},\qquad
+ \cos^L(\pi/M)\ge1-\frac5{16}=\frac{11}{16},
+ \qquad \rho_N\le\frac{16\sqrt2}{110}<1.
+\]
+The first bound uses $M\ge4\sqrt L$ and $\pi^2<10$; the second is
+Bernoulli's inequality.
+
+Initialize by a convex decomposition of the observed seed $a x$ in
+$P_0$. At cut $t$, the machine stores $s\in[M]$. After command $c$,
+replace it by a random label whose mean vertex in $P_{t+1}$ is
+$R^c\rho_tu_s$, using \eqref{eq:polygon-inclusion}. Induction gives
+\[
+ \E[\rho_tu_{s_t}\mid x,c_1,\ldots,c_t]
+                         =R^{c_1+\cdots+c_t}a x.
+\]
+The terminal binary row has mean $e_j^T\rho_Nu_s$. This proves the
+specified full conditional law. The final binary register fits within
+$M$ states.
+
+The update coefficients can be written explicitly. If the direction of
+$R^cu_s$ falls between $u_l$ and $u_{l+1}$, let its offset be
+$0\le\theta\le\omega=2\pi/M$. Set
+\[
+ A=\frac{\rho_t\sin(\omega-\theta)}{\rho_{t+1}\sin\omega},\quad
+ B=\frac{\rho_t\sin\theta}{\rho_{t+1}\sin\omega},\quad
+ T_{t,c}(s,k)=A\mathbf1_{k=l}+B\mathbf1_{k=l+1}+\frac{1-A-B}{M}.
+\]
+Both coefficients are nonnegative and
+$A+B\le(\rho_t/\rho_{t+1})\sec(\pi/M)=1$.
+Since $\sum_ku_k=0$, these rows have the required mean. Boundary
+choices agree. Initialization uses the same triangular fan, replacing
+$\rho_t$ by the norm of the seed. Only a vertex \emph{index} is stored.
+In fact, the ratio $\rho_t/\rho_{t+1}$ is constant, so each command
+matrix is the same at every training epoch for this construction.
+The final decoder still depends on the chosen horizon.
+
+For the rational alternative, decompose $a x$ into the three vertices
+$v_i$ of \eqref{eq:static-triangle}; its weights are
+\[
+              1/2+a x_1,\quad 1/4-a x_1/2+a x_2,\quad
+              1/4-a x_1/2-a x_2.
+\]
+Store the pair $(i,q)$, initially $q=0$, and add $c$ to $q$ at each
+command. At cut $t$ at most $3(t+1)$ states are available. The decoder
+has mean $e_j^TR^qv_i$, which belongs to $[-1,1]$ because
+$\norm{v_i}_2<1$. This is an exact realization, with rational
+initialization, transitions and output rows when $R$ is rational.
+\end{proof}
+
+The polygon construction provides known exact stochastic rows. For a
+rational rotation, its trigonometric constants are algebraic; for the
+golden angle they are fixed computable real constants. Neither is being
+silently identified with a bounded fair-bit computation. The rational
+$3(N+1)$ construction can use the separately charged rational-row
+sampler of the retained development \cite{GTF31}. Its extra workspace
+is not asserted to preserve the atomic peak. Similarly, an autonomous
+machine required to check the input length has an additional clock task;
+that task is not part of Definition~\ref{def:machine}.

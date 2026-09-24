@@ -1,0 +1,154 @@
+\section{Reachable sections and a cumulative volume bound}
+\label{sec:volume}
+We first treat a general finite collection of linear mean updates.
+Let $\mathcal L$ be a finite set of linear maps of $\R^d$, containing
+$I_d$. A finite seed alphabet has associated vectors $z(x)$, whose
+convex hull $S$ has nonempty interior. Assume that every product of at
+most $N$ allowed maps sends the seed vectors into $D=[-1,1]^d$.
+After reading $x$ and $N$ commands $L_1,\ldots,L_N\in\mathcal L$,
+a terminal query $j\in[d]$ requires a binary output of mean
+$e_j^TL_N\cdots L_1z(x)$. Denote this complete array by $C_N$.
+
+\begin{lemma}[The reachable-section lift]\label{lem:lift}
+Every realization of $C_N$ with profile $(K_t)_{t=0}^N$ determines
+full-dimensional polytopes $P_t\subset D$ such that
+\begin{equation}\label{eq:lift-conditions}
+ S\subset P_t,\qquad
+ |\ext P_t|\le2^{K_t},\qquad
+ LP_t\subset P_{t+1}\quad(L\in\mathcal L,\ t<N).
+\end{equation}
+The conclusion permits arbitrary hidden states and does not require
+individual state continuations to belong to the residual affine span.
+\end{lemma}
+\begin{proof}
+For each actual prefix $h$ at cut $t$, let $E_h\in\Delta_{K_t}$ be
+its hidden state distribution. Put
+\[
+ H_t=\aff\{E_h:h\text{ a prefix at }t\},\qquad
+ Q_t=H_t\cap\Delta_{K_t}.
+\]
+For any state distribution $e\in\Delta_{K_t}$, run the remaining
+commands all equal to $I_d$. The vector of its $d$ terminal means is a
+linear function $\pi_t(e)$ and belongs to $D$. Correctness on actual
+prefixes gives $\pi_t(E_h)=z_h$, the specified predictive vector.
+Set $P_t=\pi_t(Q_t)$.
+
+Write $T_{t,L}$ for the realizing transition matrix of command $L$.
+The identity $E_hT_{t,L}=E_{hL}$ implies
+$H_tT_{t,L}\subset H_{t+1}$. Stochasticity also implies
+$\Delta_{K_t}T_{t,L}\subset\Delta_{K_{t+1}}$; consequently
+$Q_tT_{t,L}\subset Q_{t+1}$. On every actual prefix,
+\[
+ \pi_{t+1}(E_hT_{t,L})=L\pi_t(E_h).
+\]
+Both sides are affine in $E_h$, so this equality extends to all of $H_t$,
+including its points with some negative coordinates. Restricting back to
+$Q_t$ yields $LP_t\subset P_{t+1}$. Taking the idle command shows
+$P_t\subset P_{t+1}$. The initial section contains all seeds, hence so
+does every $P_t$.
+
+It remains to bound vertices without assuming a minimal hidden
+representation. In its affine hull, $Q_t$ is a bounded polytope defined
+by the $K_t$ coordinate inequalities $e_s\ge0$. Two distinct vertices
+cannot have the same zero-coordinate set. Indeed, if they did, their
+difference would give a nonzero direction preserving all active
+equalities, and sufficiently small motion in both directions from
+either point would preserve the remaining strict inequalities. That
+point would not be a vertex. There are at most $2^{K_t}$ zero sets.
+A linear image of a polytope is the convex hull of the images of its
+vertices, proving $|\ext P_t|\le|\ext Q_t|\le2^{K_t}$.
+\end{proof}
+
+The section $Q_t$, rather than the entire hidden simplex, is essential.
+For an arbitrary unit hidden state, the identity relating the two probe
+maps need not hold. It holds on the affine span of reachable
+\emph{distributions}. This is the finite-horizon version of the
+accessible-space/observable-quotient precaution in classical realization
+\cite[Section 4]{MW}; the vertex bound accounts for the resulting lift.
+In particular, replacing $2^{K_t}$ by $K_t$ without further hypotheses
+would not be justified.
+
+For a full-dimensional compact seed hull $S\subset D$, define
+\begin{equation}\label{eq:expansion}
+ \delta_M(S,D,\mathcal L)=
+ \min_{\substack{S\subset P\subset D\\P\text{ a polytope},\ |\ext P|\le M}}
+ \left\{\vol_d\left(\conv\bigcup_{L\in\mathcal L}LP\right)
+                  -\vol_d(P)\right\}.
+\end{equation}
+If the feasible set is empty, put $\delta_M=+\infty$.
+The maps in the union need not send all of $D$ into $D$.
+Only the implementing sequence from Lemma~\ref{lem:lift} must obey that
+constraint. The quantity is a geometric optimization on observable
+polytopes, not an optimization over candidate transition tables.
+
+\begin{theorem}[Volume budget for a state profile]\label{thm:volume}
+Suppose $|\det L|=1$ for every $L\in\mathcal L$ and $I_d\in\mathcal L$.
+If there is no full-dimensional polytope $P$ with
+$S\subset P\subset D$ and $LP=P$ for all $L\in\mathcal L$, then every
+nonempty minimum in \eqref{eq:expansion} is strictly positive.
+Every realization of $C_N$ satisfies
+\begin{equation}\label{eq:volume-budget}
+ \sum_{t=0}^{N-1}\delta_{2^{K_t}}(S,D,\mathcal L)
+                       \le\vol_d(D)-\vol_d(S).
+\end{equation}
+In particular, a uniform state bound $K$ implies
+$N\delta_{2^K}\le\vol_d(D)-\vol_d(S)$.
+\end{theorem}
+\begin{proof}
+The set of feasible polytopes with at most $M$ vertices is compact in
+the Hausdorff metric: represent them by $M$ points in the compact set
+$D$, permitting repetitions, and impose the closed condition that their
+convex hull contain $S$. Convex hull, finite union followed by convex
+hull, and volume of compact convex sets are continuous. Thus the
+minimum is attained whenever the set is nonempty.
+
+Because the identity is allowed, the displayed volume difference is
+nonnegative. If it vanishes at $P$, the full-dimensional convex bodies
+$P$ and $\conv\bigcup_LLP$ have equal volume and one contains the
+other, so they are equal. Thus $LP\subset P$. The determinant hypothesis
+makes their volumes equal, hence $LP=P$ for every $L$, contrary to the
+assumption. Therefore $\delta_M>0$.
+
+For the polytopes in Lemma~\ref{lem:lift},
+\[
+ \vol_d(P_{t+1})-\vol_d(P_t)
+ \ge\vol_d\left(\conv\bigcup_LLP_t\right)-\vol_d(P_t)
+ \ge\delta_{2^{K_t}}.
+\]
+Summing telescopes. The endpoint inclusions give
+\eqref{eq:volume-budget}. The minima are nonincreasing in $M$, which
+gives the assertion for a uniform bound.
+\end{proof}
+
+The volume hypothesis is a property of the mean dynamics and the
+observation domain, not a small-ball or metric-dimension assumption.
+Under an invertible affine change of predictive coordinates, using the
+conjugate affine maps, both sides of \eqref{eq:volume-budget} are
+multiplied by the same absolute determinant. Thus the normalized budget
+is independent of this coordinate choice. The proof also works for
+volume-preserving affine maps with an idle map.
+
+\begin{corollary}[Effective finite obstructions]\label{cor:effective}
+In dimension two, for explicitly given rational or real-algebraic
+polygons $S,D$ and volume-preserving linear maps, every nonempty
+$\delta_M$ is a computable real-algebraic number. If the hypothesis of
+Theorem~\ref{thm:volume} holds, one can compute a rational
+$0<c_M\le\delta_M$ and hence a finite horizon excluding any specified
+uniform width $K$ with $M=2^K$.
+\end{corollary}
+\begin{proof}
+Use $M$ pairs of vertex coordinates in $D$ as variables. Containment of
+each vertex of $S$ in their hull is expressed with nonnegative
+barycentric variables. A finite partition by determinant signs and
+cyclic orders identifies each possible convex hull, including
+repetitions and collinear points. On every such piece the areas of
+$P$ and $\conv\bigcup_LLP$ are polynomial expressions, by the polygon
+area formula. Thus the graph of the objective, its feasible domain and
+the statement that a number is its minimum are first-order formulas over
+the real closed field of algebraic numbers. Quantifier elimination,
+followed by real-root isolation, computes the minimum and a positive
+rational lower bound when it is positive \cite{BPR}.
+Algebraic inputs are represented by defining polynomials and isolating
+intervals. The procedure is finite; no polynomial complexity in $K$,
+the horizon, or a succinct circuit description is asserted.
+\end{proof}

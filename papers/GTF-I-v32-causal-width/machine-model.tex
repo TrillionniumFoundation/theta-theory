@@ -1,0 +1,88 @@
+\section{Complete arrays and charged state profiles}
+\label{sec:model}
+\begin{definition}[Clocked stochastic transducer]\label{def:machine}
+Fix finite alphabets $X,Y_1,\ldots,Y_N,J,B$. A complete terminal array
+is a probability distribution $C(\cdot\mid x,y_1,\ldots,y_N,j)$ on $B$
+for every word in the full Cartesian product. A realization has finite
+registers $S_t=[K_t]$ for $0\le t\le N$, an initialization row
+$E(s\mid x)$, transition rows
+$T_{t,y}(s,s')$ from $S_t$ to $S_{t+1}$ for $0\le t<N$,
+and terminal rows $D(b\mid s,j)$, all nonnegative and normalized.
+It realizes $C$ when
+\begin{equation}\label{eq:machine-product}
+ C(b\mid x,y_1,\ldots,y_N,j)
+ =\sum_{s_0,\ldots,s_N}E(s_0\mid x)
+       \prod_{t=0}^{N-1}T_{t,y_{t+1}}(s_t,s_{t+1})D(b\mid s_N,j).
+\end{equation}
+The current input is read atomically, and only the next register survives
+its update. There is an initial singleton before $x$ and, when the output
+is retained, a final $|B|$-label register. The full peak is
+$\max(1,|B|,K_0,\ldots,K_N)$.
+\end{definition}
+
+Inputs in this definition are externally supplied; they need not have a
+probability law. Equality is wordwise. A controller's earlier randomness,
+input buffers, data-dependent scheduling information and previously
+emitted symbols cannot be read again unless retained in its register.
+The declared epoch $t$ is a free external clock; the current query is
+consumed in the terminal update. All row tables are known program data,
+and sampling a stochastic row is atomic. Table size, arithmetic work,
+construction time and fair-bit sampling workspace are not included in
+$K_t$. A shared private seed is not an additional free input.
+
+We count available labels. Unreachable labels may be removed, while
+padding by unused labels explains upward closure of feasible profiles.
+Every declared input row, including rows unused by the actual initial
+law, is a stochastic row. An autonomous implementation instead uses one
+state set and time-independent rows; phase tagging gives a sufficient
+sum-of-widths bound and is not identified with the clocked peak. These
+conventions separate the finite positive-realization problem from
+succinct streaming-program or bit-operation complexity.
+
+Let $\cF(C)\subset\N^{N+1}$ be the upward-closed set of realizable
+profiles. For a prefix $h=(x,y_1,\ldots,y_t)$, let $R_h$ be its complete
+conditional array on all suffixes and terminal queries. At this cut the
+ambient continuation polytope is a product of output simplices. Define
+$r_t=\rank(R_h)_h$, with columns indexed by suffix, query and output.
+Normalized rows give $r_t=1+\dim\aff\{R_h\}$.
+
+\begin{definition}[Separate minimum]\label{def:separate}
+The separate minimum $\kappa_t(C)$ is the least $k$ such that every
+$R_h$ is a convex combination of $k$ normalized continuation arrays on
+the same future alphabet. There is no compatibility requirement between
+the dictionaries selected at distinct cuts. The minimum peak of a
+compatible realization is denoted $W(C)$.
+\end{definition}
+
+For finite alphabets, $\kappa_t(C)=\min_{\mathbf K\in\cF(C)}K_t$:
+store the whole prefix before the chosen cut, implement its encoder at
+that cut, and afterwards store the selected label and future inputs
+until the terminal update. Thus a separate factorization can always be
+embedded in a complete machine, at possibly large costs elsewhere.
+Ordinary row rank is a lower bound on $\kappa_t$.
+For a single terminal output alphabet this minimum is ordinary
+nonnegative rank after normalization. For a queried continuation array,
+every suffix/query block of a generator must normalize separately;
+nonnegative rank of the concatenated matrix need only be a lower bound.
+These are not the same as residual-only state counts \cite{GG,DE}.
+
+\begin{center}
+\small
+\begin{tabular}{ll}
+\toprule
+Notation & Meaning\\\midrule
+$K_t$, $W(C)$ & available labels at a cut; least simultaneous peak\\
+$r_t$, $\kappa_t(C)$ & ordinary row rank; separate normalized positive minimum\\
+$E_h$, $H_t$ & reachable state distribution; its affine span\\
+$Q_t$, $P_t$ & reachable simplex section; observable projected section\\
+$S$, $D$ & compulsory seed hull; bounded observable domain\\
+$\delta_M$ & minimum one-step volume expansion for at most $M$ vertices\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The input-only model is already a subclass of finite causal experiments:
+a prescribed action alphabet may consist of one action at each stage.
+A lower bound in this class does not solve optimization over informative
+experimental actions. The present advance concerns arbitrary-horizon
+compatibility of exact responses under a specified interface.
