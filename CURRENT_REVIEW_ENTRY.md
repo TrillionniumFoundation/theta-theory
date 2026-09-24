@@ -1,6 +1,6 @@
 # A2 referee entry — revision 147
 
-A2 v147 source entry. Consult the source-bound receipt for completed build evidence; this source entry alone does not imply a successful build.
+Verified native build from source commit `ee87f9979de6b6d40038daab9f8cf336fa0b3007`. The source-bound receipt records 24 completed regressions, three native PDFs, preservation and layout checks. These do not certify mathematical correctness or priority.
 
 Controlling report: `855c73b3a0381bebd8d5e0d382fa06125904a73f` on `review/a2-v146-independent-harsh-top4-2026-09-24`.
 Revision branch: `revision/a2-v147-intrinsic-family-descent-2026-09-24`.
