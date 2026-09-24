@@ -1,0 +1,23 @@
+name: A2 v147 revision verification
+on:
+  push:
+    branches: [revision/a2-v147-intrinsic-family-descent-2026-09-24]
+    paths:
+      - '.github/workflows/a2-v147-revision.yml'
+      - 'papers/A2-v17-boundary-information-coarsening/article/v147/**'
+permissions:
+  contents: read
+jobs:
+  source-snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Export immutable predecessor and reports
+        run: |
+          mkdir -p snapshot
+          git archive 855c73b3a0381bebd8d5e0d382fa06125904a73f papers/A2-v17-boundary-information-coarsening/article/v146 reviews/a2-v146-independent-harsh-top4-2026-09-24 | tar -x -C snapshot
+      - uses: actions/upload-artifact@v4
+        with:
+          name: a2-v147-predecessor-snapshot
+          path: snapshot
+          retention-days: 14
