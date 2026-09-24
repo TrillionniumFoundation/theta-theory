@@ -1,0 +1,422 @@
+\section{Sharp decision memory for the collision experiment}
+\label{sec:v20-physical}
+We now apply the continuation spectrum to the same marked experiment
+that supplies the microscopic certificate. Both its impossibility
+statement and its construction concern the same score, the same private
+candidate family, and the same training--validation checkpoint.
+
+\subsection{The marked family and its first two spectral values}
+In the all-on row of Section~\ref{sec:v18-microscopic}, a private
+width-one candidate has two independent report bits with probabilities
+$p,q\in[0,1]$, independently of the fair actual mark. Denote its law by
+$b(p,q)$ and put
+\[
+ a=(1-p)(1-q),\qquad c=pq.
+\]
+Let $B=\{b(p,q):p,q\in[0,1]\}$. The ideal target $Q_*$ is supported
+on $000,001,110,111$, with masses $5/16,3/16,3/16,5/16$, respectively.
+On these four atoms the candidate masses are $a/2,a/2,c/2,c/2$.
+The elementary continuation constraint implies
+\begin{equation}\label{eq:v20-root}
+ \sqrt a+\sqrt c\le1,\qquad \min(a,c)\le\tfrac14.
+\end{equation}
+Indeed the first inequality is Cauchy--Schwarz applied to
+$(\sqrt{1-p},\sqrt p)$ and $(\sqrt{1-q},\sqrt q)$; the second follows
+from the first. If $a\ge c$, then $c\le1/4$ and
+\begin{equation}\label{eq:v20-linear}
+ a+3c\le(1-\sqrt c)^2+3c
+             =1-2\sqrt c+4c\le1.
+\end{equation}
+The symmetric inequality holds when $c\ge a$.
+
+\begin{theorem}[A sharp two-state obstruction]
+\label{thm:v20-two}
+For the ideal marked collision family,
+\begin{equation}\label{eq:v20-two}
+ \mathfrak V_1(B,Q_*)=\tfrac18,
+ \qquad \mathfrak V_2(B,Q_*)=\tfrac38.
+\end{equation}
+If $\|Q-Q_*\|_{\rm TV}\le\beta$, every reset auditor retaining at most
+two states at the training--validation cut has worst-case expected score
+at most $3/8+\beta$, regardless of its finite training length and its
+upstream or downstream memory. The assertion allows mark-dependent
+validation events and stochastic state transitions.
+\end{theorem}
+\begin{proof}
+For one state, use the event $\{000,111\}$. Its score is
+$5/8-(a+c)/2\ge1/8$. Conversely, average the two candidates with
+$(a,c)=(1,0)$ and $(0,1)$. Their average is uniform on the four supported
+atoms and is at total variation distance $1/8$ from $Q_*$. Every fixed
+response has average score at most $1/8$, so its minimum over the two
+candidates is at most $1/8$. This proves the first equality; the average
+is a bound on scores, not an allowed private candidate.
+
+For the upper bound with two states, consider the three candidates
+$b_0=b(0,0)$, $b_1=b(1,1)$ and $b_*=b(1/2,1/2)$. A response may be
+set to zero outside the support of $Q_*$ without decreasing its payoff
+at any candidate. Write its four remaining coordinates as $(x,y,z,t)$.
+Its three payoffs are
+\begin{align*}
+ f_0&=(-3x-5y+3z+5t)/16,\\
+ f_1&=(5x+3y-5z-3t)/16,\\
+ f_*&=(3x+y+z+3t)/16.
+\end{align*}
+Since all four coordinates are in $[0,1]$,
+\begin{equation}\label{eq:v20-triangle}
+ f_0+f_1\le\tfrac14,
+ \qquad f_0+f_*\le\tfrac34,
+ \qquad f_1+f_*\le\tfrac34.
+\end{equation}
+Suppose two responses covered all three candidates with payoff strictly
+greater than $3/8$. The first inequality forces different responses to
+cover $b_0$ and $b_1$. The other two inequalities then force both responses
+to have payoff less than $3/8$ at $b_*$. This is a contradiction. Hence
+$\mathfrak V_2\le3/8$.
+
+For attainment take the responses, in the same four-atom order,
+\[
+ h_0=(2/3,0,1,1),\qquad h_1=(1,1,0,2/3),
+\]
+with zero response elsewhere. Both have target mean $17/24$. Their
+payoffs are $17/24-a/3-c$ and $17/24-a-c/3$. If $a\ge c$, the first
+is larger and \eqref{eq:v20-linear} makes it at least
+$17/24-1/3=3/8$. The other case is symmetric. This proves equality.
+For the perturbed target, apply \eqref{eq:v20-spectrumstable} and the
+operational upper bound of Theorem~\ref{thm:v20-spectrum}.
+\end{proof}
+
+The obstruction has an immediate continuation interpretation. Each
+post-training state supplies one validation response. The three witness
+candidates in the proof cannot be covered above $3/8$ by two such
+responses. No increase of sample size can compensate for losing the
+third continuation at that cut. This argument does not use the unrelated
+Bernoulli majority calibration.
+
+
+\begin{lemma}[Feedback completion of the physical lower bound]
+\label{lem:v20-feedback}
+The upper bound $3/8+\beta$ in Theorem~\ref{thm:v20-two} remains valid
+when the auditor may train on any of the original feedback rows and may
+select a row--event pair after the decision cut. Here every target row is
+the declared feedback pushforward of $Q$, with
+$\|Q-Q_*\|_{\rm TV}\le\beta$. In particular, two states cannot evade
+the bound by using a different sensor gate during training or validation.
+\end{lemma}
+\begin{proof}
+It suffices to restrict the adversary to an admissible subfamily. For
+$p,q\in[0,1]$, let its first emission be $X_1\sim\operatorname{Ber}(p)$,
+and, after gate $A$, let its second emission be $AX_2$, with an independent
+$X_2\sim\operatorname{Ber}(q)$ and the independent fair actual mark.
+These are genuine width-one private rows: the gate is a current input,
+and the second emission uses no retained copy of $X_1$.
+
+For any deterministic gate policy $g:\{0,1\}\to\{0,1\}$, the marked
+row is the pushforward of $b(p,q)$ under
+$T_g(x_1,x_2,w)=(x_1,g(x_1)x_2,w)$. The physical target row is the
+pushforward of $Q$ by the same map, since acquisition does not act on the
+path. Including the gate in the transcript changes nothing: it is also
+a deterministic function of the displayed coordinates. For a selected
+row event, the response pulls back to $\1_A\circ T_g$ on the all-on
+alphabet. A randomized row--event continuation pulls back to a function
+$h_m\in[0,1]^\Omega$. Hence, conditional on cut state $m$, its expected
+score on this subfamily is exactly $(Q-b(p,q))h_m$.
+
+Whatever training rows were used, their effect is solely the distribution
+of the retained state. The two-state score is thus a convex combination
+of two such responses and is bounded above by their envelope. Apply the
+three-candidate argument of Theorem~\ref{thm:v20-two}, and then the
+uniform target perturbation bound. Since this is a subfamily of the full
+private candidate class, it is a valid lower-bound witness for that full
+class. Randomized feedback is covered by conditioning on its independent
+random table and then averaging the pulled-back response.
+\end{proof}
+
+\subsection{A three-response construction}
+Define three deterministic events, all ignoring the mark,
+\[
+ A_D=\{00,11\}\times\{0,1\},\quad
+ A_0=\{00\}\times\{0,1\},\quad
+ A_1=\{11\}\times\{0,1\}.
+\]
+Their ideal scores are $1-a-c$, $1/2-a$ and $1/2-c$.
+
+\begin{lemma}[The three-response envelope]
+\label{lem:v20-envelope}
+For the original private candidate image,
+\begin{equation}\label{eq:v20-envelope}
+ \min_{p,q}\max\{1-a-c,\tfrac12-a,\tfrac12-c\}=\sqrt2-1.
+\end{equation}
+In particular $\mathfrak V_3(B,Q_*)\ge\sqrt2-1$.
+\end{lemma}
+\begin{proof}
+By symmetry suppose $a\ge c$. Then $c\le1/4$ and the maximum is
+$1-a-c$ for $a\le1/2$, and $1/2-c$ for $a\ge1/2$.
+If $a\le1/4$, the first expression is at least $1/2$. If
+$1/4\le a\le1/2$, \eqref{eq:v20-root} gives
+\[
+ a+c\le1-2\sqrt a+2a\le2-\sqrt2,
+\]
+since the last function is increasing on $[1/4,1/2]$.
+If $a\ge1/2$, then
+$c\le(1-\sqrt a)^2\le(1-1/\sqrt2)^2=3/2-\sqrt2$.
+Both cases give the asserted lower bound. It is attained at
+$p=q=1-1/\sqrt2$, where $a=1/2$ and $c=3/2-\sqrt2$.
+The symmetric point gives the same value.
+\end{proof}
+
+\begin{lemma}[Odd-sample majority selection with a uniform regret bound]
+\label{lem:v20-majority}
+Let $n=2h-1$ be odd. In $n$ independent candidate trials, let $C_0,C_1$
+count report pairs $00,11$. Choose $A_1$ if $C_0\ge h$, choose $A_0$
+if $C_1\ge h$, and otherwise choose $A_D$. The first two cases are
+mutually exclusive. Its expected ideal score satisfies
+\begin{equation}\label{eq:v20-majorityscore}
+ g_n(p,q)\ge\sqrt2-1-\frac1{4\sqrt{en}}
+                            -\frac14e^{-n/8}.
+\end{equation}
+Its event label has three possible values at the decision cut.
+\end{lemma}
+\begin{proof}
+Because $a+c\le1$,
+\[
+ \max\{1-a-c,\tfrac12-a,\tfrac12-c\}
+ =1-a-c+(a-1/2)_++(c-1/2)_+.
+\]
+The selected payoff is
+$1-a-c+(a-1/2)\1_{\{C_0\ge h\}}
+             +(c-1/2)\1_{\{C_1\ge h\}}$.
+Its expected loss from this envelope is exactly the sum, for $u=a,c$,
+of $|u-1/2|$ times the probability that the binomial majority selects
+the wrong side of $u=1/2$. At $u=1/2$ the contribution is zero.
+No independence between $C_0$ and $C_1$ is used.
+
+For $0<u<1/2$ and $k\ge h$, the ratio of the binomial mass at $u$ to
+that at $1/2$ is
+\[
+ [4u(1-u)]^{n/2}\left(\frac{u}{1-u}\right)^{k-n/2}
+                  \le[4u(1-u)]^{n/2}.
+\]
+The fair binomial upper tail is exactly $1/2$ because $n$ is odd.
+Reflecting $k$ treats $u>1/2$. The endpoint cases follow directly or by
+continuity. Thus the wrong-side probability is at most
+\[
+ \tfrac12[1-4(u-1/2)^2]^{n/2}
+             \le\tfrac12 e^{-2n(u-1/2)^2}.
+\]
+For $x\ge0$, the maximum of $xe^{-2nx^2}/2$ is
+$1/(4\sqrt{en})$, reached at $x=1/(2\sqrt n)$.
+At least one of $a,c$ is at most $1/4$ by \eqref{eq:v20-root}; that
+coordinate has $|u-1/2|\in[1/4,1/2]$ and contributes at most
+$e^{-n/8}/4$. Bound the other coordinate by the unrestricted maximum
+and use Lemma~\ref{lem:v20-envelope}.
+\end{proof}
+
+\subsection{Simultaneous exact widths and the full acquisition schedule}
+The preceding construction admits more compression than storing its two
+raw counts. Write $0,1,*$ for the three report-pair categories $00,11$
+and the two off-diagonal pairs. For $n=2h-1$, let $F_n$ be the terminal
+event-label function of this word. At a trial cut $t$, let $r=n-t$ and
+let $(u,v)$ be the two prefix counts. Associate the residual key
+\begin{equation}\label{eq:v20-key}
+ \mathcal R_t(u,v)=
+ \begin{cases}
+  \mathsf L,&u\ge h,\\
+  \mathsf R,&v\ge h,\\
+  (\min(h-u,r+1),\min(h-v,r+1)),&u,v<h.
+ \end{cases}
+\end{equation}
+The symbols $\mathsf L,\mathsf R$ mean the constant decisions $A_1,A_0$.
+In a pair key, a coordinate $r+1$ means that this majority is no longer
+reachable. The pair $(r+1,r+1)$ represents the constant decision $A_D$.
+
+\begin{theorem}[Exact profile of the physical audit rule]
+\label{thm:v20-profile}
+The keys in \eqref{eq:v20-key} are exactly the distinct continuation
+residuals of $F_n$. Their number at trial cut $t$ is
+\begin{equation}\label{eq:v20-profile}
+ r_t(F_n)=
+ \begin{cases}
+  \binom{t+2}{2},&0\le t\le h-1,\\[2pt]
+  \binom{n-t+3}{2},&h\le t\le n.
+ \end{cases}
+\end{equation}
+This is the minimum simultaneous width profile for exact computation of
+this rule, for deterministic and stochastic machines alike. Its maximum
+is $\binom{h+2}{2}$ at $t=h$.
+
+For $n=399$, the maximum trial-cut width is $20301$, and the terminal
+training cut has exactly three states. Acquiring each report pair one
+bit at a time, discarding its training mark, and then executing independent
+candidate and target validations gives a deterministic machine with at
+most $40602<2^{16}$ states at every scheduled epoch. One additional
+ignored training trial may be inserted to give the same $400$ training
+slots and $402$ total trials as the earlier certificate. It changes
+neither the payoff nor these width bounds.
+\end{theorem}
+\begin{proof}
+If a majority has already been reached, its label cannot change. Otherwise,
+the first coordinate of the pair key is exactly the number of additional
+$0$ symbols needed, with the unreachable threshold clipped to $r+1$;
+the second coordinate has the analogous meaning. These data determine
+the suffix function. Two different reachable pair keys can be distinguished
+by a suffix containing only one of the two symbols and enough $*$ symbols
+to fill the remaining positions: use a count between the two different
+thresholds. The other majority cannot be reached by this suffix. The
+constant-majority keys are distinct from every pair key because an all-$*$
+suffix returns $A_D$ for the latter. Thus the keys are exactly the
+residuals.
+
+For $t<h$, no majority has been reached and every threshold is at most
+$r+1$. The distinct pairs $(u,v)$ with $u+v\le t$ give
+$\binom{t+2}{2}$ keys. For $t\ge h$, the two constant-majority keys
+are reachable. The remaining keys are precisely
+\[
+ (i,j)\in\{1,\ldots,r+1\}^2,\qquad i+j\ge r+1.
+\]
+To see surjectivity, use $u=h-i$, $v=h-j$; these counts are nonnegative,
+less than $h$, and sum to at most $t$ because $2h-t=r+1$.
+To see necessity before clipping, use the same inequality on $h-u,h-v$;
+if either coordinate is clipped, the inequality remains automatic.
+There are
+$(r+1)^2-(r-1)r/2$ such pairs, with the expression valid also for
+$r=0,1$. Adding the two constant keys gives
+$(r+2)(r+3)/2$. This proves \eqref{eq:v20-profile}. The finite-valued
+realization theorem, Theorem~\ref{thm:v20-weighted}, proves both the
+simultaneous realization and stochastic minimality for the specified rule.
+The two polynomial pieces of the profile give its maximum as stated.
+
+For an explicit transition definition, order the reachable keys
+lexicographically, putting $\mathsf L,\mathsf R$ first. For each key
+choose the lexicographically first prefix-count pair representing it.
+After the next category, increment the appropriate count and apply
+$\mathcal R_{t+1}$. Equality of residual functions implies equality of
+the shifted residuals, so this definition is independent of the chosen
+representative. The representative is part of the time-indexed transition
+table, not another stored register. The clock supplies $t$ but no sample
+history. All these maps are deterministic and rational.
+
+At a bit-level epoch, the state consists of a residual key and, only
+between the two report bits, the first bit. It therefore has at most
+$2\max_t r_t$ values. On reading the second bit, determine the category,
+update the key and discard both bits. The mark is read and discarded;
+all-on controls and resets are prescribed by the free schedule. After
+training, keep just one of the three event labels. During validation,
+keep that label, the completed candidate-event indicator, and a first-bit
+buffer when needed. At most $3\cdot2\cdot2=12$ states suffice there;
+a completed target pair emits its event indicator minus the stored
+candidate indicator. The final score has three possible values. These
+phase-specific alphabets may be embedded in a single alphabet of size
+$40602$ because the schedule clock identifies the phase.
+
+The same trial-cut residuals remain distinct for the complete signed-score
+function, not merely for an externally emitted event name. Any two of
+$A_0,A_1,A_D$ have different indicator functions. Take an off-diagonal
+candidate-validation pair, which belongs to none, and a target-validation
+pair distinguishing the two events. The resulting scores differ. Thus
+passing to the validation suffix does not merge the residuals already
+counted.
+\end{proof}
+
+\begin{theorem}[Matched physical decision complexity and stable certification]
+\label{thm:v20-physical}
+For the two-sphere collision family of
+Theorem~\ref{thm:v18-microscopic}, let $d\in[9/10,11/10]$ and
+$0<\sigma\le1/24$, and let $Q_{d,\sigma}$ be its all-on marked target.
+At the charged training--validation cut of the reset interface,
+\begin{equation}\label{eq:v20-kappa}
+ \kappa_{2/5}(B,Q_{d,\sigma})=3.
+\end{equation}
+More concretely, no auditor retaining at most two states at this cut can
+have expected score greater than $2/5$ uniformly against all private
+width-one candidates, at any finite training length, even with feedback-row selection as in
+Lemma~\ref{lem:v20-feedback}. One rational auditor
+with three states at this cut does so with $399$ informative training
+trials and two validation trials. With a redundant ignored training trial,
+it uses exactly $402$ total trials, at most $40602$ states at every
+scheduled epoch, and the exact trial-cut profile
+\eqref{eq:v20-profile} on its informative training segment.
+
+For fixed positive $\sigma$ and $d_k\to d$, the same machine changes its
+expected score by at most
+\begin{equation}\label{eq:v20-transportscore}
+ \epsilon_k=\min\left\{1,
+ \frac{\sqrt{|d_k-d|+2700|d_k-d|^2}}{2\sigma}\right\}.
+\end{equation}
+The private, hidden and visible deficiencies, the no-collision control,
+and the joint microscopic, likelihood, posterior, innovation and global
+bounded entropic backward convergence retain all conclusions of
+Theorems~\ref{thm:v18-microscopic} and~\ref{thm:v19-global}.
+\end{theorem}
+\begin{proof}
+Theorem~\ref{thm:v18-microscopic} discharges the physical hypotheses and
+proves $\|Q_{d,\sigma}-Q_*\|_{\rm TV}<1/300$, uniformly on the stated
+parameters. Theorem~\ref{thm:v20-two} therefore gives the universal
+cut-width-two upper bound
+\[
+ \mathfrak V_2(B,Q_{d,\sigma})<\frac38+\frac1{300}<\frac25.
+\]
+Lemma~\ref{lem:v20-feedback} makes this a bound for the full original
+feedback-row interface, not only all-on training and not only the
+constructed rule. The upper construction uses all-on trials and works
+for every private candidate because only its two all-on parameters enter.
+
+Use the deterministic selector of Lemma~\ref{lem:v20-majority} with
+$n=399$, but validate against the actual physical target. For each
+selected event, changing only the target from $Q_*$ loses less than
+$1/300$. Its physical expected score is consequently greater than
+\begin{equation}\label{eq:v20-certifiedscore}
+ L_{399}:=\sqrt2-1-\frac1{4\sqrt{399e}}
+                       -\frac14e^{-399/8}-\frac1{300}>\frac25.
+\end{equation}
+Here is a rational verification of the last strict inequality, independent
+of decimal evaluation. The bounds $e>2$, $\sqrt{798}>28$,
+$\sqrt2>707/500$, and $399/8>49$ imply
+\[
+ L_{399}>\frac{207}{500}-\frac1{112}-\frac1{300}-2^{-51}
+                >\frac25,
+\]
+since $207/500-1/112-1/300-2/5=73/42000>2^{-51}$.
+The number $L_{399}$ is approximately $0.4032891$; the rational inequalities,
+not this approximation, establish the certificate. Its state realization
+was proved in Theorem~\ref{thm:v20-profile}. The general operational
+classification now yields \eqref{eq:v20-kappa} with both inequalities
+proved for this same physical task.
+
+Changing $d$ leaves the blind candidate source and all its training laws
+unchanged. The moving-collision estimate and the common-preparation
+Gaussian theorem bound the target variation by $\epsilon_k$.
+For any fixed response its target mean changes by at most this amount;
+averaging over the unchanged training rule proves
+\eqref{eq:v20-transportscore}. There is no multiplier equal to the number
+of training trials. The same physical estimates verify the hypotheses of
+Theorem~\ref{thm:v19-global}; the observation-level density and coupling
+versions used there are given in Section~\ref{sec:v20-versions}.
+This transports the same certificate and the bounded conditional-law
+consumer along the changing microscopic paths. The no-collision regime
+$d\le2/5$ has the vanishing deficiencies already proved in
+Theorem~\ref{thm:v18-microscopic}; it is not included in the positive-gap
+parameter interval.
+\end{proof}
+
+\subsection{What the two exact complexity statements measure}
+Equation~\eqref{eq:v20-kappa} minimizes over every auditor at one
+specified physical decision cut. Equation~\eqref{eq:v20-profile}
+minimizes all trial-cut widths simultaneously for exact implementation
+of the stated $402$-trial rule. These are different optimizations.
+The first is a task-level optimum, not an artifact of that rule. The
+second explains the whole online realization of the same rule, not a
+claim that every successful auditor must have $20301$ states somewhere.
+The sixteen-bit bound includes bit acquisition and validation but does
+not bound the description length of time-dependent transition tables.
+It is an implementation upper bound for peak memory. Independent
+persistent randomization is charged; fresh randomness from the reset
+experiments is not a hidden cross-cut memory channel.
+
+The former two-count $400$-sample construction and its nineteen-bit bound
+remain in Section~\ref{sec:v19-certificate}. They offer a different
+approximation to the full marked discrepancy. The new three-response
+rule does not reproduce that rule or attain its oracle envelope. It
+instead solves the specified physical certification task with an exactly
+minimal decision-cut alphabet and an explicit full continuation profile.
+The score is an expectation, not a confidence guarantee from a single
+realized validation pair.

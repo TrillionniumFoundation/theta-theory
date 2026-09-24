@@ -1,0 +1,90 @@
+\section{Confidence-level certification}
+\label{sec:v21-confidence}
+An expected signed score is an operational separation, not a confidence
+statement about one validation pair. We now distinguish these two tasks.
+The null hypothesis below is equality of the candidate and target
+validation laws; it need not belong to the private alternative family.
+All preparations in the theorem are independent resets with one fixed
+candidate law. The test cannot be given a new adversarial candidate after
+each reset.
+
+\begin{theorem}[Confidence lift with a charged accumulator]
+\label{thm:v21-confidence}
+Suppose a base reset audit uses $n$ training trials, one candidate and
+one target validation, and peak width $W$, with score $D\in\{-1,0,1\}$.
+Assume its expected score is at least $\gamma>0$ for every alternative.
+Run $J$ independent copies and reject equality when
+\begin{equation}\label{eq:v21-test}
+ \sum_{j=1}^J D_j\ge J\gamma/2.
+\end{equation}
+Then both the type-I error under equality and the worst-case type-II
+error are at most $e^{-J\gamma^2/8}$. The whole test has a realization
+with at most $W(2J+1)$ states and $J(n+2)$ trials. In particular
+$J\ge8\gamma^{-2}\log(1/\alpha)$ suffices for both errors to be at
+most $\alpha$.
+\end{theorem}
+\begin{proof}
+Under equality, conditional on the training and selected event, the two
+independent validations have equal means; hence $\E D=0$. Under each
+fixed alternative its mean is at least $\gamma$. The copies are
+independent and $D_j\in[-1,1]$. The exponential-moment estimate for a
+variable in an interval of length two is
+$\E e^{s(D_j-\E D_j)}\le e^{s^2/2}$, by the same tilted-variance
+argument used in Theorem~\ref{thm:v20-spectrum}. Markov's inequality
+and minimization in $s$ give
+$\Pr(J^{-1}\sum(D_j-\E D_j)\ge a)\le e^{-Ja^2/2}$, and the same
+lower-tail bound. Set $a=\gamma/2$.
+
+Keep the running integer sum, with at most $2J+1$ values, beside the
+base machine's register. At each completion add its emitted score and
+reset only the base register. The sum is not stored in an external
+history. The clock supplies the repetition index and the fixed terminal
+threshold; all $J(n+2)$ trials are counted.
+\end{proof}
+
+The $399$-trial physical audit has mean strictly above $2/5$, so one may
+use the rational choice $\gamma=2/5$ in this theorem. This gives the
+fully explicit sufficient count $J\ge50\log(1/\alpha)$ and
+$401J$ total trials (or $402J$ with the inherited ignored slot). The
+confidence guarantee uses repetition and its charged sum, not one pair
+of validation observations.
+
+\begin{theorem}[One training phase and repeated validation]
+\label{thm:v21-fixedwitness}
+For the physical audit of Theorem~\ref{thm:v21-physical}, put
+$\gamma_0=\sqrt2-1-1/300-\theta>0$. Retain its chosen event and use
+$m$ independent candidate--target validation pairs. Reject equality when
+their score sum is at least $m\gamma_0/2$. The type-I error is at most
+$e^{-m\gamma_0^2/8}$ and the worst-case type-II error is at most
+\[
+ 2\delta+e^{-m\gamma_0^2/8}.
+\]
+The audit uses $4LR+2m$ trials and at most $12(2m+1)$ states throughout
+training and validation. Thus $\delta\le\alpha/4$ and
+$m\ge8\gamma_0^{-2}\log(2/\alpha)$ suffice for error at most $\alpha$.
+\end{theorem}
+\begin{proof}
+The proof of Theorem~\ref{thm:v21-physical} gives an event of training
+probability at least $1-2\delta$ on which the conditional mean score of
+the selected event is strictly greater than $\gamma_0$. Conditional on
+that event and its selected label, the validation pairs are independent.
+Apply the tail bound in Theorem~\ref{thm:v21-confidence} conditionally
+and add the training failure probability. Under equality every selected
+event has zero mean, regardless of training, so no training failure term
+is needed for type-I error. Keep the three-valued event label, the
+within-pair indicator and first-bit buffer, and a sum with $2m+1$
+values. Training itself needs no more than ten states, so the displayed
+bound covers every phase.
+\end{proof}
+
+The tests in this section have a different output task from maximizing
+an expected witness score. The exact three-state decision-cut theorem is
+not asserted to be an optimal memory theorem for these binary tests.
+For perturbations of training and validation laws, the coupling argument
+of Theorem~\ref{thm:v21-transfer} bounds changes of each rejection
+probability by the sum of the per-call total variation errors. In a
+source-preserving physical transport, alternatively lower the conditional
+mean margin by the single-row target variation and reapply the conditional
+tail estimate. This latter argument transports the confidence guarantee
+without pretending that an entire $m$-sample validation law has the
+same total variation distance as one validation observation.

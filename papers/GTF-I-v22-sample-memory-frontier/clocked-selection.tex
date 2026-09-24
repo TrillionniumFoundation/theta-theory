@@ -1,0 +1,203 @@
+\section{From a decision cover to an end-to-end machine}
+\label{sec:v21-clocked}
+The unrestricted empirical table in Theorem~\ref{thm:v20-spectrum} can
+be replaced by a bounded-state training procedure. This replacement
+trades preparation count against memory, rather than assuming that the
+training computation has already been performed. The elementary block
+mechanism belongs to the classical finite-statistics theory of
+Cover~\cite{Cover1969}; the result below tracks a finite horizon, a
+uniform indifference band, rational precision, the whole validation
+phase, and a compact nonconvex candidate image.
+
+\begin{lemma}[A finite-horizon four-state comparison]\label{lem:v21-block}
+Let $Z_i$ be independent Bernoulli observations of unknown mean $u$.
+For $0<\theta<1/2$ and $0<\delta<1$, put
+\begin{equation}\label{eq:v21-LR}
+ L=\left\lceil\frac{\log(2/\delta)}{4\theta}\right\rceil,
+ \qquad
+ R=\left\lceil2^L\log(2/\delta)\right\rceil.
+\end{equation}
+There is a deterministic clocked machine with four states at every
+observation cut, using exactly $2LR$ observations, that decides the sign
+of $u-1/2$ with error at most $\delta$ whenever $|u-1/2|\ge\theta$.
+No assertion is imposed within the indifference band.
+\end{lemma}
+\begin{proof}
+Partition the observations into $R$ pairs of blocks, each block of length
+$L$. A positive block succeeds when all its observations are one; the
+following negative block succeeds when all are zero. Stop updating the
+decision at the first successful block and retain its sign. If none
+succeeds, decide negative at the end. The prescribed remaining
+observations are still consumed, but ignored.
+
+Two states are absorbing positive and negative decisions. The other two
+mean undecided with the current block still alive or already failed.
+At a block boundary the clock resets the undecided flag to alive. Its
+polarity and position are supplied by the clock; they are not inferred
+from an unrecorded sample. The last observation of each block either
+latches the sign or starts the next block. Thus four states suffice even
+at the block boundaries.
+
+Write $x=u^L$, $y=(1-u)^L$ and $s=x+(1-x)y$. The probability of a
+positive decision is exactly
+\begin{equation}\label{eq:v21-hazard}
+ H_{L,R}(u)=\frac{x}{s}\{1-(1-s)^R\}.
+\end{equation}
+Here $s>0$, including at $u=0,1$. For $u\ge1/2+\theta$, the error is
+at most $y/x+(1-s)^R$. For $u\le1/2-\theta$, it is at most $x/y$;
+the default negative decision is then correct. Since
+\[
+ \log\frac{1/2+\theta}{1/2-\theta}\ge4\theta,
+ \qquad s\ge\max(x,y)\ge2^{-L},
+\]
+both errors are bounded by
+$e^{-4\theta L}+e^{-R2^{-L}}\le\delta$.
+The logarithmic inequality follows by differentiation from its equality
+at zero. This also proves uniformity over the two composite hypotheses.
+\end{proof}
+
+\subsection{The whole-schedule continuation value}
+In the one-row reset interface of Section~\ref{sec:v20-spectrum}, let
+$W_c(B,Q)$ be the least peak width over all finite training lengths and
+all auditors whose worst-case expected signed score is strictly greater
+than $c$. Every training-observation cut, the decision cut, every fresh
+random-bit cut, and both validation cuts are charged. Observations in
+$\Omega$ are atomic for this definition. The event is selected before
+the two validations, exactly as in that interface. The schedule clock
+and read-only constants are recorded as separate resources. The class
+includes randomized machines; its rational subclass uses only finite
+fair-bit randomizers. Write $W_c^{\rm rat}$ for the corresponding
+minimum in the latter class. Empty feasible sets have value $+\infty$.
+
+\begin{theorem}[Uniform end-to-end realization of a decision cover]
+\label{thm:v21-endtoend}
+Let $B\subset\Delta(\Omega)$ be nonempty and compact, $Q$ fixed, and
+$d=|\Omega|$. For every strict threshold $c$,
+\begin{equation}\label{eq:v21-equivalence}
+ \kappa_c(B,Q)\ \le W_c(B,Q)\ \le W_c^{\rm rat}(B,Q)
+              \ \le 12d\,\kappa_c(B,Q).
+\end{equation}
+The last inequality is interpreted only for finite $\kappa_c$; when
+$\kappa_c=+\infty$ all three quantities are infinite.
+
+More explicitly, fix $K\ge2$ and a response list with uniform envelope
+at least $v$. Round its coordinates to denominator $2^r$, and choose
+$q_i\in[0,1]\cap2^{-r}\mathbb Z$ with
+$|q_i-Qh_i^{(r)}|\le\rho$. For $\theta,\delta$ as in
+Lemma~\ref{lem:v21-block}, a rational auditor uses
+\begin{equation}\label{eq:v21-tournament-N}
+ N=2LR(K-1)
+\end{equation}
+candidate training observations and two validation observations. Its
+expected score is at least
+\begin{equation}\label{eq:v21-tournament-score}
+ v-2^{1-r}-2\rho-4(K-1)\theta-2(K-1)\delta.
+\end{equation}
+Its completed-training-observation cuts have width at most $4K$, its
+decision cut has width $K$, and its entire random-bit-refined schedule
+has width at most $12Kd$. No empirical histogram is constructed.
+The response and comparison thresholds have a direct read-only
+representation of size
+$O(K^2d(r+3)+\log L+\log R+\log K)$ bits.
+\end{theorem}
+\begin{proof}
+Use a sequential tournament. Initially response $1$ is incumbent.
+At stage $j=2,\ldots,K$, compare incumbent $i$ with challenger $j$ using
+fresh candidate observations. For one observation $w\sim b$, generate
+a Bernoulli variable with conditional success probability
+\begin{equation}\label{eq:v21-comparison-coin}
+ \frac12+\frac{q_j-q_i-h_j^{(r)}(w)+h_i^{(r)}(w)}4.
+\end{equation}
+This lies in $[0,1]$ and is dyadic of denominator $2^{r+2}$.
+Its unconditional mean is
+$1/2+(\widetilde f_j(b)-\widetilde f_i(b))/4$, where
+$\widetilde f_i(b)=q_i-bh_i^{(r)}$. Conditional on the incumbent at
+the start of this stage, all these variables are independent and have
+this mean. The fixed candidate $b$ is not changed by the comparison.
+Run Lemma~\ref{lem:v21-block} and replace $i$ by $j$ exactly when its
+decision is positive.
+
+At each comparison, conditionally on all earlier stages, the probability
+of choosing the inferior response when their $\widetilde f$ values
+differ by at least $4\theta$ is at most $\delta$. With probability at
+least $1-(K-1)\delta$, no such error occurs. On this event each stage
+loses at most $4\theta$ relative to the better of its two responses.
+Induction on $j$ gives
+\[
+ \widetilde f_{\widehat i}(b)\ge
+           \max_i\widetilde f_i(b)-4(K-1)\theta.
+\]
+Replacing the calibrated means by their true means loses at most
+$2\rho$. Rounding the original list loses at most $2^{1-r}$ in its
+envelope, by Proposition~\ref{prop:v21-rational}. Any response payoff
+belongs to $[-1,1]$, so failure of the good event loses at most
+$2(K-1)\delta$ in expectation. This proves
+\eqref{eq:v21-tournament-score}, uniformly over $b$.
+
+During a comparison keep the incumbent index and one of the four block
+states. The challenger and block positions are fixed by the schedule.
+At the end of a comparison the sign updates the incumbent and is
+forgotten. This gives the $4K$ bound at completed-observation cuts.
+While drawing the coin in \eqref{eq:v21-comparison-coin}, keep this
+register and the current observation, and use the three-label binary
+sampler of Lemma~\ref{lem:v21-dyadic}. Thus at most $12Kd$ labels occur
+at any intervening random-bit cut. At the final decision cut only the
+incumbent remains. Proposition~\ref{prop:v21-rational} gives at most
+$K(2d+1)$ labels during event selection and $2K(d+1)$ during validation;
+both are bounded by $12Kd$. The three-valued terminal output fits this
+bound as well. These are compatible transitions over the entire schedule.
+
+The coin thresholds can be precomputed for all triples $(i,j,w)$ and
+stored as $r+3$-bit integers. The event thresholds and $L,R,K$ give the
+stated description bound; no arbitrary real coefficient is used by the
+executed machine. Formula~\eqref{eq:v21-tournament-N} counts every
+training observation, including ignored observations after a block
+decision has been latched.
+
+For \eqref{eq:v21-equivalence}, a width-$W$ auditor has at most $W$
+labels at its decision cut. The operational upper bound of
+Theorem~\ref{thm:v20-spectrum} implies $\kappa_c\le W$. If
+$K=\kappa_c<\infty$, its optimal list has a positive margin over $c$.
+Take $r$ large, $\rho\le2^{-r}$, and then $\theta,\delta$ small enough
+that the loss in \eqref{eq:v21-tournament-score} is smaller than that
+margin. If $K=1$, no training is needed: round the single response and
+use Proposition~\ref{prop:v21-rational}. Rational auditors are a
+subclass of all auditors, proving the remaining inequality. Finally a
+finite-width successful machine would give finite $\kappa_c$, proving
+the assertion at infinity.
+\end{proof}
+
+The dependence on the schedule is essential. The theorem is a
+constant-factor classification for fixed observation alphabet, not an
+optimal sample-complexity theorem. In particular $R$ is exponential in
+$L$. For an autonomous implementation, a coarse bound on the number
+of epochs is $T\le N(r+3)+r+4$; Proposition~\ref{prop:v21-compose}
+then gives at most $12Kd(T+1)$ states. The free-clock and autonomous
+statements are different resource bounds. Cover's theorem already
+exhibits the importance of this distinction~\cite[Theorem 2 and
+Section 4]{Cover1969}; bounded-state learning itself is not a novelty
+claim of the present theorem.
+
+\begin{corollary}[Finite-precision, calibrated certificates]
+\label{cor:v21-calibrated}
+Suppose the true training kernels differ from those used in an ideal
+auditor by at most $\alpha$ per training call, and the candidate and
+target validation laws differ by at most $\beta_{\rm c}$ and
+$\beta_{\rm t}$. The right side of
+\eqref{eq:v21-tournament-score} is decreased by at most
+\[
+ 2\min\{1,N\alpha\}+\beta_{\rm c}+\beta_{\rm t}
+\]
+for the same implemented machine. A calibration error $\rho$ in the
+known response means is already accounted for separately in that
+formula. When the training source is unchanged, $\alpha=0$, regardless
+of how large $N$ is.
+\end{corollary}
+\begin{proof}
+Couple the training executions until their first mismatch, as in
+Theorem~\ref{thm:v21-transfer}. The selected-event payoff has range
+$[-1,1]$, giving the factor two. Conditional on a common selected event,
+its two validation means change by at most the two total variation
+errors. This uses no independence between a failed coupling and its
+terminal event.
+\end{proof}

@@ -1,0 +1,148 @@
+\section{An exact statistical frontier at all cuts}
+\label{sec:v22-revelation}
+The preceding realizations are uniform upper bounds. A family with an
+exact answer illustrates what an all-algorithm statistical lower bound
+requires. Unlike exact computation of a prescribed word function, the
+objective here is the best decision risk among all rules, including
+stochastic rules, under a fixed preparation schedule and full profile.
+
+Let $\Theta=\{1,\ldots,M\}$ and fix a known prior
+$\pi_1\ge\cdots\ge\pi_M\ge0$, $\sum_j\pi_j=1$. At time $t$, an
+independent indicator $E_t$ has known mean $q_t\in[0,1]$. The report is
+$Y_t=\vartheta$ if $E_t=1$, and $Y_t=*$ otherwise. All indicators are
+independent of the parameter and the machine's private randomization.
+The unknown parameter $\vartheta$ is fixed during the $n$ observations.
+The machine starts in a parameter-independent state, has at most $K_t$
+labels after report $t$, and finally guesses $\vartheta$. Its initial
+and final randomization is part of the same finite causal machine.
+The objective is Bayesian probability of a correct answer under $\pi$.
+Parameter-dependent loss is specified here and is not identified with
+the one-row physical signed-score problem.
+
+Write $P_k=\sum_{j=1}^k\pi_j$ and put
+\begin{equation}\label{eq:v22-revelation-weights}
+ k_t=\min\{M,K_t,K_{t+1},\ldots,K_n\},\quad
+ a=\prod_{s=1}^n(1-q_s),\quad
+ w_t=q_t\prod_{s=t+1}^n(1-q_s).
+\end{equation}
+Thus $a+\sum_t w_t=1$ and $k_t$ is nondecreasing in $t$.
+
+\begin{theorem}[Exact all-cut revelation frontier]
+\label{thm:v22-revelation}
+Over all stochastic causal machines satisfying the specified profile,
+the optimal Bayesian success probability is
+\begin{equation}\label{eq:v22-exact-frontier}
+ \mathsf S_{\boldsymbol q,\boldsymbol K}(\pi)
+       =a\pi_1+\sum_{t=1}^n w_tP_{k_t}.
+\end{equation}
+A single deterministic machine attains this value simultaneously for
+all $\boldsymbol q\in[0,1]^n$. The upper bound therefore applies to
+all approximate statistical decision rules, not just to machines
+implementing a chosen selector exactly.
+\end{theorem}
+\begin{proof}
+Let $L$ be the last time with $E_L=1$, with $L=0$ when no revelation
+occurs. Then $\Pp(L=0)=a$ and $\Pp(L=t)=w_t$. These events, and every
+particular pattern of indicators, are independent of $\vartheta$.
+
+First consider any stochastic machine. Realize all of its transition
+and output kernels by independent random variables indexed by time,
+state and input, and also realize its initial randomization. This is
+possible on a product space independent of $\vartheta$ and the
+indicators. Conditional on the entire random table the machine is
+deterministic. This conditioning is an analysis device, not a free
+persistent random seed in an implementation.
+
+Fix that table and an indicator pattern with last revelation $t>0$.
+The map from $\vartheta$ to the terminal guess factors through the
+state at every time $s\ge t$: all reports after $t$ are the same
+symbol $*$, so the remaining transitions and output are fixed maps.
+The set of possible terminal guesses therefore has cardinality at
+most $\min_{s\ge t}K_s$, and at most $M$ guesses can be correct.
+Its prior success probability is bounded by the mass of the $k_t$
+largest prior atoms, namely $P_{k_t}$. Earlier revelations and any
+parameter information encoded before $t$ do not evade this future
+bottleneck. On the no-revelation pattern, the output is independent of
+$\vartheta$ and its success probability is at most $\pi_1$.
+Integrate these bounds over the random table and indicator patterns to
+obtain the upper bound in \eqref{eq:v22-exact-frontier}. In particular
+no extremality claim about a nonconvex minimax set has been used.
+
+For attainment, use the labels $\{1,\ldots,k_t\}$ at time $t$, start
+with label one, and use the following deterministic updates. On $*$,
+hold the label. On a revelation $j\le k_t$, replace it by $j$; on a
+revelation $j>k_t$, replace it by one. The holding update is legal
+because $k_{t-1}\le k_t$. At termination output the label. Conditional
+on $L=t>0$, exactly the parameters $1,\ldots,k_t$ are correct; on
+$L=0$, exactly parameter one is correct. This proves equality. The
+updates use only the prescribed profile and prior ordering, not the
+probabilities $q_t$, establishing simultaneous attainment.
+\end{proof}
+
+\begin{corollary}[Sharp preparation--peak tradeoff]
+\label{cor:v22-erasure-tradeoff}
+For the uniform prior, a constant reveal probability $0<q<1$, and
+constant width $1\le K\le M$, write $a_n=(1-q)^n$. Then
+\begin{equation}\label{eq:v22-uniform-frontier}
+ \mathsf S_{n,K}=\frac{a_n+K(1-a_n)}M.
+\end{equation}
+For $n\ge1$ and target success $s\in[1/M,1]$, the least feasible
+width is
+\begin{equation}\label{eq:v22-width-inverse}
+ K_{n,s}=\max\left\{1,
+       \left\lceil\frac{Ms-a_n}{1-a_n}\right\rceil\right\},
+\end{equation}
+provided this integer is at most $M$; otherwise the target is
+infeasible at that preparation count. If $s>1/M$ and $K>Ms$, the
+least preparation count for width $K$ is
+\begin{equation}\label{eq:v22-samples-inverse}
+ n_{K,s}=\left\lceil
+ \frac{\log((K-1)/(K-Ms))}{-\log(1-q)}\right\rceil.
+\end{equation}
+If $K\le Ms$ and $s>1/M$, no finite $n$ attains the target, except
+that equality can be attained when revelations are certain, a case
+excluded by $q<1$. Width one gives success exactly $1/M$ for all $n$.
+\end{corollary}
+\begin{proof}
+Here $P_k=k/M$ and $k_t=K$. Since $\sum_tw_t=1-a_n$,
+Theorem~\ref{thm:v22-revelation} gives \eqref{eq:v22-uniform-frontier}.
+Solving $a_n+K(1-a_n)\ge Ms$ first for $K$ and then for $n$ proves the
+formulas. For $K>1$, the limiting value $K/M$ is approached strictly
+from below when $0<q<1$, which proves the boundary assertion.
+\end{proof}
+
+\begin{corollary}[Exact cost of a changed checkpoint]
+\label{cor:v22-cut-sensitivity}
+Replacing a profile $\boldsymbol K$ by a tighter profile
+$\widetilde{\boldsymbol K}$ loses exactly
+\[
+ \sum_{t=1}^n w_t(P_{k_t}-P_{\widetilde k_t}).
+\]
+Inserting a charged holding cut of width $H$ immediately after time
+$s$ replaces $k_t$ by $\min(k_t,H)$ for $t\le s$, and leaves the
+later terms unchanged. In particular a single narrow early cut does
+not constrain information acquired after that cut.
+\end{corollary}
+\begin{proof}
+Subtract \eqref{eq:v22-exact-frontier} for the two profiles. A holding
+cut is a further bottleneck exactly for revelations that precede it.
+The same deterministic construction realizes the refined schedule.
+\end{proof}
+
+For example, with $M=4$, $q_1=q_2=q_3=1/2$, and
+$(K_1,K_2,K_3)=(4,1,4)$, the effective profile is $(1,1,4)$ and the
+optimal uniform-prior success is $5/8$. Four labels at the terminal
+cut alone would instead give $29/32$. These are risks of complete
+experiments, not counts of residual classes of one word function.
+For a nonuniform prior the same theorem weights every surviving label
+by its actual mass. The nested optimal label sets are what makes all
+cut bounds jointly attainable. For a general loss or observation
+channel such nesting need not hold; compatible continuation updates,
+not independently optimized dictionaries, remain necessary.
+
+The exact formula is Bayesian. Its upper bound also obstructs any
+uniform worst-case guarantee exceeding that Bayesian value, but the
+attaining prior-ordered machine is not asserted to be minimax. In
+particular an uncharged persistent random permutation cannot be used
+to turn its Bayesian success into a minimax statement. The prior,
+observation channel and all register cuts have been declared explicitly.

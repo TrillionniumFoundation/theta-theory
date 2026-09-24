@@ -1,0 +1,148 @@
+\section{Full-profile certification of the collision family}
+\label{sec:v21-physical}
+The short audit of Theorem~\ref{thm:v20-physical} is retained with its
+exact continuation profile. We now give a second audit of the same
+physical class whose entire acquisition-and-validation register is
+bounded independently of its accuracy parameters. Its cost is a much
+longer, explicitly counted, preparation schedule.
+
+\subsection{The row-indexed decision invariant}
+For the original row--event interface define
+\begin{equation}\label{eq:v21-kapparows}
+ \kappa_c^{\rm rows}(B,Q)=
+ \min\{K:\mathfrak V_K^{\rm rows}(B,Q)>c\}.
+\end{equation}
+The minimum is $+\infty$ when the set is empty. This is not an implicit
+change of the one-row symbol $\kappa_c$. By
+Corollary~\ref{cor:v20-rows}, it is the exact minimum decision-cut
+alphabet for a strict score, allowing a finite training schedule and a
+post-cut distribution on row--event pairs.
+
+Let $W_c^{\rm phys}$ be the minimum peak width among all finite auditors
+for the original physical row interface, now charging each report-bit,
+mark, decision and validation epoch. Its clock is externally scheduled,
+as in the earlier physical implementation. All persistent random
+selectors are charged.
+
+\begin{theorem}[A twelve-state physical audit]\label{thm:v21-physical}
+In the physical parameter range of Theorem~\ref{thm:v20-physical}, put
+$\beta=1/300$. For $0<\theta<1/4$ and $0<\delta<1$, let $L,R$ be at least the respective quantities in
+\eqref{eq:v21-LR}. There is a deterministic audit with $N=4LR$ candidate
+training trials and two validation trials whose expected score is
+strictly greater than
+\begin{equation}\label{eq:v21-smallscore}
+ \sqrt2-1-\beta-\theta-2\delta.
+\end{equation}
+It has at most five states at completed training-trial cuts, ten at
+intermediate training report-bit cuts, three at the decision cut, and
+twelve throughout validation. In particular
+\begin{equation}\label{eq:v21-physicalwidth}
+ \kappa_{2/5}^{\rm rows}=3,
+ \qquad 3\le W_{2/5}^{\rm phys}\le12.
+\end{equation}
+One entirely integer schedule takes
+$\theta=1/200$, $\delta=1/1000$, $L=400$ and $R=8\cdot2^{400}$,
+so $N=12800\cdot2^{400}$. Its lower bound exceeds $2/5$.
+The upper bound twelve is not asserted to be the exact minimum integer
+peak width.
+\end{theorem}
+\begin{proof}
+Use the report-pair probabilities $a=(1-p)(1-q)$ and $c=pq$ from
+Section~\ref{sec:v20-physical}. In the first $2LR$ training trials run
+Lemma~\ref{lem:v21-block} on the indicator of the pair $00$. If it
+returns positive, choose $A_1$ and ignore the remaining training trials.
+Otherwise, in the next $2LR$ trials run the same comparison on the
+indicator of $11$, choosing $A_0$ if positive and $A_D$ if negative.
+Both phases have fixed lengths, even after an absorbing decision.
+
+A comparison whose parameter is outside its indifference band is
+correct with probability at least $1-\delta$. For purposes of analysis,
+one may define the second comparison on its independent observations
+even when the implementation ignores them. A union bound gives
+probability at least $1-2\delta$ that neither comparison errs outside
+its band. Since $\min(a,c)\le1/4$ and $\theta<1/4$, at most one of
+$a,c$ lies in $[1/2-\theta,1/2+\theta]$.
+
+On this good event the chosen payoff is within $\theta$ of
+\[
+ E(a,c)=\max\{1-a-c,1/2-a,1/2-c\}.
+\]
+Indeed, if one coordinate exceeds $1/2+\theta$, its associated event
+is selected and is optimal. If both are below $1/2-\theta$, $A_D$ is
+selected and is optimal. In the remaining case the low coordinate's
+comparison is negative, and choosing either of the two relevant events
+costs at most the distance of the near coordinate from $1/2$.
+The range of the three payoffs at any fixed $(a,c)$ is at most one.
+The expected ideal score is therefore at least
+$E(a,c)-\theta-2\delta$. Lemma~\ref{lem:v20-envelope} gives
+$E(a,c)\ge\sqrt2-1$. Changing the target to the physical target loses
+strictly less than $\beta$, proving \eqref{eq:v21-smallscore}.
+
+The first comparator has four states. The second phase has these four
+states and one extra absorbing label for a previously chosen $A_1$,
+hence five. Retaining the first report bit doubles that count to ten.
+On the second bit, determine the relevant indicator, update the block
+state, and discard both bits. The training mark is read and discarded.
+At the phase boundary the fixed schedule maps the first decision to
+either the $A_1$ label or the initial state of the second comparator.
+At the end it maps the remaining decisions to $A_0$ or $A_D$.
+During validation keep the chosen event, the candidate-event indicator,
+and a first-bit buffer when needed. This requires at most
+$3\cdot2\cdot2=12$ states; all events ignore the mark. These are actual
+phase-compatible transitions, not a bound only on terminal labels.
+
+For the integer schedule, the error estimate in the proof of
+Lemma~\ref{lem:v21-block} is $2e^{-8}<1/1000$.
+To check it rationally, $e>8/3$ and $(8/3)^8>2000$. Further
+$\sqrt2>707/500$, and hence
+\[
+ \sqrt2-1-\frac1{300}-\frac1{200}-\frac1{500}-\frac25
+ >\frac{11}{3000}>0.
+\]
+This proves the strict score claim without numerical optimization.
+The training count is exactly $4LR$; early absorption does not delete
+trials from that count.
+
+For the lower bounds in \eqref{eq:v21-physicalwidth}, every full-profile
+auditor has its decision cut among its charged cuts. The feedback
+pushforward subfamily of Lemma~\ref{lem:v20-feedback} bounds any
+width-two decision continuation by $3/8+\beta<2/5$, for every finite
+adaptive training schedule. The all-on construction just given is a
+member of the original row interface and has three decision labels.
+This proves the row-indexed equality and both peak inequalities.
+\end{proof}
+
+\begin{corollary}[Two physical resource regimes]\label{cor:v21-regimes}
+The same physical score threshold $2/5$ admits the two schedules
+\[
+ \begin{array}{c|c|c}
+ \text{training trials}&\text{decision width}&\text{peak width}\\\hline
+ 399&3&40602\\
+ 12800\cdot2^{400}&3&12
+ \end{array}
+\]
+followed by two validations. The first schedule may be padded to $400$
+training trials as before. For either fixed machine, changing $d$ to
+$d_k$ at fixed positive noise level changes its expected score by at
+most $\epsilon_k$ in \eqref{eq:v20-transportscore}. If the candidate
+training kernels also change, their additional cost is the training
+term in Corollary~\ref{cor:v21-calibrated}.
+\end{corollary}
+\begin{proof}
+The first line is Theorem~\ref{thm:v20-physical}; the second is
+Theorem~\ref{thm:v21-physical}. In the moving-collision comparison the
+candidate training source is identical. Conditional on its chosen event,
+only one target validation mean changes. The common-preparation Gaussian
+bound therefore contributes $\epsilon_k$, independently of the length
+of the unchanged training. The general perturbation formula applies
+when this equality of sources is absent.
+\end{proof}
+
+The long schedule is an existence bound on the resource frontier, not a
+practical substitute for the $399$-trial rule. In an autonomous model the
+clock must also be stored; Proposition~\ref{prop:v21-compose} gives its
+explicit additional factor. Both schedules use deterministic transitions,
+so no precision-dependent randomizer is hidden in the physical upper
+bound. The one-collision construction remains the verified physical
+realization. No many-particle or zero-noise theorem is inferred from the
+larger class of finite experiments.

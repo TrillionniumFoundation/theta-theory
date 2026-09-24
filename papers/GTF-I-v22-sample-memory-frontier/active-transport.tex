@@ -1,0 +1,99 @@
+\section{Transport priced by active updates}
+\label{sec:v22-active}
+A changed training source need not affect a latched computation at every
+subsequent scheduled preparation. The relevant quantity is the defect
+of its induced retained-state transition, not the number of raw reports
+that happen to be present. This distinction gives a sharper transfer
+bound without assuming equality of the training laws.
+
+\begin{theorem}[Occupation-weighted retained-law transfer]
+\label{thm:v22-active}
+Consider a fixed finite execution with common initial state law $\mu$
+and retained-state transition kernels $P_t,Q_t$ on the same finite state
+spaces, $1\le t\le T$. The kernels may depend on a fixed unknown
+parameter; all inequalities below hold separately for each parameter.
+Let
+\[
+ d_t(x)=\|P_t(x,\cdot)-Q_t(x,\cdot)\|_{\TV},\qquad
+ \mu_{t-1}=\mu P_1\cdots P_{t-1}.
+\]
+For the same terminal readout kernel $F$,
+\begin{equation}\label{eq:v22-active-tv}
+ \|\mu P_1\cdots P_TF-\mu Q_1\cdots Q_TF\|_{\TV}
+ \le\min\left\{1,\sum_{t=1}^T\int d_t\,d\mu_{t-1}\right\}.
+\end{equation}
+If $d_t(x)\le\alpha_t\1_{A_t}(x)+\zeta_t(x)$, the right side can be
+replaced by the truncated sum
+$\sum_t\alpha_t\Pp_P(X_{t-1}\in A_t)+\sum_t\E_P\zeta_t(X_{t-1})$.
+For a readout in $[-1,1]$ multiply the bound by two; for an indicator
+no factor two is needed. The reverse bound with $P,Q$ exchanged is
+also valid.
+\end{theorem}
+\begin{proof}
+For signed measures, expand the product difference in the order
+\[
+ \mu P_1\cdots P_T-\mu Q_1\cdots Q_T
+ =\sum_{t=1}^T\mu P_1\cdots P_{t-1}(P_t-Q_t)Q_{t+1}\cdots Q_T.
+\]
+Integration of a row difference against $\mu_{t-1}$ has total
+variation at most $\int d_t\,d\mu_{t-1}$. All suffix kernels and $F$
+contract total variation. The triangle inequality and the bound one
+for probability-law distance prove \eqref{eq:v22-active-tv}.
+Substitute the rowwise estimate for its occupation version. The
+expectation bounds follow from the oscillation of the readout.
+\end{proof}
+
+Here the retained state must support the displayed transition kernels.
+For independent reset observations and a time-inhomogeneous finite
+machine this is automatic, even when the selected row depends on the
+state. For a non-reset physical process one must include the necessary
+analysis state or use its history kernels; ignoring a report need not
+remove its influence on subsequent physical dynamics. No Markov
+closure of an arbitrary compressed physical state is assumed.
+
+\begin{corollary}[Calibrated training with absorption]
+\label{cor:v22-active-training}
+Run the audit of Theorem~\ref{thm:v22-tournament} under an ideal reset
+source and a perturbed reset source whose row laws differ by at most
+$\alpha$ per active call. Use the same implemented coin and event
+randomizers. If $A$ is the number of active comparison updates under
+the ideal execution, the change in its selected-response score is at
+most
+\begin{equation}\label{eq:v22-active-score}
+ 2\min(1,\alpha\E A)+\beta_{\rm c}+\beta_{\rm t},
+ \qquad \E A\le(K-1)\min(n,m^2),
+\end{equation}
+where $\beta_{\rm c},\beta_{\rm t}$ bound candidate and target
+validation-law changes. A comparison with conditional coin mean $u$
+has the sharper active expectation $\E_u(\tau\wedge n)$ in
+\eqref{eq:v22-walk-time}. Uniform gaps $|u-1/2|\ge\eta$ give the
+bound $\min(n,m^2,m/(2\eta))$ for that comparison.
+\end{corollary}
+\begin{proof}
+At a completed comparison trial, marginalize the fresh coin bits into
+its transition kernel. Before absorption, data processing bounds its
+row defect by the source defect $\alpha$. After absorption its retained
+transition is the same identity under both sources; its defect is zero.
+At predetermined stage boundaries the common reset of the walk is
+also defect-free. Theorem~\ref{thm:v22-active} therefore bounds the
+terminal incumbent-law distance by $\alpha\E A$. The score associated
+with an incumbent lies in $[-1,1]$. Conditional on a common incumbent
+and common nested event, the two validation expectations change by at
+most $\beta_{\rm c}+\beta_{\rm t}$. This proves the score estimate.
+Condition on the incumbent at each stage and apply
+Lemma~\ref{lem:v22-walk}; summing proves the active-count bound.
+Marginalizing the coin here is a proof of a law estimate, not a waiver
+of its implementation states, which remain charged in
+\eqref{eq:v22-tournament-resources}.
+\end{proof}
+
+The estimate is for the output or retained computation, not for the
+complete raw-observation transcript. A padded sequence of $N$ changed
+reports can still have total variation of order $N\alpha$ even after
+the machine has stopped using them. Conversely, all $N$ preparations
+remain in the resource ledger even when only $A$ updates influence the
+answer. Finite row-rounding defects can be inserted as the terms
+$\zeta_t$ in Theorem~\ref{thm:v22-active}; a changed initial law adds
+its total variation separately. Thus source-preserving transport is
+the case $\alpha=0$, while the active bound also has content for
+$\alpha>0$ and does not assert generic sample-count-free stability.

@@ -1,0 +1,179 @@
+\section{Approximate continuation profiles and resource transfer}
+\label{sec:v21-resources}
+A cut profile records the whole causal schedule, rather than its final
+compression. We give both a realization certificate and an operational
+value. These notions keep the compatibility condition of
+Theorem~\ref{thm:v18-continuation}; separate nonnegative factorizations
+at individual cuts are not a substitute for that condition.
+
+\subsection{A causal comparison norm}
+For two normalized finite causal suffix kernels $p,q$ at cut $t$, put
+\[
+ d_t^{\rm ca}(p,q)=\sup_\pi\|P_p^\pi-P_q^\pi\|_{\rm TV},
+\]
+where $\pi$ ranges over deterministic causal input policies on the
+remaining schedule and $P_p^\pi$ is the law of its complete output
+transcript. Randomized policies give the same supremum, by conditioning
+on their independent random tables. In particular this distance includes
+feedback; the supremum over open-loop input words alone is not used.
+
+For stochastic coefficients $q_t(z,j\mid m,x)$ and suffix kernels
+$v_{t+1,j}$, denote by $\mathcal Q_t v_{t+1,m}$ the suffix kernel which,
+upon input $x$, emits $z$ and chooses $j$ with these coefficients, then
+uses $v_{t+1,j}$. The notation denotes one first-step operation, not a
+conditioning on an event of zero probability.
+
+\begin{theorem}[Approximate compatible realization]\label{thm:v21-compatible}
+Let $K_0,\ldots,K_L$ be positive integers. Suppose normalized causal
+kernels $v_{t,m}$, $m\le K_t$, and stochastic rows $q_t$ satisfy
+\begin{equation}\label{eq:v21-local}
+ d_t^{\rm ca}(v_{t,m},\mathcal Q_t v_{t+1,m})\le\eta_t
+ \quad(t<L,m\le K_t).
+\end{equation}
+At the terminal cut the suffix kernels are the unit empty kernel. If
+$\rho\in\Delta_{K_0}$ and
+$d_0^{\rm ca}(p,\sum_m\rho_m v_{0,m})\le\eta_{-1}$, then the
+machine with initial law $\rho$ and transition rows $q_t$ has the whole
+profile $(K_t)$ and realizes a kernel $\widehat p$ satisfying
+\begin{equation}\label{eq:v21-global}
+ d_0^{\rm ca}(p,\widehat p)\le
+ \min\{1,\eta_{-1}+\sum_{t=0}^{L-1}\eta_t\}.
+\end{equation}
+Conversely, a machine with this profile within distance $\varepsilon$
+of $p$ supplies such a certificate with $\eta_{-1}=\varepsilon$ and
+all local errors zero. If a deterministic initial state is required,
+use $K_0=1$ throughout both statements.
+\end{theorem}
+\begin{proof}
+Let $\widehat v_{t,m}$ be the actual continuation of the rows $q$ from
+state $m$. Fix a future policy. Conditional on the first output and next
+state, its remaining actions form an admissible suffix policy. Replacing
+$v_{t+1,j}$ by $\widehat v_{t+1,j}$ therefore changes its transcript law
+by at most $\max_j d_{t+1}^{\rm ca}(v_{t+1,j},\widehat v_{t+1,j})$.
+Mixtures and pushforwards contract total variation. The triangle
+inequality and \eqref{eq:v21-local} imply, backwards from $L$,
+\[
+ \max_m d_t^{\rm ca}(v_{t,m},\widehat v_{t,m})
+ \le\sum_{s=t}^{L-1}\eta_s.
+\]
+Mixing with $\rho$ proves \eqref{eq:v21-global}. The converse takes the
+actual normalized continuations of the given machine, including arbitrary
+valid continuations for unreachable states. Their one-step equations are
+identities. There is no assertion that independently optimal approximate
+lists at successive cuts have compatible updates.
+\end{proof}
+
+\subsection{The full value and its effective approximation}
+Fix a finite schedule with finitely many observation and action symbols,
+$N$ calls to an experiment, and a bounded terminal payoff $G\in[-1,1]$.
+An environment $b\in B$ specifies the conditional observation kernels
+at all possible visible histories and actions. Assume $B$ is a nonempty
+compact subset of the resulting finite product of probability simplexes.
+A controller $A$ has a specified persistent profile $\mathbf K$; the
+clock has no access to sample history. All action choices and all retained
+randomness factor through the current register. Define
+\begin{equation}\label{eq:v21-value}
+ V_{N,\mathbf K}(B,G)=\max_{A\in\mathcal M(\mathbf K)}
+                    \min_{b\in B}\E_b^A G.
+\end{equation}
+Unused states pad smaller machines, so $\mathcal M(\mathbf K)$ is a
+finite product of stochastic-row simplexes, with any prescribed causal
+zeros imposed. The terminal readout is included among its rows.
+
+\begin{theorem}[Full-profile resource transfer]\label{thm:v21-transfer}
+The maximum in \eqref{eq:v21-value} is attained. Its value is
+nondecreasing in each $K_t$. Removing a charged intermediate cut gives
+a relaxation, whereas inserting identity-holding cuts preserves every
+implementation with the same held register.
+
+Suppose two environments at each of their $N$ calls differ in conditional
+total variation by at most $\delta_i$, uniformly over corresponding
+histories, actions and parameters. Replace the controller rows at its
+$L$ transitions by dyadic rows of denominator $2^r$, with at most $s_t$
+possible next-state/output pairs at transition $t$. Any fixed controller
+loses at most
+\begin{equation}\label{eq:v21-budget}
+ 2\min\left\{1,\sum_{i=1}^N\delta_i+
+                         \sum_{t=1}^L(s_t-1)2^{-r}\right\}
+\end{equation}
+in expected payoff. The same bound compares optimal values on the same
+profile, with the appropriate dyadic approximation on one side.
+More generally an approximate continuation certificate contributes its
+error in \eqref{eq:v21-global} inside the braces.
+
+If $B_0\subset B$ is a finite $\omega$-net in the maximum conditional-TV
+metric and $v_0$ is the maximum over the dyadic controller grid of the
+minimum over $B_0$, then
+\begin{equation}\label{eq:v21-sandwich}
+ v_0-2N\omega\ \le V_{N,\mathbf K}(B,G)
+ \le v_0+2\sum_{t=1}^L(s_t-1)2^{-r}.
+\end{equation}
+The bounds are certificates whenever the net and the finite evaluations
+are certified. Compactness alone supplies existence of nets, not an
+algorithm for an arbitrary presentation of $B$.
+\end{theorem}
+\begin{proof}
+For fixed $b$, each path probability is a finite product of controller
+and environment coordinates. Summing the finitely many paths gives a
+jointly continuous payoff. Its minimum over compact $B$ is continuous
+in the controller rows; the controller space is compact. This proves
+attainment. Padding proves monotonicity. Removing a constraint enlarges
+the feasible set, and identity transitions prove the insertion assertion.
+
+For the perturbation bound, couple two executions until their first
+mismatch. On equal histories the conditional observation laws can be
+maximally coupled, with mismatch probability at most $\delta_i$.
+Couple the controller transitions similarly, using
+Lemma~\ref{lem:v21-dyadic}. The probability of any mismatch is at most
+the sum in \eqref{eq:v21-budget}, capped at one. The payoff changes by
+at most two on that event. This coupling is recursive on finite histories
+and remains valid for feedback controls. Alternatively, approximate
+continuation kernels are compared in the causal distance and then
+composed, as in Theorem~\ref{thm:v21-compatible}.
+
+For a fixed grid controller, a minimizing point of $B$ has a point of
+$B_0$ within $\omega$; the corresponding payoffs differ by at most
+$2N\omega$. Thus the grid optimum on all of $B$ is at least
+$v_0-2N\omega$. Conversely approximate a maximizing unrestricted
+controller row by row. Its minimum over $B$ decreases by at most the
+row-rounding bound, and its minimum over $B_0$ is no smaller. Taking the
+grid maximum proves the upper bound. No minimax interchange or
+convexification of the fixed-width behavior image occurs.
+\end{proof}
+
+The formula records preparation count, persistent labels, calibration
+error, causal simulation error and transition precision in one execution.
+The training-count factor is present when training kernels change. It
+is absent only when those kernels are identical. Failure probabilities
+are also transported, with factor one rather than two, since their
+indicators have range $[0,1]$.
+
+\begin{proposition}[Composition and schedule refinement]\label{prop:v21-compose}
+A causal simulator of profile $\mathbf R$ followed on the same synchronized
+schedule by a controller of profile $\mathbf K$ has a realization with
+profile $(R_tK_t)$. Causal simulation errors add under successive
+composition. Two disjoint phases with a genuine reset and no retained
+bridge use the maximum of their peak widths. If a bridge with $H$ labels
+must survive the second phase, its direct width bound is $H$ times the
+second-phase width.
+
+If one atomic input $x$ is encoded by $\ell$ symbols, let $D_j$ be the
+number of possible length-$j$ prefixes. Holding the pre-input state and
+the prefix realizes the refined acquisition cuts with widths
+$K_{\rm before}D_j$, followed by the original update. A time-dependent
+machine running for $T$ scheduled epochs becomes autonomous by retaining
+its clock, with at most $(T+1)\max_t K_t$ states. These are implementation
+bounds, not claims of optimality for every refinement.
+\end{proposition}
+\begin{proof}
+Keep the ordered pair of simulator and controller registers and compose
+their transition kernels. The simulator's emitted observation is the
+controller's current input. Conditional coupling until the first
+simulation discrepancy gives the error statement. A genuine reset
+permits reusing the alphabet, whereas a surviving bridge is another
+register. A partial encoded input is determined by its prefix, giving
+the stated refinement construction. Finally the augmented state
+$(t,m)$ implements the time-indexed transition without an external
+clock. These constructions also show why neither hidden selectors nor
+an external transcript may be omitted from the register being counted.
+\end{proof}

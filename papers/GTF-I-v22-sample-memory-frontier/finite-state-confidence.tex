@@ -1,0 +1,77 @@
+\section{Confidence tests with priced finite-state amplification}
+\label{sec:v22-confidence}
+The signed-sum construction in Section~\ref{sec:v21-confidence}
+converts expectation into confidence. There is also a direct
+sample--memory choice for the amplifier itself. Its formulation keeps
+the binary testing objective distinct from the expected-score task.
+
+\begin{theorem}[Two finite-state confidence amplifiers]
+\label{thm:v22-confidence}
+Suppose a reset audit uses $b$ training trials, two validations, peak
+width $W\ge3$, and reports $D\in\{-1,0,1\}$. Under the equality null
+$\E D=0$, and under every alternative in a fixed class $\E D\ge\gamma>0$.
+Fix a known dyadic $0<g\le\gamma$, and put $\theta=g/8$.
+
+\smallskip\noindent
+\textup{(i)} For integers $m,n\ge1$, there is a binary test with both
+errors at most $e_{m,n}(\theta)$, using $n(b+2)$ preparations and peak
+width at most $(2m+1)\max(W,9)$. Thus both errors are at most $\alpha$
+with the choices \eqref{eq:v22-polynomial}, with $\delta=\alpha$.
+
+\smallskip\noindent
+\textup{(ii)} With $L,R$ as in \eqref{eq:v21-LR}, using
+$\delta=\alpha$ and the same $\theta$, there is another test with both
+errors at most $\alpha$, $2LR(b+2)$ preparations, and peak width at
+most $4\max(W,9)$. Its very long external schedule is charged
+separately. The confidence error, not the input parameter, determines
+these read-only horizon constants.
+\end{theorem}
+\begin{proof}
+Run independent copies of the base audit with fresh preparations and
+fresh private bits. Conditional on each output $D$, generate an
+additional coin $Z$ with probability
+\begin{equation}\label{eq:v22-confidence-coin}
+ \Pp(Z=1\mid D)=\frac12+\frac{D-g/2}{4}.
+\end{equation}
+This is between zero and one, since $0<g\le\gamma\le1$ and
+$-1\le D\le1$. If $g$ has denominator $2^s$, the probability has
+denominator dividing $2^{s+3}$ and is sampled with $s+3$ fair bits.
+The coins are independent under each fixed parameter. Their mean is
+$1/2-g/8$ under the null and at least $1/2+g/8$ under the alternatives.
+Apply the walk of Lemma~\ref{lem:v22-walk}, rejecting the null for a
+positive result, to prove (i). Apply the block comparison of
+Lemma~\ref{lem:v21-block} to prove (ii).
+
+At every base-audit epoch retain the amplifier state alongside its $W$
+labels. After obtaining $D$, retain that value and at most three
+Bernoulli-sampler labels while drawing \eqref{eq:v22-confidence-coin}.
+This requires at most nine labels per amplifier state. Update the
+amplifier and reset the base audit before the next repetition. The
+terminal rejection decision is a function of the amplifier state and
+requires no additional persistent random seed. This proves the stated
+full-cut peak bounds. Even after the amplifier is absorbed, padded
+base-audit repetitions remain charged to the preparation count. The
+clock supplying the repetition, base-audit epoch and fair-bit depth is
+external; storing it multiplies the displayed bound by at most one
+plus the total number of such epochs.
+\end{proof}
+
+For the physical expected-score theorem one may take $g=3/8$, since
+$3/8<2/5$. The additional coin then needs at most six fair bits.
+Thus confidence can be purchased either with a growing absorbing
+counter and polynomial repetition count, or with a constant register
+and a much longer clocked schedule. Neither statement identifies the
+minimum state count of the binary testing problem with the three
+conditional validation responses needed by the expected-score problem.
+The signed-accumulator and train-once confidence theorems remain
+available as different resource regimes.
+
+The output-law transfer in Theorem~\ref{thm:v22-active} applies to a
+completed binary test. In particular, if perturbations change its
+output law by at most $\varepsilon$, its type-I and type-II bounds each
+increase by at most $\varepsilon$. Transporting all repeated raw data
+instead counts every affected preparation, as in
+Section~\ref{sec:v21-confidence}. Independence of the base repetitions
+and uniformity over the fixed alternative class are assumptions of the
+amplification theorem; adaptation of the alternative between repetitions
+is not being asserted.
