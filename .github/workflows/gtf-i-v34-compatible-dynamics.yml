@@ -1,0 +1,122 @@
+name: GTF-I v34 Fourier budgets for hidden causal memory
+
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v34-compatible-dynamics-2026-09-25
+    paths:
+      - 'papers/GTF-I-v34-compatible-dynamics/**'
+      - '.github/workflows/gtf-i-v34-compatible-dynamics.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gtf-i-v34-compatible-dynamics
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/revision/general-theta-foundations-i-v34-compatible-dynamics-2026-09-25'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 8
+          sparse-checkout: |
+            papers/GTF-I-v34-compatible-dynamics
+            papers/GTF-I-v33-compatible-lifts
+            papers/GTF-I-v32-causal-width
+            papers/GTF-I-v31-compatible-memory
+            papers/GTF-I-v30-streaming-geometry
+            papers/GTF-I-v29-intrinsic-continuation
+            papers/GTF-I-v28-causal-response
+            papers/GTF-I-v27-resource-saddle
+            papers/GTF-I-v26-controlled-memory-foundations
+            papers/GTF-I-v25-controlled-minimax
+            papers/GTF-I-v24-structural-resources
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Restore hash-checked native mathematical sources
+        shell: bash
+        run: |
+          python - <<'PY'
+          import hashlib,json,lzma
+          from pathlib import Path
+          h=Path('papers/GTF-I-v34-compatible-dynamics')
+          raw=b''.join((h/'.source-parts'/('part%02d.xz'%i)).read_bytes() for i in range(6))
+          if len(raw)!=33520 or hashlib.sha256(raw).hexdigest()!='5d79bebe180c5418dd6a74d6e7031e50735c13485091ef759ee53d8e8bd22345':
+              raise RuntimeError('Source transport mismatch')
+          payload=json.loads(lzma.decompress(raw))
+          if not isinstance(payload,dict) or len(payload)!=19: raise RuntimeError('Native source manifest mismatch')
+          for name,text in payload.items():
+              p=Path(name)
+              if p.name!=name or p.suffix not in {'.tex','.py','.md','.json'} or not isinstance(text,str):
+                  raise RuntimeError('Unsafe source path')
+              dest=h/name
+              if dest.exists() and dest.read_text()!=text: raise RuntimeError('Refusing to overwrite modified native source: '+name)
+              dest.write_text(text)
+          print('Verified and restored 19 native mathematical/build/documentation files.')
+          PY
+      - name: Publish native source before building
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git fetch --depth=1 origin ee524c3e210ede7d6ff927c2bd2a2a1a104cb28c
+          test -z "$(git diff --name-only --diff-filter=DMRT ee524c3e210ede7d6ff927c2bd2a2a1a104cb28c)"
+          git add -f papers/GTF-I-v34-compatible-dynamics
+          if ! git diff --cached --quiet; then
+            git commit -m 'revise(GTF-I v34): polynomial all-hidden Fourier budget and main-family deficiency obstruction [skip ci]'
+            git push origin HEAD:"$GITHUB_REF_NAME"
+          fi
+          echo "GTF_SOURCE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - name: Install typesetting and mathematical checks
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended lmodern
+          python -m pip install sympy==1.14.0 mpmath==1.3.0 PyMuPDF==1.26.7
+      - name: Execute checks and compile the complete revision
+        run: python papers/GTF-I-v34-compatible-dynamics/build.py
+      - name: Verify independently buildable core
+        shell: bash
+        run: |
+          python - <<'PY'
+          import tempfile,zipfile,subprocess,sys
+          from pathlib import Path
+          h=Path('papers/GTF-I-v34-compatible-dynamics')
+          with tempfile.TemporaryDirectory() as td:
+              with zipfile.ZipFile(h/'evidence/CORE_SOURCES.zip') as z: z.extractall(td)
+              subprocess.run([sys.executable,str(Path(td)/h.name/'build.py'),'--core-only'],check=True)
+          PY
+      - name: Publish only the new revision and referee-ready branch
+        shell: bash
+        run: |
+          git add -f papers/GTF-I-v34-compatible-dynamics GENERAL_THETA_FOUNDATIONS_I_V34_REVIEW_READY.md
+          git commit -m 'publish(GTF-I v34): source-bound article, r18 response, standalone core and preserved archives [skip ci]'
+          test -z "$(git diff --name-only --diff-filter=DMRT ee524c3e210ede7d6ff927c2bd2a2a1a104cb28c HEAD)"
+          READY='revision/general-theta-foundations-i-v34-referee-ready-2026-09-25'
+          if git ls-remote --exit-code --heads origin "$READY"; then
+            git fetch origin "$READY"
+            git merge-base --is-ancestor FETCH_HEAD HEAD
+          fi
+          git push origin HEAD:"$GITHUB_REF_NAME" HEAD:"$READY"
+      - name: Upload referee artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: GTF-I-v34-compatible-dynamics
+          path: papers/GTF-I-v34-compatible-dynamics/
+          retention-days: 30
+      - name: Upload failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: GTF-I-v34-diagnostics
+          path: |
+            papers/GTF-I-v34-compatible-dynamics/evidence/
+            papers/GTF-I-v34-compatible-dynamics/*.tex
+            papers/GTF-I-v34-compatible-dynamics/*.py
+          retention-days: 7
