@@ -1,0 +1,115 @@
+\section{Orbit quantization under stochastic compression}\label{sec:packet}
+We first state the probabilistic argument in a real finite-dimensional
+Hilbert space $H$. A complex unitary representation is covered by taking
+its real inner product. Let $\mathbb S(H)$ be the unit sphere and let
+$\mu$ be a probability measure on a compact group acting orthogonally
+on $H$, with action $U_g$.
+
+\begin{definition}[Orbit distortion]\label{def:distortion}
+For $k\ge1$ set
+\begin{equation}\label{eq:distortion}
+ \Gamma_k(\mu)=\inf_{v,u_1,\ldots,u_k\in\mathbb S(H)}
+  \int\min_{i\le k}\bigl(1-\langle U_gv,u_i\rangle\bigr)\,d\mu(g).
+\end{equation}
+It depends only on the representation and the law of a command packet,
+not on a proposed stochastic realization. It lies in $[0,1]$.
+\end{definition}
+The upper bound one follows by using the direction of
+$\int U_gv\,d\mu(g)$ as one of the centers, with any center if that
+integral vanishes. The infimum is attained by compactness and continuity.
+An invariant direction may make the coefficient zero; positivity is a
+geometric property to be established, not an automatic conclusion for
+all representations.
+
+\begin{lemma}[One-packet contraction]\label{lem:packet}
+Let $Y\in H$ be integrable, let $S$ be a finite register, and let $G$
+be independent of $(Y,S)$ with law $\mu$. Suppose the new register
+$S'$ has at most $k$ positive-probability values and its conditional
+law, given $(Y,S,G)$, depends only on $(S,G)$. Then
+\begin{equation}\label{eq:packet}
+ \E\norm{\E[U_GY\mid S']}
+ \le(1-\Gamma_k(\mu))\E\norm{\E[Y\mid S]}.
+\end{equation}
+\end{lemma}
+\begin{proof}
+Write $z_s=\E[Y\mid S=s]$, $p_s=\Pp(S=s)$ and
+$T_g(s,r)=\Pp(S'=r\mid S=s,G=g)$. Conditional independence gives
+\[
+ p'_r z'_r=\sum_s p_s\int T_g(s,r)U_gz_s\,d\mu(g),
+ \qquad z'_r=\E[U_GY\mid S'=r].
+\]
+Choose $u_r=z'_r/\norm{z'_r}$ when the latter is nonzero and any unit
+vector otherwise. Thus
+\begin{align*}
+ \sum_r p'_r\norm{z'_r}
+ &=\sum_s p_s\int\sum_rT_g(s,r)\langle U_gz_s,u_r\rangle\,d\mu(g)\\
+ &\le\sum_{s:z_s\ne0}p_s\norm{z_s}
+       \int\max_r\langle U_g(z_s/\norm{z_s}),u_r\rangle\,d\mu(g)\\
+ &\le (1-\Gamma_k(\mu))\sum_s p_s\norm{z_s}.
+\end{align*}
+Zero centroids cause no loss of an identity: their inner product with
+any chosen direction is zero. The maximization only relaxes the actual
+possibly randomized assignment. In particular, neither the old register
+nor the computation inside the packet is required to have $k$ states.
+\end{proof}
+
+\begin{theorem}[Representation-valued packet budget]\label{thm:group-budget}
+Let $Y_0$ be a fixed unit vector and let successive command packets have
+independent products $G_i$ with laws $\mu_i$. Between packets one may
+insert fixed commands. A finite stochastic register processes the
+commands in their prescribed order, with arbitrary cut-dependent rows.
+Let $k_i$ bound its positive-probability states at the end of packet $i$.
+If a terminal function $d(S_N)$ satisfies $\norm d\le B$ and
+\[
+             |\E\langle Y_N,d(S_N)\rangle|\ge B\kappa>0,
+\]
+then
+\begin{equation}\label{eq:product-budget}
+ \kappa\le\prod_i(1-\Gamma_{k_i}(\mu_i)),
+ \qquad \sum_i\Gamma_{k_i}(\mu_i)\le\log(1/\kappa).
+\end{equation}
+Here $Y$ evolves by the same ordered representation products as the
+commands. The statement also applies to a complex scalar correlation
+with absolute value, using $q_N\ge\kappa$ as its terminal hypothesis.
+\end{theorem}
+\begin{proof}
+At each boundary put $q=\E\norm{\E[Y\mid S]}$. A whole packet has
+one stochastic input/output kernel conditional on its starting state
+and its command word. Its internal rows and all internal hidden states
+are integrated into that kernel. The fresh packet is independent of the
+past, so Lemma~\ref{lem:packet} applies. A fixed command can only decrease
+$q$, by conditional Jensen and preservation of norm by its action.
+Initially $q=1$. At the terminal cut,
+$|\E\langle Y_N,d(S_N)\rangle|\le Bq_N$.
+Multiplication proves the first assertion; $1-u\le e^{-u}$ proves
+the second. If a coefficient is one, positive terminal correlation is
+impossible, consistent with the first assertion.
+\end{proof}
+
+The products $G_i$ need not commute. The packet endpoints need not be
+consecutive cuts. Most importantly, the commands \emph{inside} a packet
+need not be independent. Only its independence from the earlier process
+is used in the conditional-mean identity. This is what permits a stronger
+converse than a fair one-command test.
+
+\begin{proposition}[A small-ball criterion]\label{prop:small-ball}
+For $r>0$ define
+\[
+ A_\mu(r)=\sup_{v,u\in\mathbb S(H)}
+              \mu\{g:\norm{U_gv-u}<r\}.
+\]
+Then
+\begin{equation}\label{eq:smallball}
+ \Gamma_k(\mu)\ge\frac{r^2}{2}\bigl(1-kA_\mu(r)\bigr)_+.
+\end{equation}
+If for every $v$ the packet is uniform on $m$ orbit points separated by
+Euclidean distance at least $\sigma$, then
+$\Gamma_k(\mu)\ge(1-k/m)_+\sigma^2/8$.
+\end{proposition}
+\begin{proof}
+Outside the union of $k$ radius-$r$ balls the squared distance to each
+center is at least $r^2$. Use
+$1-\langle v,u\rangle=\norm{v-u}^2/2$ and the union bound.
+For separated points, each open ball of radius $\sigma/2$ contains at
+most one, so $A_\mu(\sigma/2)\le1/m$.
+\end{proof}

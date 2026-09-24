@@ -1,0 +1,64 @@
+\section{The experiment and its realizing machines}\label{sec:model}
+State distributions are row vectors and
+$\Delta_k=\{e\in\R^k:e\ge0,\ e\one=1\}$.
+
+\begin{definition}[Clocked stochastic realization]\label{def:machine}
+For a specified $N$, a realizing machine has finite state sets $[K_t]$
+for $0\le t\le N$, initialization rows $E_x\in\Delta_{K_0}$,
+row-stochastic matrices $T_{t,c}\in\R_+^{K_t\times K_{t+1}}$ for
+$t<N$, $c\in\{0,1\}$, and decoder means $d_j\in[-1,1]^{K_N}$.
+Its conditional answer mean is
+\[
+ E_xT_{0,c_1}\cdots T_{N-1,c_N}d_j.
+\]
+Its error is one half the maximum absolute difference from
+\eqref{eq:target}, over all seeds, command words and queries.
+The profile counts \emph{available} labels, including padding. Its peak
+is $\max_{0\le t\le N}K_t$, or the maximum of this number and two if
+a binary answer is retained at an additional output cut.
+$W_{N,\varepsilon}(\alpha)$ is the least such peak at error at most
+$\varepsilon$.
+\end{definition}
+
+Only the updated register persists. An earlier random seed, a transcript,
+an input-dependent clock or any retained protocol variable must be in
+that register. The current input is consumed in its update; seed and
+query are supplied just once. The epoch is external and the complete
+row table may depend on $N$. All rows, including unused rows, are
+normalized. Exact atomic stochastic rows and read-only tables are allowed;
+row construction, arithmetic and table length are not part of this width.
+A self-paced finite fair-bit compiler for rational rows has additional
+workspace and is a different resource statement \cite{GTF31}.
+
+The commands are externally specified inputs. No independence or fairness
+is part of the simulation task. A lower bound may impose any distribution
+on command words, including one chosen after the available profile is
+known. That distribution is used in the proof and is not a persistent
+seed supplied to the machine. When counting states under a chosen test
+law, zero-probability labels may be removed; the conclusions in terms of
+available labels remain valid.
+
+\begin{proposition}[Separate positive minimum]\label{prop:separate}
+At every cut after initialization the exact normalized residual rank
+and the separate positive minimum of \eqref{eq:target} are three. The
+latter permits arbitrary finite registers at the other cuts.
+\end{proposition}
+\begin{proof}
+The predictive vectors are $R_\alpha^a x/10$. Idle prefixes from the
+four seeds span a plane, and two coordinate queries after an idle suffix
+separate it. Normalization adds the constant row, giving rank three.
+The triangle with vertices $(1/2,0)$ and $(-1/2,\pm1/2)$ contains the
+seed disk of radius $\sqrt2/10$, since its side distances from the
+origin are $1/2$ and $1/(2\sqrt5)$. Its vertices have norm at most
+$1/\sqrt2$, so all rotated continuations give valid binary laws.
+At the chosen cut decompose the actual predictive vector in this
+triangle. Before it retain the finite raw history; afterwards retain
+the triangle label and the remaining active-command count. This is a
+complete finite machine attaining three at that cut. Rank gives the
+lower bound. This separate-cut construction is inherited from
+\cite{GTF32,GTF33}.
+\end{proof}
+
+The statement does not require a hidden basis state to possess a
+predictive vector. Indeed the converse below never projects a hidden
+simplex, or bounds the number of vertices in such a projection.

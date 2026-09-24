@@ -1,0 +1,205 @@
+\section{The sharp bound for binary rotation commands}\label{sec:sharp}
+Put $\zeta=e^{2\pi i\alpha}$ and
+\begin{equation}\label{eq:separation}
+ s_B(\alpha)=\min_{1\le l\le B}\|l\alpha\|_{\R/\mathbb Z}.
+\end{equation}
+For irrational $\alpha$ this number is positive at every finite $B$.
+Given an integer $k\ge1$, set $B=2k-1$ and choose $J$ uniformly from
+$\{0,\ldots,B\}$. The associated packet is the length-$B$ command word
+\begin{equation}\label{eq:wordpacket}
+                         1^J0^{B-J}.
+\end{equation}
+The command count is uniform on $2k$ possibilities; the physical packet
+still consists of $B$ ordinary binary commands. Its random choice is not
+revealed as an additional input.
+
+\begin{lemma}[Separated packets]\label{lem:separated}
+The circle action of the packet \eqref{eq:wordpacket} has
+\begin{equation}\label{eq:circle-cost}
+ \Gamma_k(\mu_B)\ge s_B(\alpha)^2.
+\end{equation}
+Consequently it multiplies the conditional phase amplitude by at most
+$1-s_B(\alpha)^2$ if its endpoint register has at most $k$ states.
+\end{lemma}
+\begin{proof}
+Write $s=s_B(\alpha)$. For any starting direction the $2k$ phase
+points differ pairwise by at least $s$ in normalized circle distance.
+Each open arc of radius $s/2$ contains at most one of them. For any
+$k$ center directions, at least $k$ packet points are therefore at
+circle distance at least $s/2$ from every center. Their loss
+$1-\cos(2\pi\theta)$ is at least $1-\cos(\pi s)$. Since $0\le s\le1/2$
+and $\sin(\pi s/2)\ge s$,
+\[
+ \frac12(1-\cos(\pi s))=\sin^2(\pi s/2)\ge s^2.
+\]
+Average over the $2k$ points and minimize over centers and initial phase.
+Lemma~\ref{lem:packet} proves the last assertion. This argument concerns
+actual hidden-state centroids, not their observable lift vertices.
+\end{proof}
+
+\begin{lemma}[Terminal calibration for every test law]\label{lem:terminal}
+Fix seed $x=(1,1)$. Under \emph{any} command-word distribution independent
+of the machine's private randomness, a realization with error
+$\varepsilon<1/20$ obeys
+\begin{equation}\label{eq:calibration}
+ q_N:=\E\bigl|\E[\zeta^{L_N}\mid S_N]\bigr|
+                  \ge\kappa:=1/10-2\varepsilon.
+\end{equation}
+\end{lemma}
+\begin{proof}
+Set $d=d_1+i d_2$, so $|d|\le\sqrt2$. For each word the target
+conditional mean of $d(S_N)$ is $(1+i)\zeta^{L_N}/10$.
+A binary row-TV error $\varepsilon$ changes each coordinate mean by
+at most $2\varepsilon$, hence the complex mean by at most
+$2\sqrt2\varepsilon$. Multiply by $\zeta^{-L_N}$ and average to get
+\[
+ |\E[\zeta^{-L_N}d(S_N)]|
+      \ge\sqrt2(1/10-2\varepsilon).
+\]
+Conditioning on $S_N$ bounds the left side by $\sqrt2q_N$.
+Only correctness at the final prescribed length was used.
+\end{proof}
+
+\begin{theorem}[Finite packet and occupation bounds]\label{thm:occupation}
+For an arbitrary irrational $\alpha$, a machine of error
+$\varepsilon<1/20$ and available-label profile $(K_t)_{t=0}^N$ satisfies,
+for every $k\ge1$ and $B=2k-1$,
+\begin{equation}\label{eq:occupation}
+ \#\{1\le t\le N:K_t\le k\}
+ \le B-1+\frac{B}{s_B(\alpha)^2}\log\frac1\kappa.
+\end{equation}
+In particular, a peak-$K$ machine has
+\begin{equation}\label{eq:floor}
+ \left\lfloor\frac N{2K-1}\right\rfloor
+               s_{2K-1}(\alpha)^2\le\log\frac1\kappa.
+\end{equation}
+More generally, for pairwise disjoint packets ending at cuts $t_i$, of
+lengths $B_i=2k_i-1$, with $K_{t_i}\le k_i$, one has
+\begin{equation}\label{eq:nonuniform}
+ \prod_i(1-s_{B_i}(\alpha)^2)\ge\kappa,
+ \qquad \sum_i s_{B_i}(\alpha)^2\le\log\frac1\kappa.
+\end{equation}
+\end{theorem}
+\begin{proof}
+On the chosen disjoint intervals use independent packets
+\eqref{eq:wordpacket}; set all other commands to zero. Fresh packet
+independence, Lemma~\ref{lem:separated} and Theorem~\ref{thm:group-budget}
+apply. Lemma~\ref{lem:terminal} supplies the final correlation for this
+particular test law. This proves \eqref{eq:nonuniform}, and consecutive
+length-$2K-1$ packets prove \eqref{eq:floor}.
+
+For \eqref{eq:occupation}, disregard low-width endpoints before $B$,
+of which there are at most $B-1$. Select the first remaining such endpoint
+$t$, take the interval $(t-B,t]$, and repeat at the first low endpoint
+at least $B$ epochs later. The selected intervals are disjoint. Each
+selected endpoint removes at most $B$ low endpoints, since there are
+only $B$ integer epochs in $[t,t+B-1]$. If $m$ intervals are selected,
+the total number of low endpoints is at most $B-1+Bm$. The second
+inequality in \eqref{eq:nonuniform} gives
+$m s_B(\alpha)^2\le\log(1/\kappa)$.
+
+The choice of intervals uses only the available profile, not the
+realized state or past command. It defines a legitimate external test
+distribution for this machine. No width bound is used inside a selected
+packet or at any unselected cut.
+\end{proof}
+
+\begin{proof}[Proof of the lower bound in Theorem~\ref{thm:main}]
+For badly approximable $\alpha$, $s_B(\alpha)\ge b_\alpha/B$.
+Equation~\eqref{eq:floor} and $N<B(\lfloor N/B\rfloor+1)$ prove
+\eqref{eq:finite-main}. Since $2K-1\le2K$ and $K\le K^3$,
+\begin{equation}\label{eq:crude}
+ W_{N,\varepsilon}(\alpha)
+ >\left(\frac{N}{2+8b_\alpha^{-2}\log(1/\kappa)}\right)^{1/3}.
+\end{equation}
+The corresponding occupation bound is
+$\#\{1\le t\le N:K_t\le k\}\le 2k-2+
+8b_\alpha^{-2}k^3\log(1/\kappa)$.
+
+For the golden angle, let $\alpha'=-(1+\sqrt5)/2$ and let $p$ be
+nearest to $l\alpha$. Then
+\[
+ (l\alpha-p)(l\alpha'-p)=p^2+lp-l^2\in\mathbb Z\setminus\{0\},
+ \quad |l\alpha'-p|\le\sqrt5l+1/2<3l.
+\]
+Thus $b_\alpha\ge1/3$. At zero error,
+$2+72\log 10<168$, proving the stated bound. The elementary inequality
+$\log10<83/36$ can, for example, be checked by the positive exponential
+series. The rank-three bound follows from Proposition~\ref{prop:separate}.
+\end{proof}
+
+\subsection{Matching realization}
+We reproduce the resonant upper construction from \cite{GTF33,GTF34}
+to make the match self-contained. Let $p/q$ be a convergent of $\alpha$
+with $q\ge\max\{5,(40N)^{1/3}\}$. Put
+\[
+ a=\pi/q,\quad \delta=2\pi(\alpha-p/q),\quad
+ \lambda=\frac{\cos(a-|\delta|)}{\cos a},\quad
+ \omega=\frac{\sin|\delta|}{\lambda\sin(2a)},\quad
+ u_s=(\cos(2\pi s/q),\sin(2\pi s/q)).
+\]
+Subscripts on $u_s$ are modulo $q$. Convergence gives $|\delta|<a$,
+so $\lambda\ge1$ and $0\le\omega\le1$.
+
+\begin{proposition}[Exact resonant upper bound]\label{prop:upper}
+The experiment has an exact $q$-state realization. Its two command
+matrices are independent of the epoch, although its decoder depends on
+$N$. For badly approximable $\alpha$, one may take
+$q=O_\alpha(N^{1/3})$.
+\end{proposition}
+\begin{proof}
+Associate to label $s$ at time $t$ the vector
+$r_tu_s$, $r_t=\lambda^t/4$. Define
+\[
+ T_0(s,\cdot)=\lambda^{-1}\delta_s+
+                     (1-\lambda^{-1})\operatorname{Unif}[q],
+ \qquad
+ T_1(s,\cdot)=(1-\omega)\delta_{s+p}
+                   +\omega\delta_{s+p+\operatorname{sgn}\delta}.
+\]
+When $\delta=0$ take $\omega=0$. The chord between the two indicated
+active vertices meets the ray at angle $2\pi(s/q+\alpha)$ at radius
+$1/\lambda$. Its second coordinate gives exactly the formula for
+$\omega$. Thus the expected next associated vector is $r_tu_s$ for
+an idle command and $R_\alpha r_tu_s$ for an active command.
+Furthermore
+\[
+ \log\lambda=\int_{a-|\delta|}^{a}\tan v\,dv
+ \le |\delta|\tan a<4\pi^2/q^3<40/q^3,
+\]
+since $q\ge5$. Hence $r_N\le e/4<1$.
+The initial polygon has inradius $\cos(\pi/q)/4>\sqrt2/10$;
+initialize by any convex decomposition of $x/10$. The final decoder
+has means $r_Ne_j^Tu_s\in[-1,1]$. Induction proves exactness for all
+words. Bounded partial quotients bound consecutive convergent-denominator
+ratios. For the golden angle the first denominator above a threshold
+$L\ge5$ is less than $2L$, proving \eqref{eq:golden}.
+\end{proof}
+
+\begin{corollary}[Hidden, vector and fixed-length common-row widths]
+\label{cor:common-row}
+For a badly approximable angle, exact clocked hidden width, exact
+clocked vector-state width, and exact fixed-length width with common
+command matrices are all $\Theta_\alpha(N^{1/3})$.
+\end{corollary}
+\begin{proof}
+The first class contains the other two, while Proposition~\ref{prop:upper}
+belongs to their intersection. Apply the unrestricted lower bound.
+\end{proof}
+An unchanged decoder correct after every earlier stopping length is a
+stronger, anytime specification; no such assertion is used here.
+
+\subsection{Other arithmetic}
+If $\|l\alpha\|\ge b l^{-\tau}$ for all $l\ge1$, the same proof gives
+$N<B+b^{-2}B^{2\tau+1}\log(1/\kappa)$ for $B=2K-1$.
+No matching claim is made under this weaker arithmetic hypothesis.
+For the irrational angle whose rotation has rational entries
+$\zeta=(3+4i)/5$, the nonzero Gaussian integer $(3+4i)^l-5^l$ gives
+$s_B(\alpha)\ge5^{-B}/(2\pi)$. Consequently
+\[
+ N<B+4\pi^2B25^B\log(1/\kappa),\qquad B=2K-1.
+\]
+The Gaussian integer is nonzero because otherwise $6/5=\zeta+\zeta^{-1}$
+would be an algebraic integer. This is an explicit logarithmic converse,
+not a proof that this angle is badly approximable. The earlier rational
+counter realization and its finite-coin accounting remain unchanged.
