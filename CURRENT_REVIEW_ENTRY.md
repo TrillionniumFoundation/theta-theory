@@ -1,6 +1,6 @@
 # A2 referee entry — revision 151
 
-Revision source published; completed verification is asserted only in the v151 build receipt. Finite checks do not certify universal proofs, historical priority, or journal acceptance.
+Native PDFs and 27 successful regression scripts are bound to source commit `e68458a9abba44759177e6fbc5fef75622719b53`. Finite checks do not certify universal proofs, historical priority, or journal acceptance.
 
 Revision branch: `revision/a2-v151-canonical-gcd-boundary-normalization-2026-09-24`. Controlling v149 review tip: `ddcef32b3cf491aacb293e466c393ec4af3caecd`.
 Report addressed: [reviews/a2-v149-independent-harsh-top4-2026-09-24/REFEREE_REPORT.md](reviews/a2-v149-independent-harsh-top4-2026-09-24/REFEREE_REPORT.md). This owner-requested report is not a journal editorial decision.
