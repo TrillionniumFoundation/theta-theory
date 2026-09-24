@@ -1,0 +1,111 @@
+name: GTF-I v31 compatibility and online simplex synthesis
+
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v31-compatible-memory-2026-09-25
+    paths:
+      - 'papers/GTF-I-v31-compatible-memory/**'
+      - '.github/workflows/gtf-i-v31-compatible-memory.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gtf-i-v31-compatible-memory
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/revision/general-theta-foundations-i-v31-compatible-memory-2026-09-25'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 20
+          sparse-checkout: |
+            papers/GTF-I-v31-compatible-memory
+            papers/GTF-I-v30-streaming-geometry
+            papers/GTF-I-v29-intrinsic-continuation
+            papers/GTF-I-v28-causal-response
+            papers/GTF-I-v27-resource-saddle
+            papers/GTF-I-v26-controlled-memory-foundations
+            papers/GTF-I-v25-controlled-minimax
+            papers/GTF-I-v24-structural-resources
+            reviews/general-theta-foundations-i-v30-streaming-geometry-pipeline-harsh-top4-r15-2026-09-24
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Restore hash-checked native mathematical sources
+        shell: bash
+        run: |
+          python - <<'PY'
+          import hashlib,json,lzma
+          from pathlib import Path
+          h=Path('papers/GTF-I-v31-compatible-memory')
+          raw=b''.join((h/'.source-parts'/('part%02d.xz'%i)).read_bytes() for i in range(6))
+          if len(raw)!=34368 or hashlib.sha256(raw).hexdigest()!='2afe35759fc2d71b915b19922754449db94c6542585d207b42ab0fd11166f557':
+              raise RuntimeError('Native source transport checksum mismatch')
+          payload=json.loads(lzma.decompress(raw))
+          if not isinstance(payload,dict) or len(payload)!=20:
+              raise RuntimeError('Native source inventory mismatch')
+          for name,text in payload.items():
+              p=Path(name)
+              if p.name!=name or p.suffix not in {'.tex','.py','.md','.json'} or not isinstance(text,str):
+                  raise RuntimeError('Unsafe source entry')
+              dest=h/name
+              if dest.exists() and dest.read_text()!=text:
+                  raise RuntimeError('Refusing to replace modified native source: '+name)
+              dest.write_text(text)
+          print('Restored 20 verified native manuscript and reproduction files.')
+          PY
+      - name: Publish the native source commit before building
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git fetch --depth=1 origin cd793fde91fca07958c6c5bc3989e9c51a17540b
+          test -z "$(git diff --name-only --diff-filter=DMRT cd793fde91fca07958c6c5bc3989e9c51a17540b)"
+          git add -f papers/GTF-I-v31-compatible-memory
+          if ! git diff --cached --quiet; then
+            git commit -m 'revise(GTF-I v31): full-support incompatible minima, additive online synthesis and non-Hadamard critical encoders [skip ci]'
+            git push origin HEAD:"$GITHUB_REF_NAME"
+          fi
+          echo "GTF_SOURCE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - name: Install typesetting and exact arithmetic
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended texlive-pictures lmodern
+          python -m pip install sympy==1.14.0 PyMuPDF==1.26.7
+      - name: Execute regressions and compile the revision and preserved volumes
+        run: python papers/GTF-I-v31-compatible-memory/build.py
+      - name: Publish only the new package and referee-ready branch
+        shell: bash
+        run: |
+          git add -f papers/GTF-I-v31-compatible-memory GENERAL_THETA_FOUNDATIONS_I_V31_REVIEW_READY.md
+          git commit -m 'publish(GTF-I v31): English article, exact rational rows, r15 response and unaltered supporting volumes [skip ci]'
+          test -z "$(git diff --name-only --diff-filter=DMRT cd793fde91fca07958c6c5bc3989e9c51a17540b HEAD)"
+          READY='revision/general-theta-foundations-i-v31-referee-ready-2026-09-25'
+          if git ls-remote --exit-code --heads origin "$READY"; then
+            git fetch origin "$READY"
+            git merge-base --is-ancestor FETCH_HEAD HEAD
+          fi
+          git push origin HEAD:"$GITHUB_REF_NAME" HEAD:"$READY"
+      - name: Upload referee package
+        uses: actions/upload-artifact@v4
+        with:
+          name: GTF-I-v31-compatible-memory
+          path: papers/GTF-I-v31-compatible-memory/
+          retention-days: 30
+      - name: Upload failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: GTF-I-v31-diagnostics
+          path: |
+            papers/GTF-I-v31-compatible-memory/evidence/
+            papers/GTF-I-v31-compatible-memory/*.tex
+            papers/GTF-I-v31-compatible-memory/*.py
+          retention-days: 7
