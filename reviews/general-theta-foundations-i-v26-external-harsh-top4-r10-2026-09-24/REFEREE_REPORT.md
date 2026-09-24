@@ -25,10 +25,10 @@ Revision 26 is the first revision in this sequence for which several of my previ
 This is a substantial revision. It does not respond to the ninth report by adding more certificates, larger preservation volumes, or a longer metadata graph. It adds new mathematics at exactly several of the places where the previous report asked for it:
 
 1. a genuine finite-register controlled family with informative, non-dominating sensing actions and a strict gap between a legal (K)-label controller and a free convexification over complete controllers;
-2. an exact two-preparation marked minimax value (U_2), with a full-parameter lower certificate and a matching least-favorable prior;
+2. an exact two-preparation marked minimax value (U2), with a full-parameter lower certificate and a matching least-favorable prior;
 3. a continuous two-preparation target family, rather than a single isolated (N=2) numerical point;
 4. a restored A0–A5 / predictive-quotient / acquired-resolution / causal-transport spine in the canonical article;
-5. a theorem-level local downstream consumer using the exact (U_2) value and the acquired transport theorem;
+5. a theorem-level local downstream consumer using the exact (U2) value and the acquired transport theorem;
 6. an improved theorem-level literature comparison with active testing, controlled sensing, imperfect recall, and finite-memory testing.
 
 I have not found a fatal counterexample to the new mathematical core in the source I inspected. In particular, the finite-memory routing ceiling, the free-selector gap, the two-preparation saddle factorization, the posterior coefficient sign argument, and the stated causal transport accounting appear internally coherent. The build and exact-regression records are also consistent with the source, although I do not treat those records as proof certification.
@@ -37,7 +37,7 @@ Therefore this rejection is no longer based on the objections that drove the v24
 
 My remaining objection is narrower and more demanding.
 
-The revision now contains a collection of serious exact results, but I still do not see a single unifying theorem of the conceptual reach expected at Annals/Inventiones/JAMS/Acta. The strongest general finite-memory statement is an exact Bellman/supersolution formulation for a **specified profile and interface**; the genuinely new exact finite-memory value is then proved for a specially engineered routing bottleneck. The strongest exact multi-preparation result is an impressive but highly structured (N=2) marked-product saddle. The restored foundations theorems make the article architecturally coherent, but their general mechanisms are primarily conditional expectation, quantization, contraction, coupling, and explicit resource bookkeeping under hypotheses that already encode the relevant rate. The physical result identifies the exact score on the entire (Wge12) segment, but not the least width or the hard (3le Wle11) part of the sample-memory Pareto frontier. Finally, the new local consumer is real, but the repository-wide eleven-paper DAG remains multiple-root and does not yet make this paper an indispensable mathematical foundation for the major A2/B4/C2 chains.
+The revision now contains a collection of serious exact results, but I still do not see a single unifying theorem of the conceptual reach expected at Annals/Inventiones/JAMS/Acta. The strongest general finite-memory statement is an exact Bellman/supersolution formulation for a **specified profile and interface**; the genuinely new exact finite-memory value is then proved for a specially engineered routing bottleneck. The strongest exact multi-preparation result is an impressive but highly structured (N=2) marked-product saddle. The restored foundations theorems make the article architecturally coherent, but their general mechanisms are primarily conditional expectation, quantization, contraction, coupling, and explicit resource bookkeeping under hypotheses that already encode the relevant rate. The physical result identifies the exact score on the entire (W >= 12) segment, but not the least width or the hard (3 <= W <= 11) part of the sample-memory Pareto frontier. Finally, the new local consumer is real, but the repository-wide eleven-paper DAG remains multiple-root and does not yet make this paper an indispensable mathematical foundation for the major A2/B4/C2 chains.
 
 This is now a strong specialized paper in causal statistical experiments, finite-state control, exact minimax calculations, and a carefully priced physical application. The issue is no longer whether there is substantive mathematics. There is. The issue is whether the present bundle of results has been compressed into a theorem of sufficient breadth, invariance, or downstream necessity to justify a top-four general-mathematics placement.
 
@@ -56,7 +56,7 @@ I read the 40-page canonical source and, in particular, the following new or mat
 - `integer-revelation.tex`;
 - `consumer-transfer.tex`.
 
-I also re-read the inherited controlled dual, marked (U_1) theorem, physical bridge, physical resource compilation, joint revelation theorem, and the relevant parts of `main.tex`.
+I also re-read the inherited controlled dual, marked (U1) theorem, physical bridge, physical resource compilation, joint revelation theorem, and the relevant parts of `main.tex`.
 
 For revision provenance and program context I inspected:
 
@@ -75,38 +75,17 @@ For revision provenance and program context I inspected:
 
 The Round-Seventeen ledger records the principal historical DAG as
 
-[
-mathrm{A2}	omathrm{A3}	omathrm{A4}	omathrm{C2}	omathrm{D1}
-]
+`A2 -> A3 -> A4 -> C2 -> D1`
 
 on the Sinai side, and
 
-[
-mathrm{B2!-!GC}	omathrm{B1}	omathrm{B2!-!MC}	o
-mathrm{B3}	omathrm{B4}	omathrm{C1/C2}	omathrm{D1}
-]
+`B2-GC -> B1 -> B2-MC -> B3 -> B4 -> C1/C2 -> D1`
 
 on the hard-sphere side, while its historical A1 remains an independent root. The v26 pipeline file is appropriately explicit that historical A2 remains independent and that B4, broad C2, and eleven-paper closure are not claimed.
 
 The v26 build receipt records a successful 40-page article build, 177-page complete manuscript, 730-page complete preserved development, ordinary/optimized agreement, 24 negative-control executions, exact predecessor-page comparisons, and the v24/v25/v26 regression suites. I regard these as useful evidence that the submitted source and artifact are reproducible. I do not regard them as independent proof verification, originality clearance, or evidence for journal significance.
 
-I also performed independent algebraic spot checks of the new (U_2) constants and the displayed factorization modulo
-[
-2r^3+25r^2-3=0.
-]
-The positive root is
-[
-r=0.341769415564857ldots,
-]
-the stated
-[
-	au=0.168823644779073ldots
-]
-and
-[
-U_2=0.426112778796656ldots
-]
-agree with the formulas in the source. This is a consistency check, not formal verification.
+I also performed independent algebraic spot checks of the new U2 constants and the displayed factorization modulo `2 r^3 + 25 r^2 - 3 = 0`. The positive root is `r = 0.341769415564857...`, the stated `tau = 0.168823644779073...`, and `U2 = 0.426112778796656...` agree with the formulas in the source. This is a consistency check, not formal verification.
 
 # 2. Disposition of the ninth report
 
@@ -117,24 +96,18 @@ The ninth report explicitly said that the next useful revision should contain th
 **Materially resolved.**
 
 Theorem 7.1 gives an exact dynamic optimization at a prescribed clocked register profile. More importantly, Theorem 7.2 is not merely a formulation: it gives an exact controlled family with incomparable actions and a genuine finite bottleneck,
-[
-V_{m,K}=rac{1}{2lceil m/Kceil},
-]
-while a free ex ante mixture over complete (K)-label controllers has value
-[
-overline V_{m,K}=rac{K}{2m}.
-]
-The gap is strict when (K
-mid m), for example
-[
-V_{3,2}=rac14<rac13=overline V_{3,2}.
-]
 
-The controller's chosen action is separately retained in an (m)-state buffer, and the profile is explicitly
-[
-(1,K,m,3,6,3).
-]
-This is therefore not the old unrestricted policy-tree theorem disguised as a finite-memory theorem.
+`V_{m,K} = 1 / (2 ceil(m/K))`,
+
+while a free ex ante mixture over complete K-label controllers has value
+
+`Vbar_{m,K} = K / (2m)`.
+
+The gap is strict when K does not divide m, for example
+
+`V_{3,2} = 1/4 < 1/3 = Vbar_{3,2}`.
+
+The controller's chosen action is separately retained in an m-state buffer, and the profile is explicitly `(1,K,m,3,6,3)`. This is therefore not the old unrestricted policy-tree theorem disguised as a finite-memory theorem.
 
 The full-support perturbation result also removes the objection that the separation is caused only by zero-probability reports.
 
@@ -144,57 +117,45 @@ The old statement "the paper has no exact informative finite-memory controlled t
 
 **Substantially strengthened, but not closed.**
 
-The exact two-preparation value is now determined on the physical segment (Wge12). This is much stronger than the old deterministic lower construction.
+The exact two-preparation value is now determined on the physical segment W >= 12. This is much stronger than the old deterministic lower construction.
 
-However, the least peak width at two preparations and the complete widths (3,dots,11) frontier remain open. The manuscript says so clearly.
+However, the least peak width at two preparations and the complete widths 3,...,11 frontier remain open. The manuscript says so clearly.
 
 Thus the physical result now gives an exact vertical segment of the frontier, not the full Pareto boundary.
 
 ## 2.3 Route C / request 15.3: exact multi-preparation marked theory
 
-**Resolved at (N=2), including a continuous family.**
+**Resolved at N=2, including a continuous family.**
 
-The exact original value (U_2(b,Q_*)) is proved, and Theorem 12.1 gives an interval of exact (N=2) target biases
-[
-rac6{25}legammalerac{13}{50}.
-]
+The exact original value U2(b,Q*) is proved, and Theorem 12.1 gives an interval of exact N=2 target biases
+
+`6/25 <= gamma <= 13/50`.
 
 The old criticism that the exact marked theory stops at one training preparation is obsolete.
 
-What remains open is not "do (N=2)" but whether the (N=1,2) formulas expose a structural mechanism that persists for (Nge3), large (N), or a broader class of experiment families.
+What remains open is not "do N=2" but whether the N=1,2 formulas expose a structural mechanism that persists for N >= 3, large N, or a broader class of experiment families.
 
 ## 2.4 Request 15.4: arbitrary integer revelation laws
 
-**Meaningfully improved, still partial for (Kge3).**
+**Meaningfully improved, still partial for K >= 3.**
 
-The paper correctly distinguishes the uniform-prior balanced-partition value from the minimax value when (K
-mid m). Proposition 14.1 gives a low-reveal exact range and the perfect-reveal endpoint, and Theorem 14.2 gives the complete (K=2) law
-[
-V^{m er}_{N,m}(2)
-=
-min{2wbho,w}.
-]
+The paper correctly distinguishes the uniform-prior balanced-partition value from the minimax value when K does not divide m. Proposition 14.1 gives a low-reveal exact range and the perfect-reveal endpoint, and Theorem 14.2 gives the complete K=2 law
+
+`V_er(N,m,2) = min(2 w b rho, w)`.
 
 This is a genuine correction and strengthening of the divisible model.
 
-The remaining (Kge3), high-reveal range is explicitly left as an exact constrained optimization rather than filled with an unsupported formula.
+The remaining K >= 3, high-reveal range is explicitly left as an exact constrained optimization rather than filled with an unsupported formula.
 
 ## 2.5 Route D / request 15.5: restore the General Theta foundations spine
 
 **Resolved architecturally.**
 
-The canonical article now begins from A0–A5, prepared path laws, predictive quotients, barycenters, checkpoint resolution, an online resolution theorem, causal morphisms, and an acquired transport theorem.
+The canonical article now begins from A0-A5, prepared path laws, predictive quotients, barycenters, checkpoint resolution, an online resolution theorem, causal morphisms, and an acquired transport theorem.
 
 This matches the direction of the repository blueprint:
-[
-	ext{prepared causal experiment}
-	o
-	ext{predictive quotient}
-	o
-	ext{causal simulation}
-	o
-	ext{finite-resource resolution}.
-]
+
+`prepared causal experiment -> predictive quotient -> causal simulation -> finite-resource resolution`.
 
 I withdraw the v25 objection that the title and the canonical article describe materially different papers.
 
@@ -204,7 +165,7 @@ The remaining question is not whether the spine is present. It is whether the ma
 
 **Resolved locally, not program-wide.**
 
-Theorem 18.1 is an actual proof dependency. It uses the exact (U_2) margin, the finite-precision implementation, the physical bridge, and the acquired causal transport theorem to obtain a confidence result with explicit preparation and memory costs.
+Theorem 18.1 is an actual proof dependency. It uses the exact (U2) margin, the finite-precision implementation, the physical bridge, and the acquired causal transport theorem to obtain a confidence result with explicit preparation and memory costs.
 
 This is materially better than a metadata edge.
 
@@ -224,23 +185,21 @@ Literature positioning is no longer a principal reason for rejection.
 
 ## 3.1 The finite-profile dynamic theorem is logically clean
 
-For a fixed legal interface, the parameterwise occupation bundle
-[
-x_	heta(h,s)
-]
-is an offline design state. The executing controller does not receive (x), (	heta), or an unrecorded history.
+For a fixed legal interface, the parameterwise occupation bundle `x_theta(h,s)` is an offline design state. The executing controller does not receive x, theta, or an unrecorded history.
 
 The recursion
-[
-B_T(x)=min_	hetasum_{h,s}x_	heta(h,s)r_	heta(h,s),
-qquad
-B_t(x)=max_{qinmathcal Q_t}B_{t+1}(mathcal T_{t,q}x)
-]
+
+`B_T(x) = min_theta sum_{h,s} x_theta(h,s) r_theta(h,s)`
+
+and
+
+`B_t(x) = max_{q in Q_t} B_{t+1}(T_{t,q} x)`
+
 therefore optimizes a single common stochastic prescription at each scheduled stage.
 
 I do not see a hidden parameter-dependent runtime oracle in this statement.
 
-The Lipschitz estimate follows from contraction of total variation/(ell^1) mass under stochastic matrices. Compactness of the row simplices and of the parameter space gives the stated attainment under the manuscript's continuity assumptions.
+The Lipschitz estimate follows from contraction of l1 mass under stochastic matrices. Compactness of the row simplices and of the parameter space gives the stated attainment under the manuscript's continuity assumptions.
 
 The supersolution identity is exact, although mathematically it is close to the Bellman principle itself rather than an unexpected duality theorem.
 
@@ -248,101 +207,63 @@ The autonomous/shared-row caveat is also correctly stated: a row reused at diffe
 
 ## 3.2 The routing converse has the right bottleneck constant
 
-For
-[
-p_i=sum_sE(smid i)D(imid s),
-]
-the score for at least one value of the hidden bit is at most (p_i/2).
+For `p_i = sum_s E(s|i) D(i|s)`, the score for at least one value of the hidden bit is at most `p_i/2`.
 
-Let (L=lceil m/Kceil). If every (p_i>1/L), then for each (i) some decoder row satisfies
-[
-D(imid s)>1/L.
-]
-A single stochastic row can contain at most (L-1) such indices, while
-[
-K(L-1)<m.
-]
-This yields the claimed upper bound.
+Let `L = ceil(m/K)`. If every `p_i > 1/L`, then for each i some decoder row satisfies `D(i|s) > 1/L`. A single stochastic row can contain at most `L-1` such indices, while `K(L-1) < m`. This yields the claimed upper bound.
 
 Balanced fibers attain it.
 
-For the free mixture, the uniform-prior calculation
-[
-rac1msum_i p_i
-le rac Km
-]
-is correct, and the cyclic interval mixture attains the resulting (K/(2m)) value.
+For the free mixture, the uniform-prior calculation `(1/m) sum_i p_i <= K/m` is correct, and the cyclic interval mixture attains the resulting `K/(2m)` value.
 
 The theorem therefore gives a real mixed-versus-behavioral resource gap, not just an example of adaptive sensing.
 
 ## 3.3 The positive-noise routing persistence is consistent
 
-Each of the two training rows moves by at most (epsilon) in total variation. Coupling until the first discrepancy gives at most (2epsilon) path disagreement. For a reward in ([-1,1]), the value of either controller class moves by at most (4epsilon). Thus the gap decreases by at most (8epsilon), matching the stated condition
-[
-epsilon<Delta_{m,K}/8.
-]
+Each of the two training rows moves by at most epsilon in total variation. Coupling until the first discrepancy gives at most `2 epsilon` path disagreement. For a reward in [-1,1], the value of either controller class moves by at most `4 epsilon`. Thus the gap decreases by at most `8 epsilon`, matching the stated condition `epsilon < Delta_{m,K}/8`.
 
 I find no constant mismatch here.
 
-## 3.4 The exact (U_2) lower certificate is genuinely global
+## 3.4 The exact U2 lower certificate is genuinely global
 
-Theorem 11.1 does not certify only a grid or only the diagonal (p=q).
+Theorem 11.1 does not certify only a grid or only the diagonal p=q.
 
-With (u=(p+q-1)^2) and (v=(p-q)^2), the new response has score
-[
-G(u,v)=H(u,v)+	au J(u,v).
-]
-The cubic equation gives (J(r,0)=0), and (	au) is chosen so that the (u)-derivative vanishes at (r).
+With `u = (p+q-1)^2` and `v = (p-q)^2`, the new response has score `G(u,v) = H(u,v) + tau J(u,v)`. The cubic equation gives `J(r,0)=0`, and tau is chosen so that the u-derivative vanishes at r.
 
-Modulo the cubic, the displayed factorization
-[
-G(u,0)-v_2
-=
-rac{(u-r)^2{75+12r+6u-37r^2-74ru}}
-     {64r(3r+25)}
-]
-is consistent.
+Modulo the cubic, the displayed factorization is
 
-The bracket is positive on the claimed region, and the manuscript's derivative bounds
-[
-partial_vHgerac7{32},qquad
-partial_vJge-rac3{64}
-]
-give strict transverse monotonicity after (0<	au<1).
+`G(u,0)-v2 = (u-r)^2 (75+12r+6u-37r^2-74ru) / (64 r (3r+25))`.
+
+The bracket is positive on the claimed region, and the manuscript's derivative bounds `partial_v H >= 7/32` and `partial_v J >= -3/64` give strict transverse monotonicity after `0 < tau < 1`.
 
 Thus the lower bound is a full-square statement.
 
-## 3.5 The (U_2) upper bound does not silently restrict the response class
+## 3.5 The U2 upper bound does not silently restrict the response class
 
-Under the two-point diagonal prior, conditional on the total number (S) of ones among the four training report bits, the ordering of those bits and the two independent marks are parameter-independent.
+Under the two-point diagonal prior, conditional on the total number S of ones among the four training report bits, the ordering of those bits and the two independent marks are parameter-independent.
 
 The manuscript then evaluates the signed predictive coefficients for every validation coordinate. The sign pattern
-[
-(0,-,+,+),quad(+,-,+,+),quad(+,+,+,+),quad
-(+,+,-,+),quad(+,+,-,0)
-]
+
+`(0,-,+,+), (+,-,+,+), (+,+,+,+), (+,+,-,+), (+,+,-,0)`
+
 selects exactly the stated response. Off-support validation atoms have nonpositive coefficient because the target gives them zero mass.
 
-Thus grouping by (S) is a proof device for the Bayes coefficients, not an imposed restriction on competitors.
+Thus grouping by S is a proof device for the Bayes coefficients, not an imposed restriction on competitors.
 
 Equality at the two prior support points closes the minimax match.
 
 I do not see the old "symmetric response only" loophole.
 
-## 3.6 The continuous (N=2) family is a theorem, not a perturbative remark
+## 3.6 The continuous N=2 family is a theorem, not a perturbative remark
 
-Theorem 12.1 proves an explicit root, response parameter, square factorization, transverse monotonicity, and coefficient sign pattern uniformly over
-[
-6/25legammale13/50.
-]
+Theorem 12.1 proves an explicit root, response parameter, square factorization, transverse monotonicity, and coefficient sign pattern uniformly over `6/25 <= gamma <= 13/50`.
 
-This deserves more credit than a stability corollary around (gamma=1/4). It is an exact continuous saddle family.
+This deserves more credit than a stability corollary around gamma=1/4. It is an exact continuous saddle family.
 
-## 3.7 The physical (Wge12) exactness is correctly one-sided in width
+## 3.7 The physical W >= 12 exactness is correctly one-sided in width
 
 The construction fits in peak twelve.
 
-The converse uses the admissible common-garbling private subfamily and the architecture-uniform outer dual, so it applies even to larger-memory or feedback competitors. Consequently the exact score for (Wge12) follows.
+The converse uses the admissible common-garbling private subfamily and the architecture-uniform outer dual, so it applies even to larger-memory or feedback competitors. Consequently the exact score for W >= 12 follows.
 
 This does **not** imply that width twelve is necessary. The paper explicitly says so.
 
@@ -350,16 +271,13 @@ That distinction is important and correctly maintained.
 
 ## 3.8 The integer revelation correction is mathematically important
 
-For (m=Kq+s), the balanced-fiber Bayes value is
-[
-B_{m,K}
-=
-1-rac{(K-s)q^2+s(q+1)^2}{m^2}.
-]
+For `m = Kq+s`, the balanced-fiber Bayes value is
+
+`B_{m,K} = 1 - ((K-s)q^2 + s(q+1)^2)/m^2`.
 
 The manuscript correctly observes that this need not be minimax-attainable without a stored partition selector. The low-reveal initialization is nonnegative exactly in the stated range, and the perfect-reveal upper bound follows from the largest unavoidable fiber.
 
-The complete (K=2) formula then gives a real phase transition for odd (m).
+The complete K=2 formula then gives a real phase transition for odd m.
 
 This section improves the conceptual honesty of the resource theory: Bayes symmetrization and implementable finite-memory minimax are not conflated.
 
@@ -370,17 +288,10 @@ Theorem 3.4 couples the exact and approximate transducers only while their **ext
 This avoids a common but serious mistake: comparing two approximate posteriors and assuming that an arbitrary feedback policy must choose the same action at nearby beliefs.
 
 The resulting defect bound
-[
-Delta
-=
-minleft{1,arepsilon_{m mod}+eta+
-sum_{t<T}(epsilon_t+L_te_t+b_ta)ight}
-]
-and the state product
-[
-C_{m cal}R_tM_tK_t
-]
-are consistent with the declared execution model.
+
+`Delta = min(1, epsilon_mod + eta + sum_{t<T}(epsilon_t + L_t e_t + b_t a))`
+
+and the state product `C_cal R_t M_t K_t` are consistent with the declared execution model.
 
 Again, I find this careful and useful.
 
@@ -399,18 +310,12 @@ Theorem 7.1 does the first.
 
 Once the architecture, scheduled cuts, legal visible inputs, and row-sharing constraints are fixed, the occupation bundle gives an exact dynamic program. This is valuable because it prevents illegal posterior access or free policy-tree mixing.
 
-But mathematically the theorem is still the principle of optimality applied to a very large design state. Its supersolution formula is attained by the value function itself. It does not reduce the complexity of the constrained problem, reveal a convex geometry comparable to the unrestricted posterior-predictive dual, or characterize the outer optimization
-[
-V^{m out}(R)=sup_{Ainmathcal A(R)}V(A)
-]
-over architectures satisfying a resource budget.
+But mathematically the theorem is still the principle of optimality applied to a very large design state. Its supersolution formula is attained by the value function itself. It does not reduce the complexity of the constrained problem, reveal a convex geometry comparable to the unrestricted posterior-predictive dual, or characterize the outer optimization `V_out(R) = sup_{A in A(R)} V(A)` over architectures satisfying a resource budget.
 
 The new routing theorem then supplies one exact nontrivial family. This is the actual novelty-bearing finite-memory result.
 
 That family is good, but it has an important limitation already acknowledged by the authors: (K) is a bottleneck coordinate, not the uniform peak. The chosen sensing action is kept in a separately charged (m)-state buffer. The exact profile is
-[
 (1,K,m,3,6,3).
-]
 
 Thus as (m) grows, the construction does not exhibit a separation at uniformly bounded total peak memory. It exhibits a sharp multicut tradeoff in which one cut is restricted to (K) labels while another cut grows with (m).
 
@@ -424,7 +329,7 @@ Revision 26 has crossed from "the finite-memory problem is missing" to "the fini
 
 That is real progress. It is also the main remaining limitation.
 
-# 5. The exact (U_2) theorem is impressive but still an algebraic island
+# 5. The exact (U2) theorem is impressive but still an algebraic island
 
 Theorem 11.1 is the cleanest exact calculation in the revision.
 
@@ -478,7 +383,7 @@ This is clean, but the mathematical engine is classical conditional-mean reducti
 Theorem 3.2 assumes:
 
 - a (d)-dimensional covering-number upper bound;
-- a contraction factor (ho<1);
+- a contraction factor rho < 1;
 - a Lipschitz prediction map;
 - an acquired small-ball upper-mass bound of order (a^d).
 
@@ -505,12 +410,12 @@ A stronger foundations result would derive a nontrivial resource monotonicity, e
 
 # 7. The physical theorem is now exact in score but not in memory
 
-The exact physical two-preparation score on (Wge12) is a real advance.
+The exact physical two-preparation score on (W >= 12) is a real advance.
 
 The paper now has:
 
-- exact (U_1);
-- exact (U_2);
+- exact (U1);
+- exact (U2);
 - a self-contained positive-noise collision presentation;
 - a peak-twelve implementation;
 - a universal upper bound from the common-garbling subfamily.
@@ -522,11 +427,9 @@ But the paper's resource language naturally raises the missing inverse question:
 > how much memory is actually necessary to attain the exact two-preparation score?
 
 The current answer is only:
-[
-Wge12quadLongrightarrowquad	ext{the exact ideal score is }U_2.
-]
+`W >= 12  =>  exact ideal score = U2`.
 
-It does not say whether (W=12) is sharp. It does not exclude (W=11), (W=8), or another smaller width. The entire region (3le Wle11) is still outside the exact frontier.
+It does not say whether (W=12) is sharp. It does not exclude (W=11), (W=8), or another smaller width. The entire region (3 <= W <= 11) is still outside the exact frontier.
 
 This matters more in v26 than it did in v25 because finite memory is now in the title and has become a central mathematical theme.
 
@@ -594,9 +497,9 @@ There are many theorem families:
 - unrestricted controlled duality;
 - finite-profile dynamic optimization;
 - routing gap;
-- exact (U_1);
-- exact (U_2);
-- continuous (U_2(gamma));
+- exact (U1);
+- exact (U2);
+- continuous (U2(gamma));
 - physical realization;
 - revelation laws;
 - finite-architecture subdivision;
@@ -649,7 +552,8 @@ The following are examples of mathematically relevant routes. I do not require a
 
 The exact routing law is a strong example. The next step would be a theorem characterizing a nontrivial class of finite-memory controlled experiments.
 
-For example, one could seek a dual or sharp relaxation for (V^{m out}(R)), an invariant of the experiment/profile that controls the loss from unavailable persistent mixing, or a theorem identifying when the nonlinear occupation program collapses to a tractable finite-dimensional object.
+For example, one could seek a dual or sharp relaxation for (V^{
+m out}(R)), an invariant of the experiment/profile that controls the loss from unavailable persistent mixing, or a theorem identifying when the nonlinear occupation program collapses to a tractable finite-dimensional object.
 
 The point is not computational efficiency alone. The point is a reusable mathematical structure.
 
@@ -686,7 +590,7 @@ This should arise from an actual proof, not from a dependency manifest.
 To avoid a moving target, I explicitly would **not** ask for:
 
 - another demonstration that adaptive sensing can beat open-loop sensing;
-- another rational (U_1) upper certificate;
+- another rational (U1) upper certificate;
 - another proof that the physical bridge is self-contained;
 - another build or preservation audit;
 - another exact divisible revelation formula;
@@ -722,15 +626,15 @@ Revision 26 has already settled these points.
 
 **Assessment:** one of the strongest new results. Exact, sharp, genuinely finite-memory, and robust to full-support perturbations. Its (K) coordinate is a specified bottleneck, while an (m)-state action buffer is separately charged. Therefore it is not a fixed-total-peak law.
 
-### Exact (U_2)
+### Exact (U2)
 
 **Assessment:** excellent exact minimax calculation, with a global lower certificate and full response-class upper bound. This fully answers a central v25 request.
 
-### Continuous (U_2(gamma)) family
+### Continuous (U2(gamma)) family
 
 **Assessment:** a real family, not a perturbative corollary. Still tightly model-specific and limited to (N=2).
 
-### Exact physical score for (Wge12)
+### Exact physical score for (W >= 12)
 
 **Assessment:** meaningful and substantially stronger than the previous construction. It determines score, not minimal width. The difficult width converse remains open.
 
@@ -779,7 +683,7 @@ At that standard, I still see the paper as a collection of several strong exact 
 
 The general finite-memory theorem is exact but largely formulational.  
 The novel exact finite-memory value is tied to one routing geometry and a multicut profile.  
-The exact (U_2) theory remains highly structured and does not yet expose an (N)-general mechanism.  
+The exact (U2) theory remains highly structured and does not yet expose an (N)-general mechanism.  
 The foundations theorems are careful but often package classical quantization/coupling ideas after strong geometric hypotheses are assumed.  
 The flagship physical result gives the exact score above width twelve without solving the width converse.  
 The local consumer is real, but the major historical A2/B4/C2 routes remain independent.
@@ -818,14 +722,15 @@ A future version would be most persuasive not by adding more exact submodels, bu
 - General Theta Foundations blueprint and original implementation note inspected.
 - Round-Seventeen eleven-paper dependency ledger inspected.
 - Finite-profile occupation recursion checked for parameter/runtime separation.
-- Routing (1/(2lceil m/Kceil)) pigeonhole converse checked.
+- Routing (1/(2lceil m/K
+ceil)) pigeonhole converse checked.
 - Free-selector (K/(2m)) average bound and cyclic construction checked.
 - Positive-noise gap constant checked.
-- (U_2) positive root and numerical constants independently spot-checked.
-- (U_2) displayed diagonal factorization checked modulo the cubic relation.
+- (U2) positive root and numerical constants independently spot-checked.
+- (U2) displayed diagonal factorization checked modulo the cubic relation.
 - Full-response upper-bound grouping logic checked.
 - Continuous (gamma) family proof route inspected.
-- Physical (Wge12) converse/construction logic inspected.
+- Physical (W >= 12) converse/construction logic inspected.
 - Integer nondivisible Bayes/minimax distinction inspected.
 - Joint causal transport visible-prefix coupling inspected.
 - Build/test evidence treated as reproducibility evidence only.
