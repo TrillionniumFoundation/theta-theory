@@ -1,6 +1,6 @@
 # A2 referee entry — revision 152
 
-Mathematical source staged; completed verification is asserted only by the v152 build receipt.
+Verified native publication from source commit `6919346ef17cf3f599a03e69c722a890fe144fe1`.
 
 Branch: `revision/a2-v152-divisor-conductor-collision-geometry-2026-09-24`. Controlling review: `11c9e91135c5e8bb3ee61a067d76286d81a3df7d`.
 
