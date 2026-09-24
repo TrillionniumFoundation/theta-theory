@@ -1,0 +1,132 @@
+\section{Deficiency of a stochastic lift diagram}\label{sec:deficiency34}
+We next turn the quantitative converse into an obstruction to approximate
+stochastic lifts of the main experiment. The local language is classical
+comparison of experiments \cite{Blackwell,Torgersen}; the new use is a
+uniform lower bound on a full diagram, derived from the Fourier budget.
+
+\subsection{Finite garbling and its normalization}
+Let $E\in\R_+^{H\times K}$ and $F\in\R_+^{H\times J}$ have stochastic
+rows, indexed by a common finite parameter set. With the convention
+$\operatorname{TV}(p,q)=\frac12\sum_j|p_j-q_j|$, define
+\begin{equation}\label{eq:deficiency34}
+ \delta(E,F)=\min_{T\mathbf1=\mathbf1,\,T\ge0}
+                    \max_{h\in H}\operatorname{TV}((ET)_h,F_h).
+\end{equation}
+The direction is fixed: the signal of $E$ is to simulate the signal of $F$.
+This is a one-sided finite deficiency. It is not a distance unless both
+directions and appropriate equivalence classes are considered.
+
+\begin{proposition}[Finite comparison formula]\label{prop:blackwell34}
+The minimum in \eqref{eq:deficiency34} is attained, and
+\begin{equation}\label{eq:deficiency-dual34}
+ \delta(E,F)=\max_{\sum_h\osc(Z_h)\le1}
+ \left\{\langle Z,F\rangle-\sum_{i=1}^K\max_{1\le j\le J}
+                                      (E^TZ)_{ij}\right\}.
+\end{equation}
+Here $\osc(Z_h)=\max_jZ_{hj}-\min_jZ_{hj}$; adding a constant to a row
+of $Z$ changes neither objective nor constraint. In particular,
+$\delta(E,F)=0$ if and only if $F=ET$ for a stochastic $T$, equivalently
+if and only if the associated finite decision inequalities hold.
+For three finite experiments,
+\begin{equation}\label{eq:deficiency-triangle34}
+                   \delta(E,G)\le\delta(E,F)+\delta(F,G).
+\end{equation}
+\end{proposition}
+\begin{proof}
+The stochastic matrices form a compact polytope. If each row of $A$ sums
+to zero, then
+\[
+ \max_h\frac12\|A_h\|_1
+       =\max_{\sum_h\osc(Z_h)\le1}\langle Z,A\rangle.
+\]
+Indeed each row contributes at most $\osc(Z_h)\|A_h\|_1/2$;
+equality follows by using an indicator of the positive coordinates on a
+maximizing row. Subtract the minimum of each row of $Z$. The permitted
+$Z$ then form the compact convex set specified by auxiliary variables
+$u_h\ge0$, $0\le Z_{hj}\le u_h$, $\sum_hu_h\le1$.
+Apply finite convex minimax to $\langle Z,F-ET\rangle$. Each row of $T$
+maximizes a linear form independently, giving
+$\max_T\langle Z,ET\rangle=\sum_i\max_j(E^TZ)_{ij}$. This proves
+\eqref{eq:deficiency-dual34}, including the normalization of the dual
+budget. At zero error it is exactly the finite Blackwell garbling
+criterion, not a new comparison theorem.
+
+For the triangle bound choose minimizing post-processings $T$ and $U$.
+For every row, contraction of TV under $U$ and the triangle inequality give
+\[
+ \operatorname{TV}((ETU)_h,G_h)
+ \le\operatorname{TV}((ET)_h,F_h)+\operatorname{TV}((FU)_h,G_h).
+\]
+Taking maxima proves \eqref{eq:deficiency-triangle34}.
+\end{proof}
+
+\subsection{One common transition for every prefix}
+Let $H_t$ be all seed/command prefixes of length $t$ in
+\eqref{eq:array34}. A finite proposed diagram $\mathcal E$ assigns a
+row-stochastic matrix $E_t\in\R_+^{H_t\times K_t}$ at every cut.
+These are proposed ideal hidden-state distributions. For $c\in\{0,1\}$
+let $E_{t+1}^{[c]}$ have rows $E_{t+1}(h c,\cdot)$ indexed by $H_t$.
+Let $Q_j$ have rows equal to the prescribed binary answer laws for query
+$j$ and complete prefixes in $H_N$. Define
+\begin{equation}\label{eq:diagram-def34}
+ \begin{split}
+ d_t(\mathcal E)&=\max_{c\in\{0,1\}}\delta(E_t,E_{t+1}^{[c]}),\\
+ d_{\rm out}(\mathcal E)&=\max_{j\in\{1,2\}}\delta(E_N,Q_j),\\
+ \mathcal D(\mathcal E)&=\sum_{t<N}d_t(\mathcal E)+d_{\rm out}(\mathcal E).
+ \end{split}
+\end{equation}
+A stochastic post-processing in each term is common to all prefixes; it
+cannot depend on an unrecorded history. Each fixed-diagram term is a finite
+linear program. The definition does not optimize over the unknown rows
+$E_t$ and does not assert that local errors cannot cancel at the output.
+
+\begin{theorem}[Executable composition and main-family defect]
+\label{thm:diagram34}
+For every diagram $\mathcal E$ there is a clocked stochastic machine with
+its same profile and uniform output error at most
+$\min\{1,\mathcal D(\mathcal E)\}$. If every $K_t\le K$, then
+\begin{equation}\label{eq:diagram-lower34}
+ \mathcal D(\mathcal E)\ge\frac12
+ \left[\frac1{10}-\sqrt{\frac{18K^3}{N\beta_{2K}(\alpha)}}\right]_+.
+\end{equation}
+More generally, for $J_k=\#\{t<N:K_t\le k\}>0$, the same inequality
+holds with $K^3/N$ replaced by $k^3/J_k$.
+\end{theorem}
+\begin{proof}
+Initialize using $E_0$ and use minimizing stochastic matrices in each
+term of \eqref{eq:diagram-def34}. Denote the actual prefix-state law by
+$\widehat E_t(h)$. Induction and TV contraction give
+\[
+ \max_{h\in H_t}\operatorname{TV}(\widehat E_t(h),E_t(h))
+                                      \le\sum_{u<t}d_u(\mathcal E).
+\]
+The selected terminal decoder adds at most $d_{\rm out}$. This proves the
+constructive statement, including a common executable row at every step.
+
+Write $D=\mathcal D(\mathcal E)$. If $D\ge1/20$, the lower bound is
+immediate. Otherwise the constructed machine has error at most $D$, so
+Theorem~\ref{thm:main34} applies with $\kappa=1/10-2D$. It implies
+$N\beta_{2K}(\alpha)\le18K^3/(1/10-2D)^2$. Rearranging gives
+\eqref{eq:diagram-lower34}. The occupation form is identical, using
+\eqref{eq:main-count34} rather than its peak consequence.
+\end{proof}
+
+For badly approximable $\alpha$, the right side is at least
+\begin{equation}\label{eq:diagram-bad34}
+ \frac12\left[\frac1{10}-\sqrt{\frac{18K^5}{b_\alpha^2N}}\right]_+.
+\end{equation}
+Thus no family of diagrams with $K=o(N^{1/5})$ has total certified
+simulation defect tending to zero. In particular a static polygon lift
+using $O(\log N)$ coordinates cannot be turned into a vanishing-defect
+stochastic diagram for this task at the same width. This conclusion
+requires a specified initialization and bounded terminal decoder as in
+\eqref{eq:diagram-def34}; it is not a lower bound on static extension
+complexity. It permits every hidden choice of section and projection,
+not merely a selected regular-polygon extended formulation.
+
+The additive quantity $\mathcal D$ is a useful operational upper bound on
+terminal error, not a claimed exact formula for minimum terminal error.
+Approximation of intermediate lifts, terminal decoding and the complete
+wordwise task are thereby kept distinct. Theorem~\ref{thm:diagram34}
+provides the requested connection between finite deficiency and the
+actual rotation family without relying on a separate toy example.

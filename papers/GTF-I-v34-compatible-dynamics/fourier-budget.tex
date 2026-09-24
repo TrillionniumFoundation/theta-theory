@@ -1,0 +1,189 @@
+\section{A Fourier budget for a hidden register}\label{sec:fourier34}
+This section states the probabilistic argument independently of the
+particular seed amplitude. Let $C_1,\ldots,C_N$ be independent fair bits,
+put $L_t=C_1+\cdots+C_t$, and let $S_t$ be an arbitrary finite-state
+process with
+\begin{equation}\label{eq:markov34}
+ \Pp(S_{t+1}=s'\mid S_0,C_1,\ldots,C_t,S_t,C_{t+1})
+                 =T_{t,C_{t+1}}(S_t,s').
+\end{equation}
+The new command is independent of the past. Initialization may be random.
+The matrices and state spaces may depend on $t$ and $N$.
+Set $Y_t=\zeta^{-L_t}$ and, on states of positive probability, define
+\begin{equation}\label{eq:posterior34}
+ p_t(s)=\Pp(S_t=s),\qquad z_t(s)=\E[Y_t\mid S_t=s],\qquad
+ q_t=\sum_s p_t(s)|z_t(s)|.
+\end{equation}
+Put $z_t=0$ on a zero-mass state. These are conditional expectations used
+in the proof, not registers or extra inputs to the transducer.
+
+\begin{lemma}[One common amplitude loss]\label{lem:phase34}
+The sequence $q_t$ is nonincreasing, with $q_0=1$. If
+$Z_{t+1}=\zeta^{-C_{t+1}}z_t(S_t)$, then
+\begin{equation}\label{eq:bary-phase34}
+ z_{t+1}(S_{t+1})=\E[Z_{t+1}\mid S_{t+1}],\qquad
+ \ell_t:=q_t-q_{t+1}\ge0,\qquad \sum_{t<N}\ell_t\le1.
+\end{equation}
+If a complex function $d(S_N)$ obeys $|d|\le B$ and
+$|\E[Y_Nd(S_N)]|\ge B\kappa$, then $q_t\ge\kappa$ for every $t$.
+\end{lemma}
+\begin{proof}
+The stochastic update and the independence of the new command imply
+$\E[Y_t\mid S_t,C_{t+1},S_{t+1}]=z_t(S_t)$ on positive-mass events.
+The tower property gives the first identity. Conditional Jensen gives
+$q_{t+1}\le\E|Z_{t+1}|=q_t$, hence the telescoping loss bound.
+Finally
+\[
+ |\E[Y_Nd(S_N)]|=|\E[z_N(S_N)d(S_N)]|\le Bq_N.
+\]
+Monotonicity proves the last assertion. No conditional independence of
+past commands given the retained state is assumed.
+\end{proof}
+
+For an integer $l\ge1$ define the homogeneous angular function
+\begin{equation}\label{eq:angular34}
+ f_l(re^{i\theta})=r e^{il\theta}\quad(r>0),\qquad f_l(0)=0.
+\end{equation}
+It is not necessary to differentiate this function at zero. The following
+inequality charges its failure to preserve averages to the \emph{same}
+absolute-amplitude loss for every $l$.
+
+\begin{lemma}[Homogeneous angular averaging]\label{lem:angular34}
+For any integrable complex random variable $Z$ and integer $l\ge1$,
+\begin{equation}\label{eq:angular-bound34}
+ \bigl|\E f_l(Z)-f_l(\E Z)\bigr|
+           \le(l^2+1)\bigl(\E|Z|-|\E Z|\bigr).
+\end{equation}
+\end{lemma}
+\begin{proof}
+If $\E Z=0$, the left side is at most $\E|Z|$, and the result follows.
+Otherwise rotate so that $\E Z=\rho>0$, and write $Z=re^{i\theta}$.
+Then $\E(r\sin\theta)=0$ and $\E(r\cos\theta)=\rho$.
+For $u=e^{i\theta}$ the identity
+\[
+ u^l-1-l(u-1)=(u-1)\sum_{j=0}^{l-1}(u^j-1)
+\]
+and $|u^j-1|\le j|u-1|$ give
+\[
+ |u^l-1-il\sin\theta|\le l^2(1-\cos\theta).
+\]
+Consequently
+\[
+ |e^{il\theta}-\cos\theta-il\sin\theta|
+                       \le(l^2+1)(1-\cos\theta).
+\]
+Multiply by $r$, average, and use the two identities for sine and cosine.
+Rotation covariance of $f_l$ restores the general case. Values with $r=0$
+contribute zero. Thus the proof covers mixtures passing through zero.
+\end{proof}
+
+Let
+\begin{equation}\label{eq:moments34}
+ m_{t,l}=\sum_s p_t(s)f_l(z_t(s)),\qquad
+ a_l=\frac{1+\zeta^{-l}}2.
+\end{equation}
+By radial homogeneity, $|m_{t,l}|\le q_t\le1$.
+
+\begin{lemma}[Moment recursion]\label{lem:moments34}
+There are complex errors $e_{t,l}$ such that
+\begin{equation}\label{eq:moment-recursion34}
+ m_{t+1,l}=a_lm_{t,l}+e_{t,l},\qquad
+ |e_{t,l}|\le(l^2+1)\ell_t\le2l^2\ell_t.
+\end{equation}
+In particular
+\begin{equation}\label{eq:squared-recursion34}
+ |m_{t+1,l}|^2\le
+ (1-\sin^2(\pi l\alpha))|m_{t,l}|^2+4l^2\ell_t.
+\end{equation}
+\end{lemma}
+\begin{proof}
+Apply Lemma~\ref{lem:angular34} conditionally on $S_{t+1}$ to
+$Z_{t+1}$ in Lemma~\ref{lem:phase34}, then average. The total conditional
+amplitude deficit is exactly $\ell_t$. Rotation covariance and the fair
+command give $\E f_l(Z_{t+1})=a_lm_{t,l}$. This proves the first line.
+Both $|m_{t+1,l}|$ and $|a_lm_{t,l}|$ are at most one, so the difference
+of their squares is at most $2|e_{t,l}|$. Use
+$|a_l|^2=1-\sin^2(\pi l\alpha)$.
+\end{proof}
+
+Associate to cut $t$ the positive measure on the circle
+\begin{equation}\label{eq:circle-measure34}
+ \nu_t=\sum_{s:z_t(s)\ne0}p_t(s)|z_t(s)|\,
+                              \delta_{\arg z_t(s)}.
+\end{equation}
+Its mass is $q_t$, it has at most $K_t$ atoms, and its $l$th Fourier
+moment is $m_{t,l}$. Equal directions may be combined; doing so only
+reduces the number of atoms.
+
+\begin{lemma}[A finite positive Fourier witness]\label{lem:fejer34}
+For a positive circle measure $\nu$ of mass $q$ with at most $k$ atoms,
+put
+\[
+ \Phi^{(M)}(\nu)=\sum_{l=1}^M
+               \left(1-\frac l{M+1}\right)|\widehat\nu(l)|^2.
+\]
+Then
+\begin{equation}\label{eq:fejer34}
+ q^2+2\Phi^{(M)}(\nu)\ge\frac{M+1}{k}q^2.
+\end{equation}
+In particular, $\Phi^{(2k)}(\nu)\ge q^2/2$.
+\end{lemma}
+\begin{proof}
+The Fej\'er kernel
+\[
+ F_M(\theta)=\frac1{M+1}\left|\sum_{j=0}^M e^{ij\theta}\right|^2
+     =1+2\sum_{l=1}^M\left(1-\frac l{M+1}\right)\cos(l\theta)
+\]
+is nonnegative and has value $M+1$ at zero. If the atom weights are
+$w_i$, integrate $F_M(\theta-\phi)$ against $\nu\otimes\nu$.
+Dropping the nonnegative off-diagonal terms gives at least
+$(M+1)\sum_iw_i^2\ge(M+1)q^2/k$. Expanding the same integral gives
+the left side of \eqref{eq:fejer34}. This is the elementary positive-kernel
+identity; its use here is to detect a finite hidden register.
+\end{proof}
+
+\begin{theorem}[Spectral occupation budget]\label{thm:fourier34}
+In the process \eqref{eq:markov34}, suppose $q_N\ge\kappa>0$.
+For every integer $k\ge1$, even if other cuts have arbitrarily many states,
+\begin{equation}\label{eq:budget34}
+ \#\{0\le t<N:K_t\le k\}\,\beta_{2k}(\alpha)
+                       \le\frac{18k^3}{\kappa^2}.
+\end{equation}
+The conclusion remains true with $K_t$ replaced by the number of
+positive-probability states under this test distribution.
+\end{theorem}
+\begin{proof}
+Fix $k$, set $M=2k$, $w_l=1-l/(M+1)$, and abbreviate
+$\Phi_t=\Phi^{(M)}(\nu_t)$. Multiply
+\eqref{eq:squared-recursion34} by $w_l$ and sum. This gives
+\[
+ \Phi_{t+1}\le\Phi_t
+   -\sum_{l=1}^M w_l\sin^2(\pi l\alpha)|m_{t,l}|^2
+   +4\ell_t\sum_{l=1}^M w_l l^2.
+\]
+Initially $z_0=1$ on every positive-mass state, so $m_{0,l}=1$ and
+$\Phi_0=M/2=k$. Moreover
+\[
+ \sum_{l=1}^M w_l l^2=\frac{M(M+1)(M+2)}{12}
+     =\frac{k(k+1)(2k+1)}3\le2k^3.
+\]
+Sum over all epochs, use $\Phi_N\ge0$ and
+$\sum\ell_t\le1$, and obtain
+\begin{equation}\label{eq:finite-potential34}
+ \sum_{t<N}\sum_{l=1}^{2k}w_l\sin^2(\pi l\alpha)|m_{t,l}|^2
+                                              \le k+8k^3\le9k^3.
+\end{equation}
+At any cut with at most $k$ positive-mass states,
+Lemma~\ref{lem:fejer34} and $q_t\ge q_N\ge\kappa$ imply
+$\Phi_t\ge\kappa^2/2$. The summand at such a cut is therefore at
+least $\beta_{2k}(\alpha)\kappa^2/2$. All other summands are
+nonnegative. Counting the small cuts proves \eqref{eq:budget34}.
+Nothing in the proof identifies the conditional past phase with a
+statewise future prediction, and no bound on vertices of a lift is used.
+\end{proof}
+
+The test law uses fresh independent commands but makes no such assumption
+about the commands in the specification: a wordwise simulator must pass
+every chosen test distribution. The conditional objects in
+\eqref{eq:posterior34} need not be computable from the finite state by
+an available runtime table; they are used only in the converse.
