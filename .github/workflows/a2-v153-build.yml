@@ -1,0 +1,80 @@
+name: A2 v153 native revision publication
+on:
+  push:
+    branches:
+      - revision/a2-v153-global-incidence-fibre-structure-2026-09-25
+    paths:
+      - .github/workflows/a2-v153-build.yml
+      - papers/A2-v17-boundary-information-coarsening/article/v153/new-core.tex
+      - papers/A2-v17-boundary-information-coarsening/article/v153/frontmatter-v153.tex
+      - papers/A2-v17-boundary-information-coarsening/article/v153/introduction-v153.tex
+      - papers/A2-v17-boundary-information-coarsening/article/v153/assemble_v153.py
+      - papers/A2-v17-boundary-information-coarsening/article/v153/check_v153.py
+permissions:
+  contents: write
+concurrency:
+  group: a2-v153-native-publication
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      DIR: papers/A2-v17-boundary-information-coarsening/article/v153
+      BRANCH: revision/a2-v153-global-incidence-fibre-structure-2026-09-25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 32
+          sparse-checkout: |
+            papers/A2-v17-boundary-information-coarsening/article/v152
+            papers/A2-v17-boundary-information-coarsening/article/v153
+      - name: Install mathematical build tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils python3-sympy
+      - name: Execute exact checks and assemble the complete article
+        run: |
+          python3 "$DIR/check_v153.py"
+          python3 "$DIR/assemble_v153.py" --build
+          pdftoppm -f 1 -singlefile -scale-to 1600 -png "$DIR/geometry.pdf" "$DIR/geometry-page1"
+      - name: Publish only to the isolated revision branch
+        run: |
+          test "$(git ls-remote origin "refs/heads/$BRANCH" | cut -f1)" = "$(git rev-parse HEAD)"
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          d=Path(os.environ['DIR'])
+          r=json.loads((d/'BUILD_RECEIPT_V153.json').read_text())
+          Path('CURRENT_REVIEW_ENTRY.md').write_text(
+              '# A2 referee entry — revision 153\n\n'
+              f'Compiled principal article: [{r["pages"]}-page geometry.pdf]({d}/geometry.pdf). '
+              f'[Self-contained LaTeX]({d}/geometry.tex).\n\n'
+              f'Source commit: `{r["source_commit"]}`. Controlling review: `{r["controlling_review_commit"]}`.\n\n'
+              f'[Response to v152]({d}/RESPONSE_TO_V152_REPORT.md) · [Reading guide]({d}/README.md) · '
+              f'[Build receipt]({d}/BUILD_RECEIPT_V153.json) · [Preservation]({d}/NONDELETION_V153.json) · '
+              f'[Exact consistency checks]({d}/EXACT_CHECKS_V153.json).\n\n'
+              'All inherited principal mathematical blocks are retained. '
+              'The full Ballico 1993 comparison remains documentary-open. '
+              'Finite checks do not certify universal proofs or journal acceptance.\n')
+          PY
+          git config user.name 'A2 revision build'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f "$DIR/geometry.tex" "$DIR/geometry.pdf" "$DIR/geometry.txt" "$DIR/BUILD_RECEIPT_V153.json" "$DIR/NONDELETION_V153.json" "$DIR/EXACT_CHECKS_V153.json" CURRENT_REVIEW_ENTRY.md
+          if ! git diff --cached --quiet; then
+            git commit -m 'A2 v153: publish source-bound complete article and verified build receipts'
+            git push origin "HEAD:refs/heads/$BRANCH"
+          fi
+      - name: Retain build evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a2-v153-complete-review-build
+          path: |
+            papers/A2-v17-boundary-information-coarsening/article/v153/geometry.*
+            papers/A2-v17-boundary-information-coarsening/article/v153/geometry-page1.png
+            papers/A2-v17-boundary-information-coarsening/article/v153/*V153.json
+            papers/A2-v17-boundary-information-coarsening/article/v153/build-pass-*.txt
+          if-no-files-found: warn
+          retention-days: 14
