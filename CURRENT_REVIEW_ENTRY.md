@@ -1,24 +1,19 @@
-# Canonical A2 referee entry — revision 145
+# Canonical A2 referee entry — revision 146
 
-**Native mathematical source commit:** `594c308f78e7b25bb970324589967afec3eff185`.
-**Controlling second-v144 report:** `d8376b5dbb47422d93a474add8362d39cf2a68c1`.
-**Additional first-v144 report:** `e392e7ba5f04a94444831140b22638ae42aa2972`.
-**Preserved v144 publication:** `542bcd5027e96ca41568f3eb9c3481dc0f296fed`.
+Native sources have been assembled. Build success must be read from the source-bound v146 receipt, not inferred from this source commit.
 
-The immutable source SHA defines the mathematical review object. All three native builds and twenty-one executed regression scripts passed in run 35962525715. Finite regressions are not formal proof, an exhaustive priority audit or an editorial certificate.
+Controlling v144 second report: `d8376b5dbb47422d93a474add8362d39cf2a68c1`. Immediate predecessor: `89edc80cce6fd1801b356313544419d30f377636`.
 
-**Principal submission:** [geometry.pdf](papers/A2-v17-boundary-information-coarsening/article/v145/geometry.pdf). Its required proofs and references are internal.
+**Principal submission:** [geometry.pdf](papers/A2-v17-boundary-information-coarsening/article/v146/geometry.pdf) · [native source](papers/A2-v17-boundary-information-coarsening/article/v146/geometry.tex).
 
-**Separate applications manuscript:** [applications.pdf](papers/A2-v17-boundary-information-coarsening/article/v145/applications.pdf).
+**Separate applications manuscript:** [applications.pdf](papers/A2-v17-boundary-information-coarsening/article/v146/applications.pdf).
 
-**Non-submitted complete research archive:** [archive-v144.pdf](papers/A2-v17-boundary-information-coarsening/article/v145/archive-v144.pdf). It preserves all predecessor mathematical parts and is not an additional submission supplement.
+**Non-submitted preserved research archive:** [archive-v144.pdf](papers/A2-v17-boundary-information-coarsening/article/v146/archive-v144.pdf).
 
-[Source lock](papers/A2-v17-boundary-information-coarsening/article/v145/SOURCE_LOCK_V145.json) · [Source-bound receipt](papers/A2-v17-boundary-information-coarsening/article/v145/evidence/BUILD_RECEIPT_V145.json) · [Nondeletion audit](papers/A2-v17-boundary-information-coarsening/article/v145/NONDELETION_V145.json)
+[Point-by-point response](papers/A2-v17-boundary-information-coarsening/article/v146/RESPONSE_TO_V144_REPORTS_V146.md) · [Reading guide](papers/A2-v17-boundary-information-coarsening/article/v146/README.md) · [Issue matrix](papers/A2-v17-boundary-information-coarsening/article/v146/ISSUE_MATRIX_V146.json).
 
-[Point-by-point response](papers/A2-v17-boundary-information-coarsening/article/v145/RESPONSE_TO_V144_REPORTS.md) · [Issue matrix](papers/A2-v17-boundary-information-coarsening/article/v145/ISSUE_MATRIX.json) · [Literature audit](papers/A2-v17-boundary-information-coarsening/article/v145/LITERATURE_AUDIT_V145.md) · [Reading guide](papers/A2-v17-boundary-information-coarsening/article/v145/README.md)
+[Source lock](papers/A2-v17-boundary-information-coarsening/article/v146/SOURCE_LOCK_V146.json) · [Build receipt](papers/A2-v17-boundary-information-coarsening/article/v146/evidence/BUILD_RECEIPT_V146.json) · [Nondeletion audit](papers/A2-v17-boundary-information-coarsening/article/v146/NONDELETION_V146.json) · [Literature audit](papers/A2-v17-boundary-information-coarsening/article/v146/LITERATURE_AUDIT_V146.md).
 
-The main article retains the all-pencil inverse and its smallest uniform order, proves reconstruction on a projective curve and on one Schubert line, and supplies precise classical orthogonal inputs. The applications preserve critical collisions and clarify the prime-field-section and nonreduced Hessian arguments.
+New in v146: intrinsic reconstruction of nonconstant pencil subbundles over smooth projective bases; recovery of the actual source bundle; classification of geometric isomorphisms with a filtered nilpotent automorphism kernel; an explicit nonisotrivial family across six spectral collisions. The all-pencil theorem, uniform sharpness, curve theorem and all predecessor mathematical parts are preserved.
 
-The full Ballico 1993 theorem-level six-axis comparison remains documentary-open. The verified Ohta input and the new curve theorem do not certify historical priority relative to that unread full text.
-
-Earlier root entries are retained under revisions/a2-v145/history. Earlier versions and review branches are unchanged.
+The complete Ballico 1993 theorem-level six-axis comparison remains documentary-open. No anticipation, nonanticipation, exhaustive priority or editorial-acceptance claim is certified. Earlier revision and review branches are unchanged.
