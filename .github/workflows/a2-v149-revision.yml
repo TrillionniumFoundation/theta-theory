@@ -1,0 +1,149 @@
+name: A2 v149 isolated revision verification
+on:
+  push:
+    branches: [revision/a2-v149-intrinsic-pencil-strata-deformations-2026-09-24]
+    paths:
+      - '.github/workflows/a2-v149-revision.yml'
+      - '.revision-bootstrap/a2-v149-2026-09-24/**'
+      - 'papers/A2-v17-boundary-information-coarsening/article/v149/**'
+permissions:
+  contents: write
+concurrency:
+  group: a2-v149-isolated-publication
+  cancel-in-progress: false
+jobs:
+  verify-and-publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      P: papers/A2-v17-boundary-information-coarsening/article/v149
+      PREDECESSOR: dc3a951e26de17e0e69403b1d8cfdfb5e28bc306
+      TARGET_BRANCH: revision/a2-v149-intrinsic-pencil-strata-deformations-2026-09-24
+      OPENBLAS_NUM_THREADS: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Record exact transport bytes
+        uses: actions/upload-artifact@v4
+        with:
+          name: a2-v149-source-transfer
+          path: .revision-bootstrap/a2-v149-2026-09-24/
+          retention-days: 7
+      - name: Verify and reconstruct exact source before execution
+        run: |
+          git fetch --no-tags --depth=1 origin "$PREDECESSOR"
+          git diff --exit-code "$PREDECESSOR" -- papers/A2-v17-boundary-information-coarsening/article/v148 reviews/a2-v148-independent-harsh-top4-2026-09-24/REFEREE_REPORT.md
+          python - <<'PY'
+          import base64,hashlib,json,lzma,os
+          from pathlib import Path,PurePosixPath
+          root=Path('.revision-bootstrap/a2-v149-2026-09-24')
+          expected=['74b569787d750e4dd70caa184a6dcfa508200d56','b82017262e1fb3dd0ca45786e673b3dae336771b','655906055ffefa5fa5820f615c8e75072563256f','6c99faa372bc683193a5bc4618499964fdb3387a','efeb8c114ab2032d34de4e9c6089198b2c766d56','126d39b68b4ccc50556122c28ca57ee2878badf5']
+          chunks=[]
+          for i,want in enumerate(expected,1):
+              b=(root/f'payload-{i:02}.b64').read_text().strip().encode()
+              got=hashlib.sha1(b'blob '+str(len(b)).encode()+b'\0'+b).hexdigest()
+              if got!=want: raise SystemExit(f'Transport hash mismatch in chunk {i}: {got} != {want}')
+              chunks.append(b)
+          compressed=base64.b64decode(b''.join(chunks),validate=True)
+          if hashlib.sha256(compressed).hexdigest()!='68ac1d31006935c72ebc7c7604ae3347feea0ae0f84821e2fbb8635611ab319a':
+              raise SystemExit('Compressed transport SHA256 mismatch')
+          raw=lzma.decompress(compressed)
+          if hashlib.sha256(raw).hexdigest()!='f40cfefc8aed1cf56a9f05115ff7243e7f2f8469ebab6c7418f7d87988601f3f':
+              raise SystemExit('Uncompressed source SHA256 mismatch')
+          source=json.loads(raw);p=Path(os.environ['P']);base=p.parent/'v148';p.mkdir(parents=True,exist_ok=True)
+          def safe(name):
+              rel=PurePosixPath(name)
+              if rel.is_absolute() or '..' in rel.parts or rel.suffix not in {'.tex','.py','.sh','.md','.json'}:
+                  raise SystemExit('Unsafe source path: '+name)
+              return rel
+          for name,value in source.items():
+              safe(name)
+              if isinstance(value,str): text=value
+              else:
+                  path=base/safe(value['base']);old=path.read_bytes()
+                  if hashlib.sha256(old).hexdigest()!=value['base_sha256']: raise SystemExit('Predecessor hash mismatch: '+str(path))
+                  lines=old.decode().splitlines(keepends=True)
+                  edits=value['edits'];last=0
+                  for i,j,t in edits:
+                      if not(isinstance(i,int) and isinstance(j,int) and isinstance(t,str) and last<=i<=j<=len(lines)):
+                          raise SystemExit('Invalid source edit: '+name)
+                      last=j
+                  for i,j,t in reversed(edits): lines[i:j]=[t]
+                  text=''.join(lines)
+              dest=p/name;dest.parent.mkdir(parents=True,exist_ok=True);dest.write_text(text)
+          lock=json.loads((p/'LOCAL_PREFLIGHT_SOURCE_SHA256_V149.json').read_text())
+          for name,want in lock.items():
+              safe(name)
+              if hashlib.sha256((p/name).read_bytes()).hexdigest()!=want: raise SystemExit('Preflight mismatch: '+name)
+          print('Verified exact source overlay and all',len(lock),'preflight hashes.')
+          PY
+      - name: Assemble and publish complete immutable source
+        run: |
+          python "$P/revision_v149.py" assemble
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f "$P" CURRENT_REVIEW_ENTRY.md
+          python - <<'PY'
+          import os,subprocess
+          names=subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines()
+          if any(not(n.startswith(os.environ['P']+'/') or n=='CURRENT_REVIEW_ENTRY.md') for n in names):
+              raise SystemExit('Unexpected staged path; refusing source publication')
+          PY
+          if ! git diff --cached --quiet; then
+            git commit -m 'source(A2 v149): intrinsic pencil strata and deformations with preserved proofs [skip ci]'
+            git push origin "HEAD:refs/heads/$TARGET_BRANCH"
+          fi
+          echo "A2_SOURCE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - name: Install native mathematics build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+          python -m pip install sympy==1.14.0 numpy==2.3.5
+      - name: Execute all regressions and native PDF builds
+        run: |
+          python "$P/revision_v149.py" build
+          python - <<'PY'
+          import json,os,platform,subprocess,sys
+          from pathlib import Path
+          import sympy,numpy
+          p=Path(os.environ['P'])/'evidence'
+          data={'source_commit':os.environ['A2_SOURCE_COMMIT'],'workflow_run_id':os.environ['GITHUB_RUN_ID'],
+                'python':sys.version,'platform':platform.platform(),'sympy':sympy.__version__,'numpy':numpy.__version__,
+                'pdflatex':subprocess.check_output(['pdflatex','--version'],text=True).splitlines()[:2]}
+          (p/'BUILD_ENVIRONMENT_V149.json').write_text(json.dumps(data,indent=2)+'\n')
+          PY
+      - name: Publish verified PDFs and source-bound evidence
+        run: |
+          git diff --exit-code "$PREDECESSOR" -- papers/A2-v17-boundary-information-coarsening/article/v148 reviews/a2-v148-independent-harsh-top4-2026-09-24/REFEREE_REPORT.md
+          git add -f "$P/geometry.pdf" "$P/applications.pdf" "$P/archive-v144.pdf"
+          git add -f "$P/geometry-labels.aux" "$P/applications-labels.aux" "$P/archive-v144-labels.aux"
+          git add -f "$P/evidence" "$P/SOURCE_LOCK_V149.json" "$P/NONDELETION_V149.json" "$P/PROVENANCE_MANIFEST_V149.json" CURRENT_REVIEW_ENTRY.md
+          python - <<'PY'
+          import os,subprocess
+          names=subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines()
+          if any(not(n.startswith(os.environ['P']+'/') or n=='CURRENT_REVIEW_ENTRY.md') for n in names):
+              raise SystemExit('Unexpected staged path; refusing publication')
+          PY
+          if ! git diff --cached --quiet; then
+            git commit -m "build(A2 v149): publish 26 checks and native PDFs from $A2_SOURCE_COMMIT [skip ci]"
+            git push origin "HEAD:refs/heads/$TARGET_BRANCH"
+          fi
+          mkdir -p publication
+          git archive HEAD "$P" CURRENT_REVIEW_ENTRY.md | tar -x -C publication
+          printf 'source_commit=%s\npublication_commit=%s\n' "$A2_SOURCE_COMMIT" "$(git rev-parse HEAD)" > publication/REMOTE_COMMITS.txt
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: a2-v149-verified-native-publication
+          path: publication
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: a2-v149-failure-diagnostics
+          path: papers/A2-v17-boundary-information-coarsening/article/v149/evidence
+          if-no-files-found: ignore
+          retention-days: 7
