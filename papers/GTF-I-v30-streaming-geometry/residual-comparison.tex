@@ -1,0 +1,81 @@
+\section{Residual automata and arbitrary positive states}
+\label{sec:residual}
+For a stochastic language $L$ on finite words and a prefix $u$ with
+$L(u\Sigma^*)>0$, its normalized residual is
+$L_u(v)=L(uv)/L(u\Sigma^*)$. A residual probabilistic automaton requires
+every state's generated language to be one of these residuals. An
+arbitrary probabilistic automaton need not satisfy that restriction.
+The distinction is explicit in the probabilistic residual line initiated
+by Esposito, Lemay, Denis and Dupont \cite{ELDD02}, and in
+\cite[Section 2 and Propositions 16, 19]{DenisEsposito}. Canonical
+minimality within a residual representation class is consequently not
+a minimum over all positive generators.
+
+The following construction makes the distinction within the precise
+streaming family, without appealing to a conjectured difference between
+models. It concerns the total number of states of a generative automaton;
+its clock is explicitly incorporated in the states.
+
+\begin{theorem}[A finite-language separation]\label{thm:prfa-gap}
+Fix $n\ge2$ and rational $0<\eta\le(2n-1)^{-1}$. There is a finite
+stochastic language $L_{n,\eta}$ such that every residual probabilistic
+automaton generating it has at least $2^n$ states, whereas an unrestricted
+rational probabilistic automaton has at most
+\begin{equation}\label{eq:pfa-count}
+               \frac{(n+1)(n+2)}2+n(n+1)+1
+\end{equation}
+states. The lower bound holds already for the states used immediately
+before the query symbol.
+\end{theorem}
+\begin{proof}
+Use distinct symbols $u_-,u_+$ for acquired bits, $q_j$ for queries,
+and $o_-,o_+$ for answers. Give mass
+\begin{equation}\label{eq:language}
+ L_{n,\eta}(u_{x_1}\cdots u_{x_n}q_j o_b)
+             =\frac{2^{-n}}n\frac{1+b\eta x_j}{2}
+\end{equation}
+to those words and zero to every other word. The masses sum to one.
+After a length-$n$ supported prefix, the residual has probabilities
+$(1+b\eta x_j)/(2n)$ on $q_j o_b$. These $2^n$ residuals are an
+injective affine image of the corners of an $n$-cube. In particular,
+every one is an extreme point of their convex hull.
+
+In a probabilistic realization, condition on such a prefix. The residual
+is a convex combination of the state languages then occupied. Since it
+is supported on words of length two of the displayed query--answer form,
+nonnegativity forces every positively used state language to have that
+same support restriction. In a residual automaton that state language
+must itself be a residual of $L_{n,\eta}$. A residual after a supported
+prefix of length $t$ is concentrated on length $n+2-t$; hence a residual
+concentrated on length two must come from $t=n$. There are no other
+supported prefix types at that length. Therefore the used state languages
+belong to the $2^n$ cube-corner residuals above. Extremality forces each
+corner to occur as a state language. They are distinct, proving the
+lower bound.
+
+For the upper bound, generate the $u$-symbols as independent fair bits.
+Simultaneously run the encoder of Theorem~\ref{thm:reservoir}; a
+transition labelled $u_x$ and updating to $s'$ has probability
+$\frac12 T_{t,x}(s,s')$. Include the phase $t$ in the state. The
+acquisition phases $t=0,\ldots,n$ have a total of
+$\sum_{t=0}^n(t+1)=(n+1)(n+2)/2$ states. At phase $n$, emit $q_j$
+uniformly and enter a state retaining $(s,j)$; there are at most
+$n(n+1)$ such states. Emit $o_b$ with the exact decoder probability
+and enter one common terminating state. Every transition and terminal
+probability is nonnegative rational, and the generated language is
+\eqref{eq:language}. This proves \eqref{eq:pfa-count} with its clock
+and query buffer included.
+\end{proof}
+The theorem does not assert that exponential succinctness differences
+between probabilistic models are new. Its role is to identify a concrete
+instance in which a residual-only minimum cannot be substituted for the
+all-machine minimum in this paper. In the present example the latter
+has a genuinely online positive realization. The state languages of
+that realization generally lie outside the residual hull.
+
+One can equivalently treat the query as an external input, recovering
+the checkpoint and streaming models of Section~\ref{sec:finite}.
+Turning it instead into a generated symbol in \eqref{eq:language} is
+what permits a direct comparison with stochastic-language automata.
+The factor $1/n$ is essential: it normalizes the query choice rather
+than appending an unnormalized family of conditional laws.

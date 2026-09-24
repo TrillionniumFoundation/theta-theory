@@ -1,0 +1,101 @@
+\section{Uniformly approximate experiments and their exact rate}
+\label{sec:approximation}
+For two binary-output channels on the same input/query set, define
+\[
+ d_{\rm row}(P,\widetilde P)=
+     \max_{x,j}\TV(P(\cdot\mid x,j),\widetilde P(\cdot\mid x,j)).
+\]
+For $\varepsilon\ge0$, this is a uniform comparison of experiments, not an error averaged over
+a selected input prior. Let $K_n^\varepsilon(\eta)$,
+$W_n^{{\rm ad},\varepsilon}(\eta)$ and
+$W_n^{{\rm fo},\varepsilon}(\eta)$ denote the corresponding minima
+allowing $d_{\rm row}\le\varepsilon$. Put
+$\kappa=(\eta-2\varepsilon)_+$.
+
+\begin{theorem}[A sharp row-error memory rate]\label{thm:approx-rate}
+If $0<\kappa<1$, then
+\begin{equation}\label{eq:approx-sandwich}
+ 2^{nI(\kappa)}\le K_n^\varepsilon(\eta)
+ \le K_n(\kappa),\qquad
+ W_n^{{\rm fo},\varepsilon}(\eta)\le W_n^{\rm fo}(\kappa).
+\end{equation}
+In particular, for fixed $\eta\in(0,1]$ and fixed
+$0\le\varepsilon<\eta/2$ with $\kappa<1$, all three normalized
+logarithmic approximate complexities converge to $I(\kappa)$.
+For $\varepsilon\ge\eta/2$, one query state and at most two terminal
+states suffice, so the rate is zero. At $(\eta,\varepsilon)=(1,0)$
+the exact state counts equal $2^n$.
+\end{theorem}
+\begin{proof}
+Let $m_j(x)$ be the mean output of an admissible approximate channel.
+Binary total variation is half the absolute difference of means; hence
+$|m_j(x)-\eta x_j|\le2\varepsilon$. Factoring the approximate
+channel through states gives $m(x)=\sum_sE_x(s)z_s$, with
+$z_s\in\cube^n$. Therefore
+\[
+                  x\cdot m(x)\ge n(\eta-2\varepsilon)=n\kappa
+\]
+when $\kappa>0$. Some used generator has $x\cdot z_s\ge n\kappa$.
+The caps in Lemma~\ref{lem:entropy-cap} cover the input corners, giving
+the lower bound, also for adaptive acquisition.
+
+Conversely, exactly synthesize the channel with mean $\kappa x_j$.
+Its distance from the required one is $(\eta-\kappa)/2=\varepsilon$.
+This proves the upper bounds and allows Theorem~\ref{thm:rate} to be
+applied at the fixed signal $\kappa$. If $\kappa=0$, the fair-output
+channel is independent of input and query and has row defect $\eta/2$.
+It needs one state before output. Finally, an exact noiseless response
+to every query determines every input bit through the stored generator;
+the cap argument at $u=1$, or disjoint supports, gives $2^n$ states,
+matched by retention.
+\end{proof}
+
+\subsection{A statistical consumer: reusable binary sensors}
+Consider a parameter $x\in\{-1,1\}^n$ and a preparation interface that
+reveals its coordinates during acquisition. A later single coordinate
+measurement has conditional mean $\eta x_j$. A simulator must be
+installed before the measurement index is chosen. Theorem~\ref{thm:rate}
+is an exact state-cost theorem for this simulator, not a theorem about
+a prior chosen to fit a codebook. Theorem~\ref{thm:approx-rate} gives
+its uniform error--memory exponent, with the same lower bound against
+adaptive acquisition.
+
+\begin{corollary}[Comparison under downstream experiments]
+\label{cor:consumer}
+A simulator with row defect $\varepsilon$ changes the expectation of
+any common $[0,1]$-valued decision loss, after one queried report and
+arbitrary parameter-independent postprocessing, by at most $\varepsilon$,
+uniformly in $x$ and in a randomized query distribution independent of
+the simulator's hidden state. If a sequence of fresh installations has
+conditional row defect at most $\varepsilon$ at each round and is
+coupled to the same downstream history-dependent controller, the
+$T$-round path-law defect is at most $\min(1,T\varepsilon)$.
+\end{corollary}
+\begin{proof}
+At one round, mixture over the common query and contraction under
+postprocessing do not increase total variation; bounded losses then
+have expectation difference at most $\varepsilon$. For repeated
+installations, couple the two executions only while their public
+histories agree. The downstream action laws then agree and the chance
+of a first discrepant report in each active round is at most
+$\varepsilon$. A union bound proves the path statement. The conditional
+hypothesis is essential; it is ensured, for example, by fresh independent
+reinstallation and fresh sampling randomness at every round.
+\end{proof}
+A single compressed label need not support a sequence of independent
+queries with the product output law. Observing an answer may change the
+conditional distribution of that label. Thus repeated use of the same
+unrefreshed code is not justified by the one-query theorem. If all $n$
+noisy answers are required jointly and independently, the specified
+product channel has full matrix rank $2^n$ for every $\eta>0$, and
+needs at least $2^n$ query-barrier states. Indeed its transition matrix
+is the $n$-fold Kronecker power of the invertible binary symmetric
+channel. The distinction between a later chosen measurement and a
+joint vector of measurements is operational, not a change of notation.
+
+The transport argument in the corollary is classical total-variation
+contraction and coupling. Its quantitative memory input is the new
+exact-synthesis law. It is a local statistical consumer, not a claim
+that a Fourier, large-deviation, or nonlinear-semigroup theorem in a
+different part of the foundations program has been proved by finite
+channel synthesis.

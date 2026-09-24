@@ -1,0 +1,221 @@
+\section{Coherent positive realizations at the rank bound}
+\label{sec:coherence}
+\subsection{Finite causal arrays}
+Fix a finite horizon and finite action and report alphabets. A complete
+causal array $C(\mathbf a\mid\mathbf y)$ is nonnegative and normalized,
+and its action-prefix marginal depends only on preceding reports. A
+terminal output is an action with a dummy subsequent report. All storage
+cuts required by the interface are included. In particular, an action
+which must be remembered while awaiting a report has a charged buffer
+cut; it is not available later as an uncharged input. Legal operation and
+buffer-copy requirements can be specified as zeros and mandatory readouts
+in the complete array. Elementary phases may be split to expose them.
+The results below concern the resulting fixed, clocked interface.
+
+For a controller prefix $h$ of positive conditional mass, let $R_h$ be
+its normalized array of future actions, with future reports supplied
+externally. Let $\cR_t$ be all distinct such arrays at cut $t$ and
+$\cP_t$ the polytope of normalized causal arrays on its remaining
+interface. Neither object is a runtime oracle. At zero-mass prefixes
+no residual is defined; the complete array still specifies which
+continuations have zero mass. Partial almost-sure specifications require
+a choice, or an optimization, of complete extensions and are a different
+input to the theorem.
+
+For $B\in\cP_t$, let $p_B(a)$ be its next-action marginal, independent
+of the unread report. Let $S_{a,y}B$ be the unnormalized restriction
+obtained by fixing that action and the next report. If $p_B(a)>0$,
+$S_{a,y}B/p_B(a)\in\cP_{t+1}$; at zero probability the restriction is
+zero. For an actual residual, each positive normalized restriction is
+again an actual residual. These maps are linear before normalization.
+
+Write $F_t(R)$ for the minimal face of $\cP_t$ containing $R$.
+Join two members of $\cR_t$ when their minimal faces intersect, and let
+$\cR_{t,j}$, $1\le j\le c_t$, be the connected components. Define
+\begin{equation}\label{eq:support-rank}
+ r_{t,j}=1+\dim\aff\cR_{t,j},\qquad s_t=\sum_{j=1}^{c_t}r_{t,j}.
+\end{equation}
+Normalization places each component in an affine hyperplane not through
+zero, so $r_{t,j}$ is also its ordinary linear row rank.
+
+\begin{lemma}[Separated-generator bound]\label{lem:separated}
+Every stochastic realization has at least $s_t$ states at cut $t$.
+If it has exactly $s_t$, the states used by component $j$ are precisely
+$r_{t,j}$ affinely independent points of
+$\cP_t\cap\aff\cR_{t,j}$.
+\end{lemma}
+\begin{proof}
+Starting the machine from a state $s$ defines a normalized continuation
+$B_s\in\cP_t$. Conditioning on a prefix gives
+\[
+ R_h=\sum_s E_h(s)B_s,\qquad E_h(s)\ge0,\quad\sum_sE_h(s)=1.
+\]
+Every positively used $B_s$ belongs to $F_t(R_h)$, by the face property.
+Consequently the sets of states used by different support components
+are disjoint. The convex hull of the states used by component $j$
+contains $\cR_{t,j}$, and hence has at least $r_{t,j}$ generators.
+This proves the lower bound. Equality in the sum leaves exactly that
+many generators in each component and no additional used states.
+Containment of an affine space of dimension $r_{t,j}-1$ in their
+affine span forces independence and equality of the two affine spans.
+No residual-state restriction has been imposed.
+\end{proof}
+
+\begin{definition}[Coherent enclosing simplices]\label{def:coherent}
+A coherent rank enclosure consists, at every cut and component, of
+$r_{t,j}$ points $B_{t,j,k}\in\cP_t\cap\aff\cR_{t,j}$ whose convex
+hull contains $\cR_{t,j}$, together with nonnegative numbers
+$w_{t,j,k,a,y,u}$, where $u$ ranges over all vertices selected at the
+next cut, satisfying
+\begin{align}
+ S_{a,y}B_{t,j,k}&=\sum_u w_{t,j,k,a,y,u}B_{t+1,u},
+                                      \label{eq:coherent-shift}\\
+ \sum_u w_{t,j,k,a,y,u}&=p_{B_{t,j,k}}(a).
+                                      \label{eq:coherent-mass}
+\end{align}
+The initial array belongs to the initial selected hull. At the terminal
+cut there is the single empty continuation. Action-buffer phases obey
+the same equations on their explicitly split interface.
+\end{definition}
+The enclosure points are automatically affinely independent: they
+contain a set of the full required affine dimension. In particular,
+``simplex'' describes an enclosing object, not the residual hull.
+
+\begin{theorem}[Rank saturation and causal compatibility]
+\label{thm:coherence}
+For a complete finite clocked causal array, the following are equivalent:
+\begin{enumerate}
+\item A stochastic realization has profile $K_t=s_t$ at every charged cut.
+\item A coherent rank enclosure exists.
+\end{enumerate}
+If every component residual hull is a simplex, its own vertices give
+such an enclosure. The equivalence itself places no simpliciality
+condition on the residual hulls.
+\end{theorem}
+\begin{proof}
+Suppose first that a rank-saturating machine exists. Delete unused states.
+Lemma~\ref{lem:separated} assigns its continuations to the indicated
+component affine slices and proves their independence and enclosure
+property. From a given state the actual next-action law is $p_B$.
+Conditional on action $a$ and report $y$, the actual update probabilities
+$q(u\mid B,a,y)$ are common to all histories giving that state.
+Take $w_u=p_B(a)q(u\mid B,a,y)$. The law of the future program gives
+\eqref{eq:coherent-shift} and \eqref{eq:coherent-mass}. Thus the
+equations hold for one simultaneous collection, including buffer cuts.
+
+Conversely, use the selected vertices as state labels. Initialize by
+an enclosing convex decomposition of $C$. From state $B$, draw the
+next action according to $p_B$. When $p_B(a)>0$, update after report
+$y$ using $w_u/p_B(a)$. At zero $p_B(a)$ the row is unused and can
+be assigned arbitrarily. Equation~\eqref{eq:coherent-mass} makes each
+update stochastic, while $p_B$ is independent of the unread report.
+Backward induction in \eqref{eq:coherent-shift} shows that the future
+array from state $B$ is exactly $B$. The initialized law is therefore
+$C$. The number of labels is $s_t$ at every cut.
+
+For the final assertion, choose the vertices of each residual hull.
+They are actual residuals because the residual set is finite. Their
+positive normalized restrictions are residuals at the next cut and
+have convex decompositions in that cut's chosen vertices. Multiplying
+these decompositions by the action marginal supplies the required
+weights. This is the residual construction, now a special case of
+the equivalence.
+\end{proof}
+
+\begin{corollary}[Algebraic recognition]\label{cor:algebraic}
+For a fully listed rational or real-algebraic array, simultaneous
+attainment of $s_t$ is decidable by a finite existential system of
+polynomial equalities and inequalities. A positive answer admits
+real-algebraic stochastic rows. Here algebraic input numbers are given
+by integer defining polynomials and isolating intervals.
+\end{corollary}
+\begin{proof}
+The finite residuals, component graphs, affine slices, and ranks are
+computed by exact linear algebra and linear feasibility. Write the
+unknown enclosure vertices in these affine slices and impose the linear
+causal-polytope constraints. Introduce convex coefficients for every
+residual enclosure, and weights for \eqref{eq:coherent-shift}--
+\eqref{eq:coherent-mass}. All unknown products have degree at most two.
+Independence is forced by enclosure of the known full-dimensional
+component, so no extra determinant condition is needed. Real quantifier
+elimination, for example cylindrical algebraic decomposition
+\cite{Collins,Davenport}, decides this finite system. A nonempty
+semialgebraic set defined over the real algebraic numbers has a real
+algebraic point, which the same sample-point procedure supplies.
+The construction in the theorem then gives algebraic rows.
+\end{proof}
+This is not a complexity bound polynomial in the horizon or in a
+succinct program. Nor does it replace equalities identifying a stochastic
+row at different autonomous times. Those equalities are extra constraints.
+The theorem characterizes rank saturation, not arbitrary minimum positive
+rank. Its essential additional condition over a list of static enclosures
+is the common shift equation.
+
+\subsection{What static rank does and does not measure}
+Let $A$ be a nonnegative row-stochastic matrix with one output alphabet.
+Let $K(A)$ be the least number of normalized output rows whose convex
+hull contains its rows. Let $K_{\rm aff}(A)$ impose the additional
+condition that generators lie in the affine hull of the rows, and let
+$K_{\rm res}(A)$ require generators to be actual rows.
+
+\begin{proposition}[The normalization boundary]\label{prop:ranks}
+For this single-output model,
+\begin{equation}\label{eq:ranks}
+ \rank A\le\rank_+A=K(A)\le K_{\rm aff}(A)
+ \le K_{\rm res}(A)=|\ext\conv\{A_i\}|.
+\end{equation}
+Writing $r=\rank A$, equality $K(A)=r$ holds if and only if an
+$(r-1)$-simplex in the probability simplex contains every row and lies
+in their affine hull. For a family of queried output laws, the same
+convex characterization uses the product of the output simplices;
+ordinary nonnegative rank of the concatenated matrix is only a lower
+bound unless its factors satisfy all block-normalization equations.
+\end{proposition}
+\begin{proof}
+A stochastic encoder-decoder factorization is a nonnegative factorization.
+Conversely, if $A=UV$ is nonnegative, discard zero rows of $V$ and put
+$d_s=\sum_yV_{sy}>0$. Then $B_{sy}=V_{sy}/d_s$ is stochastic and
+$E_{is}=U_{is}d_s$ has row sum one because $A$ does. This proves
+$\rank_+A=K(A)$. The remaining inequalities follow by restricting the
+generators. The extreme points of a finite hull are precisely the
+necessary actual-row generators, proving the last equality. If $r$
+generators enclose affine dimension $r-1$, their affine hull must be
+the row affine hull and they are independent. This proves the simplex
+criterion and its converse.
+
+With a query $j$, a physical state has a separate normalized decoder
+row for every $j$. Normalizing the total of a concatenated generator
+only fixes the sum over all blocks; it does not make every block sum
+one. The admissible ambient set is therefore the product of simplices,
+which proves the stated distinction.
+\end{proof}
+The single-output affine-slice restriction is the transpose-normalized
+form of restricted nonnegative rank \cite{GG}. At one cut, positive
+generator complexity also decomposes additively over the support
+components: a generator cannot serve two components by the proof of
+Lemma~\ref{lem:separated}, and independent component decompositions can
+be united. For one output alphabet these components are the disjoint
+support blocks of the matrix. This static additivity is not asserted to
+solve the compatibility problem between different cuts.
+
+\begin{proposition}[A nonsimplicial equality and a strict inequality]
+\label{prop:squares}
+For the four binary-query mean rows $(\pm a,\pm a)$, ordinary normalized
+row rank is three. If $0<a\le1/3$, their positive generator number is
+three although their residual hull is a square. If $1/2<a<1$, their
+positive generator number is four although all conditional probabilities
+are strictly positive.
+\end{proposition}
+\begin{proof}
+The rank assertion follows from affine dimension two. The triangle with
+vertices $(-a,-a),(3a,-a),(-a,3a)$ lies in the outer square when
+$a\le1/3$ and contains the inner square; its defining inequalities are
+$z_i\ge-a$ and $z_1+z_2\le2a$. This proves the first assertion.
+For the second, put $d_x(z)=\frac12\sum_{i=1}^2(1-x_i z_i)$ for
+$x\in\{-1,1\}^2$. A convex representation of $a x$ uses a generator
+with $d_x(z)<1/2$, because its average is $1-a<1/2$. Such strict caps
+are disjoint for distinct $x$: a differing coordinate contributes one
+to $d_x+d_{x'}$. Four distinct generators are required, and the four
+rows themselves suffice. This proves a full-support rank gap without
+assuming residual-state realizations.
+\end{proof}

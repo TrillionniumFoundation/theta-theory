@@ -1,0 +1,190 @@
+\section{Exact synthesis throughout the fixed-signal range}
+\label{sec:entropy}
+All logarithms in rates are base two. Natural logarithms are denoted
+by $\ln$. Define $I$ by \eqref{eq:rate-intro}; thus $I(0)=0$, $I(1)=1$,
+and $I$ is increasing on $[0,1]$.
+
+\subsection{A uniform corner-cap lower bound}
+\begin{lemma}[Entropy cap]\label{lem:entropy-cap}
+For $z\in\cube^n$ and $0\le u\le1$, the fraction of sign vectors
+$x$ with $x\cdot z\ge nu$ is at most $2^{-nI(u)}$. Therefore
+\begin{equation}\label{eq:entropy-lower}
+                         K_n(\eta)\ge2^{nI(\eta)}.
+\end{equation}
+\end{lemma}
+\begin{proof}
+For a uniform sign vector $X$ and $t\ge0$,
+\[
+ \E e^{tX\cdot z}=\prod_{i=1}^n\cosh(tz_i)\le\cosh(t)^n.
+\]
+Exponential Markov inequality gives the bound
+$\exp\{-n\sup_{t\ge0}(tu-\ln\cosh t)\}$.
+For $0<u<1$ the maximum occurs at $t=\operatorname{arctanh}u$.
+Substitution gives $\sup(tu-\ln\cosh t)=(\ln2)I(u)$.
+The two endpoints follow by limits. If a set of generators encloses
+$\eta x$, then some generator $z_s$ has $x\cdot z_s\ge n\eta$.
+These caps therefore cover all $2^n$ sign vectors. The fraction bound
+and the union bound imply \eqref{eq:entropy-lower}.
+\end{proof}
+The exponent in this lemma is the classical random-access lower
+exponent \cite[Theorem 2.1]{ANTVpre}. Its cap proof is useful here
+because it applies directly to exact and perturbed conditional means.
+
+\subsection{An enclosing codebook with exact, not one-sided, responses}
+For $0<\eta<1$ and $0<\delta\le(1-\eta)/2$, put
+\begin{align}
+ k&=\left\lceil\frac{n(1+\eta+2\delta)}2\right\rceil,
+ &r&=\frac{2k}n-1,\label{eq:layer-parameters}\\
+ M(n,\eta,\delta)&=
+ \left\lceil\frac{n+1}{\delta}
+       \{n\ln(1+2/\delta)+1\}\,2^{nI(r)}\right\rceil.
+                                               \label{eq:enclosure-number}
+\end{align}
+Here $k\le n$ and $\eta+2\delta\le r\le\eta+2\delta+2/n$.
+
+\begin{lemma}[A Hamming-layer enclosure]\label{lem:enclosure}
+There is a set of at most $M(n,\eta,\delta)$ sign vertices whose
+convex hull contains $[-\eta,\eta]^n$. In particular,
+\begin{equation}\label{eq:checkpoint-bound}
+ K_n(\eta)\le\min\{2^n,M(n,\eta,\delta)\}.
+\end{equation}
+For every fixed $0<\eta<1$ there is a constant $C_\eta$ such that
+\begin{equation}\label{eq:checkpoint-rate}
+ nI(\eta)\le\log_2 K_n(\eta)
+           \le nI(\eta)+C_\eta\log_2(n+1)\qquad(n\ge1).
+\end{equation}
+\end{lemma}
+\begin{proof}
+Fix $a\in\R^n$ with $\norm a_1=1$. Orient each coordinate by the
+sign of $a_i$, choosing either orientation at zeros. Condition a uniform
+sign vertex $V$ on having exactly $k$ coordinates aligned with these
+orientations. Under this conditional law $Z=a\cdot V\le1$ and
+$\E Z=r$. If $p=\Prb(Z\ge\eta+\delta\mid k)$, then
+\[
+ r\le p+(1-p)(\eta+\delta),\qquad
+ p\ge\frac{r-\eta-\delta}{1-\eta-\delta}\ge\delta.
+\]
+It follows that, for an unconditional uniform sign vertex,
+\begin{equation}\label{eq:layer-probability}
+ \Prb(a\cdot V\ge\eta+\delta)
+             \ge\delta\binom nk2^{-n}
+             \ge\frac{\delta}{n+1}2^{-nI(r)}=:q.
+\end{equation}
+For the second inequality, $k$ is a mode of a binomial distribution
+with success probability $k/n$, so its probability is at least
+$1/(n+1)$. Rewriting that probability gives
+$\binom nk\ge2^{nh_2(k/n)}/(n+1)$. The endpoints $k=0,n$ have
+the same interpretation by continuity.
+
+Choose a $\delta$-net of the $\ell^1$ unit sphere of size at most
+$(1+2/\delta)^n$. Such a net follows by taking a maximal separated
+set and comparing the volumes of disjoint $\ell^1$ balls of radius
+$\delta/2$ with the ball of radius $1+\delta/2$.
+Draw $M=M(n,\eta,\delta)$ independent uniform sign vertices. For
+any net direction the probability that none has scalar product at
+least $\eta+\delta$ is at most $e^{-Mq}$. The probability that
+some net direction fails is at most
+$(1+2/\delta)^n e^{-Mq}\le e^{-1}<1$.
+Hence a fixed choice of vertices succeeds on every net direction.
+Their support function is one-Lipschitz in the $\ell^1$ norm, so it
+is at least $\eta$ on the entire unit sphere. Homogeneity and convex
+separation imply that their hull contains the inner cube. Repeated
+vertices can be discarded. Full retention gives the other upper bound.
+
+For fixed $\eta$, take $\delta=1/n$ once $n\ge2/(1-\eta)$.
+Then $r\le\eta+4/n$, and the derivative
+$I'(u)=\frac12\log_2((1+u)/(1-u))$ is bounded on a fixed
+neighborhood of $\eta$ lying below one. Thus
+$nI(r)\le nI(\eta)+O_\eta(1)$ for sufficiently large $n$.
+The remaining factor in \eqref{eq:enclosure-number} is polynomial
+up to a logarithm and contributes $O(\log(n+1))$ bits.
+Enlarging $C_\eta$ handles the finitely many smaller $n$.
+Combine this with Lemma~\ref{lem:entropy-cap}.
+\end{proof}
+The hull containment gives a convex representation of \emph{each}
+$\eta x$, and hence exactly the means in \eqref{eq:query-intro}.
+It does not merely ensure that a coordinate is correct with probability
+at least $(1+\eta)/2$. Once a successful vertex set has been chosen,
+all its probabilities are fixed in the program. No random choice of a
+codebook survives at runtime. For rational $\eta$, the enclosure
+linear systems admit rational encoder coefficients; for algebraic
+$\eta$ they admit coefficients in the corresponding ordered field.
+The proof is an existence and finite-synthesis result, not a claim of
+fast codebook construction.
+
+\subsection{From a terminal codebook to a one-pass machine}
+\begin{lemma}[Charged block realization]\label{lem:blocks}
+Suppose the $\ell$-coordinate channel at signal $\eta$ has a
+checkpoint codebook with $M$ generators. Then, for $1\le\ell\le n$,
+\begin{equation}\label{eq:block-peak}
+ W_n^{\rm fo}(\eta)\le
+        \max\{2,\,2^\ell M^{\lfloor n/\ell\rfloor}\}.
+\end{equation}
+All conditional output probabilities are realized exactly.
+\end{lemma}
+\begin{proof}
+Split the fixed input order into $b=\lfloor n/\ell\rfloor$ full
+blocks and a final remainder of length less than $\ell$.
+While acquiring a block, retain the previously chosen block labels and
+its current raw prefix. Upon completing a block, draw one label using
+that block's exact encoder, overwrite its raw buffer, and retain only
+the new label with the previous labels. The encoder table is a fixed
+row of the declared program. A remainder is retained raw.
+
+At a cut the state is a tuple of at most $b$ codebook labels and at
+most $\ell$ raw bits. During the overwrite the old buffer is replaced
+atomically, not retained alongside a new private selector. Thus the
+number of possible labels is bounded as in \eqref{eq:block-peak}.
+The compression epochs are prescribed clock phases; they do not depend
+on observations.
+
+For a query in a complete block, use the corresponding label's decoder
+coordinate. Its conditional mean is $\eta x_j$ independently of the
+other labels. For a query in the remainder, draw a binary response of
+mean $\eta x_j$ from the retained bit. At most two terminal labels
+are required. The label sampling uses fresh randomness, and all its
+persistent effect is in the tuple. No unread bit, chosen codebook, or
+previous random seed is a free register.
+\end{proof}
+
+\begin{theorem}[Exact fixed-signal streaming rate]\label{thm:rate}
+For every fixed $0<\eta<1$, there exists $C'_\eta<\infty$ such that
+\begin{align}
+ nI(\eta)&\le\log_2 K_n(\eta)
+       \le\log_2 W_n^{\rm ad}(\eta)
+       \le\log_2 W_n^{\rm fo}(\eta),\label{eq:rate-lower}\\
+ \log_2 W_n^{\rm fo}(\eta)&\le
+          nI(\eta)+C'_\eta\sqrt{n\log_2(n+1)}.
+                                             \label{eq:rate-upper}
+\end{align}
+Consequently all three normalized logarithmic complexities converge
+to $I(\eta)$, as in \eqref{eq:headline-rate}. The checkpoint has the
+stronger error bound \eqref{eq:checkpoint-rate}.
+\end{theorem}
+\begin{proof}
+The lower bounds have already been proved and survive adaptive
+acquisition. For sufficiently large $n$, choose
+$\ell=\lceil\sqrt{n\log_2(n+1)}\rceil\le n$.
+Lemma~\ref{lem:enclosure} supplies a block codebook with
+$\log_2 M\le\ell I(\eta)+C_\eta\log_2(\ell+1)$.
+Lemma~\ref{lem:blocks} gives, after increasing an absolute constant,
+\[
+ \log_2 W_n^{\rm fo}
+ \le\ell+\frac n\ell\{\ell I(\eta)+C_\eta\log_2(\ell+1)\}
+ \le nI(\eta)+O_\eta(\sqrt{n\log(n+1)}).
+\]
+Again the finitely many smaller $n$ are absorbed into $C'_\eta$.
+Division by $n$ proves the limits.
+\end{proof}
+This theorem covers every fixed interior signal, rather than just two
+endpoint windows. It does not determine every finite integer value of
+$K_n$ or $W_n$, their lower-order difference, or a uniform sharp law
+when $\eta$ varies with $n$. Equations~\eqref{eq:enclosure-number} and
+\eqref{eq:block-peak} remain explicit nonasymptotic bounds in those
+varying-signal problems. In the strong finite regime
+$\eta>1-1/n$, the disjoint-cap argument gives $K_n=W_n^{\rm ad}
+=W_n^{\rm fo}=2^n$: the encoder average of
+$\frac12\sum_i(1-x_i z_i)$ is below $1/2$, and its strict caps for
+distinct input corners are disjoint. Full retention matches this bound.
+That sharper endpoint statement is consistent with, but not needed for,
+Theorem~\ref{thm:rate}.

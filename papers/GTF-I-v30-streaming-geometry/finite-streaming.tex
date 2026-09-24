@@ -1,0 +1,170 @@
+\section{Exact finite streaming at the rank threshold}
+\label{sec:finite}
+\subsection{Checkpoint and streaming models}
+For $n\ge1$ and $0\le\eta\le1$, the channel to be synthesized is
+\eqref{eq:query-intro}. Every input coordinate is acquired exactly once
+before the query. In a fixed-order encoder the order is $1,\ldots,n$.
+In an adaptive encoder the next unread coordinate can depend on the
+retained state and fresh randomness; any information required to make
+that choice legal must be retained. There is no readable transcript or
+unrecorded schedule. After acquisition, all input-dependent information
+passes through a single finite state before the external query arrives.
+One query is answered; a joint law for simultaneous answers to all queries
+is not required.
+
+The checkpoint minimum $K_n(\eta)$ imposes no bound on upstream memory.
+The quantities $W_n^{\rm fo}(\eta)$ and $W_n^{\rm ad}(\eta)$ impose a
+bound on every cut, including intermediate compression and retained
+random selectors. The clock in the fixed-order convention is prescribed
+externally. A terminal binary label counts as at most two states. The
+query is a current atomic input; a model requiring its storage has to
+charge that storage separately.
+
+\begin{lemma}[Cube enclosure]\label{lem:cube}
+For $\eta>0$, $K_n(\eta)$ is the smallest number of points
+$z_s\in\cube^n$ whose convex hull contains $[-\eta,\eta]^n$.
+In particular $K_n(\eta)\ge n+1$. This lower bound and every lower
+bound obtained from such an enclosure also apply to adaptive acquisition.
+\end{lemma}
+\begin{proof}
+From state $s$, let $z_{s,j}$ be the mean binary output under query $j$.
+Conditioning on the complete input gives an encoder distribution $E_x$
+and hence
+\begin{equation}\label{eq:query-factor}
+                  \eta x=\sum_s E_x(s)z_s.
+\end{equation}
+Conversely, such a representation followed by a binary decoder with
+mean $z_{s,j}$ realizes the prescribed channel. Upstream memory is
+unrestricted for this converse construction. Convexity reduces enclosure
+of the inner cube to its corners. Its affine dimension gives $n+1$.
+For adaptive acquisition, conditioning on the complete input still gives
+one distribution of the retained state; the subsequent decoder is common
+to all inputs. This uses the acquisition barrier, not an assertion about
+arbitrary interactive scheduling.
+\end{proof}
+
+\subsection{An online simplex with a linear signal window}
+\begin{theorem}[An exact minimal acquisition profile]
+\label{thm:reservoir}
+For every $n\ge1$ and $0<\eta\le(2n-1)^{-1}$,
+\begin{equation}\label{eq:reservoir-peak}
+       K_n(\eta)=W_n^{\rm ad}(\eta)=W_n^{\rm fo}(\eta)=n+1.
+\end{equation}
+One fixed-order encoder has exactly $t+1$ states after $t$ acquired
+bits, $0\le t\le n$, and this profile is minimal at each acquisition
+cut for that order. Its stochastic acquisition rows are rational and
+independent of $\eta$.
+\end{theorem}
+\begin{proof}
+For $t\ge1$ use labels $0,1,\ldots,t$ with associated vectors
+\begin{equation}\label{eq:reservoir-vertices}
+ v_{t,0}=-\eta\1,
+ \qquad v_{t,i}=-\eta\1+2t\eta e_i\quad(1\le i\le t).
+\end{equation}
+Their convex hull is
+\[
+ P_t=\{z\in\R^t:z_i\ge-\eta,\ \sum_i z_i\le t\eta\}.
+\]
+Every vertex lies in the outer cube because $(2t-1)\eta\le1$.
+Moreover $P_t\times\{-\eta,\eta\}\subset P_{t+1}$. The barycentric
+coordinates of $w\in P_t$ are
+\[
+ \lambda_i(w)=\frac{w_i+\eta}{2t\eta},\qquad
+ \lambda_0(w)=\frac{t\eta-\sum_iw_i}{2t\eta}.
+\]
+They are nonnegative and sum to one.
+
+Here is an explicit update avoiding any stored real vector. After $t$
+inputs, the state distribution is
+\begin{equation}\label{eq:reservoir-law}
+ \Prb(S_t=i\mid x_{1:t})=\frac{\1_{\{x_i=1\}}}{t},
+ \qquad
+ \Prb(S_t=0\mid x_{1:t})=\frac{|\{i\le t:x_i=-1\}|}{t}.
+\end{equation}
+To acquire bit $x_{t+1}$, keep the old label with probability $t/(t+1)$.
+With probability $1/(t+1)$ replace it by $t+1$ when $x_{t+1}=1$ and
+by zero when $x_{t+1}=-1$. For $t=0$ only the replacement is used.
+Induction proves \eqref{eq:reservoir-law}. The mean of
+$v_{t,S_t}$ is exactly $\eta x_{1:t}$. At the query barrier use the
+binary decoder with mean $v_{n,S_n,j}$. This proves exact synthesis.
+Only the label survives an update. The last raw bit and the replacement
+coin do not persist in an auxiliary register.
+
+The final lower bound follows from Lemma~\ref{lem:cube}. At an earlier
+fixed-order cut, fix the unread bits identically for all prefixes.
+The future response vectors for queries among the first $t$ coordinates
+contain the $t$-dimensional cube of means $\eta x_{1:t}$. Factoring
+these continuations through the current state requires at least $t+1$
+labels. Thus the entire acquisition profile is minimal. The final binary
+output uses no more labels than the peak $n+1$.
+\end{proof}
+For $t\ge2$ the actual prefix residuals have a cube, not a simplex,
+as their hull. Equations~\eqref{eq:reservoir-vertices} and
+\eqref{eq:reservoir-law} are therefore a growing nonsimplicial family
+of coherent rank enclosures. Theorem~\ref{thm:coherence} applies without
+requiring that an internal vertex be a residual.
+
+\subsection{The sharp \texorpdfstring{$n+1$}{n+1}-state boundary in Hadamard dimensions}
+\begin{lemma}[A simplex obstruction]\label{lem:trace}
+If $K_n(\eta)=n+1$ with $\eta>0$, then $\eta\le1/n$.
+\end{lemma}
+\begin{proof}
+The enclosing vertices $v_0,\ldots,v_n\in\cube^n$ are affinely
+independent. Write their barycentric affine functions as
+$\lambda_s(z)=a_s+b_s\cdot z$. Nonnegativity on the inner cube gives
+$a_s\ge\eta\norm{b_s}_1$, and $\sum_sa_s=1$. The identity
+$z=\sum_s\lambda_s(z)v_s$ gives
+$\sum_s v_sb_s^T=I_n$. Taking its trace yields
+\[
+ n=\sum_s b_s\cdot v_s\le\sum_s\norm{b_s}_1\le\eta^{-1}.
+\]
+This proves the assertion for arbitrary enclosing vertices, not just
+a chosen simplex construction.
+\end{proof}
+
+\begin{theorem}[A sharp threshold with an online realization]
+\label{thm:hadamard}
+Suppose that a Hadamard matrix of order $m=n+1$ exists. For $\eta>0$,
+\begin{equation}\label{eq:hadamard-threshold}
+ K_n(\eta)=W_n^{\rm ad}(\eta)=W_n^{\rm fo}(\eta)=n+1
+       \quad\Longleftrightarrow\quad \eta\le1/n.
+\end{equation}
+This applies in particular to every $n=2^k-1$, $k\ge1$.
+More generally, a Hadamard matrix of order $m\ge n+1$ gives an
+$m$-state streaming realization whenever $0<\eta\le1/n$.
+\end{theorem}
+\begin{proof}
+Normalize the first column of the Hadamard matrix to one, and select
+$n$ other columns. Let $v_s\in\{-1,1\}^n$, $1\le s\le m$, be
+their rows. Orthogonality gives
+\begin{equation}\label{eq:hadamard-orthogonal}
+ \frac1m\sum_s v_{s,j}=0,
+ \qquad \frac1m\sum_s v_{s,i}v_{s,j}=\1_{\{i=j\}}.
+\end{equation}
+For each index $i$ and observed bit $x_i$, define the probability law
+\[
+ q_{i,x_i}(s)=\frac{1+x_i v_{s,i}}m.
+\]
+Its mean vector is $x_i e_i$ by \eqref{eq:hadamard-orthogonal}.
+At step $i$, retain the preceding state with probability $(i-1)/i$;
+otherwise redraw a label from $q_{i,x_i}$. The first step always draws.
+After $t$ bits its state law is $t^{-1}\sum_{i\le t}q_{i,x_i}$.
+Consequently $\E[v_{S_n}\mid x]=x/n$. The final decoder with mean
+$n\eta v_{S_n,j}$ is legal for $\eta\le1/n$ and gives mean $\eta x_j$.
+This is an online machine with $m$ labels; the chosen index of a redraw
+is not separately retained. All acquisition probabilities are rational.
+
+For $m=n+1$, Lemma~\ref{lem:cube} proves optimality and
+Lemma~\ref{lem:trace} excludes larger signals. The Sylvester construction
+$H_1=(1)$ and
+$H_{2m}=\begin{pmatrix}H_m&H_m\\H_m&-H_m\end{pmatrix}$ gives the
+claimed infinite sequence directly.
+\end{proof}
+The equality in \eqref{eq:hadamard-threshold} concerns the peak, not
+every intermediate width. The encoder in this proof may have $n+1$
+possible labels already after its first bit. In contrast,
+Theorem~\ref{thm:reservoir} attains the individual $t+1$ bounds in its
+smaller signal interval. Choosing the next power of two for $m$ also
+gives a less than $2(n+1)$-state upper bound at $\eta\le1/n$ for
+arbitrary $n$; it does not decide the exact simplex threshold in every
+dimension.

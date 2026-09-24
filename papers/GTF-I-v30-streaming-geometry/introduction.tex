@@ -1,0 +1,122 @@
+\section{Introduction}
+A finite statistical memory is a collection of possible continuations,
+not a collection of numerical coordinates. A low-dimensional space of
+predictions can require many positive generators. Conversely, insisting
+that every internal state be an observed residual can exclude much smaller
+stochastic realizations. There is a third constraint: positive
+factorizations at successive cuts must arise from the same causal machine.
+The distinctions between dimension, positivity, and compatibility are the
+subject of this paper.
+
+We work with complete finite response arrays, known primitive probabilities,
+and an explicit list of charged cuts. Arbitrary stochastic rows are atomic
+operations. Every retained selector, observation buffer, and data-dependent
+protocol state is included in the register. The program and the declared
+clock are fixed before observations. These conventions distinguish an exact
+state-count theorem from a finite-random-bit implementation or an acquired
+calibration theorem.
+
+\subsection{The realization question}
+At a cut $t$, normalized residual continuations form a finite set
+$\cR_t$ in a causal polytope $\cP_t$. Intersections of their minimal faces
+partition them into support components. If component $j$ has affine
+dimension $r_{t,j}-1$, every stochastic implementation needs at least
+$s_t=\sum_jr_{t,j}$ states. Residual vertices attain this bound when each
+component hull is a simplex. That sufficient condition does not describe
+all rank-saturating realizations.
+
+Theorem~\ref{thm:coherence} gives a necessary and sufficient condition for
+attaining the whole profile $s_t$. Each component must admit an enclosing
+simplex with $r_{t,j}$ normalized causal vertices in its affine slice. The
+vertices need not be residuals. Their one-step restrictions must satisfy
+common nonnegative shift equations with the next cut's vertices. Thus the
+condition separates static enclosure from simultaneous causal realization.
+For explicit algebraic arrays it becomes a finite existential system over
+the real numbers. This is an exact equality criterion, not a polynomial-time
+algorithm for a succinct controller or a solution of autonomous
+shared-row minimization.
+
+\subsection{The growing experiment}
+An input $x\in\{-1,1\}^n$ is acquired one coordinate at a time. After all
+coordinates have been acquired, a query $j\in[n]$ is supplied. The required
+binary response is
+\begin{equation}\label{eq:query-intro}
+ \Prb(B=b\mid x,j)=\frac{1+b\eta x_j}{2},\qquad b\in\{-1,1\}.
+\end{equation}
+The signal $\eta$ is specified, and the law is required for every input
+and query. Write $K_n$ for the smallest state count at the query barrier,
+$W_n^{\rm ad}$ for the smallest whole-schedule peak with adaptive
+acquisition, and $W_n^{\rm fo}$ for the fixed-order peak. In the latter two
+quantities all persistent choices during acquisition are charged. They
+satisfy $K_n\le W_n^{\rm ad}\le W_n^{\rm fo}$.
+
+Let $h_2$ be binary entropy in bits and put
+\begin{equation}\label{eq:rate-intro}
+ I(u)=1-h_2((1+u)/2),\qquad 0\le u\le1.
+\end{equation}
+The main quantitative conclusion, Theorem~\ref{thm:rate}, is
+\begin{equation}\label{eq:headline-rate}
+ \lim_{n\to\infty}\frac{\log_2K_n(\eta)}n
+ =\lim_{n\to\infty}\frac{\log_2W_n^{\rm ad}(\eta)}n
+ =\lim_{n\to\infty}\frac{\log_2W_n^{\rm fo}(\eta)}n=I(\eta)
+ \quad(0<\eta<1).
+\end{equation}
+The checkpoint upper error is $O_\eta(\log n)$ bits. The streaming error
+is $O_\eta(\sqrt{n\log n})$ bits. A fixed codebook is chosen in the
+existence proof, so there is no persistent public random seed hidden from
+the state count. For every rowwise total-variation tolerance $\varepsilon$,
+Theorem~\ref{thm:approx-rate} gives the rate $I((\eta-2\varepsilon)_+)$.
+
+The exponent in \eqref{eq:headline-rate} is not new as a random-access
+coding exponent. Ambainis, Nayak, Ta-Shma and Vazirani
+\cite{ANTVpre,ANTV} prove the matching first-order communication rate
+for success probability at least $(1+\eta)/2$. We prove a version fixing
+\emph{each} conditional response in \eqref{eq:query-intro}, and then
+account for the largest retained register during a one-pass implementation.
+A success inequality by itself is not an exact conditional channel.
+Likewise, a short message by itself is not a space bound for computing
+that message from a stream. The proofs below keep both distinctions.
+
+Finite-dimensional information is also obtained. An elementary online
+simplex construction gives the exact acquisition profile $t+1$ for
+$0<\eta\le(2n-1)^{-1}$, improving the smaller signal regime of the
+preceding development. Any $n+1$-state checkpoint factorization requires
+$\eta\le1/n$. If a Hadamard matrix of order $n+1$ exists, a different
+online encoder attains that entire interval with peak $n+1$
+(Theorem~\ref{thm:hadamard}). In particular, the threshold is sharp on
+the infinite sequence $n=2^k-1$. The latter construction has peak $n+1$;
+it is not claimed to have only $t+1$ states at every earlier cut.
+
+\Needspace{14\baselineskip}
+\subsection{One notation and resource convention}
+\begin{center}
+\begin{tabular}{@{}p{.23\textwidth}p{.69\textwidth}@{}}
+\toprule
+Symbol & Meaning\\
+\midrule
+$C$, $R_h$, $\cP_t$ & Complete causal law, normalized residual, and ambient causal polytope.\\
+$r_{t,j}$, $s_t$ & Rank of support component $j$, and their sum.\\
+$B_{t,j,k}$ & An internal normalized continuation, not necessarily a residual.\\
+$K_n$, $W_n^{\rm fo}$, $W_n^{\rm ad}$ & Query-cut, fixed-order peak, and adaptive-acquisition peak state counts.\\
+$\eta$, $\varepsilon$, $I$ & Specified signal, uniform row-TV tolerance, and entropy rate in bits.\\
+\bottomrule
+\end{tabular}
+\end{center}
+State counts are cardinalities; their binary memory cost is the ceiling
+of their base-two logarithm. The query is an atomic current input and is
+answered without retaining an uncharged copy. Input-dependent scheduling
+information has to be retained. A terminal output can use two labels;
+this constant does not affect any rate. An externally scheduled overwrite
+may draw fresh independent randomness, but past randomness survives only
+through the retained label.
+
+\subsection{Relationship with the preceding foundations development}
+The causal-experiment, predictive-quotient, minimax-contact, and physical
+comparison results of the preceding development \cite{GTF29} are preserved
+in a separate complete mathematical companion. The present article proves
+its new claims without asking the reader to reconstruct a proof from that
+volume. Section~\ref{sec:literature} identifies the relations with positive
+realization, residual automata, and random-access coding. The old
+known-target physical memory theorems remain unchanged; neither a new
+fully adaptive collision theorem nor closure of the historical analytic
+pipeline is inferred from \eqref{eq:headline-rate}.
