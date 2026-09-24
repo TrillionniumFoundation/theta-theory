@@ -1,0 +1,111 @@
+name: GTF-I v23 compatible-frontier revision
+
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v23-compatible-frontiers-2026-09-24
+    paths:
+      - 'papers/GTF-I-v23-compatible-frontiers/**'
+      - 'GENERAL_THETA_FOUNDATIONS_I_V23_REVIEW_READY.md'
+      - '.github/workflows/gtf-i-v23-compatible-frontiers.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gtf-i-v23-compatible-frontier-publication
+  cancel-in-progress: false
+
+jobs:
+  revision:
+    if: github.ref == 'refs/heads/revision/general-theta-foundations-i-v23-compatible-frontiers-2026-09-24'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install typesetting and verification dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended texlive-pictures lmodern
+          python -m pip install PyMuPDF==1.26.7
+      - name: Execute diagnostics and preserve the complete development
+        env:
+          GTF_SOURCE_COMMIT: ${{ github.sha }}
+        run: python papers/GTF-I-v23-compatible-frontiers/build.py
+      - name: Publish article, response and executed evidence
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path('papers/GTF-I-v23-compatible-frontiers')
+          r = json.loads((p/'evidence/BUILD_RECEIPT.json').read_text())
+          base = p.as_posix()
+          lines = [
+              '# General Theta Foundations I — v23 referee-ready package',
+              '',
+              '**Compatible Statistical Experiments and Resource Frontiers**',
+              '',
+              'Author: Qian Qi. Revision dated 24 September 2026.',
+              '',
+              f"Source commit: `{r['source_commit']}`.",
+              f"Controlling review: `{r['review_commit']}`.",
+              f"Reviewed v22: `{r['base_commit']}`.",
+              '',
+              f"- [Canonical English article, {r['canonical_pages']} pages]({base}/paper.pdf)",
+              f"- [Complete preserved development, {r['complete_pages']} pages]({base}/complete-development.pdf)",
+              f'- [Point-by-point referee response]({base}/RESPONSE_TO_REFEREE.md)',
+              f'- [Source and reproduction entry]({base}/README.md)',
+              f'- [Portable source archive]({base}/evidence/SUBMISSION_SOURCES.zip)',
+              f'- [Executed build receipt]({base}/evidence/BUILD_RECEIPT.json)',
+              f'- [Theorem locations]({base}/evidence/THEOREM_LOCATIONS.json)',
+              f'- [Proof status]({base}/PROOF_STATUS.json)',
+              f'- [Historical pipeline audit]({base}/HISTORY_AUDIT.md)',
+              '',
+              '## Mathematical revision',
+              '',
+              'The main proof chain is exact full-profile occupation realization,',
+              'a complete polynomial converse, compatible noisy Bayesian partitions,',
+              'an arbitrary-horizon binary-register minimax recursion, the closed',
+              'three-report profile frontier, and priced calibration and confidence',
+              'consumers. At binary error probability 1/4, profile (2,2,2) has',
+              'Bayesian success 51/64 and stochastic minimax success 25/32;',
+              'profile (2,3,2) has success 27/32 for both objectives.',
+              '',
+              '## Executed checks and preservation',
+              '',
+              f"All {r['unchanged_math_modules_verified']} inherited mathematical modules remain in the canonical article.",
+              f"All {r['predecessor_pages']} predecessor pages have identical text and raster rendering in the complete volume.",
+              f"The build executed {r['finite_diagnostic_checks']} finite checks, including {r['new_finite_diagnostic_checks']} new checks,",
+              f"with normal/optimized agreement and {r['negative_control_executions']} detected negative-control executions.",
+              'The article compiled without undefined references or overfull boxes.',
+              '',
+              f"Canonical source digest: `{r['canonical_sources_sha256']}`.",
+              f"Article SHA-256: `{r['pdf_sha256']}`.",
+              f"Workflow run: `{r['workflow_run']}`.",
+              '',
+              'These checks are reproducibility evidence, not independent mathematical',
+              'certification. The physical fixed-sample Pareto boundary and original',
+              'Norberg proof-level comparison remain unevaluated/incomplete as specified',
+              'in the response. No claim of eleven-paper closure or journal acceptance',
+              'is made. All old repository paths and the controlling review are retained.',
+              '',
+          ]
+          Path('GENERAL_THETA_FOUNDATIONS_I_V23_REVIEW_READY.md').write_text('\n'.join(lines))
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f papers/GTF-I-v23-compatible-frontiers GENERAL_THETA_FOUNDATIONS_I_V23_REVIEW_READY.md
+          git commit -m 'publish(GTF-I v23): English article, exact noisy frontiers, preserved development and executed evidence [skip ci]'
+          git push origin HEAD:"$GITHUB_REF_NAME"
+      - name: Archive the referee package
+        uses: actions/upload-artifact@v4
+        with:
+          name: GTF-I-v23-compatible-frontiers
+          path: papers/GTF-I-v23-compatible-frontiers/
+          retention-days: 30

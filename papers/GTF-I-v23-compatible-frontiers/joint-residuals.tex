@@ -1,0 +1,169 @@
+\section{Joint residual budgets and growing families}
+\label{sec:v21-joint}
+We now put lower bounds on several cuts into one statistical budget.
+Summing separate cut bounds without controlling their common words
+would count the same regret more than once.
+
+\begin{theorem}[A shared-capacity multicut obstruction]
+\label{thm:v21-joint}
+Let $f:\prod_{i=1}^L\Sigma_i\to\mathcal A$ and $\mu(w)\ge0$ be as
+in Theorem~\ref{thm:v20-weighted}. At each chosen cut $t$, choose a
+finite prefix graph with an edge $e=(u,v)$ carrying a distinguishing
+suffix $s_e$, and a weight $\lambda_{t,e}\ge0$. Impose the single family
+of constraints
+\begin{equation}\label{eq:v21-capacity}
+ \sum_{t,e:\ w=us_e\ \text{or}\ w=vs_e}\lambda_{t,e}\le\mu(w)
+ \quad\text{for every complete word }w.
+\end{equation}
+For a graph at cut $t$, write
+\[
+ \Gamma_{t,K_t}(\lambda)=
+ \min_{\phi:\,\text{prefixes}\to[K_t]}
+       \sum_{e=(u,v):\,\phi(u)=\phi(v)}\lambda_{t,e}.
+\]
+Every stochastic machine of profile $\mathbf K$ satisfies
+\begin{equation}\label{eq:v21-joint-bound}
+ \sum_w\mu(w)\Pr(\widehat f(w)\ne f(w))
+       \ge\sum_t\Gamma_{t,K_t}(\lambda).
+\end{equation}
+Consequently, with $R_w,S_\nu,\mu$ defined in
+Corollary~\ref{cor:v20-bayes}, every audit of this profile and the fixed
+training schedule has worst-case payoff at most
+\begin{equation}\label{eq:v21-joint-bayes}
+ S_\nu-\sup_{\lambda\text{ satisfying }\eqref{eq:v21-capacity}}
+                    \sum_t\Gamma_{t,K_t}(\lambda).
+\end{equation}
+For fixed graphs the supremum is the value of a finite linear program.
+\end{theorem}
+\begin{proof}
+For each edge use the overlap inequality
+\eqref{eq:v20-overlap}. Multiply it by $\lambda_{t,e}$ and sum over
+all cuts and edges. The left side is bounded above by the left side of
+\eqref{eq:v21-joint-bound}, by the shared capacity constraint. At each
+cut the resulting overlap expression is concave in its prefix state
+distributions, hence at least its minimum over deterministic labelings,
+as proved in Theorem~\ref{thm:v20-weighted}. Adding these bounds proves
+\eqref{eq:v21-joint-bound}. Although prefix distributions at different
+cuts are compatible, minimizing them separately only weakens the bound;
+it does not assume independent realizability. The Bayes-regret argument
+of Corollary~\ref{cor:v20-bayes} proves \eqref{eq:v21-joint-bayes}.
+
+For the last assertion introduce variables $z_t$ and impose, for each
+labeling $\phi$ of each finite graph,
+\[
+ z_t\le\sum_{e=(u,v):\phi(u)=\phi(v)}\lambda_{t,e}.
+\]
+Maximize $\sum_tz_t$ subject to these inequalities, nonnegative edge
+weights, and \eqref{eq:v21-capacity}. There are finitely many constraints.
+This is a computable obstruction, not a claim that every multicut
+statistical optimum equals this relaxation.
+\end{proof}
+
+\subsection{Actual physical word weights}
+For $n$ all-on trials of the private marked collision subfamily, a complete
+training word $w$ specifies the two report bits and the mark of each
+trial. With $N_{ab}$ its report-pair counts,
+\begin{equation}\label{eq:v21-physical-weight}
+ p_w(p,q)=2^{-n}
+ p^{N_{10}+N_{11}}(1-p)^{N_{00}+N_{01}}
+ q^{N_{01}+N_{11}}(1-q)^{N_{00}+N_{10}}.
+\end{equation}
+The formula has the continuous endpoint interpretation $0^0=1$.
+For any finitely supported prior on actual pairs $(p,q)\in[0,1]^2$,
+use this likelihood in $R_w(A)=\int p_w(p,q)(Q-b(p,q))\1_A\,d\nu$,
+with all marked events $A\subseteq\Omega$ as actions. Randomized events
+are included by linearity. Equations~\eqref{eq:v21-capacity} and
+\eqref{eq:v21-joint-bayes} then give a finite all-algorithm obstruction
+for that full training profile, with the true physical word probabilities.
+Changing only $Q$ by total variation $\beta$ changes every audit's
+payoff by at most $\beta$.
+
+This specialization bounds all stochastic selectors on the fixed all-on
+training schedule, not merely exact implementations of a majority rule.
+It does not assert a new numerical lower bound above three for every
+adaptive physical audit. Adaptive training has controller-dependent
+word likelihoods and must instead be included in the full experiment
+of \eqref{eq:v21-value}; using \eqref{eq:v21-physical-weight} unchanged
+for such a likelihood would be incorrect. The feedback-uniform lower
+bound used below remains Lemma~\ref{lem:v20-feedback}.
+
+\subsection{A family with matching end-to-end growth}
+\begin{theorem}[Point-source decision spectra]\label{thm:v21-point}
+Let $d\ge2$, $B_d=\{\delta_1,\ldots,\delta_d\}$ on $[d]$, and let
+$Q_d$ be uniform. For every $K\ge1$,
+\begin{equation}\label{eq:v21-point}
+ \mathfrak V_K(B_d,Q_d)=1-\frac{\lceil d/K\rceil}{d}.
+\end{equation}
+For $1-2/d<c<1-1/d$, the decision complexity is exactly $d$, and the
+whole-schedule peak satisfies
+\[
+ d\le W_c(B_d,Q_d)\le W_c^{\rm rat}(B_d,Q_d)\le2d.
+\]
+The upper bound uses one training observation and two validations, with
+no randomization. Thus the end-to-end width grows linearly in this
+nontrivial sequence of compact behavior images.
+\end{theorem}
+\begin{proof}
+Assign each point source to a response that maximizes its score. Some
+response is assigned a set $S$ of at least $\lceil d/K\rceil$ indices.
+For $s=|S|<d$, the mean of its scores on $S$ equals
+\[
+ \frac{d-s}{d}\left(
+ \frac1{d-s}\sum_{i\notin S}h_i-\frac1s\sum_{i\in S}h_i\right)
+ \le1-\frac{s}{d}.
+\]
+For $s=d$ the mean is zero. At least one assigned source has score no
+larger than this mean, proving the upper bound. Partition $[d]$ into
+at most $K$ groups of size at most $\lceil d/K\rceil$ and use their
+complements as events. This attains the lower bound.
+
+In the stated interval the formula forces $K\ge d$. A single training
+observation identifies the point source $i$ exactly. Keep $i$ and choose
+the complement of $\{i\}$. During validation retain $i$ and the candidate
+indicator, at most $2d$ states, then emit the target indicator minus it.
+This computes the prescribed signed score on every input word, including
+words that have zero probability under the point-source family.
+Its expected score is $1-1/d$. The lower bound follows from the necessary
+decision-cut width.
+\end{proof}
+
+\subsection{A sharp simultaneous storage profile}
+A second class separates overlapping retention obligations. Independent
+uniform labels $X_j\in[q_j]$ are revealed at scheduled epochs $a_j$ and
+must be reported at epochs $b_j>a_j$. No later input reveals an active
+label, and previous outputs cannot be read as external memory. Let
+$A_t=\{j:a_j\le t<b_j\}$ and $D_t=\prod_{j\in A_t}q_j$.
+
+\begin{theorem}[Overlapping retention intervals]\label{thm:v21-intervals}
+Every stochastic machine whose probability of correctly reporting all
+labels is at least $1-\varepsilon$ has
+\begin{equation}\label{eq:v21-intervals}
+ K_t\ge(1-\varepsilon)D_t\quad\text{at every cut }t.
+\end{equation}
+The exact profile $K_t=D_t$ is attained simultaneously by a deterministic
+machine. Thus the minimum peak number of bits lies between
+$\log_2\max_t D_t+\log_2(1-\varepsilon)$ and
+$\lceil\log_2\max_t D_t\rceil$ for $\varepsilon<1$.
+\end{theorem}
+\begin{proof}
+Fix a cut and give the decoder, as additional information, all labels
+outside $A_t$, whether past or future. They are independent of the
+uniform active vector. Conditional on them, every future prediction of
+that vector factors through the $K_t$-valued retained state and fresh
+randomness. If $a(m\mid x)$ is its conditional encoder and $d(x\mid m)$
+the induced joint prediction law, its success probability is at most
+\[
+ \frac1{D_t}\sum_m\sum_xa(m\mid x)d(x\mid m)
+ \le\frac1{D_t}\sum_m\sum_x d(x\mid m)
+ =\frac{K_t}{D_t}.
+\]
+Correctness of all reports implies correctness of the active reports,
+so averaging over the independent additional information proves
+\eqref{eq:v21-intervals}. For the upper bound, keep precisely the vector
+of active labels, append a label when revealed, and delete it when
+reported. Every update is deterministic and respects the schedule.
+The bit bounds follow by taking logarithms and rounding for an actual
+binary register. The lower bound is a counting argument, not an
+independence assumption about labels after conditioning on a compressed
+state.
+\end{proof}

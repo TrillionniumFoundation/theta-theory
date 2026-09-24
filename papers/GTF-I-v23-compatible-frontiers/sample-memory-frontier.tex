@@ -1,0 +1,177 @@
+\section{Finite-horizon sample--memory bounds}
+\label{sec:v22-frontier}
+The minimum $W_c$ in Theorem~\ref{thm:v21-endtoend} permits arbitrarily
+long finite training. To retain the preparation constraint, let
+$\mathsf V_{N,\boldsymbol K}(B,Q)$ denote the supremum of the worst-case
+expected score over the same reset auditors, using at most $N$ training
+trials and satisfying the specified register bound at each acquisition,
+random-bit, decision and validation cut. The observation order and the
+external clock are fixed parts of this interface. Write
+$\mathsf V_{N,W}$ when every bound equals $W$. Padding an audit with
+ignored trials shows monotonicity in $N$. This value does not identify
+machines having only the same terminal dictionary.
+
+A second realization of a response cover gives a polynomial preparation
+bound. Its counter is larger than the four-state block counter, and
+both constructions remain useful. The elementary random-walk argument
+below is classical; the purpose of retaining its proof is to price its
+use in the complete, calibrated continuation machine.
+
+\begin{lemma}[A truncated absorbing comparison]\label{lem:v22-walk}
+Let $Z_i$ be independent Bernoulli variables with mean $u$. Fix integers
+$m,n\ge1$ and $0<\theta<1/2$. Start at $S_0=0$, add $2Z_i-1$
+while $|S_{i-1}|<m$, and retain the state forever after either boundary
+is reached. At time $n$ declare positive exactly when $S_n\ge0$.
+The machine has $2m+1$ states. Whenever $|u-1/2|\ge\theta$, its error
+probability is at most
+\begin{equation}\label{eq:v22-walk-error}
+ e_{m,n}(\theta)=e^{-4\theta m}+e^{-2n\theta^2}.
+\end{equation}
+If $\tau$ is the boundary hitting time without truncation, then, with
+$x=2u-1$,
+\begin{equation}\label{eq:v22-walk-time}
+ \E_u\tau=
+ \begin{cases}
+ m\tanh(m\operatorname{arctanh}x)/x,&0<|x|<1,\\
+ m^2,&x=0,\\
+ m,&|x|=1.
+ \end{cases}
+\end{equation}
+In particular $\E_u(\tau\wedge n)\le\min(n,m^2)$, and outside the
+indifference band it is at most $\min(n,m^2,m/(2\theta))$.
+\end{lemma}
+\begin{proof}
+First suppose $1/2<u<1$ and put $r=(1-u)/u$. For the unabsorbed walk
+$T_j=\sum_{i\le j}(2Z_i-1)$, the process $r^{T_j}$ is a nonnegative
+martingale. Stopping on $\{-m,m\}$ gives
+\[
+ \Pp_u(T_\tau=-m)=\frac{r^m}{1+r^m}\le r^m.
+\]
+For completeness, absorption has finite mean: in each block of $2m$
+steps, a run of $2m$ positive increments has probability $u^{2m}>0$
+and forces absorption from every interior state. Thus the unabsorbed
+survival time is bounded by a geometric number of such blocks. Stopping
+first at $\tau\wedge j$, then using bounded convergence on the stopped
+exponential martingale, justifies the displayed identity. The estimate
+$\log((1+2\theta)/(1-2\theta))\ge4\theta$ gives
+$r^m\le e^{-4\theta m}$ when $u\ge1/2+\theta$.
+
+If the walk has not been absorbed, a negative final answer requires
+$T_n<0$. Hoeffding's inequality~\cite{Hoeffding1963} for variables in $[-1,1]$ gives
+\[
+ \Pp_u(T_n\le0)\le e^{-2n(u-1/2)^2}\le e^{-2n\theta^2}.
+\]
+Partitioning a wrong answer according to absorption proves
+\eqref{eq:v22-walk-error}. Reflection proves the lower-mean case; its
+nonabsorbed error includes $T_n=0$ and satisfies the same bound. At
+$u=0,1$ the assertion follows directly.
+
+The drift martingale $T_j-xj$ stopped at $\tau\wedge j$ gives
+$\E_u T_\tau=x\E_u\tau$, by integrability of $\tau$ and boundedness
+of the stopped walk. The hitting probabilities yield
+$\E_u T_\tau=m(1-r^m)/(1+r^m)$. Since
+$r=\exp(-2\operatorname{arctanh}x)$, this is \eqref{eq:v22-walk-time}
+when $x\ne0$. For $x=0$, stop $T_j^2-j$ to obtain $\E\tau=m^2$.
+The endpoint formula is deterministic. Finally
+$\tanh(my)\le m\tanh y$ for integer $m\ge1$ and $y\ge0$:
+induction follows from the addition formula for $\tanh$. This proves
+$\E\tau\le m^2$; the bound $m/|x|$ follows from $|T_\tau|\le m$.
+Truncation can only decrease the mean.
+\end{proof}
+
+\begin{theorem}[A preparation--width family of realizations]
+\label{thm:v22-tournament}
+Let $B\subset\Delta(\Omega)$ be compact, $d=|\Omega|$, and let
+$h_1,\ldots,h_K\in[0,1]^\Omega$, $K\ge2$, have envelope
+$v=\min_{b\in B}\max_i(Q-b)h_i$. Round their coordinates to dyadic
+precision $r$, obtaining $h_i^{(r)}$, and choose known dyadic numbers
+$q_i\in[0,1]$ with $|q_i-Qh_i^{(r)}|\le\rho$. Suppose $q_i$ also have
+denominator $2^r$; enlarging $r$ accommodates any specified dyadic
+calibration. For $m,n\ge1$ and $0<\theta<1/2$, an explicitly clocked
+fair-bit audit satisfies
+\begin{align}
+ N&=n(K-1),\qquad W\le3dK(2m+1),\label{eq:v22-tournament-resources}\\
+ \inf_{b\in B}\E_bD
+ &\ge v-2^{1-r}-2\rho-4(K-1)\theta
+                 -2(K-1)e_{m,n}(\theta).\label{eq:v22-tournament-score}
+\end{align}
+At completed training-trial cuts its width is at most $K(2m+1)$;
+at the decision cut it is at most $K$. Every random-bit cut, the
+selected event, and both validations are included in $W$. In particular
+one can replace $e_{m,n}(\theta)$ by $\delta$ by taking
+\begin{equation}\label{eq:v22-polynomial}
+ m=\left\lceil\frac{\log(2/\delta)}{4\theta}\right\rceil,
+ \qquad
+ n=\left\lceil\frac{\log(2/\delta)}{2\theta^2}\right\rceil.
+\end{equation}
+\end{theorem}
+\begin{proof}
+For a fixed unknown $b$, set
+$g_i(b)=q_i-bh_i^{(r)}$. Compare the current incumbent $i$ with the next
+index $j$ on fresh observations. Conditional on the observation $w$,
+generate a coin with probability
+\begin{equation}\label{eq:v22-comparison-coin}
+ \frac12+\frac{q_j-q_i-h_j^{(r)}(w)+h_i^{(r)}(w)}4.
+\end{equation}
+This is in $[0,1]$, is dyadic with denominator $2^{r+2}$, and has mean
+$1/2+(g_j(b)-g_i(b))/4$. Apply Lemma~\ref{lem:v22-walk}, selecting
+$j$ for a positive answer and $i$ otherwise. Conditional on all earlier
+stages, the observations and fair bits for this comparison are fresh.
+The probability of selecting the worse index when
+$|g_j-g_i|\ge4\theta$ is at most $e_{m,n}(\theta)$.
+
+Outside these exceptional comparisons each tournament stage loses at
+most $4\theta$ relative to the better of its two contestants. Induction
+shows a total loss at most $4(K-1)\theta$ relative to
+$\max_i g_i$. The union probability of exceptional comparisons is at
+most $(K-1)e_{m,n}(\theta)$ even though the incumbent is random.
+All $g_i$ lie in $[-1,1]$, so their range is at most two. Consequently
+\[
+ \E_b g_{\widehat i}(b)\ge\max_i g_i(b)-4(K-1)\theta
+                                -2(K-1)e_{m,n}(\theta).
+\]
+The calibration changes selection and evaluation by at most $2\rho$.
+For each coordinate rounding, $\|h_i-h_i^{(r)}\|_\infty\le2^{-r}$,
+so $|(Q-b)(h_i-h_i^{(r)})|\le2^{1-r}$. A nested random event with mean
+$h_{\widehat i}^{(r)}$ has exactly that rounded payoff; hence
+\eqref{eq:v22-tournament-score}.
+
+At a completed trial retain the incumbent and the absorbing walk state.
+The stage number $j$ is supplied by the predetermined clock, not by a
+sample-dependent register. During coin generation additionally retain
+$w$ and at most three sampler labels, by
+Proposition~\ref{prop:v21-rational}. This gives $3dK(2m+1)$ labels.
+The terminal event sampler, held event, and validation storage use at
+most $K(2d+1)$, $K(d+1)$, and $2K(d+1)$ labels, respectively, as in
+Theorem~\ref{thm:v21-endtoend}; all are bounded by the stated $W$.
+The stage boundary discards the walk and initializes the next one.
+After absorption, remaining observations and bits in that stage are
+ignored, but are still charged to the fixed schedule. Thus the count
+$N$ includes padding. Each active coin uses $r+2$ fair bits. A coarse
+bound for the full number of epochs is $T\le N(r+3)+r+4$.
+
+The finite transition description consists of the dyadic coin table,
+the boundary and horizon integers, and the nested-event thresholds. It
+has $O(K^2d(r+3)+\log m+\log n+\log K)$ bits under binary encoding;
+the constants depend on a fixed encoding convention. No unknown $b$
+occurs in that description. The autonomous conversion stores the clock
+and has width at most $(T+1)W$, rather than $W$. Substitution of
+\eqref{eq:v22-polynomial} proves the last assertion.
+\end{proof}
+
+\begin{corollary}[Two general preparation regimes]
+\label{cor:v22-two-realizations}
+For a strict $K$-response cover and a prescribed positive score margin,
+there are whole-schedule rational realizations of that margin with
+width at most $12dK$ and exponential block preparation count, and with
+width at most $3dK(2m+1)$ and preparation count $n(K-1)$ as in
+\eqref{eq:v22-polynomial}. Both constrain every training cut. Their
+resource pairs are upper bounds for $\mathsf V_{N,W}$, not a claim of
+an optimal frontier for every compact image.
+\end{corollary}
+\begin{proof}
+Choose rounding, calibration, band and error budgets whose sum is
+smaller than the strict margin. Apply Theorem~\ref{thm:v21-endtoend}
+or Theorem~\ref{thm:v22-tournament}. A one-response cover needs no
+training and is implemented directly by the rational event sampler.
+\end{proof}

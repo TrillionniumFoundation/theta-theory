@@ -1,0 +1,155 @@
+\section{Acquisition, clocks, and the resource order}
+\label{sec:v23-acquisition}
+A statistical bound is ambiguous unless the protocol and the resource
+coordinates being compared are specified. The superscript ${\rm clk}$
+in the preceding theorems is therefore part of their notation, not a
+qualification confined to an implementation paragraph.
+
+\subsection{Comparable resource points}
+On one declared schedule, profiles are ordered coordinatewise.
+Enlarging a register alphabet preserves every previously feasible
+machine by padding unused states. Inserting observations is comparable
+only through an explicit embedding that says which new inputs are
+ignored and which registers survive the inserted cuts. Atomic and
+bit-serial schedules are different schedules, even when they have the
+same number of experimental preparations.
+
+For a finite-precision implementation we record
+\begin{equation}\label{eq:v23-resource-tuple}
+ \mathfrak r=(N_B,N_Q,\mathbf K,r,D,\mathsf C).
+\end{equation}
+Here $N_B,N_Q$ count candidate and target preparations, $r$ bounds
+fair bits per declared row sampler, $D$ bounds a specified read-only
+description, and $\mathsf C$ specifies clocked or autonomous execution.
+A description is measured in a fixed code, not by an unspecified
+notion of compressibility. For example, with a known table layout,
+store the first $s-1$ numerators of a $2^{-r}$ stochastic row in
+$(s-1)(r+1)$ bits; its last numerator is the remainder. The layout,
+response dictionary and any program used to expand repeated phases
+have their own fixed-code costs. Sample-dependent calibration is not
+part of that read-only description.
+
+For the same code and schedule, increasing numerical resource caps
+or register alphabets gives an inclusion of machine classes. Changing
+$\mathsf C$ does not mean increasing one numerical coordinate. A
+clocked execution with $T$ update epochs and profile $\mathbf K$ has an
+autonomous realization on the disjoint union of its phase registers,
+using at most $\sum_{t=0}^T K_t$ states. This is an attainable conversion,
+not an equality of optimal frontiers. Shared-row optimization in
+Theorem~\ref{thm:v23-occupation} can be strictly smaller than that
+conversion.
+
+\begin{proposition}[Joint finite resource optimization]
+\label{prop:v23-resource-order}
+Fix a finite experimental protocol and a finite table code. With finite
+caps on description and precision, the feasible machines form a finite
+set and their optimal worst-case payoff is exactly the maximum over
+that set. If the precision restriction is removed on a fixed table
+architecture, Theorems~\ref{thm:v23-occupation} and
+\ref{thm:v23-dual} characterize its exact value. A finite collection
+of permitted architectures is handled by taking the maximum of their
+values. Calibration calls can be included as an initial part of the
+same protocol, with all their retained information passed through the
+same profile constraints.
+\end{proposition}
+\begin{proof}
+There are finitely many descriptions of bounded length and finitely
+many allowed dyadic rows. Retain exactly the descriptions that decode
+to legal tables of the specified finite schedule and budgets. Each
+has a well-defined payoff. For unrestricted stochastic rows on a fixed
+architecture, use its observable row sets in the occupation formulation.
+Optimizing over a finite union is a maximum over its components. A
+calibration prefix uses known experimental kernels at the unknown
+environment in exactly the same way as any other prefix; its
+sample-dependent state is an ordinary retained register. Thus it
+introduces neither a parameter oracle nor a new exception to the
+compatibility constraints.
+\end{proof}
+
+The proposition supplies a joint optimization model rather than merely
+a post hoc resource ledger. It does not claim a short closed formula
+for arbitrary description budgets. For compact continuous families the
+net condition in Corollary~\ref{cor:v23-compact} is still required for
+effective finite certificates.
+
+\subsection{Acquiring a calibration rather than assuming it}
+The next result gives a fully priced constructive calibration prefix.
+Let $h_1,\ldots,h_K:\Omega\to[0,1]$ be a fixed known response list,
+chosen independently of the calibration observations, and suppose its
+values have denominator $2^r$. Write $d=|\Omega|$ and
+$q_i=Qh_i$. The target $Q$ need not be given as a table: independent
+preparations from $Q$ are available. Let $M=2^s$ and $0<\beta<1$.
+
+\begin{theorem}[Sampled calibration with persistent-register pricing]
+\label{thm:v23-calibration}
+For every $\rho>0$ with
+\begin{equation}\label{eq:v23-calibration-samples}
+ M\ge\frac{1}{2\rho^2}\log\frac{2K}{\beta},
+\end{equation}
+there is a clocked finite-precision calibration protocol using $M$
+target preparations and $MKr$ fair bits. It returns
+$\widehat q_i\in\{0,1/M,\ldots,1\}$ with
+\[
+ \Pp\left(\max_i|\widehat q_i-q_i|\le\rho\right)\ge1-\beta.
+\]
+The complete counter register has at most $C=(M+1)^K$ states; a word
+buffer and the three-status dyadic sampler give peak at most $3dC$.
+If a subsequent auditor has peak at most $W$ for any exogenously fixed
+calibration vector, retaining the acquired calibration gives the bound
+$C\max(3d,W)$ for the combined execution.
+
+Let $v\in[-1,1]$ and $\epsilon\ge0$. Suppose, uniformly for calibration vectors $\widetilde q$, the auditor's
+true expected score is at least
+$v-\epsilon-2\|\widetilde q-q\|_\infty$, and its score is in $[-1,1]$.
+With fresh training and validation after this prefix, the combined
+expected score is at least
+\begin{equation}\label{eq:v23-calibrated-score}
+ v-\epsilon-2\rho-2\beta.
+\end{equation}
+\end{theorem}
+\begin{proof}
+On target trial $j$, retain its word $Y_j$. For each $i$, generate a
+Bernoulli variable $B_{ij}$ of parameter $h_i(Y_j)$ with an independent
+$r$-bit dyadic sampler, and increment counter $i$. After all $K$ updates,
+discard $Y_j$. For fixed $i$, the variables $B_{ij}$ over different
+trials are independent, lie in $\{0,1\}$, and have mean $q_i$. Their
+averages $\widehat q_i$ therefore satisfy
+\[
+ \Pp(|\widehat q_i-q_i|>\rho)\le2e^{-2M\rho^2}.
+\]
+This bounded-variable exponential estimate follows from the exponential
+moment bound used in Theorem~\ref{thm:v20-spectrum}. A union bound
+proves the probability assertion. Independence between different
+counters is not required.
+
+The $K$ counters each have $M+1$ possible values. The word buffer has
+$d$ values, and the running comparison of a uniform $r$-bit word with
+a fixed dyadic threshold has three comparison statuses. These yield
+the stated state counts at every sampler cut. Trial, response and bit
+indices are in the declared clocked schedule, not in an unmentioned
+work tape. The persistent counter vector remains in the register of
+the subsequent auditor and multiplies its width by at most $C$.
+All its values are dyadic because $M=2^s$.
+
+Conditional on the calibration vector, later observations have their
+original independent laws. On the good calibration event the score
+bound is $v-\epsilon-2\rho$. On the complementary event the score is
+at least $-1$. Since $v\le1$ and $\epsilon,\rho\ge0$, a loss of at
+most two times that event's probability suffices. This proves
+\eqref{eq:v23-calibrated-score}.
+\end{proof}
+
+For the response-cover tournament of Theorem~\ref{thm:v22-tournament},
+one may take
+\[
+ N_B=n(K-1),\quad W=3dK(2m+1),\quad
+ \epsilon=4(K-1)\theta+2(K-1)
+                         (e^{-4\theta m}+e^{-2n\theta^2})
+\]
+when $v$ is the envelope of the already dyadic response list. Starting
+with an arbitrary list and rounding it to $r$ bits incurs the additional
+$2^{1-r}$ term of that theorem. The new prefix prices target acquisition
+and its persistent calibration state. It is an explicit construction,
+not an optimal calibration-memory claim. Joint optimality at fixed
+finite budgets is the distinct problem in
+Proposition~\ref{prop:v23-resource-order}.

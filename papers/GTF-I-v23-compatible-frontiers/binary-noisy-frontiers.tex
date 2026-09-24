@@ -1,0 +1,315 @@
+\section{Continuation polytopes and noisy posterior partitions}
+\label{sec:v23-binary}
+We next obtain a finite exact recursion, and then an explicit solution,
+for noisy experiments. Unlike a revelation channel, these experiments
+need never disclose the parameter at any time.
+
+\subsection{One common continuation matrix}
+Let $\Theta$ and the terminal action set $A$ be finite. Conditional on
+$\theta$, report $t$ has distribution $p_t^\theta$ on $Y_t$ and reports
+are independent. A clocked observer starts in one state, retains at
+most $K_t$ states after report $t$, and receives payoff $G(\theta,a)$.
+For the moment there are no prescribed zeros in its update tables.
+For a fixed prior $\pi$, denote its optimal Bayesian payoff by
+$B^{\rm clk}_{n,\mathbf K}(\pi,G)$. The terminal readout has no further
+observation of a discarded report.
+
+Define finite sets of continuation matrices, with one column per
+retained state, backwards by
+\begin{align}
+ \mathscr C_n&=\{(G(\theta,a_s))_{\theta,s}:
+                                     (a_s)_s\in A^{K_n}\},
+                                        \label{eq:v23-cont-terminal}\\
+ \mathscr C_{t-1}&=\bigcup_{f:[K_{t-1}]\times Y_t\to[K_t]}
+                              T_{t,f}(\mathscr C_t),
+                                        \label{eq:v23-cont-backward}\\
+ (T_{t,f}C)_{\theta,s}&=\sum_{y\in Y_t}
+                                p_t^\theta(y)C_{\theta,f(s,y)},
+ \qquad K_0=1.                         \label{eq:v23-cont-operator}
+\end{align}
+The same matrix $C$ occurs in every term of
+\eqref{eq:v23-cont-operator}. Different incoming states do not receive
+independently selected future machines. If there are finitely many
+controlled experiments, include an action choice $a_s$ in the union
+and replace $p_t^\theta(y)$ by $p_t^\theta(y\mid a_s)$.
+
+\begin{proposition}[Exact Bayesian continuation recursion]
+\label{prop:v23-continuation}
+Every matrix in $\mathscr C_t$ is implemented by one deterministic
+suffix of the prescribed profile, and every such suffix has a matrix
+in $\mathscr C_t$. Moreover,
+\begin{equation}\label{eq:v23-cont-value}
+ B^{\rm clk}_{n,\mathbf K}(\pi,G)
+       =\max_{C\in\mathscr C_0}\sum_\theta\pi_\theta C_{\theta,1}.
+\end{equation}
+For Bayesian optimization the sets can be replaced by their joint
+convex hulls $\mathscr P_t=\operatorname{conv}\mathscr C_t$, using
+$\mathscr P_{t-1}=\operatorname{conv}\bigcup_fT_{t,f}(\mathscr P_t)$.
+This operation does not authorize a free shared random seed. Replacing
+$\mathscr P_t$ by the product of its separate column projections is
+not valid in general.
+\end{proposition}
+\begin{proof}
+At the terminal time, each column records the selected terminal action.
+At an earlier time, a deterministic update $f$ feeds the new state into
+one fixed suffix. Conditional expectation gives
+\eqref{eq:v23-cont-operator}. Backward induction proves the realization
+and converse statements, including recovery of the update tables.
+
+For a fixed prior the payoff is a multiaffine function of the finitely
+many time-indexed stochastic rows: an execution visits any such row
+at most once. A maximum exists. Holding all but one row fixed, replace
+that row by a maximizing vertex of its simplex. Doing this finitely
+many times gives a deterministic maximum without changing the budget.
+The same argument includes an experiment-selection row. This proves
+\eqref{eq:v23-cont-value} for all stochastic machines. Linearity of
+$T_{t,f}$ gives the asserted convex-hull recursion. A maximizing vertex
+of the final finite hull has a deterministic witness; the hull is used
+only to calculate a support value.
+
+For the last assertion, consider a suffix with two possible initial
+states, a compulsory next cut of width one, and no informative
+subsequent report. Its two continuation columns must be equal.
+Individually each column may implement either constant binary decision.
+The product of the two column projections also contains the matrix
+that makes opposite decisions in the two initial states, which the
+compulsory one-state cut cannot implement. Under a fair preparation
+where the two initial states reveal the binary parameter, this false
+matrix gives success one instead of the true value one half.
+\end{proof}
+
+\subsection{Binary posterior geometry}
+For $\Theta=\{0,1\}$ write a current occupation list as
+$Z=(z_s)_s$, where
+\[
+ z_s=(\Pp(\theta=0,M=s),\Pp(\theta=1,M=s))\in\R_+^2.
+\]
+Zero columns can be discarded and unused labels can always be padded.
+After report $t$, its incoming atoms are
+\begin{equation}\label{eq:v23-atoms}
+ b_{s,y}=(z_{s,0}p_t^0(y),z_{s,1}p_t^1(y)).
+\end{equation}
+Order the nonzero atoms by
+$q(b)=b_1/(b_0+b_1)\in[0,1]$. An interval partition divides that ordered
+list into at most $K_t$ consecutive nonempty blocks; summing the atoms
+in each block gives a new list $\mathcal I_t(Z)$. Equal-posterior atoms
+may first be merged. No nestedness of the partitions at different times
+is required.
+
+Set
+\begin{equation}\label{eq:v23-posterior-dp}
+ \begin{split}
+ F_n(Z)&=\sum_s\max_{a\in A}
+                        \{z_{s,0}G(0,a)+z_{s,1}G(1,a)\},\\
+ F_{t-1}(Z)&=\max_{\mathcal I_t}F_t(\mathcal I_t(Z)),
+                              \qquad t=n,\ldots,1.
+ \end{split}
+\end{equation}
+For controlled observations, first maximize over the finite vector of
+experiment choices $(a_s)_s$ and then form
+\eqref{eq:v23-atoms} with those choices. Only lists reachable from the
+initial list are needed in evaluating this recursion.
+
+\begin{theorem}[Exact noisy full-profile recursion]
+\label{thm:v23-interval}
+For arbitrary binary finite experiments of the conditionally independent
+form above, any prior, any bounded terminal payoff, and any finite
+cardinality profile,
+\begin{equation}\label{eq:v23-binary-value}
+ B^{\rm clk}_{n,\mathbf K}(\pi,G)
+                  =F_0((\pi_0,\pi_1)).
+\end{equation}
+There is an optimal deterministic machine whose update at every time
+is an interval partition of the current incoming posterior atoms.
+The recursion produces such a machine and optimizes over all stochastic
+machines, not just over a preselected statistic. It also holds with a
+finite choice of controlled experiments at each state.
+\end{theorem}
+\begin{proof}
+Deterministic optimality follows from
+Proposition~\ref{prop:v23-continuation}. Fix a deterministic global
+maximum, and consider one of its update times. Hold its prefix,
+experiment choices at this time, and entire suffix fixed. If the suffix
+starting at label $j$ has continuation rewards $c_{0j},c_{1j}$, assigning
+incoming atom $b$ to $j$ contributes
+\[
+ b_0c_{0j}+b_1c_{1j}
+       =(b_0+b_1)\bigl((1-q(b))c_{0j}+q(b)c_{1j}\bigr).
+\]
+It is therefore optimal to select a maximizing affine function of $q$.
+The upper envelope of finitely many affine functions on $[0,1]$ has
+interval regions. Choose tied affine functions consistently, ordering
+active slopes and discarding identical duplicates. Each selected label
+then occupies an interval. At an identical posterior, all atoms have
+the same maximizing set, so they can be assigned to the same label.
+Unused labels cause no difficulty. Relabel the active suffix states
+in interval order, including their future experiment choices.
+
+Now perform these replacements in chronological order. A replacement
+does not alter any earlier incoming occupation list or earlier update.
+It cannot decrease the payoff and thus preserves global optimality.
+Later incoming lists may change; they are recomputed before their own
+replacement. Hence the final machine has the interval property at
+all times simultaneously. This forward argument is why independently
+optimizing a partition at each cut would not prove the theorem.
+
+Conversely, every sequence of choices in
+\eqref{eq:v23-posterior-dp} defines causal finite update tables and
+therefore one admissible machine. The terminal formula is exactly its
+optimal readout. The existence just proved shows that restricting the
+finite search to these choices loses nothing. This proves
+\eqref{eq:v23-binary-value}. With controlled observations, first keep the
+current deterministic experiment choices fixed in the replacement
+argument; the same affine-envelope reasoning applies to their incoming
+atoms. Maximizing over those finite choices completes the proof.
+\end{proof}
+
+This theorem uses the likelihood-ratio quantizer principle
+\cite{Tsitsiklis1993}; the affine-envelope mechanism is not claimed as
+new. The point of the recursion is the common, changing occupation
+list and the simultaneous realizability of all its partitions. The
+posterior pairs are computed by the designer. The implemented machine
+stores only a finite label and uses a fixed finite lookup table; it
+does not store a real-valued posterior. The number of reachable lists
+can be large. No polynomial-time claim is part of the theorem.
+
+The result is Bayesian and clocked. A maximum of a minimum over
+environments is not multiaffine, and a reused autonomous row can occur
+several times in one execution. Neither of those cases is covered by
+the purification argument. They remain covered by
+Theorems~\ref{thm:v23-occupation} and \ref{thm:v23-dual}. The following
+example solves the minimax problem directly and shows why the distinction
+is substantive.
+
+\subsection{An exact minimax recursion for binary registers}
+There is also a structural recursion that does not purify the minimax
+objective. In this subsection observations are conditionally independent
+and uncontrolled, and every retained alphabet has size one or two.
+Represent a binary prefix experiment by its pair
+$r=(r_0,r_1)$, where $r_\theta=\Pp_\theta(M=1)$. Its labels may be
+exchanged at no cost. Say that $s$ dominates $r$ if a single stochastic
+binary channel, independent of $\theta$, maps $s$ to $r$.
+
+For a pair $s$ and the next report law, let $E_t(s)$ be the experiment
+on $\{0,1\}\times Y_t$ with masses
+\[
+ e_\theta(m,y)=s_\theta^m(1-s_\theta)^{1-m}p_t^\theta(y).
+\]
+At endpoints this formula has its direct Bernoulli meaning. For any
+finite binary experiment $E=(e_0,e_1)$ define its upper receiver curve
+by the finite linear program
+\begin{equation}\label{eq:v23-roc}
+ R_E(a)=\max\left\{\sum_x e_1(x)\phi(x):
+       0\le\phi(x)\le1,\ \sum_xe_0(x)\phi(x)=a\right\},
+                           \qquad 0\le a\le1.
+\end{equation}
+Ordering atoms by likelihood ratio solves this program: accept the
+largest ratios first, randomizing at at most one ratio level. Atoms
+with zero $e_0$ are treated by their direct contribution to the objective;
+no division by zero is needed.
+
+Starting with $\mathcal R_0=\{(0,0)\}$, define
+\begin{equation}\label{eq:v23-minimax-recursion}
+ \mathcal R_t=
+ \begin{cases}
+ \{(0,0)\},&K_t=1,\\
+ \{(a,R_{E_t(s)}(a)):s\in\mathcal R_{t-1},\ 0\le a\le1\},&K_t=2.
+ \end{cases}
+\end{equation}
+This is a recursion of attainable channels, not of their convex hulls.
+Its continuous parameters are design parameters of finite stochastic
+rows, not stored posterior coordinates. In particular, it need not
+have a polygonal reachable set after several stages.
+
+\begin{theorem}[Binary-register minimax frontier]
+\label{thm:v23-minimax-recursion}
+Every channel in $\mathcal R_t$ is attainable with the prefix profile,
+and every stochastic prefix experiment with that profile is dominated
+by some member of $\mathcal R_t$. For a bounded payoff $G$ and finite
+terminal action set, let $\Gamma_G(r)$ be the optimal minimum of the
+two expected payoffs obtained by a terminal stochastic readout of the
+binary experiment $r$. Then
+\begin{equation}\label{eq:v23-general-minimax-recursion}
+ V^{\rm clk}_{n,\mathbf K}(\{0,1\},G)
+                              =\max_{r\in\mathcal R_n}\Gamma_G(r).
+\end{equation}
+For correct-decision payoff this reduces to
+\begin{equation}\label{eq:v23-binary-terminal}
+ V^{\rm clk}_{n,\mathbf K}
+  =\max_{r\in\mathcal R_n}
+   \left\{\frac12+
+      \frac{|r_1-r_0|}{2(1+|1-r_0-r_1|)}\right\}.
+\end{equation}
+An optimizer can be implemented by likelihood-ratio quantizers with
+at most one randomized ratio level per update and a terminal readout.
+These assertions hold at every finite horizon, with overlapping noise
+and with arbitrary placement of one-state cuts.
+\end{theorem}
+\begin{proof}
+First consider a binary summary of any finite binary experiment, with
+output probabilities $(r_0,r_1)$. Exchange its labels if necessary so
+that $r_1\ge r_0$. The receiver-curve optimizer at $a=r_0$ has output
+probabilities $(r_0,b)$ with $b\ge r_1$. It dominates $(r_0,r_1)$.
+Indeed, if $b>r_0$, put
+\[
+ \lambda=\frac{r_1-r_0}{b-r_0}\in[0,1].
+\]
+The postprocessing probabilities
+$\Pp(M=1\mid S=0)=r_0(1-\lambda)$ and
+$\Pp(M=1\mid S=1)=r_0(1-\lambda)+\lambda$
+are in $[0,1]$ and give the required pair. If $b=r_0$, the desired
+summary is uninformative and can be generated by a constant stochastic
+row. Undoing the exchange of labels covers the original summary.
+The receiver program is solved by an ordered threshold because moving
+an equal amount of $e_0$-mass from a smaller likelihood ratio to a
+larger one cannot decrease its objective. Sorting the finite atoms
+and filling the prescribed mass $a$ proves the stated one-level
+randomization rule, including zero-mass atoms.
+
+Proceed by induction on $t$. Each member of
+\eqref{eq:v23-minimax-recursion} is attained by an attaining previous
+channel and a receiver-curve quantizer. Conversely, suppose a previous
+prefix channel $r$ is dominated by an attainable $s$ in
+$\mathcal R_{t-1}$. Conditional independence of the next observation
+implies that $E_t(s)$ dominates $E_t(r)$ by applying the same
+postprocessing to the state coordinate. Composing this postprocessing
+with any proposed new summary gives a binary quantizer of $E_t(s)$.
+The preceding argument dominates its output by a receiver-curve point,
+which belongs to $\mathcal R_t$. This composition can be incorporated
+in one update table and introduces no retained selector. At a one-state
+cut every prefix is uninformative and the reset to $(0,0)$ is exact.
+This proves both inductive assertions.
+
+A terminal readout can compose any dominating channel's postprocessing,
+so $\Gamma_G$ is monotone under domination. The original finite machine
+class has a maximizer by compactness of its row simplices. The
+inductive domination statement supplies an attainable member of
+$\mathcal R_n$ with at least that value. No attainable member can
+exceed the optimum. This proves the maximum and attainment in
+\eqref{eq:v23-general-minimax-recursion}, without needing a convexity
+claim about $\mathcal R_n$.
+
+For the last formula, exchange labels to arrange $r_1\ge r_0$.
+If $r_0+r_1\le1$, accept hypothesis one on state one and randomize
+on state zero with probability
+$(1-r_0-r_1)/(2-r_0-r_1)$. The two successes then equal
+$(1-r_0)/(2-r_0-r_1)$. If $r_0+r_1\ge1$, reject on state zero and
+accept on state one with probability $1/(r_0+r_1)$; both successes
+equal $r_1/(r_0+r_1)$. These are likelihood-ratio tests and are minimax
+by the same equal-error supporting-prior argument as for a finite
+receiver curve. Both expressions equal
+\eqref{eq:v23-binary-terminal}; uninformative endpoints give $1/2$
+directly. Choosing the attaining prefix quantizers proves the final
+implementation assertion.
+\end{proof}
+
+Equation~\eqref{eq:v23-minimax-recursion} is a genuine minimax
+whole-schedule characterization for arbitrary finite horizons in this
+binary-register class. It uses the ordinary comparison order of binary
+experiments, not a minimax interchange for complete machines. The
+restriction to uncontrolled, conditionally independent reports is used
+exactly when the dominating prefix is tensored with the next report.
+General controlled experiments and larger minimax registers use the
+occupation theorem instead. The three-report result that follows is a
+closed-form evaluation, with a strict mixing gap, of this same noisy
+resource problem.

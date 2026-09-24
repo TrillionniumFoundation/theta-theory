@@ -1,0 +1,65 @@
+\section{Explicit phase transitions for the two-count certificate}
+\label{sec:v20-phases}
+For comparison with the new residual quotient, we give the complete
+phase-state specification of Lemma~\ref{lem:v19-counter}. It realizes
+the original $400$-training-trial rule exactly, not the majority rule of
+Section~\ref{sec:v20-physical}. Let
+\[
+ C=(C_0,C_1)\in\{0,\ldots,250\}^2,
+ \qquad \tau(x)=\min(x,250).
+\]
+The free clock records the training index, the within-trial observation
+epoch, the validation phase, and deterministic processing epochs. It
+contains no data-dependent information. At the start, $C=(0,0)$.
+
+For a completed transcript $(x_1,x_2,w)$ define the deterministic update
+\[
+ T(C,x_1,x_2,w)=
+ \bigl(\tau(C_0+\1_{\{(x_1,x_2)=(0,0)\}}),
+       \tau(C_1+\1_{\{(x_1,x_2)=(1,1)\}})\bigr).
+\]
+The value of $w$ does not enter this training update. The phase transitions
+are the following; $x$ denotes the current input, not an earlier unretained
+report.
+\begin{center}
+\small
+\begin{tabular}{p{0.22\textwidth}p{0.33\textwidth}p{0.34\textwidth}}
+\toprule
+Phase & Retained data & Next transition\\
+\midrule
+Training start & $C$ & Read $x_1$ and keep $(C,x_1)$.\\
+Second report & $(C,x_1)$ & Read $x_2$ and keep $(C,x_1,x_2)$.\\
+Terminal mark & $(C,x_1,x_2)$ & Read $w$ and keep $(C,x_1,x_2,w)$.\\
+Count update & $(C,x_1,x_2,w)$ & Replace by $T(C,x_1,x_2,w)$; discard the transcript.\\
+Event formation & $C$ & Replace by the event mask $A(C)$ defined below.\\
+Candidate validation & $A$, partial transcript & Complete the transcript; replace it by $i=\1_A(x_1,x_2,w)$.\\
+Target validation & $(A,i)$, partial transcript & Complete the transcript and emit $\1_A(y_1,y_2,v)-i$.\\
+Score & A value in $\{-1,0,1\}$ & Terminate.\\
+\bottomrule
+\end{tabular}
+\end{center}
+The event formation map, including both threshold ties, is
+\begin{align*}
+ 000\in A(C)&\Longleftrightarrow C_0<250,&
+ 001\in A(C)&\Longleftrightarrow C_0<150,\\
+ 110\in A(C)&\Longleftrightarrow C_1<150,&
+ 111\in A(C)&\Longleftrightarrow C_1<250.
+\end{align*}
+No other atom is included. For each report pair there are three choices:
+both marked atoms, only its larger-target-mass atom, or neither. Thus
+there are at most nine masks. Clipping at $250$ preserves every comparison,
+including equality; no flag for a count exceeding the clipping threshold
+is required.
+
+At a training epoch the possible states are bounded by
+$8\cdot251^2=504008$: the factor eight dominates every partial or complete
+transcript buffer. At validation epochs the largest alphabet has at most
+$9\cdot2\cdot8=144$ values, including the already computed
+candidate-event indicator. Event formation and final emission need at
+most nine and three states, respectively. Embed each phase alphabet into
+$[504008]$ by a fixed injective encoding. Because the phase is supplied by
+the free clock, these encodings need not have disjoint images. The next
+row decodes the current phase's encoding and applies the displayed
+transition. This gives formal deterministic rows with entries zero or
+one at every epoch. The buffers, event mask, and validation indicator are
+all charged. No unpriced data store is introduced by label reuse.

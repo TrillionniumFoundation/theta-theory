@@ -1,0 +1,120 @@
+\section{Weighted continuation obstructions}
+\label{sec:v20-weighted}
+We next give a distribution-sensitive version of the wordwise obstruction.
+It applies to finite-valued terminal decisions and is useful even when a
+word of small probability should not be assigned the same weight as a
+likely one.
+
+Let $f:\Sigma_1\times\cdots\times\Sigma_L\to\mathcal A$ have finite
+range. The residual of a prefix $x$ at cut $t$ is the function
+$v\mapsto f(xv)$ on the suffix alphabet. Write $r_t(f)$ for the number
+of distinct residuals. A stochastic machine has a charged register at
+every cut; all persistent randomness is included in this register.
+Its wordwise error is $e(w)=\Pr(\widehat f(w)\ne f(w))$.
+
+\begin{theorem}[Finite-valued realization and weighted cut bound]
+\label{thm:v20-weighted}
+Exact stochastic computation of $f$ requires $K_t\ge r_t(f)$ at every
+cut. The whole residual profile is simultaneously attained by a
+deterministic machine.
+
+Fix a cut, prefixes $x_1,\ldots,x_r$, and a graph on $[r]$. For each
+edge $ij$ choose a suffix $v_{ij}$ such that
+$f(x_iv_{ij})\ne f(x_jv_{ij})$. Let $\mu(w)\ge0$ be arbitrary word
+weights. Choose edge weights $\lambda_{ij}\ge0$ satisfying the word
+capacity constraints
+\begin{equation}\label{eq:v20-congestion}
+ \sum_{ij:\,w=x_iv_{ij}\ \text{or}\ w=x_jv_{ij}}\lambda_{ij}
+ \le\mu(w)\quad\hbox{for every word }w.
+\end{equation}
+Every machine with $K$ states at this cut satisfies
+\begin{equation}\label{eq:v20-graph}
+ \sum_w\mu(w)e(w)\ \ge\
+ \min_{\phi:[r]\to[K]}
+       \sum_{ij:\,\phi(i)=\phi(j)}\lambda_{ij}.
+\end{equation}
+The right side is a weighted monochromatic-edge obstruction. Maximizing
+it over admissible witnesses and weights gives a finite,
+distribution-sensitive lower bound. The bound can be an equality with
+positive error.
+\end{theorem}
+\begin{proof}
+Let $a_i(m)$ be the state distribution after prefix $x_i$. For a fixed
+edge and a common state $m$, the future output distribution on suffix
+$v_{ij}$ is the same for both prefixes. Since their correct outputs are
+different, the sum of their two conditional error probabilities is at
+least one. Multiplying by the smaller state mass and summing gives
+\begin{equation}\label{eq:v20-overlap}
+ e(x_iv_{ij})+e(x_jv_{ij})
+ \ge \sum_{m=1}^K\min\{a_i(m),a_j(m)\}.
+\end{equation}
+Weight the inequalities by $\lambda_{ij}$ and use
+\eqref{eq:v20-congestion}. The resulting lower bound is
+\[
+ F(a_1,\ldots,a_r)=\sum_{ij}\lambda_{ij}
+                              \sum_m\min\{a_i(m),a_j(m)\}.
+\]
+This is a concave continuous function on $(\Delta_K)^r$. Every point
+of that product is a convex combination of its deterministic vertices;
+concavity implies that its value is at least the minimum over those
+vertices. A vertex is a labeling $\phi:[r]\to[K]$, and its value is
+exactly the right side of \eqref{eq:v20-graph}. This proves the bound
+without treating stochastic encodings as deterministic encodings.
+
+For zero error, choose one distinguishing suffix for every two different
+residuals. Equation~\eqref{eq:v20-overlap} forces the corresponding state
+supports to be disjoint. Hence at least $r_t(f)$ states are needed.
+For the converse, keep the residual class of the observed prefix. Equal
+residuals have equal shifts after every next input, so the next class is
+well defined. At the last epoch the residual is the output label itself.
+These quotient transitions realize all widths simultaneously.
+
+For a positive-error equality, let the only relevant words be two
+one-letter prefixes with different required labels, weighted $p$ and
+$1-p$, where $0<p<1$. Put $K=1$ and
+$\lambda_{12}=\min(p,1-p)$. The cut obstruction is $\min(p,1-p)$,
+attained by always emitting the more likely label. Thus the weighted
+constant is sometimes exact; universal sharpness for all graphs or
+input distributions is not asserted. With unit weights on the same two
+words the total-error lower bound is one, also attained by a constant
+output; this is equality in the earlier $(r-K)/(r-1)$ bound at $r=2$,
+$K=1$.
+\end{proof}
+
+\begin{corollary}[A Bayes-regret obstruction for constrained audits]
+\label{cor:v20-bayes}
+Fix a finite action set $\mathcal A$, candidate class $B$, and a
+probability measure $\nu$ on $B$. For a training word $w$, let $p_w(b)$
+be its likelihood and let $f_a(b)$ be the expected validation payoff.
+Put
+\[
+ R_w(a)=\int_Bp_w(b)f_a(b)\,d\nu(b),\qquad
+ S_\nu=\sum_w\max_a R_w(a).
+\]
+Choose a maximizing label $f(w)$. Set
+$\mu(w)=R_w(f(w))-\max_{a\ne f(w)}R_w(a)$, taking zero when a maximum
+is tied. Let $\Gamma_{t,K}(f,\mu)$ be any lower bound supplied by
+\eqref{eq:v20-graph}. Then every width-$K$ audit at cut $t$ has
+worst-case expected payoff at most
+\begin{equation}\label{eq:v20-bayes}
+ S_\nu-\Gamma_{t,K}(f,\mu).
+\end{equation}
+\end{corollary}
+\begin{proof}
+The conditional distribution of the auditor's output for a fixed word
+is independent of the unknown candidate. Its Bayes payoff is therefore
+$\sum_{w,a}R_w(a)\Pr(\widehat f(w)=a)$. Subtracting this from $S_\nu$
+gives at least $\sum_w\mu(w)e(w)$. Apply the theorem, and use that a
+minimum over candidates is at most the average under $\nu$.
+\end{proof}
+
+The corollary does not exchange a maximum and minimum over a nonconvex
+fixed-width machine class. The prior is a lower-bound device, not a
+randomization resource supplied to the candidate. With a unique maximizing
+label and strictly positive margins at every word, equality with $S_\nu$
+forces exact wordwise computation. This makes explicit the uniqueness
+step used in the odd-sample binary theorem below. For even sample size,
+the balanced-count words have zero likelihood gap. A rule can differ on
+those ties without losing value; equality of values then does not force
+one prescribed total Boolean rule, and the odd-sample width profile cannot
+simply be asserted for that case.

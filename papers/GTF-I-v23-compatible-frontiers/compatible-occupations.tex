@@ -1,0 +1,253 @@
+\section{Compatible occupation arrays}
+\label{sec:v23-occupations}
+A fixed terminal statistic and an optimal statistic under a sequence of
+memory constraints are different objects. We begin with a characterization
+of the second object. All the spaces in this section are finite. No
+strict positivity assumption is imposed on a probability coordinate.
+
+\subsection{The finite protocol and its observable rows}
+Fix a finite schedule $\sigma$ and a register profile
+$\mathbf K=(K_t)_{t\in\sigma}$. A cut is part of the specification of
+$\sigma$: subdividing an atomic observation or a randomization operation
+inserts additional register constraints. The clocked model permits a
+different transition table at each scheduled operation. It does not
+permit access to a discarded observation. We write
+$\mathcal M^{\rm clk}_\sigma(\mathbf K)$ for this class. Initial
+randomization, when allowed, is a transition of the same kind as all
+other randomizations.
+
+Let $\Theta$ be a finite set of environments. Under $\theta$, all
+preparation and experimental kernels are specified. One may include
+the complete physical and public past in a finite hidden index $i$.
+This index is a variable in the analysis, not an observer register.
+An elementary observer operation has an accessible row $r$ and chooses
+$j$ from a nonempty finite set $J_r$. The row contains exactly the
+current register and the current atomic input, if there is one. The
+choice $j$ can specify a new register and a public action. A public
+action that is subsequently needed by the observer must be retained in
+that register. Every permissible transition has the form
+\begin{equation}\label{eq:v23-row}
+ u(j\mid r),\qquad u(j\mid r)\ge0,\qquad
+ \sum_{j\in J_r}u(j\mid r)=1.
+\end{equation}
+Neither $\theta$ nor the unobserved part of $i$ is an argument of $u$.
+
+Known environment operations act linearly on conditional occupation
+masses. For example, if $z(\theta,h,m)$ is the mass before an observation,
+then its incoming mass at the observer is
+\begin{equation}\label{eq:v23-prediction}
+ x(\theta,h',(m,y))=
+       \sum_h z(\theta,h,m)L^\theta(h',y\mid h,m).
+\end{equation}
+Dependence on a previously issued action is included in $h$ or in the
+retained part of $m$. After an observer choice, the public history is
+updated and discarded indices are summed out, again by a known linear
+map. Alternating these two kinds of operation represents a finite
+controlled experiment, including feedback, calibration, validation,
+and a terminal readout. The cut alphabets and the allowed rows are
+fixed before optimization. In particular, this representation does not
+silently grant the observer the hidden history used to define the
+experimental kernels.
+
+For each observer operation introduce outgoing masses
+$f(\theta,i,r,j)$. Impose the conservation and compatibility equations
+\begin{align}
+ &f(\theta,i,r,j)\ge0,\qquad
+   \sum_{j\in J_r}f(\theta,i,r,j)=x(\theta,i,r),
+                                      \label{eq:v23-conservation}\\
+ &f(\theta,i,r,j)x(\theta',i',r)
+  =f(\theta',i',r,j)x(\theta,i,r)
+       \quad(\theta,i,\theta',i',r,j). \label{eq:v23-minors}
+\end{align}
+All incoming masses are nonnegative and are linked to the preceding
+operation by the known linear maps. Preparations are prescribed and
+have conditional mass one for each $\theta$. We call the resulting
+set of arrays $\mathcal O^{\rm clk}_\sigma(\mathbf K)$.
+
+\begin{theorem}[Exact full-profile realization]
+\label{thm:v23-occupation}
+The occupation arrays of
+$\mathcal M^{\rm clk}_\sigma(\mathbf K)$ are exactly
+$\mathcal O^{\rm clk}_\sigma(\mathbf K)$. This set is compact and is
+defined by linear equations, nonnegativity, and the quadratic equations
+\eqref{eq:v23-minors}. Every feasible array determines an implementing
+machine, with arbitrary legal rows only where the incoming mass vanishes
+under every environment.
+
+More generally, suppose specified occurrences of observable rows must
+use the same transition distribution, with their choices identified.
+For each such class impose \eqref{eq:v23-minors} also between different
+occurrences. The resulting arrays are exactly those realized by machines
+with these shared rows. In particular this gives an exact formulation
+for an autonomous controller with a fixed state alphabet and a single
+reused transition table.
+\end{theorem}
+\begin{proof}
+A machine gives
+$f(\theta,i,r,j)=x(\theta,i,r)u(j\mid r)$, so conservation and every
+minor equation follow. Conversely, fix an occurrence of $r$. If some
+$x(\theta_0,i_0,r)>0$, define
+\[
+ u(j\mid r)=\frac{f(\theta_0,i_0,r,j)}{x(\theta_0,i_0,r)}.
+\]
+Conservation makes this a stochastic row. The minor with
+$(\theta_0,i_0)$ shows that the same formula reproduces $f$ at every
+positive incoming mass. At a zero incoming mass, nonnegativity and
+conservation force each outgoing mass to be zero. If all incoming
+masses vanish, choose any legal stochastic row. Thus the recovered row
+is independent of both the environment and the hidden index.
+
+Perform this construction at every observer operation. Induction along
+the schedule, using \eqref{eq:v23-prediction} and the corresponding
+linear outgoing maps, proves that the recovered machine has exactly
+the given occupation arrays. Its registers are the declared alphabets;
+the proof has not introduced a retained selector. For a shared row class,
+choose one positive incoming mass anywhere in that class and use the
+cross-occurrence equations. The same argument reconstructs one common
+row. A class with no positive incoming mass is treated arbitrarily.
+
+Each coordinate is a conditional probability or a subprobability mass
+and is therefore at most one. Adding these redundant upper bounds makes
+boundedness explicit. The equations and inequalities are closed, and
+there are finitely many coordinates. Compactness follows.
+\end{proof}
+
+The zero-mass provision is essential. Cancelling an occupation coordinate
+without a case distinction would remove valid boundary machines. Nor
+would separate low-rank descriptions at successive cuts imply
+\eqref{eq:v23-prediction}--\eqref{eq:v23-minors}. The latter equations
+refer to one execution, not to a list of independently selected encoders.
+For an autonomous machine, the phase cannot be supplied through a
+row name unless it is either an actual input or part of the charged
+state. A clocked machine can be embedded autonomously by retaining
+$(t,m)$; Theorem~\ref{thm:v23-occupation} also permits direct optimization
+without making that possibly wasteful construction.
+
+\subsection{A complete polynomial converse}
+Let $G\in[-1,1]$ be a terminal payoff and let $L_\theta(z)$ denote its
+expectation as a linear function of the complete occupation array $z$.
+The terminal decision is included among the observer operations. Set
+\begin{equation}\label{eq:v23-value}
+ V^{\rm clk}_{\sigma,\mathbf K}(\Theta,G)
+ =\max_{A\in\mathcal M^{\rm clk}_\sigma(\mathbf K)}
+                              \min_{\theta\in\Theta}\E_\theta^A G.
+\end{equation}
+The admissible row sets are assumed nonempty. Introduce $v\in[-1,1]$
+and impose $L_\theta(z)-v\ge0$ for every $\theta$. Write $h_a=0$ for
+all the linear and quadratic equalities and $g_b\ge0$ for the remaining
+inequalities. Include the redundant ball inequality
+\[
+ R-\|(z,v)\|^2\ge0,
+\]
+where the positive integer $R$ is larger than the number of coordinates.
+Let $\mathcal F$ be this basic closed feasible set. For $d\ge1$, define
+$U_d$ as the infimum of $u\in\R$ for which the polynomial identity
+\begin{equation}\label{eq:v23-sos}
+ u-v=\sigma_0+\sum_b\sigma_b g_b+\sum_a q_a h_a
+\end{equation}
+holds, with each $\sigma_b$ a sum of squares, each $q_a$ a polynomial,
+and every displayed summand of degree at most $2d$. An empty certificate
+class has infimum $+\infty$.
+
+\begin{theorem}[Complete full-profile certificates]
+\label{thm:v23-dual}
+For the finite protocol above,
+\begin{equation}\label{eq:v23-complete-dual}
+ V^{\rm clk}_{\sigma,\mathbf K}(\Theta,G)
+ =\max_{(z,v)\in\mathcal F}v=\inf_{d\ge1}U_d,
+ \qquad U_{d+1}\le U_d.
+\end{equation}
+A feasible occupation array is a constructive lower certificate. An
+identity \eqref{eq:v23-sos} is an upper certificate for every stochastic
+machine of the specified full profile. For rational experimental data,
+every rational $u>V^{\rm clk}_{\sigma,\mathbf K}$ admits such a
+certificate with rational coefficients. The same conclusions hold with
+shared rows, including the autonomous case.
+
+Let $\ell_r$ be the best worst-case payoff among the actual controller
+tables whose entries are dyadic with denominator $2^r$. If transition
+$t$ has at most $s_t$ choices per row, then
+\begin{equation}\label{eq:v23-two-sided}
+ \ell_r\le V^{\rm clk}_{\sigma,\mathbf K}
+ \le \min\left\{U_d,\ell_r+
+                2\sum_t(s_t-1)2^{-r}\right\}.
+\end{equation}
+Here repeated uses of a shared row are counted repeatedly in the sum.
+Thus there are matching constructive and converse certificates to any
+positive accuracy, without a minimax interchange or a convexification
+of fixed-width machines.
+\end{theorem}
+\begin{proof}
+The first equality follows from Theorem~\ref{thm:v23-occupation} and
+the inequalities $v\le L_\theta(z)$. Compactness gives attainment.
+Evaluating \eqref{eq:v23-sos} at any feasible point gives $v\le u$.
+Increasing $d$ only enlarges the certificate class.
+
+For completeness, take $u>\max_{\mathcal F}v$. The polynomial $u-v$
+is strictly positive on $\mathcal F$. Apply Putinar's positivity theorem
+\cite{Putinar1993} to the inequalities $g_b\ge0$ and the pairs
+$h_a\ge0$, $-h_a\ge0$. The explicitly included ball makes the quadratic
+module Archimedean. The resulting identity has finite degree. Collecting
+the two multipliers of $h_a$ gives \eqref{eq:v23-sos}. Letting $u$
+decrease to the maximum proves the second equality. For rational data
+and rational $u$, the rational version with an explicit ball generator
+\cite[Theorem 6]{Powers2009} gives rational sums of squares and rational
+multipliers. This is an application of those positivity theorems, not a
+new Positivstellensatz.
+
+Finally round each stochastic row to the dyadic simplex, preserving its
+causal zeros, at total-variation cost at most $(s_t-1)2^{-r}$. Round a
+shared row once and use that rounded row at every occurrence. Coupling
+the original and rounded executions until their first discrepancy bounds
+the probability of a discrepancy by the sum in
+\eqref{eq:v23-two-sided}, capped at one. The payoff range is at most
+two. This estimate is uniform in $\theta$, so rounding a maximizing
+machine proves the rightmost bound. The dyadic machines are actual
+machines, which proves the left bound. Their finite enumeration is a
+construction, even though its cost may be large.
+\end{proof}
+
+A numerical semidefinite solution is not by itself an identity
+\eqref{eq:v23-sos}; coefficients and nonnegativity must be certified.
+The theorem proves convergence, not a uniform degree bound, finite
+termination at $u=V$, or an efficient algorithm. Its necessity statement
+is nevertheless different from a resource upper construction: every
+machine obeys every certified upper bound. Dropping compatibility
+constraints produces a relaxation. It does not preserve the exact value
+in general, as Theorem~\ref{thm:v23-bsc} will demonstrate explicitly.
+
+\begin{corollary}[Compact families and finite experimental adapters]
+\label{cor:v23-compact}
+Suppose $B$ is a compact family of finite experimental kernels on a fixed
+schedule with $N$ environment calls. Let $B_j\subset B$ be a finite
+$\omega_j$-net in the maximum conditional total-variation metric, with
+$\omega_j\to0$. Use the same bounded terminal payoff throughout. Then
+\begin{equation}\label{eq:v23-net-dual}
+ \ell_r(B_j)-2N\omega_j
+ \le V^{\rm clk}_{\sigma,\mathbf K}(B,G)
+ \le U_d(B_j).
+\end{equation}
+As $j,r,d$ tend to infinity in a suitable order, the two sides have common
+limit $V^{\rm clk}_{\sigma,\mathbf K}(B,G)$. A certified adapter changing
+call $i$ by at most $\delta_i$ contributes
+$2\sum_i\delta_i$ to a payoff comparison. A simulator with profile
+$\mathbf R$ is charged by the product profile $(R_tK_t)$.
+\end{corollary}
+\begin{proof}
+For any one controller, couple corresponding calls until the first
+unequal outcome. Its expected payoff varies by at most $2N\omega_j$
+between a kernel and its net representative. Hence
+$V(B_j)-2N\omega_j\le V(B)\le V(B_j)$. Apply
+Theorem~\ref{thm:v23-dual} to $B_j$ and choose the dyadic and certificate
+accuracies after choosing $j$. The same coupling with unequal
+$\delta_i$ gives the adapter bound. Retaining the ordered pair of
+simulator and controller states proves the product assertion.
+\end{proof}
+
+An effective net is additional data; abstract compactness is not an
+algorithm for an arbitrary presentation. The finite-alphabet, compact
+parameter collision experiments considered below have this interface.
+Consequently their fixed-schedule, full-profile values admit the same
+all-auditor certificates. This implication does not evaluate those
+certificates numerically for every physical sample budget, nor does it
+identify a minimal autonomous implementation.

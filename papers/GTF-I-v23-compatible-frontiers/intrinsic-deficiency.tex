@@ -1,0 +1,451 @@
+\section{Intrinsic causal deficiency}\label{sec:v13-deficiency}
+\subsection{Experiments and executable signatures}
+Fix a finite parameter set $\Theta$, a horizon $T$, and finite control
+alphabets $A_0,\ldots,A_{T-1}$. An experiment has a report at checkpoints
+$0,\ldots,T$ and an unobserved terminal mark $W$ in a common finite set.
+It is specified by finite causal instruments: for each parameter and
+control history they give the joint law of the report path and the
+actual mark. Equivalently, a finite latent-state realization may be
+expanded into its history tree. The parameter and mark are unavailable
+to the encoder. The mark may depend on the physical controlled path.
+We compare experiments with the same control interface and mark space.
+
+Write $Y_t$ for the source report and $Z_t$ for the target report. A
+private simulator of width $K$ has stochastic rows
+\begin{align}
+ q_0(z,m\mid y),&\qquad m\in[K_0],\label{eq:v13-rows}\\
+ q_t(z,m\mid m',a,y),&\qquad
+       m'\in[K_{t-1}],\ m\in[K_t],\quad 1\le t\le T.\nonumber
+\end{align}
+A row consumes the current source report, emits the target report, and
+retains the new state. The previous target reports are not available to
+that row unless encoded in $m'$. The clock and current control are part
+of the declared interface. Fresh private randomness is permitted, but
+no other persistent random variable is free. The product of all row
+simplexes is denoted $\cK_K$.
+
+A deterministic feedback tree $g$ chooses $a_t$ from $z_{0:t}$ and its
+own previous controls. It is the same controller on both sides of a
+comparison. Let $\Omega_g$ be the finite marked transcript space, including
+reports, controls, and $W$. Put
+\[
+ P_{\theta,g}^q=\Law_\theta(E\xrightarrow{q}g),\qquad
+ Q_{\theta,g}=\Law_\theta(F\xrightarrow{}g).
+\]
+Here $W$ on the left is the source's actual mark. The total variation
+convention is $\|P-Q\|_{\rm TV}=\sup_B|P(B)-Q(B)|$.
+Private deficiency is
+\begin{equation}\label{eq:v13-private}
+ \dpr_K(E,F)=\min_{q\in\cK_K}
+       \max_{\theta,g}\|P_{\theta,g}^q-Q_{\theta,g}\|_{\rm TV}.
+\end{equation}
+The minimum will be justified below. Randomized feedback need not be
+added to the maximum: conditioning on its independent random table
+expresses its law as a mixture of deterministic feedback laws. The same
+argument permits arbitrary independent side randomness in the tester.
+
+A \emph{hidden selector} $U\in[r]$, independent of the source, chooses
+one simulator $q^u$. It is not visible to the feedback controller or the
+final test. A \emph{visible selector} is revealed before feedback begins.
+The two costs are
+\begin{align}
+ \dhi_{K,r}(E,F)
+ &=\min_{\lambda,q^1,\ldots,q^r}
+   \max_{\theta,g}\left\|\sum_u\lambda_uP_{\theta,g}^{q^u}
+                              -Q_{\theta,g}\right\|_{\rm TV},
+                              \label{eq:v13-hidden}\\
+ \dvi_{K,r}(E,F)
+ &=\min_{\lambda,q^1,\ldots,q^r}
+   \max_{\theta,(g_u)}
+   \left\|\sum_u\lambda_u\delta_u\otimes P_{\theta,g_u}^{q^u}
+             -\sum_u\lambda_u\delta_u\otimes Q_{\theta,g_u}
+   \right\|_{\rm TV}.\label{eq:v13-visible}
+\end{align}
+In both expressions $\lambda\in\Delta_r$ and $q^u\in\cK_K$.
+The second formula compares the joint seed--marked interface. Its target
+seed has the same distribution and is independent of the target
+experiment. A hidden selector can be stored privately by retaining
+$(u,m)$, at width $rK_t$. A visible selector is separate side information
+and is charged by its own alphabet size. Neither interpretation identifies
+an arbitrary real-valued design with a free finite register.
+
+\begin{definition}[Deficiency spectrum]\label{def:v13-spectrum}
+The private resource spectrum of $E$ relative to $F$ is the upward-closed
+set of pairs $(K,\varepsilon)$ satisfying $\dpr_K(E,F)\le\varepsilon$.
+The hidden spectrum consists of triples $(K,r,\varepsilon)$ satisfying
+$\dhi_{K,r}(E,F)\le\varepsilon$, and the visible spectrum uses
+$\dvi_{K,r}$. Width profiles are ordered coordinatewise; in the seeded
+spectra the seed bound and error are ordered as well. Unused states or
+selector values may be adjoined. The hidden convexification is
+$\dmix_K=\inf_{r\ge1}\dhi_{K,r}$.
+\end{definition}
+The spectrum, not a presumed unique coordinatewise minimum profile, is
+the intrinsic object. For example one may minimize $\max_tK_t$, with a
+specified seed signature and tolerance, over its feasible profiles.
+Different checkpoints can have incomparable optimal tradeoffs.
+
+\subsection{The finite comparison theorem}
+Concatenate all probabilities $P_{\theta,g}^q(\omega)$ into $b(q)\in
+\mathbb R^N$, retaining their row indices; put $b_F=(Q_{\theta,g}(\omega))$.
+Let $\mathcal D_K$ be the finite set of deterministic choices of all
+rows in \eqref{eq:v13-rows}. Empty or unreachable rows remain harmless
+coordinates. Set
+\[
+ a_K=\dim\aff\{b(q):q\in\cK_K\},\qquad
+ \cI=\{(\theta,g,B):B\subseteq\Omega_g\}.
+\]
+For $i=(\theta,g,B)$ and $d\in\mathcal D_K$, define
+\begin{equation}\label{eq:v13-matrix}
+ A_{i,d}=Q_{\theta,g}(B)-P_{\theta,g}^{d}(B).
+\end{equation}
+Including both an event and its complement includes both signs.
+
+\begin{theorem}[Intrinsic deficiency, priced converse, and visibility]
+\label{thm:v13-main}
+For the finite marked causal experiments above the following assertions
+hold.
+
+\smallskip\noindent
+\textup{(i)} Private deficiency and both fixed-$r$ deficiencies are
+attained. The private problem has the exact polynomial formulation
+\begin{equation}\label{eq:v13-polynomial}
+ \min\{\varepsilon: q\in\cK_K,\ 0\le\varepsilon\le1,
+    Q_{\theta,g}(B)-P_{\theta,g}^q(B)\le\varepsilon
+                         \text{ for all }(\theta,g,B)\in\cI\}.
+\end{equation}
+In particular its zero set is exactly the nonnegative causal
+factorization of the target marked behavior by the rows
+\eqref{eq:v13-rows}. At $K_t=1$ for every $t$, this is precisely the same
+factorization with rows $q_t(z\mid a,y)$ and $q_0(z\mid y)$.
+
+\smallskip\noindent
+\textup{(ii)} Hidden convexification has the attained dual
+\begin{equation}\label{eq:v13-dual}
+ \dmix_K(E,F)=
+ \min_{\lambda\in\Delta(\mathcal D_K)}\max_{i\in\cI}
+                    \sum_d\lambda_d A_{i,d}
+ =\max_{w\in\Delta(\cI)}\min_{d\in\mathcal D_K}
+                    \sum_iw_i A_{i,d}.
+\end{equation}
+An optimal simulation uses at most $a_K+1$ selector values. Thus every
+weighted causal test has optimal discrepancy at most $\varepsilon$ if
+and only if a hidden mixture of $K$-state simulators has error at most
+$\varepsilon$; it has a private realization of width at most $(a_K+1)K$.
+More specifically,
+\begin{equation}\label{eq:v13-priced}
+ \dpr_{rK}\le\dhi_{K,r},\qquad
+ \dmix_K=\dhi_{K,a_K+1}\le\dpr_K.
+\end{equation}
+
+\smallskip\noindent
+\textup{(iii)} Put
+$e_\theta(q)=\max_g\|P_{\theta,g}^q-Q_{\theta,g}\|_{\rm TV}$.
+Then
+\begin{equation}\label{eq:v13-exposed}
+ \dvi_{K,r}=\min_{\lambda,q^1,\ldots,q^r}
+                  \max_\theta\sum_u\lambda_u e_\theta(q^u).
+\end{equation}
+Writing $a_K^{\rm v}=\dim\aff\{(e_\theta(q))_\theta:q\in\cK_K\}$,
+the infimum over all finite visible selectors is attained using
+$a_K^{\rm v}+1\le|\Theta|+1$ values and equals
+\begin{equation}\label{eq:v13-visible-dual}
+ \max_{v\in\Delta(\Theta)}\min_{q\in\cK_K}
+                          \sum_\theta v_\theta e_\theta(q).
+\end{equation}
+For every $r\ge1$, and also after optimizing over all $r$,
+\begin{equation}\label{eq:v13-zeros}
+ \dvi_{K,r}(E,F)=0\quad\Longleftrightarrow\quad\dpr_K(E,F)=0.
+\end{equation}
+No corresponding equivalence with $\dmix_K=0$ holds in general.
+
+\smallskip\noindent
+\textup{(iv)} For compatible experiments $E,F,G$ and profiles $K,L$,
+\begin{align}
+ \dpr_{KL}(E,G)&\le\dpr_K(E,F)+\dpr_L(F,G),\label{eq:v13-triangle}\\
+ \delta^{\rm s}_{KL,rs}(E,G)&\le
+ \delta^{\rm s}_{K,r}(E,F)+\delta^{\rm s}_{L,s}(F,G),
+                       \qquad {\rm s}\in\{{\rm h},{\rm v}\}.
+                       \nonumber
+\end{align}
+Here $KL$ is the pointwise product, and the second line uses independent
+selectors. If an $F$-consumer has widths $S_t$, composing it with a
+private simulator gives widths $K_tS_t$ and changes every $[0,1]$ marked
+risk by at most $\dpr_K(E,F)$. A hidden selector is stored at the
+additional price $r$, whereas visible selector alphabets multiply.
+The same bounds hold for optimized upper risk sets and their lower
+support functions with the indicated costs.
+\end{theorem}
+
+\begin{proof}
+Expand a probability of a complete source path, simulator state path,
+and transcript. It is a product of fixed experiment probabilities and
+one chosen row entry per time. Summing latent and state paths gives a
+polynomial in the finitely many row entries. No row belonging to a fixed
+time can occur twice along one path. Consequently the polynomial is
+multiaffine in the groups of stochastic rows. Continuity and compactness
+of the product of closed finite simplexes prove attainment in
+\eqref{eq:v13-private}; the same proof includes $\lambda$ and the $r$
+policies in \eqref{eq:v13-hidden}. For the visible problem there are only
+finitely many collections $(g_u)$ and transcript events, so its objective
+is again continuous on a compact set. The finite-event formula for total
+variation proves \eqref{eq:v13-polynomial}. Setting $\varepsilon=0$
+forces equality of every transcript probability, in both directions of
+each event inequality. This proves the factorization and stateless
+claims, including their necessity.
+
+For each stochastic row of $q$, sample its deterministic output once,
+independently of all other rows, before the experiment. This constructs
+a probability $\Lambda_q$ on $\mathcal D_K$. On any fixed path the row
+variables encountered have different time indices, so the expectation
+of their product is the product of the row probabilities. Summing paths
+shows, simultaneously for every $\theta,g$, that
+\begin{equation}\label{eq:v13-purification}
+ b(q)=\sum_{d\in\mathcal D_K}\Lambda_q(d)b(d).
+\end{equation}
+This is a behavior identity, not a same-width deterministic
+purification of minimax error. It implies
+$\conv b(\cK_K)=\conv\{b(d):d\in\mathcal D_K\}$.
+The latter is a compact polytope. Minimizing the continuous convex
+maximum of event discrepancies over this polytope gives the first
+expression in \eqref{eq:v13-dual}. Finite-dimensional minimax gives the
+second, with both optima attained. A point of this polytope is a convex
+combination of at most $a_K+1$ of its generating points by
+Carath\'eodory's theorem. For completeness, if a representation uses more
+points, their affine dependence gives coefficients $c_d$ with
+$\sum c_d=0$ and $\sum c_db(d)=0$. Subtract the largest permissible
+multiple of $c$ from the positive mixing weights; a weight becomes zero
+without changing the represented point. Repeating gives the stated
+bound. Store its selector together with the machine state to obtain
+\eqref{eq:v13-priced}. The dual inequality for every $w$ is equivalent
+to the maximum over $w$ being at most $\varepsilon$, which proves the
+priced testing converse.
+
+For disjoint seed fibers, total variation is the sum of the fiber total
+variations weighted by $\lambda_u$. For a fixed $\theta$, the tester can
+choose a separate maximizing tree on each revealed fiber. Therefore
+its maximum is $\sum_u\lambda_ue_\theta(q^u)$, proving
+\eqref{eq:v13-exposed}. The map $q\mapsto e(q)$ is continuous, being a
+finite maximum of continuous functions. Its image is compact. Convexifying
+it in $\mathbb R^{|\Theta|}$ and applying the preceding finite-dimensional
+separation and affine-dependence argument proves
+\eqref{eq:v13-visible-dual} and its selector bound. Notice that the inner
+minimum is over stochastic $q$, not over deterministic tables: the
+nonlinear function $e_\theta$ does not commute with
+\eqref{eq:v13-purification}. If the attained visible optimum is zero,
+then for every $u$ of positive weight and every $\theta$ one has
+$e_\theta(q^u)=0$, since every summand is nonnegative. Any such $q^u$
+is a private exact simulator. The converse uses a selector of one value.
+This also proves the assertion for the optimized visible selector,
+whose support is finite by the bound just established.
+
+Finally, cascade a $K$-state $E$-to-$F$ transducer and an $L$-state
+$F$-to-$G$ transducer. Within a step, consume the intermediate report
+before discarding it. The retained pair has at most $K_tL_t$ values.
+For any terminal tester on $G$, the second transducer together with
+that tester is an admissible randomized feedback system on $F$.
+The first error bound applies to this system, and total variation
+contracts under the remaining channel. The second error bound applies
+to the genuine $F$ system. The triangle inequality gives
+\eqref{eq:v13-triangle}. With selectors, condition on the independent
+selectors in the appropriate places; in the visible case keep both
+selectors in the compared transcript. The same argument is valid
+because the target reference selectors are independent. Storing a
+hidden selector or exposing both visible selectors gives the stated
+costs. The minima established above may be used; equivalently one can
+use nearly optimal simulators and let the extra tolerance decrease.
+
+A consumer is another causal transducer with task-specific readout and,
+where allowed, task-specific control, but with its required common
+encoder. The simulator is task blind, so its product with that encoder
+is still common. Condition on the consumer's independent random table
+to apply the feedback bound. Integration of any $[0,1]$ marked loss
+changes by at most the total variation error. Taking the same paired
+consumer for every row proves the risk-set assertion, rather than a
+separate choice of simulator for each row. Infima of nonnegative
+weighted risks give the lower support inequalities.
+\end{proof}
+
+\begin{remark}[What the converse says]\label{rem:v13-converse}
+The dual \eqref{eq:v13-dual} uses mixtures of indexed causal tests and
+optimizes over the entire common transducer. It is not a task-by-task
+choice of encoder. Its conclusion is an explicit hidden-selector
+simulation, with the selector subsequently charged if private storage
+is required. It does not replace the nonconvex private set by its
+convex hull at unchanged resource. The next example shows why that
+replacement would change the zero set.
+\end{remark}
+
+\subsection{A delayed channel and a strict signature separation}
+Let the source reveal $i\in[n]$ at checkpoint zero and reveal only a
+constant at checkpoint one. There is no control and the mark is
+constant. The target reports a constant at checkpoint zero and at
+checkpoint one draws $j\in[m]$ from a specified row-stochastic matrix
+$V=(V_{ij})$. The unknown parameter is $i$. The first target alphabet
+has one element: the simulator cannot use an early public output as
+unpriced storage. Only the intermediate register of size $K$ matters.
+
+\begin{proposition}[The nonnegative-rank slice]\label{prop:v13-rank}
+For this experiment,
+\begin{equation}\label{eq:v13-factor}
+ \dpr_K(E,F_V)=\min_{A,B}\max_i\frac12
+                 \sum_j|V_{ij}-(AB)_{ij}|,
+\end{equation}
+where $A$ is an $n$-by-$K$ row-stochastic matrix and $B$ is a $K$-by-$m$
+row-stochastic matrix. In particular
+\[
+ \dpr_K(E,F_V)=0\ \Longleftrightarrow\ \rplus(V)\le K,
+ \qquad
+ \dpr_1(E,F_V)=0\ \Longleftrightarrow\ V\text{ has identical rows}.
+\]
+For $1\le K\le n$ the identity channel has the sharp laws
+\begin{equation}\label{eq:v13-allidentity}
+ \dpr_K(E,F_{I_n})=1-\frac1{\lceil n/K\rceil},\qquad
+ \dmix_K(E,F_{I_n})=1-\frac Kn.
+\end{equation}
+Thus, at tolerance $0\le\varepsilon<1$, the least private width is
+$\lceil n/\lfloor(1-\varepsilon)^{-1}\rfloor\rceil$, whereas the
+least within-mode width with optimized hidden selection is
+$\max\{1,\lceil n(1-\varepsilon)\rceil\}$. The latter still pays for
+its selector. In particular, for $n=m=3$ and $K=2$,
+\begin{equation}\label{eq:v13-identity}
+ \dpr_2(E,F_{I_3})=\tfrac12,
+ \qquad \dmix_2(E,F_{I_3})=\tfrac13.
+\end{equation}
+For $V_*=(1/2)I_3+(1/6)\mathbf1\mathbf1^{\mathsf T}$,
+\begin{equation}\label{eq:v13-strictzero}
+ \dhi_{2,3}(E,F_{V_*})=0,
+ \qquad \dpr_2(E,F_{V_*})\ge\frac1{4\sqrt3}>0,
+ \qquad \inf_r\dvi_{2,r}(E,F_{V_*})>0.
+\end{equation}
+\end{proposition}
+\begin{proof}
+The encoder maps the consumed $i$ into its retained label by $A$; the
+terminal decoder maps that label into $j$ by $B$. This proves
+\eqref{eq:v13-factor} including its converse implementation. If
+$V=CD$ is any nonnegative factorization, let $s_k=\sum_jD_{kj}$.
+Delete zero rows of $D$, define $B_{kj}=D_{kj}/s_k$ and
+$A_{ik}=C_{ik}s_k$. Since $V$ is stochastic, the rows of $A$ sum to one.
+Padding with unused states gives the claimed equivalence with
+nonnegative rank. The one-state statement follows immediately.
+
+For $V=I_n$, row error is $1-(AB)_{ii}$. If the least correct
+probability is $c$, for each $i$ select a row $k(i)$ of $B$ with
+$B_{k(i),i}\ge c$. Some row is selected at least $\lceil n/K\rceil$
+times, so stochasticity gives $c\le1/\lceil n/K\rceil$. A partition
+into $K$ groups of sizes at most $\lceil n/K\rceil$, each decoded
+uniformly, attains that bound. Also $\sum_i(AB)_{ii}\le K$, by the
+calculation below with $K$ in place of two. It remains valid under
+mixing, giving hidden error at least $1-K/n$. Start with a deterministic
+channel that reproduces $K$ input symbols exactly and sends all others
+to those $K$ outputs. Average all simultaneous permutations of its
+input and output labels. Every diagonal entry is then $K/n$, proving
+the second formula. Inverting the two monotone formulas gives the
+stated least widths.
+
+For $V=I_3$, total variation in row $i$ is $1-(AB)_{ii}$.
+If all three diagonal entries of $AB$ were greater than $1/2$, then
+for each $i$ some row of $B$ would have its $i$th entry greater than
+$1/2$. A stochastic row has at most one such entry, so two rows cannot
+serve three indices. This proves the private lower bound $1/2$.
+Merge two input symbols into a retained label that decodes uniformly
+to that pair, and retain the third symbol exactly. This attains it.
+For every stochastic factorization with two intermediate states,
+\[
+ \sum_{i=1}^3(AB)_{ii}
+ =\sum_{k=1}^2\sum_{i=1}^3 A_{ik}B_{ki}
+ \le\sum_{k=1}^2\sum_{i=1}^3B_{ki}=2.
+\]
+The same inequality holds under hidden mixtures, giving maximal row
+error at least $1/3$. Mix uniformly the three preceding pair-merge
+channels. The resulting diagonal entries are $2/3$ and the off-diagonal
+entries are $1/6$. This is exactly $V_*$ and has error $1/3$ from $I_3$.
+It proves the hidden claims in both displays.
+
+The smallest singular value of $V_*$ is $1/2$. Any $AB$ with two
+intermediate states has a unit vector $x$ in its right null space, so
+$\|V_*-AB\|_{\rm F}\ge\|(V_*-AB)x\|_2\ge1/2$.
+If the maximal row total variation error is $\varepsilon$, each row
+has Euclidean error at most $2\varepsilon$, and hence the Frobenius
+error is at most $2\sqrt3\varepsilon$. This proves the explicit private
+bound. The optimized visible value is attained by
+Theorem~\ref{thm:v13-main}; if it were zero, its zero-set assertion
+would contradict that bound. This proves its strict positivity.
+\end{proof}
+
+\subsection{Optimal resource sets and decision certificates}
+For a class $\mathcal C_{S,q}(F)$ of common consumers, with all other
+information conventions fixed, let $\mathcal R_{S,q}(F)$ be its vector
+of attainable $[0,1]$ risks. For a nonnegative row weight $w$ summing
+to one, write
+\[
+ h_F(S,q;w)=\inf_{r\in\mathcal R_{S,q}(F)}\langle w,r\rangle.
+\]
+If $E$ privately simulates $F$ with cost $K$ and error $\varepsilon$,
+then
+\begin{equation}\label{eq:v13-risktransport}
+ \mathcal R_{S,q}(F)\subseteq
+ \mathcal R_{KS,q}(E)+[-\varepsilon,\varepsilon]^J,
+ \qquad
+ h_E(KS,q;w)\le h_F(S,q;w)+\varepsilon.
+\end{equation}
+For nonfinite row sets the first expression means pointwise paired
+risk functions within uniform distance $\varepsilon$; no finite
+coordinate box is needed. Upper sets give the equivalent one-sided
+order formulation. Hidden selectors multiply private width by $r$;
+visible selectors multiply the separate public alphabet by $r$.
+These are direct consequences of the final part of
+Theorem~\ref{thm:v13-main}, with the optimal intrinsic error in place
+of an externally estimated simulator error.
+
+When two stateless comparison directions have error at most
+$\varepsilon$, paired risk sets and their support values at unchanged
+width are within $\varepsilon$. If each is centered by a paired
+unrestricted benchmark whose error is also at most $\varepsilon$, the
+centered values are within $2\varepsilon$. Therefore a gap $g>0$
+between zero excess and infeasible widths is stable under
+$\varepsilon<g/4$: a value below $g/2$ in the approximation certifies
+feasibility in the exact finite problem, and a value above $g/2$
+certifies infeasibility. The benchmark and the class being optimized
+must be specified; this assertion does not identify different
+information signatures.
+
+\begin{proposition}[Intrinsic finite-dimensional selector approximation]
+\label{prop:v13-dimension}
+Let $\mathcal R$ be a compact risk image in $C(J)$, where $J$ is compact.
+Suppose a bounded linear operator $L:C(J)\to C(J)$ has rank at most $m$
+and $\sup_{r\in\mathcal R}\|r-Lr\|_\infty\le\eta$. Every barycenter
+$\bar r$ of a probability on $\mathcal R$ has a barycenter $r_*$ of
+at most $m+1$ members of $\mathcal R$ with
+$\|\bar r-r_*\|_\infty\le2\eta$. If $\mathcal R$ lies in a finite
+affine space of dimension $m$, the error is zero with at most $m+1$
+members. Thus the selector price can be controlled by the dimension
+of attainable risks, rather than by a covering number of the row space.
+\end{proposition}
+\begin{proof}
+The compact set $L\mathcal R$ lies in an $m$-dimensional space. Its
+convex hull is compact, and $L\bar r$ belongs to it. The
+finite-dimensional affine-dependence argument in the proof of
+Theorem~\ref{thm:v13-main} gives $r_1,\ldots,r_{m+1}\in\mathcal R$
+and weights $\lambda$ such that
+$L\bar r=\sum_i\lambda_iLr_i$. Put $r_*=\sum_i\lambda_ir_i$.
+The two residual terms $\bar r-L\bar r$ and $r_*-Lr_*$ have norms
+at most $\eta$, proving the estimate. Apply the same argument after
+translation in the exact affine case. The implementation stores the
+selected design index whenever it is not provided as visible side
+information.
+\end{proof}
+
+\begin{remark}[Finite computation and general carriers]
+For rational finite instruments, \eqref{eq:v13-polynomial} and the
+fixed-$r$ formulations are finite polynomial feasibility problems;
+\eqref{eq:v13-dual} is a finite linear program. These are exact
+variational characterizations, not assertions of polynomial running
+time in a succinct history description. The number of feedback trees,
+events, or deterministic tables can be large. On standard Borel
+carriers the same definitions use suprema over measurable feedback
+and tests and infima over executable kernels. Their product-state
+composition and decision transport remain valid by the same channel
+argument. Attainment and the finite testing dual are asserted here
+only for the stated finite class. The average-risk and physical results
+below give separate nonfinite theorems with their own hypotheses.
+\end{remark}

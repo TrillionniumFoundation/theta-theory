@@ -1,0 +1,79 @@
+\section{An exact algorithm for the observable chart}
+\label{sec:v18-chart}
+The chart in Lemma~\ref{lem:v17-chart} can be found without taking its
+dimension as an oracle. We state the input and output explicitly. Rational
+polynomials are encoded by finite lists of monomial exponent vectors and
+rational coefficients in reduced integer form. A product of simplexes is
+encoded by the number of entries in each row. Eliminating the last entry
+of every nontrivial row leaves a full-dimensional rational polytope
+$\Omega\subset\R^r$. Zero-dimensional factors are omitted.
+
+\begin{proposition}[Effective observable quotient and pullback]
+\label{prop:v18-chart}
+The input consists of the preceding simplex description, a rational
+polynomial map $b:\Omega\to\R^N$, and finitely many rational affine
+functionals $f_i$ on $\R^N$. There is a terminating algorithm which returns
+its observable affine dimension $a$, a rational basis and coordinate map
+for the observable quotient, and, when $a>0$, rational parameter points
+$q_0,q_1,\ldots,q_a$ with the following properties. With
+\[
+ z(q)=(f_i(b(q))-f_i(b(q_0)))_i,\qquad v_j=z(q_j),
+\]
+the vectors $v_j$ are a basis of the observable difference space, and
+all coordinates $t(q)$ in that basis satisfy $|t_j(q)|<2$. The output also
+contains the rational polynomial cube map $x(q)=(t(q)+2)/4$, a rational
+upper bound for the observable diameter, and the exact pullback of any
+subsequently supplied rational polynomial in $x$.
+The algorithm outputs the universal determinant formula it has decided.
+It makes no polynomial-time or coefficient-height claim.
+\end{proposition}
+\begin{proof}
+Choose a rational relative interior point $q_0$ of the input simplexes.
+Expand the vector polynomial $z(q)$ in the free row coordinates. Let $V$
+be the rational span of all its coefficient vectors, including its constant
+coefficient. This equals $\Span z(\Omega)$: a linear functional vanishes
+on $z(\Omega)$ exactly when its polynomial vanishes on the nonempty
+interior of $\Omega$, hence identically, hence on every coefficient.
+Gaussian elimination therefore gives $a=\dim V$ and a rational basis
+matrix $U$. Choosing independent rows gives a rational left inverse $L$
+with $LU=I_a$. Thus $y(q)=Lz(q)$ provides exact quotient coordinates.
+If $a=0$, all discrepancies are constant and no chart is required.
+
+For $a>0$ let
+\[
+ D_0=\max_{u_1,\ldots,u_a\in\Omega}
+             |\det(y(u_1),\ldots,y(u_a))|.
+\]
+Compactness gives a maximum, and spanning gives $D_0>0$. Enumerate rational
+tuples $(q_1,\ldots,q_a)$ in $\Omega^a$. Membership and their determinant
+$d$ are decided by rational arithmetic. For $d\ne0$, decide the
+first-order real formula
+\begin{equation}\label{eq:v18-chartformula}
+ \forall u_1,\ldots,u_a\in\Omega:\quad
+ \det(y(u_1),\ldots,y(u_a))^2<4d^2.
+\end{equation}
+Quantifier elimination terminates for each formula. Density of rational
+points and continuity of determinant imply that some enumerated tuple
+has $|d|>D_0/2$. For such a tuple the strict formula is true, so the
+search terminates. No computation of an exact algebraic maximizer is
+needed.
+
+Invert the rational matrix with columns $y(q_j)$ to obtain $t(q)$.
+Cramer's rule and \eqref{eq:v18-chartformula} give $|t_j(q)|<2$ for every
+$q$. In the observable norm $\|z\|_* =\max_i|z_i|$, each $v_j$ has norm
+at most the diameter of $z(\Omega)$. An upper bound for that diameter can
+be produced, for example, by bounding each free coordinate in $[0,1]$
+and summing the absolute polynomial coefficients for
+$f_i(b(q))-f_i(b(q'))$. This bound is rational and computable. Rational
+matrix multiplication and substitution give $x(q)$ and every requested
+pullback. They also give its full sparse coefficient encoding. All
+searches have now been specified by finite encodings and terminating
+operations.
+\end{proof}
+
+There is a small but important distinction between the quotient and a
+projection onto a smaller set of simulator rows. The former identifies
+exactly the directions invisible to the chosen event family; the original
+row constraints remain present in every universal positivity test. The
+chart need not identify equivalent tasks after a change of marks or of
+information signature. Those are changes to the comparison problem.

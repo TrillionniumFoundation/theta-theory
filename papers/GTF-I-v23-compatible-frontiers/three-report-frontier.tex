@@ -1,0 +1,234 @@
+\section{An exact noisy frontier and the cost of hidden mixing}
+\label{sec:v23-three}
+Let $\theta\in\{0,1\}$, and let $Y_1,Y_2,Y_3$ be conditionally
+independent binary reports with
+\[
+ \Pp_\theta(Y_t\ne\theta)=p,\qquad 0<p<1/2.
+\]
+Every report has overlapping support under the two hypotheses. A
+clocked machine has at most $K_t$ labels after report $t$ and makes a
+binary terminal decision. Updates are atomic stochastic operations;
+additional random-bit cuts are discussed below. Let $B_{\mathbf K}(p)$
+be its optimal success under the fair prior, and let
+$V_{\mathbf K}(p)$ be its optimal minimum of the two conditional success
+probabilities. Both optimize over all stochastic machines of this
+profile. Put
+\[
+ d(p)=p(1-p)(1-2p)>0.
+\]
+
+\begin{theorem}[Complete three-report profile frontier]
+\label{thm:v23-bsc}
+For every positive integer profile $(K_1,K_2,K_3)$,
+\begin{equation}\label{eq:v23-bsc-frontier}
+\begin{array}{c|c|c}
+\text{profile condition}&B_{\mathbf K}(p)&V_{\mathbf K}(p)\\\hline
+K_3=1&1/2&1/2\\
+K_3\ge2,\ \min(K_1,K_2)=1&1-p&1-p\\
+K_1,K_3\ge2,\ K_2=2&1-p+\tfrac12d(p)&1-p+\tfrac13d(p)\\
+K_1,K_3\ge2,\ K_2\ge3&1-p+d(p)&1-p+d(p)
+\end{array}
+\end{equation}
+In the third line a minimax optimal machine retains $Y_1$, then retains
+$Y_1Y_2$ (the Boolean AND), and after the third report decides one with
+probability
+\begin{equation}\label{eq:v23-optimal-readout}
+\begin{array}{c|cccc}
+(M_2,Y_3)&(0,0)&(0,1)&(1,0)&(1,1)\\\hline
+\Pp(\widehat\theta=1\mid M_2,Y_3)&0&2/3&1&1.
+\end{array}
+\end{equation}
+The two conditional success probabilities are equal. In particular,
+for $p=1/4$ and profile $(2,2,2)$ the exact Bayesian and minimax values
+are $51/64$ and $25/32$, whereas profile $(2,3,2)$ has value $27/32$
+for both objectives.
+\end{theorem}
+
+We prove the minimax assertion without passing to a convex hull of
+machines. The following elementary binary-channel domination is useful.
+
+\begin{lemma}[Reduction of a two-report binary register]
+\label{lem:v23-domination}
+Every stochastic binary summary of $(Y_1,Y_2)$ is, up to exchanging its
+two output labels, a stochastic postprocessing of a summary with
+\begin{equation}\label{eq:v23-edge-quantizer}
+ \Pp(M=1\mid 00)=0,\qquad
+ \Pp(M=1\mid 01)=\Pp(M=1\mid 10)=w,\qquad
+ \Pp(M=1\mid 11)=1
+\end{equation}
+for some $w\in[0,1]$. This domination holds simultaneously under both
+hypotheses and continues to hold after appending an independent third
+report.
+\end{lemma}
+\begin{proof}
+Write $u,v$ for the summary probabilities on $00,11$, and write $b$
+for the average of its probabilities on $01,10$. Those two words
+have the same probability under either hypothesis, so their average
+contains all relevant information. Exchange output labels if necessary
+to arrange $v\ge u$, and put $\alpha=v-u\in[0,1]$ and
+$c=2p(1-p)\in(0,1)$. Its output-one probabilities satisfy
+\[
+ r_0=u+c(b-u)+p^2\alpha,
+ \qquad r_1-r_0=(1-2p)\alpha.
+\]
+For the summary \eqref{eq:v23-edge-quantizer} these probabilities are
+$s_0=p^2+cw$, $s_1=(1-p)^2+cw$. Seek a postprocessing that sends input
+zero to one with probability $a$ and input one to one with probability
+$a+\alpha$. It is stochastic precisely when $0\le a\le1-\alpha$,
+and it reproduces $r_0,r_1$ if
+\[
+ a=u+c(b-u)-c\alpha w.
+\]
+As $w$ ranges over $[0,1]$, the right side ranges from
+$u+c(b-v)$ to $u+c(b-u)$. The upper endpoint is nonnegative. The lower
+endpoint is at most $1-\alpha$, since
+\[
+ 1-\alpha-u-c(b-v)=(1-v)+c(v-b)
+                           \ge(1-v)(1-c)\ge0.
+\]
+Consequently this interval meets $[0,1-\alpha]$. This proves the
+claim, including $\alpha=0$. Applying the postprocessing independently
+of the third report proves the last statement.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:v23-bsc}]
+If the last register has one state, its terminal decision is independent
+of the reports. The fair-prior value is one half, and a fair terminal
+randomization gives minimax value one half. If an earlier register has
+one state, at most the last two reports remain informative. The
+unrestricted optimal success from two equally reliable reports is
+$1-p$ under either criterion: use their common value on agreement and
+a fair decision on disagreement. One report already gives $1-p$.
+These rules respect the stated profiles and prove the second line.
+
+Suppose henceforth that $K_1,K_3\ge2$. There is no loss in retaining
+$Y_1$ exactly. Indeed any stochastic first update followed by a second
+update induces one binary channel from $(Y_1,Y_2)$ to $M_2$, and that
+channel can be implemented directly when $Y_1$ is retained. Allowing
+more than two first-stage labels gives no larger set of such channels.
+At the last stage any randomized binary decision based on $(M_2,Y_3)$
+can be placed directly in a two-label register. Thus, when $K_2=2$,
+the unrestricted optimization is exactly over a binary summary of the
+first two reports and a randomized readout of it together with $Y_3$.
+
+For the Bayesian problem, Theorem~\ref{thm:v23-interval} reduces the
+middle update to intervals of the three distinct likelihood-ratio
+classes $00$, $\{01,10\}$, $11$. A nonconstant two-interval update
+isolates $00$ or isolates $11$. These are the Boolean OR and AND,
+up to labels. With AND, the Bayesian readout is
+$\widehat\theta=Y_3\lor(Y_1\land Y_2)$. Its conditional successes are
+\[
+ c_0=1-p-p^2+p^3,\qquad c_1=1-2p^2+p^3.
+\]
+Their average is $1-p+d(p)/2$. The complementary rule interchanges
+$c_0,c_1$. A constant middle update gives only $1-p$, proving the
+Bayesian third line. This also covers updates that split the tied
+middle words: the theorem permits assigning the entire tied class to
+one maximizing suffix label without decreasing the Bayesian objective.
+
+For the minimax problem, Lemma~\ref{lem:v23-domination} reduces the
+search, without loss, to \eqref{eq:v23-edge-quantizer}. Complementing
+all reports and output labels replaces $w$ by $1-w$ and interchanges
+the hypotheses, so it suffices to take $0\le w\le1/2$. Write
+\[
+ r_0=p^2+2p(1-p)w,\qquad
+ r_1=(1-p)^2+2p(1-p)w.
+\]
+In the experiment $(M_2,Y_3)$ the likelihood ratios are ordered as
+$00,01,10,11$. Only the ordering of the middle two needs verification;
+after multiplying by their positive denominators it is equivalent to
+\[
+ r_1(1-r_0)p^2-r_0(1-r_1)(1-p)^2
+       =p^2(1-p)^2(1-2p)(1-2w)^2\ge0.
+\]
+Consider the test that accepts hypothesis one on $10,11$, rejects it
+on $00$, and accepts it on $01$ with probability
+\begin{equation}\label{eq:v23-balanced-alpha}
+ a(w)=\frac{1-r_0-r_1}
+               {(1-r_0)p+(1-r_1)(1-p)}
+     =\frac{2(1-2w)}{3-2w}.
+\end{equation}
+This number is in $[0,1]$. Its two conditional success probabilities
+are equal, with common value
+\begin{equation}\label{eq:v23-Rw}
+ R(w)=1-r_0-a(w)(1-r_0)p.
+\end{equation}
+It is a likelihood-ratio test, possibly randomized at one threshold.
+Choose the prior odds equal to that threshold. The test is then
+Bayesian optimal for those odds. Since its two successes are equal,
+no test can have a larger minimum: such a test would also have a
+larger payoff for this prior. Thus $R(w)$ is the exact minimax success
+for this summary, not merely an equal-error attainable value.
+
+Direct differentiation gives
+\begin{equation}\label{eq:v23-R-derivative}
+ R'(w)=-\frac{2p(1-p)(1-2p)(5-2w)(1-2w)}{(3-2w)^2}\le0.
+\end{equation}
+Equivalently, an explicit nonnegative gap certificate is
+\begin{equation}\label{eq:v23-gap-certificate}
+ R(0)-R(w)=
+ \frac{2p(1-p)(1-2p)w(5-6w)}{3(3-2w)}\ge0,
+                  \qquad 0\le w\le1/2.
+\end{equation}
+The denominator is positive and every factor in the numerator is
+nonnegative on the stated domain. Therefore the best $w$ is zero. Equations
+\eqref{eq:v23-balanced-alpha}--\eqref{eq:v23-Rw} give
+$a(0)=2/3$ and
+\[
+ R(0)=1-\frac23p-p^2+\frac23p^3
+                         =1-p+\frac13d(p).
+\]
+The postprocessing in Lemma~\ref{lem:v23-domination} can be composed
+with any final readout and does not need a retained selector. It follows
+that this upper bound applies to every original stochastic machine.
+The rule \eqref{eq:v23-optimal-readout} attains it.
+
+Finally, if $K_2\ge3$, retain the number of ones in the first two
+reports and output the majority of all three. Both successes are
+$1-3p^2+2p^3=1-p+d(p)$. The likelihood-ratio rule for the full three
+reports is majority under the fair prior, so no machine can have a
+larger Bayesian value or a larger minimum. This proves the last line
+and completes all cases.
+\end{proof}
+
+\begin{corollary}[A strict fixed-profile mixing gap]
+\label{cor:v23-mixing-gap}
+For profile $(2,2,2)$ a free initial selector that mixes the two
+complementary Bayesian optimal machines would give worst-case success
+$1-p+d(p)/2$. Without that uncharged selector the exact value is
+$1-p+d(p)/3$. The excess $d(p)/6$ is strictly positive.
+\end{corollary}
+\begin{proof}
+Mix the two payoff vectors $(c_0,c_1)$ and $(c_1,c_0)$ from the proof
+with equal weights. Each coordinate becomes their average. Theorem
+\ref{thm:v23-bsc} gives the smaller all-stochastic value at the original
+profile. To implement the mixture literally, retain the selector
+jointly with the machine state; a profile $(4,4,2)$ suffices. The
+corollary does not claim that this product construction minimizes the
+expanded profile.
+\end{proof}
+
+The gap identifies a specific failure of a convexified all-machine
+converse. A terminal output law can be a convex combination of laws
+while the machines producing those laws cannot be mixed within their
+original memory profile. In contrast, the quadratic compatibility
+constraints of Theorem~\ref{thm:v23-occupation} retain exactly the
+required coupling. The noisy loss $2d(p)/3$ between two and three middle
+states is also a strict full-schedule minimax loss; it is not an erasure
+probability or the cost of remembering a label that was already known.
+
+\begin{remark}[Atomic randomization and finite precision]
+\label{rem:v23-bsc-precision}
+The fraction $2/3$ in \eqref{eq:v23-optimal-readout} is an exact rational
+row of the all-stochastic model. A fixed finite string of fair bits
+cannot realize this fraction exactly. Replacing it by a dyadic number
+within $2^{-r}$ gives a genuine finite-precision rule whose minimum
+success is at least $V_{(2,2,2)}(p)-2^{-r}$. If each random-bit epoch is
+a charged cut, retain $(M_2,Y_3)$ while executing the dyadic sampler;
+the three-status comparison sampler of
+Section~\ref{sec:v21-precision} gives a conservative peak of $12$ for
+this refined execution. The theorem's exact two-state value refers to
+its stated atomic-update profile, not to this finer profile. The latter
+has its own exact occupation formulation. Neither an unbounded rejection
+sampler nor a free fair-bit clock is hidden in the two-state assertion.
+\end{remark}
