@@ -1,0 +1,370 @@
+\section{Causal experiments and their predictive quotients}
+\label{sec:foundations}
+We begin with the object and morphism structure. Its elementary
+probability statements fix the meaning of later resource theorems;
+classical kernel construction, conditional expectation and quantization
+are not assigned a new priority. The substantive comparisons below
+retain their preparation, memory and approximation coordinates
+simultaneously.
+
+\subsection{The experimental object}
+An experiment has a fixed unknown parameter $\theta\in\Theta$, hidden
+states $X_t$, visible actions $A_t$, reports $Y_{t+1}$, and preparation
+laws $\mu_\theta$. We impose the following six conventions.
+
+\smallskip\noindent\textbf{A0 (types and visibility).}
+These spaces are standard Borel. Visible histories include actions,
+reports and publicly recorded resource increments. A legal-action set
+and its remaining budget are part of the visible protocol type. Two
+histories with different legal continuations are not identified.
+
+\smallskip\noindent\textbf{A1 (positive kernels).}
+There are jointly measurable normalized nonnegative kernels
+$K_t^\theta(dx',dy,dc\mid x,a)$, with $c$ a nonnegative resource
+increment. An absorbing symbol represents termination or failure.
+Dirac kernels are allowed. Positivity here does not require every
+outcome to have strictly positive probability. A hidden state can
+contain the necessary physical past; this notation does not assume a
+finite-dimensional physical closure.
+
+\smallskip\noindent\textbf{A2 (causality).}
+A policy is a kernel $\alpha_t(da\mid h_t)$ depending only on visible
+past data and allowed independent randomization. It cannot read the
+unknown parameter. Stopping is with respect to the visible filtration.
+
+\smallskip\noindent\textbf{A3 (executable tests).}
+The specified bounded future tests include constants, required report
+events and their legal one-step continuations. For discrete reports the
+one-step instrument is
+\[
+ (\mathsf T_{t,a,y}f)(\theta,x)
+       =\int f(\theta,x')K_t^\theta(dx',\{y\},dc\mid x,a).
+\]
+The test spaces are closed under the required instruments, finite
+linear combinations and the bounded monotone limits needed to recover
+the stated event laws. For general reports one uses event instruments
+and regular conditional distributions, not division by the probability
+of a continuous singleton.
+
+\smallskip\noindent\textbf{A4 (actual preparation).}
+Average risks and acquired state laws refer to the specified preparation
+and exploration protocol. Failed trials, calibration, resets and
+conditioning events retain their probabilities and implementation costs.
+A convenient measure on a reachable set does not replace its acquired
+law.
+
+\smallskip\noindent\textbf{A5 (executable resources).}
+Persistent labels, temporary buffers, program constants, calibration
+precision, preparations and clocks are distinguished. A retained
+selector is a state. A parameter-dependent table is not a known program
+constant. A simulator with $R_t$ labels composed with a controller with
+$K_t$ labels has the direct product bound $R_tK_t$, before any justified
+quotient is taken. Atomic stochastic rows and fair-bit implementations
+are separately specified.
+
+\begin{proposition}[Prepared path laws]\label{prop:path-law}
+For every fixed parameter and causal policy, the preparation and kernels
+uniquely determine their finite-dimensional path laws. On a finite
+horizon they are the iterated kernel product
+\[
+ \mu_\theta(dx_0)\prod_{t<T}
+   \alpha_t(da_t\mid h_t)K_t^\theta(dx_{t+1},dy_{t+1},dc_t\mid x_t,a_t).
+\]
+These laws are consistent under marginalization. For a countable horizon
+they determine the usual kernel extension. Deterministic dynamics give
+their original trajectory laws when represented by Dirac kernels.
+\end{proposition}
+\begin{proof}
+Successive integration constructs each finite law. Normalization of the
+last two kernels gives its preceding marginal, and induction proves
+consistency and uniqueness on cylinder events. The countable kernel
+extension gives the full law; equivalently one applies the standard
+extension theorem to these consistent iterated kernels. Integration
+against a Dirac transition is evaluation along that transition, which
+proves the last assertion.
+\end{proof}
+
+\subsection{Prepared predictive equivalence}
+For Bayesian predictions additionally fix a prior on the parameter, and
+regard $(\theta,X_t)$ as the hidden variable. A prepared posterior $\pi$
+at a given protocol type evaluates the future tests. Define
+$\pi\sim_t\widetilde\pi$ if their evaluations agree on every specified
+future test. This definition concerns one prepared experiment; it does
+not identify a prior-dependent posterior with a statistic sufficient
+simultaneously for all fixed parameters.
+
+\begin{theorem}[Predictive quotient and causal closure]
+\label{thm:predictive-quotient}
+For finite report alphabets, predictive equivalence is preserved by every
+legal positive-probability report update. Its class determines the laws
+of all specified future experiments. Every deterministic history
+statistic that determines those laws factors onto this quotient.
+For a measurable realization it is sufficient that a countable
+separating test family gives a measurable evaluation map with standard
+Borel image, and that the chosen statistic admits a measurable factor.
+In finite history spaces the latter conditions are automatic.
+\end{theorem}
+\begin{proof}
+For a legal action and report, Bayes' rule gives
+\[
+ \pi'(f)=\frac{\pi(\mathsf T_{t,a,y}f)}
+                    {\pi(\mathsf T_{t,a,y}1)}.
+\]
+Both numerator and denominator depend only on the old class by A3.
+Equivalent posteriors assign the same probability to the report, so
+updates agree on the next test space whenever that probability is
+positive. Null reports do not affect the prepared law and may be
+assigned a fixed admissible version. Induction determines every finite
+future report word; the monotone-class extension gives the required
+future events. Conversely those event laws determine the tests.
+If two histories have the same sufficient statistic, they have the
+same future evaluations; the quotient is therefore constant on its
+fibers. This gives the factor set-theoretically. The stated measurable
+factor assumption supplies its measurable version; no claim that every
+abstract quotient of a standard Borel space is standard Borel is used.
+\end{proof}
+
+\begin{proposition}[Barycenters, entropy and normalized response]
+\label{prop:prepared-geometry}
+In a fixed preparation, suppose a hidden target $Z$, observation $Y$
+and postprocessing $W$ form a Markov chain $Z\to Y\to W$.
+For any bounded vector of tests $f$,
+\[
+ p_W=\E[p_Y\mid W],\qquad p_Y=\E[f(Z)\mid Y],\qquad
+ \E\varphi(p_W)\le\E\varphi(p_Y)
+\]
+for every convex $\varphi$ for which these expectations exist.
+For a parameter-independent kernel $G$, $P\ll Q$, and finite
+$D(P\|Q)$, regular conditional laws give
+\begin{align*}
+ D(P\|Q)={}&D(PG\|QG)\\
+ &+\int D(P(dx\mid w)\|Q(dx\mid w))\,(PG)(dw).
+\end{align*}
+Finally, if $f,g$ are bounded and
+$\pi_u(dx)=e^{ug(x)}\pi(dx)/\pi(e^{ug})$, then
+\[
+               \left.\frac{d}{du}\pi_u(f)\right|_{u=0}
+                          =\operatorname{Cov}_\pi(f,g).
+\]
+\end{proposition}
+\begin{proof}
+The Markov property and the tower rule give the conditional barycenter;
+conditional Jensen gives convex order. The joint laws $P(dx)G(dw\mid x)$
+and $Q(dx)G(dw\mid x)$ have relative entropy $D(P\|Q)$.
+Disintegrating by $w$ and applying the entropy chain rule gives the
+identity, and hence data processing. The last equality follows by
+quotient differentiation; boundedness justifies differentiation under
+the integral.
+\end{proof}
+The barycenter statement concerns a law of predictions, not a
+pointwise map between reachable sets. Likewise the covariance in the
+last formula is a normalized response, not an independently postulated
+Fisher matrix or a global sufficiency theorem.
+
+\section{Attainable resolution and resource-aware simulation}
+\label{sec:resolution}
+\subsection{Checkpoint and online prediction}
+Fix an actual exploration protocol and its history law. Let $p(h)$ be a
+bounded $d$-dimensional conditional prediction vector, with law $\nu$.
+For instance, a future test is sampled independently after encoding,
+and the coordinates include its sampling weights. Squared excess
+prediction loss is then $\E\|p(h)-\widehat p\|^2$.
+
+\begin{proposition}[Checkpoint resolution]\label{prop:checkpoint}
+For at most $M$ retained labels the least checkpoint excess loss is
+\begin{equation}\label{eq:checkpoint}
+ \inf_{c_1,\ldots,c_M}\int\min_{1\le j\le M}\|p-c_j\|^2\,\nu(dp).
+\end{equation}
+Independent randomized encoders or decoders cannot improve it. This
+formula concerns the stated preparation and does not provide a common
+codebook by separately optimizing at each unknown true parameter.
+\end{proposition}
+\begin{proof}
+Conditional squared loss decomposes into its Bayes loss and squared
+distance from the conditional mean. For each retained label replace a
+random decoder by its mean. Random assignment to the resulting centers
+cannot do better than a nearest center. Conversely a nearest-center
+assignment attains the infimum over codebooks arbitrarily closely.
+Conditioning on an independent shared random seed, if such a seed is
+allowed, gives a codebook for each seed, each with risk at least
+\eqref{eq:checkpoint}. Averaging cannot improve the bound. The formula
+does not charge the computation of a checkpoint assignment as an online
+algorithm; online compatibility is a separate condition.
+\end{proof}
+
+\begin{theorem}[A matched online resolution law]\label{thm:online-resolution}
+Suppose a fixed prepared experiment has a predictive state $s_t$ in a
+compact metric space $S$, a known initial state, and updates
+$s_{t+1}=F_{t,a,y}(s_t)$. Assume every permitted update is
+$\rho$-Lipschitz for one $0\le\rho<1$, and the prediction map
+$p:S\to\mathbb R^d$ is $L$-Lipschitz. Suppose $S$ has a $\delta$-net
+of at most $C\delta^{-d}$ points for all sufficiently small $\delta$.
+At a checkpoint $T$, assume the actual law $\nu$ of $p(s_T)$ satisfies
+the small-ball bound $\nu(B(z,a))\le A a^d$ for every center $z$ and
+all sufficiently small $a>0$.
+Then for all sufficiently large $M$, the minimum online excess
+prediction loss with $M$ retained predictive labels satisfies
+\begin{equation}\label{eq:online-rate}
+               c_0 M^{-2/d}\le R_M^{\rm on}\le C_0 M^{-2/d}.
+\end{equation}
+Here one may take
+\[
+ c_0=\frac12(2A)^{-2/d},
+ \qquad C_0=\frac{L^2C^{2/d}}{(1-\rho)^2},
+\]
+Any separate exploration
+controller, report buffer or clock is charged in addition to these
+$M$ labels. The exploration protocol and the preparation are fixed
+before optimizing the encoder.
+\end{theorem}
+\begin{proof}
+Any online $M$-label state is also a checkpoint encoder, so
+Proposition~\ref{prop:checkpoint} applies. For any $M$ centers, the union
+of balls of radius $a=(2AM)^{-1/d}$ has $\nu$-mass at most one half.
+On its complement squared distance is at least $a^2$. Integration
+gives $c_0M^{-2/d}$.
+This argument also permits randomized online encoders.
+
+For the upper bound take a $\delta$-net with
+$\delta=(C/M)^{1/d}$, and a fixed measurable nearest-net assignment
+(with a fixed tie rule). Quantize the known initial state and, after
+each legal update, quantize again. The state error obeys
+$e_{t+1}\le\rho e_t+\delta$, $e_0\le\delta$, and hence
+$e_t\le\delta/(1-\rho)$. The prediction error is at most $Le_t$.
+Squaring proves the upper bound, uniformly in time. Each update uses
+only the current net label and the current permitted input, so the
+construction is online. It does not grant the encoder free access to
+the original discarded history. If the exploration policy needs another
+register, that register is combined by a product construction.
+\end{proof}
+
+For example, a Lebesgue density bounded above by $B$ gives the
+small-ball hypothesis with $A=Bv_d$, where $v_d$ is unit-ball volume.
+The lower hypothesis is a condition on the \emph{acquired prediction
+law}. A reachable set of dimension $d$ without a mass condition does
+not imply the lower bound. Similarly, the contraction assumption is
+additional dynamics, not a consequence of kernel positivity.
+
+\subsection{Causal morphisms and simultaneous error budgets}
+A causal simulator $\Gamma:\mathfrak E\to\mathfrak F$ is a
+parameter-independent executable transducer that uses source
+preparations to supply the target interface under every allowed target
+policy. Its defect $\varepsilon$ is a uniform total-variation bound on
+the resulting path laws, including the fields required by the task.
+Its resource map $\rho_\Gamma$ bounds the source resources of the
+transducer composed with a target controller.
+
+\begin{proposition}[Composition and risk transfer]\label{prop:causal-morphism}
+Causal simulators compose. Their uniform defects add, capped at one,
+and their resource maps compose in the order
+$\rho_{\Gamma_1}\circ\rho_{\Gamma_2}$. For a terminal loss in $[0,L]$
+and a common target task,
+\[
+ \mathcal R_{\mathfrak E}(\rho_\Gamma(B))
+           \le\mathcal R_{\mathfrak F}(B)+L\varepsilon.
+\]
+For reward in $[-1,1]$, the corresponding maximum worst-case rewards
+satisfy the reverse inequality with an error $2\varepsilon$.
+\end{proposition}
+\begin{proof}
+Interleave the two transducers; their pair of internal states is a causal
+implementation. Total variation contracts under a kernel and obeys the
+triangle inequality, proving the defect sum. If their state counts are
+$R_t$ and $M_t$, the pair has at most $R_tM_t$ states. Other declared
+resource bounds compose by execution of the two protocols. A bounded
+loss changes expectation by at most its range times total variation.
+Apply this bound to every fixed parameter and target controller and
+take the appropriate infimum or supremum. Uniformity in the controller
+is essential to this step.
+\end{proof}
+
+\begin{theorem}[Acquisition, quantization and model-error transport]
+\label{thm:joint-transport}
+Suppose an exact source transducer has predictive state $s_t\in S_t$
+and additional charged buffers of size $R_t$, supplies $T$ target
+operations, and has uniform model defect at most $\varepsilon_{\rm mod}$.
+Its initialization and update depend on a calibration quantity $\xi$.
+From $N_{\rm cal}$ source preparations acquire an estimate $\widehat\xi$
+with at most $C_{\rm cal}$ retained labels, such that
+\[
+ \sup_\theta\Pp_\theta(d(\widehat\xi,\xi)>a)\le\eta.
+\]
+Subsequent preparation noises are independent of calibration conditional
+on the fixed parameter. Let finite nets of sizes $M_t$ have radii
+$\delta_t$. Assume, on matching input/output histories and on the good
+calibration event, that the quantized transducer's state error satisfies
+\begin{equation}\label{eq:joint-error-recursion}
+ e_0\le d_0+a_0a+\delta_0,\qquad
+ e_{t+1}\le\rho_t e_t+d_{t+1}+a_{t+1}a+\delta_{t+1}.
+\end{equation}
+Assume its next output kernel and the exact transducer's output kernel
+differ in total variation by at most
+$\epsilon_t+L_t e_t+b_ta$, uniformly in the fixed parameter and legal
+policy. All constants and nets are declared independently of that
+unknown parameter. Then the quantized acquired transducer has defect
+at most
+\begin{equation}\label{eq:joint-defect}
+ \Delta=\min\left\{1,\varepsilon_{\rm mod}+\eta+
+                 \sum_{t<T}(\epsilon_t+L_te_t+b_ta)\right\}.
+\end{equation}
+Composing it with any target controller of cut widths $K_t$ requires at
+most $C_{\rm cal}R_tM_tK_t$ labels at aligned execution cuts and transfers
+its bounded reward with loss at most $2\Delta$. Its preparations are
+$N_{\rm cal}$ plus all source preparations specified by the transducer;
+no successful-trial conditioning removes the failures.
+\end{theorem}
+\begin{proof}
+On the good calibration event, iterate \eqref{eq:joint-error-recursion}.
+More explicitly, with $D_0=d_0+a_0a+\delta_0$ and
+$D_j=d_j+a_ja+\delta_j$,
+\[
+ e_t\le\sum_{j=0}^tD_j\prod_{k=j}^{t-1}\rho_k.
+\]
+Couple each pair of output kernels maximally while their external
+histories agree. On agreement the target controller sees the same
+inputs, so it uses the same legal action and may use the same independent
+randomization. Its discontinuous action choices require no Lipschitz
+assumption: before a disagreement their arguments are identical.
+The chance of a first discrepancy is bounded by the sum in
+\eqref{eq:joint-defect}. Add the probability of bad calibration and the
+exact transducer's model defect. This proves the path bound, including
+stopping after padding by absorbing states.
+
+The executable approximate transducer stores its calibration label,
+additional buffer, and net index. Combine these with the actual target
+register, not its full history or an uncharged belief. The resulting
+product gives the state count. If an operation contains further buffer
+cuts, apply the same product at each such cut; $R_t$ was assumed to
+include them. Preparation costs add by execution. Finally apply
+Proposition~\ref{prop:causal-morphism}.
+\end{proof}
+
+\begin{corollary}[A finite acquisition register]\label{cor:calibration-register}
+Suppose $r_0$ calibration rows have at most $d$ outcomes, and take $n$
+independent preparations from each row on a fixed schedule. Their
+empirical rows satisfy, with probability at least $1-\eta$ uniformly in
+the row probabilities,
+\[
+ \max\TV(\widehat P,P)\le\frac{dz}{2},\qquad
+       \eta=\min\{1,2r_0d\exp(-2nz^2)\}.
+\]
+Their counts can be retained in at most
+$(n+1)^{r_0(d-1)}$ labels. Thus Theorem~\ref{thm:joint-transport} can use
+$N_{\rm cal}=r_0n$, $a=dz/2$ and this finite calibration register when
+its calibration metric is the maximum row total variation.
+\end{corollary}
+\begin{proof}
+For each outcome the empirical frequency is the mean of independent
+Bernoulli indicators. Hoeffding's bound and a union bound over at most
+$r_0d$ coordinates give the event stated. The total-variation estimate
+is half the sum of coordinate errors. Retain $d-1$ counts per row;
+the last is reconstructed from the known number of draws at that stage
+of the clocked schedule. Each retained count takes at most $n+1$ values.
+An autonomous implementation must additionally charge its schedule.
+\end{proof}
+
+These results separate exact predictive equivalence, average checkpoint
+resolution, online realizability, and uniform simulation risk. In
+particular, neither an optimal checkpoint codebook nor the proof-state
+bundle of Section~\ref{sec:controlled-memory} is automatically an
+executable finite register.

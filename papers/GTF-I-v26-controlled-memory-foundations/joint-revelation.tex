@@ -1,0 +1,128 @@
+\section{An exact preparation--decision-memory law}
+\label{sec:joint-law}
+A second solvable family separates a genuine joint resource law from an
+implementation bound. Here the memory coordinate is the number of states
+at the training--validation cut. It is not identified with the bit-level
+peak width of the collision audit.
+
+Fix $m=2^d$, $0<\alpha<1$, and an unknown parameter
+$\theta\in\{1,\ldots,m\}$. A fresh training preparation reports
+$\theta$ with probability $\alpha$ and an erasure $\bot$ otherwise.
+Conditional on $\theta$, the preparations are independent. Candidate
+validation has law $\delta_\theta$ and target validation is uniform on
+$\{1,\ldots,m\}$. At the decision cut the auditor retains at most
+$K=2^k$ states, $0\le k\le d$. Its subsequent response may depend only
+on that state, current validation observations and fresh independent
+randomness. In particular, a calibration table, remembered seed or
+stopping time outside the retained state is not available. Upstream and
+downstream memory are otherwise unrestricted for the converse. Let
+$V_N^{\rm er}(K)$ be the best worst-case expected signed validation score
+with at most $N$ training preparations.
+
+\begin{theorem}[Exact joint law]\label{thm:joint-law}
+For every $N\ge0$ and $K=2^k\le m$,
+\begin{equation}\label{eq:joint-law}
+ V_N^{\rm er}(K)=\bigl(1-(1-\alpha)^N\bigr)\left(1-\frac1K\right).
+\end{equation}
+The converse covers stochastic encoders and arbitrary legal stopping.
+The value is attained by a clocked machine with $K$ training states.
+With atomic preparation and validation outcomes, the complete audit
+has peak at most $\max\{2K,3\}$ and uses at most $N+2$ preparations.
+\end{theorem}
+\begin{proof}
+Write $q=(1-\alpha)^N$ and pre-generate $N$ potential training reports.
+A stopped auditor ignores the unused reports; this does not disclose
+extra information to it. On the event that all $N$ reports are erasures,
+its retained-state law $r=(r_j)_{j=1}^K$ is independent of $\theta$.
+After padding any smaller register with unused states, its channel to
+the decision register has the form
+\begin{equation}\label{eq:erasure-channel}
+    C(j\mid\theta)=q r_j+(1-q)S(j\mid\theta)
+\end{equation}
+for a stochastic channel $S$. This identity remains valid with randomized
+stopping and randomized state updates.
+
+Use the uniform prior on parameters as an upper certificate. The part
+$q r_j$ has zero expected score for every response: averaging
+$\delta_\theta$ under this prior gives the target itself. For the other
+part, optimizing over all responses gives a convex function of $S$, a
+sum of positive parts of linear functions. Every stochastic channel
+is a convex combination of deterministic channels $j=g(\theta)$;
+therefore its value is at most the largest deterministic-channel value.
+This convexification is used only to bound a channel. It does not
+presuppose that a mixture of width-$K$ machines is realizable at width
+$K$.
+
+If the fibers of $g$ have sizes $n_1,\ldots,n_K$, a nonempty fiber has
+posterior uniform on that fiber, so its total variation from the uniform
+target is $1-n_j/m$. The prior-averaged optimal score is
+\[
+ \sum_j\frac{n_j}{m}\left(1-\frac{n_j}{m}\right)
+    =1-\sum_j(n_j/m)^2\le1-1/K.
+\]
+Empty fibers contribute zero. Cauchy--Schwarz proves the inequality.
+This is an upper bound on the average score and hence on its minimum
+over fixed parameters. Multiplying by $1-q$ proves the upper bound in
+\eqref{eq:joint-law}.
+
+For attainment, partition the parameter alphabet into $K$ equal groups
+and let $g(\theta)$ denote its group. Initialize the register uniformly
+on the $K$ group labels. On an erasure leave it unchanged; on a revealed
+parameter overwrite it by $g(\theta)$. No extra ``revelation occurred''
+flag is needed. At the decision cut its law is
+$q\operatorname{Unif}[K]+(1-q)\delta_{g(\theta)}$.
+For register $j$, freeze the event which is the complement of group $j$.
+On a revelation its score is $1-1/K$. Under a uniformly random initial
+label, the mean score is zero for each fixed $\theta$: one of the $K$
+labels has score $1-1/K$ and the others have score $-1/K$.
+This proves the exact worst-case value.
+
+The $k$ initialization bits can be accumulated in the $K$-state register;
+all earlier prefix counts are at most $K$. Thus no persistent seed lies
+outside it. Candidate validation retains the group label and its event
+indicator, using at most $2K$ states. Target validation produces one
+of the three values $-1,0,1$. This proves the atomic-outcome peak bound.
+The controller uses a declared external schedule; an autonomous stopping
+implementation must additionally retain its phase. A phase-tagged
+implementation is finite, but its cost is not included in $K$.
+\end{proof}
+
+\begin{corollary}[Thresholds and matching resource scales]
+\label{cor:joint-scale}
+For $K\ge2$ and $0\le c<1-1/K$, the least integer number of training
+preparations giving a score strictly greater than $c$ is
+\begin{equation}\label{eq:joint-threshold}
+ N_c^{\rm er}(K)=
+ \left\lfloor\frac{\log(1-c/(1-1/K))}{\log(1-\alpha)}\right\rfloor+1.
+\end{equation}
+If $c\ge1-1/K$, no finite $N$ suffices. For $0<\varepsilon<1$, achieving
+$V_N^{\rm er}(K)\ge1-\varepsilon$ requires
+\[
+ K\ge\varepsilon^{-1},\qquad
+ N\ge\frac{\log(1/\varepsilon)}{-\log(1-\alpha)}.
+\]
+Conversely, whenever an allowed $K\le m$ satisfies $K\ge2/\varepsilon$,
+the choice
+$N\ge\log(2/\varepsilon)/[-\log(1-\alpha)]$ suffices.
+\end{corollary}
+\begin{proof}
+The strict threshold is equivalent to
+$(1-\alpha)^N<1-c/(1-1/K)$. Since the denominator logarithm is
+negative, the least integer satisfying this strict inequality is
+\eqref{eq:joint-threshold}, including equality cases of the real
+quotient. Also
+\[
+ 1-V_N^{\rm er}(K)=q+(1-q)/K.
+\]
+This is at least $q$ and at least $1/K$, and is at most $q+1/K$.
+These three inequalities prove the necessary and sufficient bounds.
+\end{proof}
+
+The exact law concerns an entire $(N,K,\alpha,m)$ family, not a single
+finite diagnostic. Its mechanism is a parameter-independent erasure
+component followed by the convex geometry of the decision channel.
+It demonstrates how a preparation obstruction and a memory obstruction
+can be matched in one theorem. It does not identify the least physical
+peak width at two collision preparations. Encoding the $m$-symbol
+reports bit by bit also introduces cuts not present in this atomic
+model; the physical bit-level accounting is given separately.
