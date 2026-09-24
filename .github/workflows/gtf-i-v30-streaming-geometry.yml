@@ -1,0 +1,111 @@
+name: GTF-I v30 positive realization and exact streaming
+
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v30-streaming-geometry-2026-09-24
+    paths:
+      - 'papers/GTF-I-v30-streaming-geometry/**'
+      - '.github/workflows/gtf-i-v30-streaming-geometry.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gtf-i-v30-streaming-geometry
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/revision/general-theta-foundations-i-v30-streaming-geometry-2026-09-24'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 20
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /papers/GTF-I-v30-streaming-geometry/
+            /papers/GTF-I-v29-intrinsic-continuation/
+            /papers/GTF-I-v28-causal-response/verify.py
+            /papers/GTF-I-v27-resource-saddle/verify.py
+            /papers/GTF-I-v26-controlled-memory-foundations/verify.py
+            /papers/GTF-I-v25-controlled-minimax/verify.py
+            /papers/GTF-I-v24-structural-resources/verify.py
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Restore hash-checked native mathematical sources
+        shell: bash
+        run: |
+          python - <<'PY'
+          import hashlib,json,lzma
+          from pathlib import Path
+          h=Path('papers/GTF-I-v30-streaming-geometry')
+          raw=b''.join((h/'.source-parts'/('part%02d.xz'%i)).read_bytes() for i in range(5))
+          if len(raw)!=37048 or hashlib.sha256(raw).hexdigest()!='8e8a8fd7f1e5d79d6d5aa6103d75df53adfca779bb64ad84189599ae97ea98c7':
+              raise RuntimeError('Source transport checksum or length mismatch')
+          payload=json.loads(lzma.decompress(raw))
+          if not isinstance(payload,dict) or len(payload)!=19:
+              raise RuntimeError('Native source manifest mismatch')
+          for name,text in payload.items():
+              p=Path(name)
+              if p.name!=name or p.suffix not in {'.tex','.py','.md','.json'} or not isinstance(text,str):
+                  raise RuntimeError('Unsafe native source entry')
+              dest=h/name
+              if dest.exists() and dest.read_text()!=text:
+                  raise RuntimeError('Refusing to replace changed native source: '+name)
+              dest.write_text(text)
+          print('Restored and checked all 19 native revision files.')
+          PY
+      - name: Publish the native source commit before building
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git fetch --depth=1 origin c039e5bc8bc8b30fca92246bc1458f66214522e1
+          test -z "$(git diff --name-only --diff-filter=DMRT c039e5bc8bc8b30fca92246bc1458f66214522e1)"
+          git add -f papers/GTF-I-v30-streaming-geometry
+          if ! git diff --cached --quiet; then
+            git commit -m 'revise(GTF-I v30): coherent rank saturation, exact streaming synthesis and intrinsic intermediate-signal laws [skip ci]'
+            git push origin HEAD:"$GITHUB_REF_NAME"
+          fi
+          echo "GTF_SOURCE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - name: Install typesetting and exact arithmetic
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended texlive-pictures lmodern
+          python -m pip install sympy==1.14.0 PyMuPDF==1.26.7
+      - name: Execute regressions and compile the focused revision and preserved volumes
+        run: python papers/GTF-I-v30-streaming-geometry/build.py
+      - name: Publish only the new package and referee-ready branch
+        shell: bash
+        run: |
+          git add -f papers/GTF-I-v30-streaming-geometry
+          git add --sparse -f GENERAL_THETA_FOUNDATIONS_I_V30_REVIEW_READY.md
+          git commit -m 'publish(GTF-I v30): focused English article, exact-source build, referee response and unaltered supporting development [skip ci]'
+          test -z "$(git diff --name-only --diff-filter=DMRT c039e5bc8bc8b30fca92246bc1458f66214522e1 HEAD)"
+          READY='revision/general-theta-foundations-i-v30-referee-ready-2026-09-24'
+          if git ls-remote --exit-code --heads origin "$READY"; then
+            git fetch origin "$READY"
+            git merge-base --is-ancestor FETCH_HEAD HEAD
+          fi
+          git push origin HEAD:"$GITHUB_REF_NAME" HEAD:"$READY"
+      - name: Upload referee package
+        uses: actions/upload-artifact@v4
+        with:
+          name: GTF-I-v30-streaming-geometry
+          path: papers/GTF-I-v30-streaming-geometry/
+          retention-days: 30
+      - name: Upload failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: GTF-I-v30-diagnostics
+          path: |
+            papers/GTF-I-v30-streaming-geometry/evidence/
+            papers/GTF-I-v30-streaming-geometry/*.tex
+            papers/GTF-I-v30-streaming-geometry/*.py
+          retention-days: 7
