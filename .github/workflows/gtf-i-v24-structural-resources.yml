@@ -1,0 +1,144 @@
+name: GTF-I v24 structural resources
+
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v24-structural-resources-2026-09-24
+    paths:
+      - 'papers/GTF-I-v24-structural-resources/**'
+      - '.github/workflows/gtf-i-v24-structural-resources.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gtf-i-v24-structural-resources
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/revision/general-theta-foundations-i-v24-structural-resources-2026-09-24'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 20
+          sparse-checkout: |
+            papers/GTF-I-v24-structural-resources
+            papers/GTF-I-v23-compatible-frontiers
+            reviews/general-theta-foundations-i-v23-external-harsh-top4-r7-2026-09-24
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install typesetting and exact verification dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended texlive-pictures lmodern
+          python -m pip install sympy==1.14.0 PyMuPDF==1.26.7
+      - name: Verify branch isolation and preserve controlling review
+        run: |
+          git fetch --depth=1 origin e34f5eb4fe1b1f03018c6baec2e594ab22766dfb
+          test -z "$(git diff --name-only --diff-filter=DMRT e34f5eb4fe1b1f03018c6baec2e594ab22766dfb HEAD)"
+      - name: Execute new and inherited checks; compile and preserve both full volumes
+        env:
+          GTF_SOURCE_COMMIT: ${{ github.sha }}
+        run: python papers/GTF-I-v24-structural-resources/build.py
+      - name: Write referee entry and commit publication
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('papers/GTF-I-v24-structural-resources')
+          r=json.loads((p/'evidence/BUILD_RECEIPT.json').read_text())
+          base=p.as_posix()
+          lines=[
+            '# General Theta Foundations I — revision 24, referee-ready package',
+            '',
+            '**Statistical Resource Duality and Two-Preparation Physical Certification**',
+            '',
+            'Qian Qi · 24 September 2026',
+            '',
+            f"Source build commit: `{r['source_commit']}`.",
+            f"Controlling review: `{r['review_commit']}`.",
+            f"Reviewed v23 package: `{r['predecessor_commit']}`.",
+            '',
+            f"- [Canonical English article, {r['article_pages']} pages]({base}/paper.pdf)",
+            f"- [Complete mathematical manuscript, {r['complete_volumes']['complete-manuscript.pdf']['pages']} pages]({base}/complete-manuscript.pdf)",
+            f"- [Complete preserved development, {r['complete_volumes']['complete-development.pdf']['pages']} pages]({base}/complete-development.pdf)",
+            f'- [Point-by-point response to r7]({base}/RESPONSE_TO_REFEREE.md)',
+            f'- [Source and reproduction instructions]({base}/README.md)',
+            f'- [Theorem locations]({base}/evidence/THEOREM_LOCATIONS.json)',
+            f'- [Exact transition tables and rational certificate]({base}/evidence/EXACT_MACHINE.json)',
+            f'- [Executed build receipt]({base}/evidence/BUILD_RECEIPT.json)',
+            f'- [Portable complete source archive]({base}/evidence/SUBMISSION_SOURCES.zip)',
+            f'- [Proof status and remaining distinctions]({base}/PROOF_STATUS.json)',
+            f'- [Historical pipeline audit]({base}/HISTORY_AUDIT.md)',
+            '',
+            '## Main result',
+            '',
+            'For the original positive-noise marked collision task at score threshold 2/5,',
+            'the minimum number of candidate training preparations is exactly 2 at every',
+            'peak-register budget W>=12. The converse covers all declared feedback/reset',
+            'architectures with at most one training preparation, even with unlimited memory.',
+            'The deterministic matching audit uses five decision labels and peak twelve,',
+            'followed by two fresh validation preparations: four preparations in total.',
+            '',
+            'The general proof chain includes posterior-predictive statistical duality,',
+            'a dominating-row outer converse, exact rational exclusion, continuum polynomial',
+            'minimization and compatible residual-state compilation. An explicit HS/m',
+            'subdivision certificate and a fully priced classical autonomous comparison',
+            'supplement the main physical theorem.',
+            '',
+            '## Executed evidence and preservation',
+            '',
+            f"The build executed {r['new_finite_checks']} new and {r['inherited_finite_checks']} inherited finite checks,",
+            f"with ordinary/optimized agreement and {r['negative_control_executions']} detected negative-control executions.",
+            f"All {r['unchanged_inherited_math_modules']} inherited mathematical module digests remain unchanged.",
+            f"The full-volume build performed {r['preserved_page_comparisons']} successful predecessor page comparisons",
+            'for identical extracted text and raster samples. No old repository path was edited or deleted.',
+            'The article compiled without undefined references or overfull boxes.',
+            '',
+            f"Article SHA-256: `{r['article_sha256']}`.",
+            f"Workflow run: `{r['workflow_run']}`.",
+            '',
+            '## Exact scope',
+            '',
+            'The least peak width at two preparations, the W=3..11 preparation boundary,',
+            'and the optimal two-preparation score are not determined. The stationary',
+            'autonomous optimum is attributed to Hellman–Cover. There is no claim of',
+            'a global SOS degree bound, Norberg proof-level clearance, B4/C2 closure,',
+            'eleven-paper closure, independent proof certification or journal acceptance.',
+            '',
+          ]
+          Path('GENERAL_THETA_FOUNDATIONS_I_V24_REVIEW_READY.md').write_text('\n'.join(lines))
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f papers/GTF-I-v24-structural-resources GENERAL_THETA_FOUNDATIONS_I_V24_REVIEW_READY.md
+          git commit -m 'publish(GTF-I v24): sharp physical preparation theorem, full volumes, response and exact evidence [skip ci]'
+          READY='revision/general-theta-foundations-i-v24-referee-ready-2026-09-24'
+          if git ls-remote --exit-code --heads origin "$READY"; then
+            git fetch origin "$READY"
+            git merge-base --is-ancestor FETCH_HEAD HEAD
+          fi
+          git push origin HEAD:"$GITHUB_REF_NAME" HEAD:"$READY"
+      - name: Upload completed referee package
+        uses: actions/upload-artifact@v4
+        with:
+          name: GTF-I-v24-structural-resources
+          path: papers/GTF-I-v24-structural-resources/
+          retention-days: 30
+      - name: Upload failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: GTF-I-v24-build-diagnostics
+          path: |
+            papers/GTF-I-v24-structural-resources/evidence/
+            papers/GTF-I-v24-structural-resources/main.tex
+            papers/GTF-I-v24-structural-resources/main.log
+            papers/GTF-I-v24-structural-resources/build.py
+            papers/GTF-I-v24-structural-resources/verify.py
+          retention-days: 7
