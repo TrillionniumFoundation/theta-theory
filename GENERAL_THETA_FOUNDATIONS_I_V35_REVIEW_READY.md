@@ -2,7 +2,7 @@
 
 **Sharp Width of Hidden Rotation Experiments**
 
-Native source commit: `07dd852f832069a1601c020ab39c23795c3a786a`. Controlling r19: `6016075083626f7c94cfb07912c49fa256fcf9e0`.
+Native source commit: `0ae43a2180d07bda18384697a33da48d3fc1562a`. Controlling r19: `6016075083626f7c94cfb07912c49fa256fcf9e0`.
 
 [Focused English article (13 pages)](papers/GTF-I-v35-sharp-memory/paper.pdf) · [Native LaTeX](papers/GTF-I-v35-sharp-memory/main.tex) · [Response to r19](papers/GTF-I-v35-sharp-memory/RESPONSE_TO_REFEREE.md)
 
