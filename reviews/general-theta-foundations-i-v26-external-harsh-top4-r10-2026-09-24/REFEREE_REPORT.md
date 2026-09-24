@@ -722,8 +722,7 @@ A future version would be most persuasive not by adding more exact submodels, bu
 - General Theta Foundations blueprint and original implementation note inspected.
 - Round-Seventeen eleven-paper dependency ledger inspected.
 - Finite-profile occupation recursion checked for parameter/runtime separation.
-- Routing (1/(2lceil m/K
-ceil)) pigeonhole converse checked.
+- Routing `1 / (2 ceil(m/K))` pigeonhole converse checked.
 - Free-selector (K/(2m)) average bound and cyclic construction checked.
 - Positive-noise gap constant checked.
 - (U2) positive root and numerical constants independently spot-checked.
