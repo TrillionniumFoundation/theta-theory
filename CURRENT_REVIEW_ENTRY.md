@@ -1,6 +1,6 @@
 # A2 referee entry — revision 149
 
-The revision source is published; native verification is recorded only in the v149 build receipt. Regression checks do not certify universal proofs, historical priority, or journal acceptance.
+Native PDFs and 26 successful regression scripts are bound to source commit `4af97058186974234e2669677818956781a67a08`. Regression checks do not certify universal proofs, historical priority, or journal acceptance.
 
 Revision branch: `revision/a2-v149-intrinsic-pencil-strata-deformations-2026-09-24`. Controlling review tip: `dc3a951e26de17e0e69403b1d8cfdfb5e28bc306`.
 Report addressed: [reviews/a2-v148-independent-harsh-top4-2026-09-24/REFEREE_REPORT.md](reviews/a2-v148-independent-harsh-top4-2026-09-24/REFEREE_REPORT.md).
