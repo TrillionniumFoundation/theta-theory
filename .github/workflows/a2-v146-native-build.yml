@@ -1,4 +1,4 @@
-name: A2 v146 moving-pencil revision native build
+name: A2 v146 local and moving-pencil inverse native build
 on:
   push:
     branches: ['revision/a2-v146-referee-proof-completion-2026-09-24']
@@ -28,7 +28,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
-      - name: Assemble and push the complete native source first
+      - name: Assemble and push complete native source before the build
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
@@ -37,9 +37,10 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           python .revision-bootstrap/a2-v146/revision_v146.py assemble
+          python .revision-bootstrap/a2-v146/augment_local_inverse.py
           test "$(git ls-remote origin "refs/heads/$BRANCH" | cut -f1)" = "$GITHUB_SHA"
           git add -A -f -- "$P" CURRENT_REVIEW_ENTRY.md
-          git commit -m 'A2 v146: native moving-pencil inverse, actual bundle recovery, automorphism kernel and preserved referee response [skip ci]'
+          git commit -m 'A2 v146: prove unmarked Artin local inverse, coefficient-support orientation and unrestricted moving-family reconstruction [skip ci]'
           git push origin "HEAD:$BRANCH"
           SOURCE=$(git rev-parse HEAD)
           echo "A2_SOURCE_COMMIT=$SOURCE" >> "$GITHUB_ENV"
@@ -49,11 +50,11 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y -qq texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
           python -m pip install --disable-pip-version-check sympy==1.14.0 numpy==2.3.5 python-flint
-      - name: Run all 22 scripts and compile three manuscripts
+      - name: Run all 23 scripts and compile three manuscripts
         run: |
           set -euo pipefail
           bash "$P/build.sh" 2>&1 | tee /tmp/a2-v146-build.log
-      - name: Publish verified native PDFs and source-bound review entry
+      - name: Publish verified native PDFs and immutable-source review entry
         run: |
           set -euo pipefail
           python - <<'PY'
@@ -62,15 +63,16 @@ jobs:
           p=Path(os.environ['P'])
           r=json.loads((p/'evidence/BUILD_RECEIPT_V146.json').read_text())
           assert r['all_checks_pass']
-          assert r['executed_script_count']==22
+          assert r['executed_script_count']==23
           assert r['source_commit']==os.environ['A2_SOURCE_COMMIT']
-          assert r['predecessor_commit']=='89edc80cce6fd1801b356313544419d30f377636'
+          assert r['checks']['local_inverse_and_unrestricted_family_present']
+          assert r['checks']['local_inverse_exact_regression_passed']
           assert not r['historical_priority_certified']
           assert not r['Ballico_1993_full_text_comparison_completed']
           PY
           test "$(git ls-remote origin "refs/heads/$BRANCH" | cut -f1)" = "$A2_SOURCE_COMMIT"
           git add -A -f -- "$P/geometry.pdf" "$P/applications.pdf" "$P/archive-v144.pdf" "$P/evidence" "$P/SOURCE_LOCK_V146.json" "$P/PROVENANCE_MANIFEST_V146.json" "$P/NONDELETION_V146.json" CURRENT_REVIEW_ENTRY.md
-          git commit -m 'A2 v146: publish three verified native PDFs, 22-check receipt and immutable-source referee entry [skip ci]'
+          git commit -m 'A2 v146: publish verified local-inverse and moving-family PDFs with 23-check source-bound receipt [skip ci]'
           git push origin "HEAD:$BRANCH"
           git rev-parse HEAD > /tmp/a2-v146-publication-commit.txt
       - name: Package native referee sources and build diagnostics
