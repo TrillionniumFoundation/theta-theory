@@ -1,9 +1,9 @@
-# A2 referee entry — revision 153
+# A2 referee entry — revision 154
 
-Compiled principal article: [80-page geometry.pdf](papers/A2-v17-boundary-information-coarsening/article/v153/geometry.pdf). [Self-contained LaTeX](papers/A2-v17-boundary-information-coarsening/article/v153/geometry.tex).
+Complete [89-page article](papers/A2-v17-boundary-information-coarsening/article/v154/geometry.pdf) and [standalone source](papers/A2-v17-boundary-information-coarsening/article/v154/geometry.tex).
 
-Source commit: `19516986e07e3508e7d13e8a08b66528078a6af7`. Controlling review: `60f1a3c5f8078c31019dfab249d334d0e717e225`.
+Source commit: `39c3c325c695f60c7b3560a3babb83949f849ee2`. Controlling complete-v153 review: `52ebb8183433ad398f61958219b2af809f721824`.
 
-[Response to v152](papers/A2-v17-boundary-information-coarsening/article/v153/RESPONSE_TO_V152_REPORT.md) · [Reading guide](papers/A2-v17-boundary-information-coarsening/article/v153/README.md) · [Build receipt](papers/A2-v17-boundary-information-coarsening/article/v153/BUILD_RECEIPT_V153.json) · [Preservation](papers/A2-v17-boundary-information-coarsening/article/v153/NONDELETION_V153.json) · [Exact consistency checks](papers/A2-v17-boundary-information-coarsening/article/v153/EXACT_CHECKS_V153.json).
+[Response](papers/A2-v17-boundary-information-coarsening/article/v154/RESPONSE_TO_V153_REPORT.md) · [Reading guide](papers/A2-v17-boundary-information-coarsening/article/v154/README.md) · [Build receipt](papers/A2-v17-boundary-information-coarsening/article/v154/BUILD_RECEIPT_V154.json) · [Preservation](papers/A2-v17-boundary-information-coarsening/article/v154/NONDELETION_V154.json) · [Exact calculations](papers/A2-v17-boundary-information-coarsening/article/v154/EXACT_CHECKS_V154.json).
 
-All inherited principal mathematical blocks are retained. The full Ballico 1993 comparison remains documentary-open. Finite checks do not certify universal proofs or journal acceptance.
+All inherited mathematical blocks and labels are retained. Native polarized moduli and spectral fibre detection are distinguished from full GL(E) orbit collapse. Classical GIT, Hochster and determinant-apolar inputs are attributed. Ballico 1993 remains documentary-open. Finite checks do not certify the universal proofs or a journal decision.
