@@ -1,19 +1,18 @@
-# Canonical A2 referee entry — revision 146
+# A2 referee entry — revision 147
 
-Native source: `5d5ce834e24b5c7ba80a9ccf2a63b0a449913c5d`. All 23 executed exact-regression scripts and all three native LaTeX builds passed. See the source-bound receipt; these checks do not certify all proofs or historical priority.
+A2 v147 source entry. Consult the source-bound receipt for completed build evidence; this source entry alone does not imply a successful build.
 
-Controlling v144 second report: `d8376b5dbb47422d93a474add8362d39cf2a68c1`. Immediate predecessor: `89edc80cce6fd1801b356313544419d30f377636`.
+Controlling report: `855c73b3a0381bebd8d5e0d382fa06125904a73f` on `review/a2-v146-independent-harsh-top4-2026-09-24`.
+Revision branch: `revision/a2-v147-intrinsic-family-descent-2026-09-24`.
 
-**Principal submission:** [geometry.pdf](papers/A2-v17-boundary-information-coarsening/article/v146/geometry.pdf) · [native source](papers/A2-v17-boundary-information-coarsening/article/v146/geometry.tex).
+**Principal manuscript:** [geometry.pdf](papers/A2-v17-boundary-information-coarsening/article/v147/geometry.pdf) · [LaTeX](papers/A2-v17-boundary-information-coarsening/article/v147/geometry.tex).
 
-**Separate applications manuscript:** [applications.pdf](papers/A2-v17-boundary-information-coarsening/article/v146/applications.pdf).
+[Point-by-point response](papers/A2-v17-boundary-information-coarsening/article/v147/RESPONSE_TO_V146_REPORT.md) · [Reading guide](papers/A2-v17-boundary-information-coarsening/article/v147/README.md) · [Issue matrix](papers/A2-v17-boundary-information-coarsening/article/v147/ISSUE_MATRIX_V147.json).
 
-**Non-submitted preserved research archive:** [archive-v144.pdf](papers/A2-v17-boundary-information-coarsening/article/v146/archive-v144.pdf).
+[Source lock](papers/A2-v17-boundary-information-coarsening/article/v147/SOURCE_LOCK_V147.json) · [Build receipt](papers/A2-v17-boundary-information-coarsening/article/v147/evidence/BUILD_RECEIPT_V147.json) · [Source preservation](papers/A2-v17-boundary-information-coarsening/article/v147/NONDELETION_V147.json) · [Literature audit](papers/A2-v17-boundary-information-coarsening/article/v147/LITERATURE_AUDIT_V147.md).
 
-[Point-by-point response](papers/A2-v17-boundary-information-coarsening/article/v146/RESPONSE_TO_V144_REPORTS_V146.md) · [Reading guide](papers/A2-v17-boundary-information-coarsening/article/v146/README.md) · [Issue matrix](papers/A2-v17-boundary-information-coarsening/article/v146/ISSUE_MATRIX_V146.json).
+The principal addition is a general unmarked inverse for moving Schur coefficient subspaces, including actual bundle descent. Two isotrivial rank-712 thickenings with the same Artin fibres and the same graded vector bundles are separated by this inverse. The first-relation orbit proposition, represented local automorphism sequence and inverse-system comparison isolate the geometric contribution. All previous all-pencil, local, curve, moving, sharpness and spectral results are retained.
 
-[Source lock](papers/A2-v17-boundary-information-coarsening/article/v146/SOURCE_LOCK_V146.json) · [Build receipt](papers/A2-v17-boundary-information-coarsening/article/v146/evidence/BUILD_RECEIPT_V146.json) · [Nondeletion audit](papers/A2-v17-boundary-information-coarsening/article/v146/NONDELETION_V146.json) · [Literature audit](papers/A2-v17-boundary-information-coarsening/article/v146/LITERATURE_AUDIT_V146.md).
+[Separate applications](papers/A2-v17-boundary-information-coarsening/article/v147/applications.pdf) and [non-submitted historical archive](papers/A2-v17-boundary-information-coarsening/article/v147/archive-v144.pdf) remain separate. No other paper is part of the principal submission.
 
-New in v146: an unmarked single-point Artin local inverse, coefficient-support orientation, an explicit local unipotent kernel, and intrinsic reconstruction of nonconstant pencil subbundles over smooth projective bases; recovery of the actual source bundle; classification of geometric isomorphisms with a filtered nilpotent automorphism kernel; an explicit nonisotrivial family across six spectral collisions. The all-pencil theorem, uniform sharpness, curve theorem and all predecessor mathematical parts are preserved.
-
-The complete Ballico 1993 theorem-level six-axis comparison remains documentary-open. No anticipation, nonanticipation, exhaustive priority or editorial-acceptance claim is certified. Earlier revision and review branches are unchanged.
+Ballico 1993: the publisher's first page has now been inspected, but the complete theorem/proof text has not been obtained. The six-axis full-text comparison remains open. No editorial acceptance or exhaustive priority clearance is asserted.
