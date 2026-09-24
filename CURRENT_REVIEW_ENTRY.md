@@ -1,26 +1,18 @@
-# A2 referee entry — revision 148
+# A2 referee entry — revision 149
 
-**Current independent report:** [reviews/a2-v148-independent-harsh-top4-2026-09-24/REFEREE_REPORT.md](reviews/a2-v148-independent-harsh-top4-2026-09-24/REFEREE_REPORT.md)
+The revision source is published; native verification is recorded only in the v149 build receipt. Regression checks do not certify universal proofs, historical priority, or journal acceptance.
 
-**Review branch:** `review/a2-v148-independent-harsh-top4-2026-09-24`  
-**Disposition:** **Reject in the present form for a top-four general mathematics journal.**
+Revision branch: `revision/a2-v149-intrinsic-pencil-strata-deformations-2026-09-24`. Controlling review tip: `dc3a951e26de17e0e69403b1d8cfdfb5e28bc306`.
+Report addressed: [reviews/a2-v148-independent-harsh-top4-2026-09-24/REFEREE_REPORT.md](reviews/a2-v148-independent-harsh-top4-2026-09-24/REFEREE_REPORT.md).
 
-The independent v148 review finds the two new mathematical blocks substantive and does not identify a new fatal counterexample to the principal local/moving inverse chain. The rejection instead rests on two remaining top-four blockers: the Ballico 1993 theorem/proof comparison is still explicitly unresolved, and the new recognition/covering results do not yet provide the breadth or independent geometric consequence required for a general top-four venue.
+**Principal article:** [geometry.pdf](papers/A2-v17-boundary-information-coarsening/article/v149/geometry.pdf) · [LaTeX](papers/A2-v17-boundary-information-coarsening/article/v149/geometry.tex).
 
-Native PDFs and 25 successful regression scripts are bound to source commit `3acb5744f4b820070edb997b3aa38534f4726efe`. These checks do not certify universal proofs, historical priority, or journal acceptance.
+[Response to v148](papers/A2-v17-boundary-information-coarsening/article/v149/RESPONSE_TO_V148_REPORT.md) · [Reading guide](papers/A2-v17-boundary-information-coarsening/article/v149/README.md) · [Issue matrix](papers/A2-v17-boundary-information-coarsening/article/v149/ISSUE_MATRIX_V149.json).
 
-**Revision branch:** `revision/a2-v148-coefficient-symmetries-moving-pencils-2026-09-24`  
-**Controlling previous review tip:** `17fb7ba7cab6545f5da6d4fcde5283318bd26725`  
-**Previous report addressed by v148:** [reviews/a2-v147-independent-harsh-top4-2026-09-24/REFEREE_REPORT.md](reviews/a2-v147-independent-harsh-top4-2026-09-24/REFEREE_REPORT.md)
+New mathematical content: universal common-divisor strata; determinant-divisor quotient stacks without a factor-invariance hypothesis; exact pencil common multiplicity; an all-base effective pencil stack and deformation comparison; three transverse normal modes; complete fixed-determinant-support families leaving both coefficient symmetries. All previous mathematical blocks and source bytes are preserved. Nonlinear and right-factor inertia are recorded before the explicitly defined effective quotient.
 
-**Principal article:** [geometry.pdf](papers/A2-v17-boundary-information-coarsening/article/v148/geometry.pdf) · [LaTeX](papers/A2-v17-boundary-information-coarsening/article/v148/geometry.tex)
+[Build receipt](papers/A2-v17-boundary-information-coarsening/article/v149/evidence/BUILD_RECEIPT_V149.json) · [Source lock](papers/A2-v17-boundary-information-coarsening/article/v149/SOURCE_LOCK_V149.json) · [Preservation](papers/A2-v17-boundary-information-coarsening/article/v149/NONDELETION_V149.json) · [Literature audit](papers/A2-v17-boundary-information-coarsening/article/v149/LITERATURE_AUDIT_V149.md) · [Proof-scope audit](papers/A2-v17-boundary-information-coarsening/article/v149/PROOF_SCOPE_AUDIT_V149.md).
 
-[Response to v147](papers/A2-v17-boundary-information-coarsening/article/v148/RESPONSE_TO_V147_REPORT.md) · [Reading guide](papers/A2-v17-boundary-information-coarsening/article/v148/README.md) · [Issue matrix](papers/A2-v17-boundary-information-coarsening/article/v148/ISSUE_MATRIX_V148.json)
+[Applications](papers/A2-v17-boundary-information-coarsening/article/v149/applications.pdf) are separate; the [historical archive](papers/A2-v17-boundary-information-coarsening/article/v149/archive-v144.pdf) remains non-submitted. Only geometry.pdf is the principal article.
 
-The v148 additions give an intrinsic recognition criterion, exact coefficient stabilizers and transpose ambiguity, including the global zero/full case. They also realize the equivalence problem for maps of the projective line inside one fibre orbit of moving quadratic pencils, with identical fibre algebras and the listed graded vector bundles. All v147 mathematical blocks and source bytes are retained.
-
-[Build receipt](papers/A2-v17-boundary-information-coarsening/article/v148/evidence/BUILD_RECEIPT_V148.json) · [Source lock](papers/A2-v17-boundary-information-coarsening/article/v148/SOURCE_LOCK_V148.json) · [Preservation](papers/A2-v17-boundary-information-coarsening/article/v148/NONDELETION_V148.json) · [Literature audit](papers/A2-v17-boundary-information-coarsening/article/v148/LITERATURE_AUDIT_V148.md)
-
-[Applications](papers/A2-v17-boundary-information-coarsening/article/v148/applications.pdf) are separate; the [historical archive](papers/A2-v17-boundary-information-coarsening/article/v148/archive-v144.pdf) is non-submitted. Only geometry.pdf is the principal article.
-
-**Documentary item still unresolved:** Ballico 1993 full theorem/proof text was not obtained. The six-axis comparison remains open; no claim that the new mathematics settles historical priority is made.
+**Unresolved documentary item:** the full Ballico 1993 theorem/proof text was not obtained. Its six-axis comparison is still open; the new results are not a substitute for that priority check.
