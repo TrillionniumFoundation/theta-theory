@@ -1,6 +1,6 @@
 # A2 referee entry — revision 148
 
-The complete revision source is published; native build status is recorded only in the v148 build receipt. These checks do not certify universal proofs, historical priority, or journal acceptance.
+Native PDFs and 25 successful regression scripts are bound to source commit `3acb5744f4b820070edb997b3aa38534f4726efe`. These checks do not certify universal proofs, historical priority, or journal acceptance.
 
 Revision branch: `revision/a2-v148-coefficient-symmetries-moving-pencils-2026-09-24`. Controlling review tip: `17fb7ba7cab6545f5da6d4fcde5283318bd26725`.
 Latest report addressed: [reviews/a2-v147-independent-harsh-top4-2026-09-24/REFEREE_REPORT.md](reviews/a2-v147-independent-harsh-top4-2026-09-24/REFEREE_REPORT.md).
