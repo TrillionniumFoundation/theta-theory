@@ -1,0 +1,124 @@
+name: GTF-I v29 intrinsic continuation and causal memory
+
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v29-intrinsic-continuation-2026-09-24
+    paths:
+      - 'papers/GTF-I-v29-intrinsic-continuation/**'
+      - '.github/workflows/gtf-i-v29-intrinsic-continuation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gtf-i-v29-intrinsic-continuation
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/revision/general-theta-foundations-i-v29-intrinsic-continuation-2026-09-24'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 20
+          sparse-checkout: |
+            papers/GTF-I-v29-intrinsic-continuation
+            papers/GTF-I-v28-causal-response
+            papers/GTF-I-v27-resource-saddle
+            papers/GTF-I-v26-controlled-memory-foundations
+            papers/GTF-I-v25-controlled-minimax
+            papers/GTF-I-v24-structural-resources
+            reviews/general-theta-foundations-i-v28-pipeline-harsh-top4-r13-2026-09-24
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Restore hash-checked native mathematical sources
+        shell: bash
+        run: |
+          python - <<'PY'
+          import ast,hashlib,json,lzma,runpy,shutil
+          from pathlib import Path
+          h=Path('papers/GTF-I-v29-intrinsic-continuation')
+          old=h.parent/'GTF-I-v28-causal-response'
+          raw=b''.join((h/'.source-parts'/('part%02d.xz'%i)).read_bytes() for i in range(6))
+          if len(raw)!=32480 or hashlib.sha256(raw).hexdigest()!='a949da617926e1546b5ed8e9ff30a2f2dba874741d785bd3c110fe6951c41e2c':
+              raise RuntimeError('Source transport checksum mismatch')
+          payload=json.loads(lzma.decompress(raw))
+          if not isinstance(payload,dict) or len(payload)!=17:
+              raise RuntimeError('Native source manifest mismatch')
+          for name,text in payload.items():
+              p=Path(name)
+              if p.name!=name or p.suffix not in {'.tex','.py','.md','.json'} or not isinstance(text,str):
+                  raise RuntimeError('Unsafe source entry')
+              dest=h/name
+              if dest.exists() and dest.read_text()!=text:
+                  raise RuntimeError('Refusing to replace modified native source: '+name)
+              dest.write_text(text)
+          tree=ast.parse(payload['assemble.py'])
+          mods=next(ast.literal_eval(node.value) for node in tree.body if isinstance(node,ast.Assign) and any(isinstance(t,ast.Name) and t.id=='EXPECTED_MODULES' for t in node.targets))
+          if len(mods)!=18: raise RuntimeError('Inherited module count mismatch')
+          for name,expected in mods.items():
+              if Path(name).name!=name or not name.endswith('.tex'):
+                  raise RuntimeError('Unsafe inherited path')
+              data=(old/name).read_bytes()
+              if hashlib.sha256(data).hexdigest()!=expected:
+                  raise RuntimeError('Inherited source checksum mismatch: '+name)
+              dest=h/name
+              if dest.exists() and dest.read_bytes()!=data:
+                  raise RuntimeError('Inherited module changed: '+name)
+              shutil.copy2(old/name,dest)
+          runpy.run_path(str(h/'assemble.py'))
+          print('Restored 17 native files and 18 unchanged mathematical modules; reversible body verified.')
+          PY
+      - name: Publish the native source commit before building
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git fetch --depth=1 origin 9c8161e9df1b017fa2dfb46218a4fa42f42e9bdd
+          test -z "$(git diff --name-only --diff-filter=DMRT 9c8161e9df1b017fa2dfb46218a4fa42f42e9bdd)"
+          git add -f papers/GTF-I-v29-intrinsic-continuation
+          if ! git diff --cached --quiet; then
+            git commit -m 'revise(GTF-I v29): intrinsic complete continuation class and exact streaming memory regimes [skip ci]'
+            git push origin HEAD:"$GITHUB_REF_NAME"
+          fi
+          echo "GTF_SOURCE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - name: Install typesetting and exact arithmetic
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended texlive-pictures lmodern
+          python -m pip install sympy==1.14.0 PyMuPDF==1.26.7
+      - name: Execute regressions and compile the full revision
+        run: python papers/GTF-I-v29-intrinsic-continuation/build.py
+      - name: Publish only the new package and referee-ready branch
+        shell: bash
+        run: |
+          git add -f papers/GTF-I-v29-intrinsic-continuation GENERAL_THETA_FOUNDATIONS_I_V29_REVIEW_READY.md
+          git commit -m 'publish(GTF-I v29): intrinsic theorem spine, preserved proofs, PDFs and source-bound evidence [skip ci]'
+          test -z "$(git diff --name-only --diff-filter=DMRT 9c8161e9df1b017fa2dfb46218a4fa42f42e9bdd HEAD)"
+          READY='revision/general-theta-foundations-i-v29-referee-ready-2026-09-24'
+          if git ls-remote --exit-code --heads origin "$READY"; then
+            git fetch origin "$READY"
+            git merge-base --is-ancestor FETCH_HEAD HEAD
+          fi
+          git push --atomic origin HEAD:"$GITHUB_REF_NAME" HEAD:"$READY"
+      - name: Upload referee package
+        uses: actions/upload-artifact@v4
+        with:
+          name: GTF-I-v29-intrinsic-continuation
+          path: papers/GTF-I-v29-intrinsic-continuation/
+          retention-days: 30
+      - name: Upload failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: GTF-I-v29-diagnostics
+          path: |
+            papers/GTF-I-v29-intrinsic-continuation/evidence/
+            papers/GTF-I-v29-intrinsic-continuation/*.tex
+            papers/GTF-I-v29-intrinsic-continuation/*.py
+          retention-days: 7
