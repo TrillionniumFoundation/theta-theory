@@ -1,0 +1,13 @@
+# Historical derivation audit — revision 28
+
+The latest r12 review is frozen at `63f52685341e0121f5494c63768bf53999f3c6c5`; the parallel r11 report at `ebd325871e0706d1346780b6c00503d9246b72dc`; the common v27 manuscript at `7a659e0a2a41cd91f1f6f4ddc3b01c50a77882e3`. The new work branch was created remotely from r12 before publication of the revision sources.
+
+Both reports were read in full. The source audit re-read the v27 canonical organization, saddle positive realization/contact theorem, exact decision and candidate-first memory proofs, all-N localization, the v26 two-preparation saddle/family, the physical interface and microscopic collision/Brownian bridge, and the predecessor assembly/build/resource records. The earlier weighted/joint residual and decision-spectrum mechanisms, foundations blueprint and original implementation context were traced through the already inspected lineage. The Round-Seventeen proof-dependency ledger was read again at the current frozen review tree.
+
+This is a targeted proof-chain audit, not a claim that all 782 archived pages have been independently re-proved. The inherited all-N, revelation, autonomous, calibration and operator-interface mathematics remains in the source and full preserved volumes. The old actual-preparation -> predictive quotient -> causal morphism -> charged realization chain is used, not replaced by a new unpriced experiment.
+
+The new physical target formula exploits facts already present in the boxes but not extracted by the previous TV coupling: reflection in the y coordinate, independence of the center-of-mass z coordinate carrying the actual mark, equal disjoint Brownian windows, and a common random outgoing signal. These yield first and second conditional-error moments. The full-support saddle then changes the old support-zero memory analysis; it is not inferred merely from small TV distance.
+
+All new files are placed under `papers/GTF-I-v28-causal-response`, with a new root entry and a branch-restricted workflow. The predecessor main blob is pinned and its entire substantive body is recovered exactly after removing the recorded insertions. The only copied module changed inside the new package is `saddle-realization.tex`, where the elementary identity is separated from the contact theorem with an exactly reversible statement/proof transformation. All other inherited mathematical modules are byte-identical. No predecessor path is edited.
+
+Historical A2 and the principal Sinai/hard-sphere chains keep their distinct Fourier, entropy, LDP, operator-domain, semigroup and phase obligations. No aggregate closure is inferred from the new positive-support physical memory theorem or the preservation audit.

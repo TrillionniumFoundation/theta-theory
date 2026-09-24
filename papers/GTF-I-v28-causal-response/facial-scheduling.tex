@@ -1,0 +1,116 @@
+\section{Facial certificates for schedule-optimized memory}
+\label{sec:facial-scheduling}
+A schedule is part of the resource problem. The following criterion
+extracts a whole family of schedule converses from a saddle, rather than
+minimizing the states of one selected program. Its hypotheses are finite
+identities of continuation functions and faces. Its conclusion applies
+to arbitrary stochastic state encoders.
+
+Consider finitely many validation tapes, with a fixed internal order
+on each tape and finitely many symbols per slot. A \emph{declared-clock
+schedule} is a word specifying which tape supplies each successive
+slot; it is fixed before training and is independent of all reports.
+Let $\mathcal G$ be the finite acyclic graph of consumed-prefix counts.
+Its directed paths from the initial vertex to the final vertex are the
+legal schedules. This includes all interleavings, not only serial ones.
+The lower bound below does not give an adaptive scheduler free storage:
+a report-dependent choice of the next tape belongs to a different
+controlled interface and requires its own charged rows.
+
+At a vertex $v$ of $\mathcal G$, a retained state supplies a conditional
+channel on the unread tape suffixes. Assume in this section that every
+prefix and suffix combination used in a witness has positive probability
+under a supporting experiment. One may instead restrict to a stated
+common suffix subalphabet with this property. The channels form a
+product of probability simplices, denoted by $\mathcal P_v$.
+
+\begin{definition}[Contact-forced facial certificate]
+\label{def:facial-certificate}
+A certificate at $v$ consists of distinct deterministic channels
+$d_1,\ldots,d_s$ and channels $r_1,\ldots,r_j$, such that every
+minimax-optimal auditor has these rows among its conditional
+continuations, allowing parameter-independent averaging of specified
+past rows. Each $r_i$ lies in a face $F_i$ of $\mathcal P_v$, the faces
+are pairwise disjoint, and
+\[
+ r_i\notin\operatorname{conv}\{d_a:d_a\in F_i\}.
+\]
+Its certified capacity is $s+j$. Define $c(v)$ to be the largest such
+capacity within a declared finite witness family. Conditional averaging
+must retain the same future-input coordinates and may not add the
+unknown parameter as an input. A channel of mean zero is not thereby a
+deterministic zero channel.
+\end{definition}
+
+For an upper certificate choose a minimax-optimal finite randomization
+over frozen deterministic events, with the selected event retained at
+the decision cut. Let $\mathcal D_v$ be its distinct future deterministic
+output functions after all possible supported prefixes at $v$.
+When the input support is a full product, equality of these functions
+is closed under every next-symbol restriction. Put $r(v)=|\mathcal D_v|$.
+More general supported experiments may use any explicitly supplied
+shift-compatible deterministic completion; merely minimizing separate
+partial-function covers at different cuts is insufficient.
+
+\begin{theorem}[Facial capacity and schedule realization]
+\label{thm:facial-schedule}
+Suppose contact with the unrestricted saddle supplies the preceding
+certificates. For each declared-clock path $\pi$ and every stochastic
+auditor on that path attaining the unrestricted value,
+\begin{equation}\label{eq:path-lower}
+             W(\pi)\ge\max_{v\in\pi}c(v).
+\end{equation}
+A shift-compatible deterministic residual family realizes the selected
+optimal event rule simultaneously with widths $r(v)$ along any such
+path. If its training and selection peak is $W_0$, then
+\begin{equation}\label{eq:path-upper}
+ \min_{\pi}\max_{v\in\pi}c(v)
+ \le W_{\rm clk}^{\min}
+ \le\min_{\pi}\max\{W_0,\max_{v\in\pi}r(v)\}.
+\end{equation}
+In particular, a certificate and a realizing path with the same peak
+identify the exact minimum over all declared-clock schedules and all
+stochastic architectures on those schedules. If $c(v)=r(v)$ at every
+vertex and $W_0$ does not exceed the path peak, the entire minimum-profile
+problem reduces to the intrinsic capacity field on $\mathcal G$.
+The peak optimum of that field is computed by
+\begin{equation}\label{eq:bottleneck-recursion}
+ b(v_0)=c(v_0),\qquad
+ b(v)=\max\{c(v),\min_{u\to v}b(u)\}.
+\end{equation}
+The result is invariant under bijective, causal, slot-preserving
+recodings of the tape alphabets.
+\end{theorem}
+\begin{proof}
+Condition on a charged retained state at $v$. Every past row is a
+stochastic mixture of the same at most $W(\pi)$ future channels.
+Parameter-independent averaging preserves this factorization.
+The face-packing lemma therefore gives at least $s+j$ states for each
+certificate, proving \eqref{eq:path-lower}. This step ranges over
+all state wirings and all stochastic encoders, not a specified graph.
+
+For the upper bound retain the current residual output function.
+If two residuals agree on the future input product, their restrictions
+after each legal next symbol agree as well. Therefore the next retained
+label is determined by the old label and that symbol. At the last cut
+it is the output itself. This constructs all cuts compatibly in one
+machine. The initially sampled event and its training selector are
+charged in $W_0$. Optimizing the two bounds over the finite path set
+proves \eqref{eq:path-upper}. The recursion follows by classifying
+paths according to their last edge and taking the maximum with the
+cost of the final vertex. Induction proves it on the acyclic graph.
+Finally, a bijective recoding induces an affine isomorphism of every
+channel polytope, preserving vertices, faces, conditional averages and
+restriction maps. It preserves both certificates and realizing paths.
+\end{proof}
+
+The general positive-realization normal form and residual quotient have
+classical antecedents \cite{Heller,Vidyasagar,GG}. The minimization of
+partially specified machines likewise requires compatible coverings,
+not unrelated cutwise minima \cite{Reusch}. The contribution used here
+is different: the witness rows are forced by \emph{every member of the
+uniform saddle}, through contact on its Bayes-indifferent coordinates.
+This makes the lower field independent of a chosen optimal program.
+The criterion is a certificate theorem for this class of experiments,
+not an assertion that arbitrary nonnegative-rank problems have become
+easy or that facial packing is always exact.

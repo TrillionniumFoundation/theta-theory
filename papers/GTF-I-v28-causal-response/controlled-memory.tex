@@ -1,0 +1,234 @@
+\section{Controlled experiments at a prescribed memory profile}
+\label{sec:controlled-memory}
+An unrestricted posterior is a useful information state for a proof, but
+it is not a free runtime state. We first give a resource-exact dynamic
+formulation and then solve a controlled family in which replacing that
+formulation by a policy-tree mixture changes the value strictly.
+
+\subsection{A parameterwise occupation state}
+Fix a finite horizon $T$, a compact metric parameter space $\Theta$,
+finite hidden execution spaces $H_t$, and register alphabets $S_t$ of
+sizes at most $K_t$. The visible inputs to each stochastic row and all
+legal actions are specified. Any input that must survive a cut belongs
+to $S_t$: this includes a chosen action, an unread report buffer, a stop
+flag, a selected validation event and a validation accumulator.
+One may subdivide an operation into several cuts to expose these costs.
+The scheduled time is available only in the clocked convention.
+
+For now rows at different scheduled times are independently prescribed.
+Let $\mathcal Q_t$ be the finite product of legal row simplices at stage
+$t$. A prescription $q\in\mathcal Q_t$ is a table, chosen at design
+time, whose runtime arguments are exactly the declared visible inputs.
+After summing the fixed environmental kernels its one-stage transition
+is a stochastic matrix $M^q_{t,\theta}$ on the hidden-state/register
+pairs. We assume this matrix is jointly continuous in $(q,\theta)$.
+Both action selection and state updating occur in this matrix, in their
+specified causal order; it is not an arbitrary matrix chosen separately
+for each hidden state or each parameter.
+
+For a continuous bundle of probability vectors
+$x=(x_\theta(h,s))_{\theta\in\Theta}$ define
+\[
+ (\mathcal T_{t,q}x)_\theta(h',s')
+  =\sum_{h,s}x_\theta(h,s)
+              M^q_{t,\theta}((h,s),(h',s')).
+\]
+The initial bundle $x_0$ is fixed by preparation. Terminal rewards
+$r_\theta(h,s)\in[-1,1]$ are continuous in $\theta$.
+Absorbing stopped states and frozen validation phases are included in
+this execution, not added afterwards without charge. Put
+\begin{align}
+ B_T(x)&=\min_{\theta\in\Theta}\sum_{h,s}x_\theta(h,s)r_\theta(h,s),
+                                                    \label{eq:memory-terminal}\\
+ B_t(x)&=\max_{q\in\mathcal Q_t}B_{t+1}(\mathcal T_{t,q}x),
+       \qquad 0\le t<T.                              \label{eq:memory-dp}
+\end{align}
+The argument $x$ is an \emph{offline occupation bundle}, not the
+realized history, not an observed parameter, and not an additional
+register made available to the machine.
+
+\begin{theorem}[Resource-exact dynamic value and supersolutions]
+\label{thm:memory-dp}
+For the specified clocked profile and observable-row interface,
+$B_0(x_0)$ is the exact maximum worst-case reward over all stochastic
+controllers. The maximum is attained by a sequence of legal common
+prescriptions. With the norm
+$\|x-x'\|=\sup_\theta\sum_{h,s}|x_\theta(h,s)-x'_\theta(h,s)|$,
+each $B_t$ is $1$-Lipschitz. Moreover,
+\begin{equation}\label{eq:memory-super}
+ B_0(x_0)=\inf_H H_0(x_0),
+\end{equation}
+where the infimum ranges over families of functions on occupation
+bundles satisfying
+\[
+ H_T\ge B_T,\qquad
+ H_t(x)\ge H_{t+1}(\mathcal T_{t,q}x)
+                       \quad(q\in\mathcal Q_t).
+\]
+The infimum is attained by $H=B$. No convexification over retained
+controllers and no new adversarial choice after a report occurs in
+these identities.
+\end{theorem}
+\begin{proof}
+For a fixed sequence $q_0,\ldots,q_{T-1}$, iteration of the displayed
+transition gives its actual terminal law for every fixed $\theta$.
+The terminal minimum is therefore exactly its worst-case reward.
+A runtime randomized controller in this interface is precisely such a
+sequence of common conditional rows; independence of fresh randomization
+and the declared register specify all its conditional choices.
+Persistent random correlations are allowed only through that register.
+
+The occupation bundle at the next stage is determined by the current
+bundle and the prescription, without drawing a realized history in the
+design problem. Hence optimizing over the remaining prescription
+sequence gives \eqref{eq:memory-dp} by ordinary backward induction.
+This does not select a different continuation for each unrecorded
+history. Each maximizing $q$ is still a single legal table common to
+all hidden histories and parameters. At $x_0$ one follows the maximizing
+sequence of design prescriptions, computing their occupation bundles
+offline; the runtime controller only reads its allowed inputs.
+
+Stochastic matrices contract the $\ell^1$ norm. The terminal minimum is
+$1$-Lipschitz in the displayed norm. Induction, using the same $q$ when
+comparing two bundles and then taking the two maxima, proves the
+Lipschitz assertion. Joint continuity and compactness of $\mathcal Q_t$
+give attainment at each stage, and compactness of $\Theta$ gives the
+terminal minimum. Any family $H$ in \eqref{eq:memory-super} bounds the
+terminal reward along every prescription sequence. Backward induction
+therefore gives $H_t\ge B_t$. Equality is admissible, proving
+\eqref{eq:memory-super} and its attainment.
+\end{proof}
+
+This is a nonlinear supersolution dual, not a least-favorable-prior
+saddle theorem at fixed width. Its optimization can be large and
+nonconvex. The principle of dynamic programming is classical; the point
+of this formulation is that the common-row and memory constraints
+remain in the maximizations. If rows are shared across scheduled times,
+as for an autonomous controller, choose the shared rows once and hold
+them fixed in all subsequent transitions; equivalently augment the
+\emph{design} problem by that immutable prescription. Maximizing a
+shared row anew at each time would solve a different problem.
+A finite union of allowed interfaces can be handled by taking their
+maximum, or by a fully wired interface with the prescribed profile and
+its legal observable inputs. Neither operation enlarges a runtime
+register invisibly.
+
+\subsection{An exact informative-control bottleneck}
+Fix integers $m\ge2$ and $1\le K\le m$. The fixed parameter is
+$\theta=(i,j)\in[m]\times\{0,1\}$. The first training experiment $R$
+reports $i$. Across the next cut the controller retains at most $K$
+labels, with an arbitrary stochastic encoder $E(s\mid i)$. It then
+chooses one of the $m$ sensing actions with probabilities $D(a\mid s)$.
+The selected action is kept in a charged $m$-state action buffer and the
+old label is discarded. Action $a$ reports $j$ when $a=i$ and reports
+$\perp$ otherwise. The first report is no longer available.
+
+The candidate validation law on $\{0,1\}$ is $\delta_j$; the target is
+uniform. An event is frozen before one fresh candidate and one fresh
+target validation. Stopping before either training action is permitted.
+No independent persistent selector is given to the controller. The
+observation symbols are atomic; a bitwise input implementation would
+have additional cuts. Denote the maximum worst-case score by $V_{m,K}$.
+
+\begin{theorem}[Exact finite-memory control and its convexification gap]
+\label{thm:routing-gap}
+In this protocol,
+\begin{equation}\label{eq:routing-value}
+ V_{m,K}=\frac{1}{2\lceil m/K\rceil}.
+\end{equation}
+The value obtained by allowing an uncharged ex ante mixture of complete
+$K$-label controllers is instead
+\begin{equation}\label{eq:routing-mixed}
+                         \overline V_{m,K}=\frac{K}{2m}.
+\end{equation}
+The inequality is strict whenever $K$ does not divide $m$. The matching
+controller for \eqref{eq:routing-value} has charged cut profile bounded
+by $(1,K,m,3,6,3)$. The $K$-label cut controls both retention of the
+routing observation and the subsequent informative action choice.
+\end{theorem}
+\begin{proof}
+For a fixed $i$, let
+\[
+                         p_i=\sum_s E(s\mid i)D(i\mid s).
+\]
+This is the probability of taking the informative action. On its
+complement, all retained information is independent of $j$. Averaging
+over the two values of $j$ makes the expected validation score zero
+there, for any frozen event or randomized response. On the informative
+part the score is at most $\TV(\mathrm{Ber}(1/2),\delta_j)=1/2$.
+Thus the minimum over $j$ at a given $i$ is at most $p_i/2$.
+A stop before sensing is also uninformative about $j$ and obeys the
+same bound; it can be padded by an ignored sensing operation.
+
+Set $L=\lceil m/K\rceil$. Since $p_i\le\max_sD(i\mid s)$,
+a value $\min_i p_i>1/L$ would require every $i$ to have some row $s$
+with $D(i\mid s)>1/L$. Each stochastic row has at most $L-1$ such
+indices. But $K(L-1)<m$. This contradiction proves the upper bound.
+Partition $[m]$ into at most $K$ fibers of size at most $L$, retain the
+fiber label after $R$, and choose uniformly inside that fiber. On a
+successful report freeze $\{1\}$ when $j=0$ and $\{0\}$ when $j=1$;
+on $\perp$ freeze the empty event. The score for every $j$ is
+$1/(2|\text{fiber}(i)|)$, proving equality. The event alphabet has three
+labels. Storing the event and its candidate indicator requires at most
+six labels, and the final difference has three. The chosen sensing
+action was separately charged, proving the displayed profile.
+
+For the convexified upper bound use the uniform prior on $(i,j)$.
+For any one controller,
+\[
+ \frac1m\sum_i p_i
+    =\frac1m\sum_{i,s}E(s\mid i)D(i\mid s)
+    \le\frac1m\sum_{i,s}D(i\mid s)=\frac Km.
+\]
+The same upper bound holds for mixtures. For the matching mixture,
+choose uniformly one of the $m$ cyclic intervals of $K$ indices.
+For that interval hardcode a deterministic $K$-label encoder which
+routes each included index to its own sensing action, and assigns other
+indices arbitrarily. Each $i$ belongs to exactly $K$ intervals. A
+successful action is followed by the complementary singleton event and
+failure by the empty event, as above. Every fixed $(i,j)$ has mean score
+$K/(2m)$. This proves \eqref{eq:routing-mixed}.
+\end{proof}
+
+For example, $V_{3,2}=1/4$ whereas $\overline V_{3,2}=1/3$.
+The mixture just constructed can be implemented with a retained interval
+selector and a local label, using at most $mK$ labels at the bottleneck.
+It cannot be declared a $K$-label realization: when the displayed gap is
+positive, \eqref{eq:routing-value} proves that no such realization exists.
+The action buffer of size $m$ is not part of the $K$ coordinate and has
+not been omitted from the profile. The theorem is a multicut resource
+law, not an assertion that its uniform peak equals $K$.
+
+The actions are statistically incomparable. $R$ cannot distinguish the
+two values of $j$ at any fixed $i$, while action $a$ does distinguish
+them at $i=a$. For $a\ne b$, action $a$ does not distinguish the pair
+with $i=b$, while $b$ does. A parameter-independent garbling cannot
+create a distinction absent from its input experiment.
+
+\begin{corollary}[A strict gap with positive report probabilities]
+\label{cor:routing-noise}
+Replace each of the two training kernels by a mixture with weight
+$\epsilon>0$ of the uniform law on its report alphabet. Let
+$\Delta_{m,K}=K/(2m)-1/(2\lceil m/K\rceil)>0$.
+For $\epsilon<\Delta_{m,K}/8$ the resulting full-support model still
+has a strict gap between the genuine profile-constrained value and its
+free-selector convexification.
+\end{corollary}
+\begin{proof}
+Each training row changes by at most $\epsilon$ in total variation.
+Couple corresponding rows until the first disagreement. For any fixed
+controller or mixed controller the probability of such a disagreement
+is at most $2\epsilon$, and its conditional reward lies in $[-1,1]$.
+Each of the two optimal values changes by at most $4\epsilon$.
+Their difference is therefore at least $\Delta_{m,K}-8\epsilon>0$.
+All row arguments and register alphabets are unchanged.
+\end{proof}
+
+The distinction between mixed and behavioral strategies without perfect
+recall is classical; it is not first asserted here. Contemporary
+polynomial formulations over behavioral simplices include
+\cite{ZSV}. Theorem~\ref{thm:routing-gap} evaluates the discrepancy in
+this specific frozen-validation experiment for every $m,K$, with a
+matching actual register and a noisy persistence statement. In
+particular, a single prior followed by an unrestricted policy-tree
+best response cannot be substituted for \eqref{eq:memory-dp}.

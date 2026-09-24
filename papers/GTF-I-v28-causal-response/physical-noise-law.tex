@@ -1,0 +1,144 @@
+\section{Exact statistical form of the Brownian collision sensor}
+\label{sec:physical-noise-law}
+The full-support theorem applies to the original microscopic target,
+not only to an independently constructed contamination model. The
+preparation symmetries supply the required form exactly.
+
+\begin{theorem}[Physical symmetry and a quantitative noise region]
+\label{thm:physical-noise-form}
+Use exactly the preparation boxes, elastic collision, detector and
+Brownian windows of Section~\ref{sec:physical-bridge}. Conditional on
+the preparation put
+\[
+ Z=|h(v_{1,y}^{+})|,\qquad
+ e=\Phi\left(-\frac{Z}{\sqrt2\sigma}\right),\qquad
+ \mu_1=\mathbb E e,\quad \mu_2=\mathbb E e^2.
+\]
+For every $9/10\le d\le11/10$ and $0<\sigma\le1/24$ the exact
+all-on target law is
+\begin{equation}\label{eq:exact-physical-target}
+ Q_{d,\sigma}=Q_{\gamma_{d,\sigma},\kappa_{d,\sigma}},\qquad
+ \gamma_{d,\sigma}=\frac14-\frac{\mu_1}{2},\quad
+ \kappa_{d,\sigma}=\frac{\mu_1-\mu_2}{2}.
+\end{equation}
+In particular
+\[
+ \frac14-\frac1{1200}<\gamma_{d,\sigma}<\frac14,
+ \qquad0<\kappa_{d,\sigma}<\frac1{1200},
+\]
+so the entire physical range lies inside $\mathcal R$, and every target
+atom has strictly positive probability. The physical two-preparation
+value in the unrestricted-memory original gate interface equals
+\eqref{eq:leak-value} at these parameters. Its exact decision-memory
+number is five.
+\end{theorem}
+\begin{proof}
+The collision estimate gives $Z>1/4$ for every prepared point.
+The conditional two window noises are independent, of equal variance,
+and the deterministic signal is constant after the collision. Thus,
+given $(B,W,Z)$, the two report bits are independent copies of $B$
+flipped with probability $e$.
+
+We justify the distribution of $Z$ rather than assume a noise symmetry.
+Reflection in the spatial $y$ coordinate sends
+$(r_y,g_y,V_y)$ to their negatives, interchanges the two $B$ boxes,
+and preserves their uniform product laws and the elastic equations.
+It negates $v_{1,y}^{+}$ and leaves $Z$ unchanged. The only box that
+depends on $W$ is the one for $V_z$; changing this center-of-mass
+velocity cannot change the relative collision or the outgoing
+$y$ velocity. All other box coordinates are independent of $W$.
+Consequently $Z$, and hence $e$, has the same conditional law for all
+four $(B,W)$ labels. The Brownian increments are independent of these
+labels and of the preparation.
+
+The prepared masses of $(B,W)$ are $5/16$ for equality and $3/16$
+otherwise. Direct averaging therefore gives
+\begin{align*}
+ Q(000)=Q(111)&=5/16-5\mu_1/8+\mu_2/2,\\
+ Q(001)=Q(110)&=3/16-3\mu_1/8+\mu_2/2,\\
+ Q(010)=Q(011)=Q(100)=Q(101)&=(\mu_1-\mu_2)/2.
+\end{align*}
+These are precisely \eqref{eq:leak-target} with
+\eqref{eq:exact-physical-target}. This calculation uses both the common
+signal and the actual mark; replacing the common signal by independent
+unconditional report errors would in general replace $\mu_2$ incorrectly
+by $\mu_1^2$.
+
+The Gaussian bound already proved in the physical bridge yields
+$0<e<1/600$ uniformly in this physical range. Thus
+$0<\mu_2<\mu_1<1/600$, proving the parameter bounds. Positivity follows
+also directly from $0<e<1$ and positive prepared label masses.
+The all-on construction works against every private candidate in
+Definition~\ref{def:physical-class}; its score is the product-family
+score. Conversely the common-garbling private subfamily gives the
+architecture-uniform upper bound. Theorem~\ref{thm:positive-saddle}
+therefore supplies both exact value and exact decision count for the
+original interface, not for an auxiliary sensor.
+\end{proof}
+
+\begin{remark}[Known target and acquired calibration]
+The exact value and exact atomic stochastic realization are statements
+for a specified target law. Their event-selection probability depends
+on that target, not on the unknown candidate. When $d,\sigma$ and the
+preparation are known, the expectations in
+\eqref{eq:exact-physical-target} are defined integrals of that known
+physical law. They are not free information about the private parameter.
+An auditor that must acquire the target instead uses finite calibration
+and a precision allowance. The following explicit bound makes this
+separation operational.
+\end{remark}
+
+\begin{proposition}[Acquisition and finite row precision]
+\label{prop:physical-acquisition}
+Let the fixed physical target be in the preceding theorem. From $n$
+independent all-on target calibration words define
+\[
+ \widehat\kappa=\frac1{4n}\sum_{i=1}^n\mathbf1_{\{X_{1i}\ne X_{2i}\}},
+ \qquad
+ \widehat\gamma=\frac1n\sum_{i=1}^n
+ \bigl(\mathbf1_{\{000,111\}}-\mathbf1_{\{001,110\}}\bigr)(X_i).
+\]
+Clip these separately to the two intervals of $\mathcal R$.
+With probability at least $1-4\exp(-na^2/2)$, both coordinate errors
+are at most $a$. Choose the optimal response for this clipped target
+and replace its tie probability by a dyadic number with error at most
+$2^{-b}$. Conditional on that calibration event, its worst-case score
+against the true target is at least
+\begin{equation}\label{eq:acquired-leak-score}
+ U_2(b,Q_{d,\sigma})-9a-2^{-b}.
+\end{equation}
+The calibration can be acquired with at most $(n+1)^3$ counter states and at most
+$4(n+1)^3$ states including the current report buffer;
+retaining the calibration output during the audit gives the conservative
+product bound $12(n+1)^3$ at logical report cuts. A sequential fair-bit
+realization of the tie coin, with its origin and bit phase retained,
+has a finite explicit bound $12(n+1)^3+8(b+2)(n+1)^3$.
+\end{proposition}
+\begin{proof}
+The off-diagonal indicator has mean $4\kappa$ and range one. The signed
+diagonal indicator has mean $2a-2b=\gamma$ and range two.
+Hoeffding's inequality and a union bound give the displayed failure
+probability; clipping to an interval containing the truth cannot
+increase coordinate error. The two target laws have total variation
+at most $|\Delta\gamma|/2+4|\Delta\kappa|\le9a/2$.
+Every fixed trained response changes score by at most this amount when
+only the target changes, and so does the unrestricted optimal value.
+Using an optimizer for the estimated target therefore loses at most
+$9a$ against the true one. Only the two extreme-count event choices
+are rounded. Their score contribution changes by at most the coin
+error, because their total probability is at most one and the change
+in a single indicator expectation has magnitude at most one. This
+proves \eqref{eq:acquired-leak-score}.
+
+Three nonnegative category counts, each bounded by $n$, compute the
+two statistics; they also fix the clipped estimates and the subsequent
+program choice. Keeping this count triple with the twelve-state audit
+costs at most the stated product. At an extreme count, sample the
+dyadic coin using $b$ fair bits and comparison with its binary threshold,
+retaining the two-valued origin, the comparison flag and the phase.
+At most $8(b+2)$ additional states suffice per calibration choice.
+All other counts select deterministic events. The bound includes the
+coin workspace instead of identifying an algebraic row with a finite
+random-bit primitive. The $n$ target calibrations and the four audit
+preparations are all charged.
+\end{proof}

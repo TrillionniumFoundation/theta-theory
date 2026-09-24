@@ -1,0 +1,204 @@
+\section{Controlled experiments without a dominating action}
+\label{sec:controlled}
+The reduction to one dominating row is not needed for a statistical
+dual, provided causal action choice is retained in the dual recursion.
+We give the finite-action theorem with a compact parameter space and an
+explicit protocol state. Its equality is an unrestricted-memory
+statement; its upper certificates apply to every smaller-memory class.
+
+Let $\Theta$ be compact metric and $E$ a finite set of protocol states.
+At $e\in E$ let $\mathcal A_e$ be a finite set of training actions.
+Action $a$ produces $x$ in a finite alphabet $X_a$ with law
+$P^a_\theta$ and changes the protocol state to $T(e,a,x)$.
+The functions $\theta\mapsto P^a_\theta(x)$ are continuous.
+An unknown $\theta$ is fixed throughout the experiment. Conditional on
+it, each requested preparation uses a fresh independent draw from the
+selected row. Legal validation designs form a nonempty finite set
+$\mathcal B_e$. Design $b$ has a finite outcome alphabet $Y_b$, target
+law $Q^b$ and continuous candidate law $V^b_\theta$.
+A policy may stop after at most $N$ training actions. It then freezes
+$b\in\mathcal B_e$ and an event on $Y_b$, before one candidate and one
+target validation. Randomization is independent of $\theta$.
+No training action is assumed to dominate another.
+
+For a finite nonnegative measure $\nu$ on $\Theta$ write
+$\nu_{a,x}(d\theta)=P^a_\theta(x)\nu(d\theta)$ and set
+\begin{align}
+ \Phi_e(\nu)&=\max_{b\in\mathcal B_e}\sum_{y\in Y_b}
+       \left[Q^b(y)\nu(\Theta)-\int V^b_\theta(y)d\nu\right]_+,
+                                                   \label{eq:controlled-terminal}\\
+ F_0(e,\nu)&=\Phi_e(\nu),\notag\\
+ F_n(e,\nu)&=\max\left\{\Phi_e(\nu),\
+        \max_{a\in\mathcal A_e}\sum_{x\in X_a}
+           F_{n-1}(T(e,a,x),\nu_{a,x})\right\}.
+                                                   \label{eq:controlled-recursion}
+\end{align}
+If no training action is legal, only the stopping term is retained.
+All the functions vanish at the zero measure, so no posterior division
+is required on null histories. For positive mass, \eqref{eq:controlled-terminal}
+is the mass times the largest posterior-predictive total variation.
+
+\begin{theorem}[Controlled posterior-predictive dual]
+\label{thm:controlled}
+Let $\mathcal U_N(e_0)$ be the maximum worst-case expected validation
+score over all randomized causal policies in the declared protocol,
+with at most $N$ training preparations and no memory cap. Then
+\begin{equation}\label{eq:controlled-dual}
+       \mathcal U_N(e_0)=\min_{\mu\in\cP(\Theta)}F_N(e_0,\mu).
+\end{equation}
+Both extrema are attained. Each $F_n(e,\cdot)$ is the maximum of
+finitely many continuous linear functionals on the cone of measures;
+in particular it is convex, continuous and positively homogeneous.
+For every prior $\mu$, $F_N(e_0,\mu)$ bounds the worst-case score of
+every finite-memory architecture implementing this protocol.
+\end{theorem}
+\begin{proof}
+There are finitely many histories of length at most $N$ and finitely
+many event masks at each stopping history. Consequently there are
+finitely many deterministic policy trees, denoted by $\Pi_N(e_0)$.
+For $\pi\in\Pi_N(e_0)$ its payoff $g_\pi(\theta)$ is a finite sum
+of finite products of continuous primitive probabilities and is
+continuous in $\theta$.
+
+A randomized causal policy induces the same outcome laws as a probability
+distribution on these trees: sample its finite random decision table in
+advance and condition on it. Conversely, with no memory cap, a sampled
+tree can be retained and followed. Thus the unrestricted payoff vectors
+are exactly the convex hull of the $g_\pi$. This step is not an assertion
+that mixing machines preserves a specified register width.
+
+The simplex on $\Pi_N(e_0)$ and $\cP(\Theta)$ are compact and convex.
+The expected payoff is continuous and bilinear. Minimax therefore gives
+\[
+ \max_{\lambda\in\Delta(\Pi_N)}\min_\theta
+       \sum_\pi\lambda_\pi g_\pi(\theta)
+ =\min_\mu\max_{\pi\in\Pi_N}\int g_\pi\,d\mu.
+\]
+For a fixed measure, the terminal maximum is
+\eqref{eq:controlled-terminal}, because an event includes precisely the
+positive coordinates of its signed predictive measure. At a training
+node one selects an action and, after its observed outcome, selects a
+continuation tree separately on that branch. The unnormalized branch
+measure is exactly $\nu_{a,x}$. Backward induction proves
+\eqref{eq:controlled-recursion} and identifies the right side with
+\eqref{eq:controlled-dual}. It also proves the finite-linear-functional
+representation. Compactness gives an optimizing prior and an optimizing
+mixed tree. Finally, the minimum over fixed parameters of any policy is
+at most its average under $\mu$, which is at most $F_N(e_0,\mu)$.
+This remains true after restricting its memory or architecture.
+\end{proof}
+
+The minimization in \eqref{eq:controlled-dual} occurs once, outside the
+recursion. It cannot be replaced by fresh adversarial choices after
+observations. The posterior carries dependence on one fixed unknown
+parameter. Also, a Bayes-optimal tree for a minimizing prior need not by
+itself be a minimax policy; the saddle-point mixture is supplied by the
+finite game in the proof.
+
+\begin{corollary}[Bellman upper certificates]\label{cor:bellman-certificate}
+Suppose functions $\Psi_n(e,\nu)$ satisfy $\Psi_0\ge\Phi$ and, for
+$n\ge1$, satisfy
+\[
+ \Psi_n(e,\nu)\ge\Phi_e(\nu),\qquad
+ \Psi_n(e,\nu)\ge\sum_x\Psi_{n-1}(T(e,a,x),\nu_{a,x})
+                  \quad(a\in\mathcal A_e).
+\]
+Then $\Psi_N(e_0,\mu)$ is an upper certificate for every admissible
+architecture and every prior $\mu$. The family $F_n$ is the least such
+family. An optimal prior can be chosen with at most $d+1$ support points,
+where $d$ is the affine dimension of
+$\{(g_\pi(\theta))_{\pi\in\Pi_N}:\theta\in\Theta\}$.
+\end{corollary}
+\begin{proof}
+Induction in \eqref{eq:controlled-recursion} gives $F_n\le\Psi_n$.
+The equality case is the recursion itself. The objective depends on a
+prior only through its vector of integrals of the finitely many
+$g_\pi$. An optimal such vector belongs to the convex hull of their
+compact evaluation image. Carath\'eodory's theorem gives the stated
+support bound while preserving every pure-tree payoff.
+\end{proof}
+
+\begin{proposition}[Causal stability]\label{prop:controlled-stability}
+Consider two models with the same protocol, alphabets and policy class.
+Suppose their training rows differ uniformly in total variation by at
+most $\epsilon$, their candidate validation rows by at most $\eta$,
+and their target validation rows by at most $\beta$. Their unrestricted
+values, or their values in any common specified memory class, differ by
+at most $2N\epsilon+\eta+\beta$.
+\end{proposition}
+\begin{proof}
+Use the same policy randomization and couple corresponding training
+rows while the histories agree. The probability of a first discrepancy
+is at most $N\epsilon$, even with feedback and stopping. Conditional
+expected validation rewards lie in $[-1,1]$, so differing training
+histories contribute at most $2N\epsilon$. On agreeing histories the
+same frozen design and event are used, and their conditional mean
+rewards differ by at most $\eta+\beta$. The bound is uniform in the
+fixed parameter and in the policy. Taking minima and suprema preserves
+it, with the reverse inequality obtained by interchanging the models.
+\end{proof}
+
+\subsection{An informative action choice}
+The following calculation distinguishes the controlled theorem from a
+common-row reduction. Let $\Theta=\{(i,j):i,j\in\{0,1\}\}$. Action
+$R$ reports $i$. Action $L$ reports $j$ when $i=0$ and otherwise reports
+an independent fair bit. Action $H$ reports $j$ when $i=1$ and otherwise
+reports an independent fair bit. The candidate validation is
+$\delta_{(i,j)}$ and the target is uniform on $\Theta$.
+
+\begin{proposition}[Strict adaptive advantage]\label{prop:adaptive-gap}
+With two training preparations, the unrestricted adaptive value is
+$3/4$ and the best nonadaptive value is $5/8$. Nonadaptive policies here
+include mixtures of schedules, with their random schedule retained.
+No available single training action dominates all the others.
+\end{proposition}
+\begin{proof}
+Take $R$ first, and then $L$ or $H$ according to the observed $i$.
+The parameter is recovered exactly. The complement of its validation
+atom has score $3/4$. No policy can exceed $\TV(Q,\delta_\theta)=3/4$
+even with full information.
+
+For the converse for fixed schedules, use the uniform prior. For a
+pair of actions $a,b$ its Bayes value is explicitly
+\begin{equation}\label{eq:adaptive-table-formula}
+ \sum_{x,y,\theta}\left[
+       \frac1{16}\sum_{\vartheta}P^a_\vartheta(x)P^b_\vartheta(y)
+       -\frac14P^a_\theta(x)P^b_\theta(y)\right]_+.
+\end{equation}
+Substitution of the three displayed kernels gives
+\[
+\begin{array}{c|ccc}
+ &R&L&H\\\hline
+R&1/2&5/8&5/8\\
+L&5/8&7/16&1/2\\
+H&5/8&1/2&7/16
+\end{array}.
+\]
+This is an exact finite sum, not a parameter-grid estimate. It bounds
+any mixture of fixed schedules by $5/8$; an early stop can be padded
+with an ignored observation. To attain the bound uniformly in $\theta$,
+choose with equal probabilities the schedules $(R,L)$ and $(R,H)$.
+When the chosen branch-specific action matches $i$, the parameter is
+known and the score is $3/4$. Otherwise only $i$ is known, and the
+complement of its two-atom fiber gives score $1/2$. Each fixed parameter
+therefore has mean score $5/8$.
+
+Action $R$ cannot distinguish parameters differing only in $j$.
+Action $L$ cannot distinguish $(1,0)$ and $(1,1)$, and $H$ cannot
+distinguish $(0,0)$ and $(0,1)$. An experiment which fails to distinguish
+such a pair cannot garble to one that distinguishes it. Hence no action
+is a common dominating row.
+\end{proof}
+
+If every binary report is additionally passed through an independent
+binary symmetric channel of crossover $\epsilon$, the primitive
+training rows change by at most $\epsilon$ and have full support for
+$0<\epsilon<1/2$. Proposition~\ref{prop:controlled-stability}, applied
+to both policy classes, leaves an adaptive advantage at least
+$1/8-8\epsilon$, which is positive for $0<\epsilon<1/64$.
+Thus the distinction is not confined to disjoint observation supports.
+The finite-horizon belief recursion and its piecewise-linear structure
+are classical \cite{SmallwoodSondik}. The contribution here is their
+explicit integration with the frozen validation score, one fixed
+adversarial parameter, outer certificates, and the resource conventions;
+no priority for Bellman recursion itself is claimed.

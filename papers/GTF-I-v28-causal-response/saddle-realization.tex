@@ -1,0 +1,312 @@
+\section{Saddle faces and causal realization}
+\label{sec:saddle-realization}
+The statistical saddle and its implementation are different objects.
+The former is convex; the latter need not be. The purpose of this section
+is to retain that distinction while extracting memory obstructions from
+an unrestricted saddle. In particular, a zero Bayes coefficient must not
+be discarded before the contact conditions at the worst parameters have
+been imposed.
+
+\subsection{A normal form over a finite causal interface}
+Fix a finite horizon and finite action and report alphabets. An action
+$a_t$ is chosen before report $y_t$. A terminal output is included as one
+last action, followed by a dummy report. Illegal actions can be removed
+from each protocol type; equivalently, use a fixed padding of the finite
+protocol tree and impose its zero constraints. Define a \emph{causal
+response array} $C(\mathbf a\mid\mathbf y)$ by nonnegativity,
+normalization in $\mathbf a$ for every $\mathbf y$, and the requirement
+that its marginal on $a_1,\ldots,a_t$ depends only on
+$y_1,\ldots,y_{t-1}$. The resulting set $\mathcal C$ is a finite
+polytope. Conditioning successive marginals realizes every such array
+by a full-history randomized controller; arbitrary versions on zero
+marginals do not change the array.
+
+For a fixed parameter $\theta$, the environment has a history-dependent
+likelihood $L_\theta(\mathbf a,\mathbf y)$, obtained by marginalizing
+its hidden states. The bounded reward has the linear form
+\begin{equation}\label{eq:strategic-payoff}
+ g_\theta(C)=\sum_{\mathbf a,\mathbf y}
+ L_\theta(\mathbf a,\mathbf y)r_\theta(\mathbf a,\mathbf y)
+ C(\mathbf a\mid\mathbf y).
+\end{equation}
+Assume its coefficient vector is continuous on a compact metric
+parameter space. The parameter is fixed once, not selected after a
+report. Protocol-specific equalities, including a frozen validation
+choice, are represented by the corresponding finite protocol tree.
+A discarded protocol choice is not supplied again as a free input.
+
+Here is an explicit positive realization of a response array. At cut
+$t$ use $k_t$ states, an initial distribution $\alpha$, and nonnegative
+matrices $M_t^{a,y}$ of size $k_{t-1}$ by $k_t$ such that
+\begin{equation}\label{eq:normalized-instruments}
+ M_t^{a,y}\mathbf1=p_t(a),\qquad
+ \sum_a p_t(a)=\mathbf1,\qquad
+ p_t(a)\text{ is independent of }y.
+\end{equation}
+Then
+\begin{equation}\label{eq:positive-realization}
+ C(\mathbf a\mid\mathbf y)
+   =\alpha M_1^{a_1,y_1}\cdots M_T^{a_T,y_T}\mathbf1.
+\end{equation}
+The independence in \eqref{eq:normalized-instruments} is essential:
+otherwise an action could use its not-yet-observed report. If an action
+or an input must survive an intermediate cut, split this formula at that
+cut and include its buffer in the state alphabet. Likewise, impose any
+declared shared-row constraints before optimizing. An externally fixed
+clock permits time-dependent matrices; an autonomous implementation has
+to store its phase or use the prescribed shared rows.
+
+\begin{proposition}[Outer normal form and compatible continuations]
+\label{prop:outer-normal-form}
+For the finite interface and declared cuts, the response arrays of all
+controllers with profile at most $\mathbf K$ are exactly the arrays
+\eqref{eq:positive-realization} with $k_t\le K_t$, the normalization
+\eqref{eq:normalized-instruments}, and the declared interface constraints.
+This set, denoted $\mathcal C_{\mathbf K}$, is compact. The assertion is
+over all wirings of the allowed register, not one chosen transition graph.
+
+Equivalently, there are at most $K_t$ normalized continuation arrays
+$B_{t,s}$ at each cut, with terminal continuation $1$, and common
+nonnegative coefficients satisfying
+\begin{equation}\label{eq:continuation-shift}
+ B_{t-1,s}(a\mathbf a\mid y\mathbf y)
+   =\sum_{s'}M_t^{a,y}(s,s')B_{t,s'}(\mathbf a\mid\mathbf y),
+ \qquad C=\sum_s\alpha(s)B_{0,s}.
+\end{equation}
+Separate positive factorizations at the cuts are not sufficient without
+these common shift identities.
+\end{proposition}
+\begin{proof}
+In a controller, let $p_t(a\mid s)$ be its action row and
+$q_t(s'\mid s,a,y)$ its update row. Their product defines $M_t^{a,y}$
+and gives \eqref{eq:normalized-instruments}. Multiplication over a
+complete execution gives \eqref{eq:positive-realization}. Every finite
+wiring embeds into the fully connected register by assigning zero to
+unused transitions; smaller alphabets are padded by unused states.
+Thus no further maximization over graph presentations is necessary.
+
+Conversely choose action $a$ with probability $p_t(a\mid s)$, and,
+after observing $y$, use the row
+$M_t^{a,y}(s,s')/p_t(a\mid s)$ when the denominator is positive.
+At a zero denominator the entire corresponding nonnegative row vanishes;
+choose an arbitrary legal update there. This gives exactly the required
+runtime arguments. It does not expose a posterior, the parameter, or an
+offline occupation array to the machine. Apply the same construction at
+each declared buffer cut. A product of finitely many stochastic row
+simplices is compact; closed legality and sharing constraints preserve
+compactness. Its continuous image is $\mathcal C_{\mathbf K}$.
+
+The future execution starting at a state $s$ defines $B_{t,s}$ and
+satisfies \eqref{eq:continuation-shift}. Conversely, induction from the
+terminal continuation and these identities gives the product formula.
+Thus the continuation description has exactly the same realizations.
+In particular, independently selected factorizations at different cuts
+cannot be spliced unless the shift equations hold.
+\end{proof}
+
+This is a finite controlled positive-realization statement. The role of
+positivity and invariant generating cones in stochastic realization is
+classical \cite{Heller,Vidyasagar,GG}. Ordinary linear rank need not be a
+state count. Here the additional statistical question is which positive
+realizations meet an optimal saddle face. Proposition~\ref{prop:outer-normal-form}
+provides a normal form, not an efficient factorization algorithm. It
+also does not compactify an unbounded number of observable operations.
+
+\subsection{The realization theorem}
+Let
+\[
+ U=\max_{C\in\mathcal C}\min_{\theta}g_\theta(C),\qquad
+ V_{\mathbf K}=\max_{C\in\mathcal C_{\mathbf K}}
+                                      \min_\theta g_\theta(C).
+\]
+By compact convex minimax there is a least-favorable prior $\mu_*$ with
+$U=\max_{C\in\mathcal C}\int g_\theta(C)d\mu_*$. Put
+\begin{align}
+ \ell_*(C)&=\int g_\theta(C)d\mu_*,\notag\\
+ F_*&=\{C\in\mathcal C:\ell_*(C)=U\},\notag\\
+ \mathcal S_*&=F_*\cap
+             \bigcap_{\theta}\{C:g_\theta(C)\ge U\}.\label{eq:saddle-face}
+\end{align}
+The set $F_*$ is an exposed face. The second intersection is important:
+a Bayes best response to a least-favorable prior need not be minimax.
+
+Here $\mathcal C$ is the full-history convex reference for the finite
+protocol. A nonconvex restriction, such as reuse of one stochastic table
+at several visits, is imposed on $\mathcal C_{\mathbf K}$, not inserted
+into $\mathcal C$ before invoking convex minimax. In that case $U$ is a
+reference upper value unless exactness for the unrestricted physical
+class is separately known. In the reset applications below that
+exactness is supplied by Theorems~\ref{thm:dual} and \ref{thm:outer}.
+
+
+\begin{proposition}[Bayes loss and worst-case loss]
+\label{prop:loss-decomposition}
+Under the preceding assumptions,
+\begin{equation}\label{eq:resource-loss}
+ U-V_{\mathbf K}=\min_{C\in\mathcal C_{\mathbf K}}
+ \left\{U-\ell_*(C)+
+                  \ell_*(C)-\min_\theta g_\theta(C)\right\}.
+\end{equation}
+Both summands are nonnegative and the minimum is attained.
+\end{proposition}
+\begin{proof}
+The prior average is at most $U$ and at least the minimum over fixed
+parameters. The sum in braces equals $U-\min_\theta g_\theta(C)$.
+Minimizing on the compact realization set proves the assertion.
+\end{proof}
+
+\begin{theorem}[Saddle-face contact and compatible realization]
+\label{thm:saddle-realization}
+Under the preceding assumptions, $V_{\mathbf K}=U$ if and
+only if some array in $\mathcal S_*$ has compatible positive
+continuation generators of profile at most $\mathbf K$.
+If no such generators exist, $V_{\mathbf K}<U$ strictly.
+
+For $C\in\mathcal S_*$ one has $g_\theta(C)=U$ on
+$\supp\mu_*$. At an interior supporting parameter at which the payoff
+is differentiable, $\nabla_\theta g_\theta(C)=0$. These equalities and
+stationarity conditions hold also in directions whose Bayes coefficient
+vanishes.
+
+At any reset continuation cut, let $R_h$ denote the conditional channel
+of future outputs under each externally specified future input word.
+It factors as
+\begin{equation}\label{eq:cut-channel-factor}
+                  R_h=\sum_{s=1}^{K_t}E(s\mid h)B_s,
+ \qquad E(\cdot\mid h)\in\Delta_{K_t},
+\end{equation}
+with one common family of continuation channels $B_s$.
+Any obstruction to this positive factorization for every member of
+$\mathcal S_*$ is therefore a memory obstruction for every admissible
+architecture, regardless of its training wiring.
+\end{theorem}
+\begin{proof}
+By Proposition~\ref{prop:loss-decomposition}, the two nonnegative
+losses vanish exactly when $C$ belongs to $\mathcal S_*$.
+Proposition~\ref{prop:outer-normal-form} then proves the realization
+criterion. Compactness makes nonintersection
+a strictly positive value loss, not merely failure of one optimizer.
+
+For an optimal array, $g_\theta(C)-U$ is continuous, nonnegative, and
+has zero $\mu_*$ integral. It is zero on the support of that measure.
+Every interior zero is a local minimum, so its gradient vanishes.
+No strict-sign hypothesis on individual coordinates is needed.
+Finally condition on the actual retained state at a reset cut. Given
+that state, the future program receives the same specified inputs and
+has the same output law, irrespective of the discarded past. Averaging
+gives \eqref{eq:cut-channel-factor}. All persistent random variables
+are part of that state. The assertion can equivalently be checked on
+controller input tapes, using the generators in
+\eqref{eq:continuation-shift}; it does not assume that a hidden
+physical state resets at a cut where the interface has not reset it.
+\end{proof}
+
+The identity \eqref{eq:resource-loss} is an exact loss decomposition, not
+a new interchange of a minimum and maximum over nonconvex machines.
+Its use is that an unrestricted certificate identifies a finite face,
+while contact at its supporting parameters can determine the remaining
+coordinates. The resulting channels are then tested for causal
+realizability. This is stronger than choosing an arbitrary Bayes tie rule
+and counting the states of that one rule.
+
+\begin{corollary}[Explicit coefficient form for frozen validation]
+\label{cor:coefficient-face}
+In the reset experiment of \eqref{eq:selector}, write
+\[
+ C^*_{z\omega}=\int P_\theta^{\otimes N}(z)
+                  (Q(\omega)-P_\theta(\omega))\,d\mu_*(\theta).
+\]
+The first summand of \eqref{eq:resource-loss} is exactly
+\begin{equation}\label{eq:weighted-face-loss}
+ \sum_{C^*_{z\omega}>0}C^*_{z\omega}(1-h_z(\omega))
+ +\sum_{C^*_{z\omega}<0}|C^*_{z\omega}|h_z(\omega).
+\end{equation}
+Thus optimality fixes every strict-sign coordinate, while the support
+contact and stationarity equations must still be imposed at the zeros.
+For $K$ labels at the post-training decision cut, an arbitrary upstream
+encoder gives the compact relaxation
+\begin{equation}\label{eq:decision-factor}
+ h_z(\omega)=\sum_{s=1}^K E(s\mid z)D_s(\omega),\qquad
+ E\in(\Delta_K)^{\Omega^N},\quad D_s\in[0,1]^\Omega.
+\end{equation}
+If this relaxation misses the saddle set, its strictly positive gap
+bounds every smaller architectural class.
+\end{corollary}
+\begin{proof}
+Maximizing each coefficient separately gives the sum of its positive
+part. Subtraction gives \eqref{eq:weighted-face-loss}. Conditioning on
+the decision state gives \eqref{eq:decision-factor}; the post-cut
+randomization is independent of the discarded word. Conversely an
+arbitrary encoder and a response list realize this factorization when
+other memory is unrestricted. The parameter spaces in
+\eqref{eq:decision-factor} are compact, so the final assertion follows
+from Theorem~\ref{thm:saddle-realization}.
+\end{proof}
+
+\subsection{Faces as memory witnesses}
+For a finite input set $\mathcal Y$ and output alphabet $\mathcal D$,
+continuation channels form the polytope
+$\mathcal P=\prod_{y\in\mathcal Y}\Delta(\mathcal D)$.
+Its vertices are deterministic output functions. The analogous
+polytope for scalar test responses is $[0,1]^{\mathcal Y}$.
+
+\begin{lemma}[Vertex and face packing]\label{lem:face-packing}
+Suppose channels to be factored through one common state alphabet include
+$s$ distinct vertices $v_1,\ldots,v_s$ of a polytope $\mathcal P$ and
+rows $r_1,\ldots,r_j$. Suppose $r_i\in F_i$, the faces $F_i$ are
+pairwise disjoint, and
+\[
+ r_i\notin\conv\{v_a:v_a\in F_i\}.
+\]
+Every factorization of these rows as stochastic mixtures of generators
+in $\mathcal P$ needs at least $s+j$ generators.
+\end{lemma}
+\begin{proof}
+A convex decomposition of a vertex uses that same vertex at every
+positive coefficient. Hence all $s$ vertices must occur among the
+generators. If a convex combination belongs to a face, all generators
+with positive coefficients belong to that face. The stated exclusion
+therefore forces an additional generator in each $F_i$. Pairwise
+disjointness prevents any such generator from serving two faces.
+\end{proof}
+
+The lemma does not assert that a stochastic state must itself be a
+history residual. Its generator can be any channel in the ambient
+polytope. This is why the argument also excludes randomized encoders
+and randomized continuations. It is a positive-factorization argument,
+not ordinary matrix rank or a restriction to a deterministic compiler.
+
+\begin{proposition}[Resource equivalence and stable obstructions]
+\label{prop:saddle-transport}
+A causal, cut-preserving recoding with a causal inverse, both using only
+one transducer state and preserving the payoff, preserves every
+$V_{\mathbf K}$, $U$, and the set of profiles attaining $U$.
+More generally suppose simulations in both directions have defect at
+most $\epsilon$ and require at most $R_t$ states at cut $t$. For rewards
+in $[-1,1]$,
+\[
+ V_{\mathfrak E}(\mathbf R\mathbf K)
+       \ge V_{\mathfrak F}(\mathbf K)-2\epsilon,\qquad
+ V_{\mathfrak F}(\mathbf R\mathbf K)
+       \ge V_{\mathfrak E}(\mathbf K)-2\epsilon.
+\]
+For a common controller class and training--validation kernels whose
+values differ by at most $\eta$, a gap $U-V_{\mathbf K}=\delta$
+remains at least $\delta-2\eta$ after the perturbation.
+\end{proposition}
+\begin{proof}
+Transport a controller through each simulator and retain the product of
+its state and the simulator state. Apply the uniform bounded-reward
+variation bound and optimize. With an exact one-state inverse the two
+inequalities are equalities at the same profile. In the last assertion
+both the unrestricted and the constrained optimum change by at most
+$\eta$; subtract their two bounds. The state products must be applied
+at the actual buffer cuts, not only at the terminal decision.
+\end{proof}
+
+These statements place the saddle face, the future-test quotient, and
+resource-aware causal morphisms in one theorem chain. The channel
+factorizations are presentation-independent under the stated causal
+recodings. The memory obstruction in the next section is derived from
+the experimental coefficients themselves, not from a metric dimension
+or a covering exponent supplied as an additional hypothesis.
