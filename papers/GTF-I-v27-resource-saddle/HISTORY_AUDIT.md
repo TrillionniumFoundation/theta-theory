@@ -1,0 +1,15 @@
+# Historical derivation audit — revision 27
+
+The current review is r10 at `6018ed8f31d758b35eacc48079104e5895fc9591`; the reviewed v26 head is `466bfcdcb8b7d594d3924dbfa82b4c6e29368858`. The remote branch search and review ref were inspected before creating the new branch. The complete r10 report was read, including its explicit withdrawals and its five proposed synthesis routes.
+
+The mathematical audit re-read the v26 foundational, controlled-memory, exact-U2, continuous-family and physical-interface modules, its native assembly/build scheme, and the report's checks. The v23 module inventory was traced through `papers/GTF-I-v23-compatible-frontiers/main.tex`. Three earlier derivations were read in full: `decision-continuations.tex`, `weighted-residuals.tex`, and `joint-residuals.tex`.
+
+Those predecessors matter substantively. The decision-spectrum theorem already supplies the finite-alphabet empirical error mechanism. The weighted-residual theorem already links strict Bayes regret to deterministic residual requirements, and explicitly warns that zero Bayes margins do not force an arbitrary tie rule. The new contact theorem solves that exact obstacle in the U2 exposed face: it uses supporting-parameter equality and stationarity before deriving stochastic positive-generator bounds. The multicut shared-capacity theorem remains a different approximate obstruction; its fixed-schedule likelihood is not silently reused for adaptive data.
+
+The actual preparation -> executable future tests -> predictive continuation -> compatible retained state -> charged causal transport route is retained. It is the route stated in `foundations/general-theta/General_Theta_Foundations_v0.1.md` and the original implementation note, read in the preceding revision context. The present audit does not claim to have independently re-proved every page of the 730-page preserved development.
+
+`ROUND17_PROOF_DEPENDENCY_LEDGER.md` was read at the frozen review commit. It records historical A1 as independent; the Sinai chain A2 -> A3 -> A4 -> C2 -> D1; and the hard-sphere chain B2-GC -> B1 -> B2-MC -> B3 -> B4 -> C1/C2 -> D1. Their model-specific Fourier, LDP, semigroup, range, form, and phase gates are not supplied by finite positive matrices. No such dependency is rewritten.
+
+The new proof edges are local and explicit: U2 saddle + contact-realization -> exact five-state decision memory; the same mechanism on validation output channels -> exact candidate-first serial peak twelve; nearest-experiment localization + derived marked contact growth -> an all-N W2 bound on symmetric least-favorable priors. These strengthen the physical and statistical spine without deleting the older roots.
+
+Preservation is additions-only relative to r10. The assembly pins v26 main by Git blob `c6dcd5f60dfbd34c679961e6afeded933cda3ba4`, copies all eleven substantive modules byte-identically, and records reversible body insertions plus the precise old-width-remark update. Both complete predecessor volumes are appended unaltered. File hashes, page identity and build success are publication checks, not proof certification.
