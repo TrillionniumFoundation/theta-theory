@@ -8,6 +8,7 @@ from __future__ import annotations
 import collections, hashlib, itertools as it, json, math, runpy
 from pathlib import Path
 import sympy as s
+from sympy.polys.matrices import DomainMatrix
 HERE=Path(__file__).resolve().parent
 
 def require(test: bool, message: str) -> None:
@@ -77,7 +78,7 @@ def f22() -> dict:
                 for k,co in enumerate(matrices[v][:,h]):
                     if co: entries[ri[target,k],j]=(-1)**l*co
         A=s.MutableSparseMatrix(len(rows),len(columns),entries)
-        ranks[p,w]=A.to_DM().rank();differentials[p,w]=A
+        ranks[p,w]=DomainMatrix.from_Matrix(A).rank();differentials[p,w]=A
         if (p-1,w) in differentials:
             require(differentials[p-1,w]*A==s.zeros(differentials[p-1,w].rows,A.cols),'Koszul differential squares to zero')
     betti={}
