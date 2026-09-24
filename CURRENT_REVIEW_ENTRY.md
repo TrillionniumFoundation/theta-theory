@@ -1,6 +1,6 @@
 # Canonical A2 referee entry — revision 146
 
-Native sources have been assembled. Build success must be read from the source-bound v146 receipt, not inferred from this source commit.
+Native source: `5d5ce834e24b5c7ba80a9ccf2a63b0a449913c5d`. All 23 executed exact-regression scripts and all three native LaTeX builds passed. See the source-bound receipt; these checks do not certify all proofs or historical priority.
 
 Controlling v144 second report: `d8376b5dbb47422d93a474add8362d39cf2a68c1`. Immediate predecessor: `89edc80cce6fd1801b356313544419d30f377636`.
 
@@ -14,6 +14,6 @@ Controlling v144 second report: `d8376b5dbb47422d93a474add8362d39cf2a68c1`. Imme
 
 [Source lock](papers/A2-v17-boundary-information-coarsening/article/v146/SOURCE_LOCK_V146.json) · [Build receipt](papers/A2-v17-boundary-information-coarsening/article/v146/evidence/BUILD_RECEIPT_V146.json) · [Nondeletion audit](papers/A2-v17-boundary-information-coarsening/article/v146/NONDELETION_V146.json) · [Literature audit](papers/A2-v17-boundary-information-coarsening/article/v146/LITERATURE_AUDIT_V146.md).
 
-New in v146: intrinsic reconstruction of nonconstant pencil subbundles over smooth projective bases; recovery of the actual source bundle; classification of geometric isomorphisms with a filtered nilpotent automorphism kernel; an explicit nonisotrivial family across six spectral collisions. The all-pencil theorem, uniform sharpness, curve theorem and all predecessor mathematical parts are preserved.
+New in v146: an unmarked single-point Artin local inverse, coefficient-support orientation, an explicit local unipotent kernel, and intrinsic reconstruction of nonconstant pencil subbundles over smooth projective bases; recovery of the actual source bundle; classification of geometric isomorphisms with a filtered nilpotent automorphism kernel; an explicit nonisotrivial family across six spectral collisions. The all-pencil theorem, uniform sharpness, curve theorem and all predecessor mathematical parts are preserved.
 
 The complete Ballico 1993 theorem-level six-axis comparison remains documentary-open. No anticipation, nonanticipation, exhaustive priority or editorial-acceptance claim is certified. Earlier revision and review branches are unchanged.
