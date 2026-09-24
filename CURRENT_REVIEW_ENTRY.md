@@ -1,24 +1,18 @@
-# Canonical A2 referee entry — revision 147
+# A2 referee entry — revision 148
 
-Verified native build from source commit ee87f9979de6b6d40038daab9f8cf336fa0b3007. The source-bound receipt records 24 completed regressions, three native PDFs, preservation and layout checks. These do not certify mathematical correctness or priority.
+The complete revision source is published; native build status is recorded only in the v148 build receipt. These checks do not certify universal proofs, historical priority, or journal acceptance.
 
-**Latest independent top-four referee report:** [REFEREE_REPORT.md](reviews/a2-v147-independent-harsh-top4-2026-09-24/REFEREE_REPORT.md)  
-**Report commit:** 280d8757de51226fc008c18ceb1c715b0c266566  
-**Review branch:** review/a2-v147-independent-harsh-top4-2026-09-24  
-**Revision branch reviewed:** revision/a2-v147-intrinsic-family-descent-2026-09-24
+Revision branch: `revision/a2-v148-coefficient-symmetries-moving-pencils-2026-09-24`. Controlling review tip: `17fb7ba7cab6545f5da6d4fcde5283318bd26725`.
+Latest report addressed: [reviews/a2-v147-independent-harsh-top4-2026-09-24/REFEREE_REPORT.md](reviews/a2-v147-independent-harsh-top4-2026-09-24/REFEREE_REPORT.md).
 
-The report recommends rejection in the present form at top-four level, while explicitly finding that v147 materially closes the v146 proof-architecture objections and reveals no new fatal counterexample in the newly added first-relation, group-scheme, actual bundle-descent, or isotrivial-family arguments. The remaining blockers are the unresolved theorem-level Ballico 1993 comparison and the need for a broader structural or pencil-native consequence establishing top-four significance.
+**Principal article:** [geometry.pdf](papers/A2-v17-boundary-information-coarsening/article/v148/geometry.pdf) · [LaTeX](papers/A2-v17-boundary-information-coarsening/article/v148/geometry.tex).
 
-Predecessor controlling report: 855c73b3a0381bebd8d5e0d382fa06125904a73f on review/a2-v146-independent-harsh-top4-2026-09-24.
+[Response to v147](papers/A2-v17-boundary-information-coarsening/article/v148/RESPONSE_TO_V147_REPORT.md) · [Reading guide](papers/A2-v17-boundary-information-coarsening/article/v148/README.md) · [Issue matrix](papers/A2-v17-boundary-information-coarsening/article/v148/ISSUE_MATRIX_V148.json).
 
-**Principal manuscript:** [geometry.pdf](papers/A2-v17-boundary-information-coarsening/article/v147/geometry.pdf) · [LaTeX](papers/A2-v17-boundary-information-coarsening/article/v147/geometry.tex).
+The new results give an intrinsic recognition criterion, exact coefficient stabilizers and transpose ambiguity, including the global zero/full case. They realize the equivalence problem for maps of the projective line inside one fibre orbit of moving quadratic pencils, with identical fibre algebras and all graded vector bundles. All v147 mathematical blocks and source bytes are retained.
 
-[Point-by-point response](papers/A2-v17-boundary-information-coarsening/article/v147/RESPONSE_TO_V146_REPORT.md) · [Reading guide](papers/A2-v17-boundary-information-coarsening/article/v147/README.md) · [Issue matrix](papers/A2-v17-boundary-information-coarsening/article/v147/ISSUE_MATRIX_V147.json).
+[Build receipt](papers/A2-v17-boundary-information-coarsening/article/v148/evidence/BUILD_RECEIPT_V148.json) · [Source lock](papers/A2-v17-boundary-information-coarsening/article/v148/SOURCE_LOCK_V148.json) · [Preservation](papers/A2-v17-boundary-information-coarsening/article/v148/NONDELETION_V148.json) · [Literature audit](papers/A2-v17-boundary-information-coarsening/article/v148/LITERATURE_AUDIT_V148.md).
 
-[Source lock](papers/A2-v17-boundary-information-coarsening/article/v147/SOURCE_LOCK_V147.json) · [Build receipt](papers/A2-v17-boundary-information-coarsening/article/v147/evidence/BUILD_RECEIPT_V147.json) · [Source preservation](papers/A2-v17-boundary-information-coarsening/article/v147/NONDELETION_V147.json) · [Literature audit](papers/A2-v17-boundary-information-coarsening/article/v147/LITERATURE_AUDIT_V147.md).
+[Applications](papers/A2-v17-boundary-information-coarsening/article/v148/applications.pdf) are separate; the [historical archive](papers/A2-v17-boundary-information-coarsening/article/v148/archive-v144.pdf) is non-submitted. Only geometry.pdf is the principal article.
 
-The principal addition is a general unmarked inverse for moving Schur coefficient subspaces, including actual bundle descent. Two isotrivial rank-712 thickenings with the same Artin fibres and the same graded vector bundles are separated by this inverse. The first-relation orbit proposition, represented local automorphism sequence and inverse-system comparison isolate the geometric contribution. All previous all-pencil, local, curve, moving, sharpness and spectral results are retained.
-
-[Separate applications](papers/A2-v17-boundary-information-coarsening/article/v147/applications.pdf) and [non-submitted historical archive](papers/A2-v17-boundary-information-coarsening/article/v147/archive-v144.pdf) remain separate. No other paper is part of the principal submission.
-
-Ballico 1993: the publisher's first page has been inspected, but the complete theorem/proof text has not been obtained. The six-axis full-text comparison remains open. No editorial acceptance or exhaustive priority clearance is asserted.
+**Documentary item still unresolved:** Ballico 1993 full theorem/proof text was not obtained. The six-axis comparison remains open; no claim that the new mathematics settles historical priority is made.
