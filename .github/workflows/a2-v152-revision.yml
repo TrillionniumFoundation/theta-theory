@@ -1,0 +1,129 @@
+name: A2 v152 conductor and genuine boundary verification
+on:
+  push:
+    branches: [revision/a2-v152-divisor-conductor-collision-geometry-2026-09-24]
+    paths:
+      - '.github/workflows/a2-v152-revision.yml'
+      - '.revision-bootstrap/a2-v152-2026-09-24/**'
+      - 'papers/A2-v17-boundary-information-coarsening/article/v152/**'
+permissions:
+  contents: write
+concurrency:
+  group: a2-v152-isolated-publication
+  cancel-in-progress: false
+jobs:
+  verify-and-publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      P: papers/A2-v17-boundary-information-coarsening/article/v152
+      PREDECESSOR: 11c9e91135c5e8bb3ee61a067d76286d81a3df7d
+      TARGET_BRANCH: revision/a2-v152-divisor-conductor-collision-geometry-2026-09-24
+      OPENBLAS_NUM_THREADS: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Verify exact source transfer and untouched controlling review
+        run: |
+          git diff --exit-code "$PREDECESSOR" -- papers/A2-v17-boundary-information-coarsening/article/v151 reviews/a2-v151-independent-harsh-top4-2026-09-24/REFEREE_REPORT.md
+          python - <<'PY'
+          import base64,hashlib,json,lzma,os
+          from pathlib import Path,PurePosixPath
+          root=Path('.revision-bootstrap/a2-v152-2026-09-24')
+          expected=['e2a279e3f7db54c86ae11d964366d3c99a316d01','0dcab72872ed124252b998c19fa6f6b67bc8209c','4b0698414bc772e11087603edbfc5764936e4521']
+          chunks=[]
+          for i,want in enumerate(expected,1):
+              b=(root/f'payload-{i:02}.b64').read_bytes()
+              got=hashlib.sha1(b'blob '+str(len(b)).encode()+b'\0'+b).hexdigest()
+              if got!=want: raise SystemExit(f'Transport hash mismatch: chunk {i}')
+              chunks.append(b)
+          compressed=base64.b64decode(b''.join(chunks),validate=True)
+          if hashlib.sha256(compressed).hexdigest()!='0d20e6ede200ff43c4f80f2fad995cddabd389a834053efdd0b54a5a23b4dd97':
+              raise SystemExit('Compressed source SHA256 mismatch')
+          raw=lzma.decompress(compressed)
+          if hashlib.sha256(raw).hexdigest()!='9b8f356a96ab60160a48a4306df21813bf27627ac5040248f3e09b0f95337d85':
+              raise SystemExit('Uncompressed source SHA256 mismatch')
+          source=json.loads(raw);p=Path(os.environ['P']);base=p.parent/'v151';p.mkdir(parents=True,exist_ok=True)
+          def safe(name):
+              rel=PurePosixPath(name)
+              if rel.is_absolute() or '..' in rel.parts or rel.suffix not in {'.tex','.py','.sh','.md','.json'}:
+                  raise SystemExit('Unsafe source path: '+name)
+              return rel
+          for name,value in source.items():
+              safe(name)
+              if isinstance(value,str): text=value
+              else:
+                  old=(base/safe(value['base'])).read_bytes()
+                  if hashlib.sha256(old).hexdigest()!=value['base_sha256']: raise SystemExit('Predecessor hash mismatch: '+name)
+                  lines=old.decode().splitlines(keepends=True);edits=value['edits'];last=0
+                  for i,j,t in edits:
+                      if not(isinstance(i,int) and isinstance(j,int) and isinstance(t,str) and last<=i<=j<=len(lines)):
+                          raise SystemExit('Invalid source edit: '+name)
+                      last=j
+                  for i,j,t in reversed(edits): lines[i:j]=[t]
+                  text=''.join(lines)
+              dest=p/name;dest.parent.mkdir(parents=True,exist_ok=True);dest.write_text(text)
+          print('Verified and reconstructed',len(source),'revision source files.')
+          PY
+      - name: Publish complete native mathematical source on the isolated branch
+        run: |
+          python "$P/revision_v152.py" assemble
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f "$P" CURRENT_REVIEW_ENTRY.md
+          python - <<'PY'
+          import os,subprocess
+          names=subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines()
+          if any(not(n.startswith(os.environ['P']+'/') or n=='CURRENT_REVIEW_ENTRY.md') for n in names):
+              raise SystemExit('Unexpected staged path; refusing source publication')
+          PY
+          if ! git diff --cached --quiet; then
+            git commit -m 'source(A2 v152): conductor singularities and genuine pencil failure boundary [skip ci]'
+            git push origin "HEAD:refs/heads/$TARGET_BRANCH"
+          fi
+          echo "A2_SOURCE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - name: Install native mathematics build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+          python -m pip install sympy==1.14.0 numpy==2.3.5
+      - name: Run all 28 regressions and native principal, applications and archive builds
+        run: |
+          python "$P/revision_v152.py" build
+      - name: Publish source-bound PDFs and complete verification evidence
+        run: |
+          git diff --exit-code "$PREDECESSOR" -- papers/A2-v17-boundary-information-coarsening/article/v151 reviews/a2-v151-independent-harsh-top4-2026-09-24/REFEREE_REPORT.md
+          git add -f "$P/geometry.pdf" "$P/applications.pdf" "$P/archive-v144.pdf"
+          git add -f "$P/geometry-labels.aux" "$P/applications-labels.aux" "$P/archive-v144-labels.aux"
+          git add -f "$P/evidence_v152" "$P/SOURCE_LOCK_V152.json" "$P/NONDELETION_V152.json" "$P/PROVENANCE_MANIFEST_V152.json" CURRENT_REVIEW_ENTRY.md
+          python - <<'PY'
+          import os,subprocess
+          names=subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines()
+          if any(not(n.startswith(os.environ['P']+'/') or n=='CURRENT_REVIEW_ENTRY.md') for n in names):
+              raise SystemExit('Unexpected staged path; refusing evidence publication')
+          PY
+          if ! git diff --cached --quiet; then
+            git commit -m "build(A2 v152): verified 28 regressions and native PDFs from $A2_SOURCE_COMMIT [skip ci]"
+            git push origin "HEAD:refs/heads/$TARGET_BRANCH"
+          fi
+          mkdir -p publication
+          git archive HEAD "$P" CURRENT_REVIEW_ENTRY.md | tar -x -C publication
+          printf 'source_commit=%s\npublication_commit=%s\n' "$A2_SOURCE_COMMIT" "$(git rev-parse HEAD)" > publication/REMOTE_COMMITS.txt
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: a2-v152-verified-native-publication
+          path: publication
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: a2-v152-failure-diagnostics
+          path: papers/A2-v17-boundary-information-coarsening/article/v152/evidence_v152
+          if-no-files-found: ignore
+          retention-days: 7
