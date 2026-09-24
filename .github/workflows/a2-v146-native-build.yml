@@ -1,0 +1,94 @@
+name: A2 v146 moving-pencil revision native build
+on:
+  push:
+    branches: ['revision/a2-v146-referee-proof-completion-2026-09-24']
+    paths:
+      - '.revision-bootstrap/a2-v146/**'
+      - '.github/workflows/a2-v146-native-build.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: a2-v146-native-build
+  cancel-in-progress: false
+jobs:
+  verify-and-publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      BRANCH: revision/a2-v146-referee-proof-completion-2026-09-24
+      P: papers/A2-v17-boundary-information-coarsening/article/v146
+      OPENBLAS_NUM_THREADS: '1'
+      SYMPY_GROUND_TYPES: flint
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Assemble and push the complete native source first
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git merge-base --is-ancestor 89edc80cce6fd1801b356313544419d30f377636 HEAD
+          git merge-base --is-ancestor d8376b5dbb47422d93a474add8362d39cf2a68c1 HEAD
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          python .revision-bootstrap/a2-v146/revision_v146.py assemble
+          test "$(git ls-remote origin "refs/heads/$BRANCH" | cut -f1)" = "$GITHUB_SHA"
+          git add -A -f -- "$P" CURRENT_REVIEW_ENTRY.md
+          git commit -m 'A2 v146: native moving-pencil inverse, actual bundle recovery, automorphism kernel and preserved referee response [skip ci]'
+          git push origin "HEAD:$BRANCH"
+          SOURCE=$(git rev-parse HEAD)
+          echo "A2_SOURCE_COMMIT=$SOURCE" >> "$GITHUB_ENV"
+          echo "$SOURCE" > /tmp/a2-v146-source-commit.txt
+      - name: Install native LaTeX and exact-arithmetic dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+          python -m pip install --disable-pip-version-check sympy==1.14.0 numpy==2.3.5 python-flint
+      - name: Run all 22 scripts and compile three manuscripts
+        run: |
+          set -euo pipefail
+          bash "$P/build.sh" 2>&1 | tee /tmp/a2-v146-build.log
+      - name: Publish verified native PDFs and source-bound review entry
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ['P'])
+          r=json.loads((p/'evidence/BUILD_RECEIPT_V146.json').read_text())
+          assert r['all_checks_pass']
+          assert r['executed_script_count']==22
+          assert r['source_commit']==os.environ['A2_SOURCE_COMMIT']
+          assert r['predecessor_commit']=='89edc80cce6fd1801b356313544419d30f377636'
+          assert not r['historical_priority_certified']
+          assert not r['Ballico_1993_full_text_comparison_completed']
+          PY
+          test "$(git ls-remote origin "refs/heads/$BRANCH" | cut -f1)" = "$A2_SOURCE_COMMIT"
+          git add -A -f -- "$P/geometry.pdf" "$P/applications.pdf" "$P/archive-v144.pdf" "$P/evidence" "$P/SOURCE_LOCK_V146.json" "$P/PROVENANCE_MANIFEST_V146.json" "$P/NONDELETION_V146.json" CURRENT_REVIEW_ENTRY.md
+          git commit -m 'A2 v146: publish three verified native PDFs, 22-check receipt and immutable-source referee entry [skip ci]'
+          git push origin "HEAD:$BRANCH"
+          git rev-parse HEAD > /tmp/a2-v146-publication-commit.txt
+      - name: Package native referee sources and build diagnostics
+        if: always()
+        run: |
+          if test -d "$P"; then
+            tar --exclude='__pycache__' --exclude='*.pyc' -czf /tmp/a2-v146-referee-bundle.tar.gz "$P" CURRENT_REVIEW_ENTRY.md
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: a2-v146-native-referee-bundle
+          path: |
+            /tmp/a2-v146-referee-bundle.tar.gz
+            /tmp/a2-v146-source-commit.txt
+            /tmp/a2-v146-publication-commit.txt
+            /tmp/a2-v146-build.log
+            .revision-bootstrap/a2-v146
+          retention-days: 30
+          include-hidden-files: true
+          if-no-files-found: warn
