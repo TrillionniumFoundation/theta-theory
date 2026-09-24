@@ -1,0 +1,169 @@
+\section{A self-contained collision interface}
+\label{sec:physical-bridge}
+We give the preparation, mechanical estimate, observation law and
+private simulator class needed for the physical specialization. The
+following argument does not appeal to an unpublished physical lemma.
+It retains the same positive-volume preparation and positive sensor
+noise as the earlier collision construction.
+
+\begin{definition}[The reset row--event architecture]
+\label{def:physical-class}
+A preparation supplies two sequential report slots and, afterwards, an
+actual mark. The source reports in the two slots are constant. A private
+width-one simulator has no retained information between those slots
+and no persistent hidden seed. It may use fresh independent coins.
+Its first emission is $X_1\sim\Ber(p)$; after receiving the current
+gate $A\in\{0,1\}$, its second emission has a fixed Bernoulli kernel
+with parameter $q_A$. The parameters $(p,q_0,q_1)$ are fixed throughout
+the audit. The simulator does not observe the actual mark. All its
+coins are independent of that mark. Different preparations reset all
+unretained variables and are independent conditional on the parameters.
+
+The auditor observes the first report, chooses a gate using its retained
+state and that report, observes the second report, and then observes the
+mark. During training it may choose rows and stop adaptively, using at
+most the declared number of candidate preparations. It next freezes
+one gate policy and one event, with any retained random choice included
+in its register. It uses that same row--event continuation on one fresh
+candidate preparation and one independent target preparation and returns
+the difference of their event indicators, target minus candidate.
+It may not reselect the event after either validation. Independent
+target-only calibration is allowed but all retained calibration and
+randomness are charged. Peak width counts every bit, mark, event and
+validation-accumulator cut. Clocked schedules are declared externally;
+an autonomous implementation must retain its phase. An unretained
+transcript, seed or stopping-time value is not available to a continuation.
+\end{definition}
+
+In the all-on row the complete private law is $b(p,q_1)$, with an
+independent fair actual mark. For lower bounds it suffices to restrict
+the adversary to $q_0=0$, $q_1=q$. In this subfamily every deterministic
+gate policy is the pushforward
+\[
+ T_g(x_1,x_2,w)=(x_1,g(x_1)x_2,w)
+\]
+of $b(p,q)$. The gate, when included in the transcript, is another
+function of these same coordinates. Randomized gate policies are
+covered by averaging their independent random tables. This proves
+both the all-on product characterization for the upper construction
+and the common-garbling subfamily used for the outer converse. The
+width-one constraint is a simulator constraint; it is not an uncharged
+restriction on the auditor's register.
+
+\subsection{Preparation and elastic scattering}
+Consider two labeled equal-mass hard spheres in $\mathbb R^3$, with no
+walls and contact distance $d$. Write $r=q_1-q_2$, $g=v_1-v_2$,
+$V=(v_1+v_2)/2$, and let the center of mass position range over any fixed
+rational box of positive volume. Prepare $(B,W)\in\{0,1\}^2$ with
+probability $5/16$ at $B=W$ and $3/16$ at $B\ne W$. Conditional on
+$(B,W)$, use the uniform product preparation on the following boxes:
+\begin{align}
+ r&=(-a_0,(2B-1)b_0,c_0),&
+ a_0&\in[29/10,31/10],& b_0&\in[9/20,11/20],\notag\\
+ |c_0|&\le1/100,&g_x&\in[19/10,21/10],&
+ |g_y|,|g_z|&\le1/100,\label{eq:local-packets}\\
+ |V_x|,|V_y|&\le1/100,&&&|V_z-(2W-1)|&\le1/100.\notag
+\end{align}
+Thus the actual mark is $W=\mathbf1_{\{V_z>0\}}$, preserved by momentum
+conservation. Set
+\[
+ h(z)=\operatorname{sgn}(z)\min\{1,(|z|-1/4)_+\}.
+\]
+This is a bounded $1$-Lipschitz detector, identically zero on the incoming
+transverse-velocity range.
+
+\begin{lemma}[Uniform collision signal]\label{lem:local-scattering}
+For every preparation in \eqref{eq:local-packets} and every
+$9/10\le d\le11/10$, exactly one collision occurs and its time lies in
+$(4/5,3/2)$. Afterwards
+\[
+             (2B-1)v_{1,y}>1/2,\qquad (2B-1)h(v_{1,y})>1/4.
+\]
+For $0<d\le2/5$ no collision occurs on $[0,3]$ and the detector is zero
+throughout that interval.
+\end{lemma}
+\begin{proof}
+Before contact, $r(t)=r+tg$. At $t\le4/5$ its $x$ coordinate is at
+most $-29/10+(4/5)(21/10)=-61/50$, so its norm exceeds $11/10$.
+At $t=3/2$ its absolute coordinate bounds are $1/4$, $113/200$ and
+$1/40$, whose squared sum is less than $(9/10)^2$. The first contact
+therefore occurs in the claimed interval. At the free zero of the
+$x$ coordinate, whose time is at most $31/19$, the transverse norm is
+less than $9/10$. Hence the entry contact has $n_x<0$, where
+$n=r(t_c)/d$. Its remaining coordinates give
+\[
+ |n_x|^2\ge1-\frac{(113/200)^2+(1/40)^2}{(9/10)^2}>(77/100)^2,
+ \qquad (2B-1)n_y\ge87/220.
+\]
+It follows that $-g\cdot n>(19/10)(77/100)-2/100=1443/1000$.
+The elastic rule gives
+\[
+ v_1^+=V+g/2-(g\cdot n)n,\qquad g^+=g-2(g\cdot n)n.
+\]
+Consequently
+\[
+ (2B-1)v_{1,y}^+>-3/200+(1443/1000)(87/220)>1/2.
+\]
+The definition of $h$ implies the signal bound. Since
+$r(t_c)\cdot g^+>0$, squared separation increases strictly afterwards;
+there is no second collision. Finally, for $d\le2/5$ and $0\le t\le3$,
+$|(r+tg)_y|\ge9/20-3/100=21/50>d$. There is no contact, and the
+incoming $|v_{1,y}|\le3/200$ makes $h$ zero.
+\end{proof}
+
+\subsection{Positive noise and the actual mark}
+Let $\mathcal B_t$ be Brownian motion independent of the preparation and
+set
+\[
+ Y_t=\int_0^t h(v_{1,y}(s))\,ds+\sigma\mathcal B_t,
+                  \qquad 0<\sigma\le1/24.
+\]
+The two potential all-on reports are
+\[
+ Z_1=\mathbf1_{\{2(Y_2-Y_{3/2})>0\}},\qquad
+ Z_2=\mathbf1_{\{2(Y_3-Y_{5/2})>0\}}.
+\]
+The actual second report is $AZ_2$. The gate changes acquisition, not
+the mechanical path. The continuous path is implemented by the target
+sensor; it is not made available to the private simulator or supplied
+as an uncharged auditor buffer. Denote the law of $(Z_1,Z_2,W)$ by
+$Q_{d,\sigma}$.
+
+\begin{theorem}[Uniform physical presentation]\label{thm:local-physical}
+For $9/10\le d\le11/10$ and $0<\sigma\le1/24$,
+\begin{equation}\label{eq:local-tv}
+                    \TV(Q_{d,\sigma},Q_*)<1/300.
+\end{equation}
+The same estimate holds after every declared feedback gate, including
+its observable gate value. The all-on private product family and the
+common-garbling subfamily in Definition~\ref{def:physical-class} apply
+to this very experiment.
+\end{theorem}
+\begin{proof}
+Every collision occurs before $3/2$. Conditional on the preparation,
+the two normalized sensor windows are independent Gaussians with mean
+$h(v_{1,y}^+)$ and standard deviation $\sqrt2\sigma\le1/12$.
+Lemma~\ref{lem:local-scattering} makes their means have sign $2B-1$
+and magnitude greater than $1/4$. Each potential report therefore
+differs from $B$ with probability less than $\Phi(-3)$.
+The Gaussian tail estimate
+\[
+ \Phi(-x)\le\frac{e^{-x^2/2}}{x\sqrt{2\pi}}
+\]
+gives $\Phi(-3)<1/600$: $e^{9/2}>80$ and $\sqrt{2\pi}>5/2$
+suffice. Couple the ideal and noisy reports using the same preparation,
+actual mark and gate random table. Except on a set of probability less
+than $2\Phi(-3)<1/300$, both potential reports equal $B$ and the entire
+gated transcript agrees. The ideal marked law is precisely $Q_*$,
+by the prepared $(B,W)$ table. This proves \eqref{eq:local-tv} and the
+feedback-uniform version. Finally, the source is blind, its actual mark
+is unobserved by the simulator, and the gate is its only current input
+at the second emission. The product and subfamily assertions follow
+from the two independent private-emission kernels specified above.
+\end{proof}
+
+For $d\le2/5$, the two windows instead contain only independent centered
+Gaussian noise. Their signs are independent fair bits, independent of
+$W$, and a private width-one simulator reproduces every gated row
+exactly. Thus the informative regime and its no-collision control use
+the same detector, preparation convention and actual mark.

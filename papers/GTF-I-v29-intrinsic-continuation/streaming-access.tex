@@ -1,0 +1,186 @@
+\section{A scalable full-support experiment with two exact memory laws}
+\label{sec:access29}
+We next keep the final answer alphabet binary while the preparation
+length grows. This distinguishes intrinsic positive memory from
+ordinary predictive dimension, and gives an exact causal construction
+rather than a checkpoint factorization alone.
+
+An input $x=(x_1,\ldots,x_n)\in\{-1,1\}^n$ is fixed. Each coordinate
+can be read once during acquisition. After acquisition an external
+query $j\in[n]$ arrives as one atomic symbol, and a bit $B\in\{-1,1\}$
+is emitted. For a specified $0\le\eta\le1$, the required experiment is
+\begin{equation}\label{eq:access-law29}
+             \Pr(B=b\mid x,j)=\frac{1+b\eta x_j}{2}.
+\end{equation}
+Acquisition may choose the next unread coordinate using the retained
+state. At the query cut the entire acquisition transcript has been
+discarded except for that state. Neither a public persistent seed nor
+a transcript of the chosen order is given to the decoder. The external
+round number is a declared clock; any data-dependent schedule variables
+must be stored. The output is sampled in the update receiving $j$,
+so $j$ need not be buffered after that update. Exact arbitrary stochastic
+rows are atomic, as in the preceding realization theorems.
+
+Let $W_n(\eta)$ be the least whole-schedule peak over these controllers.
+Let $K_n(\eta)$ be the least number of states just before the query,
+without an upstream cap. For $0<\eta<1$ every required answer probability
+has full support. Equality with \eqref{eq:access-law29} is required for
+every input and every query; an average success criterion is different.
+
+\begin{theorem}[Linear and exponential exact memory regimes]
+\label{thm:access29}
+For every integer $n\ge1$,
+\begin{align}
+ K_n(\eta)=W_n(\eta)&=n+1,
+       &&0<\eta\le n^{-2},\label{eq:access-weak29}\\
+ K_n(\eta)=W_n(\eta)&=2^n,
+       &&1-n^{-1}<\eta\le1.\label{eq:access-strong29}
+\end{align}
+In the weak-signal regime a fixed-order streaming controller has exactly
+$t+1$ states after $t$ input bits, simultaneously for $0\le t\le n$.
+For that fixed order these counts are minimal. Both peak lower bounds
+hold for arbitrary adaptive acquisition schedules. The two displayed
+regimes are not asserted to exhaust the intermediate parameter range.
+\end{theorem}
+
+\subsection{The intrinsic checkpoint geometry}
+For a query-state $s$, write $z_s(j)=\E[B\mid s,j]\in[-1,1]$.
+An encoder gives \eqref{eq:access-law29} exactly if and only if
+\begin{equation}\label{eq:cube-factor29}
+                     \eta x=\sum_s E(s\mid x)z_s
+              \quad\hbox{for every }x\in\{-1,1\}^n.
+\end{equation}
+Thus $K_n(\eta)$ equals the smallest number of points in $[-1,1]^n$
+whose convex hull contains $[-\eta,\eta]^n$. Necessity is conditioning
+on the state. Conversely any such containment supplies a stochastic
+encoder and binary decoder. This is a normalized nested-polytope
+formulation, not an identification with unrestricted matrix rank
+\cite{GG}. It says nothing by itself about the memory needed to compute
+the encoder online.
+
+For $\eta>0$, the inner cube has affine dimension $n$, whence
+\begin{equation}\label{eq:access-rank29}
+                          K_n(\eta)\ge n+1.
+\end{equation}
+Equivalently, the matrix in \eqref{eq:access-law29}, with input words
+as rows and pairs $(j,b)$ as columns, has ordinary rank $n+1$.
+Adaptive acquisition cannot evade \eqref{eq:cube-factor29}: after the
+barrier there is still only one retained state law for each complete
+input, and the same decoder on every input.
+
+\subsection{A compatible sequence of enclosing simplices}
+We construct the encoder using only a label, never a stored real vector.
+For $t\ge1$ put $b_t=t\eta$ and define
+\begin{equation}\label{eq:access-simplex29}
+ P_t=\{z\in\mathbb R^t:z_i\ge-b_t,\ \sum_{i=1}^t z_i\le b_t\}.
+\end{equation}
+Its vertices are $v_{t,0}=(-b_t,\ldots,-b_t)$ and
+$v_{t,i}=v_{t,0}+(t+1)b_t e_i$, $1\le i\le t$.
+The distinguished coordinate of $v_{t,i}$ is $t^2\eta$ and its other
+coordinates are $-t\eta$. Therefore $P_t\subset[-1,1]^t$ when
+$\eta\le n^{-2}$ and $t\le n$. Set $P_0=\{()\}$.
+The key causal inclusion is
+\begin{equation}\label{eq:access-nesting29}
+                    P_t\times\{-\eta,\eta\}\subset P_{t+1}.
+\end{equation}
+Indeed old coordinates are at least $-t\eta$, the new coordinate is at
+least $-\eta$, and the new sum is at most $t\eta+\eta=b_{t+1}$.
+For $w\in P_t$ its barycentric coordinates are
+\begin{equation}\label{eq:access-bary29}
+ \lambda_0(w)=\frac{b_t-\sum_iw_i}{(t+1)b_t},\qquad
+ \lambda_i(w)=\frac{w_i+b_t}{(t+1)b_t}\quad(1\le i\le t).
+\end{equation}
+They are nonnegative, sum to one, and reconstruct $w$.
+
+\begin{proof}[Proof of \eqref{eq:access-weak29}]
+At time $t$ the register is an index $s\in\{0,\ldots,t\}$.
+After bit $x_{t+1}$, replace it by index $s'$ sampled from the
+barycentric coordinates of $(v_{t,s},\eta x_{t+1})$ in $P_{t+1}$.
+These are legal rows by \eqref{eq:access-nesting29}. Induction gives
+\[
+ \sum_s\Pr(s\mid x_1,\ldots,x_t)v_{t,s}
+                         =\eta(x_1,\ldots,x_t).
+\]
+Given the final state $s$ and query $j$, draw the answer with mean
+$v_{n,s}(j)$. This is a valid binary row because $P_n\subset[-1,1]^n$.
+The preceding identity proves \eqref{eq:access-law29} exactly.
+It also proves the entire online implementation, not just existence
+of a final stochastic matrix. The real vectors in the proof are
+read-only row descriptions; the machine stores only their indices.
+No past coin, real accumulator, or chosen-input transcript survives
+outside the register. Formula~\eqref{eq:access-bary29} shows that all
+acquisition rows are rational and independent of $\eta>0$, because
+that common factor cancels. Only the final decoder depends on the
+specified signal strength.
+
+The peak is $n+1$; sampling and retaining the final binary answer uses
+two states. Bound~\eqref{eq:access-rank29} gives the converse even with
+adaptive acquisition. For a fixed acquisition order, after $t$ bits
+fix all future input bits and consider queries among the first $t$
+coordinates. The resulting continuation rows have affine dimension
+$t$, forcing $t+1$ states at that cut. This proves simultaneous
+minimality of the claimed streaming profile.
+\end{proof}
+
+\subsection{A geometry stronger than rank}
+\begin{proof}[Proof of \eqref{eq:access-strong29}]
+For a corner $x$ and a possible generator $z\in[-1,1]^n$, set
+\[
+                        d_x(z)=\frac12\sum_{i=1}^n(1-x_i z_i).
+\]
+Equation~\eqref{eq:cube-factor29} implies that its average under the
+encoder for $x$ is $n(1-\eta)/2<1/2$. Hence some used generator has
+$d_x(z)<1/2$. For distinct corners $x,x'$, at a coordinate where they
+differ the two corresponding summands add to one; all other summands
+are nonnegative. Thus $d_x(z)+d_{x'}(z)\ge1$, and no generator can
+serve both corners. All $2^n$ corners need distinct generators.
+Retaining the entire input word and then applying the single noisy
+query row gives the upper bound $2^n$. The factorization argument is
+independent of the acquisition order or its internal randomization.
+\end{proof}
+
+For $n\ge2$, both exact regimes contain full-support laws. In the
+strong regime the ordinary rank is only $n+1$, but the exact causal
+memory is $2^n$. In the weak regime the nested simplices attain that
+rank with a compatible streaming implementation. Thus neither support
+alone nor linear dimension alone determines exact memory.
+In persistent bits these two regimes give respectively
+$\lceil\log_2(n+1)\rceil$ and $n$.
+At $\eta=0$ the query-state complexity is one; the peak is two if the
+emitted answer must be held for a charged output cut. Every nonzero
+weak signal has query-state complexity $n+1$, despite full support
+and uniform convergence to the fair-output channel as $\eta\downarrow0$.
+
+\begin{proposition}[Known rows, approximation, and a strict rank margin]
+\label{prop:access-approx29}
+The input-independent fair-output channel has rowwise total-variation
+error $\eta/2$ in approximating \eqref{eq:access-law29}.
+For $n\ge2$, any approximation factoring through at most $n$ query
+states has worst rowwise error at least $\eta/(2\sqrt n)$.
+The exact state counts in Theorem~\ref{thm:access29} refer to known
+$\eta$ and atomic stochastic rows, not to an unknown calibration or
+a fixed-length finite fair-bit implementation.
+\end{proposition}
+\begin{proof}
+The first assertion is the binary total-variation formula. For the
+second, form the $2^n$ by $2n$ probability matrix $A$. Its nonzero
+singular values are $\sqrt{n2^{n-1}}$ and
+$\eta\sqrt{2^{n-1}}$ with multiplicity $n$. This follows by using the
+orthogonal row functions $1,x_1,\ldots,x_n$ and, in each query block,
+the orthogonal column vectors $(1,1)$ and $(1,-1)$.
+A matrix of rank at most $n$ differs from $A$ in Frobenius norm by at
+least its smallest nonzero singular value. If every binary-query row
+has total-variation error at most $\delta$, each pair contributes at
+most $2\delta^2$, so the squared Frobenius error is at most
+$2n2^n\delta^2$. The claimed bound follows. This is only an
+approximation bound, not an assertion that the two sides match.
+\end{proof}
+
+Random-access coding is a classical communication task
+\cite{ALMO,RAC2026,Liu2026}. Equation~\eqref{eq:access-law29}
+fixes every conditional decoding probability, not merely a lower bound
+on worst-case success or an average over inputs and queries. The new
+causal assertion made here is the exact finite-horizon profile from
+\eqref{eq:access-nesting29}, together with lower bounds that survive
+adaptive acquisition and all persistent-randomness accounting. No
+priority claim for the communication model or for convex coding is made.

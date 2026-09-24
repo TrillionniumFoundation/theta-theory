@@ -1,0 +1,115 @@
+\section{Integer memory and the failure of a naive partition formula}
+\label{sec:integer-revelation}
+The divisibility assumptions in Theorem~\ref{thm:joint-law} can be
+removed, but a balanced-partition Bayes bound must not be mistaken for
+a minimax equality when a persistent random partition is not free.
+This distinction leads to another exact finite-resource transition.
+
+Keep the revelation interface, but allow any integers $m\ge2$ and
+$1\le K\le m$. Put $\rho=1-(1-\alpha)^N$, and denote the genuine
+$K$-label minimax value by $V^{\rm er}_{N,m}(K)$. Write
+$m=Kq+s$, $0\le s<K$, and set
+\begin{equation}\label{eq:balanced-integer}
+ B_{m,K}=1-\frac{(K-s)q^2+s(q+1)^2}{m^2}.
+\end{equation}
+Here and below all-erasure initialization randomness is a state
+initialization, not an unrecorded seed used again at validation.
+
+\begin{proposition}[Arbitrary integer alphabet bounds and low-reveal equality]
+\label{prop:integer-erasure}
+The optimal uniform-prior Bayes score is $\rho B_{m,K}$. The minimax
+value satisfies
+\begin{equation}\label{eq:integer-bounds}
+ V^{\rm er}_{N,m}(K)\le
+ \min\left\{\rho B_{m,K},\;1-\frac{\lceil m/K\rceil}{m}\right\}.
+\end{equation}
+If $\rho\le m/(m+s)$, equality with the first term holds. At perfect
+revelation $\rho=1$ the exact value is the second term. In particular,
+when $s>0$ the uniform-prior Bayes optimum at perfect revelation is
+strictly larger than the minimax value.
+\end{proposition}
+\begin{proof}
+The all-erasure decomposition \eqref{eq:erasure-channel} holds without
+any divisibility condition. Its parameter-independent part has zero
+uniform-prior score. Optimizing the other part over responses gives a
+convex function of its stochastic channel. A deterministic channel with
+fiber sizes $n_j$ has Bayes score $1-\sum_j(n_j/m)^2$. If two nonempty
+fiber sizes differ by at least two, moving one index from the larger
+to the smaller strictly decreases the sum of squares. Allowing empty
+fibers and repeating gives sizes $q$ and $q+1$, proving the Bayes bound.
+It is attained by this partition and its complementary events, with
+any parameter-independent initialization. This proves the first upper
+bound as well as the asserted Bayes optimum.
+
+For perfect revelation, fix any $K$ response vectors. For each known
+parameter choose a response maximizing its score; this deterministic
+assignment cannot decrease any parameter's payoff, even when the
+original encoder was randomized. Some assigned fiber has size at least
+$\lceil m/K\rceil$. Averaging its parameters, the score of their common
+response is at most the total variation between the uniform target
+and the uniform law on that fiber, namely $1-|\text{fiber}|/m$.
+The minimum is no larger. Balanced fibers with their complementary
+events attain the resulting upper bound. A perfectly informed encoder
+can simulate any less informative encoder, so this is an upper bound
+at every $\rho$.
+
+For the low-reveal equality let balanced fibers have weights $w_j=n_j/m$.
+When $\rho<1$, initialize their label register with probabilities
+\begin{equation}\label{eq:integer-initial}
+ r_j=\frac{\rho w_j+(1-2\rho)/K}{1-\rho}.
+\end{equation}
+These sum to one, and are nonnegative precisely throughout the stated
+range: the smallest numerator is $\rho q/m+(1-2\rho)/K$.
+On a revealed parameter overwrite the label by its fiber; on erasure
+do nothing. No revelation flag is retained. For a parameter in fiber
+$i$, the complementary-event score is
+\begin{align*}
+ g_i&=\rho(1-w_i)+(1-\rho)\left(r_i-\sum_jr_jw_j\right)\\
+    &=\rho\left(1-\sum_jw_j^2\right)=\rho B_{m,K}.
+\end{align*}
+This matches the upper bound uniformly in the fixed parameter. If
+$\rho=1$ and $s=0$, the deterministic revealed label already attains
+that value, so the singular denominator in \eqref{eq:integer-initial}
+is not used. Finally, with unequal balanced fibers the weighted average
+of their sizes is strictly smaller than the largest size; equivalently
+$B_{m,K}>1-\lceil m/K\rceil/m$. This proves the last assertion.
+\end{proof}
+
+\begin{theorem}[The complete two-label revelation law]\label{thm:two-label-erasure}
+For every $m\ge2$, every $N\ge0$, and $0<\alpha<1$, set
+$w=\lfloor m/2\rfloor/m$ and $b=\lceil m/2\rceil/m$. Then
+\begin{equation}\label{eq:two-label-erasure}
+ V^{\rm er}_{N,m}(2)=\min\{2wb\rho,\;w\},
+                 \qquad \rho=1-(1-\alpha)^N.
+\end{equation}
+The same formula holds at the limiting endpoints $\rho=0,1$.
+For odd $m$ it changes regime at $\rho=m/(m+1)$; for even $m$ it
+reduces to $\rho/2$. The attaining machine uses two training labels,
+a frozen two-event alphabet, and atomic peak at most four.
+\end{theorem}
+\begin{proof}
+Proposition~\ref{prop:integer-erasure} gives the upper bound and its
+attainment for $\rho\le1/(2b)$. Above this threshold, partition into
+fibers of weights $w,b$ and initialize deterministically in the larger
+fiber's label. Continue to overwrite on a reveal and leave the state
+unchanged on an erasure. A parameter in the larger fiber has score
+$w$; a parameter in the smaller fiber has score $(2\rho-1)b$.
+The latter is at least $w$ exactly when $\rho\ge1/(2b)$.
+This attains the second upper bound. For even $m$ the threshold is one,
+so the low-reveal construction suffices. The endpoint $\rho=0$ may
+instead freeze a constant event. Candidate validation retains the
+selected label and its indicator, with at most four states; target
+validation produces the difference. Initialization is atomic
+randomization when its probabilities are not dyadic.
+\end{proof}
+
+For example, $m=3,K=2$ gives
+$V^{\rm er}_{N,3}(2)=\min\{4\rho/9,1/3\}$, rather than $4\rho/9$
+for all $\rho$. The balanced-integer expression is therefore not the
+unqualified replacement of the divisible minimax formula. For
+$K\ge3$ outside the low-reveal range, \eqref{eq:integer-bounds} remains
+a bound rather than an asserted equality. The compatible dynamic
+formulation of Section~\ref{sec:controlled-memory} retains the exact
+optimization in that regime. These results strengthen the revelation
+example without identifying its decision-cut coordinate with the
+collision model's bit-level peak.

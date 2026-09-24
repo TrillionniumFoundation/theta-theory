@@ -1,0 +1,215 @@
+\section{An intrinsic continuation invariant}
+\label{sec:intrinsic29}
+We first give a finite realization theorem whose input is the complete
+response law, rather than a selected collection of lower certificates.
+The distinction between a law and an implementation is essential:
+states in a competing implementation need not themselves be residuals
+of the law. The lower bound below allows all such states.
+
+\subsection{Normalized causal residuals}
+Fix a finite horizon, finite alphabets, and a list of charged cuts.
+At an elementary stage the machine chooses an action $a$, then receives
+a report $y$. A terminal output is an action followed by a dummy report.
+Let $C(\mathbf a\mid\mathbf y)$ be a nonnegative normalized array whose
+action-prefix marginal depends only on the reports preceding that prefix.
+Thus an action cannot read its own future report. Every necessary buffer
+cut is an elementary cut. Time-dependent rows are allowed; a persistent
+seed, data-dependent clock, or protocol register is not a free input.
+
+These conventions describe exact realization of a \emph{specified}
+causal array on the full declared alphabet. For a model imposing only
+almost-sure requirements, one must first specify a legal completion on
+unsupported words, or optimize over those completions. Changing the
+completion can change the answer. Additional autonomous row-identification
+constraints are not part of the clocked theorem below.
+
+For a positive-mass controller prefix $h=(\mathbf a_{\le t},
+\mathbf y_{\le t})$, let $R_h$ be the normalized array of future actions
+conditional on that prefix and on externally supplied future reports.
+Positivity of the prefix refers to its marginal in $C$, with past reports
+fixed, and not to a prior on environmental parameters. Write $\mathscr R_t$
+for the finite set of distinct such arrays. Duplicate arrays are removed.
+Let $\mathscr P_t$ be the polytope of all normalized causal arrays on the
+remaining interface. Its defining equations express normalization and
+nonanticipation; its inequalities express nonnegativity. Legality
+restrictions are included in the response array's zero pattern. A
+mandatory retained output or buffer is included through its prescribed
+later readout, so that deleting it changes the continuation task.
+
+If $R\in\mathscr R_t$ and its next action has probability $p_R(a)>0$,
+then, for every next report $y$,
+\begin{equation}\label{eq:residual-shift29}
+ R(a\mathbf a\mid y\mathbf y)
+       =p_R(a)R^{a,y}(\mathbf a\mid\mathbf y),
+ \qquad R^{a,y}\in\mathscr R_{t+1}.
+\end{equation}
+The scalar $p_R(a)$ is independent of $y$. If $p_R(a)=0$, the entire
+left side is zero. These are normalized residuals of a controller, not
+posteriors in its runtime register.
+
+\begin{definition}[Support components and their rank]\label{def:csr29}
+For $R\in\mathscr R_t$, denote its minimal face in $\mathscr P_t$ by
+$F_t(R)$. Join two residuals when their minimal faces intersect. Let
+$\mathscr R_{t,1},\ldots,\mathscr R_{t,c_t}$ be the connected components
+of this graph, and put
+\begin{equation}\label{eq:csr29}
+ d_{t,j}=\dim\operatorname{aff}\mathscr R_{t,j},\qquad
+ s_t(C)=\sum_{j=1}^{c_t}(d_{t,j}+1),\qquad
+ e_t(C)=\sum_{j=1}^{c_t}
+       \bigl|\operatorname{ext}\operatorname{conv}\mathscr R_{t,j}\bigr|.
+\end{equation}
+Call the residual geometry \emph{componentwise simplicial} at $t$ if
+each $\operatorname{conv}\mathscr R_{t,j}$ is a simplex, including a
+point as a zero-dimensional simplex.
+\end{definition}
+
+Everything in this definition is determined by $C$ and the charged
+interface. For finite rational data, face intersection is a linear
+feasibility problem with the two zero patterns imposed, affine dimension
+is a matrix rank, and extreme-point membership is another linear
+feasibility problem. No witness subfamily or trial controller enters the
+definition. Since normalized residuals lie in an affine hyperplane not
+containing zero, $d_{t,j}+1$ equals their ordinary row rank.
+For terminal-output channels the ambient polytope is a product of
+probability simplices; two minimal faces intersect precisely when their
+allowed-output sets intersect at every future input.
+
+\begin{theorem}[Intrinsic simultaneous realization]\label{thm:intrinsic29}
+Every stochastic clocked realization of $C$, with all persistent
+variables included in its register, has
+\begin{equation}\label{eq:csr-lower29}
+                         K_t\ge s_t(C)
+\end{equation}
+at every charged cut. A single stochastic realization has profile
+$K_t=e_t(C)$ simultaneously at all cuts. If the residual geometry is
+componentwise simplicial at every cut, then
+\begin{equation}\label{eq:csr-exact29}
+             K_t^{\min}=s_t(C)=e_t(C)\quad\hbox{simultaneously},
+ \qquad W^{\min}(C)=\max_t s_t(C).
+\end{equation}
+A realizing machine is obtained directly from residual vertices and
+barycentric one-step updates. Thus the statement determines an exact
+profile, not just unrelated lower bounds at individual cuts.
+\end{theorem}
+\begin{proof}
+Conditioning a realizing machine on a controller prefix gives
+\begin{equation}\label{eq:csr-factor29}
+                 R_h=\sum_s E_h(s)B_{t,s},
+ \qquad E_h(s)\ge0,\quad\sum_sE_h(s)=1,
+ \quad B_{t,s}\in\mathscr P_t.
+\end{equation}
+Here $B_{t,s}$ is the future program starting in the actual state $s$.
+It may lie outside the convex hull of the residuals. If $E_h(s)>0$,
+the defining property of a face implies $B_{t,s}\in F_t(R_h)$.
+A state used for residuals in two different components would therefore
+belong to two intersecting minimal faces, which would join those
+components. This is impossible. The states used by distinct components
+are disjoint. Within component $j$, the affine span of its residuals
+is contained in the affine span of its used state continuations, and
+hence at least $d_{t,j}+1$ states are required. Summing proves
+\eqref{eq:csr-lower29}. This argument does not replace stochastic
+encoders by deterministic ones.
+
+For the upper construction, at cut $t$ choose as states all extreme
+points of the component convex hulls. Every such point is an actual
+residual, since the residual set is finite. Each residual is a convex
+combination of these chosen states. Given a state $R$, choose its next
+action with probability $p_R(a)$. For positive $p_R(a)$, represent
+$R^{a,y}$ from \eqref{eq:residual-shift29} as a convex combination of
+the chosen states at cut $t+1$, and use those coefficients as the update
+row after report $y$. At zero $p_R(a)$ choose an arbitrary update on
+the unused row. The action row remains independent of the unread
+report. Initialization is the decomposition of $C$ at the first cut;
+the terminal continuation is realized by its prescribed output row.
+
+Backward induction proves the entire future array from every chosen
+state. In particular, the updates at different cuts implement the same
+law; no separate factorization is being spliced without checking its
+shifts. This gives the profile $e_t(C)$. In the simplicial case each
+component has exactly $d_{t,j}+1$ vertices, so the upper and lower
+profiles coincide. Within each component the barycentric coefficients
+are unique, although arbitrary minimum-size realizations need not be
+unique or have states equal to residuals.
+\end{proof}
+
+\begin{corollary}[A complete, finite test for the stated class]
+\label{cor:decidable29}
+For a complete finite rational response array, componentwise simpliciality
+and the numbers in \eqref{eq:csr-exact29} can be decided from linear
+systems, rational linear feasibility, and a finite graph. When the test
+succeeds, rational transition tables realizing the exact profile can be
+constructed. The same holds for real algebraic input using exact sign
+and linear-feasibility decisions over the specified ordered field.
+\end{corollary}
+\begin{proof}
+Enumerate the positive-prefix normalized residuals and their zero
+patterns. Solve the pairwise face-intersection problems in the stated
+causal polytope, find the connected components, and find the extreme
+residuals of each component hull. A component hull is a simplex exactly
+when its number of vertices equals its affine dimension plus one.
+Solve the barycentric systems in the proof of Theorem~\ref{thm:intrinsic29}.
+All operations are finite and preserve the indicated field.
+\end{proof}
+
+The input table can be exponentially large in the horizon. The corollary
+is a completeness and synthesis result for an explicit class, not a
+polynomial algorithm in a succinct program length. It does not say that
+ordinary rank solves unrestricted positive realization. Nor does it
+claim that residual-state minimization, by itself, minimizes over all
+probabilistic machines; that last conclusion uses the separated-component
+lower bound. The distinction is also present in residual automata
+\cite{DenisEsposito} and nested-polytope formulations \cite{GG}.
+
+\subsection{Exact schedule fields without selected certificates}
+Consider a terminal-output channel on finitely many tapes, internally
+ordered on each tape, with a full product input alphabet. At a vector
+$v$ of consumed-prefix lengths let $\mathscr R_v$ consist of the
+channel rows for \emph{all} prefixes at $v$ as functions of the remaining
+suffixes. The rows and their minimal faces are independent of the path
+used to reach $v$. Define $s(v),e(v)$ by \eqref{eq:csr29}.
+
+\begin{corollary}[Intrinsic declared-order minimization]
+\label{cor:intrinsic-schedule29}
+If every component hull at every schedule vertex is a simplex, the least
+width on each declared schedule $\pi$ is
+$\max_{v\in\pi}s(v)$. In particular,
+\begin{equation}\label{eq:intrinsic-schedule29}
+ W^{\min}_{\rm clk}
+       =\min_{\pi}\max_{v\in\pi}s(v).
+\end{equation}
+The minimum is computed by the bottleneck recurrence on the finite
+schedule graph. The same residual-vertex construction supplies the
+updates for every allowed next-tape restriction.
+\end{corollary}
+\begin{proof}
+Restriction of an actual prefix row by any next tape symbol is an actual
+row at the corresponding child vertex. Apply the proof of
+Theorem~\ref{thm:intrinsic29} on the entire schedule graph, then on each
+path. The last-edge decomposition of paths gives the bottleneck
+recurrence. No lower certificate or upper residual family is an extra
+input to this corollary.
+\end{proof}
+
+An observation-dependent choice of tape has to be included as a
+controller action in $C$. Theorem~\ref{thm:intrinsic29} also classifies
+such a specified causal array when its normalized residual geometry
+passes the same test. Equation~\eqref{eq:intrinsic-schedule29} alone
+optimizes declared paths, not all adaptive arrays. A scalable experiment
+for which the peak optimum is unchanged even by adaptive acquisition
+is solved in Section~\ref{sec:access29}.
+
+\subsection{Why the completeness hypothesis has content}
+The condition is neither universal nor a restatement of the answer.
+Consider four binary-query channels with response vectors
+$(\epsilon,\epsilon),(\epsilon,1-\epsilon),
+(1-\epsilon,\epsilon),(1-\epsilon,1-\epsilon)$, where
+$0<\epsilon<1/4$. All output probabilities are positive, so there is one
+support component. Its affine dimension is two and $s=3$, but four
+states are necessary. Indeed, for each corner of the square a convex
+representation of its displayed row needs a generator with total
+coordinate error at most $2\epsilon<1/2$. Two distinct corner-error
+sums add to at least one, so no generator can serve two corners.
+Four deterministic corner generators suffice. The nonsimplicial square
+therefore has state count four rather than three. This is a strict
+failure of the lower bound outside its completeness class, not an
+unsupported claim that the class contains every experiment.
