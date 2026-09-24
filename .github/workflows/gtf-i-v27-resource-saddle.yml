@@ -1,0 +1,115 @@
+name: GTF-I v27 saddle geometry and causal memory
+
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v27-resource-saddle-2026-09-24
+    paths:
+      - 'papers/GTF-I-v27-resource-saddle/**'
+      - '.github/workflows/gtf-i-v27-resource-saddle.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gtf-i-v27-resource-saddle
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/revision/general-theta-foundations-i-v27-resource-saddle-2026-09-24'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 20
+          sparse-checkout: |
+            papers/GTF-I-v27-resource-saddle
+            papers/GTF-I-v26-controlled-memory-foundations
+            papers/GTF-I-v25-controlled-minimax
+            papers/GTF-I-v24-structural-resources
+            reviews/general-theta-foundations-i-v26-external-harsh-top4-r10-2026-09-24
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Restore hash-checked native manuscript source
+        shell: bash
+        run: |
+          python - <<'PY'
+          import hashlib,json,lzma,runpy,shutil
+          from pathlib import Path
+          h=Path('papers/GTF-I-v27-resource-saddle')
+          old=h.parent/'GTF-I-v26-controlled-memory-foundations'
+          raw=b''.join((h/'.source-parts'/('part%02d.xz'%i)).read_bytes() for i in range(5))
+          if len(raw)!=32600: raise RuntimeError('Source transport size mismatch')
+          if hashlib.sha256(raw).hexdigest()!='687d4a29c77f4f5d12ea5ddba9248ae1c3e619234eaca77930c259b8092976bf':
+              raise RuntimeError('Source transport checksum mismatch')
+          payload=json.loads(lzma.decompress(raw))
+          if not isinstance(payload,dict) or len(payload)!=14: raise RuntimeError('Source manifest mismatch')
+          for name,text in payload.items():
+              p=Path(name)
+              if p.name!=name or p.suffix not in {'.tex','.py','.md','.json'} or not isinstance(text,str):
+                  raise RuntimeError('Unsafe source entry')
+              dest=h/name
+              if dest.exists() and dest.read_text()!=text:
+                  raise RuntimeError('Refusing to replace modified native source: '+name)
+              dest.write_text(text)
+          inherited=['foundations.tex','controlled-dual.tex','controlled-memory.tex','marked-minimax.tex','physical-bridge.tex','physical-improvement.tex','two-preparation-saddle.tex','two-preparation-family.tex','joint-revelation.tex','integer-revelation.tex','consumer-transfer.tex']
+          for name in inherited:
+              dest=h/name
+              if dest.exists() and dest.read_bytes()!=(old/name).read_bytes():
+                  raise RuntimeError('Inherited module changed: '+name)
+              shutil.copy2(old/name,dest)
+          runpy.run_path(str(h/'assemble.py'))
+          print('Verified transport; restored 14 native files, eleven unchanged predecessor modules and assembled canonical main.tex.')
+          PY
+      - name: Publish native source before executing the build
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git fetch --depth=1 origin 6018ed8f31d758b35eacc48079104e5895fc9591
+          test -z "$(git diff --name-only --diff-filter=DMRT 6018ed8f31d758b35eacc48079104e5895fc9591)"
+          git add -f papers/GTF-I-v27-resource-saddle
+          if ! git diff --cached --quiet; then
+            git commit -m 'revise(GTF-I v27): saddle contact, exact memory converses and all-preparation localization [skip ci]'
+            git push origin HEAD:"$GITHUB_REF_NAME"
+          fi
+          echo "GTF_SOURCE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - name: Install typesetting and exact arithmetic
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended texlive-pictures lmodern
+          python -m pip install sympy==1.14.0 PyMuPDF==1.26.7
+      - name: Execute exact checks and compile the complete revision
+        run: python papers/GTF-I-v27-resource-saddle/build.py
+      - name: Publish the new revision package and referee-ready branch
+        shell: bash
+        run: |
+          git add -f papers/GTF-I-v27-resource-saddle GENERAL_THETA_FOUNDATIONS_I_V27_REVIEW_READY.md
+          git commit -m 'publish(GTF-I v27): English article, saddle-memory proofs, referee response and preserved volumes [skip ci]'
+          test -z "$(git diff --name-only --diff-filter=DMRT 6018ed8f31d758b35eacc48079104e5895fc9591 HEAD)"
+          READY='revision/general-theta-foundations-i-v27-referee-ready-2026-09-24'
+          if git ls-remote --exit-code --heads origin "$READY"; then
+            git fetch origin "$READY"
+            git merge-base --is-ancestor FETCH_HEAD HEAD
+          fi
+          git push origin HEAD:"$GITHUB_REF_NAME" HEAD:"$READY"
+      - name: Upload referee package
+        uses: actions/upload-artifact@v4
+        with:
+          name: GTF-I-v27-resource-saddle
+          path: papers/GTF-I-v27-resource-saddle/
+          retention-days: 30
+      - name: Upload failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: GTF-I-v27-diagnostics
+          path: |
+            papers/GTF-I-v27-resource-saddle/evidence/
+            papers/GTF-I-v27-resource-saddle/*.tex
+            papers/GTF-I-v27-resource-saddle/*.py
+          retention-days: 7
