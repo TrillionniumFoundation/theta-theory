@@ -1,9 +1,15 @@
-# A2 referee entry — revision 147
+# Canonical A2 referee entry — revision 147
 
-Verified native build from source commit `ee87f9979de6b6d40038daab9f8cf336fa0b3007`. The source-bound receipt records 24 completed regressions, three native PDFs, preservation and layout checks. These do not certify mathematical correctness or priority.
+Verified native build from source commit ee87f9979de6b6d40038daab9f8cf336fa0b3007. The source-bound receipt records 24 completed regressions, three native PDFs, preservation and layout checks. These do not certify mathematical correctness or priority.
 
-Controlling report: `855c73b3a0381bebd8d5e0d382fa06125904a73f` on `review/a2-v146-independent-harsh-top4-2026-09-24`.
-Revision branch: `revision/a2-v147-intrinsic-family-descent-2026-09-24`.
+**Latest independent top-four referee report:** [REFEREE_REPORT.md](reviews/a2-v147-independent-harsh-top4-2026-09-24/REFEREE_REPORT.md)  
+**Report commit:** 280d8757de51226fc008c18ceb1c715b0c266566  
+**Review branch:** review/a2-v147-independent-harsh-top4-2026-09-24  
+**Revision branch reviewed:** revision/a2-v147-intrinsic-family-descent-2026-09-24
+
+The report recommends rejection in the present form at top-four level, while explicitly finding that v147 materially closes the v146 proof-architecture objections and reveals no new fatal counterexample in the newly added first-relation, group-scheme, actual bundle-descent, or isotrivial-family arguments. The remaining blockers are the unresolved theorem-level Ballico 1993 comparison and the need for a broader structural or pencil-native consequence establishing top-four significance.
+
+Predecessor controlling report: 855c73b3a0381bebd8d5e0d382fa06125904a73f on review/a2-v146-independent-harsh-top4-2026-09-24.
 
 **Principal manuscript:** [geometry.pdf](papers/A2-v17-boundary-information-coarsening/article/v147/geometry.pdf) · [LaTeX](papers/A2-v17-boundary-information-coarsening/article/v147/geometry.tex).
 
@@ -15,4 +21,4 @@ The principal addition is a general unmarked inverse for moving Schur coefficien
 
 [Separate applications](papers/A2-v17-boundary-information-coarsening/article/v147/applications.pdf) and [non-submitted historical archive](papers/A2-v17-boundary-information-coarsening/article/v147/archive-v144.pdf) remain separate. No other paper is part of the principal submission.
 
-Ballico 1993: the publisher's first page has now been inspected, but the complete theorem/proof text has not been obtained. The six-axis full-text comparison remains open. No editorial acceptance or exhaustive priority clearance is asserted.
+Ballico 1993: the publisher's first page has been inspected, but the complete theorem/proof text has not been obtained. The six-axis full-text comparison remains open. No editorial acceptance or exhaustive priority clearance is asserted.
