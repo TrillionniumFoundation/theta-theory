@@ -1,18 +1,15 @@
-# A2 referee entry — revision 151
+# A2 referee entry — revision 152
 
-Native PDFs and 27 successful regression scripts are bound to source commit `e68458a9abba44759177e6fbc5fef75622719b53`. Finite checks do not certify universal proofs, historical priority, or journal acceptance.
+Mathematical source staged; completed verification is asserted only by the v152 build receipt.
 
-Revision branch: `revision/a2-v151-canonical-gcd-boundary-normalization-2026-09-24`. Controlling v149 review tip: `ddcef32b3cf491aacb293e466c393ec4af3caecd`.
-Report addressed: [reviews/a2-v149-independent-harsh-top4-2026-09-24/REFEREE_REPORT.md](reviews/a2-v149-independent-harsh-top4-2026-09-24/REFEREE_REPORT.md). This owner-requested report is not a journal editorial decision.
+Branch: `revision/a2-v152-divisor-conductor-collision-geometry-2026-09-24`. Controlling review: `11c9e91135c5e8bb3ee61a067d76286d81a3df7d`.
 
-**Principal article:** [geometry.pdf](papers/A2-v17-boundary-information-coarsening/article/v151/geometry.pdf) · [LaTeX](papers/A2-v17-boundary-information-coarsening/article/v151/geometry.tex).
+**Principal article:** [geometry.pdf](papers/A2-v17-boundary-information-coarsening/article/v152/geometry.pdf) · [LaTeX](papers/A2-v17-boundary-information-coarsening/article/v152/geometry.tex).
 
-[Response to v149](papers/A2-v17-boundary-information-coarsening/article/v151/RESPONSE_TO_V149_REPORT.md) · [Reading guide](papers/A2-v17-boundary-information-coarsening/article/v151/README.md) · [Issue matrix](papers/A2-v17-boundary-information-coarsening/article/v151/ISSUE_MATRIX_V151.json).
+[Response to v151](papers/A2-v17-boundary-information-coarsening/article/v152/RESPONSE_TO_V151_REPORT.md) · [Reading guide](papers/A2-v17-boundary-information-coarsening/article/v152/README.md) · [Issue matrix](papers/A2-v17-boundary-information-coarsening/article/v152/ISSUE_MATRIX_V152.json).
 
-New mathematics: canonical divisor-incidence functor over arbitrary bases; finite normalization of its scheme-theoretic image; exact normal locus and complete nonreduced fibre equations; intrinsic first-relation algebra boundary; universal properties of the two rigidifications; explicit common closed pencil specialization with finite-flat failure lift. All v149 principal mathematical blocks and labels are retained.
+New mathematics: conductor and singular-scheme formulas for split divisor branches; exact binary collision model and Cohen–Macaulay criterion; reduced intersections of divisor-degree images; a universal genuinely ramified point in every pencil failure-algebra orbit closure; full reciprocal-polynomial normalization-fibre equations. All v151 principal mathematical blocks and parts are retained.
 
-[Build receipt](papers/A2-v17-boundary-information-coarsening/article/v151/evidence/BUILD_RECEIPT_V151.json) · [Source lock](papers/A2-v17-boundary-information-coarsening/article/v151/SOURCE_LOCK_V151.json) · [Preservation](papers/A2-v17-boundary-information-coarsening/article/v151/NONDELETION_V151.json) · [Literature audit](papers/A2-v17-boundary-information-coarsening/article/v151/LITERATURE_AUDIT_V151.md) · [Proof-scope audit](papers/A2-v17-boundary-information-coarsening/article/v151/PROOF_SCOPE_AUDIT_V151.md).
+[Build receipt](papers/A2-v17-boundary-information-coarsening/article/v152/evidence_v152/BUILD_RECEIPT_V152.json) · [Theorem locator](papers/A2-v17-boundary-information-coarsening/article/v152/evidence_v152/THEOREM_LOCATOR_V152.json) · [Source lock](papers/A2-v17-boundary-information-coarsening/article/v152/SOURCE_LOCK_V152.json) · [Preservation](papers/A2-v17-boundary-information-coarsening/article/v152/NONDELETION_V152.json) · [Primary-source audit](papers/A2-v17-boundary-information-coarsening/article/v152/LITERATURE_AUDIT_V152.md).
 
-[Applications](papers/A2-v17-boundary-information-coarsening/article/v151/applications.pdf) remain separate; the [historical archive](papers/A2-v17-boundary-information-coarsening/article/v151/archive-v144.pdf) remains non-submitted. Both mathematical drivers are unchanged. Only geometry.pdf is the principal article.
-
-**Documentary item still open:** complete Ballico 1993 theorem/proof text was not obtained. No theorem numbers, nonanticipation claim, or historical priority clearance are fabricated.
+[Applications](papers/A2-v17-boundary-information-coarsening/article/v152/applications.pdf) remain separate; [archive-v144.pdf](papers/A2-v17-boundary-information-coarsening/article/v152/archive-v144.pdf) is non-submitted history. The full Ballico 1993 theorem/proof text remains documentary-open. Finite checks do not certify universal proofs, historical priority, or journal acceptance.
