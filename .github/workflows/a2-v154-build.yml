@@ -1,0 +1,80 @@
+name: A2 v154 complete revision publication
+on:
+  push:
+    branches:
+      - revision/a2-v154-intrinsic-compactification-homological-fibres-2026-09-25
+    paths:
+      - .github/workflows/a2-v154-build.yml
+      - papers/A2-v17-boundary-information-coarsening/article/v154/front-v154.tex
+      - papers/A2-v17-boundary-information-coarsening/article/v154/moduli-v154.tex
+      - papers/A2-v17-boundary-information-coarsening/article/v154/homological-v154.tex
+      - papers/A2-v17-boundary-information-coarsening/article/v154/formal-details-v154.tex
+      - papers/A2-v17-boundary-information-coarsening/article/v154/references-v154.tex
+      - papers/A2-v17-boundary-information-coarsening/article/v154/assemble_v154.py
+      - papers/A2-v17-boundary-information-coarsening/article/v154/check_v154.py
+permissions:
+  contents: write
+concurrency:
+  group: a2-v154-native-publication
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      DIR: papers/A2-v17-boundary-information-coarsening/article/v154
+      BRANCH: revision/a2-v154-intrinsic-compactification-homological-fibres-2026-09-25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 4
+          sparse-checkout: |
+            papers/A2-v17-boundary-information-coarsening/article/v153
+            papers/A2-v17-boundary-information-coarsening/article/v154
+      - name: Install exact algebra and TeX tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils python3-sympy
+      - name: Rerun exact calculations and build the complete article
+        run: |
+          python3 "$DIR/check_v154.py"
+          python3 "$DIR/assemble_v154.py" --build
+          pdftoppm -f 1 -singlefile -scale-to 1600 -png "$DIR/geometry.pdf" "$DIR/geometry-page1"
+      - name: Publish only the isolated revision
+        run: |
+          test "$(git ls-remote origin "refs/heads/$BRANCH" | cut -f1)" = "$(git rev-parse HEAD)"
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          d=Path(os.environ['DIR']);r=json.loads((d/'BUILD_RECEIPT_V154.json').read_text())
+          Path('CURRENT_REVIEW_ENTRY.md').write_text(
+              '# A2 referee entry — revision 154\n\n'
+              f'Complete [{r["pages"]}-page article]({d}/geometry.pdf) and [standalone source]({d}/geometry.tex).\n\n'
+              f'Source commit: `{r["source_commit"]}`. Controlling complete-v153 review: `{r["controlling_review_commit"]}`.\n\n'
+              f'[Response]({d}/RESPONSE_TO_V153_REPORT.md) · [Reading guide]({d}/README.md) · '
+              f'[Build receipt]({d}/BUILD_RECEIPT_V154.json) · [Preservation]({d}/NONDELETION_V154.json) · '
+              f'[Exact calculations]({d}/EXACT_CHECKS_V154.json).\n\n'
+              'All inherited mathematical blocks and labels are retained. Native polarized moduli and spectral fibre detection are distinguished from full GL(E) orbit collapse. '
+              'Classical GIT, Hochster and determinant-apolar inputs are attributed. Ballico 1993 remains documentary-open. '
+              'Finite checks do not certify the universal proofs or a journal decision.\n')
+          PY
+          git config user.name 'A2 revision build'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f "$DIR/geometry.tex" "$DIR/geometry.pdf" "$DIR/geometry.txt" "$DIR/PREVIOUS_FRONTMATTER_V153.tex" "$DIR/BUILD_RECEIPT_V154.json" "$DIR/NONDELETION_V154.json" "$DIR/EXACT_CHECKS_V154.json" CURRENT_REVIEW_ENTRY.md
+          if ! git diff --cached --quiet; then
+            git commit -m 'A2 v154: publish complete source-bound manuscript and exact homological receipts'
+            git push origin "HEAD:refs/heads/$BRANCH"
+          fi
+      - name: Retain the complete build and its inputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a2-v154-complete-review-build
+          path: |
+            papers/A2-v17-boundary-information-coarsening/article/v154/
+            papers/A2-v17-boundary-information-coarsening/article/v153/geometry.tex
+            papers/A2-v17-boundary-information-coarsening/article/v153/check_v153.py
+            papers/A2-v17-boundary-information-coarsening/article/v153/new-core.tex
+          if-no-files-found: warn
+          retention-days: 14
