@@ -38,11 +38,11 @@ This recommendation is substantially more favorable mathematically than the seve
 
 Revision 24 has crossed the main mathematical threshold that the previous report identified as missing. There is now an honest outer-architecture theorem for the declared reset/feedback class. It is not merely a fixed-schedule SOS certificate. The manuscript gives an explicit one-preparation impossibility certificate, a two-preparation construction, and a common theorem that matches them to prove
 
-[
-N_c^{m phys}(W,Q)=2
-]
+\[
+N_c^{\rm phys}(W,Q)=2
+\]
 
-for every (Wge 12) and for the stated nonempty interval of thresholds. The lower bound allows unlimited memory. This is a genuine physical preparation theorem, not just a promise that a generic certificate could eventually be searched for.
+for every \(W\ge 12\) and for the stated nonempty interval of thresholds. The lower bound allows unlimited memory. This is a genuine physical preparation theorem, not just a promise that a generic certificate could eventually be searched for.
 
 The paper also supplies quantitative finite-architecture certification, an autonomous noisy theorem with explicit finite-time/precision bookkeeping, a substantially improved current literature discussion, and a genuinely focused 14-page article.
 
@@ -66,7 +66,7 @@ The physical theorem is mathematically real. The issue is the level of generalit
 My current assessment is:
 
 1. the most general new duality is powerful only in a common-dominating-row regime in which the hard architecture choice is converted into post-processing;
-2. the exact physical theorem is sharp in the integer preparation count but not in peak width, decision width, the one- or two-preparation optimal score, or the joint (N)-(W) Pareto frontier;
+2. the exact physical theorem is sharp in the integer preparation count but not in peak width, decision width, the one- or two-preparation optimal score, or the joint \(N\)-\(W\) Pareto frontier;
 3. the generic quantitative theorem is an effective discretization/Bernstein/coupling theorem for fixed finite architectures, not a sharp statistical complexity law;
 4. the autonomous stationary optimum is correctly attributed to Hellman–Cover, while the new finite-time dyadic estimate is a conservative construction without a matching resource lower bound;
 5. the physical embedding still delegates crucial model-specific statements to a large unpublished predecessor companion;
@@ -80,7 +80,7 @@ The revision deserves specific credit before any further criticism.
 
 ## 1.1 The inner/outer distinction is now mathematically operative
 
-The paper defines (V(A)) for a fixed architecture and (V^{m out}(R)) for a resource-constrained union of architectures. More importantly, this is no longer merely bookkeeping. The dominating-row theorem actually supplies an upper bound that survives the outer union for the physical reset class.
+The paper defines \(V(A)\) for a fixed architecture and \(V^{\rm out}(R)\) for a resource-constrained union of architectures. More importantly, this is no longer merely bookkeeping. The dominating-row theorem actually supplies an upper bound that survives the outer union for the physical reset class.
 
 That is a major improvement over v23.
 
@@ -100,9 +100,9 @@ The word “exact” is justified for that coordinate.
 
 The profile
 
-[
+\[
 (1,2,3,3,4,5,5,10,12,10,10,7,3)
-]
+\]
 
 is not a decision-cut-only count. It explicitly accounts for training bits, discarded marks, event identity, candidate validation, target validation, and the final output. The autonomous phase-tagged implementation is also separately charged.
 
@@ -110,11 +110,11 @@ This is much better resource accounting than an abstract “five events” const
 
 ## 1.5 Quantitative finite-architecture information has replaced pure eventual SOS completeness
 
-The (HS/m) subdivision theorem is explicit about degree, mesh, cell count, coefficient count, rationality, and reused stochastic rows. It is a genuine quantitative theorem and a useful response to the black-box character of the earlier Putinar statement.
+The \(HS/m\) subdivision theorem is explicit about degree, mesh, cell count, coefficient count, rationality, and reused stochastic rows. It is a genuine quantitative theorem and a useful response to the black-box character of the earlier Putinar statement.
 
 ## 1.6 An autonomous theorem is now stated and proved
 
-The stationary (W)-state binary testing formula is no longer merely encoded by shared-row equations. The article supplies a proof, attributes the formula to Hellman–Cover, and gives an explicit finite-time dyadic construction with implementation costs.
+The stationary \(W\)-state binary testing formula is no longer merely encoded by shared-row equations. The article supplies a proof, attributes the formula to Hellman–Cover, and gives an explicit finite-time dyadic construction with implementation costs.
 
 The previous objection “autonomous is typed but not solved” is therefore obsolete in its literal form.
 
@@ -136,9 +136,9 @@ I record these because the next revision should not waste effort repairing argum
 
 ## 2.1 Posterior-predictive minimax dual
 
-The response space is a finite-dimensional compact cube and probability measures on compact (Theta) are weakly compact. Under continuity of (	hetamapsto P_	heta), the bilinear integrated payoff is continuous in the required variables. Replacing a pointwise minimum over (	heta) by a minimum over probability measures and applying Sion is legitimate.
+The response space is a finite-dimensional compact cube and probability measures on compact \(\Theta\) are weakly compact. Under continuity of \(\theta\mapsto P_\theta\), the bilinear integrated payoff is continuous in the required variables. Replacing a pointwise minimum over \(\theta\) by a minimum over probability measures and applying Sion is legitimate.
 
-For fixed prior, optimization of each (h_z(omega)in[0,1]) gives the positive part of its coefficient. Grouping the coefficient vector for fixed (z) gives the posterior-predictive total-variation expression.
+For fixed prior, optimization of each \(h_z(\omega)\in[0,1]\) gives the positive part of its coefficient. Grouping the coefficient vector for fixed \(z\) gives the posterior-predictive total-variation expression.
 
 I do not see a minimax gap in Theorem thm:dual as stated.
 
@@ -146,13 +146,13 @@ I do not see a minimax gap in Theorem thm:dual as stated.
 
 For the inherited physical subfamily, the current feedback gate has the form
 
-[
+\[
 T_g(x_1,x_2,w)=(x_1,g(x_1)x_2,w),
-]
+\]
 
-with the private all-on row (b(p,q)) having independent Bernoulli report bits and an independent fair mark. This exact pullback structure is already present in the inherited feedback-completion argument.
+with the private all-on row \(b(p,q)\) having independent Bernoulli report bits and an independent fair mark. This exact pullback structure is already present in the inherited feedback-completion argument.
 
-Given (N) independent all-on draws, simulating each requested feedback row by applying the corresponding parameter-independent garbling to the next unused all-on draw is valid. Stopping simply leaves some generated draws unused. Conditioning on independent auditor randomness and then averaging produces a response kernel (h_z).
+Given \(N\) independent all-on draws, simulating each requested feedback row by applying the corresponding parameter-independent garbling to the next unused all-on draw is valid. Stopping simply leaves some generated draws unused. Conditioning on independent auditor randomness and then averaging produces a response kernel \(h_z\).
 
 Under these hypotheses, I do not see a defect in the architecture-uniform upper bound.
 
@@ -164,37 +164,37 @@ I independently reconstructed the displayed coefficient matrix from the stated s
 
 The sum of all positive entries is exactly
 
-[
-rac{4035777}{10240000}=u_1.
-]
+\[
+\frac{4035777}{10240000}=u_1.
+\]
 
 The manuscript is also correct to emphasize that the four-point prior is a dual certificate and is not itself a legal simulator resampled between preparations.
 
-At (eta=1/300) and (c=2/5), the lower-end separation margin is exactly
+At \(\beta=1/300\) and \(c=2/5\), the lower-end separation margin is exactly
 
-[
-rac25-u_1-rac1{300}
-=rac{78269}{30720000}>0.
-]
+\[
+\frac25-u_1-\frac1{300}
+=\frac{78269}{30720000}>0.
+\]
 
 Thus the certificate really does exclude every at-most-one-preparation auditor covered by the outer theorem at the physical threshold.
 
 ## 2.4 Two-preparation polynomial minimum
 
-The five-event selector produces the stated polynomial (H(u,v)). The derivative
+The five-event selector produces the stated polynomial \(H(u,v)\). The derivative
 
-[
-partial_v H(u,v)
-=rac{3(u-v)^2-8u+4v+15}{32}
-]
+\[
+\partial_v H(u,v)
+=\frac{3(u-v)^2-8u+4v+15}{32}
+\]
 
-is bounded below by (7/32) on the feasible region used in the proof, so minimizing in (v) at (v=0) is justified.
+is bounded below by \(7/32\) on the feasible region used in the proof, so minimizing in \(v\) at \(v=0\) is justified.
 
-The remaining one-variable cubic has its relevant interior critical point at (u=2-sqrt3), and substitution gives
+The remaining one-variable cubic has its relevant interior critical point at \(u=2-\sqrt3\), and substitution gives
 
-[
-m_2=rac{12-3sqrt3}{16}.
-]
+\[
+m_2=\frac{12-3\sqrt3}{16}.
+\]
 
 The manuscript correctly says this is the exact minimum for the specified selector, not the optimum over all two-preparation selectors.
 
@@ -212,13 +212,13 @@ I have not found a hidden free selector or a hidden uncharged first-bit buffer i
 
 The key proof idea is sound. Conditioning independent vertex lists on their count vectors gives the Bernstein coefficients. The resulting without-replacement row sequence need not itself be an admissible uncharged-memory controller; it is being used as a coefficient representation, and the manuscript says so.
 
-A first-disagreement coupling over at most (H) controller updates gives a total-variation error of order (HS/m), and a reward in ([-1,1]) doubles the path-law variation in the expected-reward estimate. This supports the advertised (HS/m) coefficient control.
+A first-disagreement coupling over at most \(H\) controller updates gives a total-variation error of order \(HS/m\), and a reward in \([-1,1]\) doubles the path-law variation in the expected-reward estimate. This supports the advertised \(HS/m\) coefficient control.
 
 The inequalities
 
-[
-L_mle V(A)le U_mle L_m+rac{HS}{m}
-]
+\[
+L_m\le V(A)\le U_m\le L_m+\frac{HS}{m}
+\]
 
 then follow in the stated finite-parameter, finite-architecture setting.
 
@@ -226,11 +226,11 @@ I do not see a shared-row independence error in the proof.
 
 ## 2.7 Autonomous stationary theorem
 
-The Markov-chain-tree likelihood-ratio argument yields an oscillation bound of (r^{2(W-1)}) for stationary state likelihood ratios. The elementary likelihood-range lemma then gives the stationary total-variation bound corresponding to minimax error
+The Markov-chain-tree likelihood-ratio argument yields an oscillation bound of \(r^{2(W-1)}\) for stationary state likelihood ratios. The elementary likelihood-range lemma then gives the stationary total-variation bound corresponding to minimax error
 
-[
-rac{1}{1+r^{W-1}}.
-]
+\[
+\frac{1}{1+r^{W-1}}.
+\]
 
 The matching birth–death approximation is consistent with the classical Hellman–Cover formula, as the paper itself states.
 
@@ -246,11 +246,11 @@ That fact matters. My rejection is principally a judgment about structural depth
 
 The most important theorem in v24 is the dominating-row converse. It is also the theorem whose hypothesis most sharply limits the foundational interpretation.
 
-The theorem assumes that every permitted training row is a parameter-independent causal garbling of one fresh draw from a common experiment (P_	heta), and that the validation rows are the corresponding garblings of the candidate and target laws.
+The theorem assumes that every permitted training row is a parameter-independent causal garbling of one fresh draw from a common experiment \(P_\theta\), and that the validation rows are the corresponding garblings of the candidate and target laws.
 
 Under this assumption, the outer architecture problem simplifies dramatically.
 
-The controller can choose feedback schedules, stop adaptively, randomize, and maintain arbitrary memory, but none of these choices can create an experiment more informative about (	heta) than the pre-generated all-on samples. The entire adaptive architecture can therefore be pulled back to a response kernel on (P_	heta^{otimes N}).
+The controller can choose feedback schedules, stop adaptively, randomize, and maintain arbitrary memory, but none of these choices can create an experiment more informative about \(\theta\) than the pre-generated all-on samples. The entire adaptive architecture can therefore be pulled back to a response kernel on \(P_\theta^{\otimes N}\).
 
 This is elegant. It is exactly why the proof succeeds.
 
@@ -262,7 +262,7 @@ Those are precisely the settings in which adaptive experimental design, controll
 
 V24 does not solve that problem.
 
-The paper's own proof-status file essentially acknowledges this by leaving a generic controlled (K)-state minimax recursion unproved. The current theorem should therefore be understood as a strong theorem for a common-dominating-row reset class, not as a general elimination of architecture from causal finite-resource statistics.
+The paper's own proof-status file essentially acknowledges this by leaving a generic controlled \(K\)-state minimax recursion unproved. The current theorem should therefore be understood as a strong theorem for a common-dominating-row reset class, not as a general elimination of architecture from causal finite-resource statistics.
 
 For a specialized paper, that is entirely respectable.
 
@@ -272,23 +272,23 @@ For a paper titled “General Theta Foundations I,” the distinction is decisiv
 
 The headline equation is mathematically correct within its declared region:
 
-[
-N_c^{m phys}(W,Q)=2,qquad Wge12.
-]
+\[
+N_c^{\rm phys}(W,Q)=2,\qquad W\ge12.
+\]
 
 But the interpretation must be exact.
 
-The lower bound excludes one preparation even with unlimited memory. It therefore gives no information that distinguishes (W=12) from (W=10^6).
+The lower bound excludes one preparation even with unlimited memory. It therefore gives no information that distinguishes \(W=12\) from \(W=10^6\).
 
 The upper bound gives one particular implementation at peak twelve. The paper does not prove:
 
-- that twelve is the least feasible peak at (N=2);
-- that five decision labels are necessary at (N=2);
-- the value for any (3le Wle11);
+- that twelve is the least feasible peak at \(N=2\);
+- that five decision labels are necessary at \(N=2\);
+- the value for any \(3\le W\le11\);
 - the optimal score among all two-preparation controllers;
-- the exact one-preparation value (U_1);
-- the exact two-preparation value (U_2);
-- a nontrivial lower curve coupling (N) and (W);
+- the exact one-preparation value \(U_1\);
+- the exact two-preparation value \(U_2\);
+- a nontrivial lower curve coupling \(N\) and \(W\);
 - any asymptotic law as either resource grows.
 
 The exactness is therefore one-dimensional: the integer preparation coordinate is exactly two once the width budget is at least the width of the displayed construction.
@@ -303,8 +303,8 @@ The manuscript is mostly careful about this. The title and foundational narrativ
 
 The proof of the preparation theorem uses two nonmatching quantities:
 
-- (u_1), obtained from a four-point prior that is expressly not claimed to be least favorable;
-- (m_2), the exact worst-case score of one displayed two-preparation selector that is expressly not claimed to be globally optimal.
+- \(u_1\), obtained from a four-point prior that is expressly not claimed to be least favorable;
+- \(m_2\), the exact worst-case score of one displayed two-preparation selector that is expressly not claimed to be globally optimal.
 
 The theorem then chooses thresholds between them.
 
@@ -314,13 +314,13 @@ But it means the paper has not solved the underlying minimax values on either si
 
 The logical form is:
 
-[
-	ext{best one-preparation score}
-le u_1
+\[
+\text{best one-preparation score}
+\le u_1
 < c
 < m_2
-le 	ext{best two-preparation score}.
-]
+\le \text{best two-preparation score}.
+\]
 
 What is not known is whether either outer inequality is equality.
 
@@ -330,12 +330,12 @@ That is a clever and efficient proof strategy. It is also evidence that the deep
 
 A top-four-level structural theorem would be more compelling if it identified one of the following:
 
-1. the exact (U_N) for a nontrivial range of (N);
+1. the exact \(U_N\) for a nontrivial range of \(N\);
 2. the least-favorable prior and a matching optimal selector;
-3. a general invariant characterizing when (N) preparations cross a threshold;
+3. a general invariant characterizing when \(N\) preparations cross a threshold;
 4. an asymptotic law with matching constants or exponents.
 
-At present the threshold (2/5) and the chosen certificate are very tightly adapted to the existing physical task.
+At present the threshold \(2/5\) and the chosen certificate are very tightly adapted to the existing physical task.
 
 # 6. Width twelve is an implementation achievement, not yet a resource obstruction
 
@@ -351,9 +351,9 @@ The missing theorem would couple the two resources.
 
 For example, any one of the following would materially deepen the paper:
 
-- prove (N_c^{m phys}(W,Q)>2) for some interval (Wle W_0);
-- determine the least peak width at (N=2);
-- prove a lower bound (Wge f(N)) on a range of (N);
+- prove \(N_c^{\rm phys}(W,Q)>2\) for some interval \(W\le W_0\);
+- determine the least peak width at \(N=2\);
+- prove a lower bound \(W\ge f(N)\) on a range of \(N\);
 - prove a matching or constant-factor Pareto curve;
 - prove that reducing the decision alphabet forces additional preparations.
 
@@ -363,13 +363,13 @@ Without such a result, the paper's strongest exact resource theorem is still fun
 
 The identity
 
-[
+\[
 U_N(P,Q)
 =
-min_mu
-sum_z m_mu(z),
-operatorname{TV}!left(Q,overline P_mu(cdotmid z)ight)
-]
+\min_\mu
+\sum_z m_\mu(z)\,
+\operatorname{TV}\!\left(Q,\overline P_\mu(\cdot\mid z)\right)
+\]
 
 is conceptually attractive. It gives the dual variables a genuine statistical meaning: a prior and its posterior-predictive validation law.
 
@@ -379,7 +379,7 @@ However, the proof is short because the mechanism is classical:
 
 - convexify the adversarial parameter by probability measures;
 - apply a minimax theorem;
-- optimize coordinatewise over ([0,1]);
+- optimize coordinatewise over \([0,1]\);
 - recognize total variation.
 
 The genuinely new burden is therefore not the existence of the algebraic identity but the structural range in which it produces new mathematics.
@@ -395,17 +395,17 @@ I would not regard the positive-part/Sion identity by itself as a top-four gener
 - a general finite-support theorem with sharp support size and operational consequences;
 - a scaling law derived directly from the posterior-predictive geometry.
 
-The current corollary giving at most ((N+2)^2) support points is useful but still a Carathéodory moment reduction, not such a classification.
+The current corollary giving at most \((N+2)^2\) support points is useful but still a Carathéodory moment reduction, not such a classification.
 
-# 8. The quantitative (HS/m) theorem is effective, but not the missing structural resource law
+# 8. The quantitative \(HS/m\) theorem is effective, but not the missing structural resource law
 
 The subdivision theorem is mathematically sound-looking and more informative than “some SOS degree eventually works.”
 
 It gives explicit:
 
-- mesh (1/m);
-- error (HS/m);
-- row-block degrees (d_r);
+- mesh \(1/m\);
+- error \(HS/m\);
+- row-block degrees \(d_r\);
 - total degree;
 - coefficient counts;
 - rational certificates;
@@ -437,7 +437,7 @@ The new contribution of the section is then principally:
 
 These are useful clarifications and operational refinements.
 
-But there is no matching finite-time lower bound, no sharp precision–state tradeoff, and no theorem that the displayed (4W(b+2)) implementation is close to optimal.
+But there is no matching finite-time lower bound, no sharp precision–state tradeoff, and no theorem that the displayed \(4W(b+2)\) implementation is close to optimal.
 
 Accordingly the autonomous section successfully repairs a conceptual omission from v23. It does not by itself add a new top-four-level theorem.
 
@@ -449,11 +449,11 @@ The current article is admirably short, but the shortening has a mathematical co
 
 The corollary for the positive-noise collision family depends on inherited facts from the unpublished companion, especially:
 
-1. the exact characterization of the private all-on candidate row as the independent product (b(p,q)) with independent actual mark, together with the legality of the feedback pushforward used in the outer reduction; and
+1. the exact characterization of the private all-on candidate row as the independent product \(b(p,q)\) with independent actual mark, together with the legality of the feedback pushforward used in the outer reduction; and
 2. the uniform physical estimate
-   [
-   operatorname{TV}(Q_{d,sigma},Q_*)<1/300.
-   ]
+   \[
+   \operatorname{TV}(Q_{d,\sigma},Q_*)<1/300.
+   \]
 
 These are not cosmetic references. They are the bridge from the abstract finite experiment to the claimed physical collision theorem.
 
@@ -499,12 +499,12 @@ That narrower claim is credible.
 The v24 article gives a clear local chain:
 
 actual preparation  
-(	o) likelihood  
-(	o) posterior/predictive continuation  
-(	o) validation-test quotient  
-(	o) dual certificate  
-(	o) residual-state realization  
-(	o) physical preparation threshold.
+\(\to\) likelihood  
+\(\to\) posterior/predictive continuation  
+\(\to\) validation-test quotient  
+\(\to\) dual certificate  
+\(\to\) residual-state realization  
+\(\to\) physical preparation threshold.
 
 This is much closer to the repository's own first-principles blueprint than v23 was.
 
@@ -570,7 +570,7 @@ The manuscript currently uses “sharp” carefully in many places, but the next
 There are three different statements:
 
 1. **Sharp preparation count at fixed width range:** yes.  
-   For the stated threshold interval and (Wge12), the minimum number of training preparations is exactly two.
+   For the stated threshold interval and \(W\ge12\), the minimum number of training preparations is exactly two.
 
 2. **Sharp width at two preparations:** no.  
    The least feasible peak width is unknown.
@@ -605,24 +605,24 @@ The following are not cosmetic. They are the shortest routes I see toward changi
 
 ## 17.1 Determine a genuine joint preparation–memory obstruction
 
-The highest-value next theorem would prove a lower bound involving both (N) and (W).
+The highest-value next theorem would prove a lower bound involving both \(N\) and \(W\).
 
-The cleanest target is probably the unresolved (N=2) width threshold.
+The cleanest target is probably the unresolved \(N=2\) width threshold.
 
 For example, prove either:
 
-[
-N_{2/5}^{m phys}(W,Q)>2
-quad	ext{for all }Wle W_0
-]
+\[
+N_{2/5}^{\rm phys}(W,Q)>2
+\quad\text{for all }W\le W_0
+\]
 
-for a nontrivial (W_0), or determine the exact least feasible peak width at (N=2).
+for a nontrivial \(W_0\), or determine the exact least feasible peak width at \(N=2\).
 
 This would turn the current high-width sample theorem into an actual Pareto theorem.
 
 ## 17.2 Solve one of the minimax values exactly
 
-Either determine (U_1) with a least-favorable prior and optimal response, or determine (U_2) for the marked family.
+Either determine \(U_1\) with a least-favorable prior and optimal response, or determine \(U_2\) for the marked family.
 
 The current gap method is enough for the threshold theorem but leaves the intrinsic statistical optimization hidden.
 
@@ -638,13 +638,13 @@ Even a restricted nontrivial case would be important.
 
 ## 17.4 Prove a scaling law
 
-A family indexed by (N), (W), or horizon with matching upper and lower asymptotics would materially strengthen the paper.
+A family indexed by \(N\), \(W\), or horizon with matching upper and lower asymptotics would materially strengthen the paper.
 
-The current (1) versus (2) separation is exact but finite and isolated.
+The current \(1\) versus \(2\) separation is exact but finite and isolated.
 
 ## 17.5 Make the physical bridge self-contained
 
-Bring the precise all-on private-row characterization and the (operatorname{TV}<1/300) physical approximation theorem into the current submission, at least at the level needed to verify every hypothesis of the abstract theorem.
+Bring the precise all-on private-row characterization and the \(\operatorname{TV}<1/300\) physical approximation theorem into the current submission, at least at the level needed to verify every hypothesis of the abstract theorem.
 
 Do not make the referee reconstruct the headline physical corollary from a 649-page internal development.
 
@@ -682,7 +682,7 @@ The paper would benefit from a sentence-level distinction between what is genera
 
 ## 18.3 Explain why the prior support is natural, or say plainly that it was discovered computationally
 
-The four support points (1/8,1/5,4/5,7/8) and weights (1/16,7/16,7/16,1/16) are effective, but the paper gives little conceptual explanation for them.
+The four support points \(1/8,1/5,4/5,7/8\) and weights \(1/16,7/16,7/16,1/16\) are effective, but the paper gives little conceptual explanation for them.
 
 A top-level referee naturally asks whether they arise from an extremality condition, symmetry, complementary slackness, moment matching, or simply search.
 
@@ -723,12 +723,12 @@ The values are separately defined and the physical converse genuinely addresses 
 ## 19.3 Request 24.3 — quantitative certificate information
 
 **Resolved at the level requested, but not elevated to a sharp complexity theorem.**  
-The (HS/m) theorem is explicit and mathematically useful.
+The \(HS/m\) theorem is explicit and mathematically useful.
 
 ## 19.4 Request 24.4 — go beyond binary width two
 
 **Partially resolved.**  
-The finite-architecture theorem has arbitrary finite widths and parameters, and the physical theorem has a continuous two-parameter family. A generic controlled (K)-state structural recursion is still open.
+The finite-architecture theorem has arbitrary finite widths and parameters, and the physical theorem has a continuous two-parameter family. A generic controlled \(K\)-state structural recursion is still open.
 
 ## 19.5 Request 24.5 — produce an actual physical upper certificate
 
@@ -770,7 +770,7 @@ I would reconsider at the requested venue standard after any one of the followin
 
 ## Route A: a true joint physical Pareto theorem
 
-Determine the least peak width at (N=2), or prove a nontrivial matched (N)-versus-(W) curve over a range of resources.
+Determine the least peak width at \(N=2\), or prove a nontrivial matched \(N\)-versus-\(W\) curve over a range of resources.
 
 This is the most direct continuation of v24.
 
@@ -780,9 +780,9 @@ Extend the architecture-uniform theorem to a class in which available experiment
 
 This would make the word “general” much more convincing.
 
-## Route C: exact minimax solution for a family of (N)
+## Route C: exact minimax solution for a family of \(N\)
 
-Use the posterior-predictive dual to compute (U_N), least-favorable priors, or sharp asymptotics for a nontrivial family beyond (N=1) versus one selected (N=2) construction.
+Use the posterior-predictive dual to compute \(U_N\), least-favorable priors, or sharp asymptotics for a nontrivial family beyond \(N=1\) versus one selected \(N=2\) construction.
 
 This would reveal a genuine invariant behind the certificate.
 
@@ -824,7 +824,7 @@ For clarity, my current assessment of the major pieces is as follows.
 
 ### Physical preparation theorem
 
-**Assessment:** real exact theorem, materially stronger than all prior versions. Exact only in preparation count for (Wge12); not a joint frontier.
+**Assessment:** real exact theorem, materially stronger than all prior versions. Exact only in preparation count for \(W\ge12\); not a joint frontier.
 
 ### Quantitative subdivision theorem
 
@@ -910,11 +910,11 @@ That is the theorem-level step that would change the status of the paper.
 - Physical lower-end margin independently checked as 78269/30720000.
 - Two-preparation continuum polynomial minimization spot-checked.
 - Residual-state closure/profile logic spot-checked.
-- Bernstein/conditioned-urn (HS/m) proof route spot-checked.
+- Bernstein/conditioned-urn \(HS/m\) proof route spot-checked.
 - Autonomous Markov-chain-tree stationary argument spot-checked.
 - No fatal one-line counterexample found in the new 14-page core.
 - Exactness of preparation count distinguished from width optimality.
-- Exact preparation threshold distinguished from exact (U_1) or (U_2) minimax values.
+- Exact preparation threshold distinguished from exact \(U_1\) or \(U_2\) minimax values.
 - Common-dominating-row architecture universality distinguished from general controlled experimental design.
 - Quantitative subdivision certificate distinguished from a sharp statistical complexity law.
 - Classical Hellman–Cover stationary optimum not counted as new.
