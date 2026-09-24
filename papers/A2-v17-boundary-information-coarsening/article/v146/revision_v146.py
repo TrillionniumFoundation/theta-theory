@@ -20,7 +20,7 @@ def expand(p,root):
     return re.sub(r'\\input\{([^}]+)\}',lambda m:expand(root/(m[1] if m[1].endswith('.tex') else m[1]+'.tex'),root),p.read_text())
 def entry(verified=False,source=None):
     p=PREFIX+'/v146'
-    status=('Native source: `'+source+'`. All 22 executed exact-regression scripts and all three native LaTeX builds passed. See the source-bound receipt; these checks do not certify all proofs or historical priority.') if verified else 'Native sources have been assembled. Build success must be read from the source-bound v146 receipt, not inferred from this source commit.'
+    status=('Native source: `'+source+'`. All 23 executed exact-regression scripts and all three native LaTeX builds passed. See the source-bound receipt; these checks do not certify all proofs or historical priority.') if verified else 'Native sources have been assembled. Build success must be read from the source-bound v146 receipt, not inferred from this source commit.'
     write(ROOT/'CURRENT_REVIEW_ENTRY.md','\n'.join([
       '# Canonical A2 referee entry — revision 146','',status,'',
       'Controlling v144 second report: `'+REVIEW+'`. Immediate predecessor: `'+BASE_SHA+'`.','',
@@ -29,7 +29,7 @@ def entry(verified=False,source=None):
       '**Non-submitted preserved research archive:** [archive-v144.pdf]('+p+'/archive-v144.pdf).','',
       '[Point-by-point response]('+p+'/RESPONSE_TO_V144_REPORTS_V146.md) · [Reading guide]('+p+'/README.md) · [Issue matrix]('+p+'/ISSUE_MATRIX_V146.json).','',
       '[Source lock]('+p+'/SOURCE_LOCK_V146.json) · [Build receipt]('+p+'/evidence/BUILD_RECEIPT_V146.json) · [Nondeletion audit]('+p+'/NONDELETION_V146.json) · [Literature audit]('+p+'/LITERATURE_AUDIT_V146.md).','',
-      'New in v146: intrinsic reconstruction of nonconstant pencil subbundles over smooth projective bases; recovery of the actual source bundle; classification of geometric isomorphisms with a filtered nilpotent automorphism kernel; an explicit nonisotrivial family across six spectral collisions. The all-pencil theorem, uniform sharpness, curve theorem and all predecessor mathematical parts are preserved.','',
+      'New in v146: an unmarked single-point Artin local inverse, coefficient-support orientation, an explicit local unipotent kernel, and intrinsic reconstruction of nonconstant pencil subbundles over smooth projective bases; recovery of the actual source bundle; classification of geometric isomorphisms with a filtered nilpotent automorphism kernel; an explicit nonisotrivial family across six spectral collisions. The all-pencil theorem, uniform sharpness, curve theorem and all predecessor mathematical parts are preserved.','',
       'The complete Ballico 1993 theorem-level six-axis comparison remains documentary-open. No anticipation, nonanticipation, exhaustive priority or editorial-acceptance claim is certified. Earlier revision and review branches are unchanged.','']))
 def assemble():
     assert BASE.exists() and (BOOT/'families.tex').exists()
@@ -178,7 +178,7 @@ All complex fibre pencils are permitted by the inverse. Its reduced base is smoo
 def build():
     os.chdir(HERE);e=HERE/'evidence';e.mkdir(exist_ok=True)
     names='exact_k3 exact_corank_two stratified_rank_two boundary_atlas generic_boundary_atlas revision131_exact revision132_exact revision133_exact revision134_exact revision135_exact revision136_exact revision137_exact revision138_exact revision139_exact revision140_exact revision141_spectral_exact revision141_likelihood_exact revision142_exact revision143_critical_exact revision144_projective_exact'.split()
-    scripts=['checks/'+n+'.py' for n in names]+['check_v145.py','check_v146.py']
+    scripts=['checks/'+n+'.py' for n in names]+['check_v145.py','check_v146.py','check_local_v146.py']
     records=[]
     for script in scripts:
         print('Execute',script,flush=True)
@@ -225,8 +225,10 @@ def verify():
     checks['archive_driver_unchanged']=sha(HERE/'archive-v144.tex')==sha(BASE/'archive-v144.tex')
     checks['new_moving_and_automorphism_results_present']={'thm:moving-reconstruction-v146','thm:automorphism-kernel-v146','lem:moving-coefficients-v146','ex:nonconstant-pencil-v146','ex:invisible-shear-v146'}<=set(labels(main))
     checks['separate_application_scope_retained']={'thm:projective-critical-v144','thm:critical-ramification-v144','thm:totally-real-reciprocal-likelihood'}<=set(labels(apps))
+    checks['local_inverse_exact_regression_passed']=json.loads((e/'LOCAL_INVERSE146_EXACT.json').read_text())['ok']
+    checks['local_inverse_and_unrestricted_family_present']={'thm:artin-local-inverse-v146','thm:unrestricted-moving-v146','prop:local-automorphisms-v146','lem:coefficient-orientation-v146'}<=set(labels(main))
     records=json.loads((e/'EXECUTED_CHECKS_V146.json').read_text())
-    checks['twenty_two_scripts_executed_successfully']=len(records)==22 and all(r['returncode']==0 and sha(HERE/r['script'])==r['sha256'] for r in records)
+    checks['twenty_three_scripts_executed_successfully']=len(records)==23 and all(r['returncode']==0 and sha(HERE/r['script'])==r['sha256'] for r in records)
     checks['v145_exact_regression_passed']=json.loads((e/'REVISION145_EXACT.json').read_text())['ok']
     checks['v146_exact_regression_passed']=json.loads((e/'REVISION146_EXACT.json').read_text())['ok']
     pdfs={}

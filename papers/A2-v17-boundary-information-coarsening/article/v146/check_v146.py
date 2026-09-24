@@ -45,7 +45,7 @@ def trunc(f,d):
     p=S.Poly(S.expand(f),x,y)
     return S.Add(*[a*x**m[0]*y**m[1] for m,a in p.terms() if sum(m)<=d])
 shear_cases=0
-for d in (13,20):
+for d in (11,20):
     for a in range(d+1):
         f=x**a*y**(d-a)
         assert trunc(f.subs(x,x+y*y)-f,d)==0

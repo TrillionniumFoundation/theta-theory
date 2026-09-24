@@ -15,7 +15,7 @@ E. Ballico, *On the Failure Locus of Higher Order Properties of Embeddings in Pr
 | Scheme structure | Full maximal-minor/Fitting ideal, including nonreduced structure | Not obtained; no claim about reduced versus nonreduced scope |
 | Infinitesimal information | First nonzero relation kernel at d=n^2+2n-4 recovers the untruncated homogeneous cone | Not obtained; no comparison theorem invented |
 | Families and base change | Universal finite relative construction with supplied socle; separately an intrinsic inverse over smooth reduced projective bases | Not obtained; no family or base-change statement inferred |
-| Inverse conclusion | All-pencil inverse; moving-family and actual-bundle reconstruction; geometric automorphism quotient and nilpotent kernel | Not obtained; no anticipation or nonanticipation conclusion |
+| Inverse conclusion | Unmarked single-point Artin inverse; unrestricted moving-family and actual-bundle reconstruction; geometric automorphism quotient and explicit local unipotent kernel | Not obtained; no anticipation or nonanticipation conclusion |
 
 The strengthened theorem does not close this documentary obligation. Every entry in the last column is unverified at theorem level. The distinct 1996 article remains a substantive antecedent but is not a substitute.
 
@@ -25,4 +25,6 @@ The pencil exterior representation, Pluecker embedding, matrix rank loci and spe
 
 ## Domains
 
-All complex fibre pencils are permitted by the inverse. Its reduced base is smooth connected projective and the right projective bundle is nontrivial. Arbitrary nonreduced-base change belongs to the separate marked-socle construction. Regularity belongs to the spectral readout. Split semisimplicity and simple disjoint poles belong to the critical-divisor application; real definiteness and separated data belong to the real likelihood application. The automorphism exact sequence is a statement about complex geometric groups, not a moduli-stack or full deformation equivalence.
+All complex fibre pencils are permitted by the inverse. Its reduced base is smooth connected projective and the source bundle is arbitrary; coefficient-support asymmetry supplies orientation, including over a point. Arbitrary nonreduced-base change belongs to the separate marked-socle construction. Regularity belongs to the spectral readout. Split semisimplicity and simple disjoint poles belong to the critical-divisor application; real definiteness and separated data belong to the real likelihood application. The automorphism exact sequence is a statement about complex geometric groups, not a moduli-stack or full deformation equivalence.
+
+The new local orientation criterion is the elementary contraction-support argument inside the classical Cauchy summand. Its use to exclude transposition is proved here; no priority claim is made for Cauchy decomposition itself. The full 1993 comparison remains unverified.
