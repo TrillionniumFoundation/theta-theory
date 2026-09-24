@@ -1,0 +1,138 @@
+name: A2 v148 isolated revision verification
+on:
+  push:
+    branches: [revision/a2-v148-coefficient-symmetries-moving-pencils-2026-09-24]
+    paths:
+      - '.github/workflows/a2-v148-revision.yml'
+      - '.revision-bootstrap/a2-v148-2026-09-24/**'
+      - 'papers/A2-v17-boundary-information-coarsening/article/v148/**'
+permissions:
+  contents: write
+concurrency:
+  group: a2-v148-isolated-publication
+  cancel-in-progress: false
+jobs:
+  verify-and-publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      P: papers/A2-v17-boundary-information-coarsening/article/v148
+      PREDECESSOR: 17fb7ba7cab6545f5da6d4fcde5283318bd26725
+      TARGET_BRANCH: revision/a2-v148-coefficient-symmetries-moving-pencils-2026-09-24
+      OPENBLAS_NUM_THREADS: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Record exact transport bytes
+        uses: actions/upload-artifact@v4
+        with:
+          name: a2-v148-source-transfer
+          path: .revision-bootstrap/a2-v148-2026-09-24/
+          retention-days: 7
+      - name: Verify source transfer before any execution
+        run: |
+          git fetch --no-tags --depth=1 origin "$PREDECESSOR"
+          git diff --exit-code "$PREDECESSOR" -- papers/A2-v17-boundary-information-coarsening/article/v147
+          python - <<'PY'
+          import base64,hashlib,json,os,zlib
+          from pathlib import Path,PurePosixPath
+          root=Path('.revision-bootstrap/a2-v148-2026-09-24')
+          repairs=json.loads((root/'transport_repairs.json').read_text()) if (root/'transport_repairs.json').exists() else {}
+          expected=['60926875e4cde028cd03cc609e00722ce882b7c0','1de9d6c2c047ba1794ac03487c96e6dc53946deb','ceae55d4f6656c80b6d089ba96da4e9b4b312938','dce79af6ea0f026e3ca112d756ce7d70816db29b','62f1efead1a9abe72b3d315f200aa9cbb60c12b0']
+          chunks=[]
+          for i,want in enumerate(expected,1):
+              name=f'payload-{i:02}.b64'
+              text=(root/name).read_text().strip()
+              for old,new in repairs.get(name,[]):
+                  if text.count(old)!=1: raise SystemExit('Ambiguous transport repair: '+name)
+                  text=text.replace(old,new,1)
+              b=text.encode()
+              got=hashlib.sha1(b'blob '+str(len(b)).encode()+b'\0'+b).hexdigest()
+              if got!=want: raise SystemExit(f'Transport hash mismatch in {name}: {got} != {want}')
+              chunks.append(text)
+          raw=zlib.decompress(base64.b64decode(''.join(chunks),validate=True))
+          if hashlib.sha256(raw).hexdigest()!='1a1146360f1f185941dc0969bbd12beab801bd95384497220823d5973fe45005':
+              raise SystemExit('Uncompressed source SHA256 mismatch')
+          source=json.loads(raw);p=Path(os.environ['P']);p.mkdir(parents=True,exist_ok=True)
+          for name,text in source.items():
+              rel=PurePosixPath(name)
+              if rel.is_absolute() or '..' in rel.parts or rel.suffix not in {'.tex','.py','.sh','.md','.json'}:
+                  raise SystemExit('Unsafe overlay path: '+name)
+              dest=p/name;dest.parent.mkdir(parents=True,exist_ok=True);dest.write_text(text)
+          lock=json.loads((p/'LOCAL_PREFLIGHT_SOURCE_SHA256_V148.json').read_text())
+          for name,want in lock.items():
+              if hashlib.sha256((p/name).read_bytes()).hexdigest()!=want: raise SystemExit('Preflight mismatch: '+name)
+          print('Verified exact source overlay and all',len(lock),'local-preflight hashes.')
+          PY
+      - name: Assemble and publish complete immutable source
+        run: |
+          python "$P/revision_v148.py" assemble
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f "$P" CURRENT_REVIEW_ENTRY.md
+          python - <<'PY'
+          import os,subprocess
+          p=os.environ['P']+'/'
+          names=subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines()
+          if any(not(n.startswith(p) or n=='CURRENT_REVIEW_ENTRY.md') for n in names):
+              raise SystemExit('Unexpected staged path; refusing publication')
+          PY
+          if ! git diff --cached --quiet; then
+            git commit -m 'source(A2 v148): publish exact stabilizers and moving-pencil moduli with preserved proofs [skip ci]'
+            git push origin "HEAD:refs/heads/$TARGET_BRANCH"
+          fi
+          echo "A2_SOURCE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - name: Install native mathematics build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+          python -m pip install sympy==1.14.0 numpy==2.3.5
+      - name: Execute all regressions and native PDF builds
+        run: |
+          python "$P/revision_v148.py" build
+          python - <<'PY'
+          import json,os,platform,subprocess,sys
+          from pathlib import Path
+          import sympy,numpy
+          p=Path(os.environ['P'])/'evidence'
+          data={'source_commit':os.environ['A2_SOURCE_COMMIT'],'workflow_run_id':os.environ['GITHUB_RUN_ID'],
+                'python':sys.version,'platform':platform.platform(),'sympy':sympy.__version__,'numpy':numpy.__version__,
+                'pdflatex':subprocess.check_output(['pdflatex','--version'],text=True).splitlines()[:2]}
+          (p/'BUILD_ENVIRONMENT_V148.json').write_text(json.dumps(data,indent=2)+'\n')
+          PY
+      - name: Publish verified PDFs and source-bound evidence
+        run: |
+          git diff --exit-code "$PREDECESSOR" -- papers/A2-v17-boundary-information-coarsening/article/v147
+          git add -f "$P/geometry.pdf" "$P/applications.pdf" "$P/archive-v144.pdf"
+          git add -f "$P/geometry-labels.aux" "$P/applications-labels.aux" "$P/archive-v144-labels.aux"
+          git add -f "$P/evidence" "$P/SOURCE_LOCK_V148.json" "$P/NONDELETION_V148.json" "$P/PROVENANCE_MANIFEST_V148.json" CURRENT_REVIEW_ENTRY.md
+          python - <<'PY'
+          import os,subprocess
+          p=os.environ['P']+'/'
+          names=subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines()
+          if any(not(n.startswith(p) or n=='CURRENT_REVIEW_ENTRY.md') for n in names):
+              raise SystemExit('Unexpected staged path; refusing publication')
+          PY
+          if ! git diff --cached --quiet; then
+            git commit -m "build(A2 v148): publish 25 checks and native PDFs from $A2_SOURCE_COMMIT [skip ci]"
+            git push origin "HEAD:refs/heads/$TARGET_BRANCH"
+          fi
+          mkdir -p publication
+          git archive HEAD "$P" CURRENT_REVIEW_ENTRY.md | tar -x -C publication
+          printf 'source_commit=%s\npublication_commit=%s\n' "$A2_SOURCE_COMMIT" "$(git rev-parse HEAD)" > publication/REMOTE_COMMITS.txt
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: a2-v148-verified-native-publication
+          path: publication
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: a2-v148-failure-diagnostics
+          path: papers/A2-v17-boundary-information-coarsening/article/v148/evidence
+          if-no-files-found: ignore
+          retention-days: 7
