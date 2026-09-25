@@ -1,0 +1,100 @@
+name: A2 v155 complete companion-paper publication
+on:
+  push:
+    branches:
+      - revision/a2-v155-boundary-fibres-referee-2026-09-25
+    paths:
+      - .github/workflows/a2-v155-build.yml
+      - papers/A2-v17-boundary-information-coarsening/article/v155/front-v155.tex
+      - papers/A2-v17-boundary-information-coarsening/article/v155/reciprocal-spectral-v155.tex
+      - papers/A2-v17-boundary-information-coarsening/article/v155/assemble_v155.py
+      - papers/A2-v17-boundary-information-coarsening/article/v155/check_v155.py
+permissions:
+  contents: write
+concurrency:
+  group: a2-v155-native-publication
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      DIR: papers/A2-v17-boundary-information-coarsening/article/v155
+      BRANCH: revision/a2-v155-boundary-fibres-referee-2026-09-25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 4
+          sparse-checkout: |
+            papers/A2-v17-boundary-information-coarsening/article/v153
+            papers/A2-v17-boundary-information-coarsening/article/v154
+            papers/A2-v17-boundary-information-coarsening/article/v155
+      - name: Verify source inputs before executing them
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, os
+          from pathlib import Path
+          d=Path(os.environ['DIR'])
+          locks=json.loads((d/'SOURCE_INPUTS_V155.json').read_text())
+          for name in ('front-v155.tex','reciprocal-spectral-v155.tex','assemble_v155.py','check_v155.py'):
+              actual=hashlib.sha256((d/name).read_bytes()).hexdigest()
+              assert actual==locks[name], (name,actual,locks[name])
+          PY
+      - name: Install exact algebra and TeX tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils python3-sympy
+      - name: Rerun exact checks and build all complete manuscripts
+        run: |
+          python3 "$DIR/check_v155.py"
+          python3 "$DIR/assemble_v155.py" --build
+          for name in geometry reconstruction divisor-geometry; do
+            pdftoppm -f 1 -singlefile -scale-to 1600 -png "$DIR/$name.pdf" "$DIR/$name-page1"
+          done
+      - name: Publish only the isolated revision
+        run: |
+          test "$(git ls-remote origin "refs/heads/$BRANCH" | cut -f1)" = "$(git rev-parse HEAD)"
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          d=Path(os.environ['DIR']);r=json.loads((d/'BUILD_RECEIPT_V155.json').read_text())
+          p=r['outputs']
+          Path('CURRENT_REVIEW_ENTRY.md').write_text(
+              '# A2 referee entry — revision 155\n\n'
+              f'[Paper I: reconstruction, {p["reconstruction"]["pages"]} pages]({d}/reconstruction.pdf) · '
+              f'[Paper II: divisor-incidence fibres and spectral power-zero schemes, {p["divisor-geometry"]["pages"]} pages]({d}/divisor-geometry.pdf) · '
+              f'[Complete preservation master, {p["geometry"]["pages"]} pages]({d}/geometry.pdf).\n\n'
+              f'All three standalone LaTeX sources and the [reading guide]({d}/README.md) are in `{d}`. '
+              'The companion sources contain their numerical cross-paper reference maps.\n\n'
+              f'Source commit: `{r["source_commit"]}`. Base: `{r["base_commit"]}`. '
+              f'Controlling complete-v153 review: `{r["controlling_review_commit"]}`.\n\n'
+              f'[Point-by-point response]({d}/RESPONSE_TO_V153_REPORT.md) · '
+              f'[Build receipt]({d}/BUILD_RECEIPT_V155.json) · [Nondeletion audit]({d}/NONDELETION_V155.json) · '
+              f'[Paper allocation]({d}/PAPER_MAP_V155.json) · [Exact checks]({d}/EXACT_CHECKS_V155.json).\n\n'
+              'New results: the exact determinant-power quadratic section of every reciprocal fibre; '
+              'the scheme-theoretic power-Fitting identity on every complex pencil line. '
+              'Classical apolar and orthogonal-orbit inputs are attributed. '
+              'All 301 predecessor labels and all 207 mathematical blocks are retained. '
+              'The actual v154 check suite is rerun; the historical 28-check suite is not. '
+              'Ballico 1993 remains documentary-open. Finite tests are not universal proof certificates or a journal decision.\n')
+          PY
+          git config user.name 'A2 revision build'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f "$DIR/geometry.tex" "$DIR/geometry.pdf" "$DIR/geometry.txt" "$DIR/reconstruction.tex" "$DIR/reconstruction.pdf" "$DIR/reconstruction.txt" "$DIR/divisor-geometry.tex" "$DIR/divisor-geometry.pdf" "$DIR/divisor-geometry.txt" "$DIR/PREVIOUS_FRONTMATTER_V154.tex" "$DIR/BUILD_RECEIPT_V155.json" "$DIR/NONDELETION_V155.json" "$DIR/PAPER_MAP_V155.json" "$DIR/EXACT_CHECKS_V155.json" "$DIR/INHERITED_V154_CHECKS_RERUN.json" CURRENT_REVIEW_ENTRY.md
+          if ! git diff --cached --quiet; then
+            git commit -m 'A2 v155: publish complete master and two companion manuscripts with exact verification receipts'
+            git push origin "HEAD:refs/heads/$BRANCH"
+          fi
+      - name: Retain the complete build and inputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a2-v155-complete-review-build
+          path: |
+            papers/A2-v17-boundary-information-coarsening/article/v155/
+            papers/A2-v17-boundary-information-coarsening/article/v154/geometry.tex
+            papers/A2-v17-boundary-information-coarsening/article/v154/check_v154.py
+            papers/A2-v17-boundary-information-coarsening/article/v153/check_v153.py
+          if-no-files-found: warn
+          retention-days: 14
