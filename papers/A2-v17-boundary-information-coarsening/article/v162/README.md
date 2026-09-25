@@ -7,11 +7,11 @@ Complete reviewed baseline: `9e3b6639021a5f1fdb725961c7a7b6bb9cf55779`.
 
 ## Two complete reading objects
 
-**Paper I: Finite failure schemes and the reconstruction of quadratic pencils** — 69 pages. [PDF](papers/A2-v17-boundary-information-coarsening/article/v162/reconstruction.pdf); [independent full LaTeX](papers/A2-v17-boundary-information-coarsening/article/v162/reconstruction.tex).
+**Paper I: Finite failure schemes and the reconstruction of quadratic pencils** — 69 pages. [PDF](reconstruction.pdf); [independent full LaTeX](reconstruction.tex).
 
-**Paper II: Power ideals and the Hilbert boundary of quadratic pencils** — 75 pages. [PDF](papers/A2-v17-boundary-information-coarsening/article/v162/divisor-geometry.pdf); [independent full LaTeX](papers/A2-v17-boundary-information-coarsening/article/v162/divisor-geometry.tex).
+**Paper II: Power ideals and the Hilbert boundary of quadratic pencils** — 75 pages. [PDF](divisor-geometry.pdf); [independent full LaTeX](divisor-geometry.tex).
 
-**Complete preservation master, not a third submission** — 137 pages. [PDF](papers/A2-v17-boundary-information-coarsening/article/v162/geometry.pdf); [independent full LaTeX](papers/A2-v17-boundary-information-coarsening/article/v162/geometry.tex).
+**Complete preservation master, not a third submission** — 137 pages. [PDF](geometry.pdf); [independent full LaTeX](geometry.tex).
 
 ## Mathematical reading route
 
@@ -28,12 +28,12 @@ Paper I, Appendix F: an algebraic envelope target, chart-invariant relative
 cotangent obstruction, and the explicitly effective family application.
 The sharp inverse and all inherited mathematical results remain intact.
 
-[All 38 referee responses](papers/A2-v17-boundary-information-coarsening/article/v162/RESPONSE_TO_V161_REPORT.md).
-[Theorem/page index](papers/A2-v17-boundary-information-coarsening/article/v162/THEOREM_INDEX_V162.json).
-[Build receipt](papers/A2-v17-boundary-information-coarsening/article/v162/BUILD_RECEIPT_V162.json).
-[Preservation audit](papers/A2-v17-boundary-information-coarsening/article/v162/NONDELETION_V162.json).
-[Exact finite checks](papers/A2-v17-boundary-information-coarsening/article/v162/EXACT_CHECKS_V162.json).
-[Primary-source comparison](papers/A2-v17-boundary-information-coarsening/article/v162/LITERATURE_AUDIT_V162.md).
+[All 38 referee responses](RESPONSE_TO_V161_REPORT.md).
+[Theorem/page index](THEOREM_INDEX_V162.json).
+[Build receipt](BUILD_RECEIPT_V162.json).
+[Preservation audit](NONDELETION_V162.json).
+[Exact finite checks](EXACT_CHECKS_V162.json).
+[Primary-source comparison](LITERATURE_AUDIT_V162.md).
 
 All 453 predecessor labels and all 299 predecessor mathematical blocks
 are retained byte for byte. The current master has 490 labels and 325
