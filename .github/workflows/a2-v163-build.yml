@@ -1,0 +1,100 @@
+name: A2 v163 complete revision publication
+on:
+  push:
+    branches: [revision/a2-v163-embedded-comparison-contact-fibres-2026-09-25]
+    paths:
+      - .github/workflows/a2-v163-build.yml
+      - papers/A2-v17-boundary-information-coarsening/article/v163/*-v163.tex
+      - papers/A2-v17-boundary-information-coarsening/article/v163/*_v163.py
+permissions:
+  contents: write
+concurrency:
+  group: a2-v163-complete-publication
+  cancel-in-progress: false
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Verify inspected source bytes
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib
+          p=Path('papers/A2-v17-boundary-information-coarsening/article/v163')
+          expected={
+            'complete-contact-fibre-v163.tex':'60387ddc9da43d45b1530f8a0f431ae738388aefe1c41b2f0337747932e578cc',
+            'embedded-comparison-v163.tex':'fc53c769fd670db0ebc7a3e03aa3ffec87081e28d69f5022e2f03f343a2f378d',
+            'products-and-strata-v163.tex':'19c5f9133d1224925a1a281ecff8306b445ec14f5f6fa749e319bd48f868d718',
+            'tangent-and-effective-v163.tex':'bef5f22262afbbe88a7ae5408d54492d1040ef7ca93baeb095cc6f80d34e5cd0',
+            'frontmatter_v163.py':'de4b295af78af47afc06e573f5c8bb0577e5799b9173d14df96408b3b2cdb4b7',
+            'assemble_v163.py':'306ca556cd7a6eb268e0fce483c0dbb9fe0f4d9421261bb44fba063356daadc6',
+            'check_v163.py':'07d846c0755aa7a102cb892415a23b5dc6c4121d2bab404f22cf395fa8dfc054',
+            'publish_v163.py':'2e81b1ac7637502fcbc1be711714e6417a01af5a4c3a16b3064fb6a17b5df0ba',
+            'RESPONSE_TO_V162_REPORT.md':'097c00c4ce2468e7fe93adb84188fa6f820739a93a1464b6c84c114dd22ee5d6',
+            'LITERATURE_AUDIT_V163.md':'d71044af8de74e5f7827ed5e82e44014448b7322f70367380c77049254f63497',
+          }
+          for name,h in expected.items():
+              actual=hashlib.sha256((p/name).read_bytes()).hexdigest()
+              assert actual==h,(name,actual,h)
+          print('All ten inspected source hashes agree.')
+          PY
+      - name: Install compilation and exact algebra tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils python3-venv
+          python3 -m venv /tmp/a2-v163-env
+          /tmp/a2-v163-env/bin/pip install 'sympy==1.14.0'
+      - name: Run new exact audits and the full inherited chain
+        run: /tmp/a2-v163-env/bin/python papers/A2-v17-boundary-information-coarsening/article/v163/check_v163.py
+      - name: Compile all three complete manuscripts
+        run: /tmp/a2-v163-env/bin/python papers/A2-v17-boundary-information-coarsening/article/v163/assemble_v163.py --build
+      - name: Prepare current review entry and rendered proof pages
+        run: |
+          /tmp/a2-v163-env/bin/python papers/A2-v17-boundary-information-coarsening/article/v163/publish_v163.py
+          p=papers/A2-v17-boundary-information-coarsening/article/v163
+          { python3 --version; /tmp/a2-v163-env/bin/python -c 'import sympy; print("SymPy",sympy.__version__)'; pdflatex --version | head -2; echo "Source $GITHUB_SHA"; echo "Run $GITHUB_RUN_ID"; } > "$p/BUILD_ENVIRONMENT.txt"
+      - name: Archive complete build outputs before publication
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: a2-v163-complete-review-build
+          path: papers/A2-v17-boundary-information-coarsening/article/v163
+          retention-days: 30
+          if-no-files-found: error
+      - name: Publish only the v163 outputs and root review entry
+        env:
+          GH_PUBLICATION_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = revision/a2-v163-embedded-comparison-contact-fibres-2026-09-25
+          p=papers/A2-v17-boundary-information-coarsening/article/v163
+          auth=$(printf 'x-access-token:%s' "$GH_PUBLICATION_TOKEN" | base64 -w0)
+          head=$(git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $auth" ls-remote origin "refs/heads/$GITHUB_REF_NAME" | cut -f1)
+          test "$head" = "$GITHUB_SHA"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f -- "$p"/*.tex "$p"/*.pdf "$p"/*.json "$p"/*.md "$p"/BUILD_ENVIRONMENT.txt "$p"/render-audit/*.png CURRENT_REVIEW_ENTRY.md
+          python3 - <<'PY'
+          from pathlib import Path
+          import json, subprocess
+          p=Path('papers/A2-v17-boundary-information-coarsening/article/v163')
+          r=json.loads((p/'BUILD_RECEIPT_V163.json').read_text())
+          c=json.loads((p/'EXACT_CHECKS_V163.json').read_text())
+          assert r['compiled'] and r['all_predecessor_math_blocks_retained_byte_for_byte']
+          assert r['body_partitioned_exactly_once']
+          assert (r['current_labels'],r['current_math_blocks'])==(520,348)
+          assert c['all_checks_pass'] and c['inherited_v162_suite_rerun']
+          assert all(v['clean_references_and_no_overfull_hboxes'] for v in r['outputs'].values())
+          paths=subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines()
+          assert paths and all(x.startswith(str(p)+'/') or x=='CURRENT_REVIEW_ENTRY.md' for x in paths),paths
+          for name in ('reconstruction','divisor-geometry','geometry'):
+              assert str(p/(name+'.pdf')) in paths
+          print('Complete manuscripts, inherited checks and isolated publication paths verified.')
+          PY
+          git commit -m 'A2 v163: publish complete paired manuscripts, full contact fibres and verification receipts [skip ci]'
+          git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $auth" push origin "HEAD:refs/heads/$GITHUB_REF_NAME"
