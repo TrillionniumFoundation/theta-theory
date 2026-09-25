@@ -7,11 +7,11 @@ Complete reviewed baseline: `299a77c6f77c4d5aec6e5737e1b1ba471ce5b7c8`.
 
 ## Complete reading objects
 
-**Paper I: Finite failure schemes and the reconstruction of quadratic pencils** — 72 pages. [PDF](papers/A2-v17-boundary-information-coarsening/article/v163/reconstruction.pdf); [independent complete LaTeX](papers/A2-v17-boundary-information-coarsening/article/v163/reconstruction.tex).
+**Paper I: Finite failure schemes and the reconstruction of quadratic pencils** — 72 pages. [PDF](reconstruction.pdf); [independent complete LaTeX](reconstruction.tex).
 
-**Paper II: Power ideals and the Hilbert boundary of quadratic pencils** — 85 pages. [PDF](papers/A2-v17-boundary-information-coarsening/article/v163/divisor-geometry.pdf); [independent complete LaTeX](papers/A2-v17-boundary-information-coarsening/article/v163/divisor-geometry.tex).
+**Paper II: Power ideals and the Hilbert boundary of quadratic pencils** — 85 pages. [PDF](divisor-geometry.pdf); [independent complete LaTeX](divisor-geometry.tex).
 
-**Complete preservation master, not a third submission** — 149 pages. [PDF](papers/A2-v17-boundary-information-coarsening/article/v163/geometry.pdf); [independent complete LaTeX](papers/A2-v17-boundary-information-coarsening/article/v163/geometry.tex).
+**Complete preservation master, not a third submission** — 149 pages. [PDF](geometry.pdf); [independent complete LaTeX](geometry.tex).
 
 ## Main revision
 
@@ -32,12 +32,12 @@ are determined. Higher lengths have a separately labelled conjecture,
 not an asserted full classification. The failure-family application is
 explicitly through the effective inverse, not the raw Artin-algebra stack.
 
-[All 44 responses](papers/A2-v17-boundary-information-coarsening/article/v163/RESPONSE_TO_V162_REPORT.md).
-[Theorem/page index](papers/A2-v17-boundary-information-coarsening/article/v163/THEOREM_INDEX_V163.json).
-[Build receipt](papers/A2-v17-boundary-information-coarsening/article/v163/BUILD_RECEIPT_V163.json).
-[Preservation](papers/A2-v17-boundary-information-coarsening/article/v163/NONDELETION_V163.json).
-[Exact audits](papers/A2-v17-boundary-information-coarsening/article/v163/EXACT_CHECKS_V163.json).
-[Primary-source record](papers/A2-v17-boundary-information-coarsening/article/v163/LITERATURE_AUDIT_V163.md).
+[All 44 responses](RESPONSE_TO_V162_REPORT.md).
+[Theorem/page index](THEOREM_INDEX_V163.json).
+[Build receipt](BUILD_RECEIPT_V163.json).
+[Preservation](NONDELETION_V163.json).
+[Exact audits](EXACT_CHECKS_V163.json).
+[Primary-source record](LITERATURE_AUDIT_V163.md).
 
 All 490 predecessor labels and 325 mathematical environment blocks are
 retained; the current master has 520 labels and 348 blocks. Preservation
