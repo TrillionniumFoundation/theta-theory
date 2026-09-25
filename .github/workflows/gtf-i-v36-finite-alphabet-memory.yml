@@ -1,0 +1,136 @@
+name: GTF-I v36 finite alphabet memory
+
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v36-finite-alphabet-memory-2026-09-25
+    paths:
+      - 'papers/GTF-I-v36-finite-alphabet-memory/**'
+      - '.github/workflows/gtf-i-v36-finite-alphabet-memory.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gtf-i-v36-finite-alphabet-memory
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/revision/general-theta-foundations-i-v36-finite-alphabet-memory-2026-09-25'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 20
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /papers/GTF-I-v36-finite-alphabet-memory/
+            /papers/GTF-I-v35-sharp-memory/
+            /papers/GTF-I-v34-compatible-dynamics/verify.py
+            /papers/GTF-I-v33-compatible-lifts/verify.py
+            /papers/GTF-I-v32-causal-width/verify.py
+            /papers/GTF-I-v31-compatible-memory/verify.py
+            /papers/GTF-I-v30-streaming-geometry/verify.py
+            /papers/GTF-I-v29-intrinsic-continuation/verify.py
+            /papers/GTF-I-v28-causal-response/verify.py
+            /papers/GTF-I-v27-resource-saddle/verify.py
+            /papers/GTF-I-v26-controlled-memory-foundations/verify.py
+            /papers/GTF-I-v25-controlled-minimax/verify.py
+            /papers/GTF-I-v24-structural-resources/verify.py
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Restore hash-checked native mathematical sources
+        shell: bash
+        run: |
+          python - <<'PY'
+          import hashlib,json,lzma
+          from pathlib import Path
+          h=Path('papers/GTF-I-v36-finite-alphabet-memory')
+          raw=b''.join((h/'.source-parts'/('part%02d.xz'%i)).read_bytes() for i in range(5))
+          if len(raw)!=37268 or hashlib.sha256(raw).hexdigest()!='8be055a3f06280975b36dc04ede1eee6d1719f86126518a3d73b59dab3cf2474':
+              raise RuntimeError('Source transport checksum mismatch')
+          data=json.loads(lzma.decompress(raw))
+          if not isinstance(data,dict) or len(data)!=20:
+              raise RuntimeError('Native source manifest mismatch')
+          for name,text in data.items():
+              p=Path(name)
+              if p.name!=name or p.suffix not in {'.tex','.py','.md','.json'} or not isinstance(text,str):
+                  raise RuntimeError('Invalid native source path')
+              dest=h/name
+              if dest.exists() and dest.read_text()!=text:
+                  raise RuntimeError('Refusing to replace modified native source: '+name)
+              dest.write_text(text)
+          print('Native sources restored and verified.')
+          PY
+      - name: Publish native source before building
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git fetch --depth=1 origin 6da551c5b804b683240d5f5631e1c4f5689e21bd
+          test -z "$(git diff --name-only --diff-filter=DMRT 6da551c5b804b683240d5f5631e1c4f5689e21bd)"
+          git add -f papers/GTF-I-v36-finite-alphabet-memory
+          if ! git diff --cached --quiet; then
+            git commit -m 'revise(GTF-I v36): full-word compression, finite rational gates, monomial width and charged coins [skip ci]'
+            git push origin HEAD:"$GITHUB_REF_NAME"
+          fi
+          echo "GTF_SOURCE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - name: Install typesetting and exact arithmetic
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended lmodern
+          python -m pip install sympy==1.14.0 mpmath==1.3.0 PyMuPDF==1.26.7
+      - name: Verify and build the complete revision
+        run: python papers/GTF-I-v36-finite-alphabet-memory/build.py
+      - name: Independently rebuild the standalone core
+        shell: bash
+        run: |
+          TMP=$(mktemp -d)
+          unzip -q papers/GTF-I-v36-finite-alphabet-memory/evidence/CORE_SOURCES.zip -d "$TMP"
+          python "$TMP/GTF-I-v36-finite-alphabet-memory/build.py" --core-only
+          python - "$TMP" <<'PY'
+          import fitz,sys
+          from pathlib import Path
+          h=Path('papers/GTF-I-v36-finite-alphabet-memory')
+          other=Path(sys.argv[1])/'GTF-I-v36-finite-alphabet-memory'
+          a=fitz.open(h/'paper.pdf');b=fitz.open(other/'paper.pdf')
+          if len(a)!=len(b): raise RuntimeError('Core page count differs')
+          for i in range(len(a)):
+              if a[i].get_text()!=b[i].get_text(): raise RuntimeError('Core text differs')
+              x=a[i].get_pixmap(matrix=fitz.Matrix(.5,.5),alpha=False)
+              y=b[i].get_pixmap(matrix=fitz.Matrix(.5,.5),alpha=False)
+              if x.samples!=y.samples: raise RuntimeError('Core rendering differs')
+          print('All standalone-core pages agree.')
+          PY
+      - name: Publish only the new package and referee-ready branch
+        shell: bash
+        run: |
+          git add -f papers/GTF-I-v36-finite-alphabet-memory GENERAL_THETA_FOUNDATIONS_I_V36_REVIEW_READY.md
+          git commit -m 'publish(GTF-I v36): finite-alphabet theorems, reply, standalone core and preserved archives [skip ci]'
+          test -z "$(git diff --name-only --diff-filter=DMRT 6da551c5b804b683240d5f5631e1c4f5689e21bd HEAD)"
+          READY='revision/general-theta-foundations-i-v36-referee-ready-2026-09-25'
+          if git ls-remote --exit-code --heads origin "$READY"; then
+            git fetch origin "$READY"
+            git merge-base --is-ancestor FETCH_HEAD HEAD
+          fi
+          git push origin HEAD:"$GITHUB_REF_NAME" HEAD:"$READY"
+      - name: Upload referee artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: GTF-I-v36-finite-alphabet-memory
+          path: papers/GTF-I-v36-finite-alphabet-memory/
+          retention-days: 30
+      - name: Upload failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: GTF-I-v36-diagnostics
+          path: |
+            papers/GTF-I-v36-finite-alphabet-memory/evidence/
+            papers/GTF-I-v36-finite-alphabet-memory/*.tex
+            papers/GTF-I-v36-finite-alphabet-memory/*.py
+          retention-days: 7
