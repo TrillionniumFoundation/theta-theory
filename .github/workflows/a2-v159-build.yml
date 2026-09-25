@@ -1,42 +1,114 @@
-name: A2 v159 source audit and revision build
+name: A2 v159 complete revision publication
 on:
   push:
     branches: [revision/a2-v159-intrinsic-boundary-modular-completion-2026-09-25]
     paths:
       - .github/workflows/a2-v159-build.yml
-      - papers/A2-v17-boundary-information-coarsening/article/v159/**
+      - papers/A2-v17-boundary-information-coarsening/article/v159/*.py
+      - papers/A2-v17-boundary-information-coarsening/article/v159/modular-boundary-v159.tex
 permissions:
-  contents: read
+  contents: write
+concurrency:
+  group: a2-v159-publication-${{ github.ref }}
+  cancel-in-progress: false
 jobs:
-  export-source:
+  build-and-publish:
+    if: github.ref == 'refs/heads/revision/a2-v159-intrinsic-boundary-modular-completion-2026-09-25'
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           fetch-depth: 1
           persist-credentials: false
-      - name: Export source for independent inspection without execution
+      - name: Verify inspected source bytes
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          import hashlib, json, shutil
-          root=Path('papers/A2-v17-boundary-information-coarsening/article')
-          out=Path('a2-v159-locked-sources'); out.mkdir()
-          hashes={}
-          for version in (153,154,155,157,158):
-              src=root/f'v{version}'
-              for p in src.iterdir():
-                  if p.is_file() and p.suffix in ('.tex','.py','.md','.json'):
-                      q=out/f'v{version}'/p.name; q.parent.mkdir(exist_ok=True)
-                      shutil.copyfile(p,q)
-                      hashes[str(q.relative_to(out))]=hashlib.sha256(p.read_bytes()).hexdigest()
-          r=Path('reviews/a2-v157-independent-harsh-top4-2026-09-25/REFEREE_REPORT.md')
-          shutil.copyfile(r,out/'REFEREE_REPORT_V157.md')
-          hashes['REFEREE_REPORT_V157.md']=hashlib.sha256(r.read_bytes()).hexdigest()
-          (out/'SOURCE_SHA256.json').write_text(json.dumps(hashes,indent=2)+'\n')
+          import hashlib
+          p=Path('papers/A2-v17-boundary-information-coarsening/article/v159')
+          expected={
+            'assemble_v159.py':'20ebe625dab53e657f243f1186097eca8be931cfb2f2f3e74fbee387faae0ae7',
+            'check_v159.py':'09449297c4765aeb8ffe5b7ba1ef2557b962dc74057077c8181adb4dbd20b10a',
+            'frontmatter_v159.py':'43a6768f319551c8bb48051d5ea81ad53ed03f86178b3309410ce9abdc648b95',
+            'modular-boundary-v159.tex':'475380fb514973d1297a577180585d39b5fefa5230c7750f65ff93fa4cdce7b7',
+          }
+          for name,h in expected.items():
+              actual=hashlib.sha256((p/name).read_bytes()).hexdigest()
+              assert actual==h,(name,actual,h)
+          print('All four inspected source hashes agree.')
           PY
+      - name: Install compilation and exact-algebra tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils python3-venv
+          python3 -m venv .a2-v159-env
+          .a2-v159-env/bin/pip install 'sympy==1.14.0'
+      - name: Rerun exact audits including the inherited chain
+        run: |
+          .a2-v159-env/bin/python papers/A2-v17-boundary-information-coarsening/article/v159/check_v159.py
+      - name: Build all three complete manuscripts
+        run: |
+          .a2-v159-env/bin/python papers/A2-v17-boundary-information-coarsening/article/v159/assemble_v159.py --build
+      - name: Render title pages and create the current review entry
+        run: |
+          p=papers/A2-v17-boundary-information-coarsening/article/v159
+          mkdir -p "$p/render-audit"
+          for name in reconstruction divisor-geometry geometry; do
+            pdftoppm -f 1 -singlefile -scale-to 1300 -png "$p/$name.pdf" "$p/render-audit/$name-title"
+          done
+          { python3 --version; .a2-v159-env/bin/python -c 'import sympy; print("SymPy",sympy.__version__)'; pdflatex --version | head -2; echo "Source $GITHUB_SHA"; } > "$p/BUILD_ENVIRONMENT.txt"
+          .a2-v159-env/bin/python - <<'PY'
+          from pathlib import Path
+          import json, os, hashlib
+          p=Path('papers/A2-v17-boundary-information-coarsening/article/v159')
+          r=json.loads((p/'BUILD_RECEIPT_V159.json').read_text())
+          c=json.loads((p/'EXACT_CHECKS_V159.json').read_text())
+          assert r['compiled'] and r['source_commit']==os.environ['GITHUB_SHA']
+          assert r['all_predecessor_math_blocks_retained_byte_for_byte']
+          assert c['all_checks_pass'] and c['inherited_v158_suite_rerun']
+          assert r['current_labels']==405 and r['current_math_blocks']==268
+          for name,rec in r['outputs'].items():
+              assert rec['clean_references_and_no_overfull_hboxes']
+              assert hashlib.sha256((p/(name+'.pdf')).read_bytes()).hexdigest()==rec['pdf_sha256']
+          root=Path('CURRENT_REVIEW_ENTRY.md')
+          if root.exists():(p/'PREVIOUS_REVIEW_ENTRY.md').write_bytes(root.read_bytes())
+          source=os.environ['GITHUB_SHA'];run=os.environ['GITHUB_RUN_ID']
+          text='# A2 referee entry — revision 159\n\n'
+          text+='Branch: `revision/a2-v159-intrinsic-boundary-modular-completion-2026-09-25`.\n\n'
+          text+=f'Mathematical source commit: `{source}`. Build run: `{run}`.\n\n'
+          text+='The complete outputs are materialized in the commit containing this entry. The source commit is not the output commit; an explicit output-SHA binding can be added without changing the manuscripts.\n\n'
+          text+='Controlling complete-v157 review: `b81ba4a2fac700f17b26163079bd17ef54947509`. Complete baseline: `a6d34cd2bb2075c64015f3667dbf3f391665cefd`. Additional preserved v158 derivations: `61c7a13fa1ce2c65777b9ca7a8e5f6c17dd6ca48`.\n\n'
+          for title,name in [('Paper I: finite failure schemes and reconstruction','reconstruction'),('Paper II: intrinsic power geometry and pencil boundary','divisor-geometry'),('Unified preservation master, not a third submission','geometry')]:
+              text+=f'**{title}** — {r["outputs"][name]["pages"]} pages. [Complete PDF]({p}/{name}.pdf); [full source]({p}/{name}.tex).\n\n'
+          text+=f'[Reading route]({p}/README.md) · [All 24 referee responses]({p}/RESPONSE_TO_V157_REPORT.md) · [Build receipt]({p}/BUILD_RECEIPT_V159.json) · [Preservation]({p}/NONDELETION_V159.json) · [Exact audits]({p}/EXACT_CHECKS_V159.json).\n\n'
+          text+='New reading priorities: Paper I, Theorem 10.1 and Proposition 11.1; Paper II, Theorems 6.1, 7.2, 11.3 and 11.4. The latter computes simultaneous ordinary-collision Hilbert fibres and residual-pencil moduli over a fixed semisimple pencil.\n\n'
+          text+='All 352 v157 labels and 236 mathematical blocks, and all locked v158 additions, are retained. The current master has 405 labels and 268 mathematical blocks. Each focused source embeds its companion references. The historical 28-check suite and theorem-level Ballico comparison are not claimed as completed. Finite tests do not certify the general proofs or an editorial decision.\n'
+          root.write_text(text)
+          (p/'PUBLICATION_MANIFEST_V159.json').write_text(json.dumps({'revision':159,'source_commit':source,'workflow_run':run,'branch':os.environ['GITHUB_REF_NAME'],'outputs':r['outputs'],'complete_outputs_materialized_by_following_commit':True},indent=2)+'\n')
+          PY
+      - name: Publish only v159 outputs and the root reading entry
+        env:
+          GH_PUBLICATION_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = revision/a2-v159-intrinsic-boundary-modular-completion-2026-09-25
+          p=papers/A2-v17-boundary-information-coarsening/article/v159
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- "$p"/*.tex "$p"/*.pdf "$p"/*.json "$p"/*.md "$p"/BUILD_ENVIRONMENT.txt "$p"/render-audit/*.png CURRENT_REVIEW_ENTRY.md
+          python3 - <<'PY'
+          import subprocess
+          paths=subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines()
+          prefix='papers/A2-v17-boundary-information-coarsening/article/v159/'
+          assert all(p.startswith(prefix) or p=='CURRENT_REVIEW_ENTRY.md' for p in paths),paths
+          assert paths,'Expected newly materialized review outputs'
+          PY
+          git commit -m 'A2 v159: materialize complete paired manuscripts and verification receipts [skip ci]'
+          auth=$(printf 'x-access-token:%s' "$GH_PUBLICATION_TOKEN" | base64 -w0)
+          git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $auth" push origin "HEAD:refs/heads/$GITHUB_REF_NAME"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: a2-v159-locked-sources
-          path: a2-v159-locked-sources/
+          name: a2-v159-complete-review-build
+          path: papers/A2-v17-boundary-information-coarsening/article/v159/
           retention-days: 14
