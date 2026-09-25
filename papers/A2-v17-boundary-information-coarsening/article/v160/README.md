@@ -10,26 +10,26 @@ Preserved post-review derivations: v158 and v159, through
 ## The two review objects
 
 **Paper I — Finite failure schemes and the reconstruction of quadratic pencils.**
-[Complete PDF](papers/A2-v17-boundary-information-coarsening/article/v160/reconstruction.pdf),
-[complete source](papers/A2-v17-boundary-information-coarsening/article/v160/reconstruction.tex), 65 pages.
+[Complete PDF](reconstruction.pdf),
+[complete source](reconstruction.tex), 65 pages.
 
 **Paper II — Intrinsic power geometry and the boundary of quadratic pencils.**
-[Complete PDF](papers/A2-v17-boundary-information-coarsening/article/v160/divisor-geometry.pdf),
-[complete source](papers/A2-v17-boundary-information-coarsening/article/v160/divisor-geometry.tex), 58 pages.
+[Complete PDF](divisor-geometry.pdf),
+[complete source](divisor-geometry.tex), 58 pages.
 
-The [preservation master](papers/A2-v17-boundary-information-coarsening/article/v160/geometry.pdf),
+The [preservation master](geometry.pdf),
 117 pages, contains all mathematics of both papers.
 It is not a third submission. Each focused source has embedded, stable
 companion references and can be compiled independently.
 
 ## Revision and evidence
 
-[Point-by-point response](papers/A2-v17-boundary-information-coarsening/article/v160/RESPONSE_TO_V157_REPORT.md).
-[Theorem and page index](papers/A2-v17-boundary-information-coarsening/article/v160/THEOREM_INDEX_V160.json).
-[Build receipt](papers/A2-v17-boundary-information-coarsening/article/v160/BUILD_RECEIPT_V160.json).
-[Nondeletion audit](papers/A2-v17-boundary-information-coarsening/article/v160/NONDELETION_V160.json).
-[Exact finite checks](papers/A2-v17-boundary-information-coarsening/article/v160/EXACT_CHECKS_V160.json).
-[Primary-source audit](papers/A2-v17-boundary-information-coarsening/article/v160/LITERATURE_AUDIT_V160.md).
+[Point-by-point response](RESPONSE_TO_V157_REPORT.md).
+[Theorem and page index](THEOREM_INDEX_V160.json).
+[Build receipt](BUILD_RECEIPT_V160.json).
+[Nondeletion audit](NONDELETION_V160.json).
+[Exact finite checks](EXACT_CHECKS_V160.json).
+[Primary-source audit](LITERATURE_AUDIT_V160.md).
 
 The source commit above contains authored inputs. The subsequent build
 commit materializes the complete sources, PDFs and receipts; its SHA is
