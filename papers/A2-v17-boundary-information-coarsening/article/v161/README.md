@@ -7,11 +7,11 @@ Preserved complete predecessor: `58c33453bf01d1f73083cb744d0479ecdc3dcf2f`.
 
 ## Complete reading objects
 
-**Paper I — Finite failure schemes and the reconstruction of quadratic pencils.** 68 pages. [PDF](papers/A2-v17-boundary-information-coarsening/article/v161/reconstruction.pdf) · [complete standalone LaTeX](papers/A2-v17-boundary-information-coarsening/article/v161/reconstruction.tex).
+**Paper I — Finite failure schemes and the reconstruction of quadratic pencils.** 68 pages. [PDF](reconstruction.pdf) · [complete standalone LaTeX](reconstruction.tex).
 
-**Paper II — Power ideals and the Hilbert boundary of quadratic pencils.** 65 pages. [PDF](papers/A2-v17-boundary-information-coarsening/article/v161/divisor-geometry.pdf) · [complete standalone LaTeX](papers/A2-v17-boundary-information-coarsening/article/v161/divisor-geometry.tex).
+**Paper II — Power ideals and the Hilbert boundary of quadratic pencils.** 65 pages. [PDF](divisor-geometry.pdf) · [complete standalone LaTeX](divisor-geometry.tex).
 
-**Preservation master — not a third submission.** 126 pages. [PDF](papers/A2-v17-boundary-information-coarsening/article/v161/geometry.pdf) · [complete standalone LaTeX](papers/A2-v17-boundary-information-coarsening/article/v161/geometry.tex).
+**Preservation master — not a third submission.** 126 pages. [PDF](geometry.pdf) · [complete standalone LaTeX](geometry.tex).
 
 Paper I has a seven-section main inverse proof; its full applications
 and prior extensions are in appendices. Paper II has a six-section main
@@ -20,12 +20,12 @@ all earlier power, spectral, collision and reciprocal-fibre extensions
 remain in appendices. Embedded companion references are stable and do
 not require an external auxiliary file.
 
-[All 30 referee responses](papers/A2-v17-boundary-information-coarsening/article/v161/RESPONSE_TO_V160_REPORT.md) ·
-[Theorem/page index](papers/A2-v17-boundary-information-coarsening/article/v161/THEOREM_INDEX_V161.json) ·
-[Primary-source comparison](papers/A2-v17-boundary-information-coarsening/article/v161/LITERATURE_AUDIT_V161.md) ·
-[Build receipt](papers/A2-v17-boundary-information-coarsening/article/v161/BUILD_RECEIPT_V161.json) ·
-[Preservation audit](papers/A2-v17-boundary-information-coarsening/article/v161/NONDELETION_V161.json) ·
-[Exact checks](papers/A2-v17-boundary-information-coarsening/article/v161/EXACT_CHECKS_V161.json).
+[All 30 referee responses](RESPONSE_TO_V160_REPORT.md) ·
+[Theorem/page index](THEOREM_INDEX_V161.json) ·
+[Primary-source comparison](LITERATURE_AUDIT_V161.md) ·
+[Build receipt](BUILD_RECEIPT_V161.json) ·
+[Preservation audit](NONDELETION_V161.json) ·
+[Exact checks](EXACT_CHECKS_V161.json).
 
 ## Principal changes
 
@@ -62,3 +62,14 @@ The authored input commit above precedes the materialization commit
 containing the complete sources and PDFs. After remote read-back,
 `papers/A2-v17-boundary-information-coarsening/article/v161/PUBLICATION_SEAL_V161.json` records the output commit and the
 checks actually performed. No self-referential commit hash is asserted.
+
+## Reproduction
+
+From this directory in a full branch checkout:
+
+```sh
+python3 check_v161.py
+python3 assemble_v161.py --build
+```
+
+The complete `.tex` files can also be compiled independently with pdflatex.
