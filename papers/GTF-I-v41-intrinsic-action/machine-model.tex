@@ -1,0 +1,89 @@
+\section{The experiment and its positive realization}\label{sec:model}
+In the general notation below, $G$ may be taken to be the effective
+matrix group $H$ of Section~\ref{sec:action41}; $U_a=A_a$. The main
+hypothesis is the constituent action gap, not the full regular gap of
+an arbitrary presenting group. Older sufficient full-group hypotheses
+are explicitly retained only where stated.
+Let $G$ be a compact group, let $U:G\to O(V)$ be a continuous orthogonal
+representation on $V=\R^D$, and fix a finite command alphabet
+$\mathcal A\subset G$. A finite seed set $\mathcal X\subset\mathbb S(V)$
+is given initially. For $w=(a_1,\ldots,a_N)$ write
+$U_w=U_{a_N}\cdots U_{a_1}$. Relative to an orthonormal basis
+$e_1,\ldots,e_D$, the prescribed numerical experiment is
+\begin{equation}\label{eq:law}
+ \Pp(B=b\mid x,w,j)=\frac{1+b\rho\langle e_j,U_wx\rangle}{2},
+ \quad b\in\{-1,1\},\quad j\in[D],\quad0<\rho\le1/10.
+\end{equation}
+All seeds, words and queries are required, not only almost-sure words
+under one source law. The probabilities are between $(1-\rho)/2$ and
+$(1+\rho)/2$.
+
+\begin{definition}[Clocked atomic-row realization]\label{def:machine}
+A horizon-$N$ machine consists of finite sets $\mathcal S_t$ with
+$|\mathcal S_t|=K_t$, a stochastic initialization $E_x$ on $\mathcal S_0$,
+stochastic matrices $T_{t,a}:\mathcal S_t\to\mathcal S_{t+1}$, and
+columns $d_j:\mathcal S_N\to[-1,1]$. Its mean response is
+\begin{equation}\label{eq:machine}
+ E_xT_{0,a_1}\cdots T_{N-1,a_N}d_j.
+\end{equation}
+It has error at most $\varepsilon$ if this differs from
+$\rho\langle e_j,U_wx\rangle$ by at most $2\varepsilon$ for every
+$(x,w,j)$. Available labels, including padding, count. All rows, including
+unreachable ones, are normalized. Only the updated label persists.
+The seed, word prefix, old random choices and any data-dependent protocol
+information cannot be consulted again unless represented by that label.
+The external time, horizon, fixed program and exact sampling from its
+rows are free. The final binary answer may be sampled when $j$ arrives;
+if retained, it uses a two-label final cut. Write $W_{N,\varepsilon}$ for
+the minimum of $\max(2,K_0,\ldots,K_N)$.
+\end{definition}
+The state alphabets and matrices may be chosen anew for each $N$, but the
+command symbols and their experimental meanings are fixed. Nothing
+requires one autonomous device or one decoder to serve all stopping
+lengths. No adaptive choice of the command is optimized in this model.
+A complex unitary representation can be treated by its realification;
+all inner products in the entropy argument are real.
+
+Fix one seed $x$ and an independent command law at each epoch for the
+converse. Let $Y_t=U_{a_t}\cdots U_{a_1}x$ and let $S_t$ be the actual
+machine state under this test law. Define
+\begin{equation}\label{eq:centroids}
+ Z_t=\E[Y_t\mid S_t],\qquad q_t=\E\norm{Z_t},\qquad
+ v_t=\E\norm{Z_t}^2.
+\end{equation}
+These random vectors and their laws are analytical devices, not an
+additional runtime register or oracle.
+\begin{lemma}[Quadratic budget and terminal calibration]\label{lem:terminal}
+For the fresh command $a$, put $X_t=U_aZ_t$. Then
+\begin{equation}\label{eq:conditional}
+ Z_{t+1}=\E[X_t\mid S_{t+1}],\quad
+ \Delta_t:=\E\norm{X_t-Z_{t+1}}^2=v_t-v_{t+1},\quad
+ \sum_{t<N}\Delta_t\le1.
+\end{equation}
+The sequences $q_t,v_t$ are nonincreasing and start at one. A machine
+with error at most $\varepsilon$ satisfies
+\begin{equation}\label{eq:kappa}
+ q_t\ge q_N\ge\kappa:=\rho/\sqrt D-2\varepsilon
+ \qquad(0\le t\le N).
+\end{equation}
+\end{lemma}
+\begin{proof}
+The current command is independent of the past, and the new label is
+generated from $(S_t,a)$ by a common row. Conditioning first on
+$(S_t,a,S_{t+1})$ and then on $S_{t+1}$ proves the first identity.
+The orthogonal projection identity for conditional expectation gives
+the second; Jensen and orthogonality give both monotonicities.
+The fixed seed has unit norm, even with randomized initialization.
+For calibration form $d=(d_1,\ldots,d_D)$ only in the proof, so
+$\norm d\le\sqrt D$. Conditioning on the complete word and using
+\eqref{eq:law}--\eqref{eq:machine} gives
+$\E\langle Y_N,d(S_N)\rangle\ge\rho-2\sqrt D\varepsilon$.
+On conditioning instead on $S_N$, this is at most $\sqrt D q_N$.
+This proves \eqref{eq:kappa}. It does not require a joint measurement
+of the $D$ coordinates.
+\end{proof}
+For each fixed profile, the optimum actual error is attained: all
+stochastic rows and terminal columns form a finite product of compact
+sets and the objective is a maximum of finitely many continuous
+functions. Thus the subsequent lower bounds concern the actual
+optimization, not a sum of local error certificates.

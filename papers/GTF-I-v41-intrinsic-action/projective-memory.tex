@@ -1,0 +1,168 @@
+\section{Sharp memory on complex projective orbits}\label{sec:projective}
+Write $r_q=\sqrt{1-1/q}$ and associate to a rank-one orthogonal
+projector $P$ the unit vector
+\begin{equation}\label{eq:pure-orbit}
+ Y(P)=\frac{P-I/q}{r_q}\in\Herm(q),\qquad
+ \mathcal K_q=\conv\{Y(P):\rank P=1\}.
+\end{equation}
+The body $\mathcal K_q$ consists of normalized centered density matrices.
+It is invariant under conjugation and contains zero. Its extreme orbit
+is $\CP^{q-1}$. Fix an orthonormal real basis $F_1,\ldots,F_D$ of
+$\Herm(q)$ and use its coordinate queries in \eqref{eq:law}.
+One may take as seeds the $q^2$ rank-one projectors onto
+$e_i$, $(e_i+e_j)/\sqrt2$ and $(e_i+i e_j)/\sqrt2$, $i<j$.
+Their centered matrices affinely span $\Herm(q)$. All seed and query
+alphabets are fixed when $q$ is fixed.
+
+\subsection{A projective enclosure with quadratic loss}
+For rank-one projectors use the distance
+$d(P,Q)=\sqrt{1-\tr(PQ)}$, the sine of their principal angle.
+\begin{lemma}[Finite projective synthesis]\label{lem:projective-net}
+For $0<h\le1$, there is an $h$-net $\mathcal V_h$ of rank-one
+projectors with at most
+\begin{equation}\label{eq:net-cardinality}
+ q\bigl(2\lceil2\sqrt{2(q-1)}/h\rceil+1\bigr)^{2(q-1)}
+\end{equation}
+elements, and the entries of all these projectors can be chosen in
+$\mathbb Q+i\mathbb Q$. If $qh^2<1$, then
+\begin{equation}\label{eq:projective-enclosure}
+ (1-qh^2)\mathcal K_q\subseteq
+ \conv\{Y(P):P\in\mathcal V_h\}\subseteq\mathcal K_q.
+\end{equation}
+\end{lemma}
+\begin{proof}
+Every complex line has a representative with a largest coordinate
+scaled to one and the real and imaginary parts of all other coordinates
+in $[-1,1]$. In each of the $q$ charts round these $2(q-1)$ real
+coordinates to the grid of step $1/M$, where
+$M=\lceil2\sqrt{2(q-1)}/h\rceil$. If $v,w$ are the original and
+rounded representatives, their norms are at least one and
+$\norm{v-w}\le\sqrt{2(q-1)}/(2M)$. Normalization changes their
+distance by at most a factor two, and the sine distance is at most
+the distance of these normalized representatives. Thus the stated
+set is an $h$-net. The projector $ww^*/\norm w^2$ has rational real
+and imaginary entries, and the grid count is \eqref{eq:net-cardinality}.
+
+For a nonzero traceless Hermitian $H$, let $\lambda_1$ and $\lambda_q$
+be its largest and smallest eigenvalues. A net projector within $h$
+of a top eigenline satisfies
+\[
+ \tr(HP)\ge\lambda_1-(\lambda_1-\lambda_q)h^2
+                \ge(1-qh^2)\lambda_1.
+\]
+Indeed $-\lambda_q\le(q-1)\lambda_1$ by trace zero. The support
+function of $\mathcal K_q$ at $H$ is $\lambda_1/r_q$.
+The support-function criterion for convex containment proves
+\eqref{eq:projective-enclosure}. It applies to every direction, not
+just a finite set of tested queries.
+\end{proof}
+
+\begin{theorem}[A finite-alphabet exact upper machine]
+\label{thm:projective-upper}
+For every finite unitary command alphabet and $0<\rho\le1/10$, the
+experiment on \eqref{eq:pure-orbit} has an exact machine of width
+$O_q(N^{q-1})$. For each $N$, all command transition matrices can be
+chosen independent of the epoch. Each row uses at most $q^2$ successors.
+The final decoder may depend on $N$.
+\end{theorem}
+\begin{proof}
+Take $h=(8qN)^{-1/2}$ and $\eta=1-1/(8N)$ in
+Lemma~\ref{lem:projective-net}. Let $V$ be the resulting finite set of
+centered vectors, and put $a_t=\eta^{-t}/4$. A label $i$ represents
+$a_tY(P_i)$ at epoch $t$. This is a proof description of a label;
+no matrix is stored in the register.
+
+Since $\rho/a_0=4\rho\le2/5<\eta$ and $0\in\mathcal K_q$,
+any seed $\rho Y(P)$ is a convex combination of $a_0V$.
+For each label $i$ and each command $U$, the vector
+$\eta UY(P_i)U^*$ lies in $\conv V$. Choose a convex representation
+and use its weights as the stochastic transition row. The choices depend
+on the command and label but not on $t$. Multiplying by $a_{t+1}$
+shows that the expected represented vector is updated by exact
+conjugation, since $a_{t+1}\eta=a_t$.
+
+Induction gives expected vector $\rho Y(U_wPU_w^*)$. The terminal
+column for query $j$ is $a_N\tr(F_jY(P_i))$. It is legal because
+$|\tr(F_jY(P_i))|\le1$ and Bernoulli's inequality gives
+$\eta^N\ge7/8$, so $a_N\le2/7$. Sampling a binary answer with this
+mean proves every conditional probability in \eqref{eq:law} exactly.
+Carath\'eodory's theorem in real dimension $D=q^2-1$ permits $q^2$
+successors. The number in \eqref{eq:net-cardinality} is
+$O_q(h^{-2(q-1)})=O_q(N^{q-1})$.
+\end{proof}
+The upper argument uses a quadratic support loss along the projective
+orbit. Applying a net on the full ambient sphere would instead give
+the larger exponent $(q^2-2)/2$.
+
+\subsection{Fixed finite algebraic alphabets}
+For $1\le j<q$ let $R_j,D_j\in\SU(q)$ act as the identity outside
+the adjacent coordinate pair $(j,j+1)$ and on that pair as
+\begin{equation}\label{eq:adjacent-gates}
+ R=\frac15\begin{pmatrix}3&-4\\4&3\end{pmatrix},\qquad
+ D=\begin{pmatrix}\zeta&0\\0&\overline\zeta\end{pmatrix},\qquad
+ \zeta=\frac{3+4i}{5}.
+\end{equation}
+The alphabet has $4(q-1)+1$ symbols:
+$\{I,R_j^{\pm1},D_j^{\pm1}:1\le j<q\}$.
+Assign probability $1/2$ to $I$ and $1/[8(q-1)]$ to each other symbol.
+
+\begin{proposition}[Qualitative group expansion]\label{prop:algebraic-gates}
+This command law has a norm gap on $L^2_0(\SU(q))$ for every fixed $q$.
+Its entries and probabilities are algebraic. No numerical gap value is
+asserted for this family.
+\end{proposition}
+\begin{proof}
+The number $\zeta$ is not a root of unity: $\zeta+\zeta^{-1}=6/5$
+is rational but not an algebraic integer. The powers of $R_j$ and $D_j$
+therefore have closures containing two distinct one-parameter subgroups
+in the corresponding embedded $\SU(2)$. Their Lie brackets generate
+that $\mathfrak{su}(2)$. The adjacent embedded Lie algebras generate
+$\mathfrak{su}(q)$: adjacent elementary off-diagonal directions produce
+all other off-diagonal directions by brackets, and their self-brackets
+produce the traceless diagonal directions. The closed generated subgroup
+is consequently $\SU(q)$.
+
+The adjoint entries are algebraic. The spectral-gap theorem of
+Benoist--de Saxc\'e \cite[Theorem 1.2]{BdS} applies to an adapted
+algebraic measure on this compact connected group with simple Lie
+algebra. Equivalently, one may use the algebraic unitary result of
+Bourgain--Gamburd \cite{BG12}. The symmetric average has an upper gap;
+weight $1/2$ at the identity makes its spectrum nonnegative. Its
+mean-zero operator norm is therefore strictly below one. This is the
+external full-group theorem, not a calculation in the defining
+$q$-dimensional representation.
+\end{proof}
+
+\begin{proof}[Proof of Corollary~\ref{cor:projective39}]
+Corollary~\ref{cor:conjugation} gives the lower order, for every fixed
+positive calibration $\kappa$. Theorem~\ref{thm:projective-upper} gives
+the matching exact upper order. Proposition~\ref{prop:algebraic-gates}
+supplies fixed finite alphabets. The quantum assertion follows from the
+next proposition. Taking binary logarithms gives the label-bit formula.
+\end{proof}
+
+\begin{proposition}[A fixed quantum realization]\label{prop:quantum}
+The projective experiment has an exact quantum realization on $\C^q$
+using fixed seed resets, the prescribed unitary commands and fixed
+query measurements. It is independent of $N$.
+\end{proposition}
+\begin{proof}
+On seed $P$ reset the density matrix to
+\[
+ \sigma_P=I/q+\rho Y(P)=(1-\rho/r_q)I/q+(\rho/r_q)P.
+\]
+This is positive and has trace one, since $0<\rho\le1/10<r_q$.
+Commands act by conjugation. For query $j$, use effects
+$(I+F_j)/2,(I-F_j)/2$. Hilbert--Schmidt normalization implies
+$\norm{F_j}_{\mathrm{op}}\le1$, so these are positive effects summing
+to $I$. Their outcome mean is
+$\tr(F_j\sigma_{U_wPU_w^*})=\rho\tr(F_jY(U_wPU_w^*))$.
+This is precisely \eqref{eq:law}. The seed reset is a channel, not a
+unitary; only one query is measured.
+\end{proof}
+The comparison is a fixed $q$-dimensional quantum register versus
+$(q-1)\log_2N+O(1)$ classical \emph{label bits}. Dimension or entropy
+advantages for quantum models are prior phenomena \cite{Gu,Thompson,Ghafari}.
+The assertion here is the proved classical width order for this complete
+worst-word numerical behavior. It does not request jointly independent
+answers to all queries or optimize arbitrary adaptive experiments.

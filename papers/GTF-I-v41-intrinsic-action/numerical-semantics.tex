@@ -1,0 +1,123 @@
+\section{Numerical realization is not cutpoint simulation}
+\label{sec:semantics}
+A numerical simulator must preserve the values in \eqref{eq:law},
+whereas a strict-cutpoint simulator need only preserve whether the
+answer probability is larger than $1/2$. The following construction
+makes the difference explicit in the present command model. Its
+stochastic embedding mechanism is classical; it is the quantitative
+width theorem that prevents numerical exactification at bounded width.
+
+\begin{proposition}[A constant-width sign simulator]\label{prop:sign-simulator}
+For any orthogonal action on $\R^D$, $D\ge2$, there is a machine
+with $D+1$ command-layer labels, common command rows, and one common
+query decoder for all lengths such that
+\begin{equation}\label{eq:attenuation}
+ \widetilde\Pp(B=1\mid x,w,j)-\tfrac12
+  =\tfrac12\lambda^{N+1}\langle e_j,U_wx\rangle,
+       \qquad\lambda=1/(2D).
+\end{equation}
+It preserves every strict comparison of \eqref{eq:law} with $1/2$,
+including equality. If $\lambda^{N+1}\le\rho$, its worst numerical
+binary-TV error is at least
+$(\rho-\lambda^{N+1})/(2\sqrt D)$.
+\end{proposition}
+\begin{proof}
+Let $v_0,\ldots,v_D$ be a regular simplex on the unit sphere of
+$\R^D$, centered at zero. Then
+\[
+ \sum_sv_s=0,\qquad \sum_sv_sv_s^T=\frac{D+1}{D}I,
+ \qquad
+ b_s(z)=\frac{1+D\langle v_s,z\rangle}{D+1}
+\]
+are barycentric coordinates for every $z$ in its convex hull. For
+$\norm z\le1/(2D)$ they are all positive and sum to one.
+Initialize with weights $b_s(\lambda x)$. For command $a$ use
+$T_a(s,r)=b_r(\lambda U_av_s)$; these are stochastic rows, independent
+of $N$ and of the epoch. Use the terminal mean $d_j(s)=\langle e_j,v_s\rangle$.
+The displayed barycentric identity shows inductively that the represented
+mean is $\lambda^{N+1}U_wx$. This proves \eqref{eq:attenuation} and
+its sign assertion. For every unit $U_wx$ some coordinate has modulus
+at least $1/\sqrt D$; binary total variation is half the difference
+of its means. This gives the numerical error bound. Only the label
+is stored. A held binary output uses a separate two-label cut.
+\end{proof}
+
+\begin{corollary}[Separation of numerical and sign-only width]
+\label{cor:semantic-separation}
+For every nontrivial expanding irreducible experiment in
+Theorem~\ref{thm:intrinsic-width41}, numerical width is of order
+$N^{s(U)/2}$ at the stated fixed positive accuracy, but strict-cutpoint
+width in the same reset--command--query interface is at most $D+1$
+for all lengths simultaneously. For complex conjugation the numerical
+order is $N^{q-1}$, while the sign-only command width is at most $q^2$.
+\end{corollary}
+\begin{proof}
+Combine Proposition~\ref{prop:sign-simulator} with the corresponding
+numerical width theorem. Here $D=q^2-1$ in the last assertion.
+The number counts command-layer labels, not the total state count of
+a language recognizer additionally parsing reset and query syntax.
+\end{proof}
+
+\subsection{The current quantum-automata comparison}
+We fix the version before comparing its theorem. The primary arXiv
+submission record inspected on September 26, 2026 lists version 1 dated
+April 8 and version 2 dated August 27, 2026. In version 1
+\cite{CWaprV1}, Proposition 3.1 is the $q^2$-dimensional mixed-state
+linearization, Theorem 3.2 gives $2k+6$ PFA states from a $k$-state
+GFA, and Corollary 3.3 gives $2q^2+6$. In the explicitly versioned
+version 2, the title and theorem numbering change. The PDF's printed
+pages 4 and 5 contain, respectively, Proposition 3.1 and Theorem 3.2
+with the improved constants used below. These are distinct primary
+versions, not interchangeable theorem numbers. We make no inference
+about why an earlier access exposed only one version.
+
+Chen--Wu's version-2 generalized-automaton conversion
+\cite[Proposition 3.1]{CWapr} maps a $k$-dimensional real
+zero-cutpoint generalized finite automaton to a probabilistic automaton
+with $k+1$ states. For its parameters $c,\delta>0$ the conversion has
+\begin{equation}\label{eq:CW-normalization}
+ f_{\rm PFA}(w)-1/(k+1)=\delta c^{|w|} f_{\rm GFA}(w).
+\end{equation}
+Their Theorem 3.2 consequently gives $q^2+1$ states for strict-cutpoint
+simulation of a $q$-state general one-way QFA. The second version of
+that paper improves the larger bound in its original version.
+Mixed-state linearization is exact before the positive embedding;
+the factor in \eqref{eq:CW-normalization} is the distinction relevant
+here. The later paper \cite[Proposition 4 and Theorems 11--12]{CWmay}
+uses the related conversion to compare hybrid quantum and classical
+language state costs. These are results about cutpoint languages,
+not fixed nonvanishing numerical accuracy.
+
+For clarity, the algebra behind \eqref{eq:CW-normalization} is that a
+uniform-row matrix $Q$ annihilates a zero-sum coordinate subspace,
+while a scaled matrix $cK_a$ carries the desired signed dynamics
+there. Matrices $Q+cK_a$ are made stochastic by choosing $c$ small.
+After $N$ commands the signed deviation is multiplied by $c^N$.
+A length-dependent decoder attempting to divide by this factor need
+not lie in $[-1,1]$ and is not a stochastic readout. More generally,
+a stochastic post-processing cannot increase total variation.
+Allowing redesign at every horizon does not overcome the numerical
+lower bound, which already permits that redesign.
+
+A prefix--suffix sign or rank argument alone cannot substitute for
+the occupation proof. The matrix of centered target responses has
+entries $\langle \rho U_px,U_s^*e_j\rangle$ and ordinary rank at most
+$D$ at every split, independently of the horizon. Adding the constant
+probability column gives rank at most $D+1$. The prepare--test
+sign-rank and shattering statements in \cite{CWmay} control a
+threshold relation in this fixed operator space; they do not force
+the numerical hidden-width growth proved here. Conversely the present
+argument gives no growing lower bound for the sign-only task, as
+Proposition~\ref{prop:sign-simulator} demonstrates.
+
+Chen's subsequent work \cite{ChenSep}, including its invariant-algebra
+simulation results and Section 7's stabilizer-orbit capacity analysis,
+also uses strict-cutpoint behavioral equivalence. Its dimensions and
+symmetry constraints belong in this comparison. Orbit dimension as
+$\dim G-\dim G_v$, and quantum operator-space linearization, are not
+claimed new here. Our invariant first takes the \emph{minimum over all
+nonzero directions in each irreducible representation}, then the
+\emph{maximum across active constituents}; it governs a growing
+fixed-accuracy numerical width as the word length grows. These are
+different optimization and asymptotic variables. No assertion of
+exhaustive priority clearance is made from this comparison.
