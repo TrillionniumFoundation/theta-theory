@@ -1,0 +1,104 @@
+name: A2 v164 complete revision publication
+on:
+  push:
+    branches: [revision/a2-v164-collision-wall-crossing-2026-09-26]
+    paths:
+      - .github/workflows/a2-v164-build.yml
+      - papers/A2-v17-boundary-information-coarsening/article/v164/collision-wall-crossing-v164.tex
+      - papers/A2-v17-boundary-information-coarsening/article/v164/effective-collisions-v164.tex
+      - papers/A2-v17-boundary-information-coarsening/article/v164/frontmatter_v164.py
+      - papers/A2-v17-boundary-information-coarsening/article/v164/assemble_v164.py
+      - papers/A2-v17-boundary-information-coarsening/article/v164/check_v164.py
+      - papers/A2-v17-boundary-information-coarsening/article/v164/publish_v164.py
+permissions:
+  contents: write
+concurrency:
+  group: a2-v164-complete-publication
+  cancel-in-progress: false
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Verify locked complete predecessor and source syntax
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import ast, hashlib
+          p=Path('papers/A2-v17-boundary-information-coarsening/article')
+          expected={
+            'v163/geometry.tex':'dd84a26f3e7fce5c9a37ea40188c3542442ef24c24d67d21d38c1661534110c5',
+            'v163/assemble_v163.py':'306ca556cd7a6eb268e0fce483c0dbb9fe0f4d9421261bb44fba063356daadc6'
+          }
+          for name,h in expected.items():
+              actual=hashlib.sha256((p/name).read_bytes()).hexdigest()
+              assert actual==h,(name,actual,h)
+          for source in (p/'v164').glob('*.py'):
+              ast.parse(source.read_text(),filename=str(source))
+          print('Complete predecessor locked and Python source syntax checked.')
+          PY
+      - name: Install compilation and exact algebra tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils python3-venv
+          python3 -m venv /tmp/a2-v164-env
+          /tmp/a2-v164-env/bin/pip install 'sympy==1.14.0'
+      - name: Run the new exact audits and full inherited chain
+        run: |
+          /tmp/a2-v164-env/bin/python papers/A2-v17-boundary-information-coarsening/article/v164/check_v164.py
+      - name: Compile complete manuscripts and check preservation
+        run: |
+          /tmp/a2-v164-env/bin/python papers/A2-v17-boundary-information-coarsening/article/v164/assemble_v164.py --build
+      - name: Prepare current review entry and proof-page renders
+        run: |
+          /tmp/a2-v164-env/bin/python papers/A2-v17-boundary-information-coarsening/article/v164/publish_v164.py
+          p=papers/A2-v17-boundary-information-coarsening/article/v164
+          { python3 --version; /tmp/a2-v164-env/bin/python -c 'import sympy; print("SymPy",sympy.__version__)'; pdflatex --version | head -2; echo "Source $GITHUB_SHA"; echo "Run $GITHUB_RUN_ID"; } > "$p/BUILD_ENVIRONMENT.txt"
+      - name: Archive complete build before publication
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: a2-v164-complete-review-build
+          path: papers/A2-v17-boundary-information-coarsening/article/v164
+          retention-days: 30
+          if-no-files-found: error
+      - name: Publish only the complete v164 files and root entry
+        env:
+          GH_PUBLICATION_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = revision/a2-v164-collision-wall-crossing-2026-09-26
+          p=papers/A2-v17-boundary-information-coarsening/article/v164
+          auth=$(printf 'x-access-token:%s' "$GH_PUBLICATION_TOKEN" | base64 -w0)
+          head=$(git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $auth" ls-remote origin "refs/heads/$GITHUB_REF_NAME" | cut -f1)
+          test "$head" = "$GITHUB_SHA"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f -- "$p"/*.tex "$p"/*.pdf "$p"/*.json "$p"/*.md "$p"/BUILD_ENVIRONMENT.txt "$p"/render-audit/*.png CURRENT_REVIEW_ENTRY.md
+          python3 - <<'PY'
+          from pathlib import Path
+          import json, subprocess, hashlib
+          p=Path('papers/A2-v17-boundary-information-coarsening/article/v164')
+          r=json.loads((p/'BUILD_RECEIPT_V164.json').read_text())
+          c=json.loads((p/'EXACT_CHECKS_V164.json').read_text())
+          assert r['compiled'] and r['all_predecessor_math_blocks_retained_byte_for_byte']
+          assert r['body_partitioned_exactly_once'] and not r['missing_labels'] and not r['duplicate_labels']
+          assert r['predecessor_labels']==520 and r['predecessor_math_blocks']==348
+          assert c['all_checks_pass'] and c['inherited_v163_suite_rerun']
+          for name,v in r['outputs'].items():
+              assert v['clean_references_and_no_overfull_hboxes']
+              assert hashlib.sha256((p/(name+'.pdf')).read_bytes()).hexdigest()==v['pdf_sha256']
+          paths=subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines()
+          assert paths,'Expected new materialized outputs'
+          assert all(x.startswith(str(p)+'/') or x=='CURRENT_REVIEW_ENTRY.md' for x in paths),paths
+          assert not subprocess.check_output(['git','diff','--cached','--name-only','--diff-filter=D'],text=True).strip()
+          for name in ('reconstruction','divisor-geometry','geometry'):
+              assert str(p/(name+'.pdf')) in paths
+          print('Complete PDFs, exact checks, preservation and isolated publication paths verified.')
+          PY
+          git commit -m 'A2 v164: materialize complete collision revision and verified PDF manuscripts [skip ci]'
+          git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $auth" push origin "HEAD:refs/heads/$GITHUB_REF_NAME"
