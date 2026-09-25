@@ -1,0 +1,126 @@
+name: GTF-I v37 sharp spectral memory
+
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v37-spectral-memory-2026-09-25
+    paths:
+      - 'papers/GTF-I-v37-spectral-memory/**'
+      - '.github/workflows/gtf-i-v37-spectral-memory.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gtf-i-v37-spectral-memory
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/revision/general-theta-foundations-i-v37-spectral-memory-2026-09-25'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 20
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /papers/GTF-I-v37-spectral-memory/
+            /papers/GTF-I-v36-finite-alphabet-memory/
+            /papers/GTF-I-v35-sharp-memory/verify.py
+            /papers/GTF-I-v34-compatible-dynamics/verify.py
+            /papers/GTF-I-v33-compatible-lifts/verify.py
+            /papers/GTF-I-v32-causal-width/verify.py
+            /papers/GTF-I-v31-compatible-memory/verify.py
+            /papers/GTF-I-v30-streaming-geometry/verify.py
+            /papers/GTF-I-v29-intrinsic-continuation/verify.py
+            /papers/GTF-I-v28-causal-response/verify.py
+            /papers/GTF-I-v27-resource-saddle/verify.py
+            /papers/GTF-I-v26-controlled-memory-foundations/verify.py
+            /papers/GTF-I-v25-controlled-minimax/verify.py
+            /papers/GTF-I-v24-structural-resources/verify.py
+            /GENERAL_THETA_FOUNDATIONS_I_V37_REVIEW_READY.md
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Restore and bind native manuscript sources
+        shell: bash
+        run: |
+          python - <<'PY'
+          import hashlib,json,lzma
+          from pathlib import Path
+          h=Path('papers/GTF-I-v37-spectral-memory')
+          raw=b''.join((h/'.source-parts'/('part%02d.xz'%i)).read_bytes() for i in range(7))
+          if len(raw)!=34788 or hashlib.sha256(raw).hexdigest()!='099b5776e897d76fa832ab35374c521073d136044090c7f464c03fa7e56e8a2b':
+              raise RuntimeError('Source transport mismatch')
+          payload=json.loads(lzma.decompress(raw))
+          if not isinstance(payload,dict) or len(payload)!=20: raise RuntimeError('Native manifest mismatch')
+          # Correct the inherited publication-entry filename, never an older entry.
+          old="(root/'GENERAL_THETA_FOUNDATIONS_I_V36_REVIEW_READY.md')"
+          new="(root/'GENERAL_THETA_FOUNDATIONS_I_V37_REVIEW_READY.md')"
+          if payload['build.py'].count(old)!=1: raise RuntimeError('Entry correction precondition failed')
+          payload['build.py']=payload['build.py'].replace(old,new)
+          if hashlib.sha256(payload['build.py'].encode()).hexdigest()!='bfb9844201e33680f40f89a2fb4d883da1c613f3307526dcec3638586cc63481':
+              raise RuntimeError('Build source mismatch')
+          for name,text in payload.items():
+              p=Path(name)
+              if p.name!=name or p.suffix not in {'.tex','.py','.md','.json'} or not isinstance(text,str):
+                  raise RuntimeError('Unsafe native entry')
+              dest=h/name
+              if dest.exists() and dest.read_text()!=text:
+                  raise RuntimeError('Refusing to replace changed native source: '+name)
+              dest.write_text(text)
+          print('Restored and checked 20 native files; older root entries are not written.')
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          test -z "$(git diff --name-only --diff-filter=DMRT d6b89112389b97a16a287fa32f3f75e4c2d72e0a)"
+          git add -f papers/GTF-I-v37-spectral-memory
+          if ! git diff --cached --quiet; then
+            git commit -m 'revise(GTF-I v37): publish native entropy-dissipation proofs and fixed-duration implementation [skip ci]'
+            git push origin HEAD:"$GITHUB_REF_NAME"
+          fi
+          echo "GTF_SOURCE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - name: Install typesetting and verification dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended lmodern
+          python -m pip install sympy==1.14.0 PyMuPDF==1.26.7 numpy==2.3.5 scipy==1.17.0 mpmath==1.3.0
+      - name: Verify and build full revision
+        run: python papers/GTF-I-v37-spectral-memory/build.py
+      - name: Rebuild the standalone core package
+        shell: bash
+        run: |
+          CORE=$(mktemp -d)
+          python -m zipfile -e papers/GTF-I-v37-spectral-memory/evidence/CORE_SOURCES.zip "$CORE"
+          python "$CORE/GTF-I-v37-spectral-memory/build.py" --core-only
+      - name: Publish only new revision paths and referee-ready branch
+        shell: bash
+        run: |
+          git add -f papers/GTF-I-v37-spectral-memory GENERAL_THETA_FOUNDATIONS_I_V37_REVIEW_READY.md
+          git commit -m 'publish(GTF-I v37): sharp finite-alphabet theorem, referee response, independent core build and preserved volumes [skip ci]'
+          test -z "$(git diff --name-only --diff-filter=DMRT d6b89112389b97a16a287fa32f3f75e4c2d72e0a HEAD)"
+          READY='revision/general-theta-foundations-i-v37-referee-ready-2026-09-25'
+          if git ls-remote --exit-code --heads origin "$READY"; then
+            git fetch origin "$READY"
+            git merge-base --is-ancestor FETCH_HEAD HEAD
+          fi
+          git push origin HEAD:"$GITHUB_REF_NAME" HEAD:"$READY"
+      - name: Upload referee artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: GTF-I-v37-spectral-memory
+          path: papers/GTF-I-v37-spectral-memory/
+          retention-days: 30
+      - name: Upload failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: GTF-I-v37-diagnostics
+          path: |
+            papers/GTF-I-v37-spectral-memory/evidence/
+            papers/GTF-I-v37-spectral-memory/*.tex
+            papers/GTF-I-v37-spectral-memory/*.py
+          retention-days: 7
