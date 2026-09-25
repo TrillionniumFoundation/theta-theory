@@ -27,7 +27,7 @@ The current primary arXiv record and v2 PDF verify the Chen–Wu v2 constants. B
 
 ## Reproduction
 
-Python 3.11+, SymPy 1.14.0, PyMuPDF 1.26.7, mpmath and a LaTeX installation with AMS, Latin Modern, mathrsfs, geometry, microtype, booktabs, mathtools, needspace and hyperref suffice.
+Python 3.11+, SymPy 1.14.0, PyMuPDF 1.26.7, mpmath, and a LaTeX installation with AMS, Latin Modern, mathrsfs, geometry, microtype, booktabs, mathtools, needspace and hyperref suffice for the standalone core. The full archival build also requires NumPy 2.3.5 and SciPy 1.17.0 for the inherited v37/v38 verification programs. These are installed explicitly in the publication workflow.
 
 ```sh
 python papers/GTF-I-v41-intrinsic-action/verify.py

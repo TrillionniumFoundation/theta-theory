@@ -47,66 +47,21 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Restore hash-checked native mathematical sources
-        shell: bash
-        run: |
-          python - <<'PY'
-          import hashlib,json,lzma,shutil
-          from pathlib import Path
-          h=Path('papers/GTF-I-v41-intrinsic-action')
-          old=h.parent/'GTF-I-v39-orbit-response'
-          raw=b''.join((h/'.source-parts'/('part%02d.xz'%i)).read_bytes() for i in range(7))
-          if len(raw)!=41140 or hashlib.sha256(raw).hexdigest()!='ec99db0503e59dfb7e4cc1fa8b0a1377b3b3732efdef6158a0e308ed830df2e8':
-              raise RuntimeError('Native source transport integrity failure')
-          payload=json.loads(lzma.decompress(raw))
-          if not isinstance(payload,dict) or len(payload)!=23:
-              raise RuntimeError('Unexpected source manifest')
-          for name,text in payload.items():
-              p=Path(name)
-              if p.name!=name or p.suffix not in {'.tex','.py','.md','.json'} or not isinstance(text,str):
-                  raise RuntimeError('Unsafe source entry')
-              dest=h/name
-              if dest.exists() and dest.read_text()!=text:
-                  raise RuntimeError('Refusing to overwrite modified native source: '+name)
-              dest.write_text(text)
-          inherited={
-              'arithmetic-normalization.tex':'a06958ba703036ead87eb3c6f0ba833106d490cf2ce9aeb9ad7c3a32fb4dc89c',
-              'conjugation-geometry.tex':'587cd927814d09ef1144d6db80caf4bd3efc338e6913aaf310bf11599008f865',
-              'effective-gates.tex':'edefa1fa69b97259fb0db8b385263c0088376cb042d73e7e7d91118ceb610e52',
-              'matrix-families.tex':'0f6cab32c6459888ffb10198c27154f08dbbf7cfe39b901e3457892c5b7fbbd8',
-              'orbit-entropy.tex':'c6073662b41ca91501193396f5569d1b9d6b8d5d154ae7d8f5dfc620bdcf700a',
-              'orbit-strata.tex':'ccd915849010e5a56cd5b6ea189aa7e42589868c09dad9942548109369d38fa0',
-              'orbit-synthesis.tex':'a8469a673f9de529c94e82925a3f692ad349755ee9e22b01042ee01c04f7cc00',
-              'projective-memory.tex':'d611ea857c28ce0fe7b92862e547877a39612cf4662f321ea247b516307620c4'
-          }
-          for name,value in inherited.items():
-              data=(old/name).read_bytes()
-              if hashlib.sha256(data).hexdigest()!=value:
-                  raise RuntimeError('Predecessor source mismatch: '+name)
-              dest=h/name
-              if dest.exists() and dest.read_bytes()!=data:
-                  raise RuntimeError('Refusing to overwrite inherited module: '+name)
-              shutil.copy2(old/name,dest)
-          print('Verified and restored 23 new/revised native files and 8 unchanged mathematical modules.')
-          PY
-      - name: Publish native source before building
+      - name: Bind committed native source
         shell: bash
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git fetch --depth=1 origin 9707844addcd9eb478eb863514f288923f9d40fd
-          test -z "$(git diff --name-only --diff-filter=DMRT 9707844addcd9eb478eb863514f288923f9d40fd)"
-          git add -f papers/GTF-I-v41-intrinsic-action
-          if ! git diff --cached --quiet; then
-            git commit -m 'revise(GTF-I v41): native intrinsic-action, canonical-activation and representation-minima proofs [skip ci]'
-            git push origin HEAD:"$GITHUB_REF_NAME"
-          fi
+          test -f papers/GTF-I-v41-intrinsic-action/main.tex
+          test -f papers/GTF-I-v41-intrinsic-action/canonical-activation.tex
+          test -z "$(git diff --name-only --diff-filter=DMRT 9707844addcd9eb478eb863514f288923f9d40fd HEAD)"
           echo "GTF_SOURCE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
       - name: Install typesetting and exact arithmetic
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended lmodern
-          python -m pip install sympy==1.14.0 PyMuPDF==1.26.7
+          python -m pip install sympy==1.14.0 PyMuPDF==1.26.7 numpy==2.3.5 scipy==1.17.0
       - name: Verify and build the full revision
         run: python papers/GTF-I-v41-intrinsic-action/build.py
       - name: Rebuild the standalone core sources independently
