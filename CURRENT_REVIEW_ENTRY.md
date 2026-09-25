@@ -1,7 +1,7 @@
 # A2 revision 161 — controlling referee entry
 
 Branch: `revision/a2-v161-multiple-incidence-contact-singularities-2026-09-25`.
-Authored source commit: `e347ed575268adbf9b561f1b9826d533a72fe3d7`.
+Authored source commit: `da3ce030046e2651cf81a76be472329214373c88`.
 Controlling complete-v160 report: `596df442f9155c79b6b33378c0a208259385b2ae`.
 Preserved complete predecessor: `58c33453bf01d1f73083cb744d0479ecdc3dcf2f`.
 
