@@ -8,11 +8,11 @@ The reviewed v162 tip is `299a77c6f77c4d5aec6e5737e1b1ba471ce5b7c8`.
 
 ## Complete reading objects
 
-**Paper I: Finite failure schemes and the reconstruction of quadratic pencils** — 73 pages. [PDF](papers/A2-v17-boundary-information-coarsening/article/v164/reconstruction.pdf); [independent complete LaTeX](papers/A2-v17-boundary-information-coarsening/article/v164/reconstruction.tex).
+**Paper I: Finite failure schemes and the reconstruction of quadratic pencils** — 73 pages. [PDF](reconstruction.pdf); [independent complete LaTeX](reconstruction.tex).
 
-**Paper II: Power ideals and the Hilbert boundary of quadratic pencils** — 89 pages. [PDF](papers/A2-v17-boundary-information-coarsening/article/v164/divisor-geometry.pdf); [independent complete LaTeX](papers/A2-v17-boundary-information-coarsening/article/v164/divisor-geometry.tex).
+**Paper II: Power ideals and the Hilbert boundary of quadratic pencils** — 89 pages. [PDF](divisor-geometry.pdf); [independent complete LaTeX](divisor-geometry.tex).
 
-**Complete preservation master, not a third submission** — 155 pages. [PDF](papers/A2-v17-boundary-information-coarsening/article/v164/geometry.pdf); [independent complete LaTeX](papers/A2-v17-boundary-information-coarsening/article/v164/geometry.tex).
+**Complete preservation master, not a third submission** — 155 pages. [PDF](geometry.pdf); [independent complete LaTeX](geometry.tex).
 
 ## Main revision
 
@@ -33,13 +33,13 @@ An explicit 4-by-4 symmetric pencil realizes the collision in a fixed
 complete-quadric target. Its application to failure algebras remains through
 the effective inverse, not the unrestricted raw Artin-algebra stack.
 
-[All 44 current referee responses](papers/A2-v17-boundary-information-coarsening/article/v164/RESPONSE_TO_V162_REPORT.md).
-[Archived v163 response](papers/A2-v17-boundary-information-coarsening/article/v164/PREVIOUS_RESPONSE_V163.md).
-[Theorem/page index](papers/A2-v17-boundary-information-coarsening/article/v164/THEOREM_INDEX_V164.json).
-[Build receipt](papers/A2-v17-boundary-information-coarsening/article/v164/BUILD_RECEIPT_V164.json).
-[Preservation audit](papers/A2-v17-boundary-information-coarsening/article/v164/NONDELETION_V164.json).
-[Exact finite audits](papers/A2-v17-boundary-information-coarsening/article/v164/EXACT_CHECKS_V164.json).
-[Primary-source comparison](papers/A2-v17-boundary-information-coarsening/article/v164/LITERATURE_AUDIT_V164.md).
+[All 44 current referee responses](RESPONSE_TO_V162_REPORT.md).
+[Archived v163 response](PREVIOUS_RESPONSE_V163.md).
+[Theorem/page index](THEOREM_INDEX_V164.json).
+[Build receipt](BUILD_RECEIPT_V164.json).
+[Preservation audit](NONDELETION_V164.json).
+[Exact finite audits](EXACT_CHECKS_V164.json).
+[Primary-source comparison](LITERATURE_AUDIT_V164.md).
 
 All 520 predecessor labels and 348
 mathematical environment blocks are retained. The current master has
