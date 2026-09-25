@@ -1,0 +1,86 @@
+\section{Fixed-duration finite-coin implementation}\label{sec:coins}
+We make the timing repair explicit rather than assuming that duration is
+unobservable. The environment supplies a command at a ready boundary.
+Every completed update uses the same publicly specified number of
+microsteps, independent of the private bits, old label and command.
+No output or internal decision is visible during the update; only its
+fixed-time ready boundary is visible. Threshold tables are nonuniform
+read-only data. The bit position, input latch, old label and control
+variables are counted. There is no uncharged microstep clock.
+
+\begin{theorem}[Padded sparse-row compiler]\label{thm:compiler}
+Let a finite transducer have peak $K$, common command rows and at most
+$L\ge2$ successors per initialization, command or decoder row, with fixed
+seed, command and query alphabets. For $\delta>0$, put
+\[
+ b=\max\left\{1,\left\lceil\log_2
+              \frac{(N+2)(L-1)}\delta\right\rceil\right\},
+ \qquad D=(L-1)b.
+\]
+It admits a fair-bit implementation with exactly $D$ private fair-bit
+microsteps per macro update, terminal error increased by at most
+$\delta$, and at most $C_{\mathcal A,X,J,L}K(b+1)$ persistent labels.
+Its duration discloses no information about the private trajectory.
+\end{theorem}
+\begin{proof}
+For each categorical row, consider its conditional binary decision tree,
+with at most $L-1$ internal nodes. Replace each conditional probability
+by a lower dyadic approximation with $b$ bits, keeping probabilities zero
+and one exact. Coupling decisions bounds the row total variation by
+$(L-1)2^{-b}$. Zero-mass nodes are given arbitrary legal rows.
+
+To draw a threshold $m/2^b$, compare $b$ private fair bits with its stored
+binary digits. Until the first mismatch the sampled prefix is equal to
+the table prefix, so no prefix integer is needed. Store the bit position
+and the relation (equal, below or above); after a mismatch, continue
+consuming the remaining bits of this comparison without changing the
+relation. After $b$ steps, move to the selected child of the categorical
+tree. Once a leaf has been selected, hold its new label and continue
+consuming dummy bits until exactly $D$ steps have elapsed. Deterministic
+thresholds and trees of shorter depth are padded in the same way.
+
+Active states retain the old label, current input, tree node, relation
+and counted progress; their number is at most a constant times $K(b+1)$
+for fixed alphabets and $L$. After leaf selection the old label is
+released; the sampler holds only the new label and counted progress.
+It does not hold two independent $K$-valued labels. Ready, initialization
+and query phases add only the same order. A final binary answer can be
+held inside the padding states. All timing information is the deterministic
+number $D$, so even a source observing ready times receives no private
+coin information from duration. This observation does not enlarge the
+main theorem into an adaptive-policy optimization result.
+
+Each completed macro update has its rounded stochastic law regardless
+of padding. Stochastic contraction and a coupling of the at most $N+2$
+updates bound final error by $(N+2)(L-1)2^{-b}\le\delta$.
+The construction changes no mathematical target to a cutpoint language.
+\end{proof}
+
+The comparison/tree construction is standard; the purpose is to price
+its control and remove the early-stopping side channel noted for the
+preceding self-paced compiler. It is not zero-error fair-bit sampling of
+arbitrary irrational probabilities.
+
+\begin{corollary}[Padded label-bit rate]\label{cor:coin-rate}
+For every fixed positive tolerance in Theorem~\ref{thm:main}, the exact
+spherical upper machine has a padded fair-bit approximation with
+$O(N^{(d-1)/2}\log(N+1))$ labels. In this separately defined nonuniform
+padded model, minimum persistent label bits obey
+\[
+ \frac{d-1}{2}\log_2N-O(1)
+ \le b_N^{\rm pad}
+ \le\frac{d-1}{2}\log_2N+O(\log\log(N+1)).
+\]
+For the five rational gates the leading coefficient is one.
+\end{corollary}
+\begin{proof}
+Lemma~\ref{lem:net-upper} gives common rows with $L=d+1$ (enlarge $L$
+for the binary output if necessary). Compile them with $\delta$ equal
+to the desired fixed tolerance, so $b=O(\log(N+1))$. This proves the
+upper label and bit bounds. At ready boundaries every padded machine
+induces an atomic transducer with no more labels than its total control
+alphabet. The sharp atomic lower bound therefore proves the lower bit
+bound. Tables, their generation, and arithmetic remain uncharged in both
+nonuniform measures. No exact order for the padded label count is inferred
+from these leading-bit estimates.
+\end{proof}

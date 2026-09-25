@@ -1,0 +1,89 @@
+\section{The experiment and its registers}\label{sec:model}
+\begin{definition}[Clocked stochastic realization]\label{def:machine}
+For a prescribed horizon $N$, a machine consists of finite alphabets
+$[K_t]$, $0\le t\le N$, initial distributions $E_x$, row-stochastic
+matrices $T_{t,a}$ of size $K_t\times K_{t+1}$, and columns
+$d_j\in[-1,1]^{K_N}$. Its response mean is
+$E_xT_{0,a_1}\cdots T_{N-1,a_N}d_j$. Its error is one half the maximum
+absolute discrepancy from $\rho e_j^TU_wx$ over the finite set of seeds,
+words and queries. Its peak is $\max_tK_t$, also including two labels
+if the final binary answer is retained at a charged cut. The minimum
+peak at error $\varepsilon$ is $W_{N,\varepsilon}$.
+\end{definition}
+
+The seed and query are each supplied once. The current command is consumed
+in its update. Only the updated register survives; a retained seed,
+input transcript, random seed, or data-dependent scheduling variable
+would be part of that register. Available, not merely reachable, labels
+are counted; padding therefore gives a larger admissible profile. Every
+unused row is normalized. The epoch, horizon, row tables, their construction,
+lookup and arithmetic, and exact atomic stochastic sampling are free.
+A machine may be redesigned for every $N$ and need not use common rows.
+This is a nonuniform probabilistic ordered read-once width, not total
+program size, autonomous state count or uniform computational space.
+
+All converse distributions below are imposed on the external word,
+independently of private randomness. Wordwise correctness licenses this
+choice; the test law is not additional runtime information. The commands
+in this paper's new converse are independent, with a possibly different
+law at each epoch. No independence of the hidden past given its current
+state is assumed.
+
+\begin{lemma}[Conditional moments and calibration]\label{lem:terminal}
+Fix a unit seed $x$. Let the fresh command $a_{t+1}$ be independent of the
+past and let private updates obey the stated Markov rule. Define
+\[
+ Z_t=\E[Y_t\mid S_t],\quad q_t=\E\norm{Z_t},\quad
+ v_t=\E\norm{Z_t}^2,\qquad Y_t=U_{a_t}\cdots U_{a_1}x.
+\]
+Then $\norm{Z_t}\le1$, $q_t$ and $v_t$ are nonincreasing, and
+\begin{equation}\label{eq:martingale-update}
+ Z_{t+1}=\E[U_{a_{t+1}}Z_t\mid S_{t+1}],\qquad
+ \Delta_t:=v_t-v_{t+1}=\E\norm{U_{a_{t+1}}Z_t-Z_{t+1}}^2.
+\end{equation}
+In particular $\sum_{t<N}\Delta_t\le1$. If the machine has wordwise
+error at most $\varepsilon$, then
+\begin{equation}\label{eq:calibration}
+ q_t\ge q_N\ge\kappa:=\rho/\sqrt d-2\varepsilon.
+\end{equation}
+\end{lemma}
+\begin{proof}
+Conditioning on $S_t,a_{t+1}$ and its randomized successor does not change
+the conditional mean of $Y_t$: the new command is independent of the
+past and the update uses that past only through $S_t$. The tower property
+gives \eqref{eq:martingale-update}. Conditional Jensen and the
+orthogonality of $U_a$ give both monotonicities. The orthogonal projection
+identity for conditional expectation gives the equality for $\Delta_t$.
+Initially $Z_0=x$, even when initialization randomizes the register.
+
+In the proof only, combine the separate decoder columns as
+\[D(S_N)=(d_1(S_N),\ldots,d_d(S_N)),\qquad\norm{D(S_N)}\le\sqrt d.\]
+For every word its conditional mean is within $2\sqrt d\varepsilon$
+of $\rho Y_N$. Hence
+\[
+ \rho-2\sqrt d\varepsilon
+ \le\E\langle Y_N,D(S_N)\rangle
+ =\E\langle Z_N,D(S_N)\rangle\le\sqrt d q_N.
+\]
+This does not require jointly sampling multiple answers. The vector
+combines different permitted final query columns only in the proof.
+\end{proof}
+
+\begin{proposition}[The isolated-cut minimum]\label{prop:separate}
+If $\Id\in\mathcal A$ and $d\rho<1$, the normalized residual rank and
+separate positive minimum at every internal cut equal $d+1$.
+\end{proposition}
+\begin{proof}
+The residuals are affine functions of $\rho U_wx$. Idle prefixes from
+$\pm e_j$ span $\R^d$, and idle suffixes with coordinate queries separate
+these coordinates. Normalization adds an independent constant direction,
+so the rank is $d+1$. A regular simplex with inradius $\rho$ has
+circumradius $d\rho<1$ and contains every reachable predictive vector.
+Its vertices therefore define legal binary response channels after every
+orthogonal suffix. Decompose the selected-cut vector into those vertices.
+One may store the raw prefix before this cut and the raw suffix together
+with the simplex label after it. Those other state sets are finite and
+uncapped. Thus this is a factorization within a complete machine. Rank
+gives the matching lower bound. This proposition, inherited from
+\cite{GTF36}, does not assert simultaneous attainment.
+\end{proof}

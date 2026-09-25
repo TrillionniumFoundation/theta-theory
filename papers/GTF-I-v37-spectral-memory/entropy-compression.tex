@@ -1,0 +1,102 @@
+\section{Entropy cost of a conditional centroid}\label{sec:entropy}
+For $\tau>0$, let $\gamma_\tau$ be the centered Gaussian density on
+$\R^d$ with covariance $\tau^2 I$. If $X$ is bounded, write
+$f_X=\Law(X)*\gamma_\tau$ and
+$\Ent(f)=-\int_{\R^d}f\log f$. All entropies and divergences in this
+section use natural logarithms. Gaussian mixtures with bounded centers
+have finite entropy and the Gaussian tail bounds needed below.
+
+\begin{lemma}[Quadratic cost of barycentric compression]
+\label{lem:centroid-entropy}
+Let $X$ be a bounded random vector and $J$ a finite random variable on
+the same probability space. Set $M=\E[X\mid J]$. Then
+\begin{equation}\label{eq:centroid-entropy}
+ \Ent(f_X)-\Ent(f_M)
+       \le\frac{\E\norm{X-M}^2}{2\tau^2}.
+\end{equation}
+No sign assertion for the left side is required.
+\end{lemma}
+\begin{proof}
+Put $f=f_M$. Direct differentiation of the finite Gaussian mixture gives
+\begin{equation}\label{eq:log-hessian}
+ \nabla^2\log f(y)
+ =-\tau^{-2}I+\tau^{-4}\operatorname{Cov}(M\mid M+\tau G=y)
+ \succeq-\tau^{-2}I,
+\end{equation}
+where $G$ is an independent standard Gaussian. This identity also follows
+by differentiating the log-sum of exponentials after factoring out
+$\exp(-\norm y^2/(2\tau^2))$.
+Define $\varphi(x)=-\E_G\log f(x+\tau G)$. Boundedness of the centers
+justifies differentiation and gives
+$\nabla^2\varphi\preceq\tau^{-2}I$. Therefore
+\[
+ \varphi(X)-\varphi(M)
+ \le \langle\nabla\varphi(M),X-M\rangle
+           +\frac{\norm{X-M}^2}{2\tau^2}.
+\]
+The first term averages to zero conditional on $J$. On the other hand,
+nonnegativity of $\KL(f_X\Vert f)$ gives
+\[
+ \Ent(f_X)-\Ent(f)
+ \le -\int(f_X-f)\log f
+ =\E\varphi(X)-\E\varphi(M).
+\]
+These inequalities prove the result. The Gaussian density used for
+convolution is a common mathematical kernel; no additional noisy state
+is assumed in the transducer.
+\end{proof}
+
+The Gaussian score/Hessian mechanism is classical. For comparison,
+Polyanskiy--Wu \cite[Proposition 1 and Corollary 4]{PW} control smoothed
+entropy differences by a Wasserstein distance. Here the specified
+martingale coupling $M=\E[X\mid J]$ cancels the linear Taylor term.
+The resulting one-sided \emph{squared} error, rather than a square-root
+continuity estimate for unrelated measures, is what can be summed along
+a stochastic register. We use the explicit proof above, not an assumed
+entropy monotonicity under convex order.
+
+\subsection{An entropy increment from a spherical gap}
+Let $\Pi$ be spherical averaging at each radius on $L^2(\R^d)$:
+\[
+ (\Pi u)(r\omega)=\int_{\mathbb S^{d-1}}u(r\theta)\,d\sigma(\theta).
+\]
+It is the orthogonal projection onto radial functions. The angular gap
+\eqref{eq:gap-intro}, integrated in polar coordinates, gives
+\begin{equation}\label{eq:radial-gap}
+ \norm{Pu}_2^2\le\norm{\Pi u}_2^2
+                  +\lambda^2\norm{u-\Pi u}_2^2.
+\end{equation}
+Here $P$ acts on Euclidean functions by the same orthogonal pullbacks;
+it preserves radial functions and commutes with $\Pi$.
+
+\begin{lemma}[Entropy increment and angular Hellinger variance]
+\label{lem:entropy-gap}
+For a Gaussian mixture $f$ with bounded centers,
+\begin{equation}\label{eq:entropy-gap}
+ \Ent(Pf)-\Ent(f)
+ \ge (1-\lambda^2)\norm{\sqrt f-\Pi\sqrt f}_2^2.
+\end{equation}
+Without a strict gap the entropy increment is still nonnegative.
+\end{lemma}
+\begin{proof}
+Set $f_a(y)=f(U_a^{-1}y)$ and $g=\sum_ap(a)f_a=Pf$.
+All $f_a$ have the same entropy, and hence
+\[
+ \Ent(g)-\Ent(f)=\sum_ap(a)\KL(f_a\Vert g).
+\]
+For probability densities $u,v$, Jensen's inequality gives
+$\KL(u\Vert v)\ge-2\log\int\sqrt{uv}
+\ge2(1-\int\sqrt{uv})=\norm{\sqrt u-\sqrt v}_2^2$.
+Consequently the entropy increment is at least
+\begin{align*}
+ \sum_ap(a)\norm{\sqrt{f_a}-\sqrt g}_2^2
+ &=1-\norm{P\sqrt f}_2^2
+       +\norm{P\sqrt f-\sqrt g}_2^2\\
+ &\ge1-\norm{P\sqrt f}_2^2.
+\end{align*}
+As $\norm{\sqrt f}_2^2=1$, \eqref{eq:radial-gap} proves the assertion.
+The last statement also follows directly from entropy concavity. This
+argument uses the full $L^2$ gap only on square roots of smoothed
+probability densities; it assumes no logarithmic Sobolev inequality and
+no one-step mixing of point masses.
+\end{proof}

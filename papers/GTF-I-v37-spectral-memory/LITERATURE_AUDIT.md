@@ -1,0 +1,33 @@
+# Literature and theorem audit — v37
+
+This is a primary-source comparison, not independent or exhaustive priority certification. Source-access descriptions refer to this revision's work. Third-party papers and font files are not bundled in the submission archives.
+
+## Analytic ingredients and the new conclusion
+
+| Source / inspected material | Object and conclusion used | Relation to v37 |
+|---|---|---|
+| Polyanskiy–Wu, *Wasserstein continuity of entropy and outer bounds for interference channels*, IEEE TIT 62 (2016), 3992–4002; full arXiv:1504.04419 text, Proposition 1, Proposition 2 and Corollary 4 | Regular log-density and Gaussian smoothing give entropy continuity for unrelated input laws in a Wasserstein metric. | Gaussian score control is classical. The v37 conditional-mean coupling cancels a Taylor linear term and gives a one-sided squared-loss inequality. We prove that special inequality directly; we do not claim its Hessian identity has no predecessor. |
+| Graf–Luschgy, *Foundations of Quantization for Probability Distributions*, LNM 1730 (2000); publisher record and metadata inspected | Finite-codebook quantization framework and classical asymptotic rates. | Cited for context, not represented as a new full-book proof audit. Sphere cosine distortion is half squared chordal quantization. |
+| Iacobelli, *Asymptotic quantization for probability measures on Riemannian manifolds*, ESAIM COCV 22 (2016), 770–785; full arXiv:1412.4026, Definition 1.1 and Theorem 1.4 inspected | Manifold quantization asymptotics with integrability/geometric hypotheses. | The compact-sphere rate 2/(d-1) is classical. The v37 sparse square-root-density obstruction and causal entropy sum are different quantities, not a new Zador exponent. |
+| Bourgain–Gamburd, *A spectral gap theorem in SU(d)*, JEMS 14 (2012), 1455–1511; full arXiv:1108.6264, Theorem 1 inspected | Algebraic dense finite generators have a spectral gap. | This deep external input supplies existence of the five-gate sphere gap. No finite defining-matrix test certifies it. No numerical lambda or effective excluded horizon is asserted. |
+
+The analytic chain proved in the article is: full angular L2 gap -> entropy increment of an orthogonally mixed Gaussian density -> angular Hellinger defect of a sparse centroid law -> gap-weighted occupation, with the entropy cost of barycentric compression paid from one telescoping quadratic loss. The gap is not strengthened to a logarithmic Sobolev inequality and the atomic walk is not assumed to mix in one step.
+
+## Classical and quantum computational models
+
+| Source / inspected material | Resource and objective | Boundary of the current result |
+|---|---|---|
+| Reingold–Steinke–Vadhan (RANDOM 2013), Steinke–Vadhan–Wan (Theory of Computing 2017), Lee–Pyne–Vadhan (APPROX/RANDOM 2022); inherited r20 comparison, current primary article/publisher theorem summaries checked for the latter two | Regular/permutation/width-three branching programs; Boolean-input Fourier growth and pseudorandomness under their stated transition hypotheses. | V37 has arbitrary row-stochastic hidden tables and a real query readout. Its spectral gap belongs to the external action, not to the hidden program. Some deterministic estimates extend by convexity; no blanket distinction based solely on randomization is claimed. No exhaustive randomized OBDD lower-bound audit is asserted. |
+| Gu–Wiesner–Rieper–Vedral, *Quantum mechanics can reduce the complexity of classical models*, Nature Communications 3 (2012), 762; primary publisher abstract and arXiv abstract inspected | Smaller stored entropy for stochastic-process models. | Quantum memory advantage is prior work. V37 concerns worst-word finite-horizon label cardinality, not optimal stationary entropy. Publisher article number 762 is used. |
+| Thompson–Garner–Vedral–Gu, *Using quantum theory to simplify input–output processes*, npj Quantum Information 3 (2017), 6; full publisher PDF inspected, including memory definitions | Quantum transducers for input–output processes, stationary input-dependent memory entropy and structural/worst-input considerations. | Input commands are not a new distinction. Our competitor is any horizon-specific stochastic machine; metric is maximum numerical row error and available labels. We do not claim to improve their entropy optimum. |
+| Ghafari et al., *Dimensional Quantum Memory Advantage in the Simulation of Stochastic Processes*, PRX 9 (2019), 041013; primary APS article abstract/metadata inspected | Dimension advantage, not merely entropy advantage, in stochastic process simulation. | The one-qubit label dimension comparison is not presented as the first quantum dimension advantage. The externally driven, finite-horizon worst-word lower bound is stated separately. |
+| Chen–Wu, *The State Cost of Classical Simulation of One-Way General Quantum Finite Automata*, arXiv:2604.07058v2; full HTML and Theorem 3.2 / stochasticization comparison | A cutpoint-language simulation can preserve signs while shrinking the numerical margin with length. | This does not supply fixed uniform numerical accuracy. The seed reset here is a channel, not an exclusively unitary measure-once input. |
+| Lumbreras–Ma–Thompson–Gu, arXiv:2608.19779; relevant full HTML portions and inherited comparison | Quantum models of inputs, dynamics and decisions, with task/update conditions. | Different model and objectives are not collapsed into a language or stationary-entropy comparison. V37 does not assert general optimal quantum simulation of world models. |
+
+## Operational claims and limits
+
+The rational example uses precisely the previously published five gates. Their exact qubit operation is inherited. The new statement is matching Theta(N) classical labels (log2 N+O(1) atomic label bits), rather than N/log N to N. Neither a new expanding generating set nor a new quantum circuit is claimed.
+
+The dyadic comparison and coupling arguments are standard. V37 adds deterministic-duration padding with an explicitly counted timer and drops the old private label when the new leaf is chosen. This is resource accounting, not a new random-sampling algorithm.
+
+The finite tests cannot establish an infinite-dimensional gap, a universal entropy inequality, all optimal finite widths, or priority. New Gaussian-mixture inequalities have explicit proofs; close entropy/realization antecedents may still exist. The strongest research claim to assess independently is the exact gap-weighted occupation statement and the resulting removal of the logarithmic width gap under the unchanged spherical-gap hypothesis.
