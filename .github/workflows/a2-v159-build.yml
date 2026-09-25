@@ -1,0 +1,42 @@
+name: A2 v159 source audit and revision build
+on:
+  push:
+    branches: [revision/a2-v159-intrinsic-boundary-modular-completion-2026-09-25]
+    paths:
+      - .github/workflows/a2-v159-build.yml
+      - papers/A2-v17-boundary-information-coarsening/article/v159/**
+permissions:
+  contents: read
+jobs:
+  export-source:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Export source for independent inspection without execution
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib, json, shutil
+          root=Path('papers/A2-v17-boundary-information-coarsening/article')
+          out=Path('a2-v159-locked-sources'); out.mkdir()
+          hashes={}
+          for version in (153,154,155,157,158):
+              src=root/f'v{version}'
+              for p in src.iterdir():
+                  if p.is_file() and p.suffix in ('.tex','.py','.md','.json'):
+                      q=out/f'v{version}'/p.name; q.parent.mkdir(exist_ok=True)
+                      shutil.copyfile(p,q)
+                      hashes[str(q.relative_to(out))]=hashlib.sha256(p.read_bytes()).hexdigest()
+          r=Path('reviews/a2-v157-independent-harsh-top4-2026-09-25/REFEREE_REPORT.md')
+          shutil.copyfile(r,out/'REFEREE_REPORT_V157.md')
+          hashes['REFEREE_REPORT_V157.md']=hashlib.sha256(r.read_bytes()).hexdigest()
+          (out/'SOURCE_SHA256.json').write_text(json.dumps(hashes,indent=2)+'\n')
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: a2-v159-locked-sources
+          path: a2-v159-locked-sources/
+          retention-days: 14
