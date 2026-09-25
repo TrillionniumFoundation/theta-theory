@@ -1,0 +1,141 @@
+name: GTF-I v39 minimal orbits and numerical memory
+
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v39-orbit-response-2026-09-25
+    paths:
+      - 'papers/GTF-I-v39-orbit-response/**'
+      - '.github/workflows/gtf-i-v39-orbit-response.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gtf-i-v39-orbit-response
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/revision/general-theta-foundations-i-v39-orbit-response-2026-09-25'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 10
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /.github/workflows/gtf-i-v39-orbit-response.yml
+            /GENERAL_THETA_FOUNDATIONS_I_V39_REVIEW_READY.md
+            /papers/GTF-I-v39-orbit-response/
+            /papers/GTF-I-v38-orbit-entropy/*.tex
+            /papers/GTF-I-v38-orbit-entropy/*.py
+            /papers/GTF-I-v38-orbit-entropy/*.md
+            /papers/GTF-I-v38-orbit-entropy/*.json
+            /papers/GTF-I-v38-orbit-entropy/paper.pdf
+            /papers/GTF-I-v38-orbit-entropy/complete-manuscript.pdf
+            /papers/GTF-I-v38-orbit-entropy/complete-development.pdf
+            /papers/**/verify.py
+            /ROUND17_PROOF_DEPENDENCY_LEDGER.md
+            /reviews/general-theta-foundations-i-v38-orbit-entropy-pipeline-harsh-top4-r23-2026-09-25/REFEREE_REPORT.md
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Restore hash-checked native mathematical sources
+        shell: bash
+        run: |
+          python - <<'PY'
+          import hashlib,json,lzma
+          from pathlib import Path
+          h=Path('papers/GTF-I-v39-orbit-response')
+          raw=b''.join((h/'.source-parts'/('part%02d.xz'%i)).read_bytes() for i in range(8))
+          if len(raw)!=46328 or hashlib.sha256(raw).hexdigest()!='7754ddb06fb1843a19ba34ab6944c196b0a8f0a4586fe9bebc1eb36647fb27ab':
+              raise RuntimeError('Source transport integrity failure')
+          payload=json.loads(lzma.decompress(raw))
+          if not isinstance(payload,dict) or len(payload)!=26:
+              raise RuntimeError('Source entry count failure')
+          for name,text in payload.items():
+              p=Path(name)
+              if p.name!=name or p.suffix not in {'.tex','.py','.md','.json'} or not isinstance(text,str):
+                  raise RuntimeError('Unsafe native source entry')
+              dest=h/name
+              if dest.exists() and dest.read_text()!=text:
+                  raise RuntimeError('Refusing to overwrite changed source: '+name)
+              dest.write_text(text)
+          print('Verified transport and restored 26 native files.')
+          PY
+      - name: Publish native source before building
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git fetch --depth=1 origin 5439c0ea2540e3caddbab600cc7a4f8699421439
+          git add -f papers/GTF-I-v39-orbit-response
+          if ! git diff --cached --quiet; then
+            git commit -m 'revise(GTF-I v39): native minimal-orbit theorem, reducible synthesis and numerical semantics [skip ci]'
+            git push origin HEAD:"$GITHUB_REF_NAME"
+          fi
+          test -z "$(git diff --name-only --diff-filter=DMRT 5439c0ea2540e3caddbab600cc7a4f8699421439 HEAD)"
+          echo "GTF_SOURCE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - name: Install typesetting and exact arithmetic
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended texlive-pictures lmodern
+          python -m pip install sympy==1.14.0 PyMuPDF==1.26.7 numpy scipy mpmath
+      - name: Verify and build the complete revision
+        run: python papers/GTF-I-v39-orbit-response/build.py
+      - name: Independently rebuild the standalone core sources
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import fitz,json,subprocess,sys,tempfile,zipfile
+          h=Path('papers/GTF-I-v39-orbit-response').resolve()
+          with tempfile.TemporaryDirectory(prefix='gtf39-core-rebuild-') as td:
+              dest=Path(td)
+              with zipfile.ZipFile(h/'evidence/CORE_SOURCES.zip') as z: z.extractall(dest)
+              core=dest/h.name
+              proc=subprocess.run([sys.executable,str(core/'build.py'),'--core-only'],cwd=dest,text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+              (h/'evidence/CORE_REBUILD_LOG.txt').write_text(proc.stdout)
+              if proc.returncode: raise RuntimeError('Independent core rebuild failed')
+              a=fitz.open(h/'paper.pdf');b=fitz.open(core/'paper.pdf')
+              if len(a)!=len(b): raise RuntimeError('Independent PDF page-count mismatch')
+              for i in range(len(a)):
+                  if a[i].get_text()!=b[i].get_text(): raise RuntimeError('Independent text mismatch')
+                  pa=a[i].get_pixmap(matrix=fitz.Matrix(.6,.6),alpha=False)
+                  pb=b[i].get_pixmap(matrix=fitz.Matrix(.6,.6),alpha=False)
+                  if (pa.width,pa.height,pa.samples)!=(pb.width,pb.height,pb.samples): raise RuntimeError('Independent raster mismatch')
+              result={'status':'success','pages':len(a),'all_page_text_equal':True,'all_page_raster_equal':True,'source_commit':__import__('os').environ['GTF_SOURCE_COMMIT']}
+              (h/'evidence/CORE_REBUILD_RECEIPT.json').write_text(json.dumps(result,indent=2)+'\n')
+              print(json.dumps(result))
+          PY
+      - name: Publish only the new revision and referee-ready branch
+        shell: bash
+        run: |
+          git add -f papers/GTF-I-v39-orbit-response GENERAL_THETA_FOUNDATIONS_I_V39_REVIEW_READY.md
+          git commit -m 'publish(GTF-I v39): complete article, r23 response, standalone reproduction and preserved volumes [skip ci]'
+          test -z "$(git diff --name-only --diff-filter=DMRT 5439c0ea2540e3caddbab600cc7a4f8699421439 HEAD)"
+          READY='revision/general-theta-foundations-i-v39-referee-ready-2026-09-25'
+          if git ls-remote --exit-code --heads origin "$READY"; then
+            git fetch origin "$READY"
+            git merge-base --is-ancestor FETCH_HEAD HEAD
+          fi
+          git push origin HEAD:"$GITHUB_REF_NAME" HEAD:"$READY"
+      - name: Upload referee artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: GTF-I-v39-orbit-response
+          path: papers/GTF-I-v39-orbit-response/
+          retention-days: 30
+      - name: Upload failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: GTF-I-v39-diagnostics
+          path: |
+            papers/GTF-I-v39-orbit-response/evidence/
+            papers/GTF-I-v39-orbit-response/*.tex
+            papers/GTF-I-v39-orbit-response/*.py
+          retention-days: 7
