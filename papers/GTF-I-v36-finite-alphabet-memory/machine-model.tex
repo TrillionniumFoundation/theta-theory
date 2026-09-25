@@ -1,0 +1,78 @@
+\section{Finite experiments and persistent registers}\label{sec:model}
+Fix a finite alphabet $\mathcal A$, matrices $U_a\in O(d)$, a finite seed
+set $X\subset\mathbb S^{d-1}$ and $0<\rho\le1/10$. Unless otherwise
+stated, $X=\{\pm e_1,\ldots,\pm e_d\}$ and $\Id\in\mathcal A$.
+We use the full specification \eqref{eq:law}; no distribution or fairness
+assumption is imposed on the external word.
+
+\begin{definition}[Nonuniform clocked stochastic transducer]
+\label{def:machine}
+For horizon $N$, a transducer consists of finite state sets $[K_t]$,
+initial distributions $E_x$, stochastic matrices
+$T_{t,a}\in\R_+^{K_t\times K_{t+1}}$, and terminal columns
+$d_j\in[-1,1]^{K_N}$. Its mean on a word is
+$E_xT_{0,a_1}\cdots T_{N-1,a_N}d_j$.
+Its error is half the maximum absolute discrepancy from the mean in
+\eqref{eq:law}. The peak counts the available labels $\max_tK_t$,
+and also two terminal labels when the emitted answer is retained at a
+charged cut. The least peak with error at most $\varepsilon$ is
+$W_{N,\varepsilon}$.
+\end{definition}
+
+Only the updated register persists. The seed and the query appear once;
+the current command is consumed in its update. Private randomness does
+not persist outside the register. An input-dependent clock, a previous
+command, or an installation tag would be charged if retained.
+The epoch, $N$, complete row tables, their construction and arithmetic,
+and exact atomic sampling are free. Rows may vary with $t$ and $N$.
+Unused rows are normalized, and padding counts as available labels.
+This is maximum layer width of a nonuniform probabilistic ordered
+read-once program, not uniform program space or total branching-program
+size. Section~\ref{sec:coins} specifies a different, finite-coin interface.
+
+For comparison with the earlier compact-input theorem, a compact command
+space requires each matrix entry $a\mapsto T_{t,a}(s,s')$ to be Borel.
+Such a row function is nonuniform program data, not a finitely represented
+real-input algorithm. None of the finite-alphabet theorems below requires
+that access. Every input to their machines is a symbol from a fixed
+finite set.
+
+\begin{proposition}[Separate positive minimum]\label{prop:separate}
+If $\rho d<1$ and the identity is available, the normalized residual rank
+and the separate positive minimum at every cut are $d+1$.
+A separate minimum places no cap on the other registers.
+\end{proposition}
+\begin{proof}
+Residual rows are affine in $v=\rho U_wx$. Idle prefixes from $\pm e_j$
+span $\R^d$, and an idle suffix followed by the coordinate queries
+separates the coordinates. Normalization adds the constant row, giving
+rank $d+1$. A regular simplex centered at zero with circumradius $d\rho$
+has inradius $\rho$. It contains every reachable vector and all its
+vertices have norm less than one. Each vertex consequently defines a
+valid future binary channel after every orthogonal command word.
+At the selected cut decompose $v$ into these vertices. Before this cut
+one may store the raw prefix; afterwards one may store a simplex label
+and the raw suffix. At $l$ later inputs this costs at most
+$(d+1)|\mathcal A|^l$ labels, and remains finite. It embeds the factorization
+in a complete machine rather than an amputated static matrix. Rank gives
+the converse.
+\end{proof}
+
+\begin{lemma}[Terminal correlation]\label{lem:terminal}
+For a fixed unit seed $x$, put $Y_t=U_{a_t}\cdots U_{a_1}x$ and
+$q_t=\E\norm{\E[Y_t\mid S_t]}$ under any external word law independent
+of the machine's private randomness. If the wordwise error is at most
+$\varepsilon$, then
+\begin{equation}\label{eq:calibration}
+ q_N\ge\kappa_d:=\rho/\sqrt d-2\varepsilon.
+\end{equation}
+\end{lemma}
+\begin{proof}
+Combine the $d$ decoder columns into $D(S_N)\in[-1,1]^d$.
+Conditionally on a word, its mean differs from $\rho Y_N$ by a vector
+of norm at most $2\sqrt d\varepsilon$. Thus
+$\E\langle Y_N,D(S_N)\rangle\ge\rho-2\sqrt d\varepsilon$.
+Conditional expectation bounds the absolute value of this quantity by
+$\sqrt d q_N$. Two or more queries are not jointly sampled in this
+argument; their decoder columns are only combined in the proof.
+\end{proof}

@@ -1,0 +1,85 @@
+\section{Finite coins with charged control}\label{sec:coins}
+The atomic model permits arbitrary exact row probabilities. We now
+separate a finite random-bit implementation. The environment supplies
+an input only at a ready boundary and waits until the update has
+finished. Fair bits are private. The row table may contain precomputed
+finite binary thresholds, but the bit position, current input, old label
+and control state are all charged. There is no free microstep clock.
+
+\begin{theorem}[Sparse-row dyadic compiler]\label{thm:compiler}
+Suppose a finite command transducer has peak $K$, at most $L$ successors
+per row, fixed finite seed and query alphabets, and common command rows.
+For any $\delta>0$ it has a self-paced fair-bit implementation whose
+uniform terminal row-TV error increases by at most $\delta$, using
+\begin{equation}\label{eq:coin-cost}
+ C_{\mathcal A,X,J,L}K(b+1)\quad\hbox{persistent labels},\qquad
+ b=\max\left\{1,\left\lceil\log_2\frac{C_L(N+2)}{\delta}\right\rceil\right\},
+\end{equation}
+and at most $(L-1)b$ fair bits for a command update. The same bound
+holds for sparse initialization and the binary terminal decoder.
+Tables and the prescribed macroscopic final boundary remain nonuniform.
+\end{theorem}
+\begin{proof}
+A categorical row with at most $L$ outcomes is a binary decision tree
+with at most $L-1$ internal nodes. At each node express the probability
+of choosing one subtree conditionally on reaching that node. A zero-mass
+node is unreachable and may use an arbitrary conditional row. Round each
+conditional probability down to a multiple of $2^{-b}$. Coupling the
+binary decisions shows that the row-TV discrepancy is at most
+$(L-1)2^{-b}$, without needing the original probabilities to be rational.
+Initialization and binary decoding are treated in the same way.
+
+Thresholds zero and one are deterministic. For $0<m<2^b$,
+to sample the dyadic Bernoulli threshold $m/2^b$, compare independent fair
+bits with the $b$ binary digits of $m$, from most to least significant.
+At the first mismatch the comparison is decided; if all digits agree,
+return the prescribed strict-comparison outcome. No prefix integer is
+stored. The comparison retains only its position $i\in\{1,\ldots,b\}$;
+while all bits agree, their values are already the fixed threshold prefix.
+A categorical tree additionally retains one of at most $L-1$ nodes.
+It must retain the old label and the current input until a leaf gives
+the new label. These are all included in \eqref{eq:coin-cost}, along with
+ready, seed and query phases. There is no second uncharged output index.
+The common-row assumption eliminates a retained epoch counter inside
+the sampler. An external end query selects the final decoder after the
+prescribed number of completed inputs.
+
+TV contraction under stochastic kernels and induction on the actual
+word give at most $C_L(N+2)2^{-b}$ terminal discrepancy. This is at most
+$\delta$ by the chosen $b$. The argument couples legal completed updates
+and therefore prices every command even when the bit comparison stops
+early. Its duration is at most $(L-1)b$ bits per update.
+\end{proof}
+
+\begin{corollary}[Leading label bits with finite coins]\label{cor:coin-rate}
+For every fixed positive error below the thresholds of the preceding
+theorems, their explicit machines admit the following finite-coin peaks:
+\[
+ \begin{array}{ll}
+ O(N^{1/3}\log(N+1)) &\text{for the resonant monomial class},\\
+ O(N^{(d-1)/2}\log(N+1)) &\text{for the spectral-gap class}.
+ \end{array}
+\]
+Consequently the least persistent bits in this self-paced, nonuniform
+fair-bit model have leading coefficients $1/3$ and $(d-1)/2$ in
+$\log_2 N$, respectively, with additive $O(\log\log(N+1))$ uncertainty.
+\end{corollary}
+\begin{proof}
+The monomial upper has at most four successors; the spherical upper has
+at most $d+1$. Their initialization is sparse and their decoder binary.
+Compile the exact machine with tolerance equal to the fixed desired
+error. Formula~\eqref{eq:coin-cost} gives the upper peaks.
+Every such sampler, when observed at ready boundaries, is itself an
+atomic transducer with at most its total number of labels. Hence the
+atomic lower bounds apply, irrespective of its internal timing. Taking
+binary logarithms and using \eqref{eq:spectral-width} and
+\eqref{eq:monomial-width} proves the stated leading coefficients.
+\end{proof}
+
+This is not an exact finite-bit implementation of an irrational row at
+zero error. It is a fixed-error compiler with an explicitly charged input
+latch and bit counter. It does not make the row description or its
+construction free in an ordinary uniform-space model; those costs are
+outside both nonuniform measures. For the rational gates, exact rational
+atomic synthesis is additionally available, but exact rational sampling
+with unbounded rejection duration is a separate implementation choice.
