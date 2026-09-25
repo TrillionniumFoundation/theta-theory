@@ -1,46 +1,83 @@
-name: A2 v157 source audit and manuscript build
+name: A2 v157 complete revision publication
 on:
   push:
     branches: [revision/a2-v157-universal-power-ideals-2026-09-25]
     paths:
       - .github/workflows/a2-v157-build.yml
-      - papers/A2-v17-boundary-information-coarsening/article/v157/**
+      - papers/A2-v17-boundary-information-coarsening/article/v157/universal-power-ideals-v157.tex
+      - papers/A2-v17-boundary-information-coarsening/article/v157/frontmatter_v157.py
+      - papers/A2-v17-boundary-information-coarsening/article/v157/assemble_v157.py
+      - papers/A2-v17-boundary-information-coarsening/article/v157/check_v157.py
 permissions:
-  contents: read
+  contents: write
+concurrency:
+  group: a2-v157-complete-publication
+  cancel-in-progress: false
 jobs:
-  source-audit:
+  build-and-publish:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      REVISION_DIR: papers/A2-v17-boundary-information-coarsening/article/v157
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           fetch-depth: 1
-          persist-credentials: false
-      - name: Export predecessor texts without executing or repairing them
+      - name: Verify the four inspected source files
         run: |
           python3 - <<'PY'
-          import base64, gzip, hashlib, json, pathlib, shutil
-          root=pathlib.Path('papers/A2-v17-boundary-information-coarsening/article')
-          out=pathlib.Path('a2-v157-source-audit'); out.mkdir()
-          parts=sorted((root/'v156').glob('SOURCE_BUNDLE_V156.part*.b64'))
-          for p in parts: shutil.copy2(p,out/p.name)
-          try:
-              packed=base64.b64decode(''.join(p.read_text().strip() for p in parts), validate=True)
-              raw=gzip.decompress(packed)
-              assert len(raw)<10_000_000, 'Unexpected source bundle size'
-              obj=json.loads(raw)
-              (out/'v156-source-bundle.json').write_bytes(raw)
-              (out/'v156-bundle-digest.txt').write_text(hashlib.sha256(raw).hexdigest()+'\n')
-              print('Bundle JSON type:',type(obj).__name__)
-              if isinstance(obj,dict): print('Top-level keys:',list(obj)[:50])
-          except Exception as exc:
-              (out/'v156-decode-failure.txt').write_text(type(exc).__name__+': '+str(exc)+'\n')
-              print('Original source parts retained; no mathematical use of undecoded bundle:',exc)
-          shutil.copy2(root/'v153'/'geometry.tex',out/'v153-geometry.tex')
-          shutil.copy2(root/'v153'/'new-core.tex',out/'v153-new-core.tex')
-          shutil.copy2('reviews/a2-v153-materialized-independent-harsh-top4-2026-09-25/REFEREE_REPORT.md',out/'REFEREE_REPORT_V153.md')
+          import hashlib, pathlib
+          root=pathlib.Path('papers/A2-v17-boundary-information-coarsening/article/v157')
+          expected={
+            'universal-power-ideals-v157.tex':'a896765b642b13207aa688f96d12f8551d36549a7e351289c936eb7521657ac0',
+            'frontmatter_v157.py':'151dc5155a0e0ee032beec01d9cc5a260f8603a487a329eb5283f895273ea5f9',
+            'assemble_v157.py':'7431f561e5676dce5b88d10c3909960c608f539b6c4f39021a186e460a9640bb',
+            'check_v157.py':'58676732e5decdb7a7383b105b32a0f90756007b9367993c45d0b4d4949842ea'
+          }
+          failures=[]
+          for name,want in expected.items():
+              got=hashlib.sha256((root/name).read_bytes()).hexdigest()
+              print(name,got)
+              if got!=want: failures.append(name)
+          assert not failures, 'Source transport mismatch: '+str(failures)
           PY
+      - name: Install compilation and exact-algebra tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils python3-venv
+          python3 -m venv /tmp/a2-v157-venv
+          /tmp/a2-v157-venv/bin/pip install sympy==1.14.0
+      - name: Run exact checks, including inherited suites
+        run: /tmp/a2-v157-venv/bin/python "$REVISION_DIR/check_v157.py" | tee "$REVISION_DIR/EXACT_CHECKS_LOG_V157.txt"
+      - name: Build the three complete manuscripts
+        run: /tmp/a2-v157-venv/bin/python "$REVISION_DIR/assemble_v157.py" --build | tee "$REVISION_DIR/BUILD_LOG_V157.txt"
+      - name: Render title pages and record environment
+        run: |
+          for paper in reconstruction divisor-geometry geometry; do
+            pdftoppm -f 1 -singlefile -scale-to 1600 -png "$REVISION_DIR/$paper.pdf" "$REVISION_DIR/$paper-title"
+          done
+          /tmp/a2-v157-venv/bin/python --version > "$REVISION_DIR/BUILD_ENVIRONMENT_V157.txt"
+          pdflatex --version | head -3 >> "$REVISION_DIR/BUILD_ENVIRONMENT_V157.txt"
+      - name: Publish complete sources, PDFs and receipts to this branch only
+        run: |
+          test "$GITHUB_REF_NAME" = 'revision/a2-v157-universal-power-ideals-2026-09-25'
+          git fetch origin "$GITHUB_REF_NAME"
+          test "$(git rev-parse FETCH_HEAD)" = "$GITHUB_SHA"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f "$REVISION_DIR/geometry.tex" "$REVISION_DIR/geometry.pdf" "$REVISION_DIR/reconstruction.tex" "$REVISION_DIR/reconstruction.pdf" "$REVISION_DIR/divisor-geometry.tex" "$REVISION_DIR/divisor-geometry.pdf"
+          git add -f "$REVISION_DIR/PREVIOUS_FRONTMATTER_V155.tex" "$REVISION_DIR/BUILD_RECEIPT_V157.json" "$REVISION_DIR/NONDELETION_V157.json" "$REVISION_DIR/PAPER_MAP_V157.json" "$REVISION_DIR/EXACT_CHECKS_V157.json" "$REVISION_DIR/INHERITED_V155_CHECKS_RERUN.json" "$REVISION_DIR/EXACT_CHECKS_LOG_V157.txt" "$REVISION_DIR/BUILD_LOG_V157.txt" "$REVISION_DIR/BUILD_ENVIRONMENT_V157.txt"
+          python3 - <<'PY'
+          import subprocess
+          prefix='papers/A2-v17-boundary-information-coarsening/article/v157/'
+          paths=subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines()
+          assert paths and all(p.startswith(prefix) for p in paths), paths
+          PY
+          git commit -m 'A2 v157: publish complete companion papers, preservation master and passing verification receipts'
+          git push origin "HEAD:refs/heads/$GITHUB_REF_NAME"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
         with:
-          name: a2-v157-locked-source-audit
-          path: a2-v157-source-audit/
+          name: a2-v157-complete-review-build
+          path: papers/A2-v17-boundary-information-coarsening/article/v157/
           retention-days: 14
