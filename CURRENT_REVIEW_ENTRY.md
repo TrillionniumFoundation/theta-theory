@@ -1,7 +1,7 @@
 # A2 revision 164 — controlling review entry
 
 Branch: `revision/a2-v164-collision-wall-crossing-2026-09-26`.
-Authored source commit: `aa933cb2d1dd7f3bc3268094e0c011d327a6e26a`.
+Authored source commit: `7a855e8cec0eb570ab2a1fa68a989644e876323a`.
 Latest controlling v162 referee report: `7e9c057907cc4502858a54f32ab0c0cfa264680f`.
 Complete post-report v163 baseline: `40a72ddfd85e16363385a1b64b922d61055e875c`.
 The reviewed v162 tip is `299a77c6f77c4d5aec6e5737e1b1ba471ce5b7c8`.
