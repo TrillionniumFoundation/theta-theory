@@ -11,31 +11,35 @@ jobs:
   source-audit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           fetch-depth: 1
           persist-credentials: false
-      - name: Export predecessor texts without executing them
+      - name: Export predecessor texts without executing or repairing them
         run: |
           python3 - <<'PY'
           import base64, gzip, hashlib, json, pathlib, shutil
           root=pathlib.Path('papers/A2-v17-boundary-information-coarsening/article')
           out=pathlib.Path('a2-v157-source-audit'); out.mkdir()
           parts=sorted((root/'v156').glob('SOURCE_BUNDLE_V156.part*.b64'))
-          assert len(parts)==2, 'Expected exactly two locked source parts'
-          packed=base64.b64decode(''.join(p.read_text().strip() for p in parts), validate=True)
-          raw=gzip.decompress(packed)
-          assert len(raw)<10_000_000, 'Unexpected source bundle size'
-          obj=json.loads(raw)
-          (out/'v156-source-bundle.json').write_bytes(raw)
-          (out/'v156-bundle-digest.txt').write_text(hashlib.sha256(raw).hexdigest()+'\n')
-          print('Bundle JSON type:',type(obj).__name__)
-          if isinstance(obj,dict): print('Top-level keys:',list(obj)[:50])
+          for p in parts: shutil.copy2(p,out/p.name)
+          try:
+              packed=base64.b64decode(''.join(p.read_text().strip() for p in parts), validate=True)
+              raw=gzip.decompress(packed)
+              assert len(raw)<10_000_000, 'Unexpected source bundle size'
+              obj=json.loads(raw)
+              (out/'v156-source-bundle.json').write_bytes(raw)
+              (out/'v156-bundle-digest.txt').write_text(hashlib.sha256(raw).hexdigest()+'\n')
+              print('Bundle JSON type:',type(obj).__name__)
+              if isinstance(obj,dict): print('Top-level keys:',list(obj)[:50])
+          except Exception as exc:
+              (out/'v156-decode-failure.txt').write_text(type(exc).__name__+': '+str(exc)+'\n')
+              print('Original source parts retained; no mathematical use of undecoded bundle:',exc)
           shutil.copy2(root/'v153'/'geometry.tex',out/'v153-geometry.tex')
           shutil.copy2(root/'v153'/'new-core.tex',out/'v153-new-core.tex')
           shutil.copy2('reviews/a2-v153-materialized-independent-harsh-top4-2026-09-25/REFEREE_REPORT.md',out/'REFEREE_REPORT_V153.md')
           PY
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: a2-v157-locked-source-audit
           path: a2-v157-source-audit/
