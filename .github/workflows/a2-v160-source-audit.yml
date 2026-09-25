@@ -1,0 +1,27 @@
+name: A2 v160 locked source audit
+on:
+  push:
+    branches: [revision/a2-v160-intrinsic-blowup-boundary-2026-09-25]
+    paths: [.github/workflows/a2-v160-source-audit.yml]
+permissions:
+  contents: read
+jobs:
+  archive-inputs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Archive immutable mathematical inputs
+        run: |
+          set -euo pipefail
+          p=papers/A2-v17-boundary-information-coarsening/article
+          mkdir -p /tmp/a2-v160-inputs
+          tar -czf /tmp/a2-v160-inputs/locked-inputs.tar.gz "$p/v154" "$p/v155" "$p/v157" "$p/v158" "$p/v159" reviews/a2-v157-independent-harsh-top4-2026-09-25 CURRENT_REVIEW_ENTRY.md .github/workflows/a2-v159-build.yml
+          git rev-parse HEAD > /tmp/a2-v160-inputs/commit.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: a2-v160-locked-inputs
+          path: /tmp/a2-v160-inputs
+          retention-days: 7
