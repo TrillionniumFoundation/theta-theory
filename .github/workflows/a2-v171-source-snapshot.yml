@@ -1,0 +1,39 @@
+name: A2 v171 locked source snapshot
+on:
+  push:
+    branches: [revision/a2-v171-duality-conductor-base-change-2026-09-27]
+    paths: [.github/workflows/a2-v171-source-snapshot.yml]
+permissions:
+  contents: read
+jobs:
+  source-snapshot:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Snapshot locked reports and historical proof and check sources
+        run: |
+          test "$GITHUB_REF_NAME" = revision/a2-v171-duality-conductor-base-change-2026-09-27
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib,json,tarfile
+          root=Path('papers/A2-v17-boundary-information-coarsening/article')
+          report=Path('reviews/a2-v170-independent-harsh-top4-2026-09-27/REFEREE_REPORT.md')
+          data=report.read_bytes()
+          assert hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()=='94fe39b7a97b20324ac45aa6b38b43297e87ca01'
+          paths=[p for p in root.rglob('*') if p.is_file() and p.suffix in ('.tex','.py','.md','.json','.bib','.sty','.cls')]
+          paths += [report]
+          paths += [p for p in Path('scripts').rglob('*') if p.is_file() and p.suffix in ('.py','.json','.sh')] if Path('scripts').exists() else []
+          with tarfile.open('a2-v171-locked-history.tar.xz','w:xz') as t:
+              for p in paths:t.add(p,arcname=str(p),recursive=False)
+          print('Snapshot files:',len(paths))
+          print('Archive SHA256:',hashlib.sha256(Path('a2-v171-locked-history.tar.xz').read_bytes()).hexdigest())
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: a2-v171-locked-history
+          path: a2-v171-locked-history.tar.xz
+          retention-days: 30
+          if-no-files-found: error
