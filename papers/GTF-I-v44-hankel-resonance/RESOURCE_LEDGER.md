@@ -1,0 +1,13 @@
+# Resource ledger — Revision 44
+
+The atomic width W counts maximum available persistent labels, including a held binary answer cut. Horizon and epoch, arbitrary real row tables, construction and lookup, arithmetic and exact row sampling are free in this mathematical model. Hidden labels may have arbitrary full suffix-response laws. Only one selected terminal coordinate query is answered.
+
+The normalized Hankel arrays have exponentially many prefix/suffix coordinates. Their positive normal form and finite separation dual do not imply efficient hidden-width optimization. The distortion-rate supremum ranges over all positive word lengths; the new comparison is analytic, not a finite approximation guarantee for that supremum.
+
+A separate uniform finite-bit program charges horizon, counters, current label, input symbol, seed, O(r) command parameters, fixed-point accumulators and fresh b-bit random integers. It has no horizon-dependent advice or per-label transition table. Digit procedures for the fixed angles are part of the fixed finite program and have an explicit linear-space/polynomial-time hypothesis. The source waits during an update; latency is not a memory channel. The command stream is not reread. The output is approximate to prescribed positive wordwise TV tolerance, not exact for irrational probabilities.
+
+The clean register uses q+1 labels (polygon plus center). Arithmetic scratch and parameters are additional charged work bits, not uncounted states. The theorem gives O(log(N+2)+log(1/epsilon)) work bits and (N+2)b fresh fair bits, b=ceil(log2(16(N+2)/epsilon)). Its O(r) circulant parameters generate (r+1)(q+1) conceptual command rows without storing them. Each noncentral row has at most three successors. Tables, had they been stored, would cost O(|A|Ks(log K+b)) bits for common sparse rows, and a factor N for arbitrary cut-dependent rows.
+
+The reference Python code is integer interval arithmetic. Its mathematical register bounds do not identify Python object overhead with Turing-space constants. The guard at 100000 interval bits is an operational resource limit of that reference executable, not a bound in the existence theorem.
+
+The fixed-program configuration lower count allows polynomial factors for work-head positions: C(s+1)^C 2^s. This gives the displayed O(log log N) correction in the bit lower bound. The leading bit coefficient is not claimed optimal. An O(log N) count-and-evaluate algorithm is an elementary comparator; the special compiler preserves a smaller clean stochastic register and prices its evaluation, rather than claiming the first logarithmic-space algorithm.
