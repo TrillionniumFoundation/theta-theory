@@ -8,15 +8,15 @@ Authored build source commit: `cf260afd87aa0cc32f5ef7069a6c6da57e4c4d67`.
 
 ## Paper I — Finite failure schemes and the reconstruction of quadratic pencils
 
-74 pages. [Complete PDF](papers/A2-v17-boundary-information-coarsening/article/v166/reconstruction.pdf) · [Standalone complete LaTeX](papers/A2-v17-boundary-information-coarsening/article/v166/reconstruction.tex).
+74 pages. [Complete PDF](reconstruction.pdf) · [Standalone complete LaTeX](reconstruction.tex).
 
 ## Paper II — Power ideals and the Hilbert boundary of quadratic pencils
 
-102 pages. [Complete PDF](papers/A2-v17-boundary-information-coarsening/article/v166/divisor-geometry.pdf) · [Standalone complete LaTeX](papers/A2-v17-boundary-information-coarsening/article/v166/divisor-geometry.tex).
+102 pages. [Complete PDF](divisor-geometry.pdf) · [Standalone complete LaTeX](divisor-geometry.tex).
 
 ## Complete preservation master (not a third submission)
 
-168 pages. [Complete PDF](papers/A2-v17-boundary-information-coarsening/article/v166/geometry.pdf) · [Standalone complete LaTeX](papers/A2-v17-boundary-information-coarsening/article/v166/geometry.tex).
+168 pages. [Complete PDF](geometry.pdf) · [Standalone complete LaTeX](geometry.tex).
 
 ## Main additions
 
@@ -32,19 +32,19 @@ attributed. Its application does not claim an explicit classification
 of all higher-contact components. The effective failure-family
 application still uses the sharp reconstruction theorem.
 
-[All 54 referee responses](papers/A2-v17-boundary-information-coarsening/article/v166/RESPONSE_TO_V164_REPORT.md)
+[All 54 referee responses](RESPONSE_TO_V164_REPORT.md)
 
-[Compiled theorem and page index](papers/A2-v17-boundary-information-coarsening/article/v166/THEOREM_INDEX_V166.json)
+[Compiled theorem and page index](THEOREM_INDEX_V166.json)
 
-[Compilation and source receipt](papers/A2-v17-boundary-information-coarsening/article/v166/BUILD_RECEIPT_V166.json)
+[Compilation and source receipt](BUILD_RECEIPT_V166.json)
 
-[Byte-for-byte proof retention](papers/A2-v17-boundary-information-coarsening/article/v166/NONDELETION_V166.json)
+[Byte-for-byte proof retention](NONDELETION_V166.json)
 
-[Exact algebra checks](papers/A2-v17-boundary-information-coarsening/article/v166/EXACT_CHECKS_V166.json)
+[Exact algebra checks](EXACT_CHECKS_V166.json)
 
-[Primary-source and documentary audit](papers/A2-v17-boundary-information-coarsening/article/v166/LITERATURE_AUDIT_V166.md)
+[Primary-source and documentary audit](LITERATURE_AUDIT_V166.md)
 
-[Independent-audit handoff](papers/A2-v17-boundary-information-coarsening/article/v166/PAPER_I_AUDIT_HANDOFF.md)
+[Independent-audit handoff](PAPER_I_AUDIT_HANDOFF.md)
 
 ## Scope and external obligations
 
