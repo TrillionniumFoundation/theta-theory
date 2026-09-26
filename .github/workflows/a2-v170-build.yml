@@ -11,10 +11,10 @@ permissions:
   contents: write
 concurrency:
   group: a2-v170-complete-publication
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   build-and-publish:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 35
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -62,7 +62,7 @@ jobs:
         if: always()
         run: |
           p=papers/A2-v17-boundary-information-coarsening/article/v170
-          { python3 --version; /tmp/a2-v170-env/bin/python -c 'import sympy; print("SymPy",sympy.__version__)'; pdflatex --version | head -2; echo "Source $GITHUB_SHA"; echo "Run $GITHUB_RUN_ID"; } > "$p/BUILD_ENVIRONMENT.txt"
+          { uname -m; python3 --version; /tmp/a2-v170-env/bin/python -c 'import sympy; print("SymPy",sympy.__version__)'; pdflatex --version | head -2; echo "Source $GITHUB_SHA"; echo "Run $GITHUB_RUN_ID"; } > "$p/BUILD_ENVIRONMENT.txt"
       - name: Archive complete review build
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
