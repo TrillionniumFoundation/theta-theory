@@ -10,17 +10,17 @@ Authored publication source: `287a3ff5665131c6950f3ffb87d610d44e5a5c06`.
 
 ## Paper I — Finite failure schemes and the reconstruction of quadratic pencils
 
-73 pages. [PDF](papers/A2-v17-boundary-information-coarsening/article/v171/reconstruction.pdf) · [Standalone LaTeX](papers/A2-v17-boundary-information-coarsening/article/v171/reconstruction.tex).
+73 pages. [PDF](reconstruction.pdf) · [Standalone LaTeX](reconstruction.tex).
 
 ## Paper II — Conductors under coefficient change and nonmonomial Hilbert boundaries
 
-16 pages. [PDF](papers/A2-v17-boundary-information-coarsening/article/v171/divisor-geometry.pdf) · [Standalone LaTeX](papers/A2-v17-boundary-information-coarsening/article/v171/divisor-geometry.tex).
+16 pages. [PDF](divisor-geometry.pdf) · [Standalone LaTeX](divisor-geometry.tex).
 
 ## Supplement and archive — not additional journal submissions
 
-Complete technical supplement: 133 pages. [PDF](papers/A2-v17-boundary-information-coarsening/article/v171/technical-supplement.pdf) · [LaTeX](papers/A2-v17-boundary-information-coarsening/article/v171/technical-supplement.tex).
+Complete technical supplement: 133 pages. [PDF](technical-supplement.pdf) · [LaTeX](technical-supplement.tex).
 
-Complete preservation master: 217 pages. [PDF](papers/A2-v17-boundary-information-coarsening/article/v171/geometry.pdf) · [LaTeX](papers/A2-v17-boundary-information-coarsening/article/v171/geometry.tex).
+Complete preservation master: 217 pages. [PDF](geometry.pdf) · [LaTeX](geometry.tex).
 
 ## New mathematical route
 
@@ -38,19 +38,19 @@ Paper I's proofbody is unchanged; the complete predecessor Paper II mathematics
 is typeset in the technical supplement. The new Paper II is independently readable.
 The master is a repository archive, not a third submission.
 
-[All 25 detailed responses](papers/A2-v17-boundary-information-coarsening/article/v171/RESPONSE_TO_V170_REPORT.md)
+[All 25 detailed responses](RESPONSE_TO_V170_REPORT.md)
 
-[Compiled theorem and page locators](papers/A2-v17-boundary-information-coarsening/article/v171/REFEREE_CROSSWALK_V171.md)
+[Compiled theorem and page locators](REFEREE_CROSSWALK_V171.md)
 
-[Proof dependencies](papers/A2-v17-boundary-information-coarsening/article/v171/THEOREM_DEPENDENCIES_V171.md)
+[Proof dependencies](THEOREM_DEPENDENCIES_V171.md)
 
-[Build and hash record](papers/A2-v17-boundary-information-coarsening/article/v171/BUILD_RECEIPT_V171.json)
+[Build and hash record](BUILD_RECEIPT_V171.json)
 
-[Exact proof preservation](papers/A2-v17-boundary-information-coarsening/article/v171/NONDELETION_V171.json)
+[Exact proof preservation](NONDELETION_V171.json)
 
-[Auxiliary exact checks](papers/A2-v17-boundary-information-coarsening/article/v171/EXACT_CHECKS_V171.json)
+[Auxiliary exact checks](EXACT_CHECKS_V171.json)
 
-[Primary-source comparison](papers/A2-v17-boundary-information-coarsening/article/v171/LITERATURE_AUDIT_V171.md)
+[Primary-source comparison](LITERATURE_AUDIT_V171.md)
 
 ## Qualification and scope
 
