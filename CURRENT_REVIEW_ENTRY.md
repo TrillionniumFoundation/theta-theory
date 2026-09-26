@@ -4,7 +4,7 @@ Branch: `revision/a2-v166-universal-flattening-2026-09-26`.
 
 Controlling referee commit: `e795bc76e458260f0efcc8182c292f19d0610ca0`.
 
-Authored build source commit: `cf260afd87aa0cc32f5ef7069a6c6da57e4c4d67`.
+Authored build source commit: `60304100b64960e8e3e3a704b23c38fb38b37a67`.
 
 ## Paper I — Finite failure schemes and the reconstruction of quadratic pencils
 
