@@ -1,0 +1,206 @@
+\section{Finite random bits and uniform space}\label{sec:bits44}
+Exact real rows and finite-bit algorithms are different resources. We
+first give a finite perturbation statement and then remove the row table
+from a concrete uniform construction. Only this section uses a
+computational model. It does not change the exact atomic-row conclusions
+proved elsewhere.
+
+\begin{lemma}[Dyadic perturbation of a stochastic transducer]\label{lem:round44}
+Suppose initialization and every command row have at most $s$ nonzero
+entries. They can be replaced by denominator-$2^b$ rows, on the same
+label sets, with row-TV error at most $(s-1)2^{-b}$. Rounding the terminal
+binary probabilities adds at most $2^{-b}$. Consequently every numerical
+word changes by at most $((N+1)(s-1)+1)2^{-b}$ in binary total variation.
+Each rounded row can be sampled with exactly $b$ independent fair bits.
+\end{lemma}
+\begin{proof}
+Order the $s$ successors, round the first $s-1$ probabilities down to
+multiples of $2^{-b}$, and give the remaining mass to the last successor.
+The total removed mass is at most $(s-1)2^{-b}$, which is exactly the
+row total variation. Couple the initializations and then the command
+updates, or telescope products using TV contraction, to sum their
+worst-row errors. A terminal Bernoulli parameter can be rounded down
+with error at most $2^{-b}$. A uniform integer in $\{0,\ldots,2^b-1\}$
+selects one of the cumulative dyadic intervals. This uses a fixed number
+of bits, with no retained random tape or rejection-time side channel.
+\end{proof}
+
+For a table implementation the storage is
+$O(|\calA|Ks(\log K+b))$ bits for common rows of width $K$, in addition
+to initialization and decoder data. Cut-dependent rows can require a
+factor $N$ more storage. Lemma~\ref{lem:round44} is the elementary
+stochastic-rounding principle; it is not claimed as a new finite-bit
+simulation method. The next construction uses no such table.
+
+\begin{definition}[Uniform command-stream model]\label{def:uniform44}
+A fixed finite program receives $N$ in binary, one of the four planar
+seeds, exactly $N$ one-way command symbols, and one final coordinate
+query. It has a work tape and fresh independent fair bits. The command
+input cannot be reread. All counters, arithmetic registers, stored
+parameters, random words and output storage count toward work space.
+An external source waits while a command is processed; waiting time is
+not an input or a persistent storage channel. The finite control is
+fixed independently of $N$. The program has no horizon-dependent advice
+or transition table.
+\end{definition}
+
+An angle has an admissible digit procedure if a fixed program computes
+a dyadic approximation within $2^{-p}$ in polynomial time in $p$ and
+$O(p)$ work bits. The same fixed $r$ is used throughout. This explicit
+hypothesis excludes a free oracle for an arbitrary noncomputable real.
+Algebraic angles, in particular the examples below, meet it by rational
+bisection with fixed-degree integer arithmetic.
+
+\begin{theorem}[A table-free finite-bit compiler]\label{thm:uniform44}
+Fix $r$ angles with admissible digit procedures, rational
+$0<\rho\le1/10$, and rational $0<\varepsilon<1$. There is a uniform
+program in Definition~\ref{def:uniform44} whose every binary output row
+has TV error at most $\varepsilon$ from the rotation experiment. It uses
+\begin{equation}\label{eq:uniform-resources44}
+ O_{r,\alpha,\rho}(\log(N+2)+\log(1/\varepsilon))\text{ work bits},
+ \qquad (N+2)b\text{ fair bits},
+\end{equation}
+where $b=\lceil\log_2(16(N+2)/\varepsilon)\rceil$.
+Its total running time is polynomial in $N+\log(1/\varepsilon)$ for
+fixed digit procedures. Its clean stochastic register has $q+1$ labels,
+including one central label, with $q=O(\sqrt N)$.
+
+If a denominator $q_0\ge4$ satisfies
+$N\eta_\alpha(q_0)\le q_0^2/2000$, the search may choose $q\le q_0$.
+Consequently the clean-register upper exponents and logarithmic bounds
+of Theorem~\ref{thm:metric-main} hold for this compiler as well, with
+changed constants. These clean labels do not include its scratch space
+or deterministic parameter registers; the full work bound is
+\eqref{eq:uniform-resources44}.
+\end{theorem}
+\begin{proof}
+We give the parameter search, real reference rows, dyadic rounding,
+and finite-space evaluation separately.
+
+\emph{Parameter search.}
+Put $p=\lceil\log_2(16000(N+2)/\varepsilon)\rceil$ and obtain dyadic
+$\widetilde\alpha_i$ with error at most $2^{-p}$. For $q=4,5,\ldots$
+compute, by integer arithmetic,
+\[
+ e(q)=\max_i\|q\widetilde\alpha_i\|_{\R/\Z}+q2^{-p}.
+\]
+Stop at the first $q$ for which $Ne(q)\le q^2/1000$. The test is
+rational and certifies both $\eta_\alpha(q)$ and
+$\eta_{\widetilde\alpha}(q)$ by the Lipschitz property of distance to
+$\Z$. It succeeds by $q=\max(4,\lceil\sqrt{2000(N+2)}\rceil)$:
+$\|q\widetilde\alpha_i\|\le1/2$ and the added term is smaller than
+one at this bound. If $q_0$ satisfies the stronger displayed condition,
+then $e(q_0)\le\eta_\alpha(q_0)+2q_0 2^{-p}$ and
+$2Nq_02^{-p}\le q_0^2/2000$. Hence that candidate succeeds.
+No exact comparison of an irrational angle with a rational sector
+boundary is performed.
+
+\emph{Reference rows with slack.}
+Use the regular $q$-gon $v_j=(\cos(2\pi j/q),\sin(2\pi j/q))$ and
+one additional label $*$ representing zero. Set
+$\Lambda=1+1/(4N)$. For $N\ge1$ the dilation estimate
+\eqref{eq:dilation} and the search condition give
+\[
+ \log\Lambda\ge1/(5N)>4\pi^2\eta_{\widetilde\alpha}(q)/q^2.
+\]
+Thus $\Lambda^{-1}R_{2\pi\widetilde\alpha_i}v_j$ lies strictly inside
+the polygon. The case $N=0$ is handled by direct rounding of the seed
+response and a fixed amount of space.
+Write $q\widetilde\alpha_i=n_i+t_i$, with integer $n_i$ and
+$0\le t_i<1$, and put $h=2\pi/q$. The command row has successors
+$j+n_i$, $j+n_i+1$ modulo $q$, and $*$, with respective weights
+\begin{equation}\label{eq:three-row44}
+ A_i=\frac{\sin((1-t_i)h)}{\Lambda\sin h},\qquad
+ B_i=\frac{\sin(t_i h)}{\Lambda\sin h},\qquad 1-A_i-B_i.
+\end{equation}
+They are nonnegative by the dilation bound, and their vector mean is
+the required contracted rotation. The row at $*$ stays there. Initialize
+with vector mean $x/2$ using the same chord formula with radial factor
+$1/2$ and the exact seed angle $0,1/4,1/2,3/4$. Decode with mean
+$2\rho\Lambda^N\ip{e_j}{v_s}$, or zero at $*$. Since
+$\Lambda^N\le e^{1/4}$, all decoder means are strictly inside $[-1,1]$.
+The usual mean induction realizes every word for
+$\widetilde\alpha$ exactly. These are reference real rows only.
+
+\emph{Certified finite rows.}
+Compute outward intervals for the first two weights in each row, each
+of width at most $2^{-b}$. Clip their lower endpoints at zero and round
+down to denominator $2^b$; assign the residue to $*$. Relative to the
+reference row, at most $4\cdot2^{-b}$ mass is moved. Evaluate and round
+each terminal Bernoulli parameter within $2\cdot2^{-b}$. TV contraction
+therefore bounds initialization, $N$ updates and final decoding by
+$(4N+6)2^{-b}$. Replacing the true angles by their dyadic approximants
+changes a product rotation by at most $2\pi N2^{-p}$ in operator norm,
+and changes a target binary row by at most $\pi\rho N2^{-p}$.
+The sum is less than $\varepsilon$ with the chosen $p,b$.
+Use exactly $b$ fair bits at each draw, including dummy bits when the
+central row is deterministic. The random-bit count is $(N+2)b$.
+
+\emph{Work and uniform evaluation.}
+Only $q$, the current vertex or central flag, the horizon and command
+counter, the $r$ dyadic angles, and $O(r)$ offsets and dyadic weights
+are retained. The latter specify circulant rows, not a $q$-row table.
+The denominator search uses integers of $O(p+\log q)$ bits.
+Elementary sine and cosine on bounded intervals can be evaluated by
+fixed-point Taylor recurrences with outward rounding; $\pi$ can be
+evaluated by Machin's arctangent identity. There are $O(b+\log q)$
+terms and only a fixed number of live accumulators. Since
+$\sin(2\pi/q)\ge4/q$ for $q\ge4$, division loses only $O(\log q)$
+bits. Repeated squaring evaluates $\Lambda^N$ with $O(\log N)$ stages,
+all intermediate true values between $1$ and $e^{1/4}$.
+An additional $O(\log(N+2)+\log(b+2))$ guard bits bounds accumulated
+rounding errors. Interval precision can instead be doubled until the
+stated widths are certified; these error estimates bound the final
+precision by the same order. No integer of unbounded exact denominator
+is stored. Every live register has
+$O(b+p+\log N)$ bits, and the number of registers is fixed for fixed
+$r$. This proves the work bound and a polynomial time bound, including
+parameter search. Finally the finite arithmetic upper proofs remain
+valid with $1/100$ replaced by $1/2000$, since only fixed constants
+change. Their candidate denominators therefore bound the search.
+\end{proof}
+
+The proof describes a fixed-point implementation, not the numerical
+behavior of a floating-point library. The accompanying integer-interval
+reference code certifies each rounded row and uses fresh bounded-length
+random integers; its Python object overhead is not identified with the
+Turing work-space constant.
+
+\begin{corollary}[Sharp work-space order for explicit alphabets]\label{cor:space44}
+Let $\alpha_i=2^{i/(r+1)}$, $1\le i\le r$, and fix rational
+$0<\varepsilon<\rho/(2\sqrt2)$ and $0<\rho\le1/10$.
+In Definition~\ref{def:uniform44}, numerical simulation requires and
+suffices with $\Theta(\log N)$ work bits. More precisely every fixed
+program using $s(N)$ work bits obeys
+\begin{equation}\label{eq:space-lower44}
+ s(N)\ge\frac r{2r+1}\log_2N-O(\log\log(N+2)).
+\end{equation}
+The compiler's clean register has
+$O(N^{r/(2r+1)})$ labels. This is not a claim that all its internal
+fair-bit states retain that label exponent or that the leading
+coefficient of work space is optimal.
+\end{corollary}
+\begin{proof}
+Put $\theta=2^{1/(r+1)}$. For a nonzero integer vector $m$ with
+$H=\|m\|_1\ge1$, choose the integer $p$ nearest to
+$-\sum_i m_i\theta^i$. The algebraic integer
+$P(\theta)=p+\sum_i m_i\theta^i$ is nonzero: the minimal polynomial
+$t^{r+1}-2$ is Eisenstein and has degree $r+1$. Each of its other
+$r$ conjugates has modulus at most $(9/2)H$, since
+$|p|\le2H+1/2$ and $|\theta^i|<2$.
+Its nonzero integer norm gives
+\[
+ \|m\cdot\alpha\|_{\R/\Z}\ge(2/9)^rH^{-r}.
+\]
+This classical algebraic example is credited in \cite{DGLPS}; it is
+not new arithmetic. The inherited badly approximable theorem,
+Corollary~\ref{cor:ba}, now supplies the all-hidden lower bound and
+the matching candidate denominators for the compiler.
+Bisection for $\theta$ and fixed-degree powers meet the digit hypothesis.
+A fixed program with $s(N)$ work bits has at most $C(s(N)+1)^C2^{s(N)}$
+command-boundary configurations. Its private randomness since the last
+boundary is integrated into the next stochastic row, so it induces a
+legal atomic realization of at most that width. Apply the lower bound
+$W_{N,\varepsilon}\ge cN^{r/(2r+1)}$ and take logarithms. The polynomial factor accounts for the fixed number of work-tape head positions; it contributes $O(\log\log N)$ unless the displayed lower bound is already automatic.
+Theorem~\ref{thm:uniform44} supplies the upper work bound.
+\end{proof}
