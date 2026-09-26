@@ -1,0 +1,166 @@
+\section{Finite word profiles and compatible enclosures}\label{sec:profiles}
+The results in this section apply to every finite orthogonal alphabet, including noncommuting alphabets. No connectedness, arithmetic condition or spectral gap is assumed. Invariant directions may make a converse profile zero; this is a property of the stated profile, not an omitted hypothesis.
+
+\subsection{An optimized distortion}
+For $B,k\ge1$ and a probability vector $p$ on the actual words $\calA^B$, define
+\begin{align}
+ D_k(p)&=1-\max_{\substack{u\in\Sphere^{D-1}\\v_1,\ldots,v_k\in\Sphere^{D-1}}}
+       \sum_{w\in\calA^B}p_w\max_{1\le j\le k}\ip{v_j}{U_wu},\label{eq:distortion43}\\
+ \Gamma_{\calA}(k,B)&=\max_{p\in\Delta(\calA^B)}D_k(p),
+ \qquad \chi_{\calA}(k,B)=-\log(1-\Gamma_{\calA}(k,B)).\label{eq:gamma43}
+\end{align}
+We allow $\chi=+\infty$. Repeated product matrices can be merged for the optimization: their probability masses add. Their representative words must still be executed one ordinary command at a time.
+
+\begin{proposition}[Finite-data properties]\label{prop:finite-profile}
+The maxima in \eqref{eq:distortion43}--\eqref{eq:gamma43} are attained, $0\le\Gamma_{\calA}(k,B)\le1$, and the profile is invariant under simultaneous orthogonal changes of coordinates. It is nonincreasing in $k$ and unchanged by duplicating a letter. For two indexed orthogonal alphabets $U,V$,
+\begin{equation}\label{eq:profile-stability}
+ |\Gamma_U(k,B)-\Gamma_V(k,B)|
+             \le B\max_{a}\norm{U_a-V_a}_{\mathrm{op}}.
+\end{equation}
+For a fully listed finite alphabet of real-algebraic matrices and fixed integers $k,B,D$, $\Gamma_{\calA}(k,B)$ and an optimizing word law are real-algebraic and can be determined by real quantifier elimination.
+\end{proposition}
+\begin{proof}
+All parameter spaces are compact and the objective is continuous. Its maximum over directions is convex in $p$, so $D_k$ is continuous and concave. The maximum scalar product is at most one. By choosing a single direction parallel to $\sum p_w U_wu$, the inner maximum is nonnegative; hence $D_k\in[0,1]$. Conjugating all directions proves invariance. Additional centers only increase that inner maximum. Product telescoping gives $\norm{U_w-V_w}_{\mathrm{op}}\le B\max_a\norm{U_a-V_a}_{\mathrm{op}}$, and maxima and minima preserve this uniform bound.
+
+For the last assertion, enumerate the product matrices. Unit-sphere equations, simplex inequalities and finitely many maximum operations define a compact semialgebraic optimization with algebraic coefficients. Maximum operations can be expressed by finite alternatives or auxiliary variables. Quantifier elimination over the real closed field of real-algebraic numbers determines the endpoint of the feasible value interval and a witness \cite{BPR}. The word table may have $|\calA|^B$ entries; this is not a polynomial-time assertion or a decision procedure for an infinite spectral gap. No logarithm needs to be eliminated: finite budget comparisons can instead use products of $1-\Gamma$.
+\end{proof}
+
+\begin{lemma}[Endpoint contraction; inherited mechanism]\label{lem:packet}
+Let a complete random word $W$ with law $p$ be independent of all information before its start. Internal letters of $W$ may be correlated. If the endpoint register has at most $k$ labels, then
+\begin{equation}\label{eq:packet-contraction}
+                       q'\le(1-D_k(p))q.
+\end{equation}
+There is no bound on the intermediate registers.
+\end{lemma}
+\begin{proof}
+Write $z_s=\E[Y\mid S=s]$ at the start. Composing all internal stochastic rows yields a common endpoint kernel $T(j\mid s,w)$. Since the entire word and the machine's fresh randomness are independent of the past,
+\[
+ z'_j=\E[U_Wz_S\mid S'=j].
+\]
+This is an endpoint identity; it would not generally hold after conditioning on a correlated next letter inside the packet. Choose $v_j=z'_j/\norm{z'_j}$ for nonzero $z'_j$, and any unit vector otherwise. Then
+\begin{align*}
+ q'&=\sum_s\Pp(S=s)\sum_w p_w\sum_jT(j\mid s,w)\ip{v_j}{U_wz_s}\\
+ &\le\sum_s\Pp(S=s)\norm{z_s}
+       \max_{\norm u=1}\sum_w p_w\max_j\ip{v_j}{U_wu}
+ \le(1-D_k(p))q.
+\end{align*}
+Terms with $z_s=0$ contribute zero. Replacing an executable assignment by the largest pairing is a relaxation in the correct direction. Arbitrary unobservable hidden coordinates are included in $s$; no statewise observable-vector hypothesis is used. This is the conditional-centroid mechanism of \cite{GTF35,GTF42}, now applied to the optimized finite word datum.
+\end{proof}
+
+For an available profile $K_\bullet$, let $I_0=0$ and define
+\begin{equation}\label{eq:interval-recursion}
+ I_t=\max\left\{I_{t-1},\ 
+        \max_{1\le B\le t}\bigl[I_{t-B}+\chi_{\calA}(K_t,B)\bigr]\right\},
+ \qquad \mathcal I_N(K_\bullet)=I_N.
+\end{equation}
+If $\Gamma_{\calA}(K_t,B)=1$, the interval annihilates the conditional-centroid amplitude and is incompatible with any positive terminal calibration. This is the meaning of an infinite charge. The recurrence is the largest sum of charges of disjoint command intervals, with an interval of length $B$ ending at $t$ charged by $\chi_{\calA}(K_t,B)$. The recurrence depends only on the alphabet and the available profile.
+
+\begin{theorem}[A nonuniform interval budget]\label{thm:profile}
+Every machine with $\kappa=\rho/\sqrt D-2\varepsilon>0$ satisfies
+\begin{equation}\label{eq:interval-budget}
+                 \mathcal I_N(K_\bullet)\le\log(1/\kappa).
+\end{equation}
+More generally its optimal actual terminal error obeys
+\begin{equation}\label{eq:actual-error}
+ \mathcal E_N(K_\bullet)\ge
+       \frac12\left[\frac\rho{\sqrt D}-e^{-\mathcal I_N(K_\bullet)}\right]_+.
+\end{equation}
+For a uniform peak bound $K$, every $B\le N$ gives
+\begin{equation}\label{eq:peak-profile}
+ \lfloor N/B\rfloor\chi_{\calA}(K,B)\le\log(1/\kappa).
+\end{equation}
+For a fixed $B,k$ with $\Gamma_{\calA}(k,B)>0$,
+\begin{equation}\label{eq:occupation-profile}
+ \#\{1\le t\le N:K_t\le k\}
+ \le B-1+\frac{B\log(1/\kappa)}{\chi_{\calA}(k,B)}.
+\end{equation}
+If $\chi=+\infty$, the last fraction is zero.
+\end{theorem}
+\begin{proof}
+Choose any maximizing disjoint interval family in \eqref{eq:interval-recursion}. On each selected interval put an independently sampled optimizing complete word from Proposition~\ref{prop:finite-profile}. All gaps and the final remainder contain fixed deterministic command words. A deterministic orthogonal command followed by a stochastic update cannot increase the conditional-mean norm, by conditional Jensen. Lemma~\ref{lem:packet} therefore gives
+\[
+ q_N\le\prod_{(t-B,t]}(1-\Gamma_{\calA}(K_t,B))
+                         =e^{-\mathcal I_N(K_\bullet)},
+\]
+since $q_0=1$. The chosen law can depend on the available layer sizes, not on private states. Wordwise correctness requires the same machine to pass it. Lemma~\ref{lem:calibration} proves \eqref{eq:interval-budget} and \eqref{eq:actual-error}; taking consecutive intervals proves \eqref{eq:peak-profile}.
+
+For \eqref{eq:occupation-profile}, discard candidate endpoints before $B$. Select the earliest remaining endpoint, delete all later candidates less than $B$ away, and repeat. If $M$ is the original number and $J$ the number selected, the explicit count is
+\[
+                         M-(B-1)\le BJ.
+\]
+The associated length-$B$ intervals are disjoint and each contributes at least $\chi_{\calA}(k,B)$. Applying \eqref{eq:interval-budget} gives the result. No restriction on the other registers was introduced.
+\end{proof}
+
+The cap union estimate below is the geometric certificate already used in the predecessor packet method \cite{GTF35}. The finite incidence formulation specifies how to optimize that certificate on a fully listed word set.
+
+\begin{proposition}[Uniform cap certificates]\label{prop:caps}
+Suppose a law $p$ on length-$B$ words satisfies
+\[
+ \sup_{u,v\in\Sphere^{D-1}}p\{w:\norm{U_wu-v}<\delta\}\le b.
+\]
+Then $\Gamma_{\calA}(k,B)\ge\tfrac12\delta^2(1-kb)_+$. For algebraic product matrices and algebraic $\delta$, the best such $b$ is the value of a finite linear program once cap incidence types have been decided by real quantifier elimination.
+\end{proposition}
+\begin{proof}
+The union of $k$ open caps has probability at most $kb$. Outside it,
+$1-\max_j\ip{v_j}{U_wu}=\tfrac12\min_j\norm{U_wu-v_j}^2\ge\delta^2/2$.
+For the algorithmic assertion, a subset of the finite word list either can or cannot be contained in one such cap for some $u,v$. This is a finite system of algebraic inequalities, including the sphere equations. For every feasible subset $A$ impose $\sum_{w\in A}p_w\le b$, along with the simplex constraints, and minimize $b$. Every actual incidence set is feasible; conversely a feasible subset is included in an actual incidence set and has no greater mass. Thus these constraints give exactly the desired supremum. The exponentially large enumeration is not concealed.
+\end{proof}
+
+\subsection{A separate exact-synthesis profile}
+Fix $0<a<1$. For $k$ such that the following family is nonempty, let
+\begin{equation}\label{eq:enclosure-profile}
+ \lambda_{\calA}(k,a)=\min_P\inf\{\lambda\ge1:
+                  U_bP\subseteq\lambda P\ \text{for all }b\in\calA\},
+\end{equation}
+where $P$ ranges over convex hulls of at most $k$ points in $\Ball^D$ containing $a\Ball^D$. An empty family has value $+\infty$.
+
+\begin{theorem}[Compatible enclosure synthesis]\label{thm:enclosure}
+The finite value in \eqref{eq:enclosure-profile} is attained and lies in $[1,a^{-1}]$. If $\rho\lambda_{\calA}(k,a)^N\le a$, there is an exact machine with $\max(k,2)$ labels, common command matrices and a horizon-dependent decoder. Each row has at most $D+1$ successors. Algebraic matrices and algebraic $a$ give an algebraically decidable profile value and algebraic row witnesses. For two indexed alphabets with a common feasible family,
+\begin{equation}\label{eq:enclosure-stability}
+ |\lambda_U(k,a)-\lambda_V(k,a)|
+                \le a^{-1}\max_b\norm{U_b-V_b}_{\mathrm{op}}.
+\end{equation}
+\end{theorem}
+\begin{proof}
+Parameterize $P$ by $k$ points in the closed unit ball, allowing repetition. Containment of $a\Ball^D$ is closed in these coordinates. Every such $P$ satisfies $U_bP\subseteq\Ball^D\subseteq a^{-1}P$. The containment conditions are closed on this compact set and $1\le\lambda\le a^{-1}$; hence a minimum exists.
+
+Let its vertices be $v_s$ and $\lambda$ its dilation. Initialize with a convex representation of $ax$. For each $b,s$, represent $\lambda^{-1}U_bv_s$ by the same vertices and use its convex coefficients as the row $T_b(s,\cdot)$. Induction gives
+\[
+                   \E[v_{S_t}\mid w]=a\lambda^{-t}U_wx.
+\]
+The decoder $d_j(s)=\rho\lambda^N\ip{e_j}{v_s}/a$ lies in $[-1,1]$ and gives \eqref{eq:target}. These are actual rows throughout the run, not independently chosen checkpoint factorizations. Carath\'eodory gives $D+1$ successors; there are $|\calA|k$ command rows, and their construction and storage remain uncharged.
+
+The defining finite problem is semialgebraic: use convex coefficients for transformed vertices and a universal ball containment condition, then eliminate quantifiers. To prove \eqref{eq:enclosure-stability}, set $e=\max_b\norm{U_b-V_b}_{\mathrm{op}}$. For every feasible $P$,
+$V_bP\subseteq U_bP+e\Ball^D\subseteq(\lambda+e/a)P$.
+Interchanging $U,V$ completes the proof.
+\end{proof}
+
+The two profiles have different quantifiers. The converse tests every hidden machine; the enclosure theorem builds a particular positive realization. Neither theorem asserts that $\lambda_{\calA}$ is the optimum over hidden machines. This is why finite-scale lower and upper bounds can be used even when they do not match.
+
+\begin{proposition}[Bounded word recoding]\label{prop:recoding}
+Suppose every command of $\calA$ is a product of exactly $L$ commands of an alphabet $\mathcal B$ on the same space, with the same seeds and queries. Then
+\[
+ \Gamma_{\calA}(k,B)\le\Gamma_{\mathcal B}(k,LB),\qquad
+ \lambda_{\calA}(k,a)\le\lambda_{\mathcal B}(k,a)^L,
+ \qquad W_{N,\varepsilon}(\calA)\le W_{LN,\varepsilon}(\mathcal B).
+\]
+An identity letter permits words of length at most $L$ to be padded. If both alphabets contain an identity and admit such bounded recodings into the other, the existence and value of a logarithmic width exponent agree.
+\end{proposition}
+\begin{proof}
+Push forward a packet law along the word substitution to obtain the first inequality. Iterate the enclosure containments for the second. For the last inequality, compose the $L$ stochastic rows of a $\mathcal B$ machine into one row for the corresponding $\calA$ command, retaining only the block-end label. All rows may depend on the external epoch. This is an implementation of the atomic $\calA$ interface, not a claim that its physical letters cost $L$ letters. Applying the two comparisons and monotonicity under final identity padding proves the exponent statement.
+\end{proof}
+
+\begin{corollary}[Packing--dilation balance]\label{cor:balance}
+Fix a calibrated experiment, an inradius $a>\rho$, and positive numbers $u,v$. Suppose that for every sufficiently large $k$ there are a length $B(k)\le Ck^u$ and a word law for which
+\[
+ \sup_{x,z\in\Sphere^{D-1}}p\{w:\norm{U_wx-z}<c k^{-v}\}\le(2k)^{-1}.
+\]
+Suppose also that $\lambda_{\calA}(k,a)\le\exp(C'k^{-u-2v})$. Then
+\[
+                         W_{N,\varepsilon}=\Theta(N^{1/(u+2v)}).
+\]
+The same conclusion holds with $u=0$ when the lengths are uniformly bounded.
+\end{corollary}
+\begin{proof}
+Proposition~\ref{prop:caps} gives $\Gamma(k,B(k))\ge c^2k^{-2v}/4$. Equation~\eqref{eq:peak-profile} implies $N\le C_1k^{u+2v}$ for a feasible peak $k$. Conversely choose $k$ at a sufficiently large constant times $N^{1/(u+2v)}$ so that $C'Nk^{-u-2v}\le\log(a/\rho)$, and apply Theorem~\ref{thm:enclosure}. The hypotheses concern finite word orbits and compatible convex containments, and impose no commutativity on the matrices.
+\end{proof}
