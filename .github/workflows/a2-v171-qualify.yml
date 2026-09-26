@@ -1,0 +1,65 @@
+name: A2 v171 exact-tip read-only qualification
+on:
+  push:
+    branches: [revision/a2-v171-duality-conductor-base-change-2026-09-27]
+permissions:
+  contents: read
+concurrency:
+  group: a2-v171-read-only-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  submitted-manuscripts-read-only:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Bind the actual submitted commit and require a clean checkout
+        run: |
+          test "$GITHUB_REPOSITORY" = TrillionniumFoundation/theta-theory
+          test "$GITHUB_REF_NAME" = revision/a2-v171-duality-conductor-base-change-2026-09-27
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain)"
+          test -f papers/A2-v17-boundary-information-coarsening/article/v171/BUILD_RECEIPT_V171.json
+      - name: Install the same reproducible build environment
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils python3-venv
+          python3 -m venv /tmp/a2-v171-env
+          /tmp/a2-v171-env/bin/pip install 'sympy==1.14.0'
+      - name: Verify submitted hashes, rerun all checks and rebuild outside the checkout
+        run: |
+          /tmp/a2-v171-env/bin/python papers/A2-v17-boundary-information-coarsening/article/v171/qualify_v171.py --output "$RUNNER_TEMP/a2-v171-qualification"
+          python3 - <<'PY'
+          from pathlib import Path
+          import json,os
+          p=Path(os.environ['RUNNER_TEMP'])/'a2-v171-qualification/READ_ONLY_QUALIFICATION_V171.json'
+          r=json.loads(p.read_text())
+          assert r['qualified_sha']==os.environ['GITHUB_SHA']
+          assert r['read_only'] and r['all_checks_pass'] and r['inherited_chain_rerun']
+          assert r['submitted_hashes_verified'] and r['all_predecessor_math_blocks_retained']==487
+          assert all(x['standalone_source_identical'] and x['pdf_layout_text_identical'] for x in r['recompiled_outputs'].values())
+          print('Exact submitted SHA qualified without any repository write:',r['qualified_sha'])
+          PY
+      - name: Require the submitted checkout to remain byte-for-byte unchanged
+        if: always()
+        run: |
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain)"
+      - name: Record exact-tip environment outside the checkout
+        if: always()
+        run: |
+          mkdir -p "$RUNNER_TEMP/a2-v171-qualification"
+          { echo "Qualified commit $GITHUB_SHA"; echo "Run $GITHUB_RUN_ID"; python3 --version; pdflatex --version | head -2; echo 'Read-only evidence, not an assertion of branch-protection enforcement or proof certification.'; } > "$RUNNER_TEMP/a2-v171-qualification/ENVIRONMENT.txt"
+      - name: Archive read-only qualification and command evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: a2-v171-exact-tip-qualification-${{ github.sha }}
+          path: ${{ runner.temp }}/a2-v171-qualification
+          retention-days: 30
+          if-no-files-found: error
