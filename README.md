@@ -1,5 +1,5 @@
-# Theta-Theory — A2 revision 169
+# Theta-Theory — A2 revision 170
 
-[Current review entry](CURRENT_REVIEW_ENTRY.md) links the complete manuscripts, PDFs, both referee responses, theorem locations, and preservation/build receipts.
+[Current referee entry](CURRENT_REVIEW_ENTRY.md) provides the complete manuscript PDFs, standalone sources, both itemwise referee responses, compiled theorem locators, proof preservation, and actual build receipts.
 
-This isolated branch is based on the complete reviewed v167 package. Historical manuscript sources, review branches, and the partial v168 branch are unchanged.
+This new branch builds on the complete v169 package and adds the all-order ramified-boundary and conductor theorem. Earlier revisions and reviews are preserved.

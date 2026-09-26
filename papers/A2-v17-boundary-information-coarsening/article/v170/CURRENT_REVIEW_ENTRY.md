@@ -12,15 +12,15 @@ Authored build commit: `038af5dc1703deb425764b6d6350ce3e13c31fde`.
 
 ## Paper I — Finite failure schemes and the reconstruction of quadratic pencils
 
-76 pages. [Complete PDF](papers/A2-v17-boundary-information-coarsening/article/v170/reconstruction.pdf) · [Standalone LaTeX](papers/A2-v17-boundary-information-coarsening/article/v170/reconstruction.tex).
+76 pages. [Complete PDF](reconstruction.pdf) · [Standalone LaTeX](reconstruction.tex).
 
 ## Paper II — Conductors and ramified Hilbert boundaries of polynomial contacts
 
-135 pages. [Complete PDF](papers/A2-v17-boundary-information-coarsening/article/v170/divisor-geometry.pdf) · [Standalone LaTeX](papers/A2-v17-boundary-information-coarsening/article/v170/divisor-geometry.tex).
+135 pages. [Complete PDF](divisor-geometry.pdf) · [Standalone LaTeX](divisor-geometry.tex).
 
 ## Complete preservation master — not a third submission
 
-202 pages. [Complete PDF](papers/A2-v17-boundary-information-coarsening/article/v170/geometry.pdf) · [Standalone LaTeX](papers/A2-v17-boundary-information-coarsening/article/v170/geometry.tex).
+202 pages. [Complete PDF](geometry.pdf) · [Standalone LaTeX](geometry.tex).
 
 ## New mathematics relative to the complete v169 package
 
@@ -43,23 +43,23 @@ of any normal toric surface modification of the plane, without Paper I.
 
 All 465 v169 mathematical blocks and 682 master labels are retained. No historical manuscript source is modified. Complete predecessor front matters are archived; the two paper bodies partition the master exactly.
 
-[All 66 controlling requests with v170 amendments](papers/A2-v17-boundary-information-coarsening/article/v170/RESPONSE_TO_SECOND_V167_REPORT.md)
+[All 66 controlling requests with v170 amendments](RESPONSE_TO_SECOND_V167_REPORT.md)
 
-[All 66 earlier requests and inherited responses](papers/A2-v17-boundary-information-coarsening/article/v170/RESPONSE_TO_FIRST_V167_REPORT.md)
+[All 66 earlier requests and inherited responses](RESPONSE_TO_FIRST_V167_REPORT.md)
 
-[Actual compiled theorem and page locators](papers/A2-v17-boundary-information-coarsening/article/v170/REFEREE_CROSSWALK_V170.md)
+[Actual compiled theorem and page locators](REFEREE_CROSSWALK_V170.md)
 
-[Proof dependencies and publication units](papers/A2-v17-boundary-information-coarsening/article/v170/THEOREM_DEPENDENCIES_V170.md)
+[Proof dependencies and publication units](THEOREM_DEPENDENCIES_V170.md)
 
-[Complete compiled theorem index](papers/A2-v17-boundary-information-coarsening/article/v170/THEOREM_INDEX_V170.json)
+[Complete compiled theorem index](THEOREM_INDEX_V170.json)
 
-[Build and source-hash receipt](papers/A2-v17-boundary-information-coarsening/article/v170/BUILD_RECEIPT_V170.json)
+[Build and source-hash receipt](BUILD_RECEIPT_V170.json)
 
-[Byte-level proof preservation](papers/A2-v17-boundary-information-coarsening/article/v170/NONDELETION_V170.json)
+[Byte-level proof preservation](NONDELETION_V170.json)
 
-[Auxiliary exact checks](papers/A2-v17-boundary-information-coarsening/article/v170/EXACT_CHECKS_V170.json)
+[Auxiliary exact checks](EXACT_CHECKS_V170.json)
 
-[Primary sources and documentary scope](papers/A2-v17-boundary-information-coarsening/article/v170/LITERATURE_AUDIT_V170.md)
+[Primary sources and documentary scope](LITERATURE_AUDIT_V170.md)
 
 ## Scope and audit status
 

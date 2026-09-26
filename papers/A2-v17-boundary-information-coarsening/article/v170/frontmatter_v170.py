@@ -1,0 +1,167 @@
+"""Front matter for the complete A2 v170 papers; no theorem body is deleted."""
+TITLE='Conductors and ramified Hilbert boundaries of polynomial contacts'
+II_ABSTRACT=r'''
+We determine the normalization and conductor of the retained-coefficient
+Hilbert graph of $[t^a:u^\rho s^a:v^\sigma st^{a-1}]$ for every
+$a\geq2$ and all positive $\rho,\sigma$. The normalized boundary
+is a chain of $a$ rational curves. Its scheme multiplicities,
+cyclic quotient singularities, normalization residue degrees, and
+conductor orders are explicit gcd formulas, independent of the
+Hilbert embedding degree. A lattice lemma proves that the entire
+parameter fibre is Cohen--Macaulay, with no hidden embedded points,
+and determines its exact nilpotence order. A depth argument extends
+the transverse conductor calculation across every boundary crossing.
+The resulting marked logarithmic models are compatible with successive
+root covers; their Hilbert coordinates forget precisely the computed
+root labels on the open boundary orbits. Uniform equations for the
+unramified universal curves, including the higher-contact punctual
+genus correction, supply the embedded-curve interpretation. The complete
+classification concerns this marked all-order family; the full
+polynomial-contact graph and its equivariance are treated separately.
+'''
+II_INTRO=r'''
+\section{Introduction}
+\label{sec:paper-ii-v164}\label{sec:paper-ii-v166}\label{sec:paper-ii-v167}
+\label{sec:paper-ii-v169}\label{sec:paper-ii-v170}
+An embedded flat limit and a point of the normalization of its parameter
+space need not carry the same information. A third object, the scheme
+fibre of that normalized parameter space, can be nonreduced even when
+its reduced boundary is a simple chain. This paper determines these
+three structures, together with their conductor, in an all-order
+family of polynomial contacts.
+
+Work over an algebraically closed field of characteristic zero. For
+$a\geq2$ the coefficient family
+\[
+ [s:t]\longmapsto[t^a:bs^a:cst^{a-1}]
+\]
+is a morphism to $\Pj^2$ when $b\ne0$. Its graph in
+$\Pj^1\times\Pj^2$, polarized by $\OO(1,1)$, has Hilbert polynomial
+$P_a(l)=(a+1)l+1$. We retain $(b,c)$ as part of the parameter and
+close this embedded Hilbert graph over $S_a=\Spec k[b,c]$.
+The resulting surface $T_a$ is a chain of $a$ successive point
+blow-ups, with exceptional valuations $(i,1)$,
+$1\leq i\leq a$; see Theorem~\ref{thm:chain-model-v169}.
+
+The principal theorem concerns every coefficient cover
+$b=u^\rho$, $c=v^\sigma$, with $\rho,\sigma$ positive. Let
+$Y=T_a\times_{S_a}\Spec k[u,v]$ and let $Z$ be its normalization.
+Writing $g_i=\gcd(\rho,i\sigma)$, the three numerical quantities
+\[
+ \ell_i=\frac{\min(\rho,i\sigma)}{g_i},\qquad
+ g_i,\qquad
+ \kappa_i=\frac{\rho i\sigma-\rho-i\sigma}{g_i}+1
+\]
+have different geometric meanings. They are respectively the generic
+length of the parameter fibre, the number of normalization lifts over
+a general point of the old boundary curve, and the conductor order.
+Theorem~\ref{thm:ramified-boundary-v170} determines the entire scheme
+fibre and conductor, not only these generic numbers. The normalized
+rays are $(i\sigma/g_i,\rho/g_i)$. Their consecutive determinants give
+all cyclic quotient singularities and intersection numbers.
+
+The distinction between a divisor computation and a full ideal is
+essential here. Lemma~\ref{lem:coordinate-ideal-v170} proves that the
+coordinate ideal on each normalized cone is divisorial. It follows
+that the parameter fibre has no embedded associated point and that
+its nilradical has exact order $\max_i\ell_i$. The same argument
+gives Corollary~\ref{cor:toric-fibres-v170} for every nontrivial
+normal toric surface modification of the affine plane, independently
+of the reconstruction problem. For the conductor,
+Lemma~\ref{lem:conductor-depth-v170} excludes a further condition
+supported at a crossing. The transverse binomial calculation therefore
+determines a global reflexive conductor ideal. In the equal-power
+case the proof also gives explicit principal generators in every
+normalization chart.
+
+The boundary retains information that the Hilbert point loses. On its
+$i$th open orbit the normalization coordinate is
+$u^{\rho/g_i}/v^{i\sigma/g_i}$, whereas the embedded curve remembers
+only its $g_i$th power. Every root label occurs along an actual
+coefficient arc. This makes the distinction between an embedded
+Hilbert point and a normalization lift concrete at every contact
+order, rather than only warning that such a distinction may occur.
+Proposition~\ref{prop:log-compatibility-v170} characterizes the
+normalized model by simultaneous principalization and proves its
+compatibility with successive root covers and changes of marked
+boundary trivializations.
+
+\subsection*{The embedded curves and the pencil problem}
+The normalization above is of the parameter surface, not of the
+universal curve. The universal curve is pulled back flatly and its
+embedded special rings are unchanged. Theorem~\ref{thm:arc-table-v169}
+gives all wall and chamber ideals for the unramified family, and
+Theorem~\ref{thm:genus-correction-v169} computes the punctual
+nilradical of length $(a-1)(a-2)/2$ on the last wall. That punctual
+module must not be identified with the nilradical of the parameter
+fibre calculated here. The monic equations of
+Proposition~\ref{prop:curve-charts-v169} permit this distinction to be
+checked directly, without an elimination in Gotzmann degree.
+
+The application to quadratic pencils uses the fixed-target local
+comparison and, for a statement intrinsic to the effective failure
+family, the sharp inverse of Paper~I. That inverse is an input to
+the application, not to the ramified-boundary theorem. The two papers
+thus have separate central statements: reconstruction from the finite
+failure scheme, and the scheme geometry of embedded degenerations.
+The complete preservation master is a record of their mathematical
+bodies, not a third submission.
+
+\subsection*{Scope and classical inputs}
+The complete classification is for the marked family specified above,
+with arbitrary contact order and coefficient ramification. It is not
+a classification of every fibre over $B_a$, of higher-corank or
+singular pencils, or of simultaneous collisions of unequal contacts.
+The full fixed-degree graph gluing of
+Theorem~\ref{thm:global-gluing-v169} is retained, but it is not
+identified with an unproved compactification across different
+Hilbert polynomials. The logarithmic comparison in this paper concerns
+two specified transverse coefficient divisors; arbitrary changes of
+unmarked coefficient coordinates need not preserve its fan.
+
+The graph construction, flat base change for blow-ups, and normalization
+are classical \cite{Stacks169}. Semigroup saturation and monomial
+blow-ups are used in the form of
+\cite[Proposition~5 and Section~2.6]{GonzalezTeissier170}; the lattice
+rule for ramification is the one in
+\cite[Definition~1 and Lemma~1]{AlexeevPardini170}.
+The paper does not claim a new general representability mechanism
+or a new theory of toric covers. The work specific to the family is
+its content-free all-order graph, the complete fibre ideal, the
+conductor through the crossings, and their relation to embedded
+Hilbert limits. The proofs state explicitly where each classical
+input ends and the scheme calculation begins.
+
+The inherited comparisons with tropical Grassmannians, comprehensive
+Gr\"obner specialization, fixed-source Quot spaces, and stable maps
+remain in the text. Different target spaces or terminology do not
+prove nonanticipation. A complete theorem-level comparison with
+Ballico's 1993 paper has not been obtained; no priority assertion
+requiring it is made. No external independent full proof audit of
+Paper~I is represented as completed. The written arguments, rather
+than compilation or finite checks, are the objects submitted for
+mathematical scrutiny.
+'''
+I_ADD=r'''
+\paragraph{Ramified boundary application.}
+The conductor and normalization-lift theorem of the companion paper
+applies to the specified reconstructed family after its effective-family
+and fixed-target hypotheses have been checked. For the marked contact
+model it determines every coefficient cover $b=u^\rho,c=v^\sigma$,
+including conductor ideals and parameter-fibre nilpotents. This
+application still reconstructs the family first; an isolated closed
+multiplication table does not supply a specialization direction.
+The new boundary argument is independent of the sharp inverse and
+does not constitute an external audit of that inverse.
+'''
+BIB=r'''
+\bibitem{GonzalezTeissier170}
+P.~D. Gonz\'alez P\'erez and B. Teissier,
+\emph{Toric geometry and the Semple--Nash modification},
+Rev. R. Acad. Cienc. Exactas F\'is. Nat. Ser. A Mat. RACSAM,
+DOI: \href{https://doi.org/10.1007/s13398-012-0096-0}{10.1007/s13398-012-0096-0}.
+\bibitem{AlexeevPardini170}
+V. Alexeev and R. Pardini,
+\emph{On the existence of ramified abelian covers},
+Rend. Sem. Mat. Univ. Politec. Torino \textbf{71} (2013), 307--315.
+'''
