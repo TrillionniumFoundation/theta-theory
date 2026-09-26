@@ -1,0 +1,166 @@
+name: GTF-I v45 synchronized actions and bounded realization
+
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v45-verified-realization-2026-09-26
+    paths:
+      - 'papers/GTF-I-v45-verified-realization/**'
+      - '.github/workflows/gtf-i-v45-verified-realization.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gtf-i-v45-verified-realization
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/revision/general-theta-foundations-i-v45-verified-realization-2026-09-26'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 20
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /papers/GTF-I-v45-verified-realization/
+            /papers/GTF-I-v44-hankel-resonance/
+            /papers/GTF-I-v43-arithmetic-profile/verify.py
+            /papers/GTF-I-v42-canonical-gap-calibration/verify.py
+            /papers/GTF-I-v41-intrinsic-action/verify.py
+            /papers/GTF-I-v39-orbit-response/verify.py
+            /papers/GTF-I-v38-orbit-entropy/verify.py
+            /papers/GTF-I-v37-spectral-memory/verify.py
+            /papers/GTF-I-v36-finite-alphabet-memory/verify.py
+            /papers/GTF-I-v35-sharp-memory/verify.py
+            /papers/GTF-I-v34-compatible-dynamics/verify.py
+            /papers/GTF-I-v33-compatible-lifts/verify.py
+            /papers/GTF-I-v32-causal-width/verify.py
+            /papers/GTF-I-v31-compatible-memory/verify.py
+            /papers/GTF-I-v30-streaming-geometry/verify.py
+            /papers/GTF-I-v29-intrinsic-continuation/verify.py
+            /papers/GTF-I-v28-causal-response/verify.py
+            /papers/GTF-I-v27-resource-saddle/verify.py
+            /papers/GTF-I-v26-controlled-memory-foundations/verify.py
+            /papers/GTF-I-v25-controlled-minimax/verify.py
+            /papers/GTF-I-v24-structural-resources/verify.py
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Restore individually hash-checked native sources
+        shell: bash
+        run: |
+          python - <<'PY'
+          import hashlib,json,lzma
+          from pathlib import Path
+          h=Path('papers/GTF-I-v45-verified-realization')
+          old=h.parent/'GTF-I-v44-hankel-resonance'
+          raw=b''.join((h/'.source-parts'/('part%02d.xz'%i)).read_bytes() for i in range(6))
+          if len(raw)!=32740 or hashlib.sha256(raw).hexdigest()!='31a41a27889efb6af2d4b631a0e7af9215195a0292903f67e376718ef0416949':
+              raise RuntimeError('Source transport checksum mismatch')
+          payload=json.loads(lzma.decompress(raw))
+          if payload.get('schema')!='source.delta/1' or len(payload['files'])!=30:
+              raise RuntimeError('Source manifest mismatch')
+          for name,parts in payload['files'].items():
+              p=Path(name)
+              if p.name!=name or p.suffix not in {'.tex','.py','.md','.json'}:
+                  raise RuntimeError('Unsafe source entry')
+              original=[]
+              if name in payload['bases']:
+                  b=(old/name).read_bytes()
+                  if hashlib.sha256(b).hexdigest()!=payload['bases'][name]:
+                      raise RuntimeError('Frozen predecessor source mismatch: '+name)
+                  original=b.decode('utf-8').splitlines(keepends=True)
+              pieces=[]
+              for item in parts:
+                  if isinstance(item,str): pieces.append(item)
+                  elif isinstance(item,list) and len(item)==2 and all(isinstance(x,int) for x in item) and 0<=item[0]<=item[1]<=len(original):
+                      pieces.append(''.join(original[item[0]:item[1]]))
+                  else: raise RuntimeError('Invalid source delta')
+              text=''.join(pieces)
+              if hashlib.sha256(text.encode('utf-8')).hexdigest()!=payload['targets'][name]:
+                  raise RuntimeError('Reconstructed source mismatch: '+name)
+              dest=h/name
+              if dest.exists() and dest.read_text()!=text:
+                  raise RuntimeError('Refusing to replace edited native source: '+name)
+              dest.write_text(text,encoding='utf-8')
+          print('Restored and individually verified all 30 native source files.')
+          PY
+      - name: Publish native source before executing the build
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git fetch --depth=1 origin d7042cf71485f661e27d87d12ffae35a2edfc15c
+          test -z "$(git diff --name-only --diff-filter=DMRT d7042cf71485f661e27d87d12ffae35a2edfc15c)"
+          git add -f papers/GTF-I-v45-verified-realization
+          if ! git diff --cached --quiet; then
+            git commit -m 'revise(GTF-I v45): native boundedness criterion, algebraic decision and preserved realization proofs [skip ci]'
+            git push origin HEAD:"$GITHUB_REF_NAME"
+          fi
+          echo "GTF_SOURCE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - name: Install typesetting and verification dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended texlive-pictures lmodern
+          python -m pip install sympy==1.14.0 mpmath==1.3.0 PyMuPDF==1.26.7 numpy==2.3.5 scipy==1.17.0
+      - name: Verify and build the full revision
+        run: python papers/GTF-I-v45-verified-realization/build.py
+      - name: Rebuild the independent core source archive
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,os,subprocess,sys,tempfile,zipfile
+          from pathlib import Path
+          import fitz
+          h=Path('papers/GTF-I-v45-verified-realization').resolve()
+          with tempfile.TemporaryDirectory(prefix='gtf45-isolated-') as td:
+              d=Path(td)
+              with zipfile.ZipFile(h/'evidence/CORE_SOURCES.zip') as z: z.extractall(d)
+              p=subprocess.run([sys.executable,str(d/h.name/'build.py'),'--core-only'],text=True,capture_output=True)
+              (h/'evidence/CORE_REBUILD_LOG.txt').write_text(p.stdout+p.stderr)
+              if p.returncode: raise RuntimeError('Isolated source build failed')
+              a=fitz.open(h/'paper.pdf');b=fitz.open(d/h.name/'paper.pdf')
+              if len(a)!=len(b): raise RuntimeError('Core page count mismatch')
+              for i in range(len(a)):
+                  if a[i].get_text()!=b[i].get_text(): raise RuntimeError('Core page text mismatch')
+                  x=a[i].get_pixmap(matrix=fitz.Matrix(.7,.7),alpha=False)
+                  y=b[i].get_pixmap(matrix=fitz.Matrix(.7,.7),alpha=False)
+                  if (x.width,x.height,x.samples)!=(y.width,y.height,y.samples): raise RuntimeError('Core page raster mismatch')
+              receipt={'status':'success','pages':len(a),'all_page_text_equal':True,'all_page_raster_equal':True,'source_commit':os.environ['GTF_SOURCE_COMMIT']}
+              (h/'evidence/CORE_REBUILD_RECEIPT.json').write_text(json.dumps(receipt,indent=2)+'\n')
+              print(json.dumps(receipt))
+          PY
+      - name: Publish only the new package and referee-ready branch
+        shell: bash
+        run: |
+          find papers/GTF-I-v45-verified-realization -type d -name __pycache__ -prune -exec rm -rf '{}' +
+          git add -f papers/GTF-I-v45-verified-realization GENERAL_THETA_FOUNDATIONS_I_V45_REVIEW_READY.md
+          git commit -m 'publish(GTF-I v45): boundedness theorem, r29 response, independent core rebuild and unchanged predecessor archives [skip ci]'
+          test -z "$(git diff --name-only --diff-filter=DMRT d7042cf71485f661e27d87d12ffae35a2edfc15c HEAD)"
+          READY='revision/general-theta-foundations-i-v45-referee-ready-2026-09-26'
+          if git ls-remote --exit-code --heads origin "$READY"; then
+            git fetch origin "$READY"
+            git merge-base --is-ancestor FETCH_HEAD HEAD
+          fi
+          git push origin HEAD:"$GITHUB_REF_NAME" HEAD:"$READY"
+      - name: Upload referee artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: GTF-I-v45-verified-realization
+          path: papers/GTF-I-v45-verified-realization/
+          retention-days: 30
+      - name: Upload failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: GTF-I-v45-diagnostics
+          path: |
+            papers/GTF-I-v45-verified-realization/evidence/
+            papers/GTF-I-v45-verified-realization/*.tex
+            papers/GTF-I-v45-verified-realization/*.py
+          retention-days: 7
