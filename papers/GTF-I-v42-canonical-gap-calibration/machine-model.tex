@@ -1,0 +1,46 @@
+\section{The experiment and its charged state}\label{sec:model}
+Fix orthogonal matrices $A_a\in O(\R^D)$ indexed by a finite alphabet $\mathcal A$, a nonempty finite set $X$ of unit seeds, $0<\rho\le1/10$, and a horizon $N\ge1$. The target is \eqref{eq:law}.
+
+\begin{definition}[Clocked atomic-row realization]\label{def:machine}
+A realization consists of finite sets $S_0,\ldots,S_N$, initial rows $E_x\in\Delta(S_0)$, stochastic matrices $T_{t,a}:S_t\to\Delta(S_{t+1})$, and columns $d_j:S_N\to[-1,1]$. Its mean output on $(x,w,j)$ is
+\[
+ E_xT_{0,a_1}\cdots T_{N-1,a_N}d_j.
+\]
+It has error at most $\varepsilon$ if this differs from $\rho\langle e_j,A_wx\rangle$ by at most $2\varepsilon$ for every triple. Its width is $\max(2,|S_0|,\ldots,|S_N|)$. Available labels count, including unused padding. The factor two includes a charged held output after the final Bernoulli row.
+\end{definition}
+
+The seed and query are atomic input symbols. Only the updated label persists: no seed, previous command, persistent random tape, protocol tag or acquisition history is free. A row may sample an arbitrary known real distribution. The epoch, horizon, row table, table construction and lookup, and real arithmetic are free. Common-row constructions below use the same $T_a$ at every command epoch, but their final decoder may depend on $N$. They are not anytime simulators. A rational fair-bit implementation is a different resource, with sampler states and a self-paced interface; no equality with the atomic optimum is inferred.
+
+Let $H=\overline{\langle A_a\rangle}$ and let $R$ be the invariant span of $HX$. Unless specified otherwise, geometric applications assume $H$ connected. Its nontrivial real isotypic subspaces in $R$ are denoted by $R_\lambda$, with irreducible models $E_\lambda$ of dimension $d_\lambda$. Orthogonal projections and adjoints refer to the physical Euclidean structure. An isometric intertwiner $J:E_\lambda\to R_\lambda\subseteq\R^D$ is not an input to the machine.
+
+\subsection{Proof-side conditional centroids}
+A wordwise converse may choose a distribution on commands without changing the specification. If commands are fresh and independent under that test law, a unit orbit process $Y_t$ and the actual register satisfy
+\begin{equation}\label{eq:centroids}
+ Z_t=\E[Y_t\mid S_t],\quad q_t=\E\norm{Z_t},\quad
+ v_t=\E\norm{Z_t}^2,\qquad
+ Z_{t+1}=\E[A_aZ_t\mid S_{t+1}].
+\end{equation}
+Indeed, conditional on $(S_t,a)$ the future row uses no other past information. The conditional-expectation projection identity and Jensen's inequality give
+\begin{equation}\label{eq:conditional}
+ q_{t+1}\le q_t,\quad
+ \Delta_t:=\E\norm{A_aZ_t-Z_{t+1}}^2=v_t-v_{t+1},
+ \qquad \sum_{t<N}\Delta_t\le1.
+\end{equation}
+The same identities hold at boundaries of independent complete command words; their internal commands need not be independent. All internal updates are first integrated into their endpoint kernel. No identity requiring a fresh independent bit is invoked inside such a word.
+
+\begin{lemma}[Terminal calibration]\label{lem:terminal}
+For a fixed unit seed, any realization with error $\varepsilon$ satisfies
+\begin{equation}\label{eq:kappa}
+ q_N\ge\kappa:=\rho/\sqrt D-2\varepsilon.
+\end{equation}
+More generally, for an isometric intertwiner $J$ and a seed with $a=\norm{J^*x}>0$, tracking $Y_t=J^*A_wx/a$ yields
+\begin{equation}\label{eq:query-kappa}
+ q_N\ge \rho a/B(J)-2\varepsilon,
+ \qquad B(J)=\norm{J^*}_{\ell_\infty^D\to\ell_2^{d_\lambda}}.
+\end{equation}
+\end{lemma}
+\begin{proof}
+Let $d=(d_1,\ldots,d_D)$. Wordwise coordinate error bounds the norm of the difference between its mean and the target by $2\varepsilon\sqrt D$. Thus $\E\langle Y_N,d(S_N)\rangle\ge\rho-2\varepsilon\sqrt D$, whereas its absolute value is at most $\sqrt D q_N$. For the second assertion apply $J^*$ before pairing with the normalized constituent orbit. The error is at most $2\varepsilon B(J)$ and $\norm{J^*d(s)}\le B(J)$. This proves \eqref{eq:query-kappa}. The pairings are analytical devices; only one query is answered.
+\end{proof}
+
+For fixed sizes the optimum error is attained: parameters range over a finite product of compact simplices and intervals, and the objective is a finite maximum of continuous functions. Bounds below therefore concern actual optimal final error, irrespective of cancellation between intermediate errors.

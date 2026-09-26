@@ -1,0 +1,127 @@
+\section{Exact synthesis from a minimal orbit}\label{sec:synthesis}
+Assume in this section that $V$ is a nontrivial real irreducible
+orthogonal representation, of dimension $d$. Choose a unit vector
+$v_0$ with orbit dimension $s=s(U)$, and set
+\[
+ \mathcal O=Gv_0,\qquad C=\conv\mathcal O.
+\]
+The orbit may be a singular orbit in the unit sphere. As a homogeneous
+space in its own right it is nevertheless a smooth compact manifold.
+
+\begin{lemma}[Inradius and quadratic support approximation]
+\label{lem:orbit-enclosure}
+One has $d^{-1}\mathbb B(V)\subseteq C\subseteq\mathbb B(V)$.
+There are $c,C_0,h_0>0$, depending on $U$ and $v_0$, such that for
+$0<h\le h_0$ a set $\mathcal V_h\subset\mathcal O$ with
+$|\mathcal V_h|\le C_0h^{-s}$ satisfies
+\begin{equation}\label{eq:orbit-enclosure}
+ (1-ch^2)C\subseteq\conv\mathcal V_h\subseteq C
+ \quad\hbox{whenever }ch^2<1.
+\end{equation}
+\end{lemma}
+\begin{proof}
+The mean of $U_gv_0$ is an invariant vector and is zero. Its covariance
+is $I/d$: the covariance is self-adjoint and commutes with the
+representation, so its eigenspaces are invariant; irreducibility and
+trace one give the claim. This is the real Schur orthogonality
+calculation, for example \cite[Lemma 5]{Barvinok}.
+For unit $H$, let $f(g)=\langle H,U_gv_0\rangle$ and
+$M=\max_g f(g)$. Since $-1\le f\le M$,
+\[
+ 0\le\E[(M-f)(f+1)]=M-\E f^2=M-1/d.
+\]
+Every support function of $C$ is thus at least $1/d$, which proves
+the inradius statement.
+
+Equip $\mathcal O$ with its induced Riemannian metric. Finitely many
+bounded smooth coordinate patches, with their inverses uniformly
+Lipschitz on smaller patches, give an intrinsic $h$-net with at most
+$C_0h^{-s}$ points. At a maximizer $y$ of
+$z\mapsto\langle H,z\rangle$ on $\mathcal O$, its tangential
+first derivative is zero. The second fundamental form of the compact
+embedded orbit is bounded. Along a unit-speed minimizing geodesic
+of length at most $h$, Taylor's formula therefore gives
+\[
+ \langle H,y\rangle-\langle H,v\rangle
+                    \le L\norm H h^2
+\]
+for a nearby net point $v$, with $L$ independent of $H,y$.
+The inradius bound gives
+$\norm H\le d h_C(H)$. Hence
+$h_{\conv\mathcal V_h}(H)\ge(1-Ldh^2)h_C(H)$ for every $H$.
+Taking $c\ge Ld$, and using the support-function criterion, proves
+\eqref{eq:orbit-enclosure}.
+\end{proof}
+
+The covering exponent $s$ and quadratic loss at a support maximum
+are geometric facts, not new quantization exponents. What is needed
+for realization is an enclosure compatible with \emph{every command}
+and \emph{every layer}; the following construction supplies it.
+
+\begin{theorem}[A minimal-orbit positive realization]
+\label{thm:orbit-upper}
+For any finite command alphabet, any finite unit seed set, and
+$0<\rho\le1/(8d)$, the experiment \eqref{eq:law} has an exact
+realization with at most $C_U N^{s(U)/2}$ available labels, for
+$N\ge1$. All command matrices can be chosen independent of the epoch;
+the final decoder may depend on $N$. Each row has at most $d+1$
+successors. If the seeds belong to $C\cap\mathbb S(V)$, the amplitude
+range improves to $0<\rho\le1/10$.
+\end{theorem}
+\begin{proof}
+Choose
+\[
+ h_N=\min\{h_0,(8cN)^{-1/2}\},\qquad
+ \eta=1-ch_N^2\ge1-1/(8N),\qquad a_t=\eta^{-t}/4.
+\]
+Let $v_1,\ldots,v_M$ be the net points. The represented vector of a
+label $i$ at layer $t$ is $a_tv_i$. These vectors describe the fixed
+rows; they are not stored as real-valued runtime data.
+
+The polytope $\conv\{v_i\}$ contains $\eta C$ and hence a ball
+of radius $\eta/d$. For a unit seed $x$,
+$4\rho x\in\eta C$ if $\rho\le1/(8d)$, because
+$4\rho\le1/(2d)<\eta/d$. Choose its convex coordinates as the
+initial distribution. More generally, if $x\in C$ and
+$4\rho\le2/5<\eta$, the same initialization is valid.
+For each command $a$ and label $i$, invariance of $C$ gives
+\[
+       \eta U_av_i\in\eta C\subseteq\conv\{v_j\}.
+\]
+Choose any convex coordinates of this point for the row $T_a(i,\cdot)$.
+They do not depend on $t$. Since $a_{t+1}\eta=a_t$, conditional
+expectation updates the represented vector by exactly $U_a$.
+Induction gives mean $\rho U_wx$ after each complete prefix.
+
+Use the terminal column $d_j(i)=a_N\langle e_j,v_i\rangle$.
+Bernoulli's inequality gives $\eta^N\ge7/8$, so
+$|d_j(i)|\le2/7<1$. This proves every numerical conditional law
+exactly. Carath\'eodory's theorem gives $d+1$ successors. Finally
+$M\le C_0h_N^{-s}\le C_UN^{s/2}$, with the fixed two-state output
+cut absorbed into the constant. Neither convex feasibility nor row
+lookup is priced as computation in this model.
+\end{proof}
+
+\begin{corollary}[The irreducible width law]\label{cor:irreducible-width}
+Suppose a probability law on the finite command alphabet has a full
+mean-zero group norm gap. For a nontrivial real irreducible $V$,
+any nonempty finite unit seed set, fixed $0<\rho\le1/(8d)$, and
+$0\le\varepsilon<\rho/(2\sqrt d)$,
+\begin{equation}\label{eq:irrep-law}
+ W_{N,\varepsilon}=\Theta_{U,p,\rho,\varepsilon}(N^{s(U)/2}).
+\end{equation}
+The same order holds for exact vector-state realizations and for
+fixed-length realizations with common command rows. For seeds on a
+minimal orbit the amplitude range is $0<\rho\le1/10$.
+\end{corollary}
+\begin{proof}
+A full group norm gap transfers to \eqref{eq:gap} with a fixed $g>0$.
+Apply Corollary~\ref{cor:intrinsic-budget} at the peak $k$, using
+$\kappa=\rho/\sqrt d-2\varepsilon>0$. It gives
+$gN\le B\kappa^{-3-2/s} k^{2/s}$ and therefore the lower order.
+The exact machine in Theorem~\ref{thm:orbit-upper} is an upper bound
+for every allowed error, is vector-valued in its representation,
+and has common command rows. These subclasses lie inside the
+unrestricted clocked class, so the lower bound applies to them too.
+The last assertion uses the stronger initialization in that theorem.
+\end{proof}

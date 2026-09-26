@@ -1,0 +1,134 @@
+\section{Sharp widths without any finite-block gap}\label{sec:toral}
+We prove Theorem~\ref{thm:main}. Throughout this section $r,\alpha,b_*,\rho,\varepsilon$ are fixed as in that theorem. Distances on $\R/\Z$ use the shorter circular distance in $[0,1/2]$, and logarithms are natural. We retain the entire wordwise specification; command laws appear only in the converse.
+
+\subsection{A packet can only lose conditional amplitude}
+\begin{lemma}[Endpoint quantization of a fresh packet]\label{lem:packet42}
+Let a complete random command word $W$ be independent of the past and of the old register's private randomness. Its net orthogonal action is $U_W$. If the register has at most $k$ labels at its endpoint, and the product distribution obeys
+\begin{equation}\label{eq:distortion}
+ \sup_{\norm u=1,\ v_1,\ldots,v_k\in\mathbb S^1}
+       \E\max_j\langle v_j,U_Wu\rangle\le1-\gamma,
+\end{equation}
+then the conditional-mean norms at the two boundaries satisfy $q'\le(1-\gamma)q$.
+\end{lemma}
+\begin{proof}
+Let $z_s=\E[Y\mid S=s]$ before the word. Integrate all internal rows and randomness into a stochastic endpoint kernel $T(j\mid s,W)$. Independence of the complete word and the update rule give
+\[
+ z'_j=\E[U_Wz_S\mid S'=j].
+\]
+Choose $v_j=z'_j/\norm{z'_j}$ when $z'_j\ne0$, and any unit direction otherwise. Then
+\begin{align*}
+ q'&=\sum_s\Pp(S=s)\E_W\sum_jT(j\mid s,W)\langle v_j,U_Wz_s\rangle\\
+ &\le\sum_s\Pp(S=s)\norm{z_s}
+       \sup_{\norm u=1}\E_W\max_j\langle v_j,U_Wu\rangle
+ \le(1-\gamma)q.
+\end{align*}
+No condition is imposed on the number of intermediate states. The maximizing assignment in the second line need not be executable; allowing it only increases an upper bound on surviving amplitude. Commands inside $W$ may be correlated.
+\end{proof}
+
+For an integer $k\ge1$, put
+\begin{equation}\label{eq:packet-length}
+ L=\lceil(2k)^{1/r}\rceil,\qquad B=r(L-1),\qquad s=b_*B^{-r}.
+\end{equation}
+A packet has $r$ segments, each of length $L-1$. In segment $i$ first give $J_i$ copies of rotation $i$, then $L-1-J_i$ idle letters, where the $J_i$ are independent uniform variables in $\{0,\ldots,L-1\}$. Thus there are exactly $B$ actual commands and $L^r\ge2k$ equiprobable products.
+
+\begin{lemma}[Separated multivariate packets]\label{lem:packet-separation}
+The products in this packet have pairwise circular angular distance at least $s$. Condition \eqref{eq:distortion} holds with $\gamma=s^2$.
+\end{lemma}
+\begin{proof}
+A difference of distinct count vectors is nonzero with $\ell_1$ norm at most $B$. Inequality \eqref{eq:dual-ba} therefore gives the separation. A circular open cap of radius $s/2$ around one decoder direction contains at most one product point, even after an arbitrary common rotation by $u$. At most $k$ of the $L^r$ points lie in the union of the $k$ caps. At least half the points have distance at least $s/2$ from every decoder direction. For $0\le d\le1/2$,
+$1-\cos(2\pi d)=2\sin^2(\pi d)\ge8d^2$.
+On that half the scalar-product loss is at least $2s^2$. Its average is at least $s^2$, as claimed. Boundary points satisfy the same weak inequality.
+\end{proof}
+
+\begin{proposition}[Finite packet and occupation bounds]\label{prop:toral-lower}
+Let $\kappa=\rho/\sqrt2-2\varepsilon>0$. For a simulator of peak width $K$, define $B$ by \eqref{eq:packet-length} with $k=K$. Then
+\begin{equation}\label{eq:toral-finite}
+ \lfloor N/B\rfloor b_*^2 B^{-2r}\le\log(1/\kappa),\qquad
+ N<B+b_*^{-2}B^{2r+1}\log(1/\kappa).
+\end{equation}
+Consequently $K\ge cN^{r/(2r+1)}$ for a fixed positive $c$.
+More generally, if $B$ is defined from a proposed small width $k$, any available profile satisfies
+\begin{equation}\label{eq:toral-occupation}
+ \#\{1\le t\le N:K_t\le k\}
+ \le B-1+b_*^{-2}B^{2r+1}\log(1/\kappa),
+\end{equation}
+with no bound on other widths.
+\end{proposition}
+\begin{proof}
+Feed independent packets up to time $B\lfloor N/B\rfloor$ and idle letters thereafter. The same realization must pass this law because its requirement is wordwise. Lemmas~\ref{lem:packet42} and \ref{lem:packet-separation} give $q_N\le(1-s^2)^{\lfloor N/B\rfloor}$. Terminal calibration gives $q_N\ge\kappa$. Taking logarithms and using $-\log(1-s^2)\ge s^2$ proves both inequalities. Since
+$B=r(\lceil(2K)^{1/r}\rceil-1)\le r(2K)^{1/r}$,
+the second inequality gives the stated lower power, after enlarging constants for finitely many small $N$.
+
+For the profile statement discard small-width endpoints before $B$. Among the rest, greedily select the earliest available endpoint and then the next at least $B$ later. At most $B$ selected-or-discarded integer endpoints are accounted for by each choice. The chosen length-$B$ intervals are disjoint. Put an independent packet in each and deterministic idle commands in all gaps. Only the chosen endpoints need have at most $k$ labels. Repeating the loss argument bounds the number of chosen intervals by $s^{-2}\log(1/\kappa)$. Adding the at most $B-1$ initial endpoints proves \eqref{eq:toral-occupation}. The test law is selected from available layer sizes, not by inspecting a machine's private state.
+\end{proof}
+
+\subsection{Simultaneous denominators at every scale}
+The following elementary argument records the arithmetic needed for an upper construction at every horizon, not merely on a subsequence.
+\begin{lemma}[Comparable simultaneous denominators]\label{lem:denominator}
+For each integer $Q\ge2$, there are integers $p_1,\ldots,p_r,q$ such that
+\begin{equation}\label{eq:denominator}
+ c_*Q^r\le q\le Q^r,\qquad
+ \max_i|q\alpha_i-p_i|\le Q^{-1},\qquad
+ c_*=(b_*/r^{r+1})^r.
+\end{equation}
+\end{lemma}
+\begin{proof}
+Place the $Q^r+1$ vectors $j\alpha\bmod\Z^r$, $0\le j\le Q^r$, in $Q^r$ equal boxes. Two lie in the same box; subtraction gives $1\le q\le Q^r$ and the stated errors. This is the usual simultaneous Dirichlet pigeonhole argument.
+
+Put $M=\lfloor q^{1/r}\rfloor$. The $(M+1)^r>q$ integer vectors in $\{0,\ldots,M\}^r$ cannot have distinct values of $m\cdot p\bmod q$. Their difference gives a nonzero $m$ with $H=\norm m_1\le rM$ and $q\mid m\cdot p$. Hence
+\[
+ b_*H^{-r}\le\norm{m\cdot\alpha}_{\R/\Z}
+   \le\frac{H}{qQ}.
+\]
+It follows that $b_*qQ\le H^{r+1}\le r^{r+1}q^{(r+1)/r}$, which rearranges to the lower bound on $q$. No unexplained transference constant is used.
+\end{proof}
+
+\begin{proposition}[Exact common-row upper realization]\label{prop:toral-upper}
+For every $N\ge1$ there is an exact realization using $O(N^{r/(2r+1)})$ labels, with common command rows and an $N$-dependent decoder. It uses the original $r+1$ letters; a reflection may also be included at the same cost.
+\end{proposition}
+\begin{proof}
+Choose an integer $Q$ so that $c_*Q^r\ge4$ and
+\[
+ \frac{4\pi^2N}{c_*^2Q^{2r+1}}\le\log2.
+\]
+It can be chosen $O(N^{1/(2r+1)})$, with a constant depending only on the fixed data. Take $q,p_i$ from Lemma~\ref{lem:denominator}. Let $P$ be the regular $q$-gon with vertices $u_j=(\cos(2\pi j/q),\sin(2\pi j/q))$. Write
+$\delta_i=2\pi(\alpha_i-p_i/q)$, so $|\delta_i|\le2\pi/(qQ)\le\pi/q$. The rotated vertices lie in $\Lambda_i P$, where
+\begin{equation}\label{eq:polygon-dilation}
+ \Lambda_i=\frac{\cos(\pi/q-|\delta_i|)}{\cos(\pi/q)},\qquad
+ \log\Lambda_i\le |\delta_i|\tan(\pi/q)
+                 \le\frac{4\pi^2}{q^2Q}.
+\end{equation}
+The first identity follows by intersecting the ray to a rotated vertex with the chord between the adjacent polygon vertices. The logarithmic inequality follows by integrating the derivative of $\log\cos(\pi/q-t)$, and $\tan(\pi/q)\le2\pi/q$ for $q\ge4$.
+
+Put $\Lambda=\max(1,\Lambda_1,\ldots,\Lambda_r)$. Then $\Lambda^N\le2$, and $\Lambda^{-1}R_{2\pi\alpha_i}P\subseteq P$. The same containment holds for the identity and for reflection in the first coordinate axis, since the latter preserves $P$.
+For each label $u_j$ and command choose convex coordinates in $P$ of its image divided by $\Lambda$ as the stochastic row. These choices are made once and do not depend on the epoch. Initially represent $x/2$ as a mixture of the vertices; this is possible since $P$ contains the radius-$\cos(\pi/q)$ disk. At epoch $t$ interpret label $j$ as $2\Lambda^tu_j$. Induction using the common rows gives mean $A_wx$. The final decoder is
+\[
+ d_\ell(j)=2\rho\Lambda^N\langle e_\ell,u_j\rangle,
+\]
+whose modulus is at most $4\rho\le2/5$. Every conditional response is therefore exact. At most three successors per row suffice by planar Carath\'eodory; the vector interpretation is a description of fixed rows, not an extra real register. Finally $q\le Q^r=O(N^{r/(2r+1)})$. Every partial command step uses the same $q$ labels.
+\end{proof}
+
+\subsection{Vanishing gaps and explicit angles}
+\begin{proposition}[All block gaps vanish]\label{prop:zero-blocks}
+For any finite family of planar rotations generating a dense subgroup of $\SO(2)$, all optimized finite-block gaps on its circle action are zero. This remains true after adjoining the reflection above when the effective group is $O(2)$.
+\end{proposition}
+\begin{proof}
+Simultaneous Dirichlet approximation gives integers $n_j\to\infty$ for which all $n_j\alpha_i$ approach integers. For an irrational generating family the denominators cannot remain bounded. On the mean-zero Fourier mode $e^{in_j\theta}$ every fixed rotation word then has eigenvalue approaching one. Every average on any fixed finite word set has norm one, so no law has positive gap. For the reflected alphabet use the normalized real function $\cos(n_j\theta)$. Reflection fixes it; rotations and any fixed words move it by a norm tending to zero. The same conclusion follows. The constants are invariant functions only at frequency zero because the effective actions are respectively $\SO(2)$ and $O(2)$.
+\end{proof}
+
+\begin{proposition}[An explicit family in every alphabet size]\label{prop:algebraic-angles}
+Let $\xi=2^{1/(r+1)}$ and $\alpha_i=\xi^i$, $1\le i\le r$. Then \eqref{eq:dual-ba} holds with $b_*=(2/9)^r$.
+\end{proposition}
+\begin{proof}
+For nonzero $m$ let $H=\norm m_1\ge1$ and choose $m_0\in\Z$ nearest to $-\sum_i m_i\xi^i$. The polynomial $P(T)=m_0+\sum_i m_iT^i$ is nonzero of degree at most $r$. Since $T^{r+1}-2$ is Eisenstein, $P(\xi)\ne0$. It is an algebraic integer of nonzero integer norm. All conjugates of $\xi$ have the same modulus and $|\xi^i|<2$, so $|m_0|\le2H+1/2\le5H/2$. Each of the other $r$ conjugates of $P(\xi)$ has modulus at most $9H/2$. The product of all $r+1$ moduli is at least one. Therefore
+\[
+ \norm{m\cdot\alpha}_{\R/\Z}=|P(\xi)|\ge(2/9)^rH^{-r}.
+\]
+The norm argument is classical algebraic Diophantine separation; its role here is to supply explicit input data for the memory theorem.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:main}]
+Propositions~\ref{prop:toral-lower} and \ref{prop:toral-upper} give the matching powers. Adding reflection retains the upper construction and the converse applies to its rotation-only subalphabet. Proposition~\ref{prop:zero-blocks} proves the gap assertion. The effective groups are the full indicated circle and orthogonal circle actions, since \eqref{eq:dual-ba} makes each angle irrational. Proposition~\ref{prop:algebraic-angles} supplies the announced examples.
+\end{proof}
+
+At any one internal cut the exact separate positive minimum is still three. Indeed all actual residuals depend affinely on a planar vector, and the idle-prefix images of the four seeds give affine dimension two. Hence at least three normalized states are required. For the reverse bound choose an equilateral triangle of circumradius $2\rho\le1/5$. It contains the radius-$\rho$ disk. Its three vertices define legal complete future continuations, since every future command is orthogonal and every final coordinate remains bounded by one. Their convex coordinates factor every actual residual at that cut. One can embed this factorization in a complete machine by retaining the full past before that cut and the chosen vertex plus the full remaining word thereafter. Other cuts are unrestricted in this separate-minimum assertion. Thus all exponents above measure causal compatibility beyond the same static value three.

@@ -1,0 +1,145 @@
+\section{Finite optimization of the error calibration}\label{sec:calibration}
+Fix a nontrivial isotypic subspace $R_\lambda$ of the reachable space and its orthogonal projection $S_\lambda$. All norms in this section use the actual coordinate queries of \eqref{eq:law}, not a freely rotated query basis. Define
+\begin{equation}\label{eq:activation}
+ a_\lambda=\max_{x\in X,J}\norm{J^*x},\qquad
+ c_\lambda=\max_{x\in X,J}\frac{\norm{J^*x}}{B(J)},
+ \qquad J^*J=I,
+\end{equation}
+where $J:E_\lambda\to R_\lambda$ ranges over isometric intertwiners. This is the canonical isotypic convention: a displayed splitting into equivalent copies is not canonical.
+
+\begin{theorem}[Projection formulation and algebraic evaluation]\label{thm:calibration}
+Let $d=d_\lambda$ and let $\mathscr P_\lambda$ consist of the real matrices satisfying
+\begin{equation}\label{eq:projection-constraints}
+ P=P^T=P^2,
+ \quad\tr P=d,
+ \quad P=S_\lambda P S_\lambda,
+ \quad PA_a=A_aP\quad(a\in\mathcal A).
+\end{equation}
+Then
+\begin{equation}\label{eq:projection-calibration}
+ c_\lambda^2=\max_{x\in X,P\in\mathscr P_\lambda}
+ \frac{x^TPx}{\max_{\sigma\in\{-1,1\}^D}\sigma^TP\sigma},
+ \qquad \frac{a_\lambda}{\sqrt D}\le c_\lambda\le\frac{a_\lambda}{\sqrt d}.
+\end{equation}
+If the finite matrices, seeds and the certified isotypic projection are real algebraic, this number and an optimizing projection are real algebraic and can be obtained by a finite quantifier-elimination procedure.
+\end{theorem}
+\begin{proof}
+Norm duality and the extreme points of a cube give
+\begin{equation}\label{eq:sign-norm}
+ B(J)=\max_{\norm{u}=1}\norm{Ju}_1
+     =\max_{\sigma\in\{-1,1\}^D}\norm{J^*\sigma}.
+\end{equation}
+The projection $P=JJ^*$ satisfies \eqref{eq:projection-constraints}. Conversely any such projection has an invariant image inside one isotypic component. Its real dimension $d$ forces that image to be one irreducible copy, so an isometric intertwiner onto it exists. The value of both numerator and denominator depends only on $P$, proving the identity. Averaging $\sigma^TP\sigma$ over independent signs gives $\tr P=d$, whereas $\sigma^TP\sigma\le\norm\sigma^2=D$. Taking maxima yields the two inequalities.
+
+The set of projections is compact and nonempty; the denominator is at least $d$. For any proposed squared value $t$, feasibility is the finite disjunction over seeds of \eqref{eq:projection-constraints} and
+\begin{equation}\label{eq:calibration-feasibility}
+ x^TPx\ge t\sigma^TP\sigma
+       \quad\text{for every }\sigma\in\{-1,1\}^D.
+\end{equation}
+These are polynomial conditions of degree at most two in $(t,P)$. Real algebraic input is represented by defining polynomials and isolating intervals. Quantifier elimination over real closed fields, for example cylindrical algebraic decomposition \cite{BPR}, determines the compact feasible interval of $t$, its endpoint and a witness. Compact semialgebraic optimization over algebraic data has an algebraic endpoint and an algebraic witness. This is finite decidability, not a polynomial-time claim. There are exponentially many sign constraints. The certified projection is part of the input; no algorithm for discovering a compact-group spectral gap is hidden in this calculation.
+\end{proof}
+
+\subsection{The multiplicity models and a semidefinite certificate}
+The real commutant of an isotypic component is a matrix algebra over $\mathbb F=\R,\C$ or the quaternions. Its invariant real orthogonal projections of rank $d$ correspond to rank-one Hermitian projections over $\mathbb F$. This follows by identifying the isotypic component with a multiplicity space tensored over the irreducible division-algebra commutant: invariant submodules correspond to $\mathbb F$-linear multiplicity subspaces, and adjoints correspond to Hermitian adjoints. In particular the rank constraint is essential in every commutant type. It is not replaced by a trace condition alone.
+
+For a matrix $M$, write
+\[
+ \mathcal E_\lambda(M)=\int_H hS_\lambda M S_\lambda h^T\,dm_H(h).
+\]
+This is the orthogonal projection onto the self-adjoint commutant supported on $R_\lambda$. With algebraic command matrices it can equivalently be computed as the orthogonal projection onto the solution of the finite linear commutation equations. The integral explains its positivity; an integration oracle is unnecessary for that finite linear problem.
+
+\begin{proposition}[A primal--dual upper certificate]\label{prop:calibration-sdp}
+For each seed $x$, let $v_x$ be the optimum of
+\begin{align}\label{eq:calibration-sdp}
+ \text{maximize }&\ \tr(xx^TQ),\\[-2mm]
+ \text{subject to }&\ Q\succeq0,\quad Q=S_\lambda Q S_\lambda,
+ \quad [Q,A_a]=0,\quad\sigma^TQ\sigma\le1\ (\sigma\in\{-1,1\}^D).\notag
+\end{align}
+Then $c_\lambda^2\le\max_xv_x$. The dual for fixed $x$ is
+\begin{equation}\label{eq:calibration-dual}
+ \min_{y_\sigma\ge0}\sum_\sigma y_\sigma,
+ \qquad
+ \sum_\sigma y_\sigma\mathcal E_\lambda(\sigma\sigma^T)
+       -\mathcal E_\lambda(xx^T)\succeq0
+       \quad\text{on }R_\lambda.
+\end{equation}
+Both optima are attained and equal. An optimal nonzero $Q$ of real rank $d$ certifies equality with the corresponding projection optimization. Higher-rank solutions are only upper bounds.
+\end{proposition}
+\begin{proof}
+For an admissible $P$, set $Q=P/\max_\sigma\sigma^TP\sigma$. This is feasible and has objective equal to \eqref{eq:projection-calibration}. The dual follows from the trace pairing in the self-adjoint commutant and positivity of $Q$. The feasible set is bounded: averaging its sign inequalities gives $\tr Q\le1$. A sufficiently small positive multiple of $S_\lambda$ is strictly feasible relative to the supported commutant. Taking all dual sign weights equal and large makes the dual constraint positive definite on $R_\lambda$, because the sign sum is a positive multiple of the identity. Finite-dimensional semidefinite strong duality gives equality and attainment. Finally a positive commuting matrix of rank $d$ has one irreducible image; on that image its self-adjoint restriction is scalar. Hence $Q=tP$. Scaling to a saturated sign constraint recovers the original ratio. This last argument does not apply to higher commutant rank.
+\end{proof}
+
+\begin{proposition}[Computed calibrations]\label{prop:calibration-examples}
+For a multiplicity-one nontrivial representation filling the physical space of dimension $D$, with unit seeds, $c=1/\sqrt D$. Thus the standard spherical, traceless complex Hermitian projective, and standard block $\R^3\oplus\R^2$ examples have respectively
+\[
+ c=1/\sqrt D,\qquad c=1/\sqrt{q^2-1},\qquad
+ c_3=1/\sqrt3,\quad c_2=1/\sqrt2
+\]
+for unit coordinate seeds in their indicated blocks.
+
+For $m$ equivalent real-type copies in orthogonal physical coordinate blocks $(\R^d)^m$, assume the reachable isotypic space is the whole block space. Writing a seed as $x=(x_1,\ldots,x_m)$, one has
+\begin{equation}\label{eq:real-multiplicity}
+ c=\frac1{\sqrt d}\max_{x\in X,\ i}\norm{x_i}.
+\end{equation}
+For $d=3,m=2$ and the two seeds $(e_1,e_1)/\sqrt2$ and $(e_1,-e_1)/\sqrt2$, Euclidean activation is $a=1$ but query calibration is $c=1/\sqrt6$.
+\end{proposition}
+\begin{proof}
+In multiplicity one the sole copy projection is $I$, and \eqref{eq:sign-norm} gives $B=\sqrt D$. For a coordinate block replace $I$ by its block projection. In the real-type multiplicity model, every isometric intertwiner is, up to an orthogonal change in the model, $Ju=(a_1u,\ldots,a_mu)$ with $\sum_i a_i^2=1$. Thus
+\[
+ B(J)=\sqrt d\sum_i|a_i|,\qquad
+ \norm{J^*x}=\norm{\sum_i a_ix_i}\le\sum_i|a_i|\max_i\norm{x_i}.
+\]
+Taking one nonzero $a_i$ attains the resulting bound. The two displayed seeds activate the full two-copy space, and each block has norm $1/\sqrt2$; a diagonal copy attains $a=1$.
+\end{proof}
+
+The last example admits a short dual certificate as well. For the positive diagonal seed use the sign vector $\sigma=(1,1,1,1,1,1)$ and dual weight $1/6$. Twirling under the diagonal $\SO(3)$ action gives $\mathcal E(xx^T)=\mathcal E(\sigma\sigma^T)/6$. A diagonal-copy projection scaled by $1/6$ is a matching feasible primal point. For the other seed change the signs of the last three coordinates. This certifies the value without a nonconvex numerical search.
+
+\subsection{Physical query frames}
+Let $F:\R^D\to\R^m$ have rows of Euclidean norm at most one, and replace the coordinate means by $\rho F A_wx$. For a copy $J$ that can be reconstructed from these queries, define
+\begin{equation}\label{eq:frame-beta}
+ \beta_F(J)=\min_{LF=J^*}\norm L_{\ell_\infty^m\to\ell_2^d},
+ \qquad c_{\lambda,F}=\max_{x,J}\norm{J^*x}/\beta_F(J).
+\end{equation}
+The minimum is finite exactly when $\ker F\subseteq\ker J^*$. Maxima range only over such copies. If there is none, no positive calibration is inferred. Full column rank is a sufficient condition.
+
+\begin{theorem}[Frame reconstruction and stability]\label{thm:frame}
+For fixed $J$, \eqref{eq:frame-beta} is the finite second-order cone problem
+\[
+ \min t\quad\text{subject to }LF=J^*,\quad
+                  \norm{L\sigma}\le t\quad(\sigma\in\{-1,1\}^m).
+\]
+Its minimum is attained, and terminal calibration becomes
+$q_N\ge\rho c_{\lambda,F}-2\varepsilon$.
+Duplicating a query does not change $\beta_F$ or $c_{\lambda,F}$. Adding query rows can only increase the calibrated activation; deleting rows can decrease it or destroy reconstructibility.
+
+For full-column-rank frames $F,F'$ with the same number of rows, set
+$\delta=\norm{F'-F}_{2\to2}$. With the same seed set,
+\begin{equation}\label{eq:frame-stability}
+ \frac{c_{\lambda,F}}{1+\delta\sqrt m/\sigma_{\min}(F')}
+ \le c_{\lambda,F'}
+ \le (1+\delta\sqrt m/\sigma_{\min}(F))c_{\lambda,F}.
+\end{equation}
+If finite seed sets have Hausdorff distance at most $h$, their calibrated activations for fixed $F$ differ by at most $h\max_j\norm{F_j}$.
+\end{theorem}
+\begin{proof}
+The sign formula for the operator norm gives the cone constraints. A bounded norm bounds every column of $L$, so minimizing sequences have convergent subsequences. Feasibility of $LF=J^*$ is precisely the stated kernel condition. Applying $L$ to the vector of decoder means reproduces the target constituent; its norm is at most $\beta_F$ and its error at most $2\varepsilon\beta_F$. The proof of Lemma~\ref{lem:terminal} then applies.
+
+An added query can be ignored. Conversely, if a row is duplicated, sum the columns of $L$ assigned to its duplicates. The new reconstruction norm cannot exceed the old one, since giving equal signs to those duplicate entries is a restriction of the old cube. These two inequalities prove equality for duplication.
+
+Write $\Delta=F'-F$ and use the Moore--Penrose left inverse $F'^+$. If $LF=J^*$, then
+\[
+ L'=L-L\Delta F'^+\quad\text{satisfies}\quad L'F'=J^*.
+\]
+Furthermore,
+\[
+ \norm{\Delta F'^+}_{\infty\to\infty}
+ \le\delta\sqrt m/\sigma_{\min}(F'),
+\]
+after bounding each output coordinate by its Euclidean norm. Thus
+$\beta_{F'}(J)\le\beta_F(J)(1+\delta\sqrt m/\sigma_{\min}(F'))$.
+Swap the frames for the reverse comparison, take ratios and maxima, and obtain \eqref{eq:frame-stability}. Finally $\norm{J^*(x-x')}\le h$. Since $J^*Ju=u$,
+$1\le\beta_F(J)\norm{FJu}_\infty\le\beta_F(J)\max_j\norm{F_j}$
+for unit $u$. This proves the seed bound. No uniform stability is implied as a query frame loses rank.
+\end{proof}
+
+These computations concern the sufficient terminal correlation used in a width converse. They do not assert that $\rho c/2$ is the exact critical error of the whole experiment. In particular, the algebraic calibration procedure is not an algorithm for deciding infinite-dimensional expansion.
