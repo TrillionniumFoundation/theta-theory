@@ -14,7 +14,7 @@ permissions:
 
 concurrency:
   group: gtf-i-v45-verified-realization
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   publish:
@@ -27,6 +27,7 @@ jobs:
           fetch-depth: 20
           sparse-checkout-cone-mode: false
           sparse-checkout: |
+            /GENERAL_THETA_FOUNDATIONS_I_V45_REVIEW_READY.md
             /papers/GTF-I-v45-verified-realization/
             /papers/GTF-I-v44-hankel-resonance/
             /papers/GTF-I-v43-arithmetic-profile/verify.py
@@ -97,7 +98,7 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git fetch --depth=1 origin d7042cf71485f661e27d87d12ffae35a2edfc15c
           test -z "$(git diff --name-only --diff-filter=DMRT d7042cf71485f661e27d87d12ffae35a2edfc15c)"
-          git add -f papers/GTF-I-v45-verified-realization
+          git add --sparse -f papers/GTF-I-v45-verified-realization
           if ! git diff --cached --quiet; then
             git commit -m 'revise(GTF-I v45): native boundedness criterion, algebraic decision and preserved realization proofs [skip ci]'
             git push origin HEAD:"$GITHUB_REF_NAME"
@@ -139,7 +140,7 @@ jobs:
         shell: bash
         run: |
           find papers/GTF-I-v45-verified-realization -type d -name __pycache__ -prune -exec rm -rf '{}' +
-          git add -f papers/GTF-I-v45-verified-realization GENERAL_THETA_FOUNDATIONS_I_V45_REVIEW_READY.md
+          git add --sparse -f papers/GTF-I-v45-verified-realization GENERAL_THETA_FOUNDATIONS_I_V45_REVIEW_READY.md
           git commit -m 'publish(GTF-I v45): boundedness theorem, r29 response, independent core rebuild and unchanged predecessor archives [skip ci]'
           test -z "$(git diff --name-only --diff-filter=DMRT d7042cf71485f661e27d87d12ffae35a2edfc15c HEAD)"
           READY='revision/general-theta-foundations-i-v45-referee-ready-2026-09-26'
