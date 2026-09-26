@@ -1,0 +1,120 @@
+name: A2 v169 complete higher-contact revision publication
+on:
+  push:
+    branches: [revision/a2-v169-content-free-higher-contact-2026-09-26]
+    paths:
+      - .github/workflows/a2-v169-build.yml
+      - papers/A2-v17-boundary-information-coarsening/article/v169/source-part-*.b64
+      - papers/A2-v17-boundary-information-coarsening/article/v169/*.py
+      - papers/A2-v17-boundary-information-coarsening/article/v169/*-v169.tex
+permissions:
+  contents: write
+concurrency:
+  group: a2-v169-complete-publication
+  cancel-in-progress: false
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Validate isolated branch and materialize authored sources
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = revision/a2-v169-content-free-higher-contact-2026-09-26
+          python3 - <<'PY'
+          from pathlib import Path
+          import ast,base64,hashlib,json,lzma
+          p=Path('papers/A2-v17-boundary-information-coarsening/article/v169')
+          encoded=''.join((p/f'source-part-{i:02d}.b64').read_text().strip() for i in range(5))
+          data=base64.b64decode(encoded,validate=True)
+          assert hashlib.sha256(data).hexdigest()=='70ec992e4b2b14222bc56581db9006a6cf8102250dced291128c7402d505fc7b','Source payload checksum mismatch'
+          bundle=json.loads(lzma.decompress(data))
+          assert bundle['revision']==169 and len(bundle['source_files'])==12
+          for name,text in bundle['source_files'].items():
+              assert Path(name).name==name and Path(name).suffix in ('.py','.tex','.md')
+              assert hashlib.sha256(text.encode()).hexdigest()==bundle['sha256'][name]
+              if name.endswith('.py'): ast.parse(text,filename=name)
+              (p/name).write_text(text)
+          (p/'AUTHORED_SOURCE_HASHES_V169.json').write_text(json.dumps(bundle['sha256'],indent=2)+'\n')
+          print('Twelve authored sources validated on the isolated v169 branch.')
+          PY
+      - name: Retrieve the earlier report at its locked commit
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin be1987dd1a37064c0bea291d7ad38ccd12cc5951
+          path=reviews/a2-v167-independent-harsh-top4-2026-09-26/REFEREE_REPORT.md
+          mkdir -p "$(dirname "$path")"
+          git show "be1987dd1a37064c0bea291d7ad38ccd12cc5951:$path" > "$path"
+          test "$(git hash-object "$path")" = b0523d8e6b294379de5a2679c116528063efc014
+          test "$(git hash-object reviews/a2-v167-second-independent-harsh-top4-2026-09-26/REFEREE_REPORT.md)" = f84656b9a3b0a6be81b844b21b73efafe08c6d8a
+      - name: Install LaTeX and exact algebra tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils python3-venv
+          python3 -m venv /tmp/a2-v169-env
+          /tmp/a2-v169-env/bin/pip install 'sympy==1.14.0'
+      - name: Rerun the complete inherited chain and new exact checks
+        run: |
+          /tmp/a2-v169-env/bin/python papers/A2-v17-boundary-information-coarsening/article/v169/check_v169.py
+      - name: Assemble and compile all complete manuscripts
+        run: |
+          /tmp/a2-v169-env/bin/python papers/A2-v17-boundary-information-coarsening/article/v169/assemble_v169.py --build
+      - name: Record actual build environment
+        if: always()
+        run: |
+          p=papers/A2-v17-boundary-information-coarsening/article/v169
+          { python3 --version; /tmp/a2-v169-env/bin/python -c 'import sympy; print("SymPy",sympy.__version__)'; pdflatex --version | head -2; echo "Source $GITHUB_SHA"; echo "Run $GITHUB_RUN_ID"; } > "$p/BUILD_ENVIRONMENT.txt"
+      - name: Archive complete review build
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: a2-v169-complete-review-build
+          path: papers/A2-v17-boundary-information-coarsening/article/v169
+          retention-days: 30
+          if-no-files-found: error
+      - name: Publish complete plaintext sources and PDFs to v169 only
+        env:
+          GH_PUBLICATION_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = revision/a2-v169-content-free-higher-contact-2026-09-26
+          p=papers/A2-v17-boundary-information-coarsening/article/v169
+          auth=$(printf 'x-access-token:%s' "$GH_PUBLICATION_TOKEN" | base64 -w0)
+          head=$(git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $auth" ls-remote origin "refs/heads/$GITHUB_REF_NAME" | cut -f1)
+          test "$head" = "$GITHUB_SHA"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f -- "$p"/*.tex "$p"/*.pdf "$p"/*.py "$p"/*.json "$p"/*.md "$p"/BUILD_ENVIRONMENT.txt "$p"/render-audit/*.png CURRENT_REVIEW_ENTRY.md A2_REVISION_V169_INDEX.md README.md
+          python3 - <<'PY'
+          from pathlib import Path
+          import json,hashlib,subprocess
+          p=Path('papers/A2-v17-boundary-information-coarsening/article/v169')
+          r=json.loads((p/'BUILD_RECEIPT_V169.json').read_text())
+          c=json.loads((p/'EXACT_CHECKS_V169.json').read_text())
+          assert r['compiled'] and r['report_bytes_validated']=={'first':True,'second':True}
+          assert r['controlling_review_commit']=='f50f6a7b194adbb42813988d3e68a43d71ccc520'
+          assert r['all_predecessor_math_blocks_retained_byte_for_byte'] and r['body_partitioned_exactly_once']
+          assert r['predecessor_math_blocks']==423 and r['predecessor_labels']==625
+          assert not r['missing_labels'] and not r['duplicate_labels']
+          assert r['companion_references_stabilized'] and not r['historical_manuscript_sources_modified']
+          assert c['all_checks_pass'] and c['inherited_v167_full_chain_rerun'] and r['inherited_v167_full_chain_rerun']
+          for name,digest in json.loads((p/'AUTHORED_SOURCE_HASHES_V169.json').read_text()).items():
+              assert hashlib.sha256((p/name).read_bytes()).hexdigest()==digest,name
+          for name,value in r['outputs'].items():
+              assert value['clean_references_and_no_overfull_hboxes']
+              assert hashlib.sha256((p/(name+'.pdf')).read_bytes()).hexdigest()==value['pdf_sha256']
+              assert hashlib.sha256((p/(name+'.tex')).read_bytes()).hexdigest()==value['tex_sha256']
+          changed=subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines()
+          allowed={'CURRENT_REVIEW_ENTRY.md','A2_REVISION_V169_INDEX.md','README.md'}
+          assert changed and all(x.startswith(str(p)+'/') or x in allowed for x in changed),changed
+          assert not subprocess.check_output(['git','diff','--cached','--name-only','--diff-filter=D'],text=True).strip()
+          for name in ('reconstruction','divisor-geometry','geometry'):
+              assert str(p/(name+'.pdf')) in changed and str(p/(name+'.tex')) in changed
+          print('Both report locks, complete PDFs, full inherited checks, preservation, and isolated publication paths verified.')
+          PY
+          git commit -m 'A2 v169: publish all-order contact manuscripts, complete PDFs, both 66-point responses and preservation receipts [skip ci]'
+          git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $auth" push origin "HEAD:refs/heads/$GITHUB_REF_NAME"
