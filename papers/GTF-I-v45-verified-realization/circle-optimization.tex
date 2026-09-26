@@ -1,0 +1,55 @@
+\section{Exact optimization of planar packets}\label{sec:circle}
+For a rotation alphabet, let $z_1,\ldots,z_M\in\Sphere^1\subset\C$ be the distinct product phases of words of length $B$, ordered cyclically. A common rotation of all phases can be absorbed into the decoder centers. The initial direction in \eqref{eq:distortion43} therefore disappears. Any probability distribution on these phases is implemented by a distribution on representative words of the same length.
+
+Let $\mathfrak P_k$ be the finite set of partitions of the cyclically ordered list into at most $k$ nonempty consecutive arcs. For $p\in\Delta_M$, set
+\begin{equation}\label{eq:partition-value}
+ F_k(p)=\max_{\mathcal P\in\mathfrak P_k}
+                \sum_{A\in\mathcal P}\left|\sum_{i\in A}p_i z_i\right|.
+\end{equation}
+
+The decoder centers in this section are unit vectors on the circle; hence maximizing their scalar product is exactly nearest-center chordal quantization.
+
+\begin{theorem}[Optimal word laws as a cone program]\label{thm:circle-socp}
+For the planar alphabet above,
+\begin{equation}\label{eq:circle-program}
+ \Gamma_{\calA}(k,B)=1-\min_{p\in\Delta_M}F_k(p).
+\end{equation}
+Equivalently, minimize $t$ subject to $p\in\Delta_M$ and, for every $\mathcal P\in\mathfrak P_k$,
+\begin{equation}\label{eq:socp}
+ \norm{\sum_{i\in A}p_i(\Re z_i,\Im z_i)}_2\le r_{\mathcal P,A}
+ \quad(A\in\mathcal P),\qquad
+ \sum_{A\in\mathcal P}r_{\mathcal P,A}\le t.
+\end{equation}
+This is a finite second-order cone program with attained optimum. A fixed law can be evaluated by cyclic segmentation in $O(kM^3)$ arithmetic operations, including computation of all interval sums. The optimization over laws may have exponentially many partition constraints.
+\end{theorem}
+\begin{proof}
+For fixed centers $v_1,\ldots,v_k$ assign each phase to a nearest center in chordal distance; equivalently maximize $\Re(\overline v_jz_i)$. Distinct centers have connected cyclic Voronoi arcs, bounded by the angular midpoints of adjacent centers. Ties can be assigned consecutively; coincident centers can be merged. For the induced partition, the contribution of a block $A$ is at most $|\sum_{i\in A}p_i z_i|$.
+
+Conversely, for any cyclic partition choose the center of each block in the direction of its weighted complex sum, arbitrarily if that sum vanishes. The best assignment to those centers has value at least the sum in \eqref{eq:partition-value}. Thus the maximum over centers equals $F_k(p)$. This proves \eqref{eq:circle-program}; introducing the norm epigraphs proves \eqref{eq:socp}. Zero weights follow either directly or by continuity from positive weights.
+
+For a fixed cyclic cut, prefix sums give every block vector in constant time. The usual recurrence for the best $j$ blocks among the first $m$ points checks at most $M$ previous split positions. It costs $O(kM^2)$ for that cut. Repeating for the $M$ cuts costs $O(kM^3)$. This recurrence evaluates a given law; it is not a polynomial-size representation of all constraints in \eqref{eq:socp}. Compactness of the simplex and continuity give attainment.
+\end{proof}
+
+Nearest-center partitions and vector quantization are classical \cite{GL}. The additional optimization here chooses the distribution of actual command words, and Theorem~\ref{thm:profile} turns its value into a constraint on arbitrary hidden registers. There is no assertion that static quantization alone characterizes the least whole-run width.
+
+\begin{proposition}[A finite exact packet certificate]\label{prop:square-packet}
+For the alphabet consisting of identity and a quarter turn, at word length three the four distinct phases are $1,i,-1,-i$. Their uniform law is optimal and
+\[
+ \Gamma(1,3)=1,\quad \Gamma(2,3)=1-\frac1{\sqrt2},\quad
+ \Gamma(3,3)=\frac{2-\sqrt2}{4},\quad \Gamma(k,3)=0\quad(k\ge4).
+\]
+\end{proposition}
+\begin{proof}
+The distortion is concave in the phase law and invariant under its four cyclic rotations. Averaging any law over those rotations proves optimality of the uniform law. For two centers, adjacent pairs give total $\sqrt2/2$; a triple and a singleton give only $1/2$. For three centers, one pair and two singletons give $\sqrt2/4+1/2$. For one center the sum is zero; four centers fit all phases. Formula~\eqref{eq:circle-program} gives the values. A uniform phase law is realized by the four ordinary words with zero, one, two or three initial quarter turns and then idle commands.
+\end{proof}
+
+For algebraic rotation matrices, both the general quantifier-elimination formulation and the cone program have algebraic coefficients. No finite list of spherical harmonics is used. For merely computable-real entries, finite numerical approximations are diagnostics unless a rigorous error enclosure is supplied; \eqref{eq:profile-stability} then quantifies how an entry enclosure propagates to a packet certificate.
+
+\begin{corollary}[Separated phases]\label{cor:separated}
+If $M\ge2k$ distinct length-$B$ word phases have pairwise circular distance at least $s\in(0,1/2]$, then $\Gamma_{\calA}(k,B)\ge s^2$.
+\end{corollary}
+\begin{proof}
+Use their uniform law. Each open arc of circular radius $s/2$ contains at most one phase. At least half the mass is at distance at least $s/2$ from every one of $k$ centers. On $[0,1/2]$,
+$1-\cos(2\pi t)=2\sin^2(\pi t)\ge8t^2$.
+The average loss is at least $s^2$. This is a lower certificate for \eqref{eq:circle-program}, not necessarily its exact value.
+\end{proof}

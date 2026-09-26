@@ -1,0 +1,88 @@
+\section{Hankel sections and compatible positive factors}\label{sec:hankel45}
+Fix a horizon $N$. For $0\le t\le N$, define the probability prefix--suffix matrix
+\begin{equation}\label{eq:hankel45}
+ H_t[(x,u),(v,j,b)]=\frac{1+b\rho\ip{e_j}{U_vU_ux}}2,
+ \quad |u|=t,\quad |v|=N-t.
+\end{equation}
+The centered mean matrix has rank at most $D$, while $\rank H_t\le D+1$. Each binary column pair is a conditional experiment, not a joint distribution over all suffixes or all queries. If a legal machine has $K_t$ labels, conditioning on its state gives $H_t=E_tF_t$ with nonnegative factors, $E_t$ row-stochastic and every $(v,j)$ pair of columns in $F_t$ summing to one. Let $\rank_{\mathrm{st}}H_t$ denote the minimum inner dimension under these stochastic normalizations. In particular
+\begin{equation}\label{eq:rank-chain45}
+ \rank H_t\le\rank_+ H_t\le\rank_{\mathrm{st}}H_t\le K_t.
+\end{equation}
+The last inequality does not reverse by choosing unrelated factorizations at different cuts. The same command row must transport all prefixes and all suffix responses simultaneously.
+
+There is an exact formulation which preserves that compatibility. Let
+\[
+ C_t=[-1,1]^{\calA^{N-t}\times\{1,\ldots,D\}}
+\]
+be the compact cube of possible terminal mean arrays. For $a\in\calA$ let the continuation restriction be
+\[
+ (D_{t,a}f)(v,j)=f(av,j),\qquad f\in C_t.
+\]
+The concatenation $av$ means execute $a$ first and then $v$. The target root row is
+$r_x(w,j)=\rho\ip{e_j}{U_wx}\in C_0$.
+A compatible polytope flag of profile $K_\bullet$ consists of nonempty
+$P_t\subset C_t$, each with at most $K_t$ vertices, satisfying
+\begin{equation}\label{eq:flag45}
+ D_{t,a}P_t\subset P_{t+1}\qquad(0\le t<N,
+a\in\calA).
+\end{equation}
+This ambient continuation cube is generally much larger than the signed target representation. No hidden state is required to lie in the affine hull of the observed target rows.
+
+\begin{theorem}[Exact continuation-flag formula]\label{thm:flag45}
+For a prescribed available profile $K_\bullet$, the minimum actual terminal row-TV error is
+\begin{equation}\label{eq:error-flag45}
+ \mathcal E_N(K_\bullet)
+ =\frac12\min_{(P_t)\text{ satisfying }\eqref{eq:flag45}}
+      \max_{x\in X}\dist_\infty(r_x,P_0).
+\end{equation}
+The minimum is attained. In particular exact realization is equivalent to a compatible flag with every $r_x\in P_0$. Available padding labels and zero-probability rows do not change the formula.
+\end{theorem}
+\begin{proof}
+For any machine and each state $s$ at cut $t$, let $f_{t,s}(v,j)$ be its actual future mean after executing suffix $v$ and query $j$ from that state. Every such vector belongs to $C_t$, including an unreachable state, since its rows are normalized. By the common command row,
+\[
+ D_{t,a}f_{t,s}=\sum_{s'}T_{t+1,a}(s,s')f_{t+1,s'}.
+\]
+Thus $P_t=\conv\{f_{t,s}:s\in S_t\}$ satisfies \eqref{eq:flag45}. Each realized initial row is a convex combination of the $f_{0,s}$, so the distance on the right of \eqref{eq:error-flag45} cannot exceed twice the machine's error.
+
+Conversely choose a flag and list its vertices, padding to $K_t$ labels by repeats. For each vertex $f_{t,s}$ and command $a$, choose convex coordinates of $D_{t,a}f_{t,s}$ in $P_{t+1}$; these coordinates are one stochastic row, shared by every suffix and every prefix reaching $s$. At cut $N$ use the coordinates $f_{N,s}(j)$ as bounded decoder means. Backward induction shows that $f_{t,s}$ is the actual continuation vector of this machine. For each seed choose a nearest point of $P_0$ to $r_x$ and initialize using its convex coordinates. The maximum mean error is exactly the corresponding maximum distance, and binary row-TV is half of mean error. This proves both inequalities.
+
+For attainment, parametrize at most $K_t$ vertices by $K_t$ points in the compact cube, with stochastic convex weights for every inclusion and initialization. All inclusion equalities are closed polynomial constraints; the all-zero continuation flag is feasible. The error objective is continuous, so it attains a minimum. Equivalently, polytopes with at most $K_t$ vertices form a compact family under Hausdorff distance in these finite cubes. Repeated vertices give the required padding convention.
+\end{proof}
+
+This theorem is the finite controlled version of the classical shift-invariant-cone realization mechanism \cite{BF,Heller}. Its role is to identify the exact resource and approximation objective. It does not claim a new discovery of Hankel representation or make nonnegative matrix factorization a convex global realization problem. For algebraic finite data, the displayed vertex and weight system is a finite real-algebraic optimization, with an exponential-size explicit suffix representation in general.
+
+
+\begin{proposition}[A dual row certificate, retained from revision 44]\label{prop:row-dual45}
+For a candidate mean continuation $c$ and next-cut mean generators $f_i$,
+\[
+ \min_{\theta\in\Delta}\left\|c-\sum_i\theta_i f_i\right\|_\infty
+ =\max_{\|z\|_1\le1}\left(\langle z,c\rangle-\max_i\langle z,f_i\rangle\right).
+\]
+The value vanishes exactly when the proposed row has a stochastic extension. Initial mean error $\delta_0$ and per-cut mean defects $\delta_t$ yield a machine with terminal binary-TV error at most $(\delta_0+\sum_t\delta_t)/2$.
+\end{proposition}
+\begin{proof}
+Express the infinity norm by duality with the compact unit $\ell^1$ ball and apply finite bilinear minimax on that ball and the probability simplex. Minimization over the simplex selects a maximizing vertex for the subtracted term. The propagation bound follows because suffix restriction and stochastic convex averaging are contractions for the infinity norm. Binary total variation is half the mean error. Local errors may cancel, so this accumulated certificate need not be the actual optimum in Theorem~\ref{thm:flag45}.
+\end{proof}
+
+\begin{proposition}[Every planar cut has nonnegative rank three]\label{prop:rank-three45}
+For any nonempty finite planar rotation alphabet, $X=\{\pm e_1,\pm e_2\}$ and $0<\rho\le1/2$, each matrix $H_t$ has
+\[
+ \rank H_t=\rank_+H_t=\rank_{\mathrm{st}}H_t=3.
+\]
+This includes the irrational-difference alphabets of Corollary~\ref{cor:planar-dichotomy45}, whose full-run widths diverge.
+\end{proposition}
+\begin{proof}
+Choose an equilateral triangle of circumradius $2\rho$ centered at the origin. Its inradius is $\rho$, so every vector $\rho U_ux$ is a convex combination of its three vertices $v_i$. Use those coefficients for $E_t$. Set
+\[
+ F_t[i,(v,j,b)]=\frac{1+b\ip{e_j}{U_vv_i}}2.
+\]
+These entries are nonnegative because $\norm{v_i}=2\rho\le1$, and each binary pair sums to one. This proves the upper nonnegative-rank bound. For the lower bound, fix one prefix and one suffix. The four seed rows have affinely spanning planar means, and the two rotated coordinate queries span the dual plane. The binary complements supply the constant column. The resulting submatrix has rank three. Thus \eqref{eq:rank-chain45} is sharp at every cut, but not for simultaneous realization.
+\end{proof}
+
+\begin{proposition}[Small-signal finite-group compiler]\label{prop:simplex-tracker45}
+If $\sync$ is finite on the active space of dimension $d$ and $\rho\le1/d$, then all horizons admit exact width at most
+$\max\{2,(d+1)|\sync|\}$, independently of the number of seeds.
+\end{proposition}
+\begin{proof}
+Take a regular unit-circumradius simplex in $R$, whose inradius is $1/d$. Its $d+1$ vertices and all their $\sync$ translates form a finite set in the unit ball. Initialize $\rho x$ in the simplex by convex coordinates. A label $(\ell,i)$ represents $\ell v_i$ in the rotating frame and is updated by the permutation $\ell\mapsto b_{t,a}\ell$. Its expected represented vector is $A^{-t}U_w\rho x$. The terminal column $\ip{e_j}{A^N\ell v_i}$ is bounded by one and has exactly the desired mean. Duplicated orbit points may be merged but are not needed for the count.
+\end{proof}

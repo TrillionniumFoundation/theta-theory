@@ -1,0 +1,48 @@
+\section{A finite decision for algebraic command data}\label{sec:decision45}
+The qualitative criterion does not require a spectral gap. For exact algebraic matrices it also has a finite decision procedure. Its termination uses a classical congruence bound for finite linear groups, not a truncation of an infinite harmonic norm.
+
+\begin{lemma}[A coarse finite-group bound]\label{lem:finite-bound45}
+If $F$ is a number field of degree $e$ and $G\subset\GL_d(F)$ is finite, then
+\begin{equation}\label{eq:minkowski-bound45}
+ |G|\le|\GL_{de}(\mathbb F_3)|<3^{(de)^2}.
+\end{equation}
+\end{lemma}
+\begin{proof}
+Restriction of scalars embeds $G$ faithfully in $\GL_{de}(\Q)$. For any finite subgroup of $\GL_n(\Q)$ the lattice
+$\Lambda=\sum_{g\in G}g\Z^n$ is a $G$-invariant free abelian group of rank $n$. Choosing its basis conjugates $G$ into $\GL_n(\Z)$.
+
+The kernel of reduction modulo three in $\GL_n(\Z)$ has no nonidentity element of finite order. To prove this, a finite-order element would have a nonidentity power $M$ of prime order $p$. Write $M=I+3^sB$, $s\ge1$, with some entry of $B$ not divisible by three. If $p\ne3$, expansion of $M^p=I$ modulo $3^{s+1}$ gives $pB\equiv0\pmod3$, a contradiction. If $p=3$, divide the expansion by $3^{s+1}$ to obtain
+\[
+ B+3^sB^2+3^{2s-1}B^3=0,
+\]
+again impossible modulo three. Thus reduction is injective on the finite group. Finally
+$|\GL_n(\mathbb F_3)|=\prod_{j=0}^{n-1}(3^n-3^j)<3^{n^2}$.
+This is the standard invariant-lattice and congruence argument; no optimal Minkowski constant is needed.
+\end{proof}
+
+\begin{theorem}[Decidability of bounded exact width]\label{thm:decision45}
+Suppose all command matrices and seeds have entries in a specified real number field $F$, with exact field arithmetic supplied. There is a terminating finite procedure deciding whether $\sup_NW_{N,0}<\infty$. It produces either a finite synchronization-group table and the exact bounded compiler, or a certificate that the synchronization group is infinite. No isotypic projection, connected-component oracle, or infinite spectral-gap certificate is an input.
+
+For symmetric coordinate seeds and any specified fixed
+$0\le\varepsilon<\rho/(2D)$, the same decision classifies bounded versus divergent $W_{N,\varepsilon}$.
+\end{theorem}
+\begin{proof}
+Construct the active space by starting with the seed columns and repeatedly adjoining their images under all commands until the rank stops increasing. This takes at most $D$ strict rank increases. Gaussian elimination over $F$ supplies a basis of $R$ of dimension $d$, and every restricted command is a matrix in $\GL_d(F)$. Rank over this real field agrees with rank over $\R$, since both are determined by the same nonzero minors. Stability under each invertible command also implies stability under its inverse.
+
+Let $A$ be one restricted reference command, and put $d_a=A^{-1}U_a|_R$. Start with a finite set $S_0$ containing $I$ and all $d_a$. At each stage adjoin inverses, all pairwise products, and conjugates by $A$ and $A^{-1}$. Equality is decided exactly in $F$. Stop if either
+\begin{enumerate}
+\item the finite set is closed under all these operations, or
+\item its size exceeds $M=3^{(de)^2}$.
+\end{enumerate}
+Every generated element belongs to the algebraic group whose closure is $\sync$. If the set closes, it is a finite subgroup normal under $A$, containing every $d_a$; Lemma~\ref{lem:tail45} shows that it is exactly $\sync$. Its multiplication and conjugation tables define \eqref{eq:finite-tracker45}.
+
+If its size exceeds $M$, Lemma~\ref{lem:finite-bound45} excludes a finite containing subgroup of $\GL_d(F)$. Hence $\sync$ is infinite. The certificate is the list of more than $M$ pairwise distinct matrices, together with their expression trees in the allowed operations. If neither stopping condition has occurred, the next stage strictly increases the finite cardinality. Thus after finitely many stages one stopping condition must occur. Theorem~\ref{thm:main45} and Corollary~\ref{cor:basis45} turn this group decision into the claimed width decision.
+\end{proof}
+
+\begin{remark}[Complexity and certificate size]
+The bound $M$ is deliberately enormous; enumeration may be much worse than exponential in the input bit length, and intermediate algebraic entries may grow. This is a decision theorem, not an efficient implementation. Finite matrix-group algorithms provide more sophisticated approaches \cite{DFO}; the elementary procedure above is included to prove termination with exactly the supplied data. In the infinite case it decides divergence, not its rate or the smallest excluding horizon for a proposed width.
+\end{remark}
+
+\begin{example}\label{ex:finite-data45}
+Take rational three-dimensional rotations $a,b$ about two distinct coordinate axes with cosine $3/5$ and sine $4/5$, and alphabet $\{a,ab\}$. The difference $a^{-1}(ab)=b$ belongs to $\sync$ and has infinite order: its rational trace is $11/5$, whereas the trace of a finite-order rational matrix is an integer, being both rational and a sum of roots of unity. Thus $\sync$ is infinite. For basis seeds, the width diverges at every fixed error below $\rho/6$. This conclusion uses no numerical or qualitative gap theorem. A sharper linear growth law for this particular example still uses the independent expansion argument preserved in revision 42; it is not inferred from the decision alone.
+\end{example}
