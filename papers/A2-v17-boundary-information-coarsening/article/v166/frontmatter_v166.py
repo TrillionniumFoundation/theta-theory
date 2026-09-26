@@ -1,0 +1,226 @@
+"""Front matter for v166. Replaced v164 material is archived verbatim."""
+II_ABSTRACT=r'''We study horizontal specializations in the Hilbert graph of lifted
+quadratic pencils. A projective relative Hilbert construction gives
+universal flat horizontal families on integral coefficient strata.
+At a double corank-two contact we give seven coordinate presentations
+for the full pullback along every discrete valuation ring arc in the
+six-dimensional coefficient base. Saturating these explicit ideals
+computes the horizontal family and its entire vertical torsion,
+without a symmetry or ramification assumption. The complete contact
+fibre has reduced components $\Pj^4$ and $\mathbb F_2$ and a
+square-zero ideal supported on a singular-conic plane. We compute
+its algebra extension: the local obstruction sheaf is the structure
+sheaf of the doubled-line curve, and the extension class is its
+nowhere vanishing section. Every conic tail is reached along a
+generically nonincident arc, whereas double-incidence arcs reach
+exactly the singular conics. Arbitrary ramification of the symmetric
+collision has an explicit cyclic-invariant normalization and a
+vertical torsion filtration of the prescribed length. The proofs
+retain the coefficient projection and undo formal coordinate changes
+before returning to the fixed target. Universal power ideals and
+complete scheme fibres with smaller Smith exponents at most two
+remain part of the same construction.'''
+II_INTRO=r'''\section{Introduction}
+\label{sec:paper-ii-v164}\label{sec:paper-ii-v166}
+A scheme fibre over a limiting pencil need not be the flat limit
+of the boundary spaces over nearby pencils. The discrepancy records
+which directions in the coefficient base have been retained.
+For quadratic pencils the first nonreduced contact already exhibits
+this phenomenon: the complete fibre contains a four-dimensional
+space of conics, while collision within the double-incidence locus
+reaches only the singular conics. We organize horizontal limits by
+a universal property, compute them along every arc through this
+contact, and determine the algebra structure of its nilpotents.
+
+Let $V$ be a complex vector space, $G=\Gr(2,\Sym^2V)$, and
+$\pi:\mathrm{CQ}(V)\to\Pj(\Sym^2V)$ the complete-quadric morphism.
+The lift of a pencil avoiding corank two has Hilbert polynomial
+$\binom n2 l+1$ for the polarization
+$\bigotimes_{q=1}^{n-1}H_q$. We retain both the pencil and the
+embedded curve in the graph of this Hilbert map, and normalize
+that total graph. No ambient automorphism quotient is taken in
+defining a Hilbert point. Its subsequent scheme fibres are not
+replaced by their normalizations or reduced supports.
+
+\subsection{Universal horizontal families}
+For a projective morphism $W\to B$ over an integral coefficient
+subspace, let $U$ be a dense open on which the fibre polynomial is
+constant and the family is flat. The closure of the section
+$u\mapsto[W_u]$ in $\operatorname{Hilb}^{P}(W/B)$ is a projective
+birational modification $F_{W,U}\to B$. Theorem
+\ref{thm:horizontal-universal-v166} identifies its universal
+family with the horizontal closure and proves its terminal
+property on test schemes for which $U$ is schematically dense.
+The construction is based on the classical Hilbert scheme
+\cite{Grothendieck166}; its representability is not a novelty claim.
+The application in Theorem~\ref{thm:stratum-flattening-v166}
+provides coefficient-stratum models through which all discrete
+valuation ring specializations of the projective Hilbert graph
+factor, carrying their flat horizontal quotients.
+
+This is not flattening of the full pullback. A vertical component
+can remain in that pullback after the horizontal family becomes
+flat. Nor do we silently use a single polynomial over strata of
+different generic fibre dimension. The distinction from the usual
+flat-pullback functor is made explicit in
+Section~\ref{sec:horizontal-v166}. The construction supplies a
+global modular organization; the following calculation supplies
+finite equations in its first nonreduced local model.
+
+\subsection{Every arc in the double-contact coefficient base}
+The local base $B_2$ consists of triples $(f,g,r)$, with $f$ monic
+quadratic and $g,r$ of degree at most one. Over a discrete valuation
+ring with uniformizer $\tau$, every arc through $(x^2,0,0)$ is
+uniquely of the form
+\[
+ f=(x-c)^2+d,\qquad g=u(x-c)+v,\qquad r=w(x-c)+z_0.
+\]
+All six coefficients are allowed to vary. In each conic coordinate
+system the full pullback is given by
+\[
+ (e^2C-d,\ eB-u,\ e^2A+v,\ \lambda u-eA-w,
+                         \ \lambda v-e^2BC-z_0).
+\]
+Five explicitly specified target coordinate systems cover all
+conics through the attaching point. Two division coordinates cover
+the primitive line jets. Theorem~\ref{thm:all-arcs-v166} proves
+that these seven systems, on their algebraic recovery opens, cover
+the entire pullback. Its horizontal ideals are exactly the
+$\tau$-saturations, and the quotient of saturated by unsaturated
+ideals is the complete base torsion. No radical is taken in this
+calculation. Arbitrary relative valuations, nonzero $g,r$ jets,
+and arcs contained in incidence strata are included.
+
+The finiteness is a finite coordinate presentation, not a finite
+classification of valuation chambers. Polynomial arcs admit exact
+elimination; arbitrary formal arcs are governed by the same ideals,
+without a claim that one fixed finite jet determines every limit.
+The universal family and these equations agree by uniqueness of
+flat embedded quotients with the given generic fibre.
+
+\subsection{The intrinsic extension and the conic excess}
+The complete fibre $X_2$ is determined in
+Theorem~\ref{thm:complete-fibre-v163}. Its reduced components are
+$\mathcal Q_P=\Pj^4$ and $E=\mathbb F_2$, meeting along the
+curve $D$ of doubled lines. The nilradical is
+$N=j_*\OO_S(-1)$ for the singular-conic plane
+$S\simeq\Pj^2\subset\mathcal Q_P$. The local fibre ring is
+\[
+ \C[\lambda,e,A,B,C]/(eA,eB,e^2C).
+\]
+Theorem~\ref{thm:extension-class-v166} determines the missing
+algebra datum. The sheaf
+$\mathcal E xt^1(L_{(X_2)_{\rm red}/\C},N)$ is $i_*\OO_D$,
+and the image of the actual square-zero extension class is $1$.
+Thus the extension is locally nonsplit at every doubled line and
+locally split elsewhere. Its nilpotent support $S$ is larger than
+its nonsplitting locus $D$.
+
+Theorem~\ref{thm:conic-realization-v166} explains the vertical
+conics by coefficient directions. Every conic through $P$ is the
+tail of a generically nonincident arc. In contrast, among arcs
+with $g=r=0$ and generically squarefree $f$, the conic tails reached
+horizontally are exactly $S$. The conics outside $S$ are therefore
+valid limits requiring other directions, not extraneous Hilbert
+points discarded by an unstated stability condition.
+
+\subsection{Ramification, complete fibres, and the retained power theory}
+For the symmetric path $(f,g,r)=(x^2-\delta,0,0)$, the horizontal
+model is the smooth quotient of the ordered blow-up and has central
+divisor $E+2S$. The full pullback contains the additional vertical
+$\mathcal Q_P$, with torsion $\mathcal I_{S/\mathcal Q_P}$
+(Theorem~\ref{thm:collision-family-v164}). After arbitrary
+ramification $\delta=\tau^m$, Theorem~\ref{thm:ramified-v166}
+identifies the normalized horizontal chart with
+\[
+ \C[\lambda,s,r]^{\mu_m},\qquad
+ \zeta(s,r)=(\zeta s,\zeta^{-2}r),\quad\tau=s^2r.
+\]
+Its central multiplicities are $2/\gcd(m,2)$ and $1$. For $m=2q$
+it has equation $eh=\tau^q$; reducedness of the central divisor
+does not imply smoothness when $q>1$. The full pullback has torsion
+$\mathcal I_{S/\mathcal Q_P}\otimes\C[\tau]/(\tau^m)$.
+The first Tor sheaf is only its last layer when $m>1$.
+
+The universal identity for multiplication ideals,
+$J_{hq+s}=I_q^{h-s}I_{q+1}^s$, remains valid over arbitrary complex
+algebras. It gives the complete-quadric power graph and its boundary
+classes. For distinct corank-two contacts with smaller Smith
+exponents at most two, the entire scheme fibre is
+$X_2^r\times(\Pj^1)^s$; the larger exponents are arbitrary.
+Theorem~\ref{thm:product-fibres-v163} retains all components,
+intersections, and nilpotents. Products of separate collisions
+are not substituted for the interacting all-arc calculation.
+The all-pencil singular invariants and higher-contact primitive
+charts remain in the appendices with their original domains.
+The universal horizontal construction applies to higher contacts,
+but it does not by itself classify their full component structure.
+
+\subsection{Comparison and organization}
+Expanded degenerations in relative stable-map theory
+\cite{JunLi166} and in the degeneration of Quot schemes and
+coherent systems \cite{LiWu166} alter the degeneration problem and
+impose their own admissibility or stability conditions. Wonderful
+compactifications \cite{Li2009v161} organize blow-ups of suitable
+arrangements. Here the target of each Hilbert curve is fixed; the
+family being flattened is a coefficient-indexed parameter space.
+The ordered blow-up resembles a deformation-to-the-normal-cone
+construction, but the exact vertical ideal and the nonsplit fibre
+extension are properties of this retained-coefficient graph.
+No equivalence with expanded, logarithmic, stable-quotient, or
+quasimap moduli is claimed without a comparison morphism. The
+collision is not a wall crossing of stability conditions.
+
+Section~\ref{sec:horizontal-v166} establishes the universal
+organization. The power theory and fixed-target contact charts
+then lead to the complete fibre, the all-arc theorem, the collision,
+and its extension and ramification calculations. Appendix
+\ref{sec:comparison-details-v166} supplies the Artin category,
+completion and saturation lemma, all-fibre exactness, and overlap
+maps. Older reciprocal-fibre calculations are placed among the
+appendices, with every previous mathematical proof block retained.
+
+The geometric proofs start with a given source and pencil and do
+not use the sharp inverse in the companion paper. Their effective
+failure-family interpretation does use that inverse, as stated in
+Proposition~\ref{prop:effective-horizontal-v166}. It does not extend
+to unrestricted deformations of raw Artin algebras. No new external
+independent audit of the entire inverse is asserted. The full-text
+comparison with Ballico's 1993 paper remains documentary-incomplete;
+no priority conclusion is inferred from unavailable text. These
+external obligations are recorded separately from the proved
+geometric assertions and the finite computational checks.
+'''
+I_ADD=r'''\subsection{Universal horizontal specialization}
+The companion now organizes horizontal limits by a projective
+relative Hilbert construction and gives seven coefficient
+presentations for every discrete valuation ring arc through a
+double corank-two contact. It also computes the nonsplit
+square-zero algebra extension, whose local obstruction sheaf is
+the structure sheaf of the doubled-line curve, and the torsion
+filtration after arbitrary ramification of the symmetric collision.
+Proposition~\ref{prop:effective-horizontal-v166} transports the
+universal property to the effective failure-family image and
+specifies the completed local equations there. This application
+does not enter the proof of the sharp inverse and does not assign
+a deformation direction to a closed algebra before reconstruction.
+'''
+BIB=r'''\bibitem[Grothendieck(1961)]{Grothendieck166}
+A. Grothendieck, \emph{Techniques de construction et th\'eor\`emes
+d'existence en g\'eom\'etrie alg\'ebrique IV: les sch\'emas de Hilbert},
+S\'eminaire Bourbaki, exp. 221 (1960/61), 249--276; with the published
+erratum to exp. 221.
+\bibitem[Stacks Project]{Stacks166}
+The Stacks Project Authors, \emph{The Stacks Project},
+Tags 00MI (fibrewise exactness and flatness), 0BJ0 (geometrically
+reduced formal fibres), 05PS (universal flattening), and 08S3
+(square-zero extensions and the naive cotangent complex),
+\url{https://stacks.math.columbia.edu}, accessed September 26, 2026.
+\bibitem[Li(2001)]{JunLi166}
+J. Li, \emph{Stable morphisms to singular schemes and relative
+stable morphisms}, J. Differential Geom. \textbf{57} (2001),
+509--578; arXiv:math/0009097.
+\bibitem[Li and Wu(2011)]{LiWu166}
+J. Li and B. Wu, \emph{Good degeneration of Quot-schemes and
+coherent systems}, arXiv:1110.0390, 2011.
+'''

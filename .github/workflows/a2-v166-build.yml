@@ -1,0 +1,95 @@
+name: A2 v166 complete revision publication
+on:
+  push:
+    branches: [revision/a2-v166-universal-flattening-2026-09-26]
+    paths:
+      - .github/workflows/a2-v166-build.yml
+      - papers/A2-v17-boundary-information-coarsening/article/v166/*.py
+      - papers/A2-v17-boundary-information-coarsening/article/v166/*-v166.tex
+permissions:
+  contents: write
+concurrency:
+  group: a2-v166-complete-publication
+  cancel-in-progress: false
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Check branch isolation and source syntax
+        run: |
+          test "$GITHUB_REF_NAME" = revision/a2-v166-universal-flattening-2026-09-26
+          python3 - <<'PY'
+          from pathlib import Path
+          import ast
+          p=Path('papers/A2-v17-boundary-information-coarsening/article/v166')
+          for source in p.glob('*.py'):
+              ast.parse(source.read_text(),filename=str(source))
+          print('New revision sources parsed; publication target is isolated.')
+          PY
+      - name: Install LaTeX and exact algebra tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils python3-venv
+          python3 -m venv /tmp/a2-v166-env
+          /tmp/a2-v166-env/bin/pip install 'sympy==1.14.0'
+      - name: Run new exact checks and the entire inherited v164 chain
+        run: |
+          /tmp/a2-v166-env/bin/python papers/A2-v17-boundary-information-coarsening/article/v166/check_v166.py
+      - name: Assemble and compile all complete manuscripts
+        run: |
+          /tmp/a2-v166-env/bin/python papers/A2-v17-boundary-information-coarsening/article/v166/assemble_v166.py --build
+      - name: Record actual build environment
+        if: always()
+        run: |
+          p=papers/A2-v17-boundary-information-coarsening/article/v166
+          { python3 --version; /tmp/a2-v166-env/bin/python -c 'import sympy; print("SymPy",sympy.__version__)'; pdflatex --version | head -2; echo "Source $GITHUB_SHA"; echo "Run $GITHUB_RUN_ID"; } > "$p/BUILD_ENVIRONMENT.txt"
+      - name: Archive build for inspection before publication
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: a2-v166-complete-review-build
+          path: papers/A2-v17-boundary-information-coarsening/article/v166
+          retention-days: 30
+          if-no-files-found: error
+      - name: Publish only complete v166 outputs and current root entries
+        env:
+          GH_PUBLICATION_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = revision/a2-v166-universal-flattening-2026-09-26
+          p=papers/A2-v17-boundary-information-coarsening/article/v166
+          auth=$(printf 'x-access-token:%s' "$GH_PUBLICATION_TOKEN" | base64 -w0)
+          head=$(git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $auth" ls-remote origin "refs/heads/$GITHUB_REF_NAME" | cut -f1)
+          test "$head" = "$GITHUB_SHA"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f -- "$p"/*.tex "$p"/*.pdf "$p"/*.json "$p"/*.md "$p"/BUILD_ENVIRONMENT.txt "$p"/render-audit/*.png CURRENT_REVIEW_ENTRY.md README.md
+          python3 - <<'PY'
+          from pathlib import Path
+          import json, hashlib, subprocess
+          p=Path('papers/A2-v17-boundary-information-coarsening/article/v166')
+          r=json.loads((p/'BUILD_RECEIPT_V166.json').read_text())
+          c=json.loads((p/'EXACT_CHECKS_V166.json').read_text())
+          assert r['compiled'] and r['all_predecessor_math_blocks_retained_byte_for_byte']
+          assert r['body_partitioned_exactly_once'] and not r['missing_labels'] and not r['duplicate_labels']
+          assert r['predecessor_labels']==539 and r['predecessor_math_blocks']==358
+          assert c['all_checks_pass'] and c['inherited_v164_suite_rerun']
+          assert r['companion_references_stabilized']
+          for name,value in r['outputs'].items():
+              assert value['clean_references_and_no_overfull_hboxes']
+              assert hashlib.sha256((p/(name+'.pdf')).read_bytes()).hexdigest()==value['pdf_sha256']
+          changed=subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines()
+          assert changed
+          assert all(x.startswith(str(p)+'/') or x in ('CURRENT_REVIEW_ENTRY.md','README.md') for x in changed),changed
+          assert not subprocess.check_output(['git','diff','--cached','--name-only','--diff-filter=D'],text=True).strip()
+          for name in ('reconstruction','divisor-geometry','geometry'):
+              assert str(p/(name+'.pdf')) in changed
+          print('Complete PDFs, all inherited checks, proof retention and isolated publication paths verified.')
+          PY
+          git commit -m 'A2 v166: publish complete revised manuscripts, PDFs and exact preservation receipts [skip ci]'
+          git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $auth" push origin "HEAD:refs/heads/$GITHUB_REF_NAME"
