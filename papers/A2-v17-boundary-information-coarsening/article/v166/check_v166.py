@@ -44,7 +44,7 @@ def conic_coverage():
         disc=S.expand(aa*aa+cc*bb*bb)
         require(disc!=0,'conic realization has generically independent quadratics')
         examples.append({'central_ABC':[A0,B0,C0],'generic_test_polynomial':str(disc)})
-    return {'evaluation_matrix':E.tolist(),'determinant':int(E.det()),'realization_examples':examples,'passed':True}
+    return {'evaluation_matrix':[[int(x) for x in row] for row in E.tolist()],'determinant':int(E.det()),'realization_examples':examples,'passed':True}
 
 def extension_algebra():
     e,A,B,C=S.symbols('e A B C');vs=(e,A,B,C);I=[e*A,e*B,e*e*C]

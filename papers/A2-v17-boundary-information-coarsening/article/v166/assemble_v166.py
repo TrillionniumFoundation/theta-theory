@@ -204,7 +204,7 @@ Ballico 1993 full text was not retrieved. Neither fact is represented as
 completed. Finite computations and a clean PDF build are not proofs of
 the general theorems, novelty, or journal acceptance.
 '''
- (root/'CURRENT_REVIEW_ENTRY.md').write_text(text);(HERE/'CURRENT_REVIEW_ENTRY.md').write_text(text)
+ (root/'CURRENT_REVIEW_ENTRY.md').write_text(text);(HERE/'CURRENT_REVIEW_ENTRY.md').write_text(text.replace(REL+'/', ''))
  (root/'README.md').write_text('# Theta-Theory — A2 revision 166\n\nThis revision branch contains complete new A2 manuscripts prepared against the locked v164 referee report.\n\n[Current review entry](CURRENT_REVIEW_ENTRY.md) provides the complete papers, response, and verification receipts.\n\nThe original repository README is preserved at ['+REL+'/PREVIOUS_ROOT_README.md]('+REL+'/PREVIOUS_ROOT_README.md). Historical sources, other papers, and the controlling review are retained.\n')
 
 def main():
