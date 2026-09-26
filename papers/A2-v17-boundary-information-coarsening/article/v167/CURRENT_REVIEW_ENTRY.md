@@ -8,15 +8,15 @@ Authored build commit: `504f78b3047ceccb0ffed5b17c6803d6c93e7398`.
 
 ## Paper I — Finite failure schemes and the reconstruction of quadratic pencils
 
-75 pages. [Complete PDF](papers/A2-v17-boundary-information-coarsening/article/v167/reconstruction.pdf) · [Complete standalone LaTeX](papers/A2-v17-boundary-information-coarsening/article/v167/reconstruction.tex).
+75 pages. [Complete PDF](reconstruction.pdf) · [Complete standalone LaTeX](reconstruction.tex).
 
 ## Paper II — Determinantal models and Hilbert limits of quadratic pencils
 
-113 pages. [Complete PDF](papers/A2-v17-boundary-information-coarsening/article/v167/divisor-geometry.pdf) · [Complete standalone LaTeX](papers/A2-v17-boundary-information-coarsening/article/v167/divisor-geometry.tex).
+113 pages. [Complete PDF](divisor-geometry.pdf) · [Complete standalone LaTeX](divisor-geometry.tex).
 
 ## Complete preservation master (not a third submission)
 
-180 pages. [Complete PDF](papers/A2-v17-boundary-information-coarsening/article/v167/geometry.pdf) · [Complete standalone LaTeX](papers/A2-v17-boundary-information-coarsening/article/v167/geometry.tex).
+180 pages. [Complete PDF](geometry.pdf) · [Complete standalone LaTeX](geometry.tex).
 
 ## Mathematical changes
 
@@ -32,19 +32,19 @@ All 390 predecessor mathematical blocks are retained byte-for-byte. The three
 power/reciprocal sections moved to appendices are not deleted. The original
 front matters are archived. The master and the two paper bodies partition exactly.
 
-[All 62 referee responses](papers/A2-v17-boundary-information-coarsening/article/v167/RESPONSE_TO_V166_REPORT.md)
+[All 62 referee responses](RESPONSE_TO_V166_REPORT.md)
 
-[Compiled theorem and page index](papers/A2-v17-boundary-information-coarsening/article/v167/THEOREM_INDEX_V167.json)
+[Compiled theorem and page index](THEOREM_INDEX_V167.json)
 
-[Proof dependencies](papers/A2-v17-boundary-information-coarsening/article/v167/THEOREM_DEPENDENCIES_V167.md)
+[Proof dependencies](THEOREM_DEPENDENCIES_V167.md)
 
-[Build receipt](papers/A2-v17-boundary-information-coarsening/article/v167/BUILD_RECEIPT_V167.json)
+[Build receipt](BUILD_RECEIPT_V167.json)
 
-[Proof and label retention](papers/A2-v17-boundary-information-coarsening/article/v167/NONDELETION_V167.json)
+[Proof and label retention](NONDELETION_V167.json)
 
-[Finite exact checks](papers/A2-v17-boundary-information-coarsening/article/v167/EXACT_CHECKS_V167.json)
+[Finite exact checks](EXACT_CHECKS_V167.json)
 
-[Source comparison and documentary limits](papers/A2-v17-boundary-information-coarsening/article/v167/LITERATURE_AUDIT_V167.md)
+[Source comparison and documentary limits](LITERATURE_AUDIT_V167.md)
 
 ## Scope that is not represented as completed
 

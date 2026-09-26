@@ -1,7 +1,7 @@
-# Theta-Theory — A2 revision 166
+# Theta-Theory — A2 revision 167
 
-This revision branch contains complete new A2 manuscripts prepared against the locked v164 referee report.
+This isolated revision branch contains the complete v167 manuscripts prepared against the locked v166 referee report.
 
-[Current review entry](CURRENT_REVIEW_ENTRY.md) provides the complete papers, response, and verification receipts.
+[Current review entry](CURRENT_REVIEW_ENTRY.md) gives both complete papers, their PDFs, the preservation master, all 62 responses, and verification receipts.
 
-The original repository README is preserved at [papers/A2-v17-boundary-information-coarsening/article/v166/PREVIOUS_ROOT_README.md](papers/A2-v17-boundary-information-coarsening/article/v166/PREVIOUS_ROOT_README.md). Historical sources, other papers, and the controlling review are retained.
+The previous README is retained in papers/A2-v17-boundary-information-coarsening/article/v167/PREVIOUS_ROOT_README_V166.md. Historical manuscript and review sources are unchanged.
