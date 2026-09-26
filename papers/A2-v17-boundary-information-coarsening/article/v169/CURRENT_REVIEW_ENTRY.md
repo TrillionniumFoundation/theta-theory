@@ -10,15 +10,15 @@ Authored build commit: `a2c4bb21ae499b9a3b548f3c918256972f7a2bd2`.
 
 ## Paper I — Finite failure schemes and the reconstruction of quadratic pencils
 
-76 pages. [Complete PDF](papers/A2-v17-boundary-information-coarsening/article/v169/reconstruction.pdf) · [Complete standalone LaTeX](papers/A2-v17-boundary-information-coarsening/article/v169/reconstruction.tex).
+76 pages. [Complete PDF](reconstruction.pdf) · [Complete standalone LaTeX](reconstruction.tex).
 
 ## Paper II — Primitive graph ideals and higher-contact Hilbert limits
 
-127 pages. [Complete PDF](papers/A2-v17-boundary-information-coarsening/article/v169/divisor-geometry.pdf) · [Complete standalone LaTeX](papers/A2-v17-boundary-information-coarsening/article/v169/divisor-geometry.tex).
+127 pages. [Complete PDF](divisor-geometry.pdf) · [Complete standalone LaTeX](divisor-geometry.tex).
 
 ## Complete preservation master — not a third submission
 
-194 pages. [Complete PDF](papers/A2-v17-boundary-information-coarsening/article/v169/geometry.pdf) · [Complete standalone LaTeX](papers/A2-v17-boundary-information-coarsening/article/v169/geometry.tex).
+194 pages. [Complete PDF](geometry.pdf) · [Complete standalone LaTeX](geometry.tex).
 
 ## Central mathematical changes
 
@@ -35,23 +35,23 @@ scheme contracts the exceptional chain while the Hilbert graph separates it.
 
 All 423 predecessor mathematical blocks and all 625 predecessor master labels are retained. Earlier main sections of Paper II are moved intact into appendices; historical manuscript sources are not modified. Both paper bodies partition the master exactly.
 
-[Replies to all 66 requests in the controlling report](papers/A2-v17-boundary-information-coarsening/article/v169/RESPONSE_TO_SECOND_V167_REPORT.md)
+[Replies to all 66 requests in the controlling report](RESPONSE_TO_SECOND_V167_REPORT.md)
 
-[Replies to all 66 requests in the first report](papers/A2-v17-boundary-information-coarsening/article/v169/RESPONSE_TO_FIRST_V167_REPORT.md)
+[Replies to all 66 requests in the first report](RESPONSE_TO_FIRST_V167_REPORT.md)
 
-[Compiled theorem/page locators](papers/A2-v17-boundary-information-coarsening/article/v169/REFEREE_CROSSWALK_V169.md)
+[Compiled theorem/page locators](REFEREE_CROSSWALK_V169.md)
 
-[Proof dependencies](papers/A2-v17-boundary-information-coarsening/article/v169/THEOREM_DEPENDENCIES_V169.md)
+[Proof dependencies](THEOREM_DEPENDENCIES_V169.md)
 
-[Complete theorem/page index](papers/A2-v17-boundary-information-coarsening/article/v169/THEOREM_INDEX_V169.json)
+[Complete theorem/page index](THEOREM_INDEX_V169.json)
 
-[Build receipt](papers/A2-v17-boundary-information-coarsening/article/v169/BUILD_RECEIPT_V169.json)
+[Build receipt](BUILD_RECEIPT_V169.json)
 
-[Proof and label retention](papers/A2-v17-boundary-information-coarsening/article/v169/NONDELETION_V169.json)
+[Proof and label retention](NONDELETION_V169.json)
 
-[Auxiliary exact checks](papers/A2-v17-boundary-information-coarsening/article/v169/EXACT_CHECKS_V169.json)
+[Auxiliary exact checks](EXACT_CHECKS_V169.json)
 
-[Primary-source comparison and documentary limits](papers/A2-v17-boundary-information-coarsening/article/v169/LITERATURE_AUDIT_V169.md)
+[Primary-source comparison and documentary limits](LITERATURE_AUDIT_V169.md)
 
 ## Precise scope
 
