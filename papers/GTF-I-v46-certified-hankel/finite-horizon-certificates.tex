@@ -1,0 +1,322 @@
+\section{Finite certificates for the whole numerical experiment}\label{sec:cert46}
+The Hankel normal form uses all suffixes. We now give an equivalent
+finite certificate whose size is polynomial in a \emph{displayed}
+horizon and proposed widths. We then treat the actual optimal error,
+not the sum of local compatibility defects. Throughout this section
+$X$ and $\calA$ are nonempty, $|\calA|=m$, $D\ge1$, and
+$K_0,\ldots,K_N\ge1$. The held binary answer is a separate two-label
+cut. A horizon is supplied in unary for statements about input size.
+Rational numbers have binary encodings; a real algebraic coefficient
+is supplied by a polynomial and a rational isolating interval.
+These conventions do not give an oracle for arbitrary real numbers.
+
+In this section $T_{t,a}$ labels the edge from cut $t$ to cut $t+1$,
+a reindexing of Definition~\ref{def:machine}. Write $E_x$ for an initialization row, $T_{t,a}$ for the
+$K_t$-by-$K_{t+1}$ row-stochastic transition, and $d_j\in[-1,1]^{K_N}$
+for the terminal mean column. Define the residual mean
+\begin{equation}\label{eq:res46}
+ R_{x,w,j}=E_xT_{0,a_1}\cdots T_{N-1,a_N}d_j
+             -\rho\ip{e_j}{U_{a_N}\cdots U_{a_1}x}.
+\end{equation}
+Thus the actual worst-word binary-TV error is
+$e(\mathcal M)=\frac12\max_{x,w,j}|R_{x,w,j}|$.
+In particular, centering the numerical response does not turn a
+bounded stochastic decoder into an unrestricted signed readout.
+
+Set $n_t=K_t+D$ and form rectangular block matrices and vectors
+\begin{equation}\label{eq:aug46}
+ A_{t,a}=\operatorname{diag}(T_{t,a},U_a^{\mathsf T}),\quad
+ u_x=(E_x,-\rho x^{\mathsf T}),\quad
+ v_j=\binom{d_j}{e_j}.
+\end{equation}
+The order and transpose in this definition are essential for
+noncommuting commands. Equation~\eqref{eq:res46} equals $u_xA_wv_j$.
+
+\begin{theorem}[A finite all-word certificate]\label{thm:gram46}
+Define
+\begin{equation}\label{eq:gram46}
+ G_0=\sum_{x\in X}u_x^{\mathsf T}u_x,\qquad
+ G_{t+1}=\sum_{a\in\calA}A_{t,a}^{\mathsf T}G_tA_{t,a},\qquad
+ S_2=\sum_{j=1}^D v_j^{\mathsf T}G_Nv_j.
+\end{equation}
+Then
+\[
+ S_2=\sum_{x\in X}\sum_{w\in\calA^N}\sum_{j=1}^D R_{x,w,j}^2.
+\]
+Consequently a legal proposed machine is exact on every word if and
+only if $S_2=0$. For rational data this can be checked by exact
+arithmetic in polynomial time in the displayed data. If $S_2>0$, a
+seed, word and query with nonzero residual can also be found in
+polynomial time, without listing all words.
+
+Exact feasibility of a prescribed profile for an algebraic
+orthogonal-word target has an existential real formula of polynomial
+size in $N,m,D,|X|$ and the explicitly displayed widths. Its equations
+may all be taken to have degree at most three after auxiliary arithmetic
+variables are introduced. Feasibility has a real algebraic witness
+whenever it has a real witness.
+\end{theorem}
+\begin{proof}
+Induction in \eqref{eq:gram46} gives
+$G_t=\sum_{x,|u|=t}(u_xA_u)^{\mathsf T}(u_xA_u)$.
+Pairing with $v_j$ proves the identity. Every summand is a real square,
+so zero means equality of all numerical responses, not merely equality
+on average. No assumption about the ranks of reachable distributions
+or the observability of individual states is used.
+
+For a witness, compute backwards
+\[
+ C_N=\sum_jv_jv_j^{\mathsf T},\qquad
+ C_t=\sum_a A_{t,a}C_{t+1}A_{t,a}^{\mathsf T}.
+\]
+Select $x$ with $u_xC_0u_x^{\mathsf T}>0$. Given a current row $u$ at
+cut $t$ with $uC_tu^{\mathsf T}>0$, at least one command satisfies
+$uA_{t,a}C_{t+1}A_{t,a}^{\mathsf T}u^{\mathsf T}>0$.
+Append it and replace $u$ by $uA_{t,a}$. At the last cut choose $j$
+with $uv_j\ne0$. The matrices are positive semidefinite by their
+recursions, so this procedure cannot encounter a dead end.
+There are $O(Nm)$ matrix operations at dimensions at most
+$\max_t n_t$. For rational input, common-denominator bounds on these
+finite matrix products also give polynomial intermediate bit length.
+Exact algebraic sign testing gives the corresponding effective
+statement for algebraic inputs; no unspecified real-number comparison
+is invoked.
+
+For existence, treat $E,T,d,G$ as unknowns. Impose nonnegativity and
+unit row sums on $E,T$, the bounds on $d$, the recursions
+\eqref{eq:gram46}, and $S_2=0$. Each recursion entry has degree at most
+three, and its number of terms is polynomial in the matrix sizes.
+The Gram variables need no independent positivity constraint: the
+initial condition and recurrence already force the displayed sum of
+squares. If target coefficients are algebraic rather than rational,
+include their defining polynomials and isolating inequalities. Arithmetic
+circuit variables reduce larger degrees to quadratic equations.
+Elimination over real closed fields decides existence and permits
+algebraic sample points. This last conclusion is the usual
+real-algebraic sampling principle \cite{BPR}, not a polynomial-time optimizer.
+\end{proof}
+
+The linear-algebraic equivalence mechanism is classical: compare
+Tzeng's equivalence algorithm \cite{Tzeng92} and the weighted-automata
+Hankel and Gram constructions of Balle--Panangaden--Precup
+\cite{BPP15}. The assertion here makes the finite clock, stochastic
+constraints, all seed initializations, and bounded query columns
+simultaneous. It must not be read as a new discovery of polynomial-time
+weighted-automata equivalence. Also, $S_2\approx0$ in floating point is
+\emph{not} the exact certificate $S_2=0$.
+
+\subsection{A hierarchy for the actual optimal error}
+Let $Q=|X|Dm^N$. For each even integer $p\ge2$, define
+\begin{equation}\label{eq:momnorm46}
+ L_p(\mathcal M)=\frac12
+       \left(Q^{-1}\sum_{x,w,j}R_{x,w,j}^{p}\right)^{1/p},\qquad
+ \ell_p(K_\bullet)=\min_{\mathcal M}L_p(\mathcal M),
+\end{equation}
+where every minimization uses the \emph{same} product of stochastic row
+simplices and bounded decoder cubes for the specified profile. Put
+$\mathcal E(K_\bullet)=\min_{\mathcal M}e(\mathcal M)$.
+
+\begin{theorem}[Moment certificates and the error frontier]\label{thm:moments46}
+All the preceding minima are attained. For every even $p\ge2$,
+\begin{equation}\label{eq:frontier46}
+ \ell_p(K_\bullet)\le\mathcal E(K_\bullet)
+                 \le Q^{1/p}\ell_p(K_\bullet).
+\end{equation}
+The numbers $\ell_p$ increase along the even integers and converge to
+$\mathcal E$. The running minima of the right sides of
+\eqref{eq:frontier46} decrease to the same value. In particular,
+$\ell_2=0$ if and only if the profile admits an exact realization.
+For each fixed $p$, its moment sum is computable by a finite homogeneous
+polynomial recurrence without enumerating words. For fixed
+$\max_t(K_t+D)$, this recurrence has size polynomial in $p,N,m,D,|X|$.
+
+For algebraic target data the actual optimum $\mathcal E$ and a
+minimizing machine are algebraic and effectively obtainable. For a
+finite prescribed width cap, the resulting threshold values give the
+exact finite-horizon error/width frontier. This is an effective finite
+optimization statement, not a closed formula or a polynomial-time
+algorithm for growing width.
+\end{theorem}
+\begin{proof}
+The parameter set is nonempty and compact, and the objectives are
+continuous. The inequalities for a vector of $Q$ numbers are
+\[
+ \left(Q^{-1}\sum |r_i|^p\right)^{1/p}
+ \le\max_i|r_i|\le
+ Q^{1/p}\left(Q^{-1}\sum |r_i|^p\right)^{1/p}.
+\]
+The first inequality survives minimization. For the second, use a
+minimizer of $L_p$ as a candidate for $\mathcal E$; no exchange of a
+maximum over words with a minimum over machines is made. Normalized
+finite-measure $L^p$ norms increase with $p$, as do their minima.
+Since $Q^{1/p}\to1$, the two sequences converge as asserted, including
+the case of a zero optimum.
+
+The recurrence is particularly transparent in polynomial form. Let
+$z$ be a row variable of the appropriate dimension and set
+\begin{equation}\label{eq:sympow46}
+ F_N(z)=\sum_j(zv_j)^p,\qquad
+ F_t(z)=\sum_a F_{t+1}(zA_{t,a}).
+\end{equation}
+Then $\sum_xF_0(u_x)$ is the moment sum. A homogeneous degree-$p$
+polynomial in $n_t$ variables has $\binom{n_t+p-1}{p}$ coefficients.
+Repeated polynomial multiplication and linear substitution compute
+these coefficients in polynomially many arithmetic operations when
+$n_t$ is fixed. This is the symmetric-power form of the familiar tensor
+product of weighted representations. It does not imply a bound
+polynomial in both $p$ and unbounded $n_t$.
+
+For the last assertion one may instead introduce all finitely many
+word inequalities $-2e\le R_{x,w,j}\le2e$ and minimize $e\in[0,1]$.
+Projection of this compact semialgebraic feasible set gives its
+semialgebraic attainable-error set. Its left endpoint is algebraic,
+and real-algebraic sampling gives a machine above that endpoint.
+The horizon and word set are finite; the number of those inequalities
+can be exponential. Standard real quantifier elimination proves the
+claim, with no missing infinite-horizon limit. Apply it successively
+to the finitely many allowed integer profiles or to padded constant
+caps. The held two-label output cut is then included in the reported
+peak.\qedhere
+\end{proof}
+
+For a \emph{given} machine and tolerance factor $1+\delta$, choosing
+an even $p\ge\log Q/\log(1+\delta)$ gives lower and upper error
+certificates with ratio at most $1+\delta$. This statement concerns
+checking the supplied machine, not finding a global moment minimizer.
+A certificate for a globally optimized bound must certify that
+optimization as well. A numerical local minimum has no such status.
+For fixed dimensions, exact rational coefficient growth in
+\eqref{eq:sympow46} is bounded by polynomially many input bit lengths,
+products and multinomial factors; certified root intervals can replace
+irrational $p$th roots in the output. The implementation below uses
+exact degree-two and degree-four recurrences, not an unreported
+large-degree optimization.
+
+\subsection{Finite precision without changing boundary widths}
+For an integer $L\ge1$, let $\mathcal G_L$ contain all machines whose
+initial and transition probabilities, and positive-answer probabilities,
+are integral multiples of $1/L$. Let
+$e_L=\min_{\mathcal M\in\mathcal G_L}e(\mathcal M)$ and set
+\begin{equation}\label{eq:gridcost46}
+ C(K_\bullet)=(K_0-1)+\sum_{t=1}^N(K_t-1)+1.
+\end{equation}
+These finite sets are nonempty even when some cuts have only one label.
+
+\begin{theorem}[A finite two-sided rational certificate]\label{thm:grid46}
+For every finite binary target, without any orthogonality assumption,
+\begin{equation}\label{eq:grid46}
+ \max\{0,e_L-C(K_\bullet)/L\}
+       \le\mathcal E(K_\bullet)\le e_L.
+\end{equation}
+Consequently dyadic machines with the same available boundary profile
+attain every strictly larger error than $\mathcal E$. The theorem
+does not assert a dyadic or rational exact optimizer at the boundary.
+If two target probability tables differ by at most $\eta$ uniformly,
+their optimal errors at the same profile differ by at most $\eta$.
+Thus a strict positive feasibility or infeasibility margin persists
+under sufficiently small target perturbations.
+\end{theorem}
+\begin{proof}
+Round down the first $k-1$ coordinates of any probability row of size
+$k$ to multiples of $1/L$, and give the remaining mass to the last
+coordinate. The row stays stochastic and its TV change is at most
+$(k-1)/L$. Round a terminal positive-answer probability to within $1/L$.
+Couple the two machines at initialization and then at each common
+command, or telescope the products by TV contraction. For every word
+the total output change is bounded by \eqref{eq:gridcost46} divided by
+$L$. Applying this construction to a minimizing real machine gives
+$e_L\le\mathcal E+C/L$; inclusion of the grid in the full parameter
+set gives $\mathcal E\le e_L$. Both use the same labels; no scratch
+configuration is hidden in that assertion. Choosing $L=2^b$ sufficiently
+large proves the strict-margin assertion. Finally, for any fixed
+machine its errors against two targets differ by at most $\eta$ by the
+triangle inequality. Minimize in both directions.
+\end{proof}
+
+An exhaustive grid search is a terminating certificate algorithm at
+fixed $L$, not an efficient proposal for large instances. If the target
+is supplied by certified intervals of radius $\eta$, the two endpoints
+in \eqref{eq:grid46} can each be enlarged by $\eta$. Dyadic row sampling
+uses $b$ fresh fair bits at denominator $2^b$; index, table and scratch
+storage still have to be charged in an implementation. The separate
+uniform compiler below supplies its own workspace accounting. The
+rational approximation statement must not be strengthened to exact
+rational factorization: such field restrictions genuinely matter in
+nonnegative realization \cite{Shitov18}.
+
+\begin{proposition}[An exact calibrated finite frontier]\label{prop:smallfront46}
+Take $N=0$, the four planar seeds $\{\pm e_1,\pm e_2\}$, two coordinate
+queries and $0<\rho\le1/2$ (this wider signal range is used only
+for the present finite example). If $k$ is the available initialization
+alphabet, the optimal binary-TV errors are
+\begin{equation}\label{eq:smallfront46}
+ \mathcal E(1)=\rho/2,\qquad
+ \mathcal E(2)=\rho/4,\qquad
+ \mathcal E(k)=0\quad(k\ge3).
+\end{equation}
+The same formula holds for an arbitrary horizon consisting only of
+identity commands, with $k=\min_t K_t$. In all cases the final held
+answer still costs two labels.
+\end{proposition}
+\begin{proof}
+A one-state decoder is one point of the mean square. Approximating
+$\pm\rho e_1,\pm\rho e_2$ by a common point has minimum uniform
+coordinate error $\rho$, attained at zero. For two states every seed
+mean lies on one affine line $n\cdot y=c$, with $n\ne0$; a degenerate
+segment may be embedded in any such line. If all coordinate errors
+are at most $d$, duality of $\ell_\infty$ and $\ell_1$ gives
+\[
+ d\|n\|_1\ge
+ \max_{y\in\{\pm\rho e_1,\pm\rho e_2\}}|n\cdot y-c|
+ =\rho\|n\|_\infty+|c|\ge\tfrac\rho2\|n\|_1.
+\]
+The diagonal segment with endpoints $\pm(\rho/2,\rho/2)$ attains
+coordinate error $\rho/2$: encode $e_1,e_2$ at its positive endpoint
+and their negatives at its negative endpoint. Divide mean errors by
+two to obtain binary TV. Three legal mean vectors
+$(2\rho,0),(-\rho,2\rho),(-\rho,-2\rho)$ enclose all four targets,
+so their barycentric initialization gives exact responses.
+For identity-only words, condition at a narrowest cut to obtain the
+same one-cut lower bound. Initialize the appropriate construction and
+carry its label through all cuts, padding unused labels as necessary,
+to obtain the upper bound.
+\end{proof}
+
+\subsection{A complexity boundary with a different output convention}
+The following comparison concerns one \emph{categorical} terminal
+output, not a selected member of a family of binary queries.
+Its width is the pre-output memory alphabet; counting the held output
+would separately add its alphabet size.
+
+\begin{proposition}[Normalized factorization and the real field]\label{prop:hard46}
+Given an explicitly listed rational row-stochastic matrix $P$, deciding
+whether it has a stochastic factorization $P=ED$ of inner dimension at
+most $k$ is $\exists\R$-complete. It is already a zero-command numerical
+realization problem. Rational target data need not have a rational
+exact optimizer at the minimum real inner dimension.
+\end{proposition}
+\begin{proof}
+Membership follows from the nonnegative variables, row-sum equations
+and quadratic equations $P=ED$. For hardness, remove the zero rows of
+a nonzero nonnegative rational matrix $A$ and divide each remaining row
+by its positive row sum, giving $P$. Positive diagonal row scaling and
+removal of zero rows preserve nonnegative rank. If $P=WH$ is a
+nonnegative factorization, put $h_i=\sum_jH_{ij}$. For $h_i>0$ set
+$D_{ij}=H_{ij}/h_i$ and $E_{xi}=W_{xi}h_i$. If $h_i=0$, replace
+that unused decoder row by any probability row and set its $E$ column
+to zero. Then $D\mathbf1=\mathbf1$ and
+$E\mathbf1=P\mathbf1=\mathbf1$. Thus stochastic inner dimension
+is exactly nonnegative rank, over either the real or rational field.
+Shitov's Theorem~2 gives $\exists\R$-hardness and his Corollary~3
+gives rational matrices with different minimum ranks over the rational
+and real algebraic fields \cite{Shitov18}. Row normalization transfers
+both statements as just shown. Zero input matrices can be treated
+separately and do not affect the reduction.
+\end{proof}
+
+This transfers a known complexity theorem; it is not a new hardness
+proof for nonnegative rank. Nor does it establish the same hardness for
+the fixed-dimensional orthogonal binary-query subclass. In that
+subclass Theorem~\ref{thm:gram46} supplies the compact exact feasibility
+formula, while the inherited arithmetic theorems determine specific
+asymptotic widths. These are different assertions.
