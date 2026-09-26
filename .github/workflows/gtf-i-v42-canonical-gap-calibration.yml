@@ -1,0 +1,165 @@
+name: GTF-I v42 alphabet dynamics and calibrated memory
+
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v42-canonical-gap-calibration-2026-09-26
+    paths:
+      - 'papers/GTF-I-v42-canonical-gap-calibration/**'
+      - '.github/workflows/gtf-i-v42-canonical-gap-calibration.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gtf-i-v42-canonical-gap-calibration
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/revision/general-theta-foundations-i-v42-canonical-gap-calibration-2026-09-26'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 20
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /papers/GTF-I-v42-canonical-gap-calibration/
+            /papers/GTF-I-v41-intrinsic-action/
+            /papers/GTF-I-v39-orbit-response/verify.py
+            /papers/GTF-I-v38-orbit-entropy/verify.py
+            /papers/GTF-I-v37-spectral-memory/verify.py
+            /papers/GTF-I-v36-finite-alphabet-memory/verify.py
+            /papers/GTF-I-v35-sharp-memory/verify.py
+            /papers/GTF-I-v34-compatible-dynamics/verify.py
+            /papers/GTF-I-v33-compatible-lifts/verify.py
+            /papers/GTF-I-v32-causal-width/verify.py
+            /papers/GTF-I-v31-compatible-memory/verify.py
+            /papers/GTF-I-v30-streaming-geometry/verify.py
+            /papers/GTF-I-v29-intrinsic-continuation/verify.py
+            /papers/GTF-I-v28-causal-response/verify.py
+            /papers/GTF-I-v27-resource-saddle/verify.py
+            /papers/GTF-I-v26-controlled-memory-foundations/verify.py
+            /papers/GTF-I-v25-controlled-minimax/verify.py
+            /papers/GTF-I-v24-structural-resources/verify.py
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Restore hash-checked native mathematical sources
+        shell: bash
+        run: |
+          python - <<'PY'
+          import hashlib,json,lzma,shutil
+          from pathlib import Path
+          h=Path('papers/GTF-I-v42-canonical-gap-calibration')
+          old=h.parent/'GTF-I-v41-intrinsic-action'
+          raw=b''.join((h/'.source-parts'/('part%02d.xz'%i)).read_bytes() for i in range(7))
+          if len(raw)!=40128 or hashlib.sha256(raw).hexdigest()!='a257c40f23d7ec54fe00ee08cca7a524d8d99b5c9c5835d68008eaad86e21da0':
+              raise RuntimeError('Source transport checksum mismatch')
+          payload=json.loads(lzma.decompress(raw))
+          if not isinstance(payload,dict) or len(payload)!=22: raise RuntimeError('Source manifest mismatch')
+          for name,text in payload.items():
+              p=Path(name)
+              if p.name!=name or p.suffix not in {'.tex','.py','.md','.json'} or not isinstance(text,str):
+                  raise RuntimeError('Unsafe source entry')
+              dest=h/name
+              if dest.exists() and dest.read_text()!=text: raise RuntimeError('Refusing to replace modified native source: '+name)
+              dest.write_text(text,encoding='utf-8')
+          for name in ['orbit-strata.tex','orbit-entropy.tex','orbit-synthesis.tex']:
+              dest=h/name
+              if dest.exists() and dest.read_bytes()!=(old/name).read_bytes(): raise RuntimeError('Inherited module changed: '+name)
+              shutil.copy2(old/name,dest)
+          print('Verified transport; restored 22 native files and three byte-identical analytic modules.')
+          PY
+      - name: Publish native source before building
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git fetch --depth=1 origin fdc5acf7e7913dcfc379f5f19d5c97ab21306496
+          test -z "$(git diff --name-only --diff-filter=DMRT fdc5acf7e7913dcfc379f5f19d5c97ab21306496)"
+          git add -f papers/GTF-I-v42-canonical-gap-calibration
+          if ! git diff --cached --quiet; then
+            git commit -m 'revise(GTF-I v42): native nongapped hierarchy, canonical block expansion and exact query calibration [skip ci]'
+            git push origin HEAD:"$GITHUB_REF_NAME"
+          fi
+          echo "GTF_SOURCE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - name: Install typesetting and exact arithmetic
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended texlive-pictures lmodern
+          python -m pip install sympy==1.14.0 mpmath==1.3.0 PyMuPDF==1.26.7 numpy==2.3.5 scipy==1.17.0
+      - name: Verify and build the full revision
+        run: python papers/GTF-I-v42-canonical-gap-calibration/build.py
+      - name: Independently rebuild the standalone core sources
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,os,subprocess,sys,tempfile,zipfile
+          from pathlib import Path
+          import fitz
+          h=Path('papers/GTF-I-v42-canonical-gap-calibration').resolve()
+          e=h/'evidence'
+          with tempfile.TemporaryDirectory(prefix='gtf42-core-') as td:
+              root=Path(td)
+              with zipfile.ZipFile(e/'CORE_SOURCES.zip') as z:
+                  for name in z.namelist():
+                      p=Path(name)
+                      if p.is_absolute() or '..' in p.parts: raise RuntimeError('Unsafe core archive')
+                  z.extractall(root)
+              core=root/h.name
+              p=subprocess.run([sys.executable,str(core/'build.py'),'--core-only'],cwd=root,text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+              (e/'CORE_REBUILD_LOG.txt').write_text(p.stdout)
+              if p.returncode: raise RuntimeError('Independent core rebuild failed')
+              a=fitz.open(h/'paper.pdf');b=fitz.open(core/'paper.pdf')
+              if len(a)!=len(b): raise RuntimeError('Core page count differs')
+              for i in range(len(a)):
+                  if a[i].get_text()!=b[i].get_text(): raise RuntimeError('Core page text differs: '+str(i))
+                  pa=a[i].get_pixmap(matrix=fitz.Matrix(.6,.6),alpha=False)
+                  pb=b[i].get_pixmap(matrix=fitz.Matrix(.6,.6),alpha=False)
+                  if pa.samples!=pb.samples or (pa.width,pa.height)!=(pb.width,pb.height): raise RuntimeError('Core page raster differs: '+str(i))
+              receipt={'status':'success','pages':len(a),'all_page_text_equal':True,'all_page_raster_equal':True,'source_commit':os.environ['GTF_SOURCE_COMMIT']}
+              (e/'CORE_REBUILD_RECEIPT.json').write_text(json.dumps(receipt,indent=2)+'\n')
+              a.close();b.close()
+          with zipfile.ZipFile(e/'REFEREE_PACKAGE.zip','a',zipfile.ZIP_DEFLATED) as z:
+              z.write(e/'CORE_REBUILD_RECEIPT.json',arcname='CORE_REBUILD_RECEIPT.json')
+          PY
+      - name: Publish only the new package and referee-ready branch
+        shell: bash
+        run: |
+          git add -f --sparse papers/GTF-I-v42-canonical-gap-calibration GENERAL_THETA_FOUNDATIONS_I_V42_REVIEW_READY.md
+          git commit -m 'publish(GTF-I v42): compiled manuscript, r27 response, independent core rebuild and preserved archives [skip ci]'
+          test -z "$(git diff --name-only --diff-filter=DMRT fdc5acf7e7913dcfc379f5f19d5c97ab21306496 HEAD)"
+          python - <<'PY'
+          import subprocess
+          paths=subprocess.check_output(['git','diff','--name-only','fdc5acf7e7913dcfc379f5f19d5c97ab21306496','HEAD'],text=True).splitlines()
+          for p in paths:
+              if not (p.startswith('papers/GTF-I-v42-canonical-gap-calibration/') or p in {'.github/workflows/gtf-i-v42-canonical-gap-calibration.yml','GENERAL_THETA_FOUNDATIONS_I_V42_REVIEW_READY.md'}):
+                  raise RuntimeError('Unexpected modified path: '+p)
+          PY
+          READY='revision/general-theta-foundations-i-v42-referee-ready-2026-09-26'
+          if git ls-remote --exit-code --heads origin "$READY"; then
+            git fetch origin "$READY"
+            git merge-base --is-ancestor FETCH_HEAD HEAD
+            git cat-file -e FETCH_HEAD:papers/GTF-I-v42-canonical-gap-calibration/main.tex
+          fi
+          git push --atomic origin HEAD:"$GITHUB_REF_NAME" HEAD:"$READY"
+      - name: Upload referee artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: GTF-I-v42-canonical-gap-calibration
+          path: papers/GTF-I-v42-canonical-gap-calibration/
+          retention-days: 30
+      - name: Upload failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: GTF-I-v42-diagnostics
+          path: |
+            papers/GTF-I-v42-canonical-gap-calibration/evidence/
+            papers/GTF-I-v42-canonical-gap-calibration/*.tex
+            papers/GTF-I-v42-canonical-gap-calibration/*.py
+          retention-days: 7
