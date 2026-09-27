@@ -1,0 +1,167 @@
+name: GTF-I v49 sign and magnitude duality
+on:
+  push:
+    branches: [revision/general-theta-foundations-i-v49-robust-duality-2026-09-27]
+    paths:
+      - 'papers/GTF-I-v49-robust-duality/**'
+      - '.github/workflows/gtf-i-v49-robust-duality.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: gtf49-robust-duality
+  cancel-in-progress: false
+jobs:
+  native-source:
+    if: github.ref == 'refs/heads/revision/general-theta-foundations-i-v49-robust-duality-2026-09-27'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      source: ${{ steps.native.outputs.source }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          sparse-checkout: |
+            papers/GTF-I-v47-compatible-certificates
+            papers/GTF-I-v49-robust-duality
+      - name: Restore the verified new native sources only
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib,json,lzma,shutil
+          h=Path('papers/GTF-I-v49-robust-duality')
+          if not (h/'main.tex').exists():
+              data=b''.join((h/'.source-parts'/('part%02d.xz'%i)).read_bytes() for i in range(7))
+              if len(data)!=40708 or hashlib.sha256(data).hexdigest()!='b7984aff12df58d8f7caefd6508413fc6b34e0a1b3e5d25c8976cbf3affbdcbb':
+                  raise RuntimeError('Source transport mismatch')
+              payload=json.loads(lzma.decompress(data))
+              if len(payload)!=19: raise RuntimeError('Source manifest mismatch')
+              for name,text in payload.items():
+                  p=Path(name)
+                  if p.name!=name or p.suffix not in {'.tex','.py','.md','.json'} or not isinstance(text,str):
+                      raise RuntimeError('Unsafe source entry')
+                  dest=h/name
+                  if dest.exists() and dest.read_text()!=text: raise RuntimeError('Refusing to overwrite native source')
+                  dest.write_text(text)
+              old=h.parent/'GTF-I-v47-compatible-certificates'
+              m=json.loads((h/'PRESERVATION_MANIFEST.json').read_text())
+              for name,digest in m['unchanged_sources'].items():
+                  if hashlib.sha256((old/name).read_bytes()).hexdigest()!=digest: raise RuntimeError('Inherited source mismatch')
+                  shutil.copyfile(old/name,h/name)
+              for name,digest in m['archived_introductions'].items():
+                  p=old/'introduction.tex'
+                  if hashlib.sha256(p.read_bytes()).hexdigest()!=digest: raise RuntimeError('Introduction mismatch')
+                  shutil.copyfile(p,h/name)
+          PY
+      - name: Publish native source once without retriggering
+        id: native
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git fetch --depth=1 origin "$GITHUB_REF_NAME"
+          test "$(git rev-parse FETCH_HEAD)" = "$GITHUB_SHA"
+          git add -f papers/GTF-I-v49-robust-duality
+          if ! git diff --cached --quiet; then
+            git commit -m 'revise(GTF-I v49): native sign-magnitude duality, exact cubic frontier and r30 response [skip ci]'
+            git push origin HEAD:"$GITHUB_REF_NAME"
+          fi
+          echo "source=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+  validate:
+    needs: native-source
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: read
+    env:
+      GTF_SOURCE_COMMIT: ${{ needs.native-source.outputs.source }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.native-source.outputs.source }}
+          persist-credentials: false
+          fetch-depth: 1
+          sparse-checkout: |
+            papers/GTF-I-v47-compatible-certificates
+            papers/GTF-I-v49-robust-duality
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install fixed verification and typesetting dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended lmodern
+          python -m pip install sympy==1.14.0 PyMuPDF==1.26.7
+      - name: Validate the exact native commit and rebuild isolated core
+        run: |
+          test "$(git rev-parse HEAD)" = "$GTF_SOURCE_COMMIT"
+          python papers/GTF-I-v49-robust-duality/build.py --check-core
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib,json,os,subprocess
+          h=Path('papers/GTF-I-v49-robust-duality')
+          for name,digest in json.loads((h/'evidence/SOURCE_HASHES.json').read_text()).items():
+              raw=subprocess.check_output(['git','show',os.environ['GTF_SOURCE_COMMIT']+':'+str(h/name)])
+              if hashlib.sha256(raw).hexdigest()!=digest: raise RuntimeError('Built source diverged from commit')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GTF-I-v49-validated-${{ needs.native-source.outputs.source }}
+          path: |
+            papers/GTF-I-v49-robust-duality/
+            GENERAL_THETA_FOUNDATIONS_I_V49_REVIEW_READY.md
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: GTF-I-v49-diagnostics
+          path: papers/GTF-I-v49-robust-duality/evidence/
+          retention-days: 7
+  publish:
+    needs: [native-source, validate]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      GTF_SOURCE_COMMIT: ${{ needs.native-source.outputs.source }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.native-source.outputs.source }}
+          fetch-depth: 1
+          sparse-checkout: papers/GTF-I-v49-robust-duality
+      - uses: actions/download-artifact@v4
+        with:
+          name: GTF-I-v49-validated-${{ needs.native-source.outputs.source }}
+          path: .
+      - name: Check receipts, source binding and branch freshness
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json,hashlib,os,subprocess
+          h=Path('papers/GTF-I-v49-robust-duality');e=h/'evidence'
+          receipt=json.loads((e/'BUILD_RECEIPT.json').read_text())
+          if receipt['source_commit']!=os.environ['GTF_SOURCE_COMMIT'] or receipt['core_rebuild']['status']!='success': raise RuntimeError('Wrong validation receipt')
+          if hashlib.sha256((h/'paper.pdf').read_bytes()).hexdigest()!=receipt['article_sha256']: raise RuntimeError('Article digest mismatch')
+          for name,digest in json.loads((e/'SOURCE_HASHES.json').read_text()).items():
+              raw=subprocess.check_output(['git','show',os.environ['GTF_SOURCE_COMMIT']+':'+str(h/name)])
+              if hashlib.sha256(raw).hexdigest()!=digest or hashlib.sha256((h/name).read_bytes()).hexdigest()!=digest: raise RuntimeError('Native source mismatch')
+          PY
+          git fetch --depth=1 origin "$GITHUB_REF_NAME"
+          test "$(git rev-parse FETCH_HEAD)" = "$GTF_SOURCE_COMMIT"
+      - name: Publish only generated v49 files with a non-force atomic push
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f papers/GTF-I-v49-robust-duality GENERAL_THETA_FOUNDATIONS_I_V49_REVIEW_READY.md
+          python - <<'PY'
+          import subprocess
+          changed=subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines()
+          if not changed: raise RuntimeError('No publication artifacts')
+          if any(not(p.startswith('papers/GTF-I-v49-robust-duality/') or p=='GENERAL_THETA_FOUNDATIONS_I_V49_REVIEW_READY.md') for p in changed): raise RuntimeError('Out-of-scope change')
+          if subprocess.check_output(['git','diff','--cached','--name-only','--diff-filter=D'],text=True).strip(): raise RuntimeError('Deletion refused')
+          PY
+          git commit -m 'publish(GTF-I v49): validated complete duality, exact frontier, isolated core and preserved archives [skip ci]'
+          git push --atomic origin HEAD:"$GITHUB_REF_NAME" HEAD:revision/general-theta-foundations-i-v49-referee-ready-2026-09-27
