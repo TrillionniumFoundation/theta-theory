@@ -1,0 +1,97 @@
+name: GTF-I v50 verified PDF publication
+
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v50-compatible-simplex-2026-09-27
+    paths:
+      - .github/workflows/gtf-i-v50-pdf-publication.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: gtf-i-v50-final-pdf
+  cancel-in-progress: false
+
+env:
+  PAPER: papers/GTF-I-v50-compatible-simplex
+  WORK: revision/general-theta-foundations-i-v50-compatible-simplex-2026-09-27
+  READY: revision/general-theta-foundations-i-v50-referee-ready-2026-09-27
+  QUALIFIED_SOURCE: ee887bf04d8265cfbc23e4b4693dd1a8645a7505
+  PREVIOUS_PUBLICATION: 40422922237c70efe2a65d3c18cc4ff746a29d3c
+
+jobs:
+  publish-validated-pdf:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          sparse-checkout: |
+            papers/GTF-I-v50-compatible-simplex
+      - uses: actions/download-artifact@v4
+        with:
+          name: GTF-I-v50-validated-ee887bf04d8265cfbc23e4b4693dd1a8645a7505
+          run-id: 36289562453
+          github-token: ${{ github.token }}
+          path: .
+      - name: Verify exact qualified bytes and publish without source changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = "$WORK"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git diff --exit-code
+          python - <<'PY'
+          import hashlib,json,os
+          from pathlib import Path
+          p=Path(os.environ['PAPER']);e=p/'evidence'
+          digest=lambda x:hashlib.sha256(x.read_bytes()).hexdigest()
+          r=json.loads((e/'BUILD_RECEIPT.json').read_text())
+          if r['status']!='success' or r['source_commit']!=os.environ['QUALIFIED_SOURCE']:
+              raise SystemExit('Wrong qualified source')
+          if not r['core_rebuild']['all_page_text_equal'] or not r['core_rebuild']['all_page_raster_equal']:
+              raise SystemExit('Isolated qualification missing')
+          if digest(p/'paper.pdf')!=r['article_sha256']:
+              raise SystemExit('PDF differs from qualified artifact')
+          for name,h in json.loads((e/'SOURCE_HASHES.json').read_text()).items():
+              if digest(p/name)!=h:
+                  raise SystemExit('Source drift: '+name)
+          (e/'PDF_PUBLICATION_RECEIPT.json').write_text(json.dumps({
+              'schema':'gtf50.pdf-publication/1','status':'success',
+              'reason':'Explicitly track the qualified PDF despite the repository PDF ignore rule',
+              'validated_source_commit':r['source_commit'],
+              'validation_workflow_run':'36289562453',
+              'validation_artifact_id':10921703926,
+              'publication_workflow_run':os.environ['GITHUB_RUN_ID'],
+              'publication_trigger_commit':os.environ['GITHUB_SHA'],
+              'previous_publication_commit':os.environ['PREVIOUS_PUBLICATION'],
+              'article_sha256':r['article_sha256'],
+              'article_bytes':(p/'paper.pdf').stat().st_size,
+              'article_pages':r['article_pages'],
+              'mathematical_source_changes':False
+          },indent=2,sort_keys=True)+'\n')
+          PY
+          test "$(git ls-remote origin "refs/heads/$WORK" | cut -f1)" = "$GITHUB_SHA"
+          test "$(git ls-remote origin "refs/heads/$READY" | cut -f1)" = "$PREVIOUS_PUBLICATION"
+          git add -f -- "$PAPER/paper.pdf"
+          git add -- "$PAPER/evidence/PDF_PUBLICATION_RECEIPT.json"
+          python - <<'PY'
+          import os,subprocess
+          p=os.environ['PAPER']
+          paths=set(subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines())
+          if paths!={p+'/paper.pdf',p+'/evidence/PDF_PUBLICATION_RECEIPT.json'}:
+              raise SystemExit('Unexpected publication files: '+repr(paths))
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'docs(gtf-i): track exact validated v50 PDF and immutable publication receipt'
+          git ls-files --error-unmatch "$PAPER/paper.pdf"
+          git push --atomic origin "HEAD:refs/heads/$WORK" "HEAD:refs/heads/$READY"
+          echo "Final publication: $(git rev-parse HEAD)" >> "$GITHUB_STEP_SUMMARY"
+          echo "Qualified source unchanged: $QUALIFIED_SOURCE" >> "$GITHUB_STEP_SUMMARY"
