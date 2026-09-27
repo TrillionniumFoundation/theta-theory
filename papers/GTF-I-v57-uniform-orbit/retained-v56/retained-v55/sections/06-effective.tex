@@ -1,0 +1,102 @@
+\section{Finite encodings and boundary quotients}\label{sec:effective54}
+The general continuous theorem is not an algorithm from arbitrary real data. We now give an explicit finite input class for which its conclusions are effective. A rational orthogonal input consists of a finite alphabet in $O(D,\Q)$ containing $I$, finite seed and query sets, and rational polynomials $F_{s,j,l}$ in the matrix entries specifying categorical probabilities. The promise $F_{s,j}(H)\subset\Delta_{M_j}$ can itself be checked once the compact closure is computed. Real algebraic output numbers are encoded by polynomial equations and isolating data.
+
+We use two established algorithmic inputs: computation of a finite defining description of the Zariski closure of a finitely generated rational matrix group \cite{DJK,NPSW}, and real quantifier elimination with effective semialgebraic connected components \cite{BPR}. The former is a terminating closure algorithm, not merely an enumeration of valid polynomial identities with an unknown stopping point. Compact orthogonal groups are real algebraic, so the real points of the computed closure in $O(D)$ give the Euclidean closure $H$ \cite{BJKP}. The complex algebraic components must not be substituted for the real connected components used here.
+
+\begin{theorem}[Effective rational classification]\label{thm:effective54}
+For a rational orthogonal input, the following are computable:
+\begin{enumerate}
+\item a semialgebraic description of every connected component of $H$, the finite group $C$, and the component of each command;
+\item the critical total-variation error $\epsc$ as an exact real algebraic number, and an attaining stationary component-permutation machine with algebraic decoders;
+\item for each algebraic $0\le\varepsilon<\epsc$ and integer $k\ge1$, an integer occupation constant $L_k$ valid for every error-$\varepsilon$ clocked realization;
+\item for every fixed $N$ and algebraic $\varepsilon\ge0$, the least width $W_{N,\varepsilon}$ and an algebraic realization attaining it.
+\end{enumerate}
+These are terminating computability statements. No polynomial running-time bound, practical implementation of general closure/quantifier elimination, or finite-random-bit cost bound is asserted.
+\end{theorem}
+\begin{proof}
+Compute $H$ using the cited closure algorithm, then its real connected components and algebraic sample points. The component containing $I$ is $K$. Products of sample points and semialgebraic membership tests determine the component multiplication table and the command images. In particular $K$ is now an effectively given compact semialgebraic group.
+
+For a component $c$ and a query, the condition that $q$ be a radius-$t$ center is the real first-order formula
+\begin{equation}\label{eq:QEcenter54}
+ q\in\Delta_{M_j},\qquad
+ \forall h\in c:\quad
+ \sum_{l=1}^{M_j}|F_{s,j,l}(h)-q_l|\le2t.
+\end{equation}
+Absolute values have a finite semialgebraic description. Quantifier elimination gives the set of admissible $(q,t)$. Its least $t$ exists by compactness and is real algebraic; algebraic sampling supplies an attaining $q$. Maximize over the finite interface and components. This proves (1)--(2), including equality at the critical error.
+
+We detail effectivity of the occupation proof, since computing the threshold alone would not supply it. Choose a component with radius greater than the given $\varepsilon$, and enumerate positive words until one lies in that component. Its rational product gives the prefix used in the proof of Theorem~\ref{thm:radius54}. The resulting map $f(h)=F_{s,j}(hu_v)$ is polynomial, so it can be used directly in place of $G$, with no approximation error.
+
+For any finite tensor degree, all required polynomial functions are coefficients of the explicitly given tensor representation. Its fixed subspace is
+\[
+ \{z:\ \forall h\in K,
+                 (R(h)-I)z=0\}.
+\]
+This linear subspace is effectively semialgebraic. Real algebraic sampling, successively outside the span of the vectors already chosen, gives an algebraic basis in finitely many steps. Its Gram matrix gives the orthogonal projection $P$ exactly. Thus every polynomial Haar moment is computable algebraically from $P\Phi(e)$; numerical integration of Haar measure is unnecessary.
+
+Enumerate finite lists of squares of rational polynomials on $K$, discarding zero Haar integrals and normalizing the others. For a list $p_i$, compute $b_i=\int p_if\,d\mu$ and its constrained simplex radius by quantifier elimination. Rational polynomials are uniformly dense among real polynomial restrictions on a compact matrix group; the localization proof therefore guarantees that some enumerated list has radius strictly greater than $\varepsilon$. Strict algebraic comparison detects that list. Fix a positive rational $\Delta$ below the radius difference and a positive rational upper bound $L$ for all coefficient constants in Proposition~\ref{prop:residual54}. These give the certified residual $Q\ge\Delta/L$.
+
+Next enumerate finite rational probability laws on executable words of a common length whose products lie in $K$, together with rational $d\in(0,1)$. The assertion \eqref{eq:gap54}, quantified over the finitely many unit vectors in the algebraic moving space, is semialgebraic: each maximum of finitely many inner products can be expressed by a finite disjunction. It is therefore decidable. Lemma~\ref{lem:gap54} and sufficiently small rational perturbations of its atom weights ensure that this search terminates. Padding by the identity letter makes every finite choice executable at one common length.
+
+The resulting $B,d,L,\Delta,Q_0$ determine \eqref{eq:Lk54}. To avoid exact comparisons involving logarithms, take a rational $A'\ge\max(1,LQ_0/\Delta)$ and use
+\[
+ \frac{\log A}{-\log(1-d)}\le\frac{A'}d.
+\]
+An integer above $b+B-1+BA'/d$ is a computable occupation bound. This proves (3).
+
+For (4), fix a candidate width $k$ and use $k$ labels at every cut, padding smaller registers with unused labels. Stochastic rows, initialization, and categorical decoder probabilities are finitely many variables in compact simplexes. For each of the finitely many length-$N$ words, the output vector is polynomial in these variables, and the target vector is rational. The total-variation inequalities are semialgebraic. Quantifier elimination therefore decides feasibility and supplies an algebraic point when feasible. A deterministic register storing the seed and entire prefix is a finite exact realization, so increasing $k$ must terminate. This proves the least-width claim for each finite horizon, without claiming a finite-horizon cutoff for all stationary or nonuniform realization questions.
+\end{proof}
+The distinction between an effective theorem and an implemented solver matters. The accompanying finite checks verify displayed exact examples and proof constants; they do not execute the general group-closure and quantifier-elimination construction. The finite-bit compiler for rational finite groups remains in the complete predecessor supplement with its separate hypotheses and costs. It is not used to reprice arbitrary algebraic decoders as cost-free finite-bit procedures.
+
+\subsection{The least component-quotient realization}
+The upper bound $|\mathcal S||C|$ can often be reduced. Here is an exact finite characterization of that reduction, with its scope stated explicitly. Put $X=\mathcal S\times C$. A \emph{component-quotient realization} has a deterministic state of the form $\pi(s,c)$, where $\pi:X\to Q$ is a surjection; its command update is induced by $(s,c)\mapsto(s,[u_a]c)$. It is stationary and has no additional state recording a representative word within a component.
+
+Call a partition $\mathcal B$ of $X$ equivariant if
+\[
+ (s,c)\sim(s',c')\quad\Longrightarrow\quad
+ (s,dc)\sim(s',dc')\qquad(d\in C).
+\]
+For a block $B\in\mathcal B$ and query $j$, set
+\[
+ A_{B,j}=\bigcup_{(s,c)\in B}F_{s,j}(c).
+\]
+\begin{theorem}[Finite quotient minimum]\label{thm:quotient54}
+The least number of command labels in an error-$\varepsilon$ component-quotient realization is
+\begin{equation}\label{eq:quotient54}
+ \min\left\{|\mathcal B|:\mathcal B\text{ equivariant and }
+         \rad_{Y_j}(A_{B,j})\le\varepsilon\text{ for every }B,j\right\},
+\end{equation}
+with value $+\infty$ if there is no admissible partition. For rational orthogonal categorical inputs this minimum and an attaining quotient are computable. If $\epsc=0$ and $\varepsilon=0$, the coarsest admissible partition is the future-output equivalence
+\[
+ (s,c)\sim(s',c')\quad\Longleftrightarrow\quad
+ F_{s,j}(dc)=F_{s',j}(dc')\quad\text{for every }d\in C,j,
+\]
+where componentwise constant maps are identified with their values.
+\end{theorem}
+\begin{proof}
+An equivariant partition induces well-defined command permutations on its blocks. Choosing a minimizing center for each $A_{B,j}$ gives exactly the stated error. Conversely, the fibers of $\pi$ in any component-quotient realization form an equivariant partition. Its decoder must approximate every executable product in each corresponding component. Such products are dense in that component, so continuity extends the error bound to $A_{B,j}$. Its decoder is therefore a permitted center. This proves \eqref{eq:quotient54}. The command generators suffice to check equivariance, since their images generate the finite group $C$.
+
+There are finitely many partitions of $X$. For polynomial categorical data their radius tests are of the form \eqref{eq:QEcenter54}, with a finite disjunction over the relevant seed/component pairs, so the minimum is computable. In the exact componentwise constant case, equality of all future outputs is an equivariant equivalence relation. Every admissible partition refines it, and its own blocks have singleton output images for each query. It is therefore the unique coarsest admissible partition.
+\end{proof}
+The minimization in \eqref{eq:quotient54} is a deterministic quotient minimum, distinct from the unrestricted stationary minimum in Theorem~\ref{thm:stationaryminimum55} and from the unrestricted nonuniform minimum at the boundary. Randomized encodings can identify numerical behaviors without identifying component pairs. What is classified here is exactly the finite deterministic quotient construction that attains the radius threshold. Theorem~\ref{thm:effective54}(4) separately computes the unrestricted minimum at each fixed horizon.
+
+\subsection{Stationary minimization by permutation closures}
+\begin{theorem}[Effective unrestricted stationary minimum]\label{thm:effectivemin55}
+For rational orthogonal commands generating $H$, rational polynomial categorical outputs, and algebraic $\varepsilon\ge0$, one can compute $M_\varepsilon$ and an attaining algebraic machine when it is finite. An identity letter is not required. At each proposed width $k$, at most $(k!)^{|\mathcal A|}$ augmented orthogonal group closures and finite real quantifier-elimination problems suffice.
+\end{theorem}
+\begin{proof}
+First compute $H$, its real connected components, and their constrained radii as in Theorem~\ref{thm:effective54}(1)--(2); those steps do not use an identity letter. The group $H\subset O(D)$ has finitely many components. Theorem~\ref{thm:finitequotient55} shows that $M_\varepsilon=\infty$ below their maximum radius. Otherwise $M_\varepsilon\le |\mathcal S||H/H^\circ|$.
+
+For $k$ between one and this upper bound enumerate all command-permutation tuples $\sigma$. The matrices
+\[
+                         \diag(u_a^{-1},\Pi_a)\in O(D+k,\Q)
+\]
+generate a compact closure which is exactly the joint group $\mathcal L_\sigma$ of Theorem~\ref{thm:stationaryminimum55}. Compute it by the same algebraic closure procedure. In \eqref{eq:permutationfeasibility55}, the unknown seed rows and decoder rows are constrained to simplexes. The mean output is bilinear in these rows, the group variable is restricted by the computed polynomial equations, and $h^{-1}=h^T$ in the physical block. Consequently all target coordinates are polynomial in the universally quantified matrix entries. Total variation is semialgebraic. Real quantifier elimination decides the resulting existential--universal formula and supplies algebraic rows whenever it is feasible. The first feasible $k$ is the minimum by purification. The finite upper bound proves termination of the entire search.
+\end{proof}
+This is a structural reduction of stationary minimization, not merely an enumeration of arbitrary stochastic transition parameters. It does not equate stationary and horizon-specific minima. The two-cycle/three-cycle example in Proposition~\ref{prop:C655} already prevents replacing the permutation-feasibility test by deterministic component partitions.
+
+\subsection{Algorithmic cost and arithmetic representation}
+There are three distinct layers of effectivity. First, the group-closure procedure produces explicit defining equations; real-component decomposition and algebraic sampling then identify the component table. Second, radius computation and the stationary permutation tests are finite quantifier-elimination tasks on those equations. At fixed $k$, the stationary seed and output variables number $k(|\mathcal S|+\sum_jM_j)$ before normalization equalities are eliminated; the group variables can be taken among the $(D+k)^2$ augmented matrix entries. Thus the displayed finite search is independent of a horizon parameter. Its factorial number of discrete cases and the cost of the real-algebraic subproblems should not be mistaken for an efficient algorithm. No bound for the full closure-to-machine process in terms of only the original bit length is extracted here.
+
+Third, occupation certificates in Theorem~\ref{thm:effective54}(3) add searches over localizer degrees and executable word laws. Their termination follows from strict analytic margins; the present proof supplies no a priori useful bound on the successful degree or word length. Fixed-horizon minimization, by contrast, has finitely many word constraints at each $N$ but their number is exponential in $N$ before repetitions are identified. These stages should be priced separately rather than hidden behind the word ``effective.''
+
+All algebraic Haar moments in the localizer search are represented in a real algebraic number field with isolating data, using the fixed-subspace projector and its algebraic Gram inverse. Signs and strict comparisons are exact real-algebraic comparisons; a quadrature tolerance is not a certificate. Every rational command word has a rational matrix product and hence a rational target vector for rational polynomial readouts. The orthogonal closure fact used above is precisely that the Euclidean closure of a subgroup of $O(D)$ is the real zero set, inside $O(D)$, of its vanishing polynomial ideal, as used in \cite{BJKP}; replacing real connected components by complex algebraic ones would give the wrong quotient.
