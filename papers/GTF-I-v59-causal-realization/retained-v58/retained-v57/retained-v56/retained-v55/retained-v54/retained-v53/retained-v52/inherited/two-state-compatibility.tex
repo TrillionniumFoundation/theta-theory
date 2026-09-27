@@ -1,0 +1,342 @@
+\section{Exact two-label geometry and robust compatibility}\label{sec:binary47}
+The positive Hankel normal form below retains the whole future array.
+For two labels, a smaller exact normal form is available. It gives
+both a class of finite certificates and an explicit error frontier.
+The statements in this section concern the actual optimized numerical
+error, not a sum of local defects or an average over a test law.
+
+\subsection{Antisymmetric experiments}
+We first allow any finite response table, not necessarily one obtained
+from orthogonal matrices. Let the seeds be paired symbols
+$X=\{+1,-1,\ldots,+n,-n\}$, let $w\in\calA^N$, and let
+$j\in\{1,\ldots,d\}$ be the selected query. Suppose the target means
+satisfy
+\begin{equation}\label{eq:antisym47}
+ f_{-i,w,j}=-f_{i,w,j},\qquad |f_{i,w,j}|\le1.
+\end{equation}
+The binary law is $(1+b f_{i,w,j})/2$. Write $\mathcal E_2(f)$ for the
+minimum worst-word binary-TV error of a machine with two available
+labels at \emph{every} cut $0,\ldots,N$. The final held answer also
+has two labels. Random initialization and arbitrary cut-dependent
+stochastic matrices are allowed. All extrema below are attained.
+
+\begin{theorem}[An exact scalar normal form]\label{thm:scalar47}
+For every table satisfying \eqref{eq:antisym47},
+\begin{equation}\label{eq:scalar47}
+ 2\mathcal E_2(f)=
+ \min_{\substack{|h_i|\le1,\ |\beta_{t,a}|\le1,\ |d_j|\le1}}
+ \max_{i,w,j}
+ \left|f_{i,w,j}-h_i d_j\prod_{t=1}^N\beta_{t,a_t}\right|.
+\end{equation}
+Thus the exact numerical optimization is the distance, in the uniform
+norm, to the set of bounded decomposable tensors with one factor for
+the positive seed, one for each command epoch, and one for the query.
+Every feasible tensor on the right has a two-label stochastic
+realization. For $N=0$ the empty product is one.
+\end{theorem}
+\begin{proof}
+Represent a probability row on two labels by its signed coordinate
+$r=2p-1\in[-1,1]$. Every stochastic update is an affine map
+$r\mapsto\alpha+\beta r$ with $|\alpha|+|\beta|\le1$;
+conversely this condition is sufficient. A bounded terminal mean has
+form $c_j+d_jr$ with $|c_j|+|d_j|\le1$.
+For a word $w$, the composite update has the form
+$A_w+B_wr$, where $B_w=\prod_t\beta_{t,a_t}$.
+If the two paired initialization coordinates are $r_i,r_{-i}$,
+the odd part of the realized mean is therefore
+\[
+ \frac{\widehat f_{i,w,j}-\widehat f_{-i,w,j}}2
+     =h_i B_w d_j,\qquad h_i=(r_i-r_{-i})/2.
+\]
+Taking the odd part cannot increase uniform error against the odd
+target: each resulting residual is half the difference of two original
+residuals. This operation is realizable without mixing whole machines.
+Use initialization coordinates $\pm h_i$, replace every update by
+$r\mapsto\beta_{t,a}r$, and replace the terminal column by $d_jr$.
+All rows remain stochastic because $|\beta_{t,a}|,|d_j|\le1$.
+This proves that the right side is no larger than twice the original
+optimum, without retaining a symmetrization coin.
+
+Conversely, initialize the positive label with probability
+$(1\pm h_i)/2$, use the stochastic matrix
+\begin{equation}\label{eq:binaryrow47}
+ \frac12\begin{pmatrix}1+\beta_{t,a}&1-\beta_{t,a}\\
+                       1-\beta_{t,a}&1+\beta_{t,a}\end{pmatrix},
+\end{equation}
+and terminal means $(d_j,-d_j)$. Induction gives the tensor in
+\eqref{eq:scalar47}. Binary total variation is half the mean error.
+Compactness of the factor cubes and continuity prove attainment.
+\end{proof}
+
+The scalar description of a two-state stochastic matrix is elementary.
+The content needed here is that deleting all affine offsets produces
+an admissible optimizer for an odd target, rather than merely a signed
+linear approximation. No averaging over an unrecorded global random
+choice is permitted. Tensor descriptions of stochastic processes are
+classical; Ohta's reachable/null-space reductions concern a different
+stationary observation model \cite{Ohta20}. Equation~\eqref{eq:scalar47}
+keeps the prescribed command order, bounded query columns and fixed
+numerical error objective simultaneously.
+
+\subsection{Balanced sign certificates}
+For an entry $e=(i,a_1,\ldots,a_N,j)$, form its incidence vector
+$\iota(e)\in\mathbb F_2^M$, where
+\[
+ M=n+N|\calA|+d.
+\]
+There is one coordinate for each seed factor, each pair $(t,a)$, and
+each query factor; $\iota(e)$ marks the factors used by that entry.
+A set $C$ of nonzero target entries is \emph{balanced} if
+$\sum_{e\in C}\iota(e)=0$. Equivalently each factor occurs an even
+number of times. It is \emph{negative} if $\prod_{e\in C}f_e<0$.
+
+\begin{theorem}[A finite sign obstruction and a gap dichotomy]\label{thm:sign47}
+A negative balanced set $C$ certifies
+\begin{equation}\label{eq:signlower47}
+ \mathcal E_2(f)\ge\tfrac12\min_{e\in C}|f_e|.
+\end{equation}
+Suppose in addition that $f_e\in\{0,\rho,-\rho\}$ for a fixed
+$0<\rho\le1$. Then exactly one of the following holds:
+\begin{equation}\label{eq:dichotomy47}
+ \begin{aligned}
+ &\mathcal E_2(f)=\rho/2,
+       &&\text{the nonzero signs do not factor;}\\
+ &\mathcal E_2(f)\le\rho/4,
+       &&\text{the nonzero signs factor.}
+ \end{aligned}
+\end{equation}
+Factorability, and hence the alternative in \eqref{eq:dichotomy47},
+is decided by a linear system over $\mathbb F_2$. In the first case
+there is a negative balanced certificate of at most $M+1$ entries.
+In the second case the proof constructs a legal two-label machine.
+Complexity is polynomial in the \emph{explicit table size}; the table
+can be exponential in the displayed horizon.
+\end{theorem}
+\begin{proof}
+The product of any decomposable real tensor over a balanced set is
+nonnegative, since each factor has even exponent. If every tensor
+entry on $C$ approximated the target within a mean error strictly
+smaller than $\min_C|f_e|$, it would be nonzero with the target sign.
+Its product would be negative, a contradiction. Apply
+Theorem~\ref{thm:scalar47} to obtain \eqref{eq:signlower47}.
+
+Let $s_e\in\mathbb F_2$ encode the nonzero target sign. The signs
+factor exactly when the system
+\begin{equation}\label{eq:gf247}
+ \ip{\iota(e)}{z}=s_e \pmod2\qquad(f_e\ne0)
+\end{equation}
+is consistent. If it is inconsistent, a linear combination of its
+rows has zero left side and right side one. The corresponding entries
+are negative and balanced. One may express a contradictory row in a
+basis of at most $M$ earlier rows, so at most $M+1$ entries suffice.
+Inequality~\eqref{eq:signlower47} gives $\mathcal E_2(f)\ge\rho/2$;
+the fair-coin decoder attains the reverse inequality.
+
+If \eqref{eq:gf247} has a solution, take the seed and epoch factors
+to be the prescribed signs $\pm1$, and take each query factor to be
+its prescribed sign times $\rho/2$. Every tensor entry then has
+magnitude $\rho/2$ and all nonzero targets have the correct sign.
+Both zero and nonzero entries have mean error at most $\rho/2$.
+The construction \eqref{eq:binaryrow47} realizes these factors with
+deterministic identity/swap command rows and bounded terminal means.
+Thus $\mathcal E_2(f)\le\rho/4$. Ordinary finite-field elimination
+both decides consistency and records the indicated certificate.
+\end{proof}
+
+The second alternative need not be an equality: a target which is
+already a bounded decomposable tensor may have zero error. The theorem
+classifies the strict-improvement threshold, not every smaller optimum.
+The certificate is an elementary parity identity, not a new
+nonnegative-rank theorem or a general polynomial-time minimization
+algorithm for stochastic automata. The difference is useful: an
+explicit witness certifies the error against \emph{every} two-label
+machine, whereas an equivalence test checks a supplied machine.
+
+\subsection{Two bottlenecks and an exact finite frontier}
+Return to the orthogonal experiment. Put
+\begin{equation}\label{eq:quarter47}
+ X=\{\pm e_1,\pm e_2\},\qquad
+ \calA=\{I,R\},\qquad
+ R=\begin{pmatrix}0&-1\\1&0\end{pmatrix},
+ \qquad0<\rho\le1/6.
+\end{equation}
+The finite signal range in \eqref{eq:quarter47} is separate from the
+smaller sufficient calibration range of the arithmetic theorems.
+Every target answer probability is in $[(1-\rho)/2,(1+\rho)/2]$.
+
+\begin{theorem}[Two separated bottlenecks]\label{thm:bottleneck47}
+At any horizon $N\ge1$, suppose a machine for \eqref{eq:quarter47}
+has at most two labels at two distinct cuts $s<t$ in $\{0,\ldots,N\}$.
+Its actual worst-word binary-TV error is at least $\rho/2$, regardless
+of the widths at all other cuts. The fair-coin output attains this
+bound at every such prescribed profile. The same conclusion holds
+for any positive signal $\rho\le1$, independently of the upper
+construction used below.
+\end{theorem}
+\begin{proof}
+Freeze all commands before $s$ and after $t$ to $I$. Between the two
+cuts retain the two words $I^{t-s}$ and $RI^{t-s-1}$, with $R$ in
+the first executed position. Integrating the intermediate computation
+gives two stochastic maps between the two endpoint alphabets. Pad a
+one-label endpoint if necessary. The initial probabilities may depend
+arbitrarily on the seed; the suffix gives one bounded column per query.
+Thus the odd part of this restricted experiment has the one-step
+scalar form of Theorem~\ref{thm:scalar47}, even when intermediate
+alphabets are arbitrarily large.
+
+Four entries of its positive-seed target are
+\[
+ f_{1,I,1}=\rho,\qquad f_{2,I,2}=\rho,\qquad
+ f_{1,R,2}=\rho,\qquad f_{2,R,1}=-\rho.
+\]
+Each seed, intervening word and query occurs twice. These four entries
+form a negative balanced set. Taking the odd part of any putative
+approximation costs no extra error, so \eqref{eq:signlower47} gives
+$\rho/2$. The zero mean decoder proves sharpness. No reset occurs
+inside the interval and no command is replaced by a free input symbol:
+collapsing the interval is a converse argument only.
+\end{proof}
+
+For $N=1$ let $\mathcal E(k_0,k_1)$ denote the optimum at the two
+command-boundary widths. A positive minimum is attained even when the
+allowed profile is infeasible for exact realization.
+
+\begin{theorem}[A complete two-cut error frontier]\label{thm:frontier47}
+In \eqref{eq:quarter47} at $N=1$, the exact frontier is
+\begin{equation}\label{eq:frontiertable47}
+\begin{array}{c|ccc}
+ \mathcal E(k_0,k_1)&k_1=1&k_1=2&k_1\ge3\\\hline
+ k_0=1&\rho/2&\rho/2&\rho/2\\
+ k_0=2&\rho/2&\rho/2&\rho/4\\
+ k_0\ge3&\rho/2&\rho/4&0
+\end{array}
+\end{equation}
+Every upper bound has an explicit rational stochastic realization
+when $\rho$ is rational. In particular, minimizing either cut
+separately at tolerance $\rho/4$ permits two labels, but no single
+machine can attain both minima simultaneously.
+\end{theorem}
+\begin{proof}
+A one-label bottleneck erases all seed dependence; for the identity
+word, opposite coordinate means force error at least $\rho/2$.
+Theorem~\ref{thm:bottleneck47} treats $(2,2)$.
+If either cut has two labels, then, for the identity word, the realized
+four seed means lie on one affine line $n\cdot y=c$. If its uniform
+coordinate error is at most $\delta$, then
+\[
+ \delta\|n\|_1\ge
+ \max_{y\in\{\pm\rho e_1,\pm\rho e_2\}}|n\cdot y-c|
+ =\rho\|n\|_\infty+|c|
+ \ge(\rho/2)\|n\|_1.
+\]
+This proves the $\rho/4$ lower bounds after dividing mean error by two.
+A degenerate segment lies in such a line as well.
+
+Here are matching machines. For $a>0$, set
+\[
+ V_a=\{(a,0),(0,a),(-a,-a)\},\qquad
+ \beta_a(y)=\frac13
+ \left(1+\frac{2y_1-y_2}{a},\
+       1+\frac{2y_2-y_1}{a},\
+       1-\frac{y_1+y_2}{a}\right).
+\]
+Whenever $\beta_a(y)\ge0$, it sums to one and has barycenter $y$
+in $V_a$.
+
+For $(3,3)$ initialize with $\beta_{2\rho}(\rho x)$.
+For each vertex $v\in V_{2\rho}$ and command $U\in\{I,R\}$,
+use the row $\beta_{6\rho}(Uv)$ on $V_{6\rho}$.
+The six rows are nonnegative: substituting the vertices gives
+$2(Uv)_1-(Uv)_2\ge-6\rho$, the analogous second inequality,
+and $(Uv)_1+(Uv)_2\le6\rho$.
+Use the coordinates of $V_{6\rho}$ as terminal means. They lie in
+$[-1,1]$ because $6\rho\le1$. The barycenter identity gives exactly
+$\rho Ux$ for each word and seed.
+
+For $(2,3)$ let the two initial labels represent
+$\pm v$, where $v=(\rho/2,\rho/2)$; initialize $e_1,e_2$ at $+v$
+and their negatives at $-v$. On command $U$, use the row
+$\beta_{2\rho}(\pm Uv)$ and decode with $V_{2\rho}$.
+All four rows are nonnegative. The output is
+$U[\rho(x_1+x_2)(1,1)/2]$, differing from $\rho Ux$ in each
+coordinate by at most $\rho/2$ for both $I$ and $R$.
+
+For $(3,2)$ initialize with $\beta_{2\rho}(\rho x)$ and decode the
+two terminal labels as $(1,1)$ and $(-1,-1)$.
+For $v\in V_{2\rho}$ use positive-label probability
+$(1+\ell(Uv))/2$, where $\ell(y)=(y_1+y_2)/2$.
+Here $|\ell(Uv)|\le2\rho\le1$. The output mean is
+$\rho((Ux)_1+(Ux)_2)(1,1)/2$, again with coordinate error $\rho/2$.
+All remaining entries in the table follow by padding normalized unused
+rows, or by the zero decoder. Every coefficient just displayed is
+rational when $\rho$ is rational.
+\end{proof}
+
+For $\rho/4\le\varepsilon<\rho/2$, the feasible two-cut profiles
+are exactly the upward closure of $(2,3)$ and $(3,2)$.
+For $0\le\varepsilon<\rho/4$, both command cuts need at least three
+labels; for $\varepsilon\ge\rho/2$, one at each command cut suffices.
+The held answer is always charged separately as two labels. These are
+finite numerical frontiers, not asymptotic claims about an irrational
+alphabet. They complement rather than replace the growing-width laws.
+
+\begin{theorem}[An arbitrary-horizon profile frontier]\label{thm:sparsefront47}
+For the alphabet and seeds in \eqref{eq:quarter47}, let $N\ge1$ and
+suppose every command-cut width belongs to $\{1,2\}\cup\{4,5,\ldots\}$.
+For any $0<\rho\le1$, the exact optimized error is
+\begin{equation}\label{eq:sparsefront47}
+ \mathcal E(K_\bullet)=
+ \begin{cases}
+  \rho/2,&\text{some $K_t=1$, or at least two cuts have $K_t=2$},\\
+  \rho/4,&\text{exactly one cut has $K_t=2$ and none has width one},\\
+  0,&\text{every $K_t\ge4$}.
+ \end{cases}
+\end{equation}
+The constructive machines have deterministic initialization and command
+rows and rational decoder probabilities when $\rho$ is rational.
+The excluded width-three profiles are not classified by this statement.
+\end{theorem}
+\begin{proof}
+For a one-label cut freeze every word to the identity; opposite seeds
+force error $\rho/2$. Two two-label cuts are treated by
+Theorem~\ref{thm:bottleneck47}. With one such cut, freeze the entire
+word to the identity. Its four output means lie in a segment, so the
+line argument in Theorem~\ref{thm:frontier47} gives error $\rho/4$.
+
+For the matching construction without a bottleneck, store which of
+$\{\pm e_1,\pm e_2\}$ is the current vector. The command $R$ permutes
+these four states, and the decoder is $\rho$ times the vector.
+If the unique two-label cut is $s$, track this vector until that cut.
+At cut $s$ replace the current vector $y$ by
+$P y=(y_1+y_2)(1,1)/2$. There are only two possibilities,
+$\pm(1,1)/2$, for these four axis vectors. This is a deterministic
+compression, with no retained old phase. Thereafter four labels track
+the quarter-rotation orbit of $Py$. The first transition out of the
+bottleneck embeds its two possibilities into these four labels and
+applies the actual command; subsequent transitions are permutations.
+At $s=0$ perform the compression in initialization; at $s=N$ decode the
+two possibilities directly. The decoder multiplies by $\rho$.
+For each axis vector, $\|y-Py\|_\infty=1/2$; every subsequent quarter
+rotation preserves this norm. The final mean error is exactly
+$\rho/2$, proving the second line of \eqref{eq:sparsefront47}.
+A fair-coin decoder handles the first line. Available excess labels
+are padded by normalized unused rows. No random branch or clock
+history is stored for free.
+\end{proof}
+
+\begin{corollary}[Stability under arbitrary target perturbations]\label{cor:stable47}
+If a finite binary response table is perturbed by at most $\eta$ in
+uniform row TV, its optimal error at any fixed profile changes by at
+most $\eta$. In particular the two-bottleneck lower bound becomes
+$\max(0,\rho/2-\eta)$ for any such perturbation of
+\eqref{eq:quarter47}. The construction at $(2,3)$ or $(3,2)$ has
+error at most $\rho/4+\eta$. Thus a strict compatibility gap persists
+whenever $\eta<\rho/8$, including full-support perturbations.
+\end{corollary}
+\begin{proof}
+For a fixed machine, the two target errors differ by at most $\eta$
+by the triangle inequality; minimizing in both directions proves the
+first claim. Apply it to \eqref{eq:frontiertable47}; the gap between
+$\rho/2-\eta$ and $\rho/4+\eta$ is positive exactly when
+$\eta<\rho/8$. Antisymmetry need not survive the perturbation.
+\end{proof}
