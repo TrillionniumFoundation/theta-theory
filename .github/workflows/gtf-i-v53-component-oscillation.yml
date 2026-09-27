@@ -1,0 +1,181 @@
+name: GTF-I v53 component-oscillation publication
+
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v53-component-oscillation-2026-09-27
+    paths:
+      - .github/workflows/gtf-i-v53-component-oscillation.yml
+      - papers/GTF-I-v53-component-oscillation/**
+  workflow_dispatch:
+
+concurrency:
+  group: gtf-i-v53-component-oscillation-publication
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  PAPER: papers/GTF-I-v53-component-oscillation
+  WORK: revision/general-theta-foundations-i-v53-component-oscillation-2026-09-27
+  READY: revision/general-theta-foundations-i-v53-referee-ready-2026-09-27
+  BASE: 7641901c2ef957542aa50d9918f272ac7a72ca1c
+  REVIEW: 4b1eb39eacdb741354e8c4faaedb1c3aabb3a14c
+
+jobs:
+  qualify-and-publish:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          sparse-checkout: |
+            papers/GTF-I-v52-quantitative-lifts
+            papers/GTF-I-v53-component-oscillation
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Materialize and commit frozen native revision sources
+        id: native
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = "$WORK"
+          observed=$(git ls-remote origin "refs/heads/$WORK" | cut -f1)
+          test "$observed" = "$GITHUB_SHA"
+          git fetch --depth=1 origin "$BASE" "$REVIEW"
+          python "$PAPER/prepare_sources.py"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- "$PAPER"
+          python - <<'PY'
+          import os,subprocess
+          paths=subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines()
+          if any(not p.startswith(os.environ['PAPER']+'/') for p in paths):
+              raise SystemExit('Native materialization path fence')
+          PY
+          if ! git diff --cached --quiet; then
+            git commit -m 'feat(gtf-i): freeze v53 native proofs and complete predecessor supplement [skip ci]'
+          fi
+          source=$(git rev-parse HEAD)
+          observed=$(git ls-remote origin "refs/heads/$WORK" | cut -f1)
+          test "$observed" = "$GITHUB_SHA"
+          git push origin "HEAD:refs/heads/$WORK"
+          echo "source_sha=$source" >> "$GITHUB_OUTPUT"
+          echo "Native source: $source" >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: GTF-I-v53-assembly-${{ github.sha }}
+          path: papers/GTF-I-v53-component-oscillation/
+          if-no-files-found: error
+          retention-days: 7
+      - name: Install native manuscript dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended lmodern
+          python -m pip install 'sympy==1.14.0' 'PyMuPDF==1.26.7'
+      - name: Qualify exact source and independent three-volume rebuild
+        env:
+          GTF_SOURCE_COMMIT: ${{ steps.native.outputs.source_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GTF_SOURCE_COMMIT"
+          python "$PAPER/build.py" --check-isolated
+          git diff --exit-code
+          python - <<'PY'
+          import hashlib,json,os
+          from pathlib import Path
+          p=Path(os.environ['PAPER'])
+          r=json.loads((p/'evidence/BUILD_RECEIPT.json').read_text())
+          if r['status']!='success' or r['source_commit']!=os.environ['GTF_SOURCE_COMMIT']:
+              raise SystemExit('Build receipt not bound to native source')
+          c=r['isolated_rebuild']
+          if not c or not c['all_page_raster_equal'] or not c['all_page_text_equal']:
+              raise SystemExit('Independent native-only rebuild missing')
+          if r['preservation']['retained_native_files']!=59 or r['preservation']['retained_loaded_labels']!=242:
+              raise SystemExit('Predecessor preservation failed')
+          for info in r['documents'].values():
+              if hashlib.sha256((p/info['filename']).read_bytes()).hexdigest()!=info['sha256']:
+                  raise SystemExit('Qualified PDF digest mismatch')
+          print(json.dumps({'source':r['source_commit'],'pages':{k:v['pages'] for k,v in r['documents'].items()},
+                            'new_exact_assertions':r['new_v53_exact_finite_assertions'],
+                            'negative_executions':r['total_named_negative_control_executions']}))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: GTF-I-v53-validated-${{ steps.native.outputs.source_sha }}
+          path: |
+            papers/GTF-I-v53-component-oscillation/
+            GENERAL_THETA_FOUNDATIONS_I_V53_REVIEW_READY.md
+          if-no-files-found: error
+          retention-days: 30
+      - name: Publish source-bound referee branch without changing proofs
+        env:
+          GTF_SOURCE_COMMIT: ${{ steps.native.outputs.source_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GTF_SOURCE_COMMIT"
+          git diff --exit-code
+          python - <<'PY'
+          import hashlib,json,os
+          from pathlib import Path
+          p=Path(os.environ['PAPER']);ev=p/'evidence'
+          r=json.loads((ev/'BUILD_RECEIPT.json').read_text())
+          if r['status']!='success' or r['source_commit']!=os.environ['GTF_SOURCE_COMMIT']:
+              raise SystemExit('Invalid source identity')
+          c=r['isolated_rebuild']
+          if not c or not c['all_page_text_equal'] or not c['all_page_raster_equal']:
+              raise SystemExit('Missing isolated source qualification')
+          for name,digest in json.loads((ev/'SOURCE_HASHES.json').read_text()).items():
+              if hashlib.sha256((p/name).read_bytes()).hexdigest()!=digest:
+                  raise SystemExit('Native source changed: '+name)
+          for info in r['documents'].values():
+              if hashlib.sha256((p/info['filename']).read_bytes()).hexdigest()!=info['sha256']:
+                  raise SystemExit('Validated PDF changed')
+          if hashlib.sha256((ev/'CORE_SOURCES.zip').read_bytes()).hexdigest()!=r['core_archive_sha256']:
+              raise SystemExit('Native archive changed')
+          (ev/'PUBLICATION_PROVENANCE.json').write_text(json.dumps({
+              'schema':'gtf53.publication/1','validated_source_commit':r['source_commit'],
+              'workflow_run':os.environ['GITHUB_RUN_ID'],'work_branch':os.environ['WORK'],
+              'referee_branch':os.environ['READY'],'documents':r['documents'],
+              'review_commit':r['review_commit'],'predecessor_publication':r['predecessor_publication'],
+              'publication':'derived artifacts only; non-force atomic two-ref push'
+          },indent=2,sort_keys=True)+'\n')
+          PY
+          observed=$(git ls-remote origin "refs/heads/$WORK" | cut -f1)
+          test "$observed" = "$GTF_SOURCE_COMMIT"
+          ready=$(git ls-remote origin "refs/heads/$READY" | cut -f1)
+          test -z "$ready"
+          git add -- "$PAPER" GENERAL_THETA_FOUNDATIONS_I_V53_REVIEW_READY.md
+          python - <<'PY'
+          import os,subprocess
+          paths=subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines()
+          if not paths or any(not (p.startswith(os.environ['PAPER']+'/') or p=='GENERAL_THETA_FOUNDATIONS_I_V53_REVIEW_READY.md') for p in paths):
+              raise SystemExit('Publication would alter an unrelated path')
+          if any(p.endswith(('.tex','.py')) for p in paths):
+              raise SystemExit('Publication must not change theorem or verifier source')
+          PY
+          git commit -m 'docs(gtf-i): publish validated v53 article, complete supplement and referee evidence [skip ci]'
+          publication=$(git rev-parse HEAD)
+          git push --atomic origin "HEAD:refs/heads/$WORK" "HEAD:refs/heads/$READY"
+          echo "Validated source: $GTF_SOURCE_COMMIT" >> "$GITHUB_STEP_SUMMARY"
+          echo "Publication: $publication" >> "$GITHUB_STEP_SUMMARY"
+          echo "Referee branch: $READY" >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: GTF-I-v53-failed-${{ github.sha }}
+          path: papers/GTF-I-v53-component-oscillation/
+          if-no-files-found: warn
+          retention-days: 7
