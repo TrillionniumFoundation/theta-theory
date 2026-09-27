@@ -1,21 +1,9 @@
-# General Theta Foundations I — Revision 50
+# Revision 50 scope and provenance
 
-Date: 2026-09-27.
+General Theta Foundations I: Compatible Simplices and Exact Stochastic Width.
 
-This revision starts from controlling review commit `d9f3273b3575517cc54054a79412fe3d09378fa7`, on a new branch. The reviewed v49 publication is `0a33f027a9088c4a55542efcd2784de95f43f557`. No other branch is to be modified.
+The controlling r31 review is `d9f3273b3575517cc54054a79412fe3d09378fa7`; its reviewed v49 publication is `0a33f027a9088c4a55542efcd2784de95f43f557`. The new revision branch was created from the review head, and its first remote anchor is `9395d81a219b9688ed87206c6f38c8ecbfb5def5`.
 
-Controlling report: `reviews/general-theta-foundations-i-v49-sign-magnitude-duality-harsh-top4-r31-2026-09-27/REFEREE_REPORT.md`.
+The native manuscript and response implement positive mathematical extensions rather than a journal downgrade or deletion of inherited results. See `PROOF_STATUS.json` for theorem scope and `evidence/BUILD_RECEIPT.json` for an actually executed, source-bound build. No source status file by itself is a build receipt or an independent proof certificate.
 
-All prior manuscript sources and historical derivations are preserved. The present revision will address the report through positive mathematical development rather than a journal downgrade or removal of inherited results. Candidate developments must be proved before they are marked established. In particular, a higher-width normal form alone is not a new effective obstruction theorem, and an abstract semialgebraic decision theorem alone is not an efficient succinct-input algorithm.
-
-Revision obligations:
-
-1. Audit the full r31 report and the inherited finite-realization, distortion/enclosure, arithmetic, finite-bit, and repository dependency modules.
-2. Develop a genuine compatible-simplex theorem beyond two states and a structural lower/upper frontier where possible.
-3. Connect finite geometry to an inherited word-profile statement without conflating necessary cutwise factorization with causal compatibility.
-4. Compare directly with rank-one tensor completion, Segre/toric circuits, positive realization, and finite-state realization theory.
-5. Quantify sign-chamber and dual-certificate output size, and distinguish theorem scope from executable verification.
-6. Preserve all historical analytic pipeline gates as separate obligations; do not assert A2/B4/C2 or aggregate closure without their proofs.
-7. Supply a readable English mathematical manuscript, a point-by-point response, exact checks, and source-bound build evidence.
-
-Status at branch creation: work in progress; this file is a remote revision anchor, not a completion or build receipt.
+No old branch or path is modified. The new work branch and the eventual validated referee-ready branch are dedicated to this manuscript. All historical analytic targets are retained and no unrelated pipeline gate is asserted closed.
