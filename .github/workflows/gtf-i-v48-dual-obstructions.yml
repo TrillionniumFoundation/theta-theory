@@ -1,0 +1,176 @@
+name: GTF-I v48 dual obstructions
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v48-dual-obstructions-2026-09-27
+    paths:
+      - 'papers/GTF-I-v48-dual-obstructions/**'
+      - '.github/workflows/gtf-i-v48-dual-obstructions.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: gtf-i-v48-dual-obstructions
+  cancel-in-progress: false
+jobs:
+  prepare:
+    if: github.ref == 'refs/heads/revision/general-theta-foundations-i-v48-dual-obstructions-2026-09-27'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      source_sha: ${{ steps.source.outputs.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          sparse-checkout: |
+            papers/GTF-I-v48-dual-obstructions
+      - name: Publish checksum-verified native source to a separate ref
+        id: source
+        shell: bash
+        run: |
+          python - <<'PY'
+          import hashlib,json,lzma
+          from pathlib import Path
+          h=Path('papers/GTF-I-v48-dual-obstructions')
+          raw=b''.join((h/'.source-parts'/f'part{i:02d}.xz').read_bytes() for i in range(6))
+          if len(raw)!=34976 or hashlib.sha256(raw).hexdigest()!='ab0a0a23789c05542c437133c6163138fee4e8e1d04367829675af72f1e99d51':
+              raise RuntimeError('Transport integrity failure')
+          files=json.loads(lzma.decompress(raw))
+          if not isinstance(files,dict) or len(files)!=21: raise RuntimeError('Source manifest failure')
+          for name,text in files.items():
+              p=Path(name)
+              if p.name!=name or p.suffix not in {'.tex','.py','.md','.json'} or not isinstance(text,str):
+                  raise RuntimeError('Invalid native source path')
+              if (h/name).exists() and (h/name).read_text()!=text:
+                  raise RuntimeError('Refusing to overwrite modified native source')
+              (h/name).write_text(text)
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f papers/GTF-I-v48-dual-obstructions
+          TREE=$(git write-tree)
+          SOURCE='revision/general-theta-foundations-i-v48-source-review-2026-09-27'
+          OLD=$(git ls-remote --heads origin "$SOURCE" | cut -f1)
+          if [ -n "$OLD" ]; then
+            git fetch --depth=1 origin "$SOURCE"
+            test "$(git rev-parse 'FETCH_HEAD^{tree}')" = "$TREE"
+            SHA="$OLD"
+          else
+            git commit -m 'source(GTF-I v48): native duality proofs, continuous frontiers, exact verifier and r30 response [skip ci]'
+            SHA=$(git rev-parse HEAD)
+            git push origin HEAD:"$SOURCE"
+          fi
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+  verify:
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: read
+    env:
+      GTF_SOURCE_COMMIT: ${{ needs.prepare.outputs.source_sha }}
+      GTF_TRIGGER_COMMIT: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare.outputs.source_sha }}
+          persist-credentials: false
+          sparse-checkout: |
+            papers/GTF-I-v48-dual-obstructions
+            papers/GTF-I-v47-compatible-certificates
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install typesetting and exact-check dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended lmodern
+          python -m pip install sympy==1.14.0 PyMuPDF==1.26.7
+      - name: Verify and build the exact source without Git writes
+        run: |
+          test "$(git rev-parse HEAD)" = "$GTF_SOURCE_COMMIT"
+          export SOURCE_DATE_EPOCH=$(git show -s --format=%ct HEAD)
+          python papers/GTF-I-v48-dual-obstructions/build.py
+          git diff --exit-code -- '*.tex' '*.py' '*.md' '*.json'
+      - name: Independently rebuild the core archive
+        shell: bash
+        run: |
+          export SOURCE_DATE_EPOCH=$(git show -s --format=%ct HEAD)
+          python - <<'PY'
+          import json,os,subprocess,sys,tempfile,zipfile
+          from pathlib import Path
+          import fitz
+          h=Path('papers/GTF-I-v48-dual-obstructions')
+          with tempfile.TemporaryDirectory() as temp:
+              with zipfile.ZipFile(h/'evidence/CORE_SOURCES.zip') as z: z.extractall(temp)
+              isolated=Path(temp)/h.name
+              p=subprocess.run([sys.executable,'build.py','--core-only'],cwd=isolated,capture_output=True,text=True,timeout=240)
+              (h/'evidence/CORE_REBUILD_LOG.txt').write_text(p.stdout+'\n'+p.stderr)
+              if p.returncode: raise RuntimeError('Isolated core rebuild failed')
+              first=fitz.open(h/'paper.pdf'); second=fitz.open(isolated/'paper.pdf')
+              if len(first)!=len(second): raise RuntimeError('Rebuild page count')
+              for a,b in zip(first,second):
+                  if a.get_text()!=b.get_text() or a.get_pixmap().samples!=b.get_pixmap().samples:
+                      raise RuntimeError('Rebuild content mismatch')
+              result={'status':'success','source_commit':os.environ['GTF_SOURCE_COMMIT'],'pages':len(first),
+                      'all_page_text_equal':True,'all_page_raster_equal':True}
+              (h/'evidence/CORE_REBUILD_RECEIPT.json').write_text(json.dumps(result,indent=2)+'\n')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GTF-I-v48-dual-obstructions
+          path: papers/GTF-I-v48-dual-obstructions/
+          retention-days: 30
+      - name: Failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: GTF-I-v48-diagnostics
+          path: papers/GTF-I-v48-dual-obstructions/evidence/
+          retention-days: 7
+  publish:
+    needs: [prepare, verify]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      GTF_SOURCE_COMMIT: ${{ needs.prepare.outputs.source_sha }}
+      GTF_TRIGGER_COMMIT: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare.outputs.source_sha }}
+          fetch-depth: 1
+          sparse-checkout: |
+            papers/GTF-I-v48-dual-obstructions
+      - uses: actions/download-artifact@v4
+        with:
+          name: GTF-I-v48-dual-obstructions
+          path: /tmp/v48-artifact
+      - name: Check native hashes and stage only the new artifacts
+        run: |
+          python - <<'PY'
+          import hashlib,json,shutil,os
+          from pathlib import Path
+          h=Path('papers/GTF-I-v48-dual-obstructions'); a=Path('/tmp/v48-artifact')
+          receipt=json.loads((a/'evidence/BUILD_RECEIPT.json').read_text())
+          if receipt['source_commit']!=os.environ['GTF_SOURCE_COMMIT']: raise RuntimeError('Source receipt mismatch')
+          for name,digest in json.loads((a/'evidence/SOURCE_HASHES.json').read_text()).items():
+              if hashlib.sha256((h/name).read_bytes()).hexdigest()!=digest: raise RuntimeError('Native source mismatch')
+          for p in a.glob('*.pdf'): shutil.copy2(p,h/p.name)
+          shutil.copytree(a/'evidence',h/'evidence',dirs_exist_ok=True)
+          shutil.copy2(a/'evidence/REVIEW_READY_ENTRY.md','GENERAL_THETA_FOUNDATIONS_I_V48_REVIEW_READY.md')
+          PY
+          git fetch --depth=1 origin 98b59f3f45f63dacd8dba8cf132d23e54e7596e8
+          test -z "$(git diff --name-only --diff-filter=DMRT 98b59f3f45f63dacd8dba8cf132d23e54e7596e8)"
+          test "$(git ls-remote --heads origin "$GITHUB_REF_NAME" | cut -f1)" = "$GTF_TRIGGER_COMMIT"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f papers/GTF-I-v48-dual-obstructions GENERAL_THETA_FOUNDATIONS_I_V48_REVIEW_READY.md
+          git commit -m 'publish(GTF-I v48): r30 structural response, exact frontier, read-only verified build and preserved archives [skip ci]'
+          READY='revision/general-theta-foundations-i-v48-referee-ready-2026-09-27'
+          test -z "$(git ls-remote --heads origin "$READY")"
+          git push --atomic origin HEAD:"$GITHUB_REF_NAME" HEAD:"$READY"
