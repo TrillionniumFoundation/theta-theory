@@ -23,7 +23,7 @@ env:
 
 jobs:
   native-source:
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:
       contents: write
@@ -64,10 +64,17 @@ jobs:
           git push origin "HEAD:refs/heads/$WORK"
           echo "source_sha=$source" >> "$GITHUB_OUTPUT"
           echo "Native source: $source" >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: GTF-I-v51-assembly-${{ github.sha }}
+          path: papers/GTF-I-v51-compatible-lifts/
+          if-no-files-found: error
+          retention-days: 7
 
   validate:
     needs: native-source
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-24.04
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
@@ -122,14 +129,13 @@ jobs:
         if: failure()
         with:
           name: GTF-I-v51-failed-${{ needs.native-source.outputs.source_sha }}
-          path: |
-            papers/GTF-I-v51-compatible-lifts/
+          path: papers/GTF-I-v51-compatible-lifts/
           if-no-files-found: warn
           retention-days: 7
 
   publish:
     needs: [native-source, validate]
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:
       contents: write
