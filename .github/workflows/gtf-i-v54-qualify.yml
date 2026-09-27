@@ -34,6 +34,7 @@ jobs:
           sparse-checkout: |
             papers/GTF-I-v54-chebyshev-radius
             .github/workflows/gtf-i-v54-qualify.yml
+            GENERAL_THETA_FOUNDATIONS_I_V54_REVIEW_READY.md
           sparse-checkout-cone-mode: false
       - uses: actions/setup-python@v5
         with:
@@ -45,7 +46,7 @@ jobs:
           python "$PREFIX/assemble_revision.py"
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -f -- "$PREFIX"
+          git add --sparse -f -- "$PREFIX"
           python - <<'PY'
           import os, subprocess
           prefix=os.environ['PREFIX']+'/'
@@ -89,7 +90,7 @@ jobs:
               if hashlib.sha256(committed).hexdigest()!=digest or hashlib.sha256(pathlib.Path(path).read_bytes()).hexdigest()!=digest:
                   raise SystemExit('Native source mismatch: '+name)
           PY
-          git add -f -- "$PREFIX" "$ENTRY"
+          git add --sparse -f -- "$PREFIX" "$ENTRY"
           python - <<'PY'
           import os,subprocess
           names=subprocess.check_output(['git','diff','--cached','--name-only','-z']).decode().split('\0')
