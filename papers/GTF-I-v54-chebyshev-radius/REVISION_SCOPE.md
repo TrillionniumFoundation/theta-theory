@@ -1,12 +1,7 @@
-# General Theta Foundations I — Revision 54
+# Revision 54 scope and provenance
 
-Status: revision opened; this scope commit is not a referee-ready publication.
+The working branch was opened remotely at `451052ca695560c51b75427a3bb3c2891ab4fc5c` before substantive work. The manuscript now contains the joint-output radius classification, intrinsic compact-group proof, cofinite-return occupation theorem, full-subcritical matching arithmetic width theorem, and effective rational specialization.
 
-Base publication: `825d1d302cfca6c6b5abe8497bddb4df8680d810` (v53).
-Controlling report: `reviews/general-theta-foundations-i-v53-component-oscillation-harsh-top4-r35-2026-09-27/REFEREE_REPORT.md` on the identically named review branch; report blob `a4f024689b9470c0f311fe0b1f744abc14ea54ac`.
+Predecessor: `825d1d302cfca6c6b5abe8497bddb4df8680d810`. Controlling review: `ea6d8b71653ec4aa6084b4faf63fe7d702505a26`.
 
-The revision will address the mathematical substance of r35 without lowering the intended journal standard, deleting predecessor mathematics, or declaring the programme a no-go. The new work is isolated to this revision branch. Earlier manuscript and review branches and the independent A/B/C/D pipeline are not to be modified.
-
-Work programme: replace the scalar-only formulation by a simultaneous-output radius problem; investigate intrinsic compact-group formulation, synchronization hypotheses, quantitative subcritical bounds and finite encodings; expand the theorem-level literature comparison; implement the local proof clarifications listed by r35; preserve the complete predecessor theory and bind all build evidence to exact source commits.
-
-Claims enter the manuscript only with proofs and explicit hypotheses. Build success is not mathematical verification, and an initial scope or queued workflow is not a completed publication. A separate referee-ready revision branch is to be created only after the actual source has been built and the results inspected.
+Readable native source is committed before qualification. Actual validation and source identity are recorded in `evidence/BUILD_RECEIPT.json`; this scope record is not a build receipt. The referee-ready branch is created only after successful qualification and inspection. Earlier paths and review branches remain unchanged. No unrelated analytic-pipeline closure, exhaustive priority, general solver implementation, or journal acceptance is claimed.
