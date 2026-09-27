@@ -1,0 +1,5 @@
+# Scope and theorem status
+
+The new article enlarges the mathematics rather than replacing it with a narrower venue recommendation. It proves arbitrary-width section geometry and a local exact criterion, all-width finite-group rigidity, a one-surplus exact six-state frontier, and quantitative rank-tight stability with a uniform positive-error four-state interval. Every theorem keeps its seed, query, alphabet, signal, dimension and exact/approximate hypotheses.
+
+The all-width and six-state expansion constants are strictly positive variational gaps, not closed-form sharp rates. The local real-algebraic existence/synthesis theorem is not an implemented general optimizer. The approximate result is rank-tight; an approximate arbitrary-width group classification is not asserted. All prior active mathematical results are preserved in the body and appendices. Build success does not imply independent mathematical certification, exhaustive priority clearance, journal acceptance or analytic closure of the other papers.

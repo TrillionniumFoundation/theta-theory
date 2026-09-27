@@ -1,0 +1,232 @@
+\section{Complete sign and magnitude alternatives}\label{sec:duality49}
+Theorem~\ref{thm:scalar47} reduces the machine problem to a bounded
+product, but a sign obstruction alone does not determine its distance.
+We now give an exact alternative at every error threshold, including
+thresholds at which entries or optimal factors vanish. Throughout this
+section the complete finite table is part of the input. Put $s=N+2$,
+write $\mathcal I=\prod_{t=0}^{s-1}[n_t]$ for the positive-seed, epoch
+and query indices, and let
+\[
+ \mathcal V=\{(t,i):0\le t<s,\ 1\le i\le n_t\},\qquad
+ v=|\mathcal V|.
+\]
+To distinguish the exponent incidence data from right-hand-side bases, we use $\nu_e$ for an entry incidence vector. For $e\in\mathcal I$, let $\nu_e\in\{0,1\}^{\mathcal V}$ mark its
+$s$ factors. Products always use one factor in each mode.
+A mean tolerance is denoted $\delta$; its binary-TV tolerance is
+$\delta/2$. Assume $0\le\delta\le\max_e|f_e|\le1$.
+
+\subsection{The support is determined by the threshold}
+Define the active entries and essential factor coordinates by
+\begin{equation}\label{eq:active49}
+ \mathcal A_\delta=\{e:|f_e|>\delta\},\qquad
+ V_\delta=\bigcup_{e\in\mathcal A_\delta}\operatorname{supp}\nu_e.
+\end{equation}
+An entry survives if all its factors belong to $V_\delta$; let
+$\mathcal S_\delta$ denote these entries. For $v\in V_\delta$, put
+\[
+ 0<a_v=\max_{e\ni v}(|f_e|-\delta)\le1.
+\]
+The maximum may be taken over active entries incident to $v$.
+
+\begin{lemma}[Threshold support reduction]\label{lem:support49}
+There is a bounded product $g_e=\prod_{v\in e}\theta_v$ with
+$\max_e|f_e-g_e|\le\delta$ if and only if there is one with
+\[
+ \theta_v=0\ (v\notin V_\delta),\qquad
+ a_v\le|\theta_v|\le1\ (v\in V_\delta).
+\]
+If $\mathcal A_\delta$ is empty, the zero product is feasible.
+\end{lemma}
+\begin{proof}
+An active entry has nonzero approximating product of magnitude at least
+$|f_e|-\delta$. Since every factor has magnitude at most one, each
+factor in that entry is at least this large. This proves the asserted
+lower bound on essential factors. Set every other factor to zero.
+Every changed entry was inactive, so its new residual is $|f_e|\le\delta$.
+All unchanged entries retain their former residual. Conversely the
+restricted product is an allowed original product. The empty-active
+case follows by choosing all factors zero. The argument uses the
+nonstrict tolerance at inactive entries and therefore also covers
+$|f_e|=\delta$.
+\end{proof}
+
+This support reduction is the multilinear counterpart of deleting
+threshold-inactive rows and columns in rank-one matrix approximation;
+compare Gillis--Shitov, Lemma~1 \cite{GS19}. It is not a generic
+assumption that a minimizing stochastic machine has strictly positive
+parameters.
+
+\subsection{Sign chambers and logarithmic feasibility}
+A sign chamber is a vector $\sigma\in\{\pm1\}^{V_\delta}$ satisfying
+\begin{equation}\label{eq:signchamber49}
+ \prod_{v\in e}\sigma_v=\operatorname{sign}(f_e)
+                         \quad(e\in\mathcal A_\delta).
+\end{equation}
+These are linear equations over $\mathbb F_2$. Failure has the balanced
+certificate of Theorem~\ref{thm:sign47}. For $e\in\mathcal S_\delta$
+write $\sigma_e=\prod_{v\in e}\sigma_v$ and set
+\begin{equation}\label{eq:interval49}
+ L_e=\max(0,\sigma_e f_e-\delta),\qquad U_e=\sigma_e f_e+\delta.
+\end{equation}
+Every surviving entry is retained, including inactive entries all of whose factor coordinates survive. A positive upper endpoint means $U_e>0$. A chamber with some $U_e\le0$ is rejected: essential-factor products
+are strictly positive. Otherwise form the following finite system,
+with $y_v=-\log|\theta_v|$:
+\begin{equation}\label{eq:loglp49}
+ \begin{aligned}
+ -y_v&\le0,& y_v&\le\log(1/a_v) &&(v\in V_\delta),\\
+ -\nu_e\cdot y&\le\log U_e&&&&(e\in\mathcal S_\delta),\\
+ \nu_e\cdot y&\le\log(1/L_e)&&&&(e\in\mathcal S_\delta,\ L_e>0).
+ \end{aligned}
+\end{equation}
+Here $\nu_e$ is restricted to $V_\delta$. In particular no logarithm
+of zero is taken. Values $U_e>1$ need not be capped; the corresponding
+constraint is harmless since $y\ge0$.
+
+\begin{theorem}[Complete two-state feasibility alternative]\label{thm:duality49}
+For every antisymmetric finite numerical table and every $\delta\ge0$,
+$\mathcal E_2(f)\le\delta/2$ if and only if either
+$\mathcal A_\delta=\varnothing$, or at least one chamber
+\eqref{eq:signchamber49} has positive $U_e$ on every surviving entry
+and a feasible system \eqref{eq:loglp49}. A feasible point gives a
+legal two-state machine by
+\[
+ \theta_v=\sigma_v e^{-y_v}\quad(v\in V_\delta),\qquad
+ \theta_v=0\quad(v\notin V_\delta),
+\]
+followed by the stochastic rows in \eqref{eq:binaryrow47}.
+
+Write \eqref{eq:loglp49} as $Cy\le\log b$, where $C$ is an integer
+matrix and $b$ is a vector of strictly positive numbers. A chamber is
+infeasible if and only if there is a vector $z$ of nonnegative
+integers satisfying
+\begin{equation}\label{eq:monomialdual49}
+ z^TC=0,\qquad \prod_i b_i^{z_i}<1.
+\end{equation}
+Such a vector can be chosen with at most $|V_\delta|+1$ nonzero
+coordinates. Thus nonexistence is certified by a sign contradiction,
+an impossible surviving upper endpoint, or one multiplicative
+certificate for each remaining chamber. These alternatives concern
+\emph{all} two-state machines, not just supplied transition tables.
+\end{theorem}
+\begin{proof}
+Use Lemma~\ref{lem:support49}. Each nonzero factor has a sign and a
+positive magnitude. At an active entry its sign must agree with the
+target. In a fixed chamber, the mean-error constraint is exactly
+$L_e\le\prod_{v\in e}|\theta_v|\le U_e$. The positive upper endpoint
+is necessary, and taking logarithms gives \eqref{eq:loglp49}.
+The inactive entries not surviving are already satisfied by zero.
+This proves both directions, including the reconstruction, using
+Theorem~\ref{thm:scalar47}.
+
+Farkas' alternative applied to $Cy\le\log b$ says that infeasibility
+is equivalent to $z\ge0$, $z^TC=0$, $z\cdot\log b<0$.
+For completeness, normalize a nonzero such vector to have coordinate
+sum one. Minimize $z\cdot\log b$ over the compact polytope
+\[
+ \{z\ge0:C^Tz=0,\ \boldsymbol1^Tz=1\}.
+\]
+A minimizing extreme point has at most $\rank(C)+1\le|V_\delta|+1$
+positive coordinates. Its coordinates are rational, since the
+equality matrix is integral. Clearing denominators and exponentiating
+proves \eqref{eq:monomialdual49}. Conversely multiplying the original
+inequalities with these nonnegative multiplicities would give
+$0\le\log\prod b_i^{z_i}<0$. This proves the alternative without
+assuming strict feasibility or an interior optimizer.
+\end{proof}
+
+The dualization and the logarithmic substitution are classical
+\cite[\S5.8]{BV04}\cite[\S2 and \S8]{BKVH07}.
+The theorem's role is to make their domain exact for the bounded
+controlled tensor, including zeros, sign changes, and reconstruction
+of stochastic rows. It is a finite disjunction of convex feasibility
+problems, not one convex relaxation of the set of machines. Mixing
+feasible chambers as if the mixing index were a free persistent label
+would change the resource and is not used.
+
+\begin{corollary}[One chamber in two useful regimes]\label{cor:onechamber49}
+If $\delta<\min_e|f_e|$, first test whether the full sign tensor factors.
+If it does, a single system \eqref{eq:loglp49}, with
+$L_e=|f_e|-\delta$ and $U_e=|f_e|+\delta$, decides feasibility.
+If $f_e\ge0$ for every positive-seed entry, one may use the all-positive
+chamber at \emph{every} tolerance, including zeros.
+\end{corollary}
+\begin{proof}
+In the first case every entry is active, so all compatible factor-sign
+choices give the same entry signs and hence the same inequalities.
+In the second case replace all factors of any approximating product
+by their absolute values. For $u\ge0$ and $t\in\R$,
+$|u-|t||\le|u-t|$. Thus this replacement never increases error.
+Apply the support reduction and Theorem~\ref{thm:duality49}.
+\end{proof}
+
+\subsection{Algebraic thresholds, not transcendental oracles}
+Although \eqref{eq:loglp49} contains logarithms, it does not require
+an oracle for arbitrary transcendental comparisons. At an algebraic
+threshold with algebraic data, every base $b_i$ is algebraic. In
+\eqref{eq:monomialdual49} integer powers and products are algebraic,
+so their order relative to one is decidable by exact real-algebraic
+arithmetic. Feasible vertices can be obtained just as explicitly.
+
+\begin{theorem}[Finite exact optimization by threshold strata]\label{thm:algebraic49}
+For a complete table with real-algebraic entries, the optimum
+$\mathcal E_2(f)$ and a minimizing stochastic machine are real
+algebraic and can be computed by a finite algorithm using sign
+elimination, rational polyhedral enumeration, and univariate
+real-algebraic root isolation. No generic multivariate minimization
+of the original stochastic rows is required.
+
+More specifically, on each open interval between consecutive values
+in $\{0\}\cup\{|f_e|\}$, feasibility is a finite Boolean combination
+of explicit polynomial inequalities in $\delta$. Each nonconstant
+boundary polynomial is obtained by clearing denominators in a
+multiplicative certificate \eqref{eq:monomialdual49}. Endpoints are
+tested separately by Theorem~\ref{thm:duality49}.
+\end{theorem}
+\begin{proof}
+The zero product gives the finite upper threshold $\max|f_e|$.
+Between its consecutive absolute-value breakpoints, the active
+entries, essential factors, surviving entries, and sign equations
+are constant. In each chamber the sign of every $U_e=\delta+\sigma_e f_e$
+is constant on this interval. The positive lower endpoints are
+$|f_e|-\delta$ at active entries, while
+$a_v=\max_{e\ni v}|f_e|-\delta$ on essential coordinates.
+Thus the matrix $C$ is constant and integral, and each base $b_i$
+is one, a positive affine algebraic function, or its reciprocal.
+
+Enumerate the extreme rays of the rational cone
+$\{z\ge0:C^Tz=0\}$, clearing denominators on each ray.
+There are finitely many. A chamber is feasible exactly when all the
+resulting products are at least one. Every denominator has fixed
+positive sign on the interval. Multiplication converts these
+conditions into polynomial inequalities with algebraic coefficients.
+Identically zero polynomials impose no additional boundary.
+Isolate the finitely many roots of the others, test the intervening
+intervals and the original breakpoints, and choose the smallest
+feasible threshold. Feasibility is closed globally by compactness of
+the original factor cube; in particular this smallest value is not
+merely an unattained infimum. It is algebraic.
+
+At that value apply the exact support/chamber test. Any feasible
+system \eqref{eq:loglp49} is a nonempty bounded polytope. It has a
+vertex determined by a full-rank selection of active linear rows.
+The inverse of that integer matrix is rational. Consequently every
+$y_v$ is a rational linear combination of logarithms of positive
+algebraic bases. The number $e^{-y_v}$ is a product of positive
+rational powers of algebraic numbers, hence algebraic. Candidate
+vertices and inequalities can be tested after clearing these
+rational exponents. Select a feasible vertex and apply the stochastic
+compiler in Theorem~\ref{thm:duality49}. If the active set is empty,
+the zero machine is rational and suffices.
+\end{proof}
+
+For effective input, a common primitive element and isolating interval specify the coefficient field, and each entry has explicit coordinates in that field. Positive rational powers always mean the positive real branch. The input comprises defining polynomials, isolating intervals, and
+field operations for the real-algebraic entries, together with the
+\emph{explicit} mode table. Rational input is the special case of
+integer numerator--denominator pairs. Neither chamber enumeration,
+ray enumeration, the degrees after clearing exponents, nor the table
+size is bounded here by a polynomial in a succinct horizon. The
+algorithm is an exact structural alternative, not a complexity claim.
+For rational thresholds an exact implementation can eliminate the
+linear variables while retaining each right side as a rational linear
+combination of logarithms of rational numbers. Its sign is decided by
+an integer-power rational product, never a floating-point LP tolerance.
