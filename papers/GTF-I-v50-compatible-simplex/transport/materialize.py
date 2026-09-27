@@ -53,7 +53,32 @@ def main() -> None:
     for name, checksum in manifest['files'].items():
         if digest((DEST / name).read_bytes()) != checksum:
             raise RuntimeError('Native source changed during materialization: ' + name)
+    amendments = HERE / 'POST_MATERIALIZE_PATCHES.json'
+    prepared = []
+    if amendments.exists():
+        patchset = json.loads(amendments.read_text())
+        if patchset.get('schema') != 'gtf50.post-materialization-patches/1':
+            raise RuntimeError('Unknown amendment schema')
+        seen = set()
+        for patch in patchset['patches']:
+            name = patch['file']
+            if name not in manifest['files'] or name in seen:
+                raise RuntimeError('Invalid or duplicate amendment target')
+            seen.add(name)
+            data = (DEST / name).read_bytes()
+            if digest(data) != patch['before_sha256']:
+                raise RuntimeError('Amendment preimage drift: ' + name)
+            text = data.decode('utf-8')
+            if text.count(patch['old']) != 1:
+                raise RuntimeError('Amendment anchor is not unique: ' + name)
+            result = text.replace(patch['old'], patch['new']).encode('utf-8')
+            if digest(result) != patch['after_sha256']:
+                raise RuntimeError('Amendment postimage drift: ' + name)
+            prepared.append((name, result))
+        for name, result in prepared:
+            (DEST / name).write_bytes(result)
     print(json.dumps({'status': 'success', 'native_files_restored': len(files),
+                      'explicit_source_amendments': len(prepared),
                       'transport_sha256': manifest['uncompressed_sha256']}))
 
 if __name__ == '__main__':
