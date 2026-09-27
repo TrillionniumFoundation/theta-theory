@@ -1,4 +1,4 @@
-# General Theta Foundations I — Revision 50
+# General Theta Foundations I — Revision 51
 
 **Compatible Lifts, Finite-Group Rigidity, and Stable Stochastic Width**
 
