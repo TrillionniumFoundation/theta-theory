@@ -1,0 +1,174 @@
+name: GTF-I v52 quantitative-lifts publication
+
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v52-quantitative-lifts-2026-09-27
+    paths:
+      - .github/workflows/gtf-i-v52-quantitative-lifts.yml
+      - revisions/GTF-I-v52/**
+  workflow_dispatch:
+
+concurrency:
+  group: gtf-i-v52-quantitative-lifts-publication
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  PAPER: papers/GTF-I-v52-quantitative-lifts
+  WORK: revision/general-theta-foundations-i-v52-quantitative-lifts-2026-09-27
+  READY: revision/general-theta-foundations-i-v52-referee-ready-2026-09-27
+
+jobs:
+  qualify-and-publish:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          sparse-checkout: |
+            papers/GTF-I-v51-compatible-lifts
+            papers/GTF-I-v52-quantitative-lifts
+            revisions/GTF-I-v52
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Materialize and commit frozen native manuscript
+        id: native
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = "$WORK"
+          observed=$(git ls-remote origin "refs/heads/$WORK" | cut -f1)
+          test "$observed" = "$GITHUB_SHA"
+          python revisions/GTF-I-v52/bootstrap.py
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- "$PAPER"
+          python - <<'PY'
+          import os,subprocess
+          paths=subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines()
+          if any(not p.startswith(os.environ['PAPER']+'/') for p in paths):
+              raise SystemExit('Native source path fence')
+          PY
+          if ! git diff --cached --quiet; then
+            git commit -m 'feat(gtf-i): materialize full v52 quantitative and noisy rigidity manuscript'
+          fi
+          source=$(git rev-parse HEAD)
+          observed=$(git ls-remote origin "refs/heads/$WORK" | cut -f1)
+          test "$observed" = "$GITHUB_SHA"
+          git push origin "HEAD:refs/heads/$WORK"
+          echo "source_sha=$source" >> "$GITHUB_OUTPUT"
+          echo "Native source: $source" >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: GTF-I-v52-assembly-${{ github.sha }}
+          path: papers/GTF-I-v52-quantitative-lifts/
+          if-no-files-found: error
+          retention-days: 7
+      - name: Install manuscript and exact-check dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended lmodern
+          python -m pip install 'sympy==1.14.0' 'PyMuPDF==1.26.7'
+      - name: Validate exact native source and isolated rebuild
+        env:
+          GTF_SOURCE_COMMIT: ${{ steps.native.outputs.source_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GTF_SOURCE_COMMIT"
+          python "$PAPER/build.py" --check-core
+          git diff --exit-code
+          python - <<'PY'
+          import hashlib,json,os
+          from pathlib import Path
+          p=Path(os.environ['PAPER'])
+          r=json.loads((p/'evidence/BUILD_RECEIPT.json').read_text())
+          if r['status']!='success' or r['source_commit']!=os.environ['GTF_SOURCE_COMMIT']:
+              raise SystemExit('Unbound build receipt')
+          c=r['core_rebuild']
+          if not c or not c['all_page_raster_equal'] or not c['all_page_text_equal']:
+              raise SystemExit('Missing isolated rebuild')
+          if hashlib.sha256((p/'paper.pdf').read_bytes()).hexdigest()!=r['article_sha256']:
+              raise SystemExit('PDF digest mismatch')
+          print(json.dumps({'source':r['source_commit'],'pages':r['article_pages'],
+                            'preserved_labels':r['original_loaded_labels_preserved'],
+                            'new_negative_executions':r['new_v52_negative_control_executions']}))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: GTF-I-v52-validated-${{ steps.native.outputs.source_sha }}
+          path: |
+            papers/GTF-I-v52-quantitative-lifts/
+            GENERAL_THETA_FOUNDATIONS_I_V52_REVIEW_READY.md
+          if-no-files-found: error
+          retention-days: 30
+      - name: Verify immutable source and atomically publish revision refs
+        env:
+          GTF_SOURCE_COMMIT: ${{ steps.native.outputs.source_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GTF_SOURCE_COMMIT"
+          git diff --exit-code
+          python - <<'PY'
+          import hashlib,json,os
+          from pathlib import Path
+          p=Path(os.environ['PAPER']);ev=p/'evidence'
+          r=json.loads((ev/'BUILD_RECEIPT.json').read_text())
+          if r['status']!='success' or r['source_commit']!=os.environ['GTF_SOURCE_COMMIT']:
+              raise SystemExit('Source binding rejected')
+          if not r['core_rebuild'] or not r['core_rebuild']['all_page_text_equal'] or not r['core_rebuild']['all_page_raster_equal']:
+              raise SystemExit('Isolated qualification absent')
+          for name,h in json.loads((ev/'SOURCE_HASHES.json').read_text()).items():
+              if hashlib.sha256((p/name).read_bytes()).hexdigest()!=h:
+                  raise SystemExit('Native source drift: '+name)
+          if hashlib.sha256((p/'paper.pdf').read_bytes()).hexdigest()!=r['article_sha256']:
+              raise SystemExit('Validated PDF changed')
+          if hashlib.sha256((ev/'CORE_SOURCES.zip').read_bytes()).hexdigest()!=r['core_archive_sha256']:
+              raise SystemExit('Validated core archive changed')
+          (ev/'PUBLICATION_PROVENANCE.json').write_text(json.dumps({
+              'schema':'gtf52.publication/1','validated_source_commit':r['source_commit'],
+              'workflow_run':os.environ['GITHUB_RUN_ID'],'work_branch':os.environ['WORK'],
+              'referee_branch':os.environ['READY'],'article_sha256':r['article_sha256'],
+              'publication':'derived artifacts only; non-force atomic two-ref push',
+              'review_commit':r['review_commit'],'v51_publication':r['v51_publication']
+          },indent=2,sort_keys=True)+'\n')
+          PY
+          observed=$(git ls-remote origin "refs/heads/$WORK" | cut -f1)
+          test "$observed" = "$GTF_SOURCE_COMMIT"
+          ready=$(git ls-remote origin "refs/heads/$READY" | cut -f1)
+          test -z "$ready"
+          git add -- "$PAPER" GENERAL_THETA_FOUNDATIONS_I_V52_REVIEW_READY.md
+          python - <<'PY'
+          import os,subprocess
+          paths=subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines()
+          if not paths or any(not (p.startswith(os.environ['PAPER']+'/') or p=='GENERAL_THETA_FOUNDATIONS_I_V52_REVIEW_READY.md') for p in paths):
+              raise SystemExit('Publication would alter unrelated paths')
+          if any(p.endswith(('.tex','.py')) for p in paths):
+              raise SystemExit('Publication must not change theorem or verifier source')
+          PY
+          git commit -m 'docs(gtf-i): publish validated v52 PDF, referee package and source-bound receipts'
+          publication=$(git rev-parse HEAD)
+          git push --atomic origin "HEAD:refs/heads/$WORK" "HEAD:refs/heads/$READY"
+          echo "Validated source: $GTF_SOURCE_COMMIT" >> "$GITHUB_STEP_SUMMARY"
+          echo "Publication: $publication" >> "$GITHUB_STEP_SUMMARY"
+          echo "Referee branch: $READY" >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: GTF-I-v52-failed-${{ github.sha }}
+          path: papers/GTF-I-v52-quantitative-lifts/
+          if-no-files-found: warn
+          retention-days: 7
