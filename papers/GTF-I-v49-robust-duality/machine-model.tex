@@ -1,0 +1,29 @@
+\section{The numerical experiment and the register}\label{sec:model}
+Let $V=\R^D$, let $\calA$ be a nonempty finite alphabet, and fix orthogonal matrices $U_a$, $a\in\calA$. Write $U_w=U_{a_N}\cdots U_{a_1}$ in the order of execution. Let $X\subset\Sphere^{D-1}$ be a nonempty finite seed set and $0<\rho<1$. The required law is \eqref{eq:target}. Commands are externally supplied, not chosen by a policy inside the simulator. No distribution on command words is part of the specification.
+
+\begin{definition}[Clocked atomic-row realization]\label{def:machine}
+At horizon $N$, a machine consists of finite sets $S_t$ with $|S_t|=K_t$ for $0\le t\le N$, an initialization probability row $E_x$ on $S_0$, stochastic matrices $T_{t,a}:S_{t-1}\to S_t$, and terminal columns $d_j:S_N\to[-1,1]$. Its numerical mean is
+\[
+ E_x T_{1,a_1}\cdots T_{N,a_N}d_j.
+\]
+After the atomic query $j$, it draws and holds the binary answer with that mean. The final answer cut has two labels. Its peak is $\max(2,K_0,\ldots,K_N)$. Available labels count even when unreachable; adding unused normalized rows is permitted.
+\end{definition}
+
+All persistent randomness, input history and protocol distinctions must be in the current label. Only the external epoch, the prescribed horizon and the read-only row tables are free. Table construction, lookup, arithmetic and exact sampling of known real stochastic rows are uncharged. Matrices, rows and state sets may depend on $N$; this is nonuniform positive-realization width, not uniform computational space. A common-row construction uses the same command matrices at all command epochs but may still have an $N$-dependent decoder. It need not answer at earlier stopping lengths.
+
+Let $W_{N,\varepsilon}$ be the least peak among machines whose every binary row differs from \eqref{eq:target} by at most $\varepsilon$ in total variation. In particular $W_{N,\varepsilon}\ge2$. For fixed finite $K_\bullet$ the optimal actual error $\mathcal E_N(K_\bullet)$ is attained: the row parameters lie in a finite product of compact sets and the error is a finite maximum of continuous functions. For planar results we use $X=\{\pm e_1,\pm e_2\}$ and include the identity letter. We keep $\rho\le1/10$ and $\varepsilon<\rho/(2\sqrt2)$.
+
+\begin{lemma}[Calibration under any external test law]\label{lem:calibration}
+Fix a seed $x\in X$ and any law on the complete command word, independent of private initialization. Let $Y_t=U_{a_t}\cdots U_{a_1}x$, $Z_t=\E[Y_t\mid S_t]$ and $q_t=\E\norm{Z_t}$. Every machine with row error at most $\varepsilon$ satisfies
+\begin{equation}\label{eq:calibration}
+ q_N\ge\kappa:=\rho/\sqrt D-2\varepsilon.
+\end{equation}
+At a boundary preceding an independent complete packet, the next boundary admits the conditional-mean identity used in Lemma~\ref{lem:packet}. No single-step independence inside a packet is asserted.
+\end{lemma}
+\begin{proof}
+For a fixed word, every coordinate of $\E[d(S_N)\mid w]-\rho Y_N$ has modulus at most $2\varepsilon$. Since $\norm{Y_N}=1$, averaging gives
+\[
+ \E\ip{Y_N}{d(S_N)}\ge\rho-2\varepsilon\sqrt D.
+\]
+On the other hand this pairing equals $\E\ip{Z_N}{d(S_N)}$ and is at most $\sqrt D q_N$. This proves \eqref{eq:calibration}. Combining terminal columns is a proof device, not a requirement to provide their joint output distribution.
+\end{proof}
