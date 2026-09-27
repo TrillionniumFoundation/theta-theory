@@ -1,0 +1,551 @@
+\documentclass[11pt]{amsart}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern,amsmath,amssymb,amsthm,mathtools,microtype,booktabs,array}
+\usepackage[margin=1.06in]{geometry}
+\usepackage[hidelinks]{hyperref}
+\emergencystretch=2em
+\numberwithin{equation}{section}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newcommand{\R}{\mathbb R}
+\newcommand{\C}{\mathbb C}
+\newcommand{\N}{\mathbb N}
+\newcommand{\E}{\mathbb E}
+\newcommand{\ip}[2]{\langle #1,#2\rangle}
+\newcommand{\norm}[1]{\lVert #1\rVert}
+\newcommand{\epsc}{\varepsilon_{\mathrm c}}
+\DeclareMathOperator{\osc}{osc}
+\DeclareMathOperator{\spanop}{span}
+\DeclareMathOperator{\End}{End}
+\DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\tr}{tr}
+\title[Sharp noise thresholds for stochastic realizations]{General Theta Foundations I:\\Sharp Noise Thresholds for Stochastic Realizations\\of Compact Group Experiments}
+\author{Qian Qi}
+\date{27 September 2026}
+\subjclass[2020]{Primary 93B15, 68Q45; Secondary 22C05, 60J10, 11R04}
+\keywords{positive realization, compact group, numerical automaton, partial observation, nonuniform width, noise threshold}
+\begin{document}
+\begin{abstract}
+We determine the exact error at which a compact matrix-group experiment admits stochastic realizations of bounded hidden-state width. The commands include the identity, the interface consists of finitely many continuous binary-mean functions, and the stochastic realization may change with both the epoch and the prescribed horizon. The critical total-variation error is one quarter of the largest oscillation of an interface function on a connected component of the command closure. The boundary is attained by one stationary permutation realization of the finite component group. Below it, the occupation of every fixed width is bounded independently of the horizon, without assumptions on reachability rank, positive state masses, or numerical conditioning. The proof combines executable positive-word tests with conditional tensor moments and polynomial localization of the extreme output values. For linear interfaces, zero-error realizability is equivalent to finiteness of the intrinsic observable action. For irrational planar rotations the threshold is exactly half the signal amplitude. Explicit logarithmic width bounds hold throughout the subcritical interval for rational rotations and, more generally, algebraic rotations of infinite order.
+\end{abstract}
+\maketitle
+
+\section{Introduction and the classification theorem}\label{sec:intro53}
+A finite stochastic register may store a continuum of probability distributions. Consequently, an infinite set of reachable numerical states does not by itself rule out a finite positive realization. A second difficulty is nonuniformity: at each horizon the transition rows, initialization, decoder, and external clock may all be redesigned. This paper identifies the precise obstruction that survives both freedoms for compact group experiments. It is the variation of an observable output within a connected component, not the cardinality of an unobserved ambient group.
+
+Fix a finite alphabet $\mathcal A$ of matrices $U_a\in O(D)$ containing an identity letter. The convention for a word $w=a_1\cdots a_n$ is
+\[
+ U_w=U_{a_n}\cdots U_{a_1}.
+\]
+Let $G=\langle U_a:a\in\mathcal A\rangle$ be the group generated with inverses, let $H=\overline G$, and let $K=H^\circ$. A closed subgroup of $O(D)$ is a compact Lie group; thus $K$ is open and normal and the component group $C=H/K$ is finite \cite{Hall}. These standard structural facts are the only Lie-group input to the classification.
+
+Let $\mathcal S$ and $\mathcal J$ be nonempty finite seed and query sets. For each $(s,j)$ prescribe a continuous function
+\[
+ f_{s,j}:H\longrightarrow[-1,1].
+\]
+After seed $s$, command word $w$, and terminal query $j$, the required answer is a random variable in $\{-1,1\}$ with mean $f_{s,j}(U_w)$. In particular, its probability of $1$ is $(1+f_{s,j}(U_w))/2$. Queries are selectable alternatives; their joint distribution is not prescribed. The functions need not be linear or separate points of $H$.
+
+\begin{definition}[Clocked stochastic realization]\label{def:machine53}
+At horizon $N$, choose finite nonempty state sets $S_t$, $0\le t\le N$, initialization rows $E_s$ on $S_0$, row-stochastic matrices $T_{t,a}:S_{t-1}\to S_t$, and columns $d_j:S_N\to[-1,1]$. The realized mean on $(s,w,j)$ is
+\[
+ E_sT_{1,a_1}\cdots T_{N,a_N}d_j.
+\]
+All persistent private information, including randomness retained for future use, belongs to the current state. The state sets and rows may depend on $N$ and $t$, but a command row cannot depend on an unrecorded input history or on the terminal query. The peak width is $\max(2,|S_0|,\ldots,|S_N|)$; the two labels account for holding the final binary answer. Write $W_{N,\varepsilon}$ for the least peak with total-variation error at most $\varepsilon$ on every seed, word of length $N$, and query.
+\end{definition}
+
+The identity letter is an executable command, not an assertion that its stochastic row is an identity matrix. Thus all clock-dependent processing on identity inputs remains available to the simulator. The problem is nonuniform numerical realization width, not a claim about uniform computational space. The resource convention is summarized at the outset:
+\begin{center}\small
+\begin{tabular}{p{.30\textwidth}p{.60\textwidth}}
+\toprule
+Resource & Convention in the lower bound\\
+\midrule
+Persistent label & Charged, including retained private randomness.\\
+Epoch and terminal horizon & Externally supplied; free.\\
+Real row tables and decoder & May depend on the horizon; description, construction, lookup, arithmetic, and exact real sampling are uncharged.\\
+Input word & Externally supplied; correctness holds for every word, not merely for a chosen distribution.\\
+Uniform upper realization & A single finite permutation table works at all horizons; its real decoder constants need not have an effective input encoding.\\
+\bottomrule
+\end{tabular}
+\end{center}
+For a component $c\in C$ set
+\[
+ m_{s,j,c}=\min_{h\in c} f_{s,j}(h),\qquad
+ M_{s,j,c}=\max_{h\in c} f_{s,j}(h),
+\]
+where a component is identified with its coset in $H$. Define
+\begin{equation}\label{eq:critical53}
+ \epsc=\frac14\max_{s,j,c}(M_{s,j,c}-m_{s,j,c}).
+\end{equation}
+Compactness ensures that both extrema are attained. The factor $1/4$ combines the best constant approximation error, one half of an oscillation, with the factor $1/2$ between binary-mean error and total variation.
+
+\begin{theorem}[Component-oscillation classification]\label{thm:classification53}
+For every $\varepsilon\ge0$, the following statements are equivalent:
+\begin{enumerate}
+\item $\sup_N W_{N,\varepsilon}<\infty$.
+\item One stationary finite-state realization with permutation command updates has error at most $\varepsilon$ at every horizon.
+\item $\varepsilon\ge\epsc$.
+\end{enumerate}
+At the boundary $\varepsilon=\epsc$, the realization in (2) has peak at most $\max(2,|\mathcal S||C|)$. If $0\le\varepsilon<\epsc$, then $W_{N,\varepsilon}\to\infty$. More strongly, for each integer $k\ge1$ there is a finite constant $L_k$, depending only on the interface, alphabet, and error, such that every admissible horizon-$N$ realization satisfies
+\begin{equation}\label{eq:occupation53}
+ \#\{t\in\{1,\ldots,N\}:|S_t|\le k\}\le L_k.
+\end{equation}
+There is no restriction on the intervening widths, reachable ranks, state probabilities, or condition numbers.
+\end{theorem}
+
+The lower bound concerns the entire permissive model in Definition~\ref{def:machine53}; the upper bound is stationary and deterministic until the query. In particular, arbitrary nonuniform transition tables cannot improve the threshold. No assertion that the optimal stationary width equals the optimal nonuniform width is made.
+
+For $f_{s,j}(h)=q_j^Thx_s$, Theorem~\ref{thm:observable53} identifies the zero-error obstruction on the observable quotient, allowing nonspanning seeds and proper query sets. For a circle action with signal amplitude $\rho$, Corollary~\ref{cor:circle53} gives $\epsc=\rho/2$, including attainability at equality. Theorem~\ref{thm:algebraic53} supplies an explicit finite-horizon inequality at every $\varepsilon<\rho/2$ for algebraic rotations. These results replace a small-error sufficient obstruction by a complete boundary and a broader interface theorem.
+
+The proof proceeds through finite-dimensional conditional moments. A suitable positive-word law contracts every conditional centroid supported by at most $k$ terminal labels. Tensor powers permit polynomially weighted tests near both extreme output values. Such tests force a positive residual conditional moment whenever the allowed mean error is less than half the oscillation. Repeated contraction then bounds the number of narrow cuts. Neither approximation of the hidden-state distribution in total variation nor a spectral gap for a prescribed random walk is used.
+
+\section{Executable tests and conditional contraction}\label{sec:tests53}
+Let $\mathcal P=\{U_w:w\in\mathcal A^*\}$ be the positive-word semigroup, including the empty word. Products in $\mathcal P$ use only available letters; the inverses in the definition of $G$ are not assumed executable.
+
+\begin{lemma}[Positive words in the identity component]\label{lem:positive53}
+The semigroup $\mathcal P$ is dense in $H$, and $\mathcal P\cap K$ is dense in $K$. Every finite collection of elements of $\mathcal P\cap K$ can be represented by executable words of one common positive length.
+\end{lemma}
+\begin{proof}
+For each generator $U$, compactness of its powers gives, for every $\eta>0$, integers $l>k+1$ with $\norm{U^l-U^k}<\eta$. Orthogonality implies $\norm{U^{l-k-1}-U^{-1}}<\eta$. Thus the closure of the positive powers contains $U^{-1}$. The closed semigroup $\overline{\mathcal P}$ therefore contains $G$, and hence equals $H$. Since $K$ is open in $H$, intersecting any relatively open neighborhood in $K$ with the dense set $\mathcal P$ proves the second claim. Pad each of finitely many representing words with identity letters to a common length $B\ge1$. Padding preserves its matrix product, though it need not preserve the simulator's hidden state.
+\end{proof}
+This compact-semigroup argument is classical; compare the closure argument in \cite[Theorem 3.1]{BJKP}.
+
+Let $R:K\to O(E)$ be a continuous orthogonal representation on a nonzero finite-dimensional Euclidean space with no nonzero fixed vector. Write $\mu$ for normalized Haar measure on $K$. Haar measure and its averaging projection are used in their standard form \cite{Folland}.
+
+\begin{lemma}[A finite executable quantization gap]\label{lem:gap53}
+For every integer $k\ge1$ there are $B\ge1$, a probability law $\nu$ on finitely many executable words of length $B$ with products in $K$, and $d\in(0,1)$ such that
+\begin{equation}\label{eq:gap53}
+ \E_{w\sim\nu}\max_{1\le j\le k}\ip{v_j}{R(U_w)u}\le1-d
+\end{equation}
+for all unit vectors $u,v_1,\ldots,v_k\in E$. The choices depend on $k$, the representation, and the command alphabet, not on a stochastic realization.
+\end{lemma}
+\begin{proof}
+On the compact product of $k+1$ unit spheres consider
+\[
+ g=\min_{u,v_1,\ldots,v_k}
+ \int_K\bigl(1-\max_j\ip{v_j}{R(h)u}\bigr)\,d\mu(h).
+\]
+The minimum exists by continuity, and the integrand is nonnegative. If its integral were zero for a minimizing tuple, full support of Haar measure would make it zero everywhere. Equality in Cauchy--Schwarz would then imply $R(h)u\in\{v_1,\ldots,v_k\}$ for every $h$. The orbit is a connected finite set because $K$ is connected. It would be a singleton, so $u$ would be a nonzero fixed vector, a contradiction. Thus $g>0$.
+
+Choose a finite measurable partition of $K$ into sets of sufficiently small $R$-operator diameter, and replace their Haar masses by atoms at nearby points of $\mathcal P\cap K$. Lemma~\ref{lem:positive53} permits these choices. More explicitly, choose the approximation radius $\eta<g/2$, separately from $g$. The function $A\mapsto\max_j\ip{v_j}{Au}$ is $1$-Lipschitz in operator norm uniformly over the unit vectors. The resulting finite law has integral defect at least $g-\eta>g/2$. Padding its words to length $B$ leaves the represented operators unchanged. Taking $d=\min(g/4,1/2)$ proves \eqref{eq:gap53}.
+\end{proof}
+There is no nonzero one-dimensional moving representation of a connected compact group: a continuous homomorphism into $O(1)$ is trivial. This is consistent with, rather than an exception to, the hypotheses of the lemma. The dimension of $E$ below need not equal the dimension of the physical state space.
+
+\begin{lemma}[Conditional-centroid contraction]\label{lem:centroid53}
+Suppose a random physical vector $Z\in E$ and a current state $S$ are followed by an independent block word $w\sim\nu$ as in Lemma~\ref{lem:gap53}. The new physical vector is $R(U_w)Z$. Suppose the terminal state $S'$ has at most $k$ values and, conditional on $(S,w)$, is generated by the block's stochastic kernel, independently of the earlier physical history. Then
+\begin{equation}\label{eq:centroid53}
+ \E\norm{\E[R(U_w)Z\mid S']}\le(1-d)\E\norm{\E[Z\mid S]}.
+\end{equation}
+For a fixed intervening identity word, the same conditional norm cannot increase, with no restriction on the new width.
+\end{lemma}
+\begin{proof}
+Put $z_s=\E[Z\mid S=s]$ and let $T_w(s,j)$ be the actual composite block kernel. Independence at the block boundary gives
+\[
+ \Pr(S'=j)\E[R(U_w)Z\mid S'=j]
+ =\sum_s\Pr(S=s)\E_w T_w(s,j)R(U_w)z_s.
+\]
+For each nonzero terminal centroid choose its unit direction $v_j$; assign an arbitrary unit vector when it is zero. Pairing with these directions and summing yields
+\begin{align*}
+ \E\norm{\E[R(U_w)Z\mid S']}
+ &=\sum_s\Pr(S=s)\E_w\sum_jT_w(s,j)\ip{v_j}{R(U_w)z_s}\\
+ &\le\sum_s\Pr(S=s)\E_w\max_j\ip{v_j}{R(U_w)z_s}\\
+ &\le(1-d)\sum_s\Pr(S=s)\norm{z_s}.
+\end{align*}
+Zero-probability states contribute zero. This proves the assertion without a lower bound on any state mass. On an identity word the physical vector is unchanged, while the new state is obtained from the old by a stochastic kernel. Conditional Jensen's inequality proves nonincrease. The argument uses independence only for a complete independent block, not for internal letters of that block.
+\end{proof}
+
+\section{Polynomial tests at the extreme outputs}\label{sec:polynomial53}
+We now obtain enough conditional statistics to test a nonlinear observable. For $\ell\ge0$ let
+\[
+ \mathcal V_\ell=\bigoplus_{m=0}^{\ell}\End((\R^D)^{\otimes m}),\qquad
+ \Phi_\ell(h)=(h^{\otimes m})_{m=0}^{\ell},
+\]
+with the sum of Frobenius inner products; the $m=0$ summand is $\R$. Define the orthogonal representation
+\[
+ R_\ell(g)(A_m)_{m=0}^{\ell}=(g^{\otimes m}A_m)_{m=0}^{\ell}.
+\]
+Every polynomial $p$ in the matrix entries of degree at most $\ell$ has a coefficient vector $a_p\in\mathcal V_\ell$ such that
+\begin{equation}\label{eq:polyrep53}
+ p(h)=\ip{a_p}{\Phi_\ell(h)}.
+\end{equation}
+Indeed a monomial of degree $m$ is an entry of $h^{\otimes m}$. A choice of coefficients is fixed whenever a norm bound is used; uniqueness is unnecessary.
+
+Let $P_\ell=\int_K R_\ell(h)\,d\mu(h)$ be the orthogonal projection onto the fixed subspace. Set
+\begin{equation}\label{eq:feature53}
+ E_\ell=(I-P_\ell)\mathcal V_\ell,\quad
+ Z(h)=(I-P_\ell)\Phi_\ell(h),\quad Q_0=\norm{Z(I)}.
+\end{equation}
+For $g\in K$, $P_\ell R_\ell(g)=R_\ell(g)P_\ell=P_\ell$. Consequently
+\[
+ Z(gh)=R_\ell(g)Z(h),\qquad
+ P_\ell\Phi_\ell(h)=P_\ell\Phi_\ell(I)\quad(h\in K).
+\]
+The restriction of $R_\ell$ to $E_\ell$ has no nonzero fixed vectors. If a polynomial of degree at most $\ell$ is nonconstant on $K$, then $E_\ell\ne\{0\}$ and $Q_0>0$.
+
+\begin{lemma}[Conditional polynomial calibration]\label{lem:polycal53}
+For an arbitrary jointly distributed $h\in K$ and finite state $S$, put
+\[
+ Q=\E\norm{\E[Z(h)\mid S]},\qquad \bar p=\int_Kp\,d\mu.
+\]
+For every $p$ of degree at most $\ell$,
+\begin{align}
+ \E[p(h)\mid S]&=\bar p+\ip{a_p}{\E[Z(h)\mid S]},\label{eq:conditional53}\\
+ |\E p(h)-\bar p|&\le\norm{a_p}Q,\label{eq:unconditional53}\\
+ |\E[p(h)D(S)]-\bar p\E D(S)|&\le\norm{a_p}Q\quad (|D|\le1).\label{eq:decoder53}
+\end{align}
+\end{lemma}
+\begin{proof}
+Split \eqref{eq:polyrep53} into its fixed and moving components. Its fixed term is $\ip{a_p}{P_\ell\Phi_\ell(I)}=\bar p$, independently of $h\in K$. Conditional expectation proves \eqref{eq:conditional53}, and Cauchy--Schwarz proves the other two inequalities.
+\end{proof}
+These are finitely many moment estimates. In particular, they do not claim that the conditional distribution of $h$ is close to Haar measure in total variation.
+
+\begin{lemma}[Localization of two extremes]\label{lem:localize53}
+Let $F$ be a real polynomial restricted to $K$, with minimum $m$ and maximum $M>m$. For every $\delta\ge0$ such that $M-m>2\delta$, there are nonnegative polynomial restrictions $p_+,p_-$ with $\bar p_+=\bar p_-=1$ and
+\begin{equation}\label{eq:Delta53}
+ \Delta=\int_Kp_+F\,d\mu-\int_Kp_-F\,d\mu-2\delta>0.
+\end{equation}
+They may be chosen as normalized powers of $F-m$ and $M-F$.
+\end{lemma}
+\begin{proof}
+For an integer $r\ge1$ set
+\[
+ p_+=\frac{(F-m)^r}{\int_K(F-m)^r\,d\mu},\qquad
+ p_-=\frac{(M-F)^r}{\int_K(M-F)^r\,d\mu}.
+\]
+Both denominators are positive by continuity and full support. Under the first weighted probability measure, the mass of $\{F\le M-\eta\}$ is bounded, for $0<\eta<M-m$, by
+\[
+ \frac1{\mu\{F>M-\eta/2\}}
+ \left(\frac{M-m-\eta}{M-m-\eta/2}\right)^r,
+\]
+which tends to zero. Hence $\int p_+F\to M$. The second weighted mean tends to $m$ by the same argument. Choose $r$ large enough that their difference is greater than $2\delta$.
+\end{proof}
+
+\begin{proposition}[A quantitative residual moment]\label{prop:residual53}
+Fix $F,p_+,p_-,\delta,\Delta$ as in Lemma~\ref{lem:localize53}. Choose $\ell$ large enough to represent $p_\pm$ and $p_\pm F$. Put
+\begin{equation}\label{eq:L53}
+ L=\sum_{\sigma\in\{+,-\}}
+ \bigl(\norm{a_{p_\sigma F}}+(1+\delta)\norm{a_{p_\sigma}}\bigr).
+\end{equation}
+Suppose a terminal decoder $D(S)\in[-1,1]$ approximates $F(h)$ with mean error at most $\delta$ conditional on each complete executable word in a chosen test law. Then $L>0$ and
+\begin{equation}\label{eq:residual53}
+                         Q\ge\Delta/L.
+\end{equation}
+\end{proposition}
+\begin{proof}
+Nonnegativity of $p=p_\sigma$ allows the wordwise error to be averaged with this weight:
+\[
+ |\E[p(h)D(S)]-\E[p(h)F(h)]|\le\delta\E p(h).
+\]
+Write $c=\E D(S)$ and $\mu_p=\int pF\,d\mu$. Lemma~\ref{lem:polycal53} gives
+\[
+ |c-\mu_p|\le\delta+
+ \bigl(\norm{a_{pF}}+(1+\delta)\norm{a_p}\bigr)Q.
+\]
+Subtract the inequalities for the two weights and use \eqref{eq:Delta53}. It follows that $\Delta\le LQ$, which also shows $L>0$. The argument requires no bound on $F$ itself: only the decoder is bounded by one. Different words having the same product may have different hidden-state distributions; the wordwise bound above remains valid for each of them.
+\end{proof}
+
+\section{Proof of the classification}\label{sec:proof53}
+We first prove the lower bound, including occupation. Suppose $\varepsilon<\epsc$ and put $\delta_0=2\varepsilon$. Choose $(s,j,c)$ with component oscillation $\Omega>2\delta_0$. By Lemma~\ref{lem:positive53}, there is an executable word $v$ with $U_v\in c$. Let $b=|v|$ and write
+\[
+ f(h)=f_{s,j}(hU_v)\qquad(h\in K).
+\]
+Since $KU_v=c$, this function has oscillation $\Omega$.
+
+Choose $\eta>0$ so that $4\eta<\Omega-2\delta_0$. Polynomials in the matrix entries, restricted to $K$, contain the constants and separate points. The real Stone--Weierstrass theorem \cite{Rudin} therefore supplies a real polynomial $F$ with $\norm{F-f}_\infty<\eta$. Its oscillation is at least $\Omega-2\eta>2(\delta_0+\eta)$. Set $\delta=\delta_0+\eta$ and apply Lemma~\ref{lem:localize53} and Proposition~\ref{prop:residual53}. If $f$ is already polynomial, one may instead take $F=f$ and $\delta=\delta_0$.
+
+Fix a width $k$. Choose the resulting tensor degree $\ell$ and apply Lemma~\ref{lem:gap53} to its nonzero moving representation, obtaining a block length $B$ and defect $d$. These depend on the chosen interface and $k$, not on the simulator. Put
+\begin{equation}\label{eq:constants53}
+ \chi=-\log(1-d)>0,\qquad
+ A=\max(1,LQ_0/\Delta).
+\end{equation}
+Start every test word with the fixed prefix $v$. Subsequent independent blocks have products in $K$; all gaps are identity words. If $h$ is the accumulated product after this prefix, the physical product is $hU_v$. Initially $h=I$, so the conditional feature norm equals $Q_0$, regardless of the state distribution after $v$. Lemma~\ref{lem:centroid53} gives, after $J$ block endpoints each of width at most $k$, and after any final identity suffix,
+\[
+ Q_N\le Q_0(1-d)^J.
+\]
+The machine's wordwise mean error for $f$ is at most $\delta_0$ and hence its error for $F$ is at most $\delta$. Proposition~\ref{prop:residual53} applies to the final decoder of the fixed query $j$. We obtain
+\begin{equation}\label{eq:J53}
+                         J\chi\le\log A.
+\end{equation}
+If every cut has width at most $k$ and $N\ge b$, consecutive blocks give the explicit necessary inequality
+\begin{equation}\label{eq:peak53}
+              \left\lfloor\frac{N-b}{B}\right\rfloor\chi\le\log A.
+\end{equation}
+All test words here are executable words of exactly the prescribed horizon.
+
+For occupation, consider the narrow cuts in $\{b+1,\ldots,N\}$. Discard cuts before $b+B$. Greedily select the first remaining narrow cut and then the next one at distance at least $B$, continuing until none remains. Put an independent length-$B$ block immediately before each selected cut and identity letters in the gaps. The blocks do not overlap. Each selected cut accounts for at most $B$ of the remaining narrow cuts, and at most $B-1$ were initially discarded. If $J$ cuts are selected, their number is therefore at most $B-1+BJ$. Including the at most $b$ cuts before or at the prefix gives
+\begin{equation}\label{eq:Lk53}
+ L_k=b+B-1+B\frac{\log A}{\chi}.
+\end{equation}
+The same bound holds when $N<b+B$, directly by counting. This proves \eqref{eq:occupation53}, including the case of unrestricted widths inside a test block or its identity gaps. Cut zero is deliberately excluded.
+
+It remains to prove the upper bound. Use command labels $(s,c)\in\mathcal S\times C$, initialize at $(s,K)$, and update by
+\[
+ (s,c)\longmapsto(s,[U_a]c).
+\]
+These updates are permutations. For query $j$ use decoder mean
+\begin{equation}\label{eq:midpoint53}
+             d_j(s,c)=\frac{M_{s,j,c}+m_{s,j,c}}2.
+\end{equation}
+It lies in $[-1,1]$ and differs from every mean on that component by at most $(M_{s,j,c}-m_{s,j,c})/2$. Its total-variation error is therefore at most \eqref{eq:critical53}. This proves attainment at the boundary, not merely an infimum over realizations.
+
+Finally, $W_{N,\varepsilon}$ is nondecreasing in $N$. Given a realization at $N+1$, absorb its last identity transition into the decoder, replacing $d_j$ by $T_{N+1,I}d_j$. This is still a legal column in $[-1,1]$ and its target at length $N$ is unchanged. Thus the subcritical unboundedness from \eqref{eq:peak53} implies divergence. All implications in Theorem~\ref{thm:classification53} follow.\qed
+
+\begin{remark}[Effectivity]\label{rem:effective53}
+For arbitrary real command matrices and continuous input functions, the compact extrema, polynomial approximation, and finite word net in this proof are mathematical existence statements. They are not a uniform algorithm from finitely encoded data. The arithmetic results of Section~\ref{sec:arithmetic53} remove these choices for a concrete infinite class. The threshold theorem itself does not require an effective encoding.
+\end{remark}
+
+\section{Observable quotients and examples}\label{sec:observable53}
+Suppose now that the interface is linear:
+\begin{equation}\label{eq:linear53}
+ f_{s,j}(h)=q_j^Thx_s\in[-1,1].
+\end{equation}
+No spanning condition is imposed. Define the reachable and invisible subspaces by
+\[
+ V_{\rm r}=\spanop\{hx_s:h\in H,\ s\in\mathcal S\},\qquad
+ V_{\rm n}=\{x\in V_{\rm r}:q_j^Thx=0\text{ for all }h\in H,j\in\mathcal J\}.
+\]
+Both are $H$-invariant. Orthogonality identifies the observable quotient with the invariant space $V_{\rm o}=V_{\rm r}\cap V_{\rm n}^{\perp}$.
+
+\begin{theorem}[Intrinsic zero-error criterion]\label{thm:observable53}
+For \eqref{eq:linear53}, uniformly bounded zero-error clocked width is equivalent to finiteness of the image of $G$ in $O(V_{\rm o})$. It is also equivalent to trivial action of $K$ on $V_{\rm o}$. In this case an exact stationary permutation realization exists.
+\end{theorem}
+\begin{proof}
+By Theorem~\ref{thm:classification53}, bounded exact width is equivalent to every $f_{s,j}$ being constant on every component. Assume this property and take $k\in K$, $g,h\in H$. Normality gives $hkh^{-1}\in K$, whence
+\[
+ q_j^Th(k-I)gx_s
+ =q_j^T(hkh^{-1})hgx_s-q_j^Thgx_s=0.
+\]
+Thus $(k-I)gx_s\in V_{\rm n}$ for every reachable generator of $V_{\rm r}$. It follows that $(k-I)V_{\rm r}\subset V_{\rm n}$. On the invariant orthogonal complement $V_{\rm o}$ this difference is also in $V_{\rm o}$, and hence vanishes. The action on $V_{\rm o}$ factors through the finite group $H/K$.
+
+Conversely, if $K$ acts trivially on $V_{\rm o}$, then $(k-I)gx_s\in V_{\rm n}$ for all $k\in K,g\in H$, so all means are constant on components. Finally, a finite image of $G$ has the same finite image closure from $H$, and the connected image of $K$ must be trivial. This proves all equivalences, including the zero-dimensional observable quotient. The stationary realization is \eqref{eq:midpoint53} with coincident extrema.
+\end{proof}
+
+\begin{corollary}[The exact planar threshold]\label{cor:circle53}
+Let the alphabet contain $I$ and an irrational-angle planar rotation, with any further planar orthogonal commands. For signed coordinate seeds $x_s\in\{\pm\rho e_1,\pm\rho e_2\}$, coordinate queries, and $0<\rho\le1$, one has
+\[
+ \sup_N W_{N,\varepsilon}<\infty\quad\Longleftrightarrow\quad
+ \varepsilon\ge\rho/2.
+\]
+At and above the boundary, one command label with fair binary output suffices; the peak is two. Below it every fixed command width has a finite occupation budget.
+\end{corollary}
+\begin{proof}
+Here $K=SO(2)$ and $H$ is either $SO(2)$ or $O(2)$. On each component every specified coordinate mean ranges over $[-\rho,\rho]$. Apply Theorem~\ref{thm:classification53}. The midpoint is zero independently of seed, component, and query, so the command label can be collapsed to one.
+\end{proof}
+In particular, for the noncommuting rational alphabet
+\[
+ I,\qquad R=\begin{pmatrix}3/5&-4/5\\4/5&3/5\end{pmatrix},\qquad
+ F=\begin{pmatrix}1&0\\0&-1\end{pmatrix},
+\]
+one has $FRF=R^{-1}\ne R$ and the same sharp threshold. The rotation has infinite order: otherwise $(3+4i)/5$ and its inverse would be algebraic integers, whereas their rational sum $6/5$ is not an integer.
+
+\begin{proposition}[A toral formula]\label{prop:torus53}
+Suppose a connected component is parameterized by independent angles $\theta\in(\R/2\pi\mathbb Z)^m$, and on that component a specified mean is
+\[
+ a_0+\sum_{l=1}^m(a_l\cos\theta_l+b_l\sin\theta_l).
+\]
+Its contribution to \eqref{eq:critical53} is
+\[
+                 \frac12\sum_{l=1}^m\sqrt{a_l^2+b_l^2}.
+\]
+The critical error is the maximum of these values over the finite interface and the components.
+\end{proposition}
+\begin{proof}
+Each summand has independent range $[-\sqrt{a_l^2+b_l^2},\sqrt{a_l^2+b_l^2}]$. Their extrema can be attained simultaneously, so the oscillation is twice their summed amplitudes. Apply \eqref{eq:critical53}.
+\end{proof}
+The independence assumption concerns the actual compact closure. For a proper subtorus with relations among the angles, the extrema must instead be taken on that subtorus; the sum formula is not asserted. Thus ambient dimension cannot substitute for the observable component oscillation.
+
+\subsection{Invisible directions and nonlinear readouts}
+Let $H=\{\diag(R_\theta,1):\theta\in\R/2\pi\mathbb Z\}$ in dimension three. A seed and query both equal to $e_3$ give the constant mean one. One command label realizes it exactly even when the generating rotation has infinite order. With seed $\rho e_1$ and query $e_1$, the same ambient action instead has threshold $\rho/2$. This contrasts partial interfaces without changing the group.
+
+For unitary commands acting on $\C^d$, regard the unitary group as a real orthogonal matrix group. A measure-once experiment with initial unit vector $\psi_s$ and query projection $P_j$ has mean
+\[
+ f_{s,j}(h)=2\norm{P_jh\psi_s}^2-1.
+\]
+It is a continuous polynomial in the real matrix entries. With an identity command included, Theorem~\ref{thm:classification53} gives critical total-variation error equal to one half of the largest componentwise oscillation of the acceptance probability $\norm{P_jh\psi_s}^2$. This is a statement about preserving numerical probabilities, not merely about recognizing the same cutpoint language.
+
+\subsection{Compact similarity and the role of reversibility}
+\begin{proposition}[Uniformly bounded group actions]\label{prop:similarity53}
+The classification remains valid for a finite alphabet in $GL(D,\R)$ whose generated group, including inverses, is uniformly bounded, provided the continuous means are defined on its compact closure. For linear means the change to an invariant Euclidean metric leaves every target probability and width unchanged.
+\end{proposition}
+\begin{proof}
+Uniform boundedness of the group also bounds all inverses, so the least singular values are bounded away from zero. Its closure is therefore a compact subgroup of $GL(D,\R)$. With normalized Haar measure define $Q=\int g^Tg\,d\mu(g)$. This is positive definite and satisfies $A^TQA=Q$ for every group element, by right invariance. The conjugates $U_a=Q^{1/2}A_aQ^{-1/2}$ are orthogonal. Transport the continuous functions through this conjugacy. For a linear mean, transform the seed to $Q^{1/2}x_s$ and the query to $Q^{-1/2}q_j$. The target means, and hence the realization problem, are identical.
+\end{proof}
+A bounded positive semigroup alone is insufficient. For scalar commands $1$ and $\lambda\in(0,1)$ the mean $\rho\lambda^{\#a(w)}$ has an exact two-command-state realization: an alive state survives each $\lambda$-command with probability $\lambda$ and otherwise enters an absorbing state, with decoder means $\rho$ and zero. The group of inverses is not bounded. Likewise, without an identity or another valid padding hypothesis, a single irrational rotation letter has only one word at each horizon. A horizon-dependent constant decoder then realizes a single-seed interface with one command state. The padding hypothesis in Theorem~\ref{thm:classification53} cannot be silently removed.
+
+\section{Effective bounds throughout the subcritical circle interval}\label{sec:arithmetic53}
+The general proof chooses a polynomial and an executable word net by compactness. On a circle both can be made explicit. Assume that the alphabet contains $I,R_\theta$ and that one seed-query pair has mean $\rho\cos\phi$ after accumulated angle $\phi$, where $0<\rho\le1$. Other seeds, queries, or commands impose additional constraints and do not invalidate the lower bound. Let $\lambda=e^{i\theta}$ have infinite order. Put $\delta=2\varepsilon<\rho$, and choose an integer
+\begin{equation}\label{eq:r53}
+ r\ge1,\qquad r>\frac{\delta}{\rho-\delta},\qquad m=r+1.
+\end{equation}
+For example $r=\lfloor\delta/(\rho-\delta)\rfloor+1$ works. Define
+\begin{equation}\label{eq:circleconstants53}
+ \Delta_r=2\left(\frac{\rho r}{r+1}-\delta\right)>0,\qquad
+ A_r=\frac{2(1+\rho+\delta)(2r+1)m}{\Delta_r}>1.
+\end{equation}
+
+\begin{lemma}[Explicit harmonic localization]\label{lem:harmonic53}
+The nonnegative trigonometric polynomials
+\[
+ p_\pm(\phi)=\frac{(1\pm\cos\phi)^r}{2^{-r}\binom{2r}{r}}
+\]
+have Haar mean one and weighted means
+\[
+ \int p_\pm(\phi)\rho\cos\phi\,\frac{d\phi}{2\pi}
+                         =\pm\frac{\rho r}{r+1}.
+\]
+For the moving feature vector
+\[
+ Z_m(\phi)=(\cos\phi,\sin\phi,\ldots,\cos m\phi,\sin m\phi),
+\]
+any terminal realization with wordwise mean error at most $\delta$ obeys
+\begin{equation}\label{eq:harmonicresidual53}
+ \E\norm{\E[Z_m(\phi)\mid S]}\ge
+ \frac{\Delta_r}{2(1+\rho+\delta)(2r+1)}.
+\end{equation}
+\end{lemma}
+\begin{proof}
+The identity $1+\cos\phi=2\cos^2(\phi/2)$, or the constant Laurent coefficient, gives
+\[
+ C_r:=\int(1+\cos\phi)^r\frac{d\phi}{2\pi}
+            =2^{-r}\binom{2r}{r},\qquad
+ C_{r+1}/C_r=\frac{2r+1}{r+1}.
+\]
+Hence the weighted cosine mean is $C_{r+1}/C_r-1=r/(r+1)$. Translation by $\pi$ gives the negative case.
+
+The absolute sum of the real cosine coefficients of either $p_\pm$, including the constant coefficient, is
+\[
+ B_r=\frac{4^r}{\binom{2r}{r}}\le2r+1.
+\]
+For $p_+$ its coefficients are nonnegative and their sum is $p_+(0)$; for $p_-$ they differ only by alternating signs. The inequality follows because the central binomial coefficient is the largest of the $2r+1$ coefficients summing to $4^r$. Multiplication by $\rho\cos\phi$ has coefficient absolute sum at most $\rho B_r$, since $\cos u\cos v=(\cos(u+v)+\cos(u-v))/2$. Thus the Euclidean norms of the moving coefficient vectors of $p_\pm$ and $p_\pm\rho\cos\phi$ are at most $2r+1$ and $\rho(2r+1)$, respectively. The proof of Proposition~\ref{prop:residual53}, now in this explicit harmonic representation with fixed coordinate the Haar mean, gives \eqref{eq:harmonicresidual53}. The starting feature norm is $\sqrt m\le m$, explaining the harmless rational relaxation in $A_r$.
+\end{proof}
+
+\begin{lemma}[Separated powers give a block defect]\label{lem:separated53}
+Suppose $|\lambda^n-1|\ge\sigma$ for every integer $1\le n\le2mk$, where $0<\sigma\le1$. On the representation $Z_m$, the uniform law on the $2k$ words with products $R_\theta^j$, $0\le j<2k$, each padded to length $2k$, has defect at least $\sigma^2/16$ in \eqref{eq:gap53}.
+\end{lemma}
+\begin{proof}
+Write a unit vector as $u=(u_1,\ldots,u_m)$ in its two-dimensional frequency blocks. For distinct indices $i,j\in\{0,\ldots,2k-1\}$,
+\[
+ \norm{R_m(i\theta)u-R_m(j\theta)u}^2
+ =\sum_{l=1}^m\norm{u_l}^2|\lambda^{l(i-j)}-1|^2\ge\sigma^2.
+\]
+A ball of radius strictly less than $\sigma/2$ about any of $k$ centers contains at most one of these $2k$ points. Thus at least $k$ points have distance at least $\sigma/2$ from all centers (the same conclusion follows by taking the open balls of radius $\sigma/2$). For unit centers the defect is one half of the squared distance to the closest center. Averaging gives at least $(1/2)(\sigma^2/8)=\sigma^2/16$.
+\end{proof}
+
+\begin{theorem}[Full-noise algebraic-circle bound]\label{thm:algebraic53}
+Assume $\lambda$ is algebraic and not a root of unity. Let its primitive irreducible integer polynomial be
+\[
+ P(z)=a z^d+a_{d-1}z^{d-1}+\cdots+a_0,\qquad a>0.
+\]
+Set $H_P=\max(a,|a_{d-1}|,\ldots,|a_0|)$ and
+\[
+                     B_P=a(1+H_P/a)^{d-1}>1.
+\]
+With $r,m,A_r$ as in \eqref{eq:r53}--\eqref{eq:circleconstants53}, every error-$\varepsilon$ realization of peak at most $k$ satisfies
+\begin{equation}\label{eq:algwidth53}
+ N<2k\left(1+16\,2^{2(d-1)}B_P^{4mk}\log A_r\right).
+\end{equation}
+Its number of command cuts $t\in\{1,\ldots,N\}$ with width at most $k$, even if other widths are unrestricted, is at most
+\begin{equation}\label{eq:algoccupation53}
+ 2k-1+32k\,2^{2(d-1)}B_P^{4mk}\log A_r.
+\end{equation}
+Consequently, for fixed algebraic data, $\rho$, and $\varepsilon<\rho/2$,
+\begin{equation}\label{eq:algrate53}
+ W_{N,\varepsilon}\ge
+ \frac{\log N-O(\log\log N)}{4m\log B_P}.
+\end{equation}
+All constants in the finite inequalities are explicit. If $\lambda=(a_1+ib_1)/c$ with integers $a_1,b_1$, $c>0$, $a_1^2+b_1^2=c^2$, and $\lambda$ not a root of unity, then \eqref{eq:algwidth53}--\eqref{eq:algrate53} hold with the factor $2^{2(d-1)}$ deleted and $B_P$ replaced by $c$.
+\end{theorem}
+\begin{proof}
+Let $\lambda=\lambda_1,\ldots,\lambda_d$ be the conjugates. None is a root of unity: otherwise irreducibility would make $P$ a cyclotomic polynomial up to its primitive sign. The resultant
+\[
+ \operatorname{Res}(P,z^n-1)=a^n\prod_{j=1}^d(\lambda_j^n-1)
+\]
+is therefore a nonzero integer. Each conjugate has modulus at most $R_P=1+H_P/a$. For completeness, if $|z|>R_P$, then
+\[
+ \sum_{j=0}^{d-1}|a_j||z|^j
+ <\frac{H_P|z|^d}{|z|-1}<a|z|^d,
+\]
+so $P(z)\ne0$. Since $|\lambda_1|=1$, the resultant bound gives
+\begin{equation}\label{eq:resultant53}
+ |\lambda^n-1|\ge
+ 2^{-(d-1)}\left(a\prod_{j=2}^d\max(1,|\lambda_j|)\right)^{-n}
+ \ge 2^{-(d-1)}B_P^{-n}.
+\end{equation}
+For $1\le n\le2mk$, take $\sigma=2^{-(d-1)}B_P^{-2mk}$ in Lemma~\ref{lem:separated53}. The block defect is at least
+\[
+                  d_k=\frac{2^{-2(d-1)}B_P^{-4mk}}{16}.
+\]
+Repeated conditional contraction and Lemma~\ref{lem:harmonic53} imply
+\[
+ \left\lfloor\frac{N}{2k}\right\rfloor
+ \le \frac{\log A_r}{-\log(1-d_k)}
+ \le 16\,2^{2(d-1)}B_P^{4mk}\log A_r.
+\]
+This proves \eqref{eq:algwidth53}. The greedy occupation argument in Section~\ref{sec:proof53}, with $b=0$ and block length $2k$, proves \eqref{eq:algoccupation53}. Taking logarithms gives \eqref{eq:algrate53}: if $k$ is already a sufficiently large multiple of $\log N$ it is immediate; otherwise $\log k=O(\log\log N)$ in the logarithm of \eqref{eq:algwidth53}. The implicit constant may depend on $P,\rho,\varepsilon$, not on $N$.
+
+In the rational-circle case, $(a_1+ib_1)^n-c^n$ is a nonzero Gaussian integer, of modulus at least one. Thus $|\lambda^n-1|\ge c^{-n}$ directly. Repeat the proof with $\sigma=c^{-2mk}$. Here $c>1$ automatically. A nonminimal supplied denominator is still valid but weakens the bound.
+\end{proof}
+The threshold is sharp; these width rates are not asserted sharp. The factor $m$ records the increased localization degree as the error approaches the boundary. At smaller errors, the retained coordinate-calibration estimates can have better constants. One should use the larger of applicable lower bounds, rather than claiming numerical improvement at every parameter value.
+
+\begin{proposition}[An explicit nonrational algebraic example]\label{prop:salem53}
+Let $t=(1-\sqrt{13})/2$ and
+\[
+ \lambda=\frac{t+i\sqrt{4-t^2}}2.
+\]
+Then $|\lambda|=1$, $\lambda$ is not a root of unity, and one can take $d=4$ and $B_P=8$ in Theorem~\ref{thm:algebraic53}.
+\end{proposition}
+\begin{proof}
+The number $t$ lies strictly between $-2$ and $2$ and solves $t^2-t-3=0$. Substitution of $t=z+z^{-1}$ gives
+\[
+                       P(z)=z^4-z^3-z^2-z+1.
+\]
+Its reduction modulo two is $z^4+z^3+z^2+z+1$. It has no linear factor over $\mathbb F_2$ and is not divisible by the only monic irreducible quadratic $z^2+z+1$; hence it is irreducible. Gauss's lemma proves irreducibility over $\mathbb Q$. The conjugate value $(1+\sqrt{13})/2>2$ gives a positive real conjugate of $\lambda$ greater than one. A root of unity cannot have such a conjugate. Finally $a=H_P=1$ and $d=4$, so $B_P=2^3=8$.
+\end{proof}
+For a reproducible rational calibration, take $\rho=1/10$ and $\varepsilon=1/25$. Then $\delta=2/25$, $r=5$, $m=6$, $\Delta_r=1/150$, and $A_r=23364$. Thus the rational-circle alphabet above obeys
+\[
+                 N<2k\bigl(1+16\cdot5^{24k}\log23364\bigr).
+\]
+This is a concrete bound inside the interval between the former small-error obstruction and the sharp threshold $1/20$. The exact coefficient and resultant checks accompanying the article verify the displayed arithmetic, not the universal theorem by finite experimentation.
+
+\section{Relation to automata and positive realization}\label{sec:comparison53}
+The distinction between numerical approximation and language recognition is essential. Brodsky and Pippenger characterize bounded-error measure-once quantum languages as group languages \cite[Theorem 3.3]{BP}. Their probabilistic simulation theorem preserves cutpoint acceptance, with a possibly different cutpoint; it does not state uniform additive preservation of each acceptance probability \cite[Theorem 3.6]{BP}. Theorem~\ref{thm:classification53} instead fixes those numerical probabilities and permits new clocked stochastic rows at every horizon. Thus its subcritical obstruction neither contradicts that simulation theorem nor follows by merely restating the group-language characterization.
+
+\begin{center}\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{p{.18\textwidth}p{.23\textwidth}p{.26\textwidth}p{.24\textwidth}}
+\toprule
+Source & State and uniformity & Correctness and conclusion & Distinction here\\
+\midrule
+Group and reversible automata \cite{BP,Paz} & One fixed finite transition system; group letters are permutations. & Acceptance of a language, rather than a prescribed real response. & Arbitrary finite continuous numerical interface; horizon-dependent stochastic lower model.\\[4pt]
+Brodsky--Pippenger \cite{BP} & One measure-once unitary automaton; one probabilistic or group recognizer. & Isolated-cutpoint group-language characterization and cutpoint-language simulation. & Sharp additive probability error, including its boundary, and narrow-cut occupation.\\[4pt]
+Blondel et al.\ \cite{BJKP} & Finitely described unitary automata; algebraic closure and elimination. & Strict-threshold decision procedures for numerical values. & Width classification of stochastic simulators, not a new closure or elimination algorithm.\\[4pt]
+Positive realization \cite{BF04} & Positive systems and invariant-cone realizations; system data are fixed. & Realization of linear input--output behavior with positivity constraints. & Compact controlled products, partial or nonlinear queries, and nonuniform error threshold.\\[4pt]
+The present theorem & Different stochastic tables, clock, and decoder allowed for every horizon. & Worst-word numerical TV error; exact threshold from component oscillations. & Free advice is allowed in the lower bound; one stationary permutation construction attains the boundary.\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The compact closure and invariant-polynomial methods in \cite{BJKP} are particularly close mathematical antecedents; we use neither their algorithm as a new result nor threshold decidability as a surrogate for quantitative width. Positive-cone and intertwining methods surveyed in \cite{BF04} remain the natural background for the retained reachable-section theory. The extra argument needed here is polynomially weighted terminal calibration combined with a representation-wide executable contraction. Haar averaging, tensor representations, polynomial approximation, resultants, and the midpoint construction are classical ingredients. The claim submitted for evaluation is their consequence in Theorem~\ref{thm:classification53}, with the stated model and quantifiers, and its explicit subcritical arithmetic extension. This comparison is targeted, not an assertion of exhaustive priority clearance.
+
+\section{Further quantitative problem}\label{sec:conclusion53}
+The component oscillation settles the bounded-width question for the full class of finite continuous interfaces considered here. A primary remaining quantitative problem is to determine the sharp order of $W_{N,\varepsilon}$ for a fixed algebraic irrational rotation at a fixed $0<\varepsilon<\rho/2$, with matching constants or matching asymptotic scales. The logarithmic estimate of Theorem~\ref{thm:algebraic53} is explicit throughout this interval, but does not identify the optimal growth law. This problem is distinct from the threshold classification, whose boundary is attained and whose subcritical occupation statement is proved above.
+
+\appendix
+\section{The complete mathematical supplement}\label{sec:supplement53}
+A separately buildable supplement retains the complete preceding finite-dimensional theory: compatible reachable sections, exact stationarization, one-surplus geometry, stable sections, finite-horizon certificates, word distortion and arithmetic scales, two-state duality, finite-bit compilation, and the global residual hierarchy. It also retains every previously loaded mathematical label and proof. A short companion note makes local conventions and conditioning choices explicit. These materials are not needed to supply a missing step in the proof of Theorem~\ref{thm:classification53}; they preserve the additional mathematical conclusions and their more specialized estimates without turning the main article into an accretive archive. The source manifest distinguishes byte-identical retained files from new proofs.
+
+\begin{thebibliography}{99}
+\bibitem{BF04} L. Benvenuti and L. Farina, A tutorial on the positive realization problem, \emph{IEEE Transactions on Automatic Control} \textbf{49} (2004), no. 5, 651--664.
+\bibitem{BJKP} V. D. Blondel, E. Jeandel, P. Koiran, and N. Portier, Decidable and undecidable problems about quantum automata, \emph{SIAM Journal on Computing} \textbf{34} (2005), no. 6, 1464--1473.
+\bibitem{BP} A. Brodsky and N. Pippenger, Characterizations of 1-way quantum finite automata, \emph{SIAM Journal on Computing} \textbf{31} (2002), no. 5, 1456--1478.
+\bibitem{Folland} G. B. Folland, \emph{A Course in Abstract Harmonic Analysis}, second ed., Chapman \& Hall/CRC, Boca Raton, 2016.
+\bibitem{Hall} B. C. Hall, \emph{Lie Groups, Lie Algebras, and Representations: An Elementary Introduction}, second ed., Graduate Texts in Mathematics 222, Springer, Cham, 2015.
+\bibitem{Paz} A. Paz, \emph{Introduction to Probabilistic Automata}, Academic Press, New York, 1971.
+\bibitem{Rudin} W. Rudin, \emph{Principles of Mathematical Analysis}, third ed., McGraw--Hill, New York, 1976.
+\end{thebibliography}
+\end{document}
