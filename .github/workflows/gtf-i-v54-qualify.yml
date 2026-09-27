@@ -1,0 +1,112 @@
+name: GTF I v54 native qualification
+
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v54-chebyshev-radius-2026-09-27
+    paths:
+      - '.github/workflows/gtf-i-v54-qualify.yml'
+      - 'papers/GTF-I-v54-chebyshev-radius/assembly/**'
+      - 'papers/GTF-I-v54-chebyshev-radius/assemble_revision.py'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gtf-i-v54-native-qualification
+  cancel-in-progress: false
+
+jobs:
+  qualify:
+    if: github.ref == 'refs/heads/revision/general-theta-foundations-i-v54-chebyshev-radius-2026-09-27'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      PREFIX: papers/GTF-I-v54-chebyshev-radius
+      ENTRY: GENERAL_THETA_FOUNDATIONS_I_V54_REVIEW_READY.md
+      TARGET_BRANCH: revision/general-theta-foundations-i-v54-chebyshev-radius-2026-09-27
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          sparse-checkout: |
+            papers/GTF-I-v54-chebyshev-radius
+            .github/workflows/gtf-i-v54-qualify.yml
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Materialize and commit readable native manuscript
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$PREFIX/assemble_revision.py"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f -- "$PREFIX"
+          python - <<'PY'
+          import os, subprocess
+          prefix=os.environ['PREFIX']+'/'
+          names=subprocess.check_output(['git','diff','--cached','--name-only','-z']).decode().split('\0')
+          if any(n and not n.startswith(prefix) for n in names):
+              raise SystemExit('Staged native file outside isolated revision')
+          PY
+          if ! git diff --cached --quiet; then
+            git commit -m 'feat(gtf-i): write v54 native joint-radius and full-noise width proofs'
+            git push origin "HEAD:refs/heads/$TARGET_BRANCH"
+          fi
+          echo "GTF_SOURCE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - name: Install typesetting and exact-check dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check sympy==1.14.0 PyMuPDF==1.26.7
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended texlive-latex-recommended texlive-science lmodern
+      - name: Qualify pinned source and isolated native archive
+        working-directory: papers/GTF-I-v54-chebyshev-radius
+        shell: bash
+        run: |
+          set -euo pipefail
+          python build.py --check-isolated
+      - name: Commit qualified publication without changing native source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib,json,os,pathlib,subprocess
+          home=pathlib.Path(os.environ['PREFIX'])
+          receipt=json.loads((home/'evidence/BUILD_RECEIPT.json').read_text())
+          if receipt['status']!='success' or receipt['source_commit']!=os.environ['GTF_SOURCE_COMMIT']:
+              raise SystemExit('Invalid source-bound qualification')
+          if receipt['isolated_rebuild']['status']!='success':
+              raise SystemExit('No successful isolated rebuild')
+          for name, digest in json.loads((home/'evidence/SOURCE_HASHES.json').read_text()).items():
+              path=str(home/name)
+              committed=subprocess.check_output(['git','show',os.environ['GTF_SOURCE_COMMIT']+':'+path])
+              if hashlib.sha256(committed).hexdigest()!=digest or hashlib.sha256(pathlib.Path(path).read_bytes()).hexdigest()!=digest:
+                  raise SystemExit('Native source mismatch: '+name)
+          PY
+          git add -f -- "$PREFIX" "$ENTRY"
+          python - <<'PY'
+          import os,subprocess
+          names=subprocess.check_output(['git','diff','--cached','--name-only','-z']).decode().split('\0')
+          if any(n and not(n.startswith(os.environ['PREFIX']+'/') or n==os.environ['ENTRY']) for n in names):
+              raise SystemExit('Publication would change an unrelated path')
+          PY
+          git commit -m 'docs(gtf-i): publish qualified v54 referee manuscript and reproducibility evidence'
+          git push origin "HEAD:refs/heads/$TARGET_BRANCH"
+          git rev-parse HEAD | tee PUBLICATION_COMMIT.txt
+      - name: Preserve actual qualification outputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gtf-v54-qualification-${{ github.run_id }}
+          if-no-files-found: error
+          retention-days: 30
+          path: |
+            papers/GTF-I-v54-chebyshev-radius/
+            GENERAL_THETA_FOUNDATIONS_I_V54_REVIEW_READY.md
+            PUBLICATION_COMMIT.txt
