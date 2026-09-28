@@ -1,0 +1,236 @@
+\section{A rational compiler for adaptive observation processes}
+\label{sec:adaptivecompiler59}
+The common-row construction also yields a causal approximation, but its
+proof requires control of the full observation law. Correct terminal
+means alone are not enough. We give that additional argument here.
+
+The physical state is $x\in B_3$, initialized at a supplied rational
+$x_0\in S^2$. A finite rational rotation list $\{A_a\}\subset SO(3)$
+acts by $x\mapsto A_ax$ and emits a null symbol. A finite probe list has
+rational affine probability laws
+\begin{equation}\label{eq:affineprobes59}
+ q_{j,y}(x)=b_{j,y}+\ip{\ell_{j,y}}x,\qquad
+ \sum_y b_{j,y}=1,\quad \sum_y\ell_{j,y}=0,
+ \quad b_{j,y}-\norm{\ell_{j,y}}\ge\eta>0.
+\end{equation}
+A probe emits a fresh draw and leaves $x$ unchanged. Controls may depend
+on the entire observed transcript. A simulator has finite retained
+labels and a nonnegative joint emission/transition matrix for each
+control and output; these matrices may depend on horizon and epoch.
+Let $\mathsf{PW}_{N,\varepsilon}$ denote its minimum peak label count
+for one total-variation budget $\varepsilon$ on the entire transcript,
+uniformly over all adaptive randomized policies. This paragraph defines
+a causal model independently of the terminal matrix-output model.
+
+Put $A=\max_j\sum_y\norm{\ell_{j,y}}^2$ and
+$C_0=\max(3,\max_j(M_j-1))$. The lower probability bound in
+\eqref{eq:affineprobes59} is used only for the relative-entropy upper
+estimate, not for the finite-testing converse below.
+
+\begin{theorem}[Adaptive rational and fair-bit realization]
+\label{thm:adaptivecompiler59}
+For rational $0<\varepsilon<1$ and integer $N\ge0$, choose
+\begin{equation}\label{eq:adaptiveparameters59}
+ m=\max\left(2,\left\lceil\sqrt{
+                    \frac{4AN^2}{\eta\varepsilon^2}}\right\rceil\right),
+ \qquad r=1-m^{-2},\qquad
+ b=\max\left(0,\left\lceil\log_2
+                 \frac{2C_0\max(1,N)}{\varepsilon}\right\rceil\right).
+\end{equation}
+There is an error-$\varepsilon$ causal realization on at most
+$13m^2+1$ labels. Before probability rounding every rotation row is
+rational, has at most four nonzero entries, and has barycentric mean
+$rA_av$. Probe emissions leave the label unchanged. After rounding,
+all emission and transition probabilities are dyadic, with at most $b$
+fair bits per control and $Nb$ bits in total. The tables are stationary
+within the chosen horizon.
+
+An exact rational algorithm constructs these tables in time polynomial
+in the numerical parameters $N,\varepsilon^{-1},A/\eta$, the explicit
+input size, and the input bit lengths. In particular, for fixed probe
+and rotation lists,
+\begin{equation}\label{eq:adaptivewidth59}
+                 \mathsf{PW}_{N,\varepsilon}
+                    =O(1+N^2/\varepsilon^2).
+\end{equation}
+The bit count now includes the actual finite probe outputs as well as
+hidden transitions; it does not describe quantum-state preparation.
+\end{theorem}
+\begin{proof}
+Take the rational net $V_m$ from Lemma~\ref{lem:rationalnet58}, including
+zero, and add $x_0$ if needed. This adds at most one label and cannot
+shrink the convex hull. Initialize deterministically at $x_0$. For every
+rotation and label $v$, the same exact triple search supplies a row with
+mean $rA_av$. At probe $j$, emit $y$ with probability $q_{j,y}(v)$ and
+retain $v$. All points lie in $B_3$.
+
+Fix an arbitrary policy. On the same finite trajectory space of controls,
+outputs and hidden labels, introduce an auxiliary law $P$: hidden labels
+follow the just constructed rotation kernels, but every probe emits
+$q_{j,y}(X)$ from the true physical state $X$, independently of the
+hidden label conditional on the public history. Its public marginal is
+exactly the target experiment. Let $Q$ be the constructed simulator law.
+The policy kernels, initial label and hidden rotation kernels are the
+same under $P,Q$; only probe emissions differ.
+
+Under $P$, if the current physical and hidden points are $X,V$, both
+$X$ and every nonzero hidden vertex are unit vectors. At a rotation
+step, for $V\ne0$,
+\begin{align*}
+ \E[\norm{V'-A_aX}^2\mid X,V,a]
+ &\le 2-2r\ip V X\\
+ &=r\norm{V-X}^2+2(1-r).
+\end{align*}
+For $V=0$ choose its row to remain at zero; the same upper bound holds
+because the left side is one and the right side is $2-r\ge1$.
+The added seed is a unit vector, so these two cases exhaust the state
+set. This is why a general interior seed has not been silently added
+to the theorem. A probe changes neither point. Iteration, with the
+control selected adaptively, gives
+\begin{equation}\label{eq:processmoment59}
+                  \E_P\norm{V_t-X_t}^2\le 2t/m^2.
+\end{equation}
+The inequality is unconditional; no posterior error bound after an
+unlikely observation is assumed.
+
+For probability vectors $p,q$ with $q_y\ge\eta$, the inequality
+$\log z\le z-1$ gives
+\[
+ D(p\Vert q)\le\sum_y(p_y-q_y)^2/q_y.
+\]
+Consequently the conditional divergence at a probe is at most
+$A\norm{X-V}^2/\eta$. The finite-trajectory relative-entropy chain rule
+cancels the common policy and rotation kernels. Applying
+\eqref{eq:processmoment59} at the probe times gives
+\begin{equation}\label{eq:processKL59}
+ D(P\Vert Q)\le \frac{2AN^2}{\eta m^2},\qquad
+ \TV(P_{\rm pub},Q_{\rm pub})
+       \le\sqrt{D(P\Vert Q)/2}
+       \le \frac Nm\sqrt{A/\eta}\le\varepsilon/2.
+\end{equation}
+Here marginalization can only decrease divergence. These elementary
+entropy facts apply to the joint classical trajectory, not to a quantum
+state. One may verify the total-variation inequality by partitioning
+into the set where $P\ge Q$ and its complement: the log-sum inequality
+reduces divergence to a Bernoulli divergence, whose second derivative
+in its first parameter is at least four. This yields
+$D(P\Vert Q)\ge2\TV(P,Q)^2$. The chain rule follows by factoring each
+trajectory probability into its conditional kernels. All probe
+probabilities in $Q$ are positive, so absolute continuity causes no
+exception. If $A=0$, every probe is constant and the divergence is zero.
+
+Round each rotation row and each probe row by rounding all but its last
+positive mass down to denominator $2^b$ and assigning the remainder to
+the last. A row supported on $d$ points changes in total variation by
+at most $(d-1)2^{-b}$. Thus every one-step joint kernel changes by at most
+$C_0 2^{-b}$. Coupling the two label--transcript processes until their
+first discrepancy proves, for every adaptive policy, an additional
+path error at most $NC_0 2^{-b}\le\varepsilon/2$. Combining this with
+\eqref{eq:processKL59} proves the asserted error. Each rounded row can
+be sampled by one uniform $b$-bit integer and cumulative integer masses;
+zero or deterministic rows may use fewer bits.
+
+The net and an added rational unit seed are explicit. For every
+command--vertex pair the exact enumeration in
+Lemma~\ref{lem:rationalnet58} examines at most $\binom{k-1}{3}$ triples,
+where $k\le13m^2+1$. The total is $O(|\mathcal A|k^4)$ constant-size
+rational linear-algebra operations, in addition to the probe tables.
+All determinants, comparisons and row identities involve rational
+numbers with polynomially bounded bit lengths in the supplied data and
+$\log m$; dyadic rounding adds $b$ bits. The computation of $m$ and $b$
+can use integer comparisons, not floating-point decisions. This proves
+the stated uniform, numerical-parameter complexity. It is a construction,
+not a minimum-width algorithm, and its exhaustive fallback need not be
+practical for large horizons.
+\end{proof}
+
+\subsection{An effective process converse for the rational free experiment}
+Keep the rational rotations and seed of
+\eqref{eq:rationaldata58}--\eqref{eq:rationalalphabet58}, now exposing the
+three nondisturbing binary probes
+\begin{equation}\label{eq:weakprobes59}
+       q_{j,+}(x)=(1+\lambda x_j)/2,\qquad
+       q_{j,-}(x)=(1-\lambda x_j)/2,
+       \quad j=1,2,3,
+\end{equation}
+where $0<\lambda<1$ is rational. This defines a fixed rational classical
+experiment. The probing law is not an implementation of nondisturbing
+quantum measurement. Let $\mathsf{PW}$ refer to the causal model above,
+not to terminal density-matrix width $W$.
+
+\begin{theorem}[Effective repeated-observation lower bound]
+\label{thm:processlower59}
+Let $0\le\varepsilon<1$ and $0<\delta<1-\varepsilon$. For an integer
+$t\ge0$ put
+\begin{equation}\label{eq:testlength59}
+ L_t=\max\left(1,\left\lceil18\lambda^{-2}625^t
+                                      \log(6/\delta)\right\rceil\right).
+\end{equation}
+At every horizon $N\ge t+3L_t$, any error-$\varepsilon$ causal machine
+has
+\begin{equation}\label{eq:processcutlower59}
+ |S_t|\ge(1-\varepsilon-\delta)(2\cdot3^t-1).
+\end{equation}
+If $\varepsilon+\delta<1/2$, it has the stronger lower bound
+$|S_t|\ge2\cdot3^t-1$. More generally, the same bounds hold at every
+cut $u$ with $t\le u\le N-3L_t$ after padding the prefixes by probes.
+In particular, for each fixed $0<\varepsilon<1$, there are explicit
+positive constants $c_{\varepsilon,\lambda},C_{\varepsilon,\lambda}$
+such that, for all sufficiently large $N$,
+\begin{equation}\label{eq:processgrowth59}
+ c_{\varepsilon,\lambda}N^{\log3/\log625}
+ \le\mathsf{PW}_{N,\varepsilon}
+ \le C_{\varepsilon,\lambda}(N+1)^2.
+\end{equation}
+The converse uses no spectral-gap theorem. Its exponent is not asserted
+to be sharp.
+\end{theorem}
+\begin{proof}
+The rational freeness and stabilizer argument in
+Theorem~\ref{thm:rationalseparation58} gives $2\cdot3^t-1$ different
+reachable pure Bloch vectors at time $t$. Their coordinates lie in
+$25^{-t}\Z^3$. Hence each distinct pair differs in some coordinate by
+at least $25^{-t}$, and the associated plus-probabilities in
+\eqref{eq:weakprobes59} differ by at least $\lambda25^{-t}/2$.
+Use one common continuation: repeat each of the three probes $L_t$
+times. Hoeffding's elementary Bernoulli bound and a union bound give
+\[
+ \mathbb P_x\left\{\max_j|\widehat q_j-q_{j,+}(x)|
+                    \ge\lambda25^{-t}/6\right\}
+ \le6\exp(-L_t\lambda^2 625^{-t}/18)\le\delta.
+\]
+The empirical neighborhoods for the different targets are disjoint.
+At a cut label $z$, let $Q_z$ be the law of this same continuation.
+Marginalizing prefix outputs and using total-variation correctness
+shows that the continuation law from each prefix gives its own
+neighborhood probability at least $1-\varepsilon-\delta$.
+Writing this law as $\sum_z\alpha_x(z)Q_z$ and summing over the disjoint
+neighborhoods yields \eqref{eq:processcutlower59}. If the probability
+exceeds $1/2$, each neighborhood needs a different label assigning it
+probability greater than $1/2$, giving the stronger conclusion.
+The proof does not condition on the success of a previous observation.
+Padding by arbitrary fixed probes leaves the target states unchanged
+and proves the assertion at later cuts. Unused final controls may also
+be probes. A terminal cut without enough remaining observations is not
+claimed to satisfy this lower bound.
+
+For the power lower bound take $\delta=(1-\varepsilon)/2$ and
+$B=54\lambda^{-2}\log(6/\delta)+4$. Then
+$t+3L_t\le B625^t$. For $N\ge B$, choose
+$t=\lfloor\log_{625}(N/B)\rfloor$. Since
+$3^t\ge(N/B)^{\log3/\log625}/3$ and $2\cdot3^t-1\ge3^t$,
+\eqref{eq:processcutlower59} gives, for example,
+$c_{\varepsilon,\lambda}=(1-\varepsilon)B^{-\log3/\log625}/6$.
+The upper bound follows from Theorem~\ref{thm:adaptivecompiler59} with
+$\eta=(1-\lambda)/2$ and $A=\lambda^2/2$. For irrational requested
+$\varepsilon$, construct at any rational tolerance between
+$\varepsilon/2$ and $\varepsilon$. All constants can thus be bounded
+from the displayed data without computing a group spectral gap.
+\end{proof}
+
+The tests in this theorem consume horizon. The full-state terminal
+exponential profile and the causal lower bound therefore express
+different requirements. Conversely, the causal upper construction
+controls one joint transcript law under adaptive control, not just its
+one-time marginals. Neither statement eliminates the logarithm in the
+retained terminal orbit theorem.
