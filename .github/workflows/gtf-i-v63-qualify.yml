@@ -1,0 +1,107 @@
+name: GTF I v63 native qualification
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v63-accuracy-profile-2026-09-28
+    paths:
+      - '.github/workflows/gtf-i-v63-qualify.yml'
+      - 'papers/GTF-I-v63-accuracy-profile/assembly/**'
+      - 'papers/GTF-I-v63-accuracy-profile/assemble_revision.py'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: gtf-i-v63-native-qualification
+  cancel-in-progress: true
+jobs:
+  qualify:
+    if: github.ref == 'refs/heads/revision/general-theta-foundations-i-v63-accuracy-profile-2026-09-28'
+    runs-on: ubuntu-22.04
+    timeout-minutes: 35
+    env:
+      PREFIX: papers/GTF-I-v63-accuracy-profile
+      ENTRY: GENERAL_THETA_FOUNDATIONS_I_V63_REVIEW_READY.md
+      TARGET_BRANCH: revision/general-theta-foundations-i-v63-accuracy-profile-2026-09-28
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          sparse-checkout: |
+            papers/GTF-I-v62-referee-response
+            papers/GTF-I-v63-accuracy-profile
+            .github/workflows/gtf-i-v63-qualify.yml
+            .github/workflows/gtf-i-v63-final-head.yml
+            GENERAL_THETA_FOUNDATIONS_I_V63_REVIEW_READY.md
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Materialize and commit readable native revision
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$PREFIX/assemble_revision.py"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add --sparse -f -- "$PREFIX"
+          python - <<'PY'
+          import os,subprocess
+          names=subprocess.check_output(['git','diff','--cached','--name-only','-z']).decode().split('\0')
+          if any(n and not n.startswith(os.environ['PREFIX']+'/') for n in names):
+              raise SystemExit('Source publication outside isolated revision')
+          PY
+          if ! git diff --cached --quiet; then
+            git commit -m 'feat(gtf-i): write v63 nonbacktracking entropy and exponential-accuracy proofs'
+            git push origin "HEAD:refs/heads/$TARGET_BRANCH"
+          fi
+          echo "GTF_SOURCE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - name: Install typesetting and exact arithmetic dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check sympy==1.14.0 PyMuPDF==1.26.7 scipy==1.17.0
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended texlive-latex-recommended texlive-science lmodern
+      - name: Qualify native source and isolated reconstruction
+        working-directory: papers/GTF-I-v63-accuracy-profile
+        run: python build.py --check-isolated
+      - name: Publish derived outputs without changing native source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib,json,os,pathlib,subprocess
+          home=pathlib.Path(os.environ['PREFIX'])
+          receipt=json.loads((home/'evidence/BUILD_RECEIPT.json').read_text())
+          if receipt['status']!='success' or receipt['source_commit']!=os.environ['GTF_SOURCE_COMMIT']:
+              raise SystemExit('Qualification not bound to native source')
+          if receipt['isolated_rebuild']['status']!='success':
+              raise SystemExit('Isolated reconstruction did not pass')
+          for name,digest in json.loads((home/'evidence/SOURCE_HASHES.json').read_text()).items():
+              path=str(home/name)
+              committed=subprocess.check_output(['git','show',os.environ['GTF_SOURCE_COMMIT']+':'+path])
+              if hashlib.sha256(committed).hexdigest()!=digest or hashlib.sha256(pathlib.Path(path).read_bytes()).hexdigest()!=digest:
+                  raise SystemExit('Native source changed: '+name)
+          PY
+          git add --sparse -f -- "$PREFIX" "$ENTRY"
+          python - <<'PY'
+          import os,subprocess
+          names=subprocess.check_output(['git','diff','--cached','--name-only','-z']).decode().split('\0')
+          if any(n and not(n.startswith(os.environ['PREFIX']+'/') or n==os.environ['ENTRY']) for n in names):
+              raise SystemExit('Derived publication outside isolated revision')
+          PY
+          git commit -m 'docs(gtf-i): publish qualified v63 manuscripts and exact accuracy certificates'
+          git push origin "HEAD:refs/heads/$TARGET_BRANCH"
+          git rev-parse HEAD | tee PUBLICATION_COMMIT.txt
+      - name: Preserve actual builder outputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gtf-v63-qualification-${{ github.run_id }}
+          if-no-files-found: error
+          retention-days: 30
+          path: |
+            papers/GTF-I-v63-accuracy-profile/
+            GENERAL_THETA_FOUNDATIONS_I_V63_REVIEW_READY.md
+            PUBLICATION_COMMIT.txt
