@@ -1,0 +1,57 @@
+name: A2 v14 exact-source verification
+on:
+  push:
+    branches:
+      - revision/a2-v14-relative-observability-normal-form-2026-09-28
+    paths:
+      - 'papers/A2-v14-relative-observability-normal-form/**'
+      - '.github/workflows/a2-v14-verify.yml'
+permissions:
+  contents: read
+jobs:
+  manuscript:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - name: Check out the exact revision
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            papers/A2-v13-two-flight-relative-invariants
+            papers/A2-v14-relative-observability-normal-form
+            reviews/a2-v13-external-harsh-top4-rereview-2026-09-28
+      - name: Install the mathematical build environment
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y texlive-latex-extra texlive-fonts-recommended latexmk python3-sympy python3-numpy python3-mpmath poppler-utils
+      - name: Build the current manuscript and companion
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd papers/A2-v14-relative-observability-normal-form
+          mkdir -p verification/current
+          printf 'source_commit=%s\nworkflow_commit=%s\nrun_id=%s\n' "$GITHUB_SHA" "$GITHUB_WORKFLOW_SHA" "$GITHUB_RUN_ID" > verification/current/run.txt
+          git rev-parse HEAD^{tree} >> verification/current/run.txt
+          pdflatex --version | head -n 1 >> verification/current/run.txt
+          python3 --version >> verification/current/run.txt
+          latexmk -pdf -interaction=nonstopmode -halt-on-error two_collision.tex > verification/current/companion.stdout 2>&1
+          latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex > verification/current/main.stdout 2>&1
+          pdfinfo main.pdf > verification/current/pdfinfo.txt
+          if grep -E 'undefined references|undefined citations|multiply defined' main.log; then exit 1; fi
+          if test -f tools/verify_v14.py; then
+            python3 tools/verify_v14.py > verification/current/v14.normal.json
+            python3 -O tools/verify_v14.py > verification/current/v14.optimized.json
+            cmp verification/current/v14.normal.json verification/current/v14.optimized.json
+          fi
+          sha256sum main.tex main.pdf main.log two_collision.pdf > verification/current/SHA256SUMS
+          git diff --exit-code
+      - name: Preserve source, PDFs, and the actual execution evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: A2-v14-${{ github.sha }}
+          path: papers/A2-v14-relative-observability-normal-form/
+          include-hidden-files: true
+          retention-days: 30
+          if-no-files-found: error
