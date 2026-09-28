@@ -1,0 +1,253 @@
+\documentclass[11pt,reqno]{amsart}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern,amsmath,amssymb,amsthm,mathtools,microtype}
+\usepackage[margin=1.1in]{geometry}
+\usepackage[hidelinks]{hyperref}
+\allowdisplaybreaks[2]
+\setlength{\emergencystretch}{2em}
+\numberwithin{equation}{section}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}\newtheorem{remark}[theorem]{Remark}
+\newcommand{\R}{\mathbb R}
+\newcommand{\C}{\mathbb C}
+\newcommand{\E}{\mathbb E}
+\newcommand{\one}{\mathbf 1}
+\newcommand{\diag}{\operatorname{diag}}
+\newcommand{\dist}{\operatorname{dist}}
+\newcommand{\rank}{\operatorname{rank}}
+\newcommand{\Res}{\operatorname{Res}}
+\newcommand{\KL}{\operatorname{KL}}
+\newcommand{\TV}{\operatorname{TV}}
+\newcommand{\diam}{\operatorname{diam}}
+\newcommand{\op}{\mathrm{op}}
+\newcommand{\cK}{\mathcal K}
+\newcommand{\cN}{\mathcal N}
+\newcommand{\sig}{\vartheta}
+\raggedbottom
+\hypersetup{pdftitle={Projective polynomial observations: normalization, spectrum, and singular inference},pdfauthor={Qian Qi},pdfsubject={A2 revision 88}}
+\title[Projective polynomial observations]{Projective polynomial observations:\\ normalization, spectrum, and singular inference}
+\author{Qian Qi}
+\date{September 19, 2026}
+\subjclass[2020]{35R30, 15A22, 41A20, 62G05, 62G15}
+\keywords{Inverse problems, projective observations, rational interpolation,
+matrix polynomials, weak identification, minimax estimation}
+\begin{document}
+\begin{abstract}
+We study matrix-valued probability curves obtained by normalizing a
+simultaneously diagonalizable polynomial through two unknown stochastic
+channels. A linear operator formed from the observations characterizes
+recovery of the monic normalization. With full-rank channels, at
+$2d+1$ clocks its nullity is exactly the degree of the common divisor of the component polynomials;
+this clock count is sharp in the worst case, even with fixed positive
+channels. Its smallest singular value and the product of the channel
+singular values enter an additive, one-sided spectral modulus. The
+modulus allows arbitrary competitors in the closed model and collisions
+between components. In degree one we replace latent-factor optimization
+by a canonical resolvent-residue invariant, identify its zero set, and
+prove its semicontinuity and a stronger Lipschitz inverse. A direct
+least-squares, singular-subspace and eigenvalue estimator attains this
+inverse order. Honest confidence sets and matching minimax orders follow
+on observable signal classes; two positive least-favourable families
+remain least favourable under adaptive clock selection.
+\end{abstract}
+\maketitle
+
+\section{Introduction}
+Normalization removes a scalar amplitude from a matrix observation. It
+can also remove a polynomial factor, and with it part of a latent
+spectrum. The inverse problem therefore has two stages: recover a
+normalization from projective data, and recover the spectrum of the
+resulting matrix polynomial. Treating these stages as two unrelated
+condition numbers can introduce a loss which the observation map does
+not possess. The normalization error remains diagonal in the true
+channel coordinates; it need not be amplified a second time by the
+channel inverses.
+
+We give a finite-clock formulation of this principle. The normalization
+is characterized by an observable linear residual operator. For
+polynomial degree $d$, its kernel has an exact algebraic description
+once $2d+1$ clocks are available. For an arbitrary design, its rank is
+the identification criterion, and its least singular value is the
+normalization condition. This separates a worst-case clock count from
+the information actually present in a particular curve.
+
+The affine experiment admits a further reduction. Its normalized curve
+has the form $A+B/(T-h)$. After recovering $h$, the residues of the
+inverse reduced pencil give an intrinsic condition, including at
+repeated eigenvalues. The condition is a finite observable construction,
+not a maximum over latent factorizations. It has a specified zero set
+and a sharp direction of semicontinuity. The spectral target remains
+Lipschitz through partial action collisions, although the factors and
+the residue partition may change. Two different boundaries---channel
+rank loss and collapse of the entire projective curve---give sharp
+statistical orders.
+
+\subsection{The polynomial experiment}
+Fix $d\ge1$, $2\le k\le\min(m_1,m_2)$, an interval $[L,D]$, distinct
+clocks $D<T_1<\cdots<T_\ell$, with $\ell\ge d+1$, and
+$0<\alpha_*<1/k$. The columns of
+$U\in\R^{m_1\times k}$ and $V\in\R^{m_2\times k}$ are probability
+vectors. Let $\alpha_b\ge\alpha_*$ and $\sum_b\alpha_b=1$. Put
+\begin{align}
+ f_b(z)&=\prod_{a=1}^d(z-\lambda_{ba}),\qquad \lambda_{ba}\in[L,D],
+       &q(z)&=\sum_b\alpha_b f_b(z),\nonumber\\
+ K(z)&=U\diag(\alpha_b f_b(z))V^{\mathsf T},
+       &P(T)&=\frac{K(T)}{q(T)}.                  \label{eq:model}
+\end{align}
+The parameter set $\cK_d$ is compact; singular channels and repeated
+roots are included. The polynomials $q$ and $f_b$ are monic of degree
+$d$. All $q(T_j)$ and component probabilities
+$p_b(T_j)=\alpha_b f_b(T_j)/q(T_j)$ have uniform positive bounds.
+An arbitrary scalar detector multiplying $K(T)$ disappears on
+normalization. Component-dependent detectors are not part of this
+experiment.
+
+The target $\Lambda$ is the unordered multiset of the $kd$ roots of all
+$f_b$, counted with multiplicity. We do not assert recovery of a
+partition of these roots into components. For two multisets of the same
+cardinality write
+\[
+ d_\infty(\Lambda,\Lambda')=
+       \min_\pi\max_a|\lambda_a-\lambda'_{\pi(a)}|,
+ \qquad \delta=\max_j\|P(T_j)-P'(T_j)\|_F.
+\]
+For real multisets this is the maximum distance between their increasing
+orders. All constants in this paper may depend on
+$d,k,m_1,m_2,\alpha_*,L,D$ and the fixed clocks, but not on action gaps,
+unless a gap is explicitly specified. There is no assertion uniform in
+growing dimension or a vanishing weight floor.
+
+Let $W=(T_j^r)_{j=1,\ldots,\ell;\,r=0,\ldots,d}$ and let $\Omega$
+be the orthogonal projector onto $\operatorname{col}(W)^\perp$. Write
+$q(z)=z^d+\sum_{r<d}a_rz^r$. For $c\in\R^d$ set
+$r_c(z)=\sum_{r<d}c_rz^r$ and define
+\begin{align}
+ \cN_Pc&=(\Omega\otimes I)
+       \big(r_c(T_j)\operatorname{vec}P(T_j)\big)_{j=1}^{\ell},
+       &\tau(P)&=\sigma_{\min}(\cN_P),\nonumber\\
+ b_P&=-(\Omega\otimes I)
+       \big(T_j^d\operatorname{vec}P(T_j)\big)_{j=1}^{\ell},
+       &\kappa&=\sigma_k(U)\sigma_k(V).           \label{eq:normalization}
+\end{align}
+Here $I$ has size $m_1m_2$, and the singular value uses Euclidean
+coefficient norm and the product Frobenius norm. Thus $\tau$ is a
+specified observable quantity, not a coordinate-free number without a
+choice of norms. Changing an orthonormal basis of the residual space
+does not change it. The normalization equation is $\cN_Pa=b_P$.
+
+\begin{theorem}[Normalization, clock design, and spectral recovery]
+\label{thm:main}
+Suppose the true channels have full column rank.
+If $\ell\ge2d+1$ and $g=\gcd(f_1,\ldots,f_k)$ is monic, then
+\begin{equation}\label{eq:kernel}
+ \ker\cN_P=\{(q/g)s:\deg s<\deg g\},\qquad
+ \dim\ker\cN_P=\deg g,
+\end{equation}
+where polynomials of degree less than $d$ are identified with their
+coefficient vectors. In particular $\tau(P)>0$ exactly when the
+component polynomials are relatively prime as a collection.
+
+For any design with $\ell\ge d+1$ and $\tau(P)>0$, every competitor
+in $\cK_d$ satisfies
+\begin{align}
+ \|a-a'\|_2&\le C\min\{1,\delta/\tau(P)\},        \label{eq:q-bound}\\
+ d_\infty(\Lambda,\Lambda')&\le
+ C\min\{1,[\delta(\kappa^{-1}+\tau(P)^{-1})]^{1/d}\}.
+                                                        \label{eq:poly-bound}
+\end{align}
+If the roots within each true $f_b$ are simple and separated by at least
+$\nu>0$, the exponent in \eqref{eq:poly-bound} is $1$, with a constant
+also depending on $\nu$. Roots belonging to different components may
+coincide. No rank or root-separation assumption is made on the competitor.
+
+Conversely, at an interior parameter with simple roots within each
+component, $\tau(P)=0$ gives a nonconstant local exact fibre with the
+same channels and a changing root multiset. The count $2d+1$ is sharp
+in the worst case for every fixed admissible $k$: there are relatively
+prime, interior examples for which $2d$ clocks do not identify the
+multiset. Richer curves can satisfy the rank criterion at fewer clocks.
+\end{theorem}
+
+In degree one write $f_b(z)=z-\xi_b$ and
+\begin{equation}\label{eq:affine}
+ h=\sum_b\alpha_b\xi_b,\quad
+ A=U\diag(\alpha)V^{\mathsf T},\quad
+ C=U\diag(\alpha_b\xi_b)V^{\mathsf T},\quad
+ B=hA-C.
+\end{equation}
+Then $P(T)=A+B/(T-h)$ and $K(z)=zA-C$. At three clocks
+$\tau(P)\asymp\gamma(P):=\|B\|_F$. Consequently
+\eqref{eq:poly-bound} recovers the gap-free affine inverse with
+$\sig=\kappa\gamma/(\kappa+\gamma)$, set to zero on either boundary.
+Section~\ref{sec:residue} strengthens this to an observable condition
+$\eta(P)$ constructed from inverse-pencil residues. It satisfies
+$\eta(P)\ge c\sig_*(P)$, where
+\begin{equation}\label{eq:envelope}
+ \sig_*(P)=\max\{\sig(\omega):\mathcal P(\omega)=P\}.
+\end{equation}
+Theorem~\ref{thm:residue} gives a one-sided Lipschitz bound with
+$\eta$ in place of $\sig_*$. Theorem~\ref{thm:algorithm} gives a
+direct spectral estimator, and Theorem~\ref{thm:statistics} proves
+matching minimax orders on both signal classes. These are worst-case
+class orders, with pointwise lower bounds on two explicit families;
+they are not a claim that every anisotropic singular point has the
+same local minimax geometry.
+
+\subsection{Relation to previous work}
+The equation $\cN_Pa=b_P$ is a vector rational-interpolation condition.
+Rational interpolation and its solution spaces have a substantial
+history; see Van Barel--Bultheel \cite{VBB}. We do not claim that
+linearizing rational interpolation is new. The content here is the
+identification of its defect with the common latent polynomial factor,
+its realization by positive fixed-channel fibres, and its combination
+with a one-sided spectral modulus in observation norm.
+
+Nor is multiset perturbation of a regular pencil new. Bauer--Fike
+\cite{BF} provides the basic exclusion argument. Chu's generalized
+pencil theorem \cite{Chu87} already treats eigenvalue clusters and
+relates conditioning to regularity and eigenvector deficiency; his
+matrix-polynomial extension \cite{Chu03} includes multiple eigenvalues
+of monic and regular polynomials. Our root-counting lemma is an
+explicit specialization of this resolvent-and-homotopy mechanism, not
+a claim to have discovered perturbation through repeated eigenvalues.
+The additional step is recovering an unknown scalar polynomial from
+normalized observations while retaining the diagonal form of its error.
+
+Higham--Mackey--Tisseur \cite{HMT} compare the conditioning of a matrix
+polynomial with that of its linearizations. In particular their
+simple-eigenvalue formula involves the derivative of the polynomial;
+it is not a uniform estimate through all component-root collisions.
+Tisseur--Higham \cite{TH} develop structured polynomial pseudospectra,
+and Su--Bai \cite{SB} study linearization of rational eigenvalue
+problems. Those results start with a specified polynomial or rational
+matrix function and a coefficient perturbation model. The present
+normalization rank, positive exact fibres, and additive conversion
+from categorical observation error are separate assertions. Our
+residue invariant uses the classical resolvent; the new bound also
+uses the exact projective pole-shift fibre before applying it.
+
+Observable latent diagonalization and factor identification are
+classical \cite{AMR,BJR}. Robust tensor uniqueness, including
+quantitative Kruskal-type results, is treated by
+Bhaskara--Charikar--Vijayaraghavan \cite{BCV}. Here the target is a
+multiset, not a stable naming of individual rank-one factors; repeated
+actions can destroy the latter without destroying the former.
+Li--Lee--Bresler \cite{LLB} give a general nuisance-transformation
+perspective on bilinear identification. The passage from inverse
+moduli to inference is classical \cite{Donoho,CaiLow,Dufour}, as is
+the occurrence of singular rates in finite mixtures \cite{HN}.
+The target-dependent distinction between partial spectral collisions
+and complete projective collapse is established below for the stated
+controlled categorical experiment.
+
+\input{article/v88/polynomial.tex}
+\input{article/v88/residues.tex}
+\input{article/v88/algorithm.tex}
+\input{article/v88/statistics.tex}
+\input{article/v88/relations.tex}
+\input{article/v88/references.tex}
+\end{document}

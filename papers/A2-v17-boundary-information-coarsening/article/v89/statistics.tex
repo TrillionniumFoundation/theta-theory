@@ -1,0 +1,316 @@
+\section{Honest inference and sharp observable signal classes}
+\label{sec:statistics}
+We first record the compact-quotient principle behind residual
+confidence sets. It applies to the polynomial model as well as its
+affine specialization.
+
+\begin{lemma}[Residual inversion]\label{lem:modulus}
+Let a compact parameter space have a continuous observation map $F$
+into a finite product of probability simplices and a continuous target
+$g$ in a compact metric space. For a true parameter $\omega$, put
+\[
+ \mathfrak m_\omega(t)=\sup\{d(g(\omega),g(\omega')):
+                             \|F(\omega')-F(\omega)\|\le t\}.
+\]
+Then $\mathfrak m_\omega(0)=0$ exactly when the target is constant on
+the exact fibre. In that case $\mathfrak m_\omega(t)\to0$ as
+$t\downarrow0$. If $e=\|\widehat F-F(\omega)\|$, a minimum-residual
+estimate has target error at most $\mathfrak m_\omega(2e)$.
+The target image of a residual ball of radius $\rho$ about
+$\widehat F$, when nonempty, has diameter at most
+$2\mathfrak m_\omega(e+\rho)$ and contains the truth on $e\le\rho$.
+\end{lemma}
+\begin{proof}
+The zero-radius assertion is the definition. If continuity at zero
+failed, compactness would give a limiting competitor in the exact
+fibre with different target. A residual minimizer has residual at most
+$e$, because the truth is feasible. The triangle inequality gives
+observation error at most $2e$. Every point of the residual ball is
+at observation distance at most $e+\rho$ from the truth, proving the
+remaining assertions.
+\end{proof}
+
+For the affine experiment, take $n$ independent categorical draws at
+each of the three clocks and put $N=3n$, $r=m_1m_2$. Let
+$\widehat P_j$ be the empirical matrices. For $0<\zeta<1$, define
+\begin{equation}\label{eq:confidence}
+ \rho_{N,\zeta}=\sqrt{\frac{r}{2n}\log\frac{6r}{\zeta}},
+ \qquad
+ \mathcal C=\{\omega\in\cK_1:
+          \max_j\|P_\omega(T_j)-\widehat P_j\|_F\le\rho_{N,\zeta}\}.
+\end{equation}
+Its target image is $\mathcal C_\xi$. If it is empty, report model
+inconsistency and the empty set. No action is assigned by the confidence
+procedure in that case. Coordinate extrema of the ordered spectra give
+simultaneous bands whenever the set is nonempty.
+
+\begin{theorem}[Risk, honesty, and adaptation]\label{thm:upper}
+The set \eqref{eq:confidence} has coverage at least $1-\zeta$
+uniformly over the entire closed model, including singular boundaries.
+The empty set is reported explicitly, and its diameter is defined as
+zero solely for the expected-diameter loss. For either
+$\psi=\eta$ or $\psi=\sig_*$, and every true datum with $\psi(P)>0$,
+the direct estimator of Theorem~\ref{thm:algorithm} satisfies
+\begin{align}
+ \E_P d_\infty(\widehat\xi,\xi)^2
+      &\le C\min\{1,(N\psi(P)^2)^{-1}\},\nonumber\\
+ \E_P\diam_\infty\mathcal C_\xi
+      &\le C_\zeta\min\{1,(\sqrt N\psi(P))^{-1}\}.
+                                                        \label{eq:stat-upper}
+\end{align}
+On the coverage event the diameter is at most
+$C\min\{1,\rho_{N,\zeta}/\psi(P)\}$.
+Neither signal nor either channel factor is supplied to the procedures.
+At $\psi=0$ the statements are coverage and bounded-range loss, not
+shrinking diameter.
+\end{theorem}
+\begin{proof}
+Hoeffding's inequality and a union bound over the $3r$ cell frequencies
+give
+\[
+ \Pr\{e>\rho_{N,\zeta}\}
+       \le6r\exp(-2n\rho_{N,\zeta}^2/r)=\zeta.
+\]
+An entrywise error bound $t$ gives a Frobenius bound $\sqrt r\,t$;
+for binary readouts the factor is $2$, not $1$.
+Theorem~\ref{thm:residue} and Lemma~\ref{lem:modulus} give the
+eventwise assertions, and on every outcome with nonempty set give
+$\diam\mathcal C_\xi\le C\min\{1,(e+\rho_{N,\zeta})/\psi(P)\}$.
+Further,
+\[
+ \E e^2\le\sum_{j=1}^3\E\|\widehat P_j-P_j\|_F^2
+       =\frac1n\sum_{j=1}^3
+              \left(1-\sum_{a,b}(P_j)_{ab}^2\right)\le3/n.
+\]
+No exceptional outcome is discarded. The empty-set convention
+preserves the diameter bound. Taking expectations proves its asserted
+order. Squaring \eqref{eq:algorithm-affine} and using this second
+moment proves the risk assertion; $\eta\ge c\sig_*$ supplies the
+other signal. Compactness gives extrema of the residual region. For
+fixed $n$ the categorical sample space is finite, so choosing
+minimizers, singular bases and tie conventions causes no measurable
+selection issue.
+\end{proof}
+
+Exact computation of $\mathcal C_\xi$ is an information-theoretic
+construction; it is not implied to be efficient by the preceding
+point estimator. Finite forward nets with mesh $r_0$ provide an
+exhaustive approximation, with residual padding $Cr_0$ and action
+padding $r_0$, by uniform forward Lipschitz continuity. This may be
+exponential in dimension and resolution. For degree $d>1$,
+Lemma~\ref{lem:modulus} and Theorem~\ref{thm:main} give the analogous
+polynomial confidence modulus. The following sharp statements concern
+the affine experiment.
+
+\subsection{Two positive least-favourable families}
+We give all constants in one lemma, so that the parameter class and the
+testing displacement use the same admissible neighbourhood.
+
+Let $u_0=m_1^{-1}\one$, $v_0=m_2^{-1}\one$. Choose unit zero-sum
+vectors $e,f$ and, when $k>2$, orthonormal zero-sum vectors
+$e_3,\ldots,e_k$ perpendicular to $e$ and
+$g_3,\ldots,g_k$ perpendicular to $f$. The dimension assumption
+$m_i\ge k$ gives these vectors. Fix a small constant $c_0>0$ and
+interior distinct actions whose first pair is $a_0-b_0,a_0+b_0$,
+with $b_0>0$, all other actions being above this pair. Set
+$\alpha_b=1/k$. For $0\le t\le t_0<b_0/2$, let
+$\lambda=1-t/b_0$ and put
+\begin{align}
+ \xi_{1,t}&=a_0-b_0+t,& \xi_{2,t}&=a_0+b_0-t,
+       &\xi_{b,t}&=\xi_b\quad(b\ge3),\nonumber\\
+ U_{t,:1}&=u_0+\frac{\epsilon_u e}{2\lambda},&
+ U_{t,:2}&=u_0-\frac{\epsilon_u e}{2\lambda},&
+ U_{t,:b}&=u_0+c_0e_b\quad(b\ge3),\label{eq:product-family}\\
+ V_{t,:1}&=v_0+\frac{\epsilon_v f}{2\lambda},&
+ V_{t,:2}&=v_0-\frac{\epsilon_v f}{2\lambda},&
+ V_{t,:b}&=v_0+c_0g_b\quad(b\ge3).\nonumber
+\end{align}
+The pole $h$ is fixed along this family.
+
+The second family fixes positive full-rank channels and positive
+weights. Choose distinct real $z_b$ with $\sum_b\alpha_bz_b=0$ and
+put, for an interior $a$,
+\begin{equation}\label{eq:collapse-family}
+ \xi_b(t)=a+t+s z_b,\qquad 0\le t\le t_0,
+ \qquad B=-sU\diag(\alpha_bz_b)V^{\mathsf T}.
+\end{equation}
+Here $h_t=a+t$, while $A,B$ do not depend on $t$.
+
+\begin{lemma}[Uniform family constants]\label{lem:families}
+There exist fixed $t_0>0$, $\epsilon_*>0$, $s_0>0$, a cell floor
+$p_*>0$, and positive constants $c_1,C_1,C_2$, depending only on the
+fixed experiment and the fixed choices just made, with the following
+properties. Both families are admissible throughout these ranges,
+all joint cell probabilities are at least $p_*$ for every
+$T\in[T_1,T_3]$, and $d_\infty(\xi(t),\xi(0))=t$.
+For either signal $\psi\in\{\eta,\sig_*\}$ and positive
+$w=\epsilon_u\epsilon_v$ in \eqref{eq:product-family}, or $w=s$
+in \eqref{eq:collapse-family}, uniformly on $[0,t_0]$,
+\begin{equation}\label{eq:family-constants}
+ c_1w\le\psi(P_t)\le C_1w,\qquad
+ \sup_{T\in[T_1,T_3]}\|P_t(T)-P_0(T)\|_F\le C_2wt.
+\end{equation}
+In the product family both observed marginals are exactly fixed, and
+\begin{align}
+ P_t(T)-P_0(T)
+  &=\frac{T-a_0}{2k(T-h)}\epsilon_u\epsilon_v
+                              (\lambda^{-2}-1)ef^{\mathsf T},
+                                                    \label{eq:product-identity}\\
+ \kappa(\omega_t)&=\frac{\epsilon_u\epsilon_v}{2\lambda^2},
+       &\sigma_k(A_t)&=\kappa(\omega_t)/k.       \label{eq:product-singular}
+\end{align}
+In the collapse family,
+\begin{equation}\label{eq:collapse-identity}
+ P_t(T)-P_0(T)=\frac{tB}{(T-a-t)(T-a)}.
+\end{equation}
+If $w=0$, the respective family has exactly the same laws for all $t$
+and all clocks in the interval, despite its changing action multiset.
+\end{lemma}
+\begin{proof}
+Choose $c_0,\epsilon_*$ small enough that every channel entry in the
+product family is at least half the corresponding uniform entry.
+Shrink $t_0$ and $s_0$ to keep every action in the declared interval
+and to preserve order. The collapse family also has a fixed positive
+cell floor, since its channels are strictly positive. These choices
+precede all later choices of $N,w$ and the testing displacement.
+
+In the first two terms of the product family the unnormalized sum is
+\begin{align*}
+ &(T-a_0+\lambda b_0)
+       (u_0+\epsilon_ue/(2\lambda))(v_0+\epsilon_vf/(2\lambda))^{\mathsf T}\\
+ &\quad +(T-a_0-\lambda b_0)
+       (u_0-\epsilon_ue/(2\lambda))(v_0-\epsilon_vf/(2\lambda))^{\mathsf T}.
+\end{align*}
+Its constant part is $2(T-a_0)u_0v_0^{\mathsf T}$, its linear parts
+are $b_0\epsilon_u ev_0^{\mathsf T}+b_0\epsilon_vu_0f^{\mathsf T}$,
+and its interaction part is
+$(T-a_0)\epsilon_u\epsilon_v ef^{\mathsf T}/(2\lambda^2)$.
+Division by $k(T-h)$ proves \eqref{eq:product-identity}. Zero sums
+of $e,f$ prove exact marginal cancellation.
+
+The latent vector $(1,-1,0,\ldots,0)/\sqrt2$ is a right singular
+vector of $U_t$ with singular value $\epsilon_u/(\sqrt2\lambda)$.
+Its orthogonal complement maps, independently of $\epsilon_u$, into
+the independent directions $u_0,e_3,\ldots,e_k$, all perpendicular to
+$e$. Its least singular value is a fixed positive number. Choosing
+$\epsilon_*$ smaller if necessary gives the stated smallest singular
+value, and the same proof applies to $V_t$. In $A_t=U_tV_t^{\mathsf T}/k$
+the pair direction maps $f$ to $(\kappa/k)e$; the complementary
+rank-$(k-1)$ map is fixed and has its nonzero singular values bounded
+below. This proves \eqref{eq:product-singular}.
+
+Taking the marginals of $B$ gives components of magnitude
+$b_0\epsilon_u/k$ and $b_0\epsilon_v/k$ in the $e$ and $f$
+directions. Thus $\gamma\ge c\max(\epsilon_u,\epsilon_v)$ and
+$\sig\asymp\epsilon_u\epsilon_v$. The actions are simple and both
+channels have full rank when the two contrasts are positive.
+Proposition~\ref{prop:factors}, including its rank argument for every
+alternative exact representation, gives $\sig_* =\sig$.
+Further, \eqref{eq:beta-bounds} and \eqref{eq:product-singular} imply
+$\beta\asymp\kappa^{-1}$; hence $\eta\asymp\epsilon_u\epsilon_v$.
+Since $\lambda$ stays in a fixed compact subinterval of $(0,1]$,
+$\lambda^{-2}-1\asymp t$, uniformly on the chosen interval.
+
+For the collapse family, subtraction of $A+B/(T-a-t)$ gives
+\eqref{eq:collapse-identity}. The fixed channel ranks imply
+$\gamma\asymp s$, while $\kappa$ stays bounded below. Simple-spectrum
+uniqueness gives $\sig_* =\sig\asymp s$ for $s>0$.
+The inequalities $c\sig_*\le\eta\le\gamma$ give $\eta\asymp s$.
+The denominators in both exact identities have fixed positive bounds,
+which gives \eqref{eq:family-constants} with one common set of
+constants after taking minima and maxima. Both exact identities also
+prove the assertions at $w=0$.
+\end{proof}
+
+\subsection{Adaptive experiments and the lower bounds}
+An adaptive experiment consists of parameter-independent probability
+kernels $\pi_i(dT\mid\mathcal H_{i-1})$ on $[T_1,T_3]$. Here
+$\mathcal H_{i-1}$ contains all preceding clocks and categorical
+observations, and any external randomization independent of the
+parameter. At step $i$ sample the clock with this kernel and then one
+categorical observation with law $P_\omega(T_i)$. Deterministic
+predictable clocks and fixed designs are included. The complete
+transcript, including clocks, is available to the estimator.
+
+\begin{theorem}[Sharp classes and honest-diameter lower bounds]
+\label{thm:statistics}
+For either $\psi=\eta$ or $\psi=\sig_*$, there exists $s_*>0$
+such that for $0<s\le s_*$ and $N=3n$,
+\begin{equation}\label{eq:minimax}
+ \inf_{\widehat\xi}\sup_{\omega:\psi(\mathcal P(\omega))\ge s}
+       \E_\omega d_\infty(\widehat\xi,\xi)^2
+                   \asymp\min\{1,(Ns^2)^{-1}\}.
+\end{equation}
+The direct estimator at the balanced three-clock design gives the upper
+bound. The lower bound remains valid when the infimum includes every
+adaptive experiment just defined.
+
+If a random spectrum set $J$ is honest at level $1-\zeta$ over
+$\cK_1$, with $0<\zeta<1/4$, then at the base point of either
+positive family,
+\begin{equation}\label{eq:diameter-lower}
+ \E_0\diam_\infty J\ge c_\zeta
+               \min\{1,(\sqrt N\psi(P_0))^{-1}\}.
+\end{equation}
+This is true under any such clock strategy. The exact singular limits
+of these families have nonvanishing risk and honest-diameter lower
+bounds. Equal channel contrasts $\epsilon$ give the transition
+$N\epsilon^4\asymp1$; full-spectrum spread $s$ with fixed channels
+gives $Ns^2\asymp1$.
+\end{theorem}
+\begin{proof}
+The upper bound follows from Theorem~\ref{thm:upper}.
+Lemma~\ref{lem:families} and its cell floor give, uniformly in the
+clock,
+\[
+ \KL(P_t(T),P_0(T))
+ \le\sum_{a,b}\frac{((P_t)_{ab}-(P_0)_{ab})^2}{(P_0)_{ab}}
+ \le Cw^2t^2.
+\]
+The conditional clock kernel is the same under both parameters.
+The relative-entropy chain rule therefore gives
+\[
+ \KL(\mathbb P_t^{(N)},\mathbb P_0^{(N)})
+   =\sum_{i=1}^N\E_t\KL(P_t(T_i),P_0(T_i))\le CNw^2t^2.
+\]
+This equality includes the external randomization and the entire
+transcript, so no fixed-design assumption is hidden in the bound.
+Take $t=c\min\{t_0,(\sqrt Nw)^{-1}\}$ with a sufficiently small
+fixed $c$. Pinsker's inequality makes the total variation at most
+$1/2$. The spectra are distance $t$ apart. Turning an estimate into
+the nearer of the two spectra gives maximal squared risk at least
+$t^2/16$.
+
+Here is the class bookkeeping. Fix once and for all the constants in
+Lemma~\ref{lem:families}, choose $M\ge1/c_1$, and set
+$w=Ms$, $\epsilon_u=\epsilon_v=\sqrt{Ms}$ in the product family.
+Take $s_*\le\epsilon_*^2/M$. Then every $t\in[0,t_0]$, including
+the testing displacement just chosen, has positive cell floor $p_*$,
+admissible actions and weights, and $\psi(P_t)\ge c_1Ms\ge s$.
+All constants in the entropy estimate remain unchanged. This proves
+the lower bound on the exact class in \eqref{eq:minimax}; the collapse
+family gives the other attained singular order.
+
+For an honest set, transfer coverage at the alternative to the base
+law. The union bound gives
+\[
+ \Pr_0\{\xi(0),\xi(t)\in J\}
+       \ge1-2\zeta-\TV(\mathbb P_t^{(N)},\mathbb P_0^{(N)}).
+\]
+Decreasing $c$ depending on $\zeta$ leaves a positive fixed lower
+bound. On this event the diameter is at least $t$.
+The comparison $\psi(P_0)\asymp w$ proves
+\eqref{eq:diameter-lower}. At $w=0$ use a fixed nonzero $t$;
+all conditional laws agree at every clock, so the transcript laws are
+identical for every policy. The same testing and coverage arguments
+give the stated nonvanishing bounds.
+\end{proof}
+
+The two paths identify different losses of the observation map. The
+first removes both first-order marginal changes and leaves a tensor
+product of weak channel directions. The second keeps the channels
+fixed and removes the whole projective contrast. Neither construction
+charges a small gap between two otherwise visible actions. The results
+are class-sharp and pathwise sharp as stated, rather than a complete
+classification of all directional moduli at intersections of singular
+strata.

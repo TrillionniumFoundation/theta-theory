@@ -1,26 +1,17 @@
-# Theta-Theory: current manuscripts and workstreams
+# Theta-Theory — A2 revision 82
 
-This index separates the current statistical A1 submission from the dynamical and mechanical research programme. Historical manuscripts and reports remain preserved.
+**Current referee entry: [A2_REVISION_V82_REVIEW_READY.md](A2_REVISION_V82_REVIEW_READY.md).**
 
-## Statistical A1 v36: frozen author version
+## Action rigidity with selective detection
 
-**Attainable information and causal compression at exponent collisions**
+Mathematical source: `80133d376cc28cc8f2555f58324a3285f9dcfb67` on `revision/a2-v82-selective-detector-rigidity-2026-09-18`.
 
-- [Pinned complete native manuscript directory](https://github.com/TrillionniumFoundation/theta-theory/tree/8f074b8027627a71a81a362b9d15f47975e1f3ae/papers/A1-english-v36-common-normalization)
-- [Pinned associated referee-style report](https://github.com/TrillionniumFoundation/theta-theory/blob/1e7af61f0812638d00ee0efad8fc9a68e2776c3c/reviews/a1-english-v36-harsh-independent-2026-09-08/REFEREE_REPORT.md)
-- Release pointer: `release/a1-v36-submission-2026-09-08`.
-- [Submission map and checklist](workstreams/2026-09-08-next-step/submission/README.md).
+[Complete manuscript](papers/A2-v17-boundary-information-coarsening/rigidity_v82.tex) · [Core reading edition](papers/A2-v17-boundary-information-coarsening/rigidity_v82_core.tex) · [Response to the referee](revisions/a2-v82/RESPONSE_TO_REFEREE.md) · [Verification](revisions/a2-v82/VERIFICATION.md).
 
-The associated AI-assisted report recommends acceptance within its stated main-article scope. It is not a journal decision, a proof-assistant certificate, or certification of all companion or planned papers. Exponent collisions are coincidences among exponent labels, not hard-sphere impacts.
+The new principal theorem recovers absolute actions from five projective endpoint matrices with unknown branch-selective log-affine detection. It learns the full-rank visible component count and uncalibrated channels, treats action coincidences distinguished by detector rates, identifies the exact remaining gauge, and gives a fixed-source nonconvex return realization. The full manuscript preserves all substantive v81 inputs and all historical mathematical files unchanged.
 
-## Executed research work, September 8, 2026
+The **10-page core reading edition** was natively compiled and visually inspected; **15 algebra checks passed**. The **full integrated native build was not executed locally**. The real native workflow compiles both entries and distinguishes its exact run status from these local checks.
 
-[Start at the execution index](workstreams/2026-09-08-next-step/README.md).
+## Historical entries
 
-The workstream contains the full DYN-A1 proof audit, a new two-collision count-response note for the actual triangular Lorentz gas, and a chronological contact/coarea note for finite hard-sphere histories. Full English TeX sources, independent finite diagnostics, and submission records accompany them. Compiled PDFs and the complete local reproduction archive are delivered in the originating conversation.
-
-The old eleven-paper targets are not automatically completed by statistical A1 or by these finite-time notes. The dynamical moving-cut manuscript and the specular collision calculations retain their own model and time assumptions. The Jacobi identification programme is another distinct manuscript line.
-
-## Preservation and review
-
-This index is proposed on a separate work branch. Creating that branch does not merge it into `main`. Existing mathematical sources, historical review reports and repository permissions are unchanged. Review each new theorem within its printed scope before downstream use.
+The prior root README is preserved byte-for-byte in [README_before_v82.md](revisions/a2-v82/README_before_v82.md). Existing manuscripts, reviews, revision branches and the default branch are not overwritten by this delivery. The full history and the older conditional, calibrated, convex and marked-billiard regimes remain available.

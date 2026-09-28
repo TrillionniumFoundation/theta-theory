@@ -1,0 +1,64 @@
+name: A2 v94 exact-head manuscript and source audit
+on:
+  push:
+    branches: [revision/a2-v94-germ-newton-stochastic-intersection-2026-09-19]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  manuscript:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install mathematical and native typesetting dependencies
+        run: |
+          python -m pip install numpy sympy
+          sudo apt-get update
+          sudo apt-get install -y latexmk texlive-latex-extra texlive-science texlive-fonts-recommended lmodern poppler-utils
+      - name: Audit exact HEAD and run finite regressions
+        run: python revisions/a2-v94/verify_a2_v94.py --receipt build/a2-v94/exact-head.json
+      - name: Compile the complete manuscript
+        working-directory: papers/A2-v17-boundary-information-coarsening
+        run: |
+          latexmk -pdf -interaction=nonstopmode -halt-on-error rigidity_v94.tex
+          if grep -E 'LaTeX Warning: (Reference|Citation).*undefined|There were undefined references|There were multiply-defined labels|Overfull \\[hv]box' rigidity_v94.log; then
+            echo 'Unresolved reference, duplicate label, or overfull box in the complete manuscript.'
+            exit 1
+          fi
+      - name: Package manuscript and exact source graph
+        run: |
+          mkdir -p build/a2-v94
+          cp papers/A2-v17-boundary-information-coarsening/rigidity_v94.pdf build/a2-v94/
+          cp papers/A2-v17-boundary-information-coarsening/rigidity_v94.log build/a2-v94/
+          pdftotext -layout build/a2-v94/rigidity_v94.pdf build/a2-v94/rigidity_v94.txt
+          python - <<'PY'
+          import json, pathlib, tarfile
+          root = pathlib.Path('.')
+          m = json.loads((root/'revisions/a2-v94/SOURCE_MANIFEST.json').read_text())
+          files = {'papers/A2-v17-boundary-information-coarsening/'+p for p in m['active_tex']}
+          files.update(m['new_source_sha256'])
+          files.update({'revisions/a2-v94/SOURCE_MANIFEST.json',
+                        'reviews/a2-v93-independent-harsh-top4-2026-09-19/REFEREE_REPORT.md'})
+          with tarfile.open('build/a2-v94/source-and-response.tar.gz', 'w:gz') as archive:
+              for name in sorted(files):
+                  archive.add(root/name, arcname=name)
+          PY
+      - name: Retain native log after any compilation attempt
+        if: always()
+        run: |
+          mkdir -p build/a2-v94
+          if test -f papers/A2-v17-boundary-information-coarsening/rigidity_v94.log; then
+            cp papers/A2-v17-boundary-information-coarsening/rigidity_v94.log build/a2-v94/
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: a2-v94-exact-head-${{ github.sha }}
+          path: build/a2-v94/
+          if-no-files-found: warn

@@ -1,0 +1,65 @@
+name: A2 v100 exact-head revision
+on:
+  push:
+    branches: [revision/a2-v100-canonical-degeneration-and-singular-entrances-2026-09-20]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: a2-v100-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  source:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+      - name: Preserve exact source snapshot
+        run: |
+          mkdir -p /tmp/source
+          git rev-parse HEAD > /tmp/source/HEAD.txt
+          git ls-files -z '*.tex' '*.bib' '*.sty' '*.cls' '*.py' '*.json' '*.md' '*.yml' '*.yaml' | tar --null -T - -czf /tmp/source/source.tar.gz
+      - uses: actions/upload-artifact@v4
+        with:
+          name: a2-v100-source-${{ github.sha }}
+          path: /tmp/source/
+          retention-days: 90
+  manuscript:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      EXPECTED_HEAD: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - name: Install native TeX and exact arithmetic
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y latexmk texlive-latex-extra texlive-fonts-recommended texlive-science lmodern poppler-utils
+          python -m pip install sympy==1.14.0
+      - name: Expand the lossless committed exact record
+        run: gzip -dc revisions/a2-v100/EXACT_DIAGNOSTICS.json.gz > revisions/a2-v100/EXACT_DIAGNOSTICS.json
+      - name: Check preservation and the complete principal source graph
+        run: python scripts/audit_a2_v100.py --source-only --output a2-v100-artifacts/SOURCE_RECEIPT.json
+      - name: Recompute every committed exact diagnostic
+        run: python scripts/verify_a2_v100_math.py --output a2-v100-artifacts/EXACT_DIAGNOSTICS.json --check revisions/a2-v100/EXACT_DIAGNOSTICS.json
+      - name: Build principal, archive and complete volume with all PDF dependencies
+        run: python scripts/build_a2_v100.py
+      - name: Bind actual native outputs and input graphs to source HEAD
+        run: |
+          python scripts/audit_a2_v100.py --output a2-v100-artifacts/RUNTIME_RECEIPT.json
+          cp revisions/a2-v100/{SOURCE_MANIFEST.json,RESPONSE_TO_REFEREE.md,LOCAL_VALIDATION.json} a2-v100-artifacts/
+          cp papers/A2-v17-boundary-information-coarsening/rigidity_v100{,_archive,_complete}.{pdf,log,fls} a2-v100-artifacts/
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: a2-v100-native-${{ github.sha }}
+          path: |
+            a2-v100-artifacts/
+            papers/A2-v17-boundary-information-coarsening/rigidity_v100*.log
+          if-no-files-found: warn
+          retention-days: 90

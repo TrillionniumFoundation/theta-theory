@@ -1,0 +1,137 @@
+\section{A direct spectral estimator}
+\label{sec:algorithm}
+The inverse estimates concern the true experiment, but their proof
+does not require a global search over latent factors. We give an
+explicit estimator for the multiset alone. Computation of the exact
+residual confidence region in the next section is a separate problem.
+
+Given matrices $\widehat P_j$, form $\cN_{\widehat P}$ and
+$b_{\widehat P}$ by \eqref{eq:normalization}. If the former has full
+column rank, let $\widehat a$ be its least-squares solution and put
+$\widehat q(z)=z^d+\sum_{r<d}\widehat a_rz^r$.
+For $d=1$, replace $-\widehat a_0$ by its projection onto $[L,D]$;
+write the resulting polynomial as $z-\widehat h$.
+Interpolate the matrices $\widehat q(T_j)\widehat P_j$ at the first
+$d+1$ clocks to obtain $\widehat K(z)$.
+
+Take the leading $k$ left and right singular subspaces of
+$\widehat P_1$, with orthonormal bases $\widehat Q_1,\widehat Q_2$.
+Form the reduced polynomial
+\[
+ \widehat M(z)=\widehat Q_1^{\mathsf T}\widehat K(z)\widehat Q_2.
+\]
+Compute its $kd$ roots, counted with algebraic multiplicity, project
+the real parts onto $[L,D]$, and sort them. This is the estimator
+$\widehat\Lambda$. If the normalization matrix lacks full column
+rank, a sampled $\widehat q$ is nonpositive, $\widehat P_1$ has rank
+less than $k$, or the leading coefficient of $\widehat M$ is singular,
+return a fixed multiset in $[L,D]$ instead. This convention defines the
+estimator everywhere. Numerical root tolerances can be added to the
+bounds below; the statements themselves refer to exact arithmetic.
+
+\begin{theorem}[Constructive recovery]\label{thm:algorithm}
+Put $e=\max_j\|\widehat P_j-P_j\|_F$.
+At every polynomial truth with $\kappa>0$ and $\tau(P)>0$, the
+estimator just defined satisfies
+\begin{equation}\label{eq:algorithm-poly}
+ d_\infty(\widehat\Lambda,\Lambda)
+ \le C\min\{1,[e(\kappa^{-1}+\tau(P)^{-1})]^{1/d}\}.
+\end{equation}
+The within-component simple-root hypothesis of Theorem~\ref{thm:main}
+gives the corresponding linear bound. In the affine experiment the
+stronger observable estimate holds:
+\begin{equation}\label{eq:algorithm-affine}
+ d_\infty(\widehat\xi,\xi)
+                    \le C\min\{1,e/\eta(P)\},\qquad P\in\mathcal R.
+\end{equation}
+The procedure uses a least-squares solve, a singular value decomposition,
+polynomial interpolation, and the roots of a regular matrix polynomial
+of size $k$ and degree $d$. It does not optimize over $U,V$ or enumerate
+a parameter net. No conditioning floor is an input to the estimator.
+\end{theorem}
+\begin{proof}
+The normalization operator and its right-hand side depend linearly on
+the observed entries. Therefore
+$\|\cN_{\widehat P}-\cN_P\|\le Ce$, and the residual of the true
+coefficient vector in the perturbed equation is at most $Ce$.
+If $e\le c\tau$, the least singular value is at least $\tau/2$.
+Least-squares optimality followed by the triangle inequality gives
+\begin{equation}\label{eq:algorithm-q}
+ \|\widehat a-a\|\le Ce/\tau.
+\end{equation}
+Projection of $\widehat h$ cannot increase its distance from $h$.
+For sufficiently small $e/\tau$, all sampled denominator values
+remain positive.
+
+We record the subspace estimate used in both parts of the proof.
+Let $Q_1,Q_2$ span the true column and row spaces of $P_1$. The
+best rank-$k$ approximation property implies
+\[
+ \|(I-\widehat Q_1\widehat Q_1^{\mathsf T})P_1\|\le2e,
+ \qquad
+ \|P_1(I-\widehat Q_2\widehat Q_2^{\mathsf T})\|\le2e.
+\]
+If $2e/\sigma_k(P_1)$ is sufficiently small, the largest principal
+angle has sine at most that ratio. In particular both matrices
+$\widehat Q_1^{\mathsf T}Q_1$ and
+$Q_2^{\mathsf T}\widehat Q_2$ are invertible with inverse norms at
+most two. This assertion also follows directly by applying the
+preceding residual inequalities to a singular value decomposition of
+$P_1$.
+
+For the polynomial bound, $\sigma_k(P_1)\ge c\kappa$.
+Consequently $S=\widehat Q_1^{\mathsf T}U$ and
+$T=\widehat Q_2^{\mathsf T}V$ are invertible, with
+$\|S^{-1}\|\|T^{-1}\|\le C/\kappa$, when $e/\kappa$ is small.
+At the interpolation nodes, reduction by these inverses yields
+\begin{align*}
+ S^{-1}\widehat M(T_j)T^{-\mathsf T}-D_f(T_j)
+ &=\widehat q(T_j)S^{-1}\widehat Q_1^{\mathsf T}
+            (\widehat P_j-P_j)\widehat Q_2T^{-\mathsf T}\\
+ &\quad +(\widehat q(T_j)-q(T_j))\diag(p_b(T_j)).
+\end{align*}
+As in \eqref{eq:diagonal-error}, interpolation bounds the coefficient
+error by $Ce(\kappa^{-1}+\tau^{-1})$. The leading coefficient is
+then invertible and Lemma~\ref{lem:roots} applies. The real-part and
+interval projections cannot increase the distance to any matched true
+real root. Sorting gives the claimed multiset estimate. All failure
+conditions are excluded in this small-error regime; bounded range
+handles its complement.
+
+For the stronger affine assertion, no comparison with $\kappa$ is
+needed. The resolvent formula \eqref{eq:residue-formula} gives
+\[
+ \sigma_k(P_1)^{-1}
+       =\|(T_1-h)M(T_1)^{-1}\|\le C\beta(P).
+\]
+Thus the two estimated subspaces have the preceding inverse bounds
+as soon as $e\beta$ is small. The true pencil, reduced into these
+estimated subspaces, has residues
+\[
+ (Q_2^{\mathsf T}\widehat Q_2)^{-1}R_x
+                (\widehat Q_1^{\mathsf T}Q_1)^{-1},
+\]
+whose total norm is at most $4\beta$.
+By \eqref{eq:algorithm-q} and $\tau\asymp\gamma$,
+$u=\widehat h-h$ satisfies $|u|\le Ce/\gamma$.
+Apply the exact gauge \eqref{eq:gauge} to this true reduced pencil.
+The difference between the estimated pencil and that gauge polynomial
+is the affine interpolant of
+\[
+ (T_j-\widehat h)\widehat Q_1^{\mathsf T}
+                      (\widehat P_j-P_j)\widehat Q_2,
+ \qquad j=1,2,
+\]
+and has coefficient norm at most $Ce$. The resolvent and root-counting
+argument of Theorem~\ref{thm:residue} now gives root matching error
+$C\beta e$ about the shifted actions, plus $Ce/\gamma$ for the
+shift itself. It applies to complex estimated roots as well. Projection
+and the bounded-range convention complete \eqref{eq:algorithm-affine}.
+\end{proof}
+
+The theorem is an arithmetic and stability statement for this explicit
+procedure. It is not a bit-complexity theorem uniform in dimension,
+precision and conditioning. In degree one only a $k\times k$
+generalized eigenvalue problem is required. Confidence-region
+optimization is not being declared tractable on the strength of this
+point-estimation result.

@@ -1,0 +1,124 @@
+name: A2 v76 relative determinants and phase-weighted smooth inverse
+on:
+  push:
+    branches:
+      - revision/a2-v76-relative-envelope-2026-09-17
+    paths:
+      - .github/workflows/a2-v76-native.yml
+      - .github/revision-sources/a2-v76-apply.py
+      - .github/revision-sources/a2-v76-payload-*.b64
+permissions:
+  contents: write
+concurrency:
+  group: a2-v76-native-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  native:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      SOURCE_PREFIX: papers/A2-v17-boundary-information-coarsening
+      EXPECTED_SOURCE_TREE: 950c448c8e8f19c6181fee26e425a9ac23b7dca9
+      SOURCE_BRANCH: revision/a2-v76-relative-envelope-2026-09-17
+    steps:
+      - name: Checkout exact authorial bootstrap
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          ref: ${{ github.sha }}
+      - name: Materialize and publish the complete revision
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B .github/revision-sources/a2-v76-apply.py
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'A2 v76: relative determinant principle, phase-weighted smooth inverse, integrated conditioning and complete referee response'
+          git fetch origin "refs/heads/$SOURCE_BRANCH"
+          REMOTE_SHA=$(git rev-parse FETCH_HEAD)
+          if test "$(git rev-parse "$REMOTE_SHA:$SOURCE_PREFIX")" = "$EXPECTED_SOURCE_TREE"; then
+            git checkout --detach "$REMOTE_SHA"
+          else
+            test "$REMOTE_SHA" = "$GITHUB_SHA"
+            git push origin "HEAD:refs/heads/$SOURCE_BRANCH"
+          fi
+          SOURCE_SHA=$(git rev-parse HEAD)
+          test "$(git rev-parse "$SOURCE_SHA:$SOURCE_PREFIX")" = "$EXPECTED_SOURCE_TREE"
+          echo "SOURCE_SHA=$SOURCE_SHA" >> "$GITHUB_ENV"
+          echo "EVIDENCE=$RUNNER_TEMP/a2-v76-native" >> "$GITHUB_ENV"
+          echo "PRODUCTS_BRANCH=revision/a2-v76-native-products-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_ENV"
+          echo "Frozen v76 source: $SOURCE_SHA; tree: $EXPECTED_SOURCE_TREE" >> "$GITHUB_STEP_SUMMARY"
+      - name: Install native TeX and exact algebra
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends latexmk texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils python3-sympy
+      - name: Build all three frozen entries and preserve evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          /usr/bin/python3 -B "$SOURCE_PREFIX/tools/build_revision_v76.py" --output-dir "$EVIDENCE"
+          /usr/bin/python3 -B "$SOURCE_PREFIX/tools/verify_source_zip_v69.py" "$EVIDENCE/native-source.zip" > "$EVIDENCE/strict-zip-modes.json"
+          if grep -En 'Overfull|LaTeX Error|Missing character:|There were undefined references|There were undefined citations' "$EVIDENCE/main.log" "$EVIDENCE/rigidity.log" "$EVIDENCE/two_collision.log"; then exit 1; fi
+          test "$(git rev-parse "HEAD:$SOURCE_PREFIX")" = "$EXPECTED_SOURCE_TREE"
+      - name: Commit, fetch and verify source-matched native products
+        shell: bash
+        run: |
+          set -euo pipefail
+          DEST="deliveries/a2-v76/$SOURCE_SHA"
+          /usr/bin/python3 -B "$SOURCE_PREFIX/tools/retain_native_v76.py" prepare --destination "$DEST" --source-commit "$SOURCE_SHA" --evidence "$EVIDENCE" --run-id "$GITHUB_RUN_ID"
+          git switch -c "$PRODUCTS_BRANCH" "$SOURCE_SHA"
+          git add -f -- "$DEST"
+          /usr/bin/python3 -B "$SOURCE_PREFIX/tools/retain_native_v76.py" verify --destination "$DEST" --ref INDEX
+          git commit -m 'Retain A2 v76 native PDFs, complete source archive, build logs and finite diagnostics'
+          PRODUCTS_COMMIT=$(git rev-parse HEAD)
+          export PRODUCTS_COMMIT
+          git push origin "HEAD:refs/heads/$PRODUCTS_BRANCH"
+          git fetch origin "refs/heads/$PRODUCTS_BRANCH:refs/remotes/origin/$PRODUCTS_BRANCH"
+          /usr/bin/python3 -B "$SOURCE_PREFIX/tools/retain_native_v76.py" verify --destination "$DEST" --ref "refs/remotes/origin/$PRODUCTS_BRANCH" --attestation
+          python3 - <<'PY'
+          import os,json,pathlib
+          e=os.environ; s=e['SOURCE_SHA']; p=e['PRODUCTS_COMMIT']; b=e['PRODUCTS_BRANCH']
+          report=json.loads((pathlib.Path(e['EVIDENCE'])/'build-report.json').read_text())
+          base='https://github.com/TrillionniumFoundation/theta-theory'
+          directory=f'{base}/tree/{p}/deliveries/a2-v76/{s}'
+          source=f"{base}/tree/{s}/{e['SOURCE_PREFIX']}"
+          lines=['# A2 revision 76 — referee handoff','',f'Frozen source: `{s}`; manuscript tree: `{e["EXPECTED_SOURCE_TREE"]}`.',f'Source branch: `{e["SOURCE_BRANCH"]}`.',f'Native branch: `{b}`; immutable product commit: `{p}`.','',f'[Complete English sources and response]({source})',f'[Source-matched PDFs, logs and archive]({directory})','', '## Native products','']
+          for stem in ('rigidity','main','two_collision'):
+              obj=report['entries'][stem]['product'];lines.append(f'- `{stem}.pdf`: {obj["pages"]} pages; SHA-256 `{obj["sha256"]}`.')
+          lines+=['','## Revision','', 'Corrects R75-P1; adopts the integrated R75-C1 conditioning analysis; adds a dimension-free off-diagonal determinant estimate and an actual-function matrix-envelope inverse with a phase-dependent sufficient order. All 1,017 inherited source files and 1,435 active labels are preserved. See the point-by-point response and historical derivation audit in the manuscript directory.','', 'Build and finite checks passed; they do not constitute formal proof verification or settle the referee\'s separate placement judgment. Visual inspection is reported separately, not asserted by this workflow.','']
+          pathlib.Path('A2_REVISION_V76_REVIEW_READY.md').write_text('\n'.join(lines))
+          provenance={'source_commit':s,'source_tree':e['EXPECTED_SOURCE_TREE'],'source_branch':e['SOURCE_BRANCH'],'products_commit':p,'products_branch':b,'workflow_run':e['GITHUB_RUN_ID'],'build_status':report['status'],'products':{k:v['product'] for k,v in report['entries'].items()}}
+          pathlib.Path('A2_REVISION_V76_PROVENANCE.json').write_text(json.dumps(provenance,indent=2,sort_keys=True)+'\n')
+          readme=pathlib.Path('README.md');old=readme.read_text();banner='## A2 revision 76\n\nThe current v76 source and native-PDF handoff is [here](A2_REVISION_V76_REVIEW_READY.md).\n\n'
+          if not old.startswith('## A2 revision 76\n'):readme.write_text(banner+old)
+          PY
+          git add -- README.md A2_REVISION_V76_REVIEW_READY.md A2_REVISION_V76_PROVENANCE.json
+          git add -f -- "$DEST/COMMITTED_OBJECTS_VERIFIED.json"
+          git commit -m 'Pin A2 v76 referee handoff and fetched-product verification'
+          git push origin "HEAD:refs/heads/$PRODUCTS_BRANCH"
+          git fetch origin "refs/heads/$PRODUCTS_BRANCH:refs/remotes/origin/$PRODUCTS_BRANCH"
+          /usr/bin/python3 -B "$SOURCE_PREFIX/tools/retain_native_v76.py" verify --destination "$DEST" --ref "refs/remotes/origin/$PRODUCTS_BRANCH"
+          mkdir -p "$RUNNER_TEMP/a2-v76-handoff"
+          cp README.md A2_REVISION_V76_REVIEW_READY.md A2_REVISION_V76_PROVENANCE.json "$RUNNER_TEMP/a2-v76-handoff/"
+          git switch --detach "$SOURCE_SHA"
+          cp "$RUNNER_TEMP/a2-v76-handoff/"* .
+          git add -- README.md A2_REVISION_V76_REVIEW_READY.md A2_REVISION_V76_PROVENANCE.json
+          git commit -m 'Complete A2 v76 source-branch handoff to immutable native products'
+          test "$(git rev-parse "HEAD:$SOURCE_PREFIX")" = "$EXPECTED_SOURCE_TREE"
+          git push origin "HEAD:refs/heads/$SOURCE_BRANCH"
+          git fetch origin "refs/heads/$SOURCE_BRANCH"
+          test "$(git rev-parse HEAD)" = "$(git rev-parse FETCH_HEAD)"
+          echo "Source branch: $SOURCE_BRANCH at $(git rev-parse HEAD)" >> "$GITHUB_STEP_SUMMARY"
+          echo "Native branch: $PRODUCTS_BRANCH; native commit: $PRODUCTS_COMMIT" >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload source-matched evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a2-v76-native-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/a2-v76-native/
+          if-no-files-found: warn
+          retention-days: 90

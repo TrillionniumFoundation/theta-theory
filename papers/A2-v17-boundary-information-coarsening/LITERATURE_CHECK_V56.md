@@ -1,0 +1,15 @@
+# Primary literature and observation scope — A2 v56
+
+Checked September 15, 2026. This is a targeted primary-record and theorem-scope check, not an exhaustive priority search or a fresh verification of the external proofs. The complete inherited bibliography remains unchanged. The principal article uses the same cited primary records.
+
+**Douglas Finamore and Martin Leguil.** *A CAT(0)-approach to the marked length spectral rigidity of Sinai billiards*, arXiv:2510.18983v1, October 21, 2025. The current primary record still lists v1. Its finite-horizon Sinai rigidity conclusion uses an enriched marked length spectrum. The primary PDF's printed pages 4–5 were inspected for that definition and Theorem A. The enriched auxiliary closed-geodesic data are not silently replaced by ordinary marked periodic-orbit lengths. No equivalence with the A2 endpoint-law observation is asserted. Primary record: https://arxiv.org/abs/2510.18983v1.
+
+**Jacopo De Simoi, Vadim Kaloshin and Martin Leguil.** *Marked Length Spectral determination of analytic chaotic billiards with axial symmetries*, arXiv:1905.00890v4, August 17, 2022; related journal DOI 10.1007/s00222-023-01191-8. The primary record describes analytic open billiards with non-eclipse and suitable symmetry/genericity assumptions, using marked length data. The new introduction compares supplied observations, not a purported removal of those hypotheses. Primary record: https://arxiv.org/abs/1905.00890v4.
+
+**Gerhard Osius.** *Asymptotic inference for semiparametric association models*, Annals of Statistics 37 (2009), 459–489; arXiv:0903.0702v1; DOI 10.1214/07-AOS572. The primary record describes odds-ratio association models without restricting the marginals. The A2 cancellation is credited as established association algebra; the nonlinear billiard law and actual-smooth signed geometric inverse are different steps. Primary record: https://arxiv.org/abs/0903.0702.
+
+**Anna Florio and Martin Leguil.** *Smooth conjugacy classes of 3D Axiom A flows*, arXiv:2010.04120v5, June 3, 2021. The version record explicitly removes an earlier geometric spectral-rigidity assertion affected by an error while retaining dynamical conclusions. The principal article does not use that removed assertion. Primary record: https://arxiv.org/abs/2010.04120v5.
+
+The inherited Holland–Wang citation is also retained for the dependence-function background. Its DOI endpoint did not return readable content in this session; a new full-text check of that paper is not claimed. The fresh primary association-scope check above is the Osius record, not an assertion derived from an unavailable page.
+
+The latest repository referee report is evidence of an author-requested assessment and of suggestions, not a primary publication establishing the manuscript's claims. Its adverse placement judgment is not converted into either a proof gap or an external result of nonpublishability. The revised principal theorem is presented with its complete assumptions and actual supplied datum.

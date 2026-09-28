@@ -1,0 +1,75 @@
+name: A2 v86 manuscript
+on:
+  push:
+    branches: [revision/a2-v86-shared-nuisance-singular-transition-2026-09-18]
+    paths:
+      - .github/workflows/a2-v86-manuscript.yml
+      - papers/A2-v17-boundary-information-coarsening/article/v86/**
+      - papers/A2-v17-boundary-information-coarsening/rigidity_v86*.tex
+      - papers/A2-v17-boundary-information-coarsening/verification/verify_v86.py
+      - papers/A2-v17-boundary-information-coarsening/v86-ready.txt
+permissions:
+  contents: write
+concurrency:
+  group: a2-v86-native-manuscript
+  cancel-in-progress: false
+jobs:
+  manuscript:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      ART: /tmp/a2-v86-artifact
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Preserve auditable source and base
+        run: |
+          set -euo pipefail
+          mkdir -p "$ART"
+          git rev-parse HEAD > "$ART/source-commit.txt"
+          git fetch --depth=1 origin 65cd70c44e1bb5f679bd3e0397c6d66da139102c
+          git ls-files papers/A2-v17-boundary-information-coarsening reviews | grep -E '\.(tex|md|py|json|txt)$' > /tmp/a2-v86-source-list
+          tar -czf "$ART/a2-sources.tar.gz" -T /tmp/a2-v86-source-list
+      - name: Install native build dependencies
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq texlive-latex-extra texlive-fonts-recommended texlive-science latexmk python3-numpy python3-sympy poppler-utils
+      - name: Validate identities, all source graphs and preservation
+        working-directory: papers/A2-v17-boundary-information-coarsening
+        run: /usr/bin/python3 verification/verify_v86.py --base "$PWD" --output "$ART/verification.json"
+      - name: Compile all editions with resolved references
+        working-directory: papers/A2-v17-boundary-information-coarsening
+        run: |
+          set -euo pipefail
+          for name in rigidity_v86_core rigidity_v86 rigidity_v86_full; do
+            latexmk -pdf -interaction=nonstopmode -halt-on-error "$name.tex"
+            if grep -E 'undefined references|undefined citations|There were undefined|multiply defined' "$name.log"; then exit 1; fi
+            cp "$name.pdf" "$ART/"
+            pdfinfo "$name.pdf" > "$ART/$name.pdfinfo.txt"
+          done
+          sha256sum rigidity_v86.pdf rigidity_v86_full.pdf rigidity_v86_core.pdf > "$ART/pdf-sha256.txt"
+          pdftoppm -r 80 -png rigidity_v86_core.pdf "$ART/core"
+      - name: Record native evidence and compiled copies
+        working-directory: papers/A2-v17-boundary-information-coarsening
+        run: |
+          set -euo pipefail
+          cp "$ART/verification.json" verification/v86-native-verification.json
+          cp "$ART/source-commit.txt" verification/v86-native-source-commit.txt
+          cp "$ART/pdf-sha256.txt" verification/v86-native-pdf-sha256.txt
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f rigidity_v86.pdf rigidity_v86_full.pdf rigidity_v86_core.pdf verification/v86-native-verification.json verification/v86-native-source-commit.txt verification/v86-native-pdf-sha256.txt
+          if ! git diff --cached --quiet; then
+            git commit -m 'Build all A2 v86 editions and record source-pinned native verification'
+            git push origin HEAD:revision/a2-v86-shared-nuisance-singular-transition-2026-09-18
+          fi
+      - name: Collect diagnostics
+        if: always()
+        run: |
+          mkdir -p "$ART"
+          find papers/A2-v17-boundary-information-coarsening -maxdepth 1 -name 'rigidity_v86*.log' -exec cp {} "$ART/" \;
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: a2-v86-manuscript
+          path: /tmp/a2-v86-artifact/
+          retention-days: 30

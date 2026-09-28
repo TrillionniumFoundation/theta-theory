@@ -1,0 +1,67 @@
+name: A2 v35 complete native submission
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - revision/a2-v35-referee-integration-native-verification-2026-09-13
+    paths:
+      - 'papers/A2-v17-boundary-information-coarsening/**/*.tex'
+      - 'papers/A2-v17-boundary-information-coarsening/tools/**'
+      - '.github/workflows/a2-v35-native-build.yml'
+permissions:
+  contents: read
+jobs:
+  complete-native:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Archive the immutable complete source before installing tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p a2-v35-evidence
+          git rev-parse HEAD > a2-v35-evidence/source-commit.txt
+          git archive --format=tar.gz --output=a2-v35-evidence/complete-source.tar.gz HEAD papers/A2-v17-boundary-information-coarsening README.md reviews/a2-v33-external-harsh-top4-2026-09-13 .github/workflows/a2-v35-native-build.yml
+          sha256sum a2-v35-evidence/complete-source.tar.gz > a2-v35-evidence/source-archive.sha256
+      - name: Retain the complete source archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: a2-v35-source-${{ github.sha }}
+          path: a2-v35-evidence/
+          retention-days: 30
+      - name: Finite R1 and preservation diagnostics
+        shell: bash
+        run: |
+          set -euo pipefail
+          python papers/A2-v17-boundary-information-coarsening/tools/check_revision_v35.py > a2-v35-evidence/v35-normal.json
+          python -O papers/A2-v17-boundary-information-coarsening/tools/check_revision_v35.py > a2-v35-evidence/v35-optimized.json
+          cmp a2-v35-evidence/v35-normal.json a2-v35-evidence/v35-optimized.json
+      - name: Install native TeX and PDF tools
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y latexmk texlive-latex-extra texlive-fonts-recommended texlive-science lmodern poppler-utils
+      - name: Compile the complete native main and companion
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          python papers/A2-v17-boundary-information-coarsening/tools/build_submission.py --output-dir "$GITHUB_WORKSPACE/a2-v35-evidence/native" 2>&1 | tee a2-v35-evidence/native-build-console.txt
+      - name: Hash all actual evidence products
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p a2-v35-evidence
+          find a2-v35-evidence -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > a2-v35-evidence/SHA256SUMS
+      - name: Retain actual logs and products, including failures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a2-v35-native-${{ github.sha }}
+          path: a2-v35-evidence/
+          if-no-files-found: error
+          retention-days: 30

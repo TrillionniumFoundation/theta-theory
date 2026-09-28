@@ -1,0 +1,830 @@
+\documentclass[11pt,reqno]{amsart}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern,amsmath,amssymb,amsthm,mathtools,microtype}
+\usepackage[margin=1.1in]{geometry}
+\usepackage[hidelinks]{hyperref}
+\allowdisplaybreaks[2]
+\setlength{\emergencystretch}{2em}
+\numberwithin{equation}{section}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}\newtheorem{remark}[theorem]{Remark}
+\newcommand{\R}{\mathbb R}
+\newcommand{\E}{\mathbb E}
+\newcommand{\one}{\mathbf 1}
+\newcommand{\diag}{\operatorname{diag}}
+\newcommand{\dist}{\operatorname{dist}}
+\newcommand{\KL}{\operatorname{KL}}
+\newcommand{\TV}{\operatorname{TV}}
+\newcommand{\diam}{\operatorname{diam}}
+\newcommand{\rank}{\operatorname{rank}}
+\newcommand{\op}{\mathrm{op}}
+\newcommand{\cK}{\mathcal K}
+\newcommand{\cC}{\mathcal C}
+\newcommand{\sig}{\vartheta}
+\raggedbottom
+\hypersetup{pdftitle={Action recovery from projective matrix curves},pdfauthor={Qian Qi},pdfsubject={A2 revision 87: arbitrary-rank, gap-free singular quotient theory}}
+\title[Action recovery from projective matrix curves]{Action recovery from projective matrix curves}
+\author{Qian Qi}
+\date{September 19, 2026}
+\subjclass[2020]{35R30, 15A22, 62G05, 62G15, 62H12}
+\keywords{Inverse problems, projective observations, latent variables,
+weak identification, matrix pencils, minimax estimation}
+\begin{document}
+\begin{abstract}
+We study recovery of an unordered action spectrum from normalized
+matrix observations with two unknown stochastic channels. For every
+fixed latent rank, three clocks identify every nonconstant spectrum
+with full-rank channels, whereas two clocks admit a nontrivial exact fibre. A one-sided inverse estimate
+holds against the full closed model, including rank-deficient
+competitors, without a lower bound on individual action gaps. Its
+conditioning separates the product of the two smallest channel
+singular values from the observable contrast of the projective curve.
+Thus partial action collisions and collapse of the entire spectrum
+have different consequences. Residual confidence sets are honest
+without supplied rank or contrast floors. Explicit positive families
+with unchanged marginals, and a second family with a collapsing
+spectrum, give matching risk and confidence-diameter orders in every
+latent rank. The lower bounds also hold under adaptive clock selection.
+The binary determinant law is recovered as a separated-spectrum case.
+\end{abstract}
+\maketitle
+
+\section{Introduction}
+A selective observation can erase the total mass of an experiment
+without erasing the relative frequencies of two conditionally
+independent readings. The resulting datum is a probability matrix.
+When an unobserved component with action $\xi_b$ contributes a factor
+$T-\xi_b$ at clock $T$, the matrix is a rational curve with an unknown
+common pole. The action spectrum is a feature of this curve, not of
+a particular naming of the hidden components.
+
+The exact matrix-pencil inverse is well understood when the channels
+are well conditioned and the actions are separated. The question here
+is different: how much information about the \emph{actions} remains
+when the channels approach rank loss, some actions coincide, or the
+whole clock curve approaches a constant? These limits should not be
+combined into an unspecified inverse-function constant. Nor should
+conditioning for recovering eigenvectors be charged to a problem
+whose target is only the unordered spectrum.
+
+We prove one estimate which separates the two relevant losses. The
+first is bilinear: a weak direction in each readout channel produces
+the product of the two weaknesses. The second is projective: a nearly
+constant normalized curve conceals the location of its common pole.
+A partial collision of actions causes neither loss by itself. The
+same estimate yields exact identification, honest confidence regions,
+and minimax upper bounds. Two explicit families show that its two
+singular orders cannot in general be improved.
+
+\subsection{The experiment}
+Fix integers $2\le k\le\min(m_1,m_2)$, real numbers
+$L<D<T_1<T_2<T_3$, and $0<\alpha_*<1/k$.
+Let $\cK$ be the compact set of parameters
+\[
+ \omega=(U,V,\alpha,\xi),\qquad
+ U\in\R^{m_1\times k},\quad V\in\R^{m_2\times k},
+\]
+where the columns of $U,V$ are probability vectors,
+$\alpha_b\ge\alpha_*$, $\sum_b\alpha_b=1$, and
+$L\le\xi_1\le\cdots\le\xi_k\le D$.
+Rank-deficient channels and repeated actions are included. Define
+\begin{align}
+ h&=\sum_b\alpha_b\xi_b,&
+ p_b(T)&=\frac{\alpha_b(T-\xi_b)}{T-h},\nonumber\\
+ P_\omega(T)&=U\diag(p_b(T))V^{\mathsf T},&
+ \mathcal P(\omega)&=(P_\omega(T_1),P_\omega(T_2),P_\omega(T_3)).
+ \label{eq:v87-model}
+\end{align}
+Every $P_\omega(T)$ is a probability matrix. All weights $p_b(T)$
+have a positive lower bound on $[T_1,T_3]$. The normalization of raw
+matrices $c(T)U\diag(a_b(T-\xi_b))V^{\mathsf T}$ gives
+\eqref{eq:v87-model}, with $\alpha_b=a_b/\sum_ca_c$, for every
+unknown positive scalar detector $c(T)$. Moreover
+\[
+ \log\frac{p_b(T)}{p_c(T)}
+ =\log\frac{\alpha_b}{\alpha_c}+\log(T-\xi_b)-\log(T-\xi_c).
+\]
+Thus the original logarithmic action law is retained. Componentwise
+clock-dependent detectors are a different experiment.
+
+The target is the spectrum with multiplicity, metrized by
+\[
+ d_\infty(\xi,\xi')=\min_{\pi\in\mathfrak S_k}
+          \max_b|\xi_b-\xi'_{\pi(b)}|
+        =\max_b|\xi_b-\xi'_b|.
+\]
+The last equality holds for the displayed increasing order. We use
+$\|\mathcal P-\mathcal P'\|_*=\max_j\|P_j-P'_j\|_F$.
+All unspecified constants depend only on the fixed dimensions,
+intervals, weight floor and clocks.
+
+Put
+\begin{align}
+ A&=U\diag(\alpha_b)V^{\mathsf T},&
+ B&=U\diag(\alpha_b(h-\xi_b))V^{\mathsf T},\nonumber\\
+ \kappa(\omega)&=\sigma_k(U)\sigma_k(V),&
+ \gamma(\omega)&=\|B\|_F,\qquad
+ \sig(\omega)=\frac{\kappa\gamma}{\kappa+\gamma}.
+ \label{eq:v87-signal}
+\end{align}
+Set $\sig=0$ when either factor vanishes. In particular $\sig$ is
+continuous on the closed model. The identity
+\begin{equation}\label{eq:v87-curve}
+                      P_\omega(T)=A+\frac{B}{T-h}
+\end{equation}
+is the starting point of the argument.
+
+\begin{theorem}[Projective spectrum and singular modulus]
+\label{thm:v87-main}
+If $\sig(\omega)>0$, then for every $\omega'\in\cK$,
+\begin{equation}\label{eq:v87-main-bound}
+ d_\infty(\xi,\xi')+|h-h'|
+ \le C\min\left\{1,
+          \frac{\|\mathcal P(\omega)-\mathcal P(\omega')\|_*}
+               {\sig(\omega)}\right\}.
+\end{equation}
+There is no rank, contrast, or individual action-gap assumption on the
+competitor. No individual action-gap constant enters $C$.
+Consequently three clocks identify the spectrum and $h$ whenever the
+channels have full column rank and not all actions coincide. Two
+clocks do not identify them, even with fixed positive full-rank
+channels and interior, distinct actions.
+
+If $\xi_k-\xi_1\ge\Delta>0$, then
+$\sig(\omega)\ge c_\Delta\kappa(\omega)$, so
+\eqref{eq:v87-main-bound} holds with $\kappa$ in place of $\sig$ and
+a constant depending additionally on $\Delta$, but on no smaller gap.
+\end{theorem}
+
+The theorem extends the earlier arbitrary-rank exact clock-pencil
+inverse by a uniform, one-sided singular estimate. At simple spectra
+it also identifies the channels and relative weights up to a common
+permutation; at repeated spectra these factors can have additional
+gauges. The estimate concerns the spectrum, and does not assert
+uniform recovery of those factors through an eigenvalue collision.
+
+For an intrinsic formulation, define on the model image
+\begin{equation}\label{eq:v87-envelope}
+ \sig_*(P)=\max\{\sig(\omega):\mathcal P(\omega)=P\}.
+\end{equation}
+Compactness makes the maximum attainable. This is invariant under
+all latent representations of the same datum, not merely under
+permutation. If it is positive, Theorem~\ref{thm:v87-main} shows that
+all representatives have the same spectrum and pole. The estimate
+then holds with $\sig_*(P)$, by using a maximizing representative.
+For a simple spectrum the stochastic spectral factors determine
+$\kappa$ up to permutation, and hence $\sig_* = \sig$.
+For repeated spectra \eqref{eq:v87-envelope} is a compact
+factorization problem; no unproved closed formula is assumed.
+
+\subsection{Statistical consequence}
+At each of the three clocks observe $n$ independent draws from the
+$m_1m_2$-cell law, and let $N=3n$.
+Section~\ref{sec:v87-statistics} constructs a residual estimator and
+an honest confidence region over the entire closed model, without
+supplying either conditioning factor. For each true observation $P$
+with $\sig_*(P)>0$, their squared risk and expected diameter satisfy
+\begin{equation}\label{eq:v87-stat-summary}
+ \E d_\infty(\widehat\xi,\xi)^2
+       \le C\min\{1,(N\sig_*(P)^2)^{-1}\},\qquad
+ \E\diam_\infty\cC_\xi
+       \le C_\zeta\min\{1,(\sqrt N\sig_*(P))^{-1}\}.
+\end{equation}
+These orders are minimax sharp on the classes
+$\{\omega:\sig_*(\mathcal P(\omega))\ge s\}$ for all sufficiently
+small $s>0$. They are attained on two different positive families:
+one with weak channel directions and fixed action spread, and one
+with full-rank channels and a collapsing action spread. The same
+lower bounds hold for adaptive selection of clocks in $[T_1,T_3]$.
+
+\subsection{Predecessors and the contribution}
+Observable diagonalization and latent-structure identification are
+classical; see Allman--Matias--Rhodes \cite{AMR} and
+Bonhomme--Jochmans--Robin \cite{BJR}. In this experiment a clock is a
+controlled covariate, not an additional conditionally independent
+readout. We use the usual rank-one spectral decomposition, rather
+than claim a new general tensor-identifiability theorem. The exact
+three-clock reconstruction was already available in the earlier
+clock-pencil derivation. The present assertion is its gap-free
+singular modulus and its finite-experiment lower bounds.
+
+Identification modulo nuisance transformations has a general
+bilinear formulation in Li--Lee--Bresler \cite{LLB}. Here the
+normalization nuisance has a specific one-parameter two-clock fibre,
+and three observations remove it. The perturbation proof below is
+related to the classical matrix-pencil perspective of Bauer--Fike
+\cite{BF}; we include the required eigenvalue argument. Applying a
+condition number to an observed inverse and then another to its
+eigenvectors would not establish the stated product law. The essential
+step is to keep the pole perturbation diagonal after multiplication
+by the \emph{true} two channel inverses.
+
+The relation between moduli and inference is classical
+\cite{Donoho,CaiLow}; weak identification and nonshrinking honest
+sets have important precedents in \cite{Dufour}. Ho--Nguyen
+\cite{HN} study singularity structures and rates for finite mixtures.
+The calculation here is for a controlled categorical experiment with
+unknown channels. Partial coalescence of action values does not cause
+a slower action-spectrum rate: the full matrix curve still retains
+the spectrum. Loss of a channel direction and loss of the whole
+projective contrast do cause singular rates, as the two exact
+families demonstrate. This distinction is a statement about the
+observation map and the chosen target, not about finite mixtures in
+general.
+
+\section{The projective fibre and its third-clock resolution}
+\label{sec:v87-clock}
+\begin{lemma}[Pole recovery]\label{lem:v87-pole}
+If $\gamma>0$, set $X=P_1-P_2$, $Y=P_2-P_3$. Then
+\begin{equation}\label{eq:v87-ratio}
+ \frac{\langle X,Y\rangle_F}{\|Y\|_F^2}
+ =\frac{T_2-T_1}{T_3-T_2}\frac{T_3-h}{T_1-h},\qquad
+ c\gamma\le\|Y\|_F\le C\gamma.
+\end{equation}
+If $\delta=\|\mathcal P-\mathcal P'\|_*\le c_0\gamma$ for a
+sufficiently small fixed $c_0$, the candidate also has $\gamma'>0$,
+and
+\begin{equation}\label{eq:v87-pole-error}
+                         |h-h'|\le C\delta/\gamma.
+\end{equation}
+\end{lemma}
+\begin{proof}
+Subtract \eqref{eq:v87-curve} at consecutive clocks. The differences
+are scalar multiples of $B$, which gives \eqref{eq:v87-ratio}.
+All scalar multipliers and their relevant reciprocals are bounded
+because $h\in[L,D]$. If $\delta\le c_0\gamma$, then
+$\|Y'\|_F\ge\|Y\|_F-2\delta\ge c\gamma/2$; in particular $B'$
+is nonzero. The difference of the two ratios is at most
+$C\delta/\gamma$: expand their numerators and denominators, using
+$\|X\|_F,\|Y\|_F,\|X'\|_F,\|Y'\|_F\le C\gamma$ and the
+lower bounds on the denominators. The derivative of the right side
+of \eqref{eq:v87-ratio} is
+\[
+ \frac{T_2-T_1}{T_3-T_2}\frac{T_3-T_1}{(T_1-h)^2},
+\]
+which is positive and bounded below on $[L,D]$. This proves
+\eqref{eq:v87-pole-error}.
+\end{proof}
+Once $h$ is recovered, two values of $(T-h)P(T)$ give the affine
+polynomial
+\begin{equation}\label{eq:v87-cleared}
+                  K(T)=U\diag(\alpha_b(T-\xi_b))V^{\mathsf T}.
+\end{equation}
+Its reduced generalized eigenvalues are the actions, with
+multiplicity. Section~\ref{sec:v87-inverse} proves this and its
+stability without first recovering individual eigenvectors.
+
+\begin{proposition}[The exact two-clock fibre]\label{prop:v87-fibre}
+Fix an interior parameter with positive full-rank channels and distinct
+actions. Its two-clock fibre contains a smooth nonconstant curve with
+these same channels. With $H=(T_1-h)(T_2-h)$ and sufficiently small
+real $u$, this curve is
+\begin{align}
+ h_u&=h+u,\nonumber\\
+ \alpha_{b,u}&=\alpha_b\left(1+\frac{u(h-\xi_b)}{H}\right),
+                                                        \label{eq:v87-gauge}\\
+ \xi_{b,u}&=\frac{\xi_b+u\{1+(h-\xi_b)(T_1+T_2-h)/H\}}
+                  {1+u(h-\xi_b)/H}.\nonumber
+\end{align}
+Both observed matrices are exactly unchanged. Moreover
+\begin{equation}\label{eq:v87-gauge-derivative}
+ \left.\frac{d\xi_{b,u}}{du}\right|_{u=0}
+                =\frac{(T_1-\xi_b)(T_2-\xi_b)}{H}>0.
+\end{equation}
+\end{proposition}
+\begin{proof}
+Let $q_b(T)$ be the affine interpolant of $p_b(T_1),p_b(T_2)$.
+Direct calculation gives
+\begin{equation}\label{eq:v87-q}
+ q_b(T)=\alpha_b\left[1+(h-\xi_b)
+                           \frac{T_1+T_2-h-T}{H}\right].
+\end{equation}
+The affine function
+$\alpha_b(T-\xi_b)-u q_b(T)$ has slope $\alpha_{b,u}$ and root
+$\xi_{b,u}$. At $T_j$, $j=1,2$, it equals
+$(T_j-h-u)p_b(T_j)$. Summing over $b$ gives the polynomial
+$T-h-u$. Thus $\sum_b\alpha_{b,u}=1$ and
+$\sum_b\alpha_{b,u}\xi_{b,u}=h+u$, and the two normalized weights
+are unchanged. Positivity, the weight floor, distinctness and action
+bounds persist for small $u$ by the interior assumptions.
+Differentiation gives \eqref{eq:v87-gauge-derivative}.
+\end{proof}
+The obstruction is present even when the channels are fixed. It is
+therefore a normalization fibre, not a failure of a spectral algorithm.
+
+\section{A gap-free one-sided inverse}
+\label{sec:v87-inverse}
+We first record an elementary spectral fact. The use of a multiset
+rather than individually labelled eigenvectors is essential.
+
+\begin{lemma}[Matching a perturbed real diagonal spectrum]
+\label{lem:v87-match}
+Let $D_0=\diag(t_1,\ldots,t_k)$ with increasing real $t_b$.
+If a real matrix $D_0+E_0$ has real eigenvalues
+$t'_1\le\cdots\le t'_k$, counted with algebraic multiplicity, then
+\begin{equation}\label{eq:v87-match}
+             \max_b|t_b-t'_b|\le(2k-1)\|E_0\|_\op.
+\end{equation}
+Repeated eigenvalues in either spectrum are allowed.
+\end{lemma}
+\begin{proof}
+Write $\varepsilon=\|E_0\|_\op$. For every $0\le s\le1$, the
+spectrum of $D_0+sE_0$ is in the union of the complex disks of radius
+$\varepsilon$ about $t_b$: outside this union the diagonal resolvent
+has norm less than $\varepsilon^{-1}$, so a Neumann series proves
+invertibility. Use slightly larger disks first, choosing their radius
+so distinct connected components have disjoint boundaries. The number
+of eigenvalues in each component is constant along the homotopy,
+by the argument principle for the characteristic polynomial. It is
+the number of its centres, counted with multiplicity. A component
+with $r$ centres has diameter between extreme centres at most
+$2(r-1)\varepsilon$, in the limiting radius. A root in the component
+is consequently at distance at most $(2r-1)\varepsilon$ from every
+one of those centres. Match within each component and let the
+additional radius decrease to zero. For real ordered spectra an
+increasing matching minimizes the maximum distance: an inverted pair
+can be uncrossed without increasing that distance. This proves
+\eqref{eq:v87-match}.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:v87-main}]
+It suffices first to consider $\delta\le c_0\sig$.
+Let $L_U=U^\dagger$ and $R_V=(V^\dagger)^{\mathsf T}$ be the
+true channel inverses. They are used only in the proof, not supplied
+to the estimator. Their norms have product $\kappa^{-1}$.
+Let $K'(T)=(T-h')P_{\omega'}(T)$, an affine matrix polynomial even
+when the candidate channels are singular, and write
+\[
+                         M(T)=L_UK'(T)R_V.
+\]
+At $T_j$, $j=1,2$,
+\begin{align}
+ M(T_j)&=\diag(\alpha_b(T_j-\xi_b))
+        -(h'-h)\diag(p_b(T_j))+F_j,\nonumber\\
+ F_j&=(T_j-h')L_U(P'_j-P_j)R_V,
+              \qquad \|F_j\|_\op\le C\delta/\kappa.
+                                                    \label{eq:v87-whiten}
+\end{align}
+Affinely interpolate this identity. The coefficient norms of the
+interpolant of $F_1,F_2$ are bounded by $C\delta/\kappa$.
+The pole term is diagonal, with scalar affine entries $q_b$ in
+\eqref{eq:v87-q}; their coefficients are uniformly bounded. Hence
+\begin{equation}\label{eq:v87-coefficients}
+ M(T)=(D_\alpha+E_1)T-D_\alpha D_\xi+E_0,
+ \qquad \|E_0\|_\op+\|E_1\|_\op
+       \le C\delta(\kappa^{-1}+\gamma^{-1})=C\delta/\sig.
+\end{equation}
+Here $D_\alpha=\diag(\alpha_b)$ and $D_\xi=\diag(\xi_b)$.
+This is the cancellation in the proof: the pole error is \emph{not}
+multiplied by a second channel inverse bound.
+
+For small enough $c_0$, $D_\alpha+E_1$ is invertible, with inverse
+norm at most $2/\alpha_*$. The roots of $\det M(T)$ are the
+spectrum of
+\begin{equation}\label{eq:v87-root-matrix}
+ Z=(D_\alpha+E_1)^{-1}(D_\alpha D_\xi-E_0),\qquad
+            \|Z-D_\xi\|_\op\le C\delta/\sig.
+\end{equation}
+To identify those roots without a hypothesis on the candidate, observe
+that the leading coefficient is also
+\[
+                 (L_UU')\diag(\alpha'_b)(V'^{\mathsf T}R_V).
+\]
+Its invertibility forces both outer square factors to be invertible.
+Thus
+\[
+ \det M(T)=\det(L_UU')\det(V'^{\mathsf T}R_V)
+                         \prod_b\alpha'_b(T-\xi'_b).
+\]
+In particular $Z$ has exactly the real candidate spectrum, with
+multiplicity. Lemma~\ref{lem:v87-match} and
+\eqref{eq:v87-root-matrix} prove the action bound.
+Lemma~\ref{lem:v87-pole} proves the pole bound. When
+$\delta>c_0\sig$, compactness of the action interval proves
+\eqref{eq:v87-main-bound} after increasing $C$.
+
+If the channels have full rank, $B=0$ is equivalent to
+$\alpha_b(h-\xi_b)=0$ for every $b$, by multiplying by the two
+channel inverses. It is therefore equivalent to all actions being
+equal. This proves the stated domain of exact identification; the
+necessity of three clocks follows from Proposition~\ref{prop:v87-fibre}.
+Finally,
+\[
+ \gamma=\|U\diag(\alpha_b(h-\xi_b))V^{\mathsf T}\|_F
+ \ge\kappa\Big(\sum_b\alpha_b^2(h-\xi_b)^2\Big)^{1/2}
+ \ge\tfrac12\alpha_*\Delta\kappa
+\]
+if $\xi_k-\xi_1\ge\Delta$, because at least one endpoint is at
+distance $\Delta/2$ from $h$. The formula for $\sig$ proves the
+last assertion.
+\end{proof}
+
+\begin{proposition}[Simple and repeated spectral factors]
+\label{prop:v87-factors}
+For full-rank channels and a nonconstant spectrum, the three matrices
+determine the spectrum with multiplicity. If the actions are distinct,
+they also determine $U,V,\alpha$ up to a simultaneous permutation.
+For a repeated action, its total matrix coefficient is determined;
+individual rank-one factors within that coefficient need not be.
+\end{proposition}
+\begin{proof}
+The pole lemma determines $h$, so the slope $A$ and constant
+coefficient of $K(T)$ are observed. Take row and column index sets
+$I,J$ such that $A_{IJ}$ is invertible. Then
+\[
+ K(T_1)_{IJ}A_{IJ}^{-1}
+                  =U_I\diag(T_1-\xi_b)U_I^{-1}.
+\]
+For a simple eigenvalue its spectral projector $\Pi_b$ yields
+\[
+ E_b=A_{:J}A_{IJ}^{-1}\Pi_b A_{I:}
+                          =\alpha_b U_{:b}V_{:b}^{\mathsf T}.
+\]
+Summing all entries gives $\alpha_b$; dividing the row and column
+sums by $\alpha_b$ gives the two stochastic columns. A repeated
+eigenvalue has a unique projector onto its whole eigenspace, which
+yields $\sum_{\xi_b=t}\alpha_bU_{:b}V_{:b}^{\mathsf T}$ instead.
+Different positive factorizations of this matrix can give the same
+curve. The spectrum statement does not require choosing one.
+\end{proof}
+For example, with three columns in each full-rank channel, the spectra
+$(a,a,b)$ with $a\ne b$ are covered uniformly as two nearby actions
+approach $a$. In contrast, $(a,a,a)$ produces a constant normalized
+curve; varying $a$ leaves it unchanged. Individual gaps and whole
+spectrum collapse are mathematically different limits.
+
+\section{The observation modulus and honest inference}
+\label{sec:v87-statistics}
+The next elementary principle isolates what is common to exact fibres
+and finite-sample uncertainty. Its statistical ingredients are
+classical; the preceding section supplies the model-specific modulus.
+
+\begin{lemma}[Residual inversion of an observation quotient]
+\label{lem:v87-modulus}
+Let a compact parameter space $\Theta$ have continuous observation map
+$F$ into a finite product of probability simplices and continuous target
+$g$ in a compact metric space. For a true $\theta$, define
+\[
+ \Omega_\theta(t)=\sup\{d(g(\theta),g(\theta')):
+                                  \|F(\theta')-F(\theta)\|\le t\}.
+\]
+Then $\Omega_\theta(0)=0$ precisely when the target is constant on
+the exact observation fibre. In that case $\Omega_\theta(t)\to0$
+as $t\downarrow0$. If $e=\|\widehat F-F(\theta)\|$, a residual
+minimizer has target error at most $\Omega_\theta(2e)$.
+The target image of $\{\theta':\|F(\theta')-\widehat F\|\le\eta\}$
+has diameter at most $2\Omega_\theta(e+\eta)$, whenever nonempty.
+On $e\le\eta$ it contains the true target.
+\end{lemma}
+\begin{proof}
+The first equivalence is the definition at zero. If continuity at
+zero failed, choose a sequence of competitors at observation distance
+tending to zero and target distance bounded below; a compact
+subsequence contradicts the equivalence. A residual minimizer has
+residual at most $e$, since the truth is feasible, and the triangle
+inequality gives distance at most $2e$ from the true observation.
+Every feasible candidate in the confidence set is at distance at most
+$e+\eta$ from it. Applying the modulus to each candidate proves
+the diameter bound. Inclusion of the truth is immediate.
+\end{proof}
+
+For \eqref{eq:v87-model}, let $q=m_1m_2$ and let $\widehat P_j$
+be the empirical matrices. Given $0<\zeta<1$, put
+\begin{equation}\label{eq:v87-radius}
+ \eta=\sqrt{\frac{q}{2n}\log\frac{6q}{\zeta}},\qquad
+ \cC=\{\omega\in\cK:\max_j\|P_\omega(T_j)-\widehat P_j\|_F\le\eta\}.
+\end{equation}
+Report the set $\cC_\xi$ of its action spectra. If the set is empty,
+report model inconsistency and the empty set, not an assigned action.
+Its diameter is assigned zero only for the loss calculation. Coordinate
+intervals from the smallest and largest ordered actions in $\cC$
+give simultaneous bands with the same maximum-coordinate width bound.
+A minimum-residual estimate is defined over the full compact model.
+
+\begin{theorem}[Honesty and adaptation without signal floors]
+\label{thm:v87-confidence}
+The region \eqref{eq:v87-radius} has coverage at least $1-\zeta$
+uniformly over $\cK$, including both singular boundaries. For every
+true observation $P$ with $s=\sig_*(P)>0$, on the coverage event
+\[
+                    \diam_\infty\cC_\xi\le C\min\{1,\eta/s\}.
+\]
+For fixed $\zeta$ the expectation and risk estimates
+\eqref{eq:v87-stat-summary} hold. At $s=0$ the assertions are coverage
+and bounded-range losses, not shrinking diameter.
+\end{theorem}
+\begin{proof}
+An entrywise error bound $t$ implies a Frobenius error bound
+$\sqrt q\,t$. Hoeffding's inequality and a union bound over the
+$3q$ entries give
+\[
+ \Pr\{\max_j\|\widehat P_j-P_j\|_F>\eta\}
+ \le 6q\exp(-2n\eta^2/q)=\zeta.
+\]
+For $q=4$ the conversion is exactly $2t$, not $t$.
+Theorem~\ref{thm:v87-main}, applied to a maximizing representative
+in \eqref{eq:v87-envelope}, bounds the action modulus by
+$C\min\{1,t/s\}$. Lemma~\ref{lem:v87-modulus} proves coverage
+and the eventwise diameter bound.
+
+No exceptional event is discarded in the expectation. On every
+outcome with nonempty $\cC$ its diameter is at most
+$C\min\{1,(e+\eta)/s\}$. Also
+\[
+ \E e^2\le\sum_{j=1}^3\E\|\widehat P_j-P_j\|_F^2
+     =\frac1n\sum_{j=1}^3\left(1-\sum_{a,b}(P_j)_{ab}^2\right)
+     \le3/n.
+\]
+The empty-set convention preserves this bound. Taking expectations
+proves the diameter assertion. The residual estimator has error
+bounded by $C\min\{1,e/s\}$ on every outcome; squaring and using
+the same second moment proves the risk assertion. Compactness gives
+minimizers and extrema. Measurable choices exist without a selection
+issue, since the fixed-$n$ categorical sample space is finite.
+\end{proof}
+Coverage requires independence within each clock. Independence between
+clocks is used below for the simple fixed-design likelihood argument.
+Finite forward nets of $\cK$ give an exhaustive implementation:
+if the mesh in parameter space is $r$, uniform forward Lipschitz
+continuity allows padding the residual radius by $C r$ and the action
+bands by $r$. The preceding proofs then replace $\eta$ by
+$\eta+C r$. Neither inverse conditioning nor a guessed latent rank
+floor is needed; the capacity $k$ is part of the declared experiment.
+
+\section{Product singularities in every latent rank}
+\label{sec:v87-product}
+The following family exposes the loss which remains after both
+observed marginals have been held fixed. It also shows why a product
+rather than an individual channel weakness occurs.
+
+Let $u_0=m_1^{-1}\one$ and $v_0=m_2^{-1}\one$. Choose unit zero-sum
+vectors $e\in\R^{m_1}$, $f\in\R^{m_2}$. If $k>2$, choose
+orthonormal zero-sum vectors $e_3,\ldots,e_k$ orthogonal to $e$,
+and $f_3,\ldots,f_k$ orthogonal to $f$. Their existence follows from
+$m_i\ge k$. Fix a small $c>0$. Choose distinct interior actions,
+with the first two $\xi_1=s_0-d$, $\xi_2=s_0+d$, and all others
+strictly above $\xi_2$ and separated from this pair. Take $\alpha_b=1/k$. For
+$0\le t\le t_0<d/2$, put $\lambda=1-t/d$ and
+\begin{align}
+ \xi_{1,t}&=\xi_1+t,& \xi_{2,t}&=\xi_2-t,
+       &\xi_{b,t}&=\xi_b\quad(b\ge3),\nonumber\\
+ U_{t,:1}&=u_0+\frac{\epsilon_u e}{2\lambda},&
+ U_{t,:2}&=u_0-\frac{\epsilon_u e}{2\lambda},&
+ U_{t,:b}&=u_0+c e_b\quad(b\ge3),\label{eq:v87-lf}\\
+ V_{t,:1}&=v_0+\frac{\epsilon_v f}{2\lambda},&
+ V_{t,:2}&=v_0-\frac{\epsilon_v f}{2\lambda},&
+ V_{t,:b}&=v_0+c f_b\quad(b\ge3).\nonumber
+\end{align}
+Take $0\le\epsilon_u,\epsilon_v\le\epsilon_*$ with $\epsilon_*$
+sufficiently small. All channel and joint cell probabilities have
+positive lower bounds independent of $t,\epsilon_u,\epsilon_v$.
+The pole $h$ is constant along the family.
+
+\begin{lemma}[Exact marginal cancellation]\label{lem:v87-lf}
+Both readout marginals in \eqref{eq:v87-lf} are independent of $t$
+at every clock in $[T_1,T_3]$, and
+\begin{equation}\label{eq:v87-lf-identity}
+ P_t(T)-P_0(T)=
+ \frac{T-s_0}{2k(T-h)}\epsilon_u\epsilon_v(\lambda^{-2}-1)ef^{\mathsf T}.
+\end{equation}
+For positive contrasts,
+\begin{equation}\label{eq:v87-lf-signal}
+ \kappa(\omega_t)=\frac{\epsilon_u\epsilon_v}{2\lambda^2},
+ \qquad \sig_*(\mathcal P(\omega_t))
+            =\sig(\omega_t)\asymp\epsilon_u\epsilon_v.
+\end{equation}
+The observation distance is comparable to
+$\epsilon_u\epsilon_v t$. If either contrast is zero, all these
+laws are exactly equal although the spectrum changes.
+\end{lemma}
+\begin{proof}
+In the pair contribution, expand
+\[
+ (T-s_0+\lambda d)
+    (u_0+\epsilon_u e/(2\lambda))(v_0+\epsilon_v f/(2\lambda))^{\mathsf T}
+ +(T-s_0-\lambda d)
+    (u_0-\epsilon_u e/(2\lambda))(v_0-\epsilon_v f/(2\lambda))^{\mathsf T}.
+\]
+Its constant part is $2(T-s_0)u_0v_0^{\mathsf T}$, its linear parts
+are $d\epsilon_u ev_0^{\mathsf T}+d\epsilon_v u_0f^{\mathsf T}$,
+and its bilinear part is
+$(T-s_0)\epsilon_u\epsilon_v ef^{\mathsf T}/(2\lambda^2)$.
+Divide by $k(T-h)$ and subtract $t=0$ to obtain
+\eqref{eq:v87-lf-identity}. Zero sums of $e,f$ prove the marginal
+assertion directly.
+
+The vector $(1,-1,0,\ldots,0)/\sqrt2$ is a right singular vector
+of $U_t$ with singular value $\epsilon_u/(\sqrt2\lambda)$.
+On its orthogonal complement the map is independent of $\epsilon_u$
+and has a positive smallest singular value: the independent output
+directions are $u_0,e_3,\ldots,e_k$. These directions are orthogonal
+to $e$. Choosing $\epsilon_*$ below that fixed singular value gives
+the stated exact smallest singular value. The same argument applies
+to $V_t$, proving the first identity in \eqref{eq:v87-lf-signal}.
+Taking marginals of $B$ shows that its $e$ and $f$ components have
+magnitudes proportional to $\epsilon_u$ and $\epsilon_v$,
+respectively; hence $\gamma\ge c\max(\epsilon_u,\epsilon_v)$.
+Consequently $\sig\asymp\epsilon_u\epsilon_v$.
+All spectra in this family are simple and the channels are full rank
+when both contrasts are positive. Proposition~\ref{prop:v87-factors}
+therefore gives $\sig_* = \sig$.
+Finally $T-s_0$ and $T-h$ have uniform positive bounds, and
+$\lambda^{-2}-1\asymp t$ on the fixed interval. This proves the
+distance comparison and the exact singular statement.
+\end{proof}
+The vanishing interaction is the tensor product of the two contrast
+directions. There are no first-order marginal changes left to exploit.
+The calculation is not restricted to binary alphabets, square matrices,
+or two latent components.
+
+\section{Collapse of the whole projective spectrum}
+\label{sec:v87-collapse}
+Fix strictly positive full-column-rank channels, positive weights, and
+distinct real numbers $z_b$ with $\sum_b\alpha_bz_b=0$.
+Take an interior $a$ and sufficiently small $s\ge0$. Consider
+\begin{equation}\label{eq:v87-collapse}
+             \xi_b(t)=a+t+s z_b,\qquad 0\le t\le t_0,
+\end{equation}
+with $t_0$ fixed so all actions remain in $(L,D)$.
+Here $h_t=a+t$ and
+\[
+ A=U\diag(\alpha_b)V^{\mathsf T},\qquad
+ B=-sU\diag(\alpha_bz_b)V^{\mathsf T}
+\]
+are independent of $t$. Therefore
+\begin{equation}\label{eq:v87-collapse-identity}
+ P_t(T)-P_0(T)
+       =\frac{tB}{(T-a-t)(T-a)}.
+\end{equation}
+For $s>0$, $\gamma\asymp s$, $\kappa$ is bounded below, and
+$\sig_* = \sig\asymp s$, by simple-spectrum uniqueness. The
+observation distance is comparable to $st$, whereas the action
+distance is exactly $t$. At $s=0$ the laws are constant in both
+$T$ and $t$, although the common action changes. Thus the contrast
+term in Theorem~\ref{thm:v87-main} is necessary even for perfectly
+well-conditioned channels. This is a second singular boundary, not
+the channel-rank boundary in Section~\ref{sec:v87-product}.
+
+\section{Sharp statistical orders and adaptive clocks}
+\label{sec:v87-lower}
+\begin{theorem}[Minimax transition and honest-diameter lower bounds]
+\label{thm:v87-minimax}
+For each fixed admissible $k,m_1,m_2$ there is $s_*>0$ such that,
+for $0<s\le s_*$ and $N=3n$,
+\begin{equation}\label{eq:v87-minimax}
+ c\min\{1,(Ns^2)^{-1}\}
+ \le\inf_{\widehat\xi}\sup_{\omega:\sig_*(\mathcal P(\omega))\ge s}
+       \E_\omega d_\infty(\widehat\xi,\xi)^2
+ \le C\min\{1,(Ns^2)^{-1}\}.
+\end{equation}
+The upper bound uses the balanced three-clock design. The lower bound
+remains valid if the infimum also includes arbitrary randomized,
+predictable choices of each of $N$ clocks in $[T_1,T_3]$.
+
+Let a random spectrum region $J$ be honest at level $1-\zeta$ over
+$\cK$, with $0<\zeta<1/4$. At the base point of either positive
+family in Sections~\ref{sec:v87-product} and
+\ref{sec:v87-collapse},
+\begin{equation}\label{eq:v87-diameter-lower}
+ \E_0\diam_\infty J\ge c_\zeta
+                      \min\{1,(\sqrt N\sig_*(P_0))^{-1}\}.
+\end{equation}
+This holds for any such clock strategy. At the exact singular limits
+of these families there are nonvanishing risk and honest-diameter
+lower bounds. Equal channel contrasts $\epsilon$ give the transition
+$N\epsilon^4\asymp1$; full-spectrum spread $s$ with fixed channels
+gives $Ns^2\asymp1$.
+\end{theorem}
+\begin{proof}
+The upper bound follows from Theorem~\ref{thm:v87-confidence}.
+In either lower-bound family write $\beta=\epsilon_u\epsilon_v$
+or $\beta=s$, respectively. The exact identities and uniform
+positive cell floors give, uniformly for $T\in[T_1,T_3]$,
+\[
+ \KL(P_t(T),P_0(T))
+       \le\sum_{a,b}\frac{((P_t)_{ab}-(P_0)_{ab})^2}{(P_0)_{ab}}
+       \le C\beta^2t^2.
+\]
+For a predictable randomized clock strategy, condition on the entire
+past and the internal randomization at each step. The policy has the
+same conditional rule under both parameters, and only the next
+categorical law contributes to relative entropy. The chain rule
+therefore bounds the entropy of the complete transcript by
+$CN\beta^2t^2$. This includes fixed and uneven clock allocations.
+
+Choose $t=c_1\min\{t_0,(\sqrt N\beta)^{-1}\}$ with $c_1$ small.
+Pinsker's inequality makes the total variation distance of the
+transcript laws at most $1/2$. The spectra are distance $t$ apart.
+Choosing the nearer spectrum converts any estimator into a test, so
+its larger squared risk is at least $t^2/16$.
+
+To obtain the specified class in \eqref{eq:v87-minimax}, use the
+product family with $\epsilon_u=\epsilon_v$ and choose their product
+to be $M s$ for a fixed sufficiently large $M$. Uniformly on the
+small $t$ interval, Lemma~\ref{lem:v87-lf} gives
+$\sig_*\ge c\epsilon_u\epsilon_v\ge s$.
+The upper contrast restriction holds for $s\le s_*$.
+The two-point bound is then the lower bound in
+\eqref{eq:v87-minimax}. The collapse family supplies the second
+attained singular order as well.
+
+For an honest set $J$, transfer coverage under the alternative to
+the base law. Then
+\[
+ \Pr_0\{\xi(0),\xi(t)\in J\}
+        \ge1-2\zeta-\TV(\mathbb P_t,\mathbb P_0).
+\]
+Decrease $c_1$, depending on $\zeta$, so the last expression is
+bounded below by a positive constant. On this event the diameter
+is at least $t$, which proves \eqref{eq:v87-diameter-lower}.
+At a zero contrast, or at zero full-spectrum spread, choose fixed
+distinct $t$; the exact identities make the transcript laws identical
+for every policy. The same testing and coverage arguments give the
+nonvanishing limits.
+\end{proof}
+The theorem is a uniform order statement and gives pointwise
+lower bounds on the displayed families. It does not identify the
+exact directional condition number of every anisotropic latent
+factorization. In particular a small product computed from an
+arbitrary repeated-spectrum representative is not declared to be
+an intrinsic obstruction; \eqref{eq:v87-envelope} removes precisely
+that dependence on representation.
+
+\section{Relation to the other observation quotients}
+\label{sec:v87-relations}
+The result reorganizes two earlier mechanisms: the arbitrary-rank
+projective clock pencil and the binary determinant-product modulus.
+For $k=m_1=m_2=2$, stochastic columns imply
+\[
+ \frac{|\det U|}{\sqrt2}\le\sigma_2(U)\le|\det U|,
+ \qquad
+ \frac{|\det V|}{\sqrt2}\le\sigma_2(V)\le|\det V|.
+\]
+Indeed $1\le\sigma_1(U),\sigma_1(V)\le\sqrt2$, and the product
+of singular values is the absolute determinant. On the separated
+action/reference class, Theorem~\ref{thm:v87-main} thus gives the
+same single inverse power of $|\det U\det V|$. Also
+$\alpha_1=(\xi_2-h)/(\xi_2-\xi_1)$, so a fixed action/reference
+gap recovers the earlier throughput estimate. No determinant of
+a higher-degree scalar polynomial or gap-dependent root derivative
+is needed for the general spectrum theorem.
+
+The shared two-clock spatial experiment has a different nuisance
+space: its clock factors are common across sites. Spatial calibration
+can then replace a third clock. The exact shared theorem, including
+its one-clock geometric alternatives, is retained in the companion.
+Its local correctly-labelled calibration estimate is not a global
+noise bound through profile collisions. The new theorem supplies a
+singular theory for the projective affine experiment; it does not
+silently transfer its modulus to that different shared experiment.
+
+Likewise, the polynomial, rational and compact-surface detector
+quotients retain their own secant and tangent tests and clock designs.
+They are preserved in full, together with the branched-clock version
+of the unchanged logarithmic law. Their divisor counts remain valid
+sufficient counts. The sharp count here is governed by the affine
+numerator and one projective normalization parameter, not by a claim
+that an ambient meromorphic pole budget is always optimal.
+
+The companion also retains finite-record geometric certificates,
+component coverings, return-lift constructions, and raw-acquisition
+laws. Metric rigidity there is supplied by the stated classical
+boundary-rigidity theorems. The present theorem is an upstream
+observation result: it adds neither a partial-data boundary-rigidity
+claim nor a new geometric hypothesis. Separating these logical roles
+allows the action inverse and its singular statistical transition to
+form a self-contained theorem, while retaining the other mathematical
+regimes with all their assumptions.
+
+\begin{thebibliography}{99}
+\bibitem{AMR} E. S. Allman, C. Matias and J. A. Rhodes,
+Identifiability of parameters in latent structure models with many
+observed variables, \emph{Ann. Statist.} \textbf{37} (2009), 3099--3132.
+\bibitem{BF} F. L. Bauer and C. T. Fike,
+Norms and exclusion theorems, \emph{Numer. Math.} \textbf{2} (1960), 137--141.
+\bibitem{BJR} S. Bonhomme, K. Jochmans and J.-M. Robin,
+Estimating multivariate latent-structure models,
+\emph{Ann. Statist.} \textbf{44} (2016), 540--563.
+\href{https://arxiv.org/abs/1603.09141}{arXiv:1603.09141}.
+\bibitem{CaiLow} T. T. Cai and M. G. Low,
+An adaptation theory for nonparametric confidence intervals,
+\emph{Ann. Statist.} \textbf{32} (2004), 1805--1840.
+\bibitem{Donoho} D. L. Donoho, Statistical estimation and optimal recovery,
+\emph{Ann. Statist.} \textbf{22} (1994), 238--270.
+\bibitem{Dufour} J.-M. Dufour, Some impossibility theorems in econometrics
+with applications to structural and dynamic models,
+\emph{Econometrica} \textbf{65} (1997), 1365--1389.
+\bibitem{HN} N. Ho and X. Nguyen, Singularity structures and impacts on
+parameter estimation in finite mixtures of distributions,
+\emph{SIAM J. Math. Data Sci.} \textbf{1} (2019), 730--758.
+\href{https://arxiv.org/abs/1609.02655}{arXiv:1609.02655}.
+\bibitem{LLB} Y. Li, K. Lee and Y. Bresler,
+A unified framework for identifiability analysis in bilinear inverse
+problems with applications to subspace and sparsity models,
+preprint, arXiv:1501.06120.
+\end{thebibliography}
+\end{document}

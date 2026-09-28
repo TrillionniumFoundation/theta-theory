@@ -1,0 +1,156 @@
+name: A2 v59 complete analytic contact inverse and native submission
+on:
+  push:
+    branches:
+      - revision/a2-v59-analytic-contact-inverse-2026-09-15
+    paths:
+      - papers/A2-v17-boundary-information-coarsening/**/*.tex
+      - papers/A2-v17-boundary-information-coarsening/tools/**
+      - .github/workflows/a2-v59-native-submission.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 40
+    permissions:
+      contents: write
+    outputs:
+      source_commit: ${{ steps.source.outputs.source_commit }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: true
+      - name: Integrate the complete revision and preserve the exact reviewed source
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = revision/a2-v59-analytic-contact-inverse-2026-09-15
+          P=papers/A2-v17-boundary-information-coarsening
+          python3 -B "$P/tools/materialize_revision_v59.py" > "$RUNNER_TEMP/materialization-v59.json"
+          A="$P/history/v58-review-baseline"
+          test -e "$A/REPOSITORY_README.md" || cp README.md "$A/REPOSITORY_README.md"
+          test -e "$A/README.md" || cp "$P/README.md" "$A/README.md"
+          cat > README.md <<'EOF'
+          # Theta-Theory: A2 revision 59
+
+          **Boundary laws and rigidity of periodic dispersing billiards** — Qian Qi, September 15, 2026.
+
+          [Principal source](papers/A2-v17-boundary-information-coarsening/rigidity.tex) · [Complete technical source](papers/A2-v17-boundary-information-coarsening/main.tex) · [Companion](papers/A2-v17-boundary-information-coarsening/two_collision.tex).
+
+          [Response to the latest v58 report](papers/A2-v17-boundary-information-coarsening/RESPONSE_TO_REFEREE_V59.md) · [Historical audit](papers/A2-v17-boundary-information-coarsening/HISTORICAL_DERIVATION_AUDIT_V59.md) · [Dependency ledger](papers/A2-v17-boundary-information-coarsening/journal/DEPENDENCY_LEDGER_V59.md) · [Primary records](papers/A2-v17-boundary-information-coarsening/LITERATURE_CHECK_V59.md).
+
+          Source branch: `revision/a2-v59-analytic-contact-inverse-2026-09-15`. Latest report: `464209b66aad6ff48b63f054711396fbfd759b64`; reviewed source: `92a6d946c98e19c33ebff15997c0116ac158b89d`.
+
+          Theorem 12.12 proves a local analytic inverse for the complete contact action map in a bounded-holomorphic norm on one fixed small disc. Lemmas 12.10–12.11 construct protected holomorphic half-lines and the exact stationary-envelope derivative. A finite low-jet inverse and one bounded infinite tail inverse control all lower-degree couplings. This is not inferred from the diagonal estimate, and its analytic norm is not inferred from weak density or sampling error. The original smooth and global results retain their classes.
+
+          All 121 inherited active source paths and all 574 inherited statement/proof blocks remain. Six amended-file originals are archived, and 115 inherited inputs remain byte-identical in place. The new shared subsection adds two lemmas and one theorem with complete proofs; the final union has 122 inputs. The acquisition dependency and the complete technical corpus remain intact.
+
+          The version-scoped workflow compiles all three complete entries from the actual committed source and retains products under `deliveries/a2-v59/<source>/` on a new products branch. Consult the final review-ready entry for completed identities and verification. This source entry does not claim an unfinished workflow succeeded. A1, historical reports, the default branch and unrelated workstreams are unchanged.
+          EOF
+          cat > "$P/README.md" <<'EOF'
+          # A2 revision 59 — principal article and complete technical corpus
+
+          [Principal source](rigidity.tex) · [Full technical source](main.tex) · [Companion](two_collision.tex) · [Response to v58](RESPONSE_TO_REFEREE_V59.md) · [Historical audit](HISTORICAL_DERIVATION_AUDIT_V59.md) · [Dependency ledger](journal/DEPENDENCY_LEDGER_V59.md).
+
+          The directory's v17 name is historical; the current revision is 59. The [new shared subsection](article/23a2_analytic_contact_inverse_v59.tex) is inside the existing contact-inversion section. It proves the complete local analytic inverse by a stationary-envelope representation, a finite-low/high-tail split and a nonlinear contraction. It does not claim weak-noise analytic continuation, a universal full-table analytic norm, or a uniform acquisition rate. All prior exact, smooth, differential, quantitative and statistical results remain.
+
+          The v58 report is frozen at `464209b66aad6ff48b63f054711396fbfd759b64`, its actual source at `92a6d946c98e19c33ebff15997c0116ac158b89d`. Exact amended-file originals and the source-matched manifest are in [the v58 archive](history/v58-review-baseline/). All 574 old statement/proof blocks remain verbatim.
+
+          The unchanged three-entry engine builds the companion, full technical manuscript and principal article in dependency order from frozen Git source. Final product identities and actual visual coverage are in the final review-ready ledger. Build and finite-check success do not certify proofs or journal significance.
+          EOF
+          git switch -C "$GITHUB_REF_NAME"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- README.md "$P"
+          if ! git diff --cached --quiet; then
+            git commit -m 'A2 v59: integrate the complete analytic-contact manuscript and archive the exact reviewed v58 inputs'
+            git push origin "HEAD:refs/heads/$GITHUB_REF_NAME"
+          fi
+          SOURCE=$(git rev-parse HEAD)
+          echo "source_commit=$SOURCE" >> "$GITHUB_OUTPUT"
+          printf 'Preparation: `%s`\n\nActual mathematical source: `%s`\n' "$GITHUB_SHA" "$SOURCE" >> "$GITHUB_STEP_SUMMARY"
+      - name: Install native toolchain and finite diagnostic libraries
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends latexmk texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils python3-numpy python3-scipy python3-sympy
+      - name: Verify preservation, reference roles and finite variational controls in both Python modes
+        shell: bash
+        run: |
+          set -euo pipefail
+          P=papers/A2-v17-boundary-information-coarsening
+          for script in check_revision_v59 check_quantized_v46 check_adaptive check_revision_v32 check_revision_v38; do
+            /usr/bin/python3 -B "$P/tools/$script.py" > "$RUNNER_TEMP/$script-normal.json"
+            /usr/bin/python3 -O -B "$P/tools/$script.py" > "$RUNNER_TEMP/$script-optimized.json"
+            cmp "$RUNNER_TEMP/$script-normal.json" "$RUNNER_TEMP/$script-optimized.json"
+          done
+      - name: Compile all three complete entries from frozen Git source
+        env:
+          SOURCE: ${{ steps.source.outputs.source_commit }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE"
+          /usr/bin/python3 -B papers/A2-v17-boundary-information-coarsening/tools/build_revision_v56.py --output-dir "$RUNNER_TEMP/a2-v59-native-$SOURCE"
+          cp "$RUNNER_TEMP"/check_*-normal.json "$RUNNER_TEMP"/check_*-optimized.json "$RUNNER_TEMP/a2-v59-native-$SOURCE/"
+          cp "$RUNNER_TEMP/materialization-v59.json" "$RUNNER_TEMP/a2-v59-native-$SOURCE/"
+          printf '%s\n' "$GITHUB_SHA" > "$RUNNER_TEMP/a2-v59-native-$SOURCE/workflow-preparation-commit.txt"
+      - name: Retain products and raw evidence
+        if: always() && steps.source.outputs.source_commit != ''
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: a2-v59-native-${{ steps.source.outputs.source_commit }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/a2-v59-native-${{ steps.source.outputs.source_commit }}/
+          if-no-files-found: error
+          retention-days: 90
+  publish-verified-products:
+    needs: native
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 15
+    permissions:
+      actions: read
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.native.outputs.source_commit }}
+          fetch-depth: 1
+          persist-credentials: true
+      - name: Retrieve and validate all source-matched products
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE: ${{ needs.native.outputs.source_commit }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          P=papers/A2-v17-boundary-information-coarsening
+          gh run download "$GITHUB_RUN_ID" --repo "$GITHUB_REPOSITORY" --name "a2-v59-native-$SOURCE-$GITHUB_RUN_ATTEMPT" --dir "$RUNNER_TEMP/v59"
+          python3 -B "$P/tools/retain_native_v59.py" prepare --evidence "$RUNNER_TEMP/v59" --destination "deliveries/a2-v59/$SOURCE" --source-commit "$SOURCE" --run-id "$GITHUB_RUN_ID"
+      - name: Publish new product branch and verify fetched Git objects
+        env:
+          SOURCE: ${{ needs.native.outputs.source_commit }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          P=papers/A2-v17-boundary-information-coarsening
+          D="deliveries/a2-v59/$SOURCE"
+          branch="revision/a2-v59-native-products-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          git switch -c "$branch"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f -- "$D"
+          python3 -B "$P/tools/retain_native_v59.py" verify --destination "$D" --ref INDEX
+          git commit -m 'A2 v59: retain three complete native manuscripts and source-matched evidence'
+          git push origin "HEAD:refs/heads/$branch"
+          git fetch origin "refs/heads/$branch"
+          python3 -B "$P/tools/retain_native_v59.py" verify --destination "$D" --ref FETCH_HEAD --attestation
+          git add -- "$D/COMMITTED_OBJECTS_VERIFIED.json"
+          git commit -m 'A2 v59: attest the fetched published native Git objects'
+          git push origin "HEAD:refs/heads/$branch"
+          git fetch origin "refs/heads/$branch"
+          python3 -B "$P/tools/retain_native_v59.py" verify --destination "$D" --ref FETCH_HEAD
+          printf 'Source: `%s`\n\nProducts: `%s`\n\nVerified head: `%s`\n' "$SOURCE" "$branch" "$(git rev-parse FETCH_HEAD)" >> "$GITHUB_STEP_SUMMARY"

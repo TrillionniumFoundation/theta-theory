@@ -1,0 +1,48 @@
+name: A2 v39 complete native article
+on:
+  push:
+    branches:
+      - revision/a2-v39-native-complete-article-2026-09-13
+    paths:
+      - papers/A2-v17-boundary-information-coarsening/**/*.tex
+      - papers/A2-v17-boundary-information-coarsening/tools/**
+      - .github/workflows/a2-v39-native-submission.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout the exact triggering commit
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Retain the immutable native source before toolchain installation
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          mkdir -p "$RUNNER_TEMP/a2-v39-native-$GITHUB_SHA"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/a2-v39-native-$GITHUB_SHA/checkout-identities.txt"
+          git archive --format=zip HEAD papers/A2-v17-boundary-information-coarsening > "$RUNNER_TEMP/a2-v39-native-$GITHUB_SHA/repository-native-source.zip"
+      - name: Install the native TeX toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends latexmk texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils python3-numpy python3-scipy python3-sympy
+      - name: Build both complete entries with fail-closed provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          /usr/bin/python3 -B papers/A2-v17-boundary-information-coarsening/tools/build_submission.py --output-dir "$RUNNER_TEMP/a2-v39-native-$GITHUB_SHA/build"
+      - name: Retain native products, source and failure evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: a2-v39-native-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/a2-v39-native-${{ github.sha }}/
+          if-no-files-found: error
+          retention-days: 90

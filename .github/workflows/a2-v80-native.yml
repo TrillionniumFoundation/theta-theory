@@ -1,0 +1,33 @@
+name: A2 v80 native source and manuscript
+on:
+  push:
+    branches: [revision/a2-v80-calibrated-records-intrinsic-rigidity-2026-09-18]
+    paths:
+      - .github/workflows/a2-v80-native.yml
+      - papers/A2-v17-boundary-information-coarsening/article/v80/**
+      - papers/A2-v17-boundary-information-coarsening/tools-v80/**
+      - papers/A2-v17-boundary-information-coarsening/rigidity_v80.tex
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Export immutable source for independent verification
+        run: |
+          mkdir -p "$RUNNER_TEMP/a2-v80-source"
+          git rev-parse HEAD > "$RUNNER_TEMP/a2-v80-source/SOURCE_COMMIT.txt"
+          git archive --format=tar HEAD papers/A2-v17-boundary-information-coarsening | gzip -n > "$RUNNER_TEMP/a2-v80-source/source.tar.gz"
+          cd "$RUNNER_TEMP/a2-v80-source"
+          sha256sum source.tar.gz > SHA256SUMS
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: a2-v80-source-${{ github.sha }}
+          path: ${{ runner.temp }}/a2-v80-source/
+          if-no-files-found: error
+          retention-days: 90

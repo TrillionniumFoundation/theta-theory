@@ -1,0 +1,137 @@
+name: A2 v61 relative mechanism revision and complete native submission
+on:
+  push:
+    branches:
+      - revision/a2-v61-relative-mechanism-2026-09-16
+    paths:
+      - papers/A2-v17-boundary-information-coarsening/**
+      - .github/workflows/a2-v61-native-submission.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 40
+    permissions:
+      contents: write
+    outputs:
+      source_commit: ${{ steps.source.outputs.source_commit }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: true
+      - name: Integrate the revised exposition and archive exact entries
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = revision/a2-v61-relative-mechanism-2026-09-16
+          P=papers/A2-v17-boundary-information-coarsening
+          python3 -B "$P/tools/materialize_revision_v61.py" > "$RUNNER_TEMP/materialization-v61.json"
+          A="$P/history/v60-review-baseline"
+          test -e "$A/REPOSITORY_README.md" || cp README.md "$A/REPOSITORY_README.md"
+          test -e "$A/README.md" || cp "$P/README.md" "$A/README.md"
+          cp A2_REVISION_V61_INDEX.md README.md
+          cat > "$P/README.md" <<'DOC'
+          # A2 v61 — principal article and complete technical corpus
+
+          [Principal article](rigidity.tex) · [Complete technical manuscript](main.tex) · [Companion](two_collision.tex).
+
+          [Response to v60](RESPONSE_TO_REFEREE_V61.md) · [Letter for reassessment](COVER_LETTER_V61.md) · [Historical audit](HISTORICAL_DERIVATION_AUDIT_V61.md) · [Dependencies](journal/DEPENDENCY_LEDGER_V61.md) · [Primary literature](LITERATURE_CHECK_V61.md).
+
+          The directory name is historical; the active revision is 61. The principal exposition now centers the relative physical limit and actual-smooth action inverse. No theorem is added or weakened. The complete v59/v60 inverse proofs and all global, differential, window and acquisition statements remain. The original introduction is retained, and exact old entry files are archived in `history/v60-review-baseline/`.
+
+          The addressed report is pinned at `396bb28e17ba9944af5ff89a2db601412eeb95ee`; its mathematical source is `1a55bfb1102c3eab9cdcd6a292c5ef9070ea14a5`. The new version-scoped workflow builds all three entries and retains verified products in Git. Consult the final review-ready record for completed identities and actual visual coverage. Source preservation and successful typesetting do not settle correctness or exceptional significance.
+          DOC
+          git switch -C "$GITHUB_REF_NAME"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- README.md "$P"
+          if ! git diff --cached --quiet; then
+            git commit -m 'A2 v61: integrate mechanism-centered principal manuscript while preserving all theorem and proof modules'
+            git push origin "HEAD:refs/heads/$GITHUB_REF_NAME"
+          fi
+          SOURCE=$(git rev-parse HEAD)
+          echo "source_commit=$SOURCE" >> "$GITHUB_OUTPUT"
+          git fetch --no-tags --depth=1 origin 1a55bfb1102c3eab9cdcd6a292c5ef9070ea14a5
+          printf 'Actual mathematical source: `%s`\n' "$SOURCE" >> "$GITHUB_STEP_SUMMARY"
+      - name: Install native toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends latexmk texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils python3-numpy python3-scipy python3-sympy
+      - name: Verify the preserved source and active proof graph
+        shell: bash
+        run: |
+          set -euo pipefail
+          P=papers/A2-v17-boundary-information-coarsening
+          /usr/bin/python3 -B "$P/tools/check_revision_v61.py" > "$RUNNER_TEMP/check_revision_v61-normal.json"
+          /usr/bin/python3 -O -B "$P/tools/check_revision_v61.py" > "$RUNNER_TEMP/check_revision_v61-optimized.json"
+          cmp "$RUNNER_TEMP/check_revision_v61-normal.json" "$RUNNER_TEMP/check_revision_v61-optimized.json"
+      - name: Compile all complete entries from the committed source
+        env:
+          SOURCE: ${{ steps.source.outputs.source_commit }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE"
+          /usr/bin/python3 -B papers/A2-v17-boundary-information-coarsening/tools/build_revision_v56.py --output-dir "$RUNNER_TEMP/a2-v61-native-$SOURCE"
+          cp "$RUNNER_TEMP"/check_revision_v61-*.json "$RUNNER_TEMP/a2-v61-native-$SOURCE/"
+          cp "$RUNNER_TEMP/materialization-v61.json" "$RUNNER_TEMP/a2-v61-native-$SOURCE/"
+      - name: Retain source-matched products and evidence
+        if: always() && steps.source.outputs.source_commit != ''
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: a2-v61-native-${{ steps.source.outputs.source_commit }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/a2-v61-native-${{ steps.source.outputs.source_commit }}/
+          if-no-files-found: error
+          retention-days: 90
+  publish-verified-products:
+    needs: native
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 15
+    permissions:
+      actions: read
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ needs.native.outputs.source_commit }}
+          fetch-depth: 1
+          persist-credentials: true
+      - name: Validate the source-matched products
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE: ${{ needs.native.outputs.source_commit }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          P=papers/A2-v17-boundary-information-coarsening
+          gh run download "$GITHUB_RUN_ID" --repo "$GITHUB_REPOSITORY" --name "a2-v61-native-$SOURCE-$GITHUB_RUN_ATTEMPT" --dir "$RUNNER_TEMP/v61"
+          python3 -B "$P/tools/retain_native_v61.py" prepare --evidence "$RUNNER_TEMP/v61" --destination "deliveries/a2-v61/$SOURCE" --source-commit "$SOURCE" --run-id "$GITHUB_RUN_ID"
+      - name: Publish and verify fetched Git objects on a new branch
+        env:
+          SOURCE: ${{ needs.native.outputs.source_commit }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          P=papers/A2-v17-boundary-information-coarsening
+          D="deliveries/a2-v61/$SOURCE"
+          branch="revision/a2-v61-native-products-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          git switch -c "$branch"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f -- "$D"
+          python3 -B "$P/tools/retain_native_v61.py" verify --destination "$D" --ref INDEX
+          git commit -m 'A2 v61: retain all three complete native PDFs and exact source evidence'
+          git push origin "HEAD:refs/heads/$branch"
+          git fetch origin "refs/heads/$branch"
+          python3 -B "$P/tools/retain_native_v61.py" verify --destination "$D" --ref FETCH_HEAD --attestation
+          git add -- "$D/COMMITTED_OBJECTS_VERIFIED.json"
+          git commit -m 'A2 v61: attest fetched source-matched native Git objects'
+          git push origin "HEAD:refs/heads/$branch"
+          git fetch origin "refs/heads/$branch"
+          python3 -B "$P/tools/retain_native_v61.py" verify --destination "$D" --ref FETCH_HEAD
+          printf 'Source: `%s`\n\nProducts: `%s`\n\nVerified head: `%s`\n' "$SOURCE" "$branch" "$(git rev-parse FETCH_HEAD)" >> "$GITHUB_STEP_SUMMARY"

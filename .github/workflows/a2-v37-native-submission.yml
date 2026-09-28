@@ -1,0 +1,60 @@
+name: A2 v37 native submission evidence
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - revision/a2-v37-referee-closure-native-submission-2026-09-13
+    paths:
+      - 'papers/A2-v17-boundary-information-coarsening/**/*.tex'
+      - 'papers/A2-v17-boundary-information-coarsening/tools/**'
+      - '.github/workflows/a2-v37-native-submission.yml'
+permissions:
+  contents: read
+jobs:
+  native:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Retain exact complete source before installing tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p a2-v37-evidence
+          git rev-parse HEAD > a2-v37-evidence/source-commit.txt
+          git rev-parse HEAD^{tree} > a2-v37-evidence/source-tree.txt
+          git archive --format=tar.gz --prefix=source/ HEAD papers/A2-v17-boundary-information-coarsening reviews/a2-v36-external-harsh-top4-2026-09-13 README.md .github/workflows/a2-v37-native-submission.yml > a2-v37-evidence/complete-source.tar.gz
+          sha256sum a2-v37-evidence/complete-source.tar.gz > a2-v37-evidence/source-sha256.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: a2-v37-source-${{ github.sha }}
+          path: a2-v37-evidence
+          retention-days: 90
+      - name: Install native toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y latexmk texlive-latex-extra texlive-fonts-recommended texlive-science lmodern poppler-utils
+      - name: Build unabridged main and companion
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 papers/A2-v17-boundary-information-coarsening/tools/build_submission.py --output-dir a2-v37-evidence/native 2>&1 | tee a2-v37-evidence/build-driver.txt
+      - name: Hash retained products
+        if: always()
+        shell: bash
+        run: |
+          if test -d a2-v37-evidence; then
+            find a2-v37-evidence -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 -r sha256sum > a2-v37-evidence/SHA256SUMS
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: a2-v37-native-${{ github.sha }}
+          path: a2-v37-evidence
+          if-no-files-found: warn
+          retention-days: 90

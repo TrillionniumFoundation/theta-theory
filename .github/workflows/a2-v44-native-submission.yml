@@ -1,0 +1,118 @@
+name: A2 v44 nonsymmetric realization and verified native retention
+on:
+  push:
+    branches:
+      - revision/a2-v44-nonsymmetric-realization-2026-09-14
+    paths:
+      - papers/A2-v17-boundary-information-coarsening/**/*.tex
+      - papers/A2-v17-boundary-information-coarsening/tools/**
+      - .github/workflows/a2-v44-native-submission.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 40
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Source preservation and finite geometry
+        shell: bash
+        run: |
+          set -euo pipefail
+          P=papers/A2-v17-boundary-information-coarsening
+          for script in check_revision_v44 check_realization_v44; do
+            python3 -B "$P/tools/$script.py" > "$RUNNER_TEMP/$script-normal.json"
+            python3 -O -B "$P/tools/$script.py" > "$RUNNER_TEMP/$script-optimized.json"
+            cmp "$RUNNER_TEMP/$script-normal.json" "$RUNNER_TEMP/$script-optimized.json"
+          done
+      - name: Export complete source checkpoint
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/a2-v44-source"
+          git archive --format=zip --output="$RUNNER_TEMP/a2-v44-source/native-source.zip" HEAD papers/A2-v17-boundary-information-coarsening
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/a2-v44-source/git-identity.txt"
+          git ls-tree -r HEAD -- papers/A2-v17-boundary-information-coarsening > "$RUNNER_TEMP/a2-v44-source/git-input-tree.txt"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: a2-v44-source-${{ github.sha }}
+          path: ${{ runner.temp }}/a2-v44-source/
+          if-no-files-found: error
+          retention-days: 90
+      - name: Install native toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends latexmk texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils python3-numpy python3-scipy python3-sympy
+      - name: Compile both full native entries from Git objects
+        shell: bash
+        run: |
+          set -euo pipefail
+          /usr/bin/python3 -B papers/A2-v17-boundary-information-coarsening/tools/build_submission.py --output-dir "$RUNNER_TEMP/a2-v44-native-$GITHUB_SHA"
+          cp "$RUNNER_TEMP"/check_*_v44-*.json "$RUNNER_TEMP/a2-v44-native-$GITHUB_SHA/"
+      - name: Retain actual products and evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: a2-v44-native-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/a2-v44-native-${{ github.sha }}/
+          if-no-files-found: error
+          retention-days: 90
+  publish-verified-products:
+    needs: native
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 15
+    permissions:
+      actions: read
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: true
+      - name: Retrieve new native products and repair the historical v43 archive
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          P=papers/A2-v17-boundary-information-coarsening
+          OLD=22d9b930a426cdb2c62984a5a3e5875e95e05e79
+          gh run download "$GITHUB_RUN_ID" --repo "$GITHUB_REPOSITORY" --name "a2-v44-native-$GITHUB_SHA-$GITHUB_RUN_ATTEMPT" --dir "$RUNNER_TEMP/v44"
+          gh run download 34813913830 --repo "$GITHUB_REPOSITORY" --name "a2-v43-native-$OLD-1" --dir "$RUNNER_TEMP/v43"
+          python3 -B "$P/tools/check_retention_v44.py" --evidence "$RUNNER_TEMP/v43" > "$RUNNER_TEMP/retention-normal.json"
+          python3 -O -B "$P/tools/check_retention_v44.py" --evidence "$RUNNER_TEMP/v43" > "$RUNNER_TEMP/retention-optimized.json"
+          cmp "$RUNNER_TEMP/retention-normal.json" "$RUNNER_TEMP/retention-optimized.json"
+          cp "$RUNNER_TEMP"/retention-*.json "$RUNNER_TEMP/v44/"
+          python3 -B "$P/tools/retain_native_v44.py" prepare --evidence "$RUNNER_TEMP/v44" --destination "deliveries/a2-v44/$GITHUB_SHA" --source-commit "$GITHUB_SHA" --run-id "$GITHUB_RUN_ID"
+          python3 -B "$P/tools/retain_native_v44.py" prepare --evidence "$RUNNER_TEMP/v43" --destination "deliveries/a2-v43-repaired/$OLD" --source-commit "$OLD" --run-id "$GITHUB_RUN_ID"
+      - name: Publish and verify fetched Git objects, not copied files
+        shell: bash
+        run: |
+          set -euo pipefail
+          P=papers/A2-v17-boundary-information-coarsening
+          OLD=22d9b930a426cdb2c62984a5a3e5875e95e05e79
+          D1="deliveries/a2-v44/$GITHUB_SHA"
+          D2="deliveries/a2-v43-repaired/$OLD"
+          branch="revision/a2-v44-native-products-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          git switch -c "$branch"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f -- "$D1" "$D2"
+          for D in "$D1" "$D2"; do python3 -B "$P/tools/retain_native_v44.py" verify --destination "$D" --ref INDEX; done
+          git commit -m "A2 v44: retain all native products and repair v43 archive"
+          git push origin "HEAD:refs/heads/$branch"
+          git fetch origin "refs/heads/$branch"
+          for D in "$D1" "$D2"; do python3 -B "$P/tools/retain_native_v44.py" verify --destination "$D" --ref FETCH_HEAD --attestation; done
+          git add -- "$D1/COMMITTED_OBJECTS_VERIFIED.json" "$D2/COMMITTED_OBJECTS_VERIFIED.json"
+          git commit -m "A2 v44: attest fetched published Git objects for both deliveries"
+          git push origin "HEAD:refs/heads/$branch"
+          git fetch origin "refs/heads/$branch"
+          for D in "$D1" "$D2"; do python3 -B "$P/tools/retain_native_v44.py" verify --destination "$D" --ref FETCH_HEAD; done
+          printf 'Source: `%s`\n\nProducts branch: `%s`\n\nVerified final head: `%s`\n' "$GITHUB_SHA" "$branch" "$(git rev-parse FETCH_HEAD)" >> "$GITHUB_STEP_SUMMARY"

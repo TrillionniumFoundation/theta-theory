@@ -1,0 +1,42 @@
+name: A2 v78 native manuscripts
+on:
+  push:
+    branches: [revision/a2-v78-observation-quotient-root-free-2026-09-17]
+    paths:
+      - .github/workflows/a2-v78-native.yml
+      - papers/A2-v17-boundary-information-coarsening/article/v78/**
+      - papers/A2-v17-boundary-information-coarsening/tools-v78/**
+      - papers/A2-v17-boundary-information-coarsening/rigidity_v78.tex
+      - papers/A2-v17-boundary-information-coarsening/periodic_companion_v78.tex
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Install native build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils python3-numpy python3-scipy python3-sympy python3-mpmath
+      - name: Compile exact committed manuscript inputs and run diagnostics
+        working-directory: papers/A2-v17-boundary-information-coarsening
+        run: bash tools-v78/build_v78.sh "$RUNNER_TEMP/a2-v78-native"
+      - name: Record immutable repository source
+        run: |
+          git rev-parse HEAD > "$RUNNER_TEMP/a2-v78-native/SOURCE_COMMIT.txt"
+          git rev-parse HEAD:papers/A2-v17-boundary-information-coarsening > "$RUNNER_TEMP/a2-v78-native/PAPER_TREE.txt"
+          git archive --format=tar HEAD papers/A2-v17-boundary-information-coarsening | gzip -n > "$RUNNER_TEMP/a2-v78-native/source.tar.gz"
+          cd "$RUNNER_TEMP/a2-v78-native"
+          sha256sum *.pdf source.tar.gz > SHA256SUMS
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: a2-v78-native-${{ github.sha }}
+          path: ${{ runner.temp }}/a2-v78-native/
+          if-no-files-found: error
+          retention-days: 90

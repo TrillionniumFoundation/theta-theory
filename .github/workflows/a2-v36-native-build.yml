@@ -1,0 +1,62 @@
+name: A2 v36 complete native delivery
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - revision/a2-v36-complete-native-delivery-top4-2026-09-13
+    paths:
+      - 'papers/A2-v17-boundary-information-coarsening/**/*.tex'
+      - 'papers/A2-v17-boundary-information-coarsening/tools/**'
+      - '.github/workflows/a2-v36-native-build.yml'
+permissions:
+  contents: read
+jobs:
+  complete-native:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Archive the exact complete submission before installing tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p a2-v36-evidence
+          git rev-parse HEAD > a2-v36-evidence/source-commit.txt
+          git rev-parse 'HEAD^{tree}' > a2-v36-evidence/source-tree.txt
+          git archive --format=tar.gz --output=a2-v36-evidence/complete-source.tar.gz HEAD papers/A2-v17-boundary-information-coarsening README.md reviews/a2-v35-external-harsh-top4-2026-09-13 .github/workflows/a2-v36-native-build.yml
+          sha256sum a2-v36-evidence/complete-source.tar.gz > a2-v36-evidence/source-archive.sha256
+      - name: Retain the exact complete source archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: a2-v36-source-${{ github.sha }}
+          path: a2-v36-evidence/
+          if-no-files-found: error
+          retention-days: 90
+      - name: Install native TeX and PDF tools
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y latexmk texlive-latex-extra texlive-fonts-recommended texlive-science lmodern poppler-utils
+      - name: Compile the unabridged main and native companion
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          python papers/A2-v17-boundary-information-coarsening/tools/build_submission.py --output-dir "$GITHUB_WORKSPACE/a2-v36-evidence/native" 2>&1 | tee a2-v36-evidence/native-build-console.txt
+      - name: Hash actual evidence products
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p a2-v36-evidence
+          find a2-v36-evidence -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > a2-v36-evidence/SHA256SUMS
+      - name: Retain logs and products even after a failed build
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a2-v36-native-${{ github.sha }}
+          path: a2-v36-evidence/
+          if-no-files-found: error
+          retention-days: 90

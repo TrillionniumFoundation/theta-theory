@@ -1,0 +1,47 @@
+name: A2 v89 native manuscript
+on:
+  push:
+    branches: [revision/a2-v89-observable-polynomial-quotient-2026-09-19]
+  pull_request:
+    branches: [review/a2-v88-independent-harsh-top4-2026-09-19]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  manuscript:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Install native mathematics tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y latexmk texlive-latex-recommended texlive-fonts-recommended lmodern python3-numpy python3-sympy poppler-utils
+      - name: Verify immutable baseline and retained mathematics
+        working-directory: papers/A2-v17-boundary-information-coarsening
+        run: |
+          git diff --name-status 47fd795b7e4d80f9fe81e9798e73a05efc7fa8f7 HEAD > /tmp/a2-v89-preservation.txt
+          test -s /tmp/a2-v89-preservation.txt
+          if grep -v '^A' /tmp/a2-v89-preservation.txt; then exit 1; fi
+          python3 verification/verify_v88.py --output /tmp/a2-v89-inherited-verification.json
+      - name: Compile complete revision
+        working-directory: papers/A2-v17-boundary-information-coarsening
+        run: |
+          latexmk -pdf -interaction=nonstopmode -halt-on-error rigidity_v89.tex
+          pdfinfo rigidity_v89.pdf > /tmp/a2-v89-pdfinfo.txt
+          git rev-parse HEAD > /tmp/a2-v89-source-commit.txt
+          sha256sum article/v89/*.tex rigidity_v89.tex rigidity_v89.pdf > /tmp/a2-v89-sha256.txt
+          if grep -E 'undefined references|undefined citations|multiply defined' rigidity_v89.log; then exit 1; fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: a2-v89-native-manuscript
+          path: |
+            papers/A2-v17-boundary-information-coarsening/rigidity_v89.pdf
+            papers/A2-v17-boundary-information-coarsening/rigidity_v89.log
+            papers/A2-v17-boundary-information-coarsening/rigidity_v89.tex
+            papers/A2-v17-boundary-information-coarsening/article/v89/*.tex
+            /tmp/a2-v89-*.txt
+            /tmp/a2-v89-inherited-verification.json

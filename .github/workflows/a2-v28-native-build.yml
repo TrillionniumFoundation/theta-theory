@@ -1,0 +1,56 @@
+name: A2 v28 complete native build
+on:
+  push:
+    branches: [revision/a2-v28-common-orientation-quotient-top4-2026-09-12]
+    paths:
+      - 'papers/A2-v17-boundary-information-coarsening/**/*.tex'
+      - 'papers/A2-v17-boundary-information-coarsening/tools/**'
+      - '.github/workflows/a2-v28-native-build.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      P: papers/A2-v17-boundary-information-coarsening
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Pin complete source before compilation
+        run: |
+          mkdir -p "$RUNNER_TEMP/a2-v28"
+          git rev-parse HEAD > "$RUNNER_TEMP/a2-v28/source-commit.txt"
+          git archive HEAD "$P" | gzip -n > "$RUNNER_TEMP/a2-v28/native-source.tar.gz"
+          python3 --version > "$RUNNER_TEMP/a2-v28/python-version.txt"
+      - name: Install native typesetting tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y latexmk texlive-latex-extra texlive-fonts-recommended texlive-science lmodern poppler-utils
+      - name: Run ordinary and optimized diagnostics
+        run: |
+          for VERSION in 27 28; do
+            python3 "$P/tools/check_revision_v${VERSION}.py" > "$RUNNER_TEMP/a2-v28/v${VERSION}-normal.json"
+            python3 -O "$P/tools/check_revision_v${VERSION}.py" > "$RUNNER_TEMP/a2-v28/v${VERSION}-optimized.json"
+            cmp "$RUNNER_TEMP/a2-v28/v${VERSION}-normal.json" "$RUNNER_TEMP/a2-v28/v${VERSION}-optimized.json"
+          done
+      - name: Audit both complete native source graphs
+        if: always()
+        run: python3 "$P/tools/audit_native_sources_v27.py" --output "$RUNNER_TEMP/a2-v28/native-graph.json"
+      - name: Build both complete native manuscripts
+        if: always()
+        run: python3 "$P/tools/build_submission.py" --output-dir "$RUNNER_TEMP/a2-v28/native-build"
+      - name: Record product hashes
+        if: always()
+        run: |
+          cd "$RUNNER_TEMP/a2-v28"
+          find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 -r sha256sum > SHA256SUMS
+      - name: Preserve source, logs, products and failures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a2-v28-native-${{ github.sha }}
+          path: ${{ runner.temp }}/a2-v28
+          if-no-files-found: error

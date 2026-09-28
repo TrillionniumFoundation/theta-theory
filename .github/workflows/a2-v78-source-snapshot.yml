@@ -1,0 +1,33 @@
+name: A2 v78 source snapshot
+on:
+  push:
+    branches: [revision/a2-v78-observation-quotient-root-free-2026-09-17]
+    paths:
+      - .github/workflows/a2-v78-source-snapshot.yml
+      - A2_REVISION_V78_REVIEW_READY.md
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Archive exact committed sources (not proof or build certification)
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/a2-v78-snapshot
+          git rev-parse HEAD > /tmp/a2-v78-snapshot/SOURCE_COMMIT.txt
+          git rev-parse HEAD:papers/A2-v17-boundary-information-coarsening > /tmp/a2-v78-snapshot/PAPER_TREE.txt
+          git archive --format=tar HEAD papers/A2-v17-boundary-information-coarsening reviews/a2-v77-three-clock-independent-harsh-top4-2026-09-17 | gzip -n > /tmp/a2-v78-snapshot/source.tar.gz
+          cd /tmp/a2-v78-snapshot
+          sha256sum source.tar.gz > SHA256SUMS
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: a2-v78-source-${{ github.sha }}
+          path: /tmp/a2-v78-snapshot/
+          if-no-files-found: error
+          retention-days: 90

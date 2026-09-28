@@ -1,0 +1,98 @@
+name: A2 v70 complete native manuscripts
+
+on:
+  push:
+    branches:
+      - revision/a2-v70-central-proof-architecture-2026-09-16
+    paths:
+      - .github/workflows/a2-v70-native.yml
+      - .github/revision-sources/materialize-a2-v70.py
+      - .github/revision-sources/a2-v70.delta.*
+      - papers/A2-v17-boundary-information-coarsening/**
+
+permissions:
+  contents: write
+
+concurrency:
+  group: a2-v70-native-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  native:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      SOURCE_PREFIX: papers/A2-v17-boundary-information-coarsening
+      EXPECTED_SOURCE_TREE: 63fdb25cd2002d9d2b3a238e7e7f1862b2328d2b
+    steps:
+      - name: Checkout the exact revision commit
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+      - name: Commit and publish the complete verified v70 sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B .github/revision-sources/materialize-a2-v70.py
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'A2 v70: foreground the complete geometric proof and answer the v69 referee without deleting results'
+          SOURCE_SHA=$(git rev-parse HEAD)
+          test "$(git rev-parse "${SOURCE_SHA}:${SOURCE_PREFIX}")" = "$EXPECTED_SOURCE_TREE"
+          git push origin "HEAD:refs/heads/revision/a2-v70-central-proof-architecture-2026-09-16"
+          git fetch origin refs/heads/revision/a2-v70-central-proof-architecture-2026-09-16
+          test "$(git rev-parse FETCH_HEAD)" = "$SOURCE_SHA"
+          echo "SOURCE_SHA=$SOURCE_SHA" >> "$GITHUB_ENV"
+          echo "EVIDENCE=$RUNNER_TEMP/a2-v70-native" >> "$GITHUB_ENV"
+          echo "Actual source: $SOURCE_SHA; manuscript tree: $EXPECTED_SOURCE_TREE" >> "$GITHUB_STEP_SUMMARY"
+      - name: Install the native TeX toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends latexmk texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+      - name: Build all three complete source-matched entries
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B "$SOURCE_PREFIX/tools/build_revision_v70.py" --output-dir "$EVIDENCE"
+          test "$(git rev-parse "HEAD:${SOURCE_PREFIX}")" = "$EXPECTED_SOURCE_TREE"
+          python3 -B "$SOURCE_PREFIX/tools/verify_source_zip_v69.py" "$EVIDENCE/native-source.zip" > "$EVIDENCE/strict-zip-modes.json"
+          if grep -En 'Overfull|LaTeX Error|Missing character:|There were undefined references|There were undefined citations' "$EVIDENCE/main.log" "$EVIDENCE/rigidity.log" "$EVIDENCE/two_collision.log"; then
+            echo 'Unexpected final-log diagnostic' >&2
+            exit 1
+          fi
+      - name: Retain products and verify their pushed Git objects
+        shell: bash
+        run: |
+          set -euo pipefail
+          DEST="deliveries/a2-v70/$SOURCE_SHA"
+          PRODUCTS_BRANCH="revision/a2-v70-native-products-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          python3 -B "$SOURCE_PREFIX/tools/retain_native_v70.py" prepare --destination "$DEST" --source-commit "$SOURCE_SHA" --evidence "$EVIDENCE" --run-id "$GITHUB_RUN_ID"
+          git switch -c "$PRODUCTS_BRANCH" "$SOURCE_SHA"
+          git add -f -- "$DEST"
+          python3 -B "$SOURCE_PREFIX/tools/retain_native_v70.py" verify --destination "$DEST" --ref INDEX
+          git commit -m 'Retain all three complete A2 v70 PDFs, frozen source and native evidence'
+          git push origin "HEAD:refs/heads/$PRODUCTS_BRANCH"
+          git fetch origin "refs/heads/$PRODUCTS_BRANCH:refs/remotes/origin/$PRODUCTS_BRANCH"
+          python3 -B "$SOURCE_PREFIX/tools/retain_native_v70.py" verify --destination "$DEST" --ref "refs/remotes/origin/$PRODUCTS_BRANCH" --attestation
+          git add -f -- "$DEST/COMMITTED_OBJECTS_VERIFIED.json"
+          git commit -m 'Attest fetched committed A2 v70 native product objects'
+          git push origin "HEAD:refs/heads/$PRODUCTS_BRANCH"
+          git fetch origin "refs/heads/$PRODUCTS_BRANCH:refs/remotes/origin/$PRODUCTS_BRANCH"
+          test "$(git rev-parse HEAD)" = "$(git rev-parse "refs/remotes/origin/$PRODUCTS_BRANCH")"
+          python3 -B "$SOURCE_PREFIX/tools/retain_native_v70.py" verify --destination "$DEST" --ref "refs/remotes/origin/$PRODUCTS_BRANCH"
+          echo "Products branch: $PRODUCTS_BRANCH" >> "$GITHUB_STEP_SUMMARY"
+          echo "Products head: $(git rev-parse HEAD)" >> "$GITHUB_STEP_SUMMARY"
+          echo "Delivery: $DEST" >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload complete native evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a2-v70-native-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/a2-v70-native/
+          if-no-files-found: warn
+          retention-days: 90

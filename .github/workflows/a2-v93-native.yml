@@ -1,0 +1,70 @@
+name: A2 v93 exact-head source and manuscript audit
+on:
+  push:
+    branches:
+      - revision/a2-v93-constrained-newton-gauge-2026-09-19
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: a2-v93-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  native:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Record actual revision HEAD and source tree
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/a2-v93-delivery
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git rev-parse HEAD > /tmp/a2-v93-delivery/HEAD.txt
+          git rev-parse HEAD^{tree} > /tmp/a2-v93-delivery/TREE.txt
+          git ls-tree -r HEAD > /tmp/a2-v93-delivery/GIT_TREE.txt
+      - name: Install native TeX and diagnostic dependencies
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended latexmk python3-numpy python3-scipy python3-sympy poppler-utils
+      - name: Verify complete graph, every declared identity, ancestry and diagnostics
+        run: |
+          set -euo pipefail
+          python3 revisions/a2-v93/verify_a2_v93.py --receipt /tmp/a2-v93-delivery/verification.json | tee /tmp/a2-v93-delivery/verification.txt
+      - name: Compile complete revised manuscript
+        working-directory: papers/A2-v17-boundary-information-coarsening
+        run: |
+          set -euo pipefail
+          latexmk -pdf -interaction=nonstopmode -halt-on-error rigidity_v93.tex
+          cp rigidity_v93.pdf rigidity_v93.log /tmp/a2-v93-delivery/
+          pdftotext rigidity_v93.pdf /tmp/a2-v93-delivery/rigidity_v93.txt
+          if grep -E 'undefined references|Citation .* undefined|Reference .* undefined|multiply defined|Overfull \\hbox' rigidity_v93.log; then exit 1; fi
+      - name: Capture the declared source and response bundle
+        if: always()
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, pathlib, zipfile
+          manifest_path = pathlib.Path('revisions/a2-v93/SOURCE_MANIFEST.json')
+          manifest = json.loads(manifest_path.read_text())
+          base = pathlib.Path('papers/A2-v17-boundary-information-coarsening')
+          paths = {str(base / p) for p in manifest['active_tex']} | set(manifest['files'])
+          paths |= {str(manifest_path), 'revisions/a2-v92/SOURCE_MANIFEST.json',
+                    'reviews/a2-v92-independent-harsh-top4-2026-09-19/REFEREE_REPORT.md'}
+          with zipfile.ZipFile('/tmp/a2-v93-delivery/source-and-response.zip', 'w', zipfile.ZIP_DEFLATED) as archive:
+              for name in sorted(paths):
+                  archive.write(name, name)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: a2-v93-exact-head-${{ github.sha }}
+          path: /tmp/a2-v93-delivery/
+          if-no-files-found: error
+          retention-days: 30

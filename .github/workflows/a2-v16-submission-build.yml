@@ -1,0 +1,39 @@
+name: A2 v16 integrated submission
+on:
+  push:
+    branches: [revision/a2-v16-integrated-submission-2026-09-11]
+    paths:
+      - '.github/workflows/a2-v16-submission-build.yml'
+      - 'papers/A2-v16-integrated-submission/**'
+permissions:
+  contents: read
+jobs:
+  source-and-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Export pinned author and referee sources
+        shell: bash
+        run: |
+          mkdir -p a2-v16-artifacts
+          git rev-parse HEAD > a2-v16-artifacts/source-commit.txt
+          git archive --format=tar.gz --output=a2-v16-artifacts/source.tar.gz HEAD papers/A2-v15-intrinsic-scalar-transport reviews/a2-v15-independent-harsh-scalar-transport-2026-09-11
+          git ls-tree HEAD papers/A2-v15-intrinsic-scalar-transport > a2-v16-artifacts/author-tree.txt
+      - name: Install full manuscript build dependencies
+        if: hashFiles('papers/A2-v16-integrated-submission/main.tex') != ''
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y latexmk texlive-latex-extra texlive-science texlive-fonts-recommended poppler-utils python3-numpy python3-scipy
+      - name: Build and verify complete submission
+        if: hashFiles('papers/A2-v16-integrated-submission/tools/build_submission.py') != ''
+        run: python3 papers/A2-v16-integrated-submission/tools/build_submission.py --output-dir "$GITHUB_WORKSPACE/a2-v16-artifacts/build"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: a2-v16-integrated-${{ github.sha }}
+          path: a2-v16-artifacts/
+          if-no-files-found: error
+          retention-days: 14
