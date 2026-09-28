@@ -1,0 +1,52 @@
+name: GTF I v61 read-only final-head verification
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v61-sharp-width-2026-09-28
+      - revision/general-theta-foundations-i-v61-referee-ready-2026-09-28
+    paths:
+      - GENERAL_THETA_FOUNDATIONS_I_V61_FINAL_HEAD_REQUEST.json
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: gtf-i-v61-final-head-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  verify-final-head:
+    if: startsWith(github.ref, 'refs/heads/revision/general-theta-foundations-i-v61-')
+    runs-on: ubuntu-22.04
+    timeout-minutes: 35
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 3
+          persist-credentials: false
+          sparse-checkout: |
+            papers/GTF-I-v61-sharp-width
+            GENERAL_THETA_FOUNDATIONS_I_V61_FINAL_HEAD_REQUEST.json
+            GENERAL_THETA_FOUNDATIONS_I_V61_REVIEW_READY.md
+            .github/workflows/gtf-i-v61-final-head.yml
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned reconstruction dependencies
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check sympy==1.14.0 PyMuPDF==1.26.7 scipy==1.17.0
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended texlive-latex-recommended texlive-science lmodern
+      - name: Independently rebuild and compare the exact reviewed head
+        run: python papers/GTF-I-v61-sharp-width/final_head_verify.py --output-dir "$RUNNER_TEMP/gtf61-final-head"
+      - name: Preserve external final-head attestation
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gtf-v61-final-head-${{ github.sha }}-${{ github.run_id }}
+          retention-days: 90
+          if-no-files-found: error
+          path: ${{ runner.temp }}/gtf61-final-head/
