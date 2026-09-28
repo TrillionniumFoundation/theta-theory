@@ -1,0 +1,39 @@
+name: A2 v15 exact-source verification
+on:
+  push:
+    branches:
+      - revision/a2-v15-asymmetric-contact-rigidity-2026-09-28
+    paths:
+      - 'papers/A2-v15-asymmetric-contact-rigidity/**'
+      - '.github/workflows/a2-v15-verify.yml'
+permissions:
+  contents: read
+jobs:
+  manuscript:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Check out the exact revision
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            papers/A2-v15-asymmetric-contact-rigidity
+      - name: Install the mathematical build environment
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y texlive-latex-extra texlive-fonts-recommended latexmk python3 poppler-utils
+      - name: Verify direct sources and build all three documents
+        working-directory: papers/A2-v15-asymmetric-contact-rigidity
+        run: python3 tools/run_validation.py
+      - name: Preserve actual source and execution evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: A2-v15-${{ github.sha }}
+          path: papers/A2-v15-asymmetric-contact-rigidity/
+          include-hidden-files: true
+          retention-days: 30
+          if-no-files-found: error
