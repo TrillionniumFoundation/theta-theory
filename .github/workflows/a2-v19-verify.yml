@@ -1,0 +1,45 @@
+name: A2 v19 exact-source full-package verification
+on:
+  push:
+    branches:
+      - revision/a2-v19-intrinsic-network-descent-2026-09-28
+    paths:
+      - 'papers/A2-v19-intrinsic-network-descent/**'
+      - '.github/workflows/a2-v19-verify.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  manuscript:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Check out the exact triggering commit
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          sparse-checkout: |
+            papers/A2-v19-intrinsic-network-descent
+      - name: Install mathematical build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y texlive-latex-extra texlive-fonts-recommended latexmk python3 python3-numpy python3-scipy poppler-utils
+      - name: Validate exact sources and all submission volumes
+        working-directory: papers/A2-v19-intrinsic-network-descent
+        run: python3 tools/validate_v19.py --all-volumes --require-checkout
+      - name: Archive actual logs, receipts and PDFs, including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: A2-v19-${{ github.sha }}
+          path: |
+            papers/A2-v19-intrinsic-network-descent/verification/current/
+            papers/A2-v19-intrinsic-network-descent/verification/local/
+            papers/A2-v19-intrinsic-network-descent/build/
+            papers/A2-v19-intrinsic-network-descent/SOURCE_PINS.json
+          include-hidden-files: true
+          retention-days: 30
+          if-no-files-found: error
