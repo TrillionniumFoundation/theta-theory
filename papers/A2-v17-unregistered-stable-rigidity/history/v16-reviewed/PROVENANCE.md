@@ -1,0 +1,9 @@
+# A2 v16 source provenance
+
+The baseline is the latest v15 external-review head `3de6ab93a81e76f35ccf507f8815852ea4c981f6`, repository tree `e17bb31b7dbeb64e7523ba41331e9e0c194a788c`. The report, source audit, literature audit, preceding primary article, and proof/information ledger were consulted. The four mathematical core files listed in `SOURCE_PINS.json` were read in full and retained verbatim. The retained complete volume is not represented as independently re-proved line by line in this revision.
+
+The report distinguishes v15 delivery metadata (`0dbe3b317da4b2b14f7a99e000da808fbbf8691e`) from its qualified mathematical manuscript (`00f27ebd0071d75504995b61f9a15c67f896188f`). The latter's whole paper tree is reused under `history/v15-reviewed`. The complete supplementary tree is reused directly under `complete`. Previous revision and review directories are not modified or deleted.
+
+New mathematical sources are the intrinsic setting, calibration, standalone filtration and analytic identity lemma, registered global reconstruction, count-fiber analysis, and intrinsic physical/observation corollaries. The retained Cartesian proof, physical families, binary experiment and relative-law comparison remain separate identifiable inputs. The new bibliography is checked against primary publisher/arXiv records; it is a targeted comparison, not a complete novelty audit.
+
+Local evidence is source-content evidence: the container did not possess an authenticated Git checkout. Its null commit fields are deliberate. Remote publication is bound separately by comparing Git blob identities for the exact local sources and by recording the actual commit and tree. A hosted action must be read at its own source SHA and status; neither old v15 results nor a queued action are declared a current hosted pass.

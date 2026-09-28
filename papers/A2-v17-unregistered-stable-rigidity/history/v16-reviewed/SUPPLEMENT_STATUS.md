@@ -1,0 +1,7 @@
+# Supplement S: submission and archival status
+
+The directory `complete/` is formally included as Supplement S to the current A2 v16 submission package. It is not claimed to be independently published, accepted, or separately peer-reviewed. It contains the complete smooth relative boundary-law, symmetrized-profile, Volterra, Abel and auxiliary-experiment proofs. Build `two_collision.tex` before `main.tex` in that directory because of external references.
+
+For exact preservation its Git tree is unchanged from v15: `14b2e5379e5b223bc0bdc823c97fd77c2dca2cda`. Its front matter consequently still names the preceding asymmetric article. This cover record assigns the same mathematical volume to the present submission without rewriting its historical acknowledgments, hypotheses, provenance files, or qualification records. The 133-page and 7-page figures in those historical records refer to prior executed builds; they are not new v16 execution claims.
+
+The new primary article proves the intrinsic local and registered global theorems without using a supplementary theorem as an unproved dependency. Its relative-law comparison section uses Supplement S for the older smooth claims and explicitly distinguishes their information category. The complete v15 primary article and its nested historical sources are separately preserved under `history/v15-reviewed/`; those are archival sources, not additional new papers submitted as new results.
