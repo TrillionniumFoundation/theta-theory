@@ -1,0 +1,377 @@
+\section{Uniform one-pass computation with charged bit-space}\label{sec:streaming64}
+The preceding label-width invariant permits arbitrary real transition
+tables. A lower bound for that invariant also constrains finite-bit
+algorithms, but an upper bound for it need not be implementable at a
+comparable cost. We now give a separate uniform result in which all
+integer storage and arithmetic are charged. Throughout this section the
+physical alphabet is exactly $\mathcal A_6$ in
+Theorem~\ref{thm:noidle62}; in particular, no idle command is added.
+All logarithms are natural except those explicitly denoted by $\log_2$.
+
+\subsection{Computational convention and the space theorem}
+A numerical streaming algorithm has a fixed finite program. It reads
+parameters $N\ge2$ and $L\ge2$, followed by $N$ commands, in one pass.
+A consumed command cannot be consulted again. No input-dependent
+information may be stored in a readable output tape, an external
+clock, or an uncharged address. After the last command it returns a
+rational matrix $\widehat F(w)\in\mathcal D_2$. For randomized
+algorithms every returned matrix is required to be legal, and our
+correctness condition is the weaker, mean condition
+\begin{equation}\label{eq:streammean64}
+ \sup_{w\in\mathcal A_6^N}
+ \bigl\|\E\widehat F(w)-D(A_we_1)\bigr\|_{\rm F}\le2^{-L}.
+\end{equation}
+Internal computation terminates almost surely between successive
+commands and at the output stage. Randomness is fresh; any retained
+random seed is part of the configuration.
+
+Writable bit-space includes the data registers, temporary integer
+storage, retained parameter information, work-tape addresses and
+control information. Equivalently, one may charge a binary encoding of
+the complete private configuration. To relate these conventions,
+a fixed program with $s$ work bits and a fixed number of work heads
+has at most $C(s+1)^d2^{cs}$ configurations, for constants depending
+only on its machine convention. The prescribed position of the
+one-pass input head at the $t$th command boundary contains no
+input-dependent information. A private address that does contain such
+information must be counted. The parameters are not an advice table;
+they contain only the two integers $N,L$.
+
+\begin{theorem}[Uniform streaming space]\label{thm:streamspace64}
+There is one deterministic numerical streaming algorithm for the six
+rational rotations such that, for every $N\ge2$ and $L\ge2$, every
+output is legal, the pointwise error is at most $2^{-L}$, and the
+writable bit-space is
+\begin{equation}\label{eq:spaceupper64}
+ O\bigl(\min\{N,L+\log_2(N+1)\}\bigr).
+\end{equation}
+It uses no real advice, no random sampling, and no oracle arithmetic.
+Writing $b_* =\min\{N,L+\lceil\log_2N\rceil+2\}$, its command updates
+can be performed in $O(b_*)$ bit operations each with $O(b_*)$ scratch
+space. Parameter scanning is charged separately by its input length;
+a binary rational output uses $O(b_*)$ bits.
+
+Conversely, there is an absolute $c>0$ such that every one-pass
+algorithm satisfying \eqref{eq:streammean64} and having at most $2^B$
+complete private configurations at each command boundary satisfies
+\begin{equation}\label{eq:spacelower64}
+ B\ge c\min\{N,L+\log_2(N+1)\}.
+\end{equation}
+There is no running-time restriction in this converse. It applies even
+to arbitrary horizon-dependent stochastic updates. Consequently every
+fixed-program randomized bit algorithm has the same lower order of
+writable space, with machine-dependent constants. Deterministic and
+randomized uniform space therefore have the common order
+$\Theta(\min\{N,L+\log_2(N+1)\})$ for this numerical task.
+\end{theorem}
+The spectral input for the converse is the full spherical Koopman norm
+$\sqrt5/3$ of the six-letter average, not the norm of its action on
+$\R^3$. The upper algorithm uses only rational orthogonality and does
+not need a spectral assumption. The theorem is a consequence of the
+entropy occupation law together with an explicit finite-arithmetic
+construction, not a new proof of the LPS spectral theorem.
+
+\subsection{From complete configurations to stochastic width}
+\begin{lemma}[Boundary reduction]\label{lem:boundary64}
+If a one-pass algorithm has at most $k$ private configurations at every
+command boundary and satisfies mean error $\varepsilon$, its boundary
+laws define a clocked numerical realization of peak width at most $k$
+and the same error.
+\end{lemma}
+\begin{proof}
+Take the configurations at boundary $t$ as $S_t$. Include every piece
+of retained information, whether or not it is called a data register.
+Starting from a boundary configuration and a supplied next command,
+integrate over all internal computation and fresh randomness up to the
+next boundary. Almost-sure termination gives a stochastic row of total
+mass one. The row depends only on that configuration and command,
+with the fixed parameters and boundary index permitted as public
+parameters. Consumed input and old random bits are inaccessible unless
+recorded in the configuration. This gives precisely the Markov rows
+of Definition~\ref{def:machine54}.
+
+At the terminal boundary, replace any randomized output computation
+by its conditional mean matrix. This mean is in $\mathcal D_2$ by
+convexity and compactness, and is independent of the discarded input
+conditional on the complete configuration. Thus the numerical decoder
+is legal and has exactly the mean output in
+\eqref{eq:streammean64}. No running-time or exact-sampling assumption
+is introduced in this reduction.
+\end{proof}
+
+\begin{proposition}[A finite bit--accuracy obstruction]\label{prop:bitaccuracy64}
+For the six-command experiment, suppose a correct realization has at
+most $2^B$ complete configurations at every positive cut and error
+$0\le\varepsilon<1/\sqrt2$. Put
+\[
+ a_B=1+6\log(12\cdot2^B),\qquad c_B=648\pi^2\,2^B.
+\]
+Then
+\begin{equation}\label{eq:finitebits64}
+ N\le a_B+c_B\frac{\sqrt2\varepsilon}{1-\sqrt2\varepsilon}.
+\end{equation}
+In particular, if $d=N-a_B>0$, then
+\begin{equation}\label{eq:invertedbits64}
+ \varepsilon\ge\frac{d}{\sqrt2(c_B+d)}.
+\end{equation}
+At zero error the exact profile gives the stronger bound
+$B\ge N\log_2 5$.
+\end{proposition}
+\begin{proof}
+Apply \eqref{eq:noidleoccupation62} to all $N$ positive cuts with
+$k=2^B$ and $\zeta=1-\sqrt2\varepsilon$. This gives
+\eqref{eq:finitebits64}, including its limiting zero-error case.
+Solving $d\le c_B\sqrt2\varepsilon/(1-\sqrt2\varepsilon)$ gives
+\eqref{eq:invertedbits64}. For the last assertion use the exact
+terminal width $5^N$ in Theorem~\ref{thm:noidle62} instead of the
+weaker entropy estimate.
+\end{proof}
+
+\begin{proof}[Lower bound in Theorem~\ref{thm:streamspace64}]
+Let $k$ be the maximum number of boundary configurations. Since
+$\varepsilon=2^{-L}\le1/4$, Proposition~\ref{prop:bitaccuracy64}, or
+\eqref{eq:noidleoccupation62} with $k$, implies, for absolute positive
+constants $C_0,C_1,C_2$,
+\begin{equation}\label{eq:bitdichotomy64}
+ N\le C_0+C_1\log k+C_2\varepsilon k.
+\end{equation}
+For $N\ge2C_0$, either $\log k\ge N/(4C_1)$ or
+$k\ge N/(4C_2\varepsilon)$. Taking logarithms and enlarging an
+absolute additive constant yields
+\[
+ \log_2 k\ge c_0\min\{N,\log_2(N/\varepsilon)\}-C_3.
+\]
+The additive constant can be absorbed uniformly. Indeed $k\ge2$ for
+all $N\ge2$ in the stated error range: the all-$A_1$ word ends at
+$e_1$, whereas $N-1$ copies of $A_1$ followed by $A_2$ end at
+$A_2e_1=(-3/5,0,-4/5)$. Their density matrices have Frobenius
+distance $\sqrt{8/5}>1/2$. A single constant mean decoder cannot be
+within $1/4$ of both. If
+$\min\{N,\log_2(N/\varepsilon)\}$ is below a fixed large constant,
+$\log_2k\ge1$ suffices; above that constant it absorbs $C_3$ in the
+preceding estimate. The finitely bounded range $N<2C_0$ is handled
+in the same way. Since $k\le2^B$, this proves
+\eqref{eq:spacelower64}. Finally the fixed-program configuration count
+stated above gives $\log_2k=O(s+1)$, so the same conclusion holds
+for work-tape space. This argument neither assumes uniform transition
+tables nor assumes that an individual sampled decoder approximates
+the physical target.
+\end{proof}
+
+\subsection{A legality-preserving integer algorithm}
+For $b\ge0$, define coordinatewise truncation toward zero by
+\[
+ T_b(x)_i=2^{-b}\operatorname{sgn}(x_i)
+                          \lfloor2^b|x_i|\rfloor.
+\]
+Unlike rounding to the nearest grid point, this operation preserves
+the closed Euclidean unit ball.
+\begin{lemma}[Directed rounding]\label{lem:directedround64}
+For every $x\in\R^d$,
+\[
+ \norm{T_b(x)}\le\norm x,\qquad
+ \norm{T_b(x)-x}\le\sqrt d\,2^{-b}.
+\]
+If $R_1,\ldots,R_N$ are orthogonal, $x_t=R_tx_{t-1}$ with
+$\norm{x_0}\le1$, and $v_0=x_0$ is on the $2^{-b}$ grid, then
+$v_t=T_b(R_tv_{t-1})$ satisfies
+\begin{equation}\label{eq:roundorbit64}
+ \norm{v_t}\le1,\qquad \norm{v_t-x_t}\le t\sqrt d\,2^{-b}.
+\end{equation}
+\end{lemma}
+\begin{proof}
+Each absolute coordinate decreases under truncation and changes by
+less than $2^{-b}$. Squaring and summing gives the first two estimates.
+Orthogonality and the triangle inequality give
+$\norm{v_t-x_t}\le\sqrt d\,2^{-b}+\norm{v_{t-1}-x_{t-1}}$.
+Induction proves both assertions in \eqref{eq:roundorbit64}.
+\end{proof}
+
+Write $A_a=M_a/5$, where $M_a$ is one of the six fixed integer
+matrices from \eqref{eq:lpsinput61} and their transposes, multiplied
+by five. Set
+\begin{equation}\label{eq:precision64}
+ b=L+\lceil\log_2N\rceil+2.
+\end{equation}
+When $b<N$, initialize $n=(2^b,0,0)\in\Z^3$. On command $a$, compute
+\begin{equation}\label{eq:integerupdate64}
+ z=M_an,\qquad
+ n'_i=\operatorname{sgn}(z_i)\lfloor |z_i|/5\rfloor,
+ \qquad n\leftarrow n'.
+\end{equation}
+The current numerical vector is $v=n/2^b$. The update is exactly
+$T_b(A_av)$; in particular it does not use an approximate matrix.
+The common denominator is kept fixed.
+
+When $b\ge N$, instead initialize $n=e_1$ and $d=1$ and use the exact
+updates
+\begin{equation}\label{eq:exactupdate64}
+                       n\leftarrow M_an,\qquad d\leftarrow5d.
+\end{equation}
+After $t$ commands, $n/d=A_{a_t}\cdots A_{a_1}e_1$ and $d=5^t$.
+No history of the commands is retained in either mode.
+
+\begin{proof}[Upper bound in Theorem~\ref{thm:streamspace64}]
+In the fixed-grid mode, Lemma~\ref{lem:directedround64} gives legality
+at every step and
+\[
+ \|D(v_N)-D(x_N)\|_{\rm F}
+   =\frac{\norm{v_N-x_N}}{\sqrt2}
+   \le\sqrt{3/2}\,N2^{-b}<2^{-L}.
+\]
+The exact mode is legal and has zero error. In both modes the output
+is a rational density matrix. For example, if $v=n/d$, one may output
+\begin{equation}\label{eq:output64}
+ D(v)=\frac1{2d}
+ \begin{pmatrix}d+n_3&n_1-\mathrm i n_2\\
+                  n_1+\mathrm i n_2&d-n_3\end{pmatrix}.
+\end{equation}
+The guarantee $\norm n\le d$ implies positive semidefiniteness.
+There is no square root, eigenvalue computation, projection oracle, or
+physical quantum preparation in the algorithm.
+
+In the fixed-grid mode each coordinate needs $b+O(1)$ bits, including
+its sign. Every entry of $M_a$ has absolute value at most five and each
+row has absolute sum at most seven. Thus the temporary integer $z_i$
+and the new coordinate also require only $b+O(1)$ bits. A constant
+number of buffers suffices. Addition, multiplication by these fixed
+integers, and division of a nonnegative integer by five are executable
+by binary digit scans with $O(b)$ bit operations and $O(b)$ storage.
+Truncation of a negative coordinate uses its sign and absolute value;
+rounding toward negative infinity would not give this algorithm.
+
+In the exact mode $\norm n=d=5^t$, so all numerators, the denominator,
+and intermediate results have $O(t+1)$ bits. Their updates use
+$O(t+1)$ bit operations and storage. Taking $b<N$ for the first mode
+and $b\ge N$ for the second yields \eqref{eq:spaceupper64} and the
+asserted command time. Formula~\eqref{eq:output64} can be written as
+signed binary integers over one common denominator in $O(b_*)$ time
+and space. Conversion to a decimal presentation is not needed for the
+bit-operation bound.
+
+For completeness, parameter handling does not require storing a very
+large requested precision. Read $N$ and store it in binary. While
+reading $L$, maintain its value capped at $N$ by the recurrence
+$\ell\leftarrow\min\{N,2\ell+\delta\}$ for each binary digit
+$\delta$. If the cap is reached, the exact mode is already determined.
+Otherwise $L<N$ is stored exactly, and \eqref{eq:precision64} is
+computed with $O(\log N)$ auxiliary bits. This also works with any
+fixed input radix. Reading the entire header takes its actual input
+length; a straightforward implementation uses $O(\log N)$ work bits
+and $O(\log N)$ bit operations per header digit. A counter validating
+that exactly $N$ commands were read costs $O(\log N)$ additional bits,
+which are within the asserted bound. No command-time external clock
+is needed.
+\end{proof}
+
+\begin{corollary}[The zero-error and arbitrary-tolerance regimes]\label{cor:allprecision64}
+Exact one-pass numerical realization of this fixed rational experiment
+has bit-space $\Theta(N)$. For every real $0<\varepsilon\le1/4$, a
+sufficient binary accuracy parameter $L=\lceil\log_2(1/\varepsilon)\rceil$
+gives optimal space order
+\[
+              \Theta\bigl(\min\{N,\log(N+1)+\log(1/\varepsilon)\}\bigr).
+\]
+Thus the order is logarithmic at fixed positive error and linear once
+$\log(1/\varepsilon)$ is of order $N$ or larger.
+\end{corollary}
+\begin{proof}
+Use the exact profile $5^N$ for the first lower bound and
+\eqref{eq:exactupdate64} for its upper bound. For positive tolerance,
+the lower proof applies directly with that tolerance in
+\eqref{eq:bitdichotomy64}. The chosen $L$ differs from
+$\log_2(1/\varepsilon)$ by less than one and supplies the upper bound.
+\end{proof}
+
+\subsection{Rational orthogonal actions}
+The computational consequence is not restricted to the numerical LPS
+example. Legal unit-ball outputs allow the same argument for any fixed
+rational orthogonal alphabet satisfying the two geometric hypotheses
+used by the entropy theorem.
+
+\begin{corollary}[Uniform space for rational orthogonal actions]\label{cor:rationalspace64}
+Let $\mathcal A\subset O(\Q^m)$ be a fixed finite alphabet, let $G$
+be its compact generated group, and let $x_0\in\Q^m$ be a unit vector.
+Assume the full action gap \eqref{eq:fullgap62} and the all-direction
+cap bound \eqref{eq:caps62} with a positive exponent $p$.
+Require numerical decoder values to belong to the closed unit ball
+of $\R^m$. In the one-pass model, with Euclidean mean error at most
+$2^{-L}$, the optimal uniform bit-space order is
+\[
+             \Theta\bigl(\min\{N,L+\log_2(N+1)\}\bigr)
+\]
+for $L\ge2$ and $N$ above a constant depending only on the fixed
+input. There is no identity or return hypothesis. The upper bound is
+deterministic with pointwise error. Exact computation has order $N$.
+\end{corollary}
+\begin{proof}
+The lower proof of Theorem~\ref{thm:driftoccupation62} uses the legal
+output set only through $\norm{D_i}\le1$ in the terminal centroid
+estimate. It therefore applies unchanged to unit-ball decoders, with
+$\rho=1$ and $\zeta=1-\varepsilon$. Its finite budget gives
+\[
+ N\le C_0+C_1\log k+C_2\varepsilon k^{2/p}
+                   \qquad(0\le\varepsilon\le1/4).
+\]
+The same dichotomy as in \eqref{eq:bitdichotomy64} gives
+$\log k\ge c\min\{N,\log(N/\varepsilon)\}-C'$.
+For sufficiently large $N$ this lower bound absorbs its additive
+constant uniformly, since $\log(N/\varepsilon)\ge\log(4N)$.
+At zero error the finite budget directly gives $\log k\ge cN-C'$.
+The complete-configuration reduction then applies.
+
+For the upper bound write $A_a=M_a/D$ and $x_0=n_0/d_0$ with fixed
+integer data and positive common denominators. At grid precision $b$
+initialize $v_0=T_b(x_0)$ and perform the integer update
+$n'_i=\operatorname{sgn}((M_an)_i)\lfloor |(M_an)_i|/D\rfloor$.
+The initial error contributes one additional rounding term, so
+Lemma~\ref{lem:directedround64} gives
+$\norm{v_N-x_N}\le(N+1)\sqrt m\,2^{-b}$ and legal outputs at
+all prefixes. Choose
+$b=L+\lceil\log_2(N+1)\rceil+\lceil\log_2\sqrt m\rceil+2$.
+Alternatively retain the exact vector with denominator $d_0D^t$.
+Since the dimension and integer coefficients are fixed, these modes
+use respectively $O(b)$ and $O(N+1)$ bits, including scratch and
+parameter storage. Choose the smaller mode. The capped parameter
+scan and fixed-integer digit operations from the preceding proof
+apply without change. No orbit-covering algorithm or construction of
+a real transition table is used.
+\end{proof}
+This corollary requires unit-ball decoders. It does not assert that
+coordinatewise truncation preserves an arbitrary orbit hull or the
+positive-semidefinite cone in higher matrix dimension. The Bloch ball
+is exactly the legal qubit output set, which is why the preceding
+explicit result gives legal density matrices.
+
+\subsection{Relation to finite automata and positive realization}
+The passage from a configuration to a stochastic label in
+Lemma~\ref{lem:boundary64} is elementary, as is directed finite-precision
+arithmetic. The quantitative content is that the entropy obstruction
+continues to force optimal uniform bit-space even when arbitrary
+randomization and unlimited internal running time are allowed.
+This is not a reinterpretation of free real-table lookup as an
+implemented algorithm. The upper program is independently specified.
+The logarithm of width records fewer asymptotic details than width
+itself: the present matching space order does not remove the
+subexponential multiplicative loss in Theorem~\ref{thm:crossover63}.
+
+The invariant-cone characterization of positive realization, stated by
+Benvenuti--Farina \cite[Theorem~2]{BF64}, concerns exact stationary
+nonnegative realizations of a rational transfer function. Our lower
+bound instead concerns all-word, horizon-dependent approximation by
+common stochastic rows. The affine Bloch recursion has constant real
+linear dimension, but its negative matrix entries do not make it a
+positive finite-label realization. A finite-bit implementation of that
+recursion must pay for its accuracy.
+
+Ambainis--Watrous \cite[Section~2 and Theorem~1]{AW64} allow a two-way
+input head and a fixed-dimensional quantum register in a language
+recognition problem. Panduranga Rao--Vinay
+\cite[Theorem~1]{RV64} construct complex-weighted two-way automata
+for one-sided language recognition. Their transitions are not
+nonnegative stochastic rows with a legal density-matrix decoder.
+Neither comparison identifies algebraic amplitudes with finitely many
+classical configurations. The model here has a one-pass classical
+input, no physical quantum register, and a numerical output required
+for every command word. We do not claim a language-recognition
+separation or an extension to repeated quantum measurements.

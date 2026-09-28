@@ -1,0 +1,104 @@
+name: GTF-I v64 source qualification and publication
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v64-uniform-streaming-2026-09-28
+    paths:
+      - papers/GTF-I-v64-uniform-streaming/**
+      - .github/workflows/gtf-i-v64-build.yml
+permissions:
+  contents: write
+concurrency:
+  group: gtf64-source-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  qualify:
+    runs-on: ubuntu-24.04
+    container: debian:13-slim
+    timeout-minutes: 30
+    steps:
+      - name: Install fixed Python dependencies and Debian 13 typesetting stack
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          apt-get update -qq
+          apt-get install -y --no-install-recommends ca-certificates git python3 python3-venv texlive-latex-extra texlive-fonts-recommended lmodern
+          python3 -m venv /opt/gtf64-venv
+          /opt/gtf64-venv/bin/pip install --disable-pip-version-check PyMuPDF==1.26.7 sympy==1.14.0
+      - name: Checkout the exact native source candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 2
+      - name: Build all manuscripts and isolated source reconstruction
+        shell: bash
+        env:
+          GTF64_SOURCE_COMMIT: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          /opt/gtf64-venv/bin/python papers/GTF-I-v64-uniform-streaming/build_revision.py --isolated > "$RUNNER_TEMP/gtf64-build.json"
+      - name: Independently reconstruct the minimal journal package
+        shell: bash
+        run: |
+          set -euo pipefail
+          /opt/gtf64-venv/bin/python - <<'PY'
+          import os, pathlib, subprocess, zipfile
+          d=pathlib.Path(os.environ['RUNNER_TEMP'])/'gtf64-journal'
+          d.mkdir()
+          with zipfile.ZipFile('papers/GTF-I-v64-uniform-streaming/evidence/JOURNAL_PACKAGE.zip') as z:
+              z.extractall(d)
+          r=subprocess.run(['/opt/gtf64-venv/bin/python',str(d/'journal_verify.py')],check=True,capture_output=True)
+          pathlib.Path('papers/GTF-I-v64-uniform-streaming/evidence/JOURNAL_REBUILD_RECEIPT.json').write_bytes(r.stdout)
+          PY
+      - name: Publish only generated v64 artifacts on the unchanged work branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          branch='revision/general-theta-foundations-i-v64-uniform-streaming-2026-09-28'
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git ls-remote --heads origin "refs/heads/$branch" | cut -f1)" = "$GITHUB_SHA"
+          /opt/gtf64-venv/bin/python - <<'PY'
+          import json, os, pathlib, subprocess
+          r=pathlib.Path('papers/GTF-I-v64-uniform-streaming')
+          b=json.loads((r/'evidence/BUILD_RECEIPT.json').read_text())
+          if b['source_commit']!=os.environ['GITHUB_SHA'] or not b['isolated_rebuild']:
+              raise RuntimeError('source qualification identity mismatch')
+          changed=subprocess.check_output(['git','diff','--name-only'],text=True).splitlines()
+          for n in changed:
+              if not (n.startswith(str(r)+'/evidence/') or n in [str(r)+'/'+k for k in b['documents']]):
+                  raise RuntimeError('builder changed a native source: '+n)
+          counts=b['regression']['check_streaming.py']
+          lines=['# General Theta Foundations I — Revision 64 referee entry', '',
+            'Quantitative manuscript: `papers/GTF-I-v64-uniform-streaming/paper.pdf` (44 pages).',
+            'Structural manuscript: `papers/GTF-I-v64-uniform-streaming/STRUCTURAL_PAPER.pdf` (40 pages).',
+            'Complete edition: `papers/GTF-I-v64-uniform-streaming/COMPLETE_REVISION.pdf` (92 pages).', '',
+            'Actual page counts and exact PDF hashes are authoritative in `evidence/BUILD_RECEIPT.json`.',
+            'Native source: `'+b['source_commit']+'`.',
+            'Builder run: `'+os.environ['GITHUB_RUN_ID']+'`.', '',
+            'New main result: optimal uniform one-pass bit-space `Theta(min(N,L+log(N+1)))` for the six rational LPS Bloch rotations, with charged integer arithmetic and legal density-matrix outputs. A rational-orthogonal extension with full action gap, all-direction caps and legal unit-ball outputs is also proved.', '',
+            'Source: `sections/31-uniform-streaming.tex`. In the quantitative paper: Theorem 14.1 and Corollary 14.6. The response maps all ten required revisions and twenty-four detailed comments from the controlling v61/r40 report. v62/v63 results are inherited, not presented as new or externally re-reviewed.', '',
+            str(counts['exact_assertions'])+' exact finite assertions; '+str(counts['word_cases'])+' tested words; '+str(len(counts['negative_controls']))+' negative controls. Normal/optimized outputs agree. These are implementation regressions, not universal proof or priority certification.', '',
+            'All 478 predecessor native files and all 303 prior active complete-edition mathematical labels are preserved. The journal package is independently rebuildable without historical PDFs. A final read-only request and attestation are separate from this source-publication step.', '',
+            'Work branch: `revision/general-theta-foundations-i-v64-uniform-streaming-2026-09-28`.',
+            'Referee alias, after final qualification: `revision/general-theta-foundations-i-v64-referee-ready-2026-09-28`.', '']
+          # Use actual pagination even if a toolchain changes a line break.
+          lines[2]='Quantitative manuscript: `'+str(r)+'/paper.pdf` ('+str(b['documents']['paper.pdf']['pages'])+' pages).'
+          lines[3]='Structural manuscript: `'+str(r)+'/STRUCTURAL_PAPER.pdf` ('+str(b['documents']['STRUCTURAL_PAPER.pdf']['pages'])+' pages).'
+          lines[4]='Complete edition: `'+str(r)+'/COMPLETE_REVISION.pdf` ('+str(b['documents']['COMPLETE_REVISION.pdf']['pages'])+' pages).'
+          pathlib.Path('GENERAL_THETA_FOUNDATIONS_I_V64_REVIEW_READY.md').write_text('\n'.join(lines))
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add papers/GTF-I-v64-uniform-streaming/paper.pdf papers/GTF-I-v64-uniform-streaming/STRUCTURAL_PAPER.pdf papers/GTF-I-v64-uniform-streaming/COMPLETE_REVISION.pdf papers/GTF-I-v64-uniform-streaming/evidence GENERAL_THETA_FOUNDATIONS_I_V64_REVIEW_READY.md
+          git commit -m 'docs(gtf-i): publish qualified v64 manuscripts and uniform streaming evidence'
+          git push origin "HEAD:refs/heads/$branch"
+          git rev-parse HEAD > "$RUNNER_TEMP/gtf64-publication-sha.txt"
+      - name: Upload qualified publication package
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: gtf-v64-qualification-${{ github.run_id }}
+          path: |
+            papers/GTF-I-v64-uniform-streaming/*.pdf
+            papers/GTF-I-v64-uniform-streaming/evidence/
+            GENERAL_THETA_FOUNDATIONS_I_V64_REVIEW_READY.md
+          if-no-files-found: error

@@ -1,0 +1,59 @@
+name: GTF-I v64 exact-head reconstruction
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v64-uniform-streaming-2026-09-28
+    paths:
+      - GENERAL_THETA_FOUNDATIONS_I_V64_FINAL_HEAD_REQUEST.json
+      - papers/GTF-I-v64-uniform-streaming/evidence/BUILD_RECEIPT.json
+permissions:
+  contents: read
+concurrency:
+  group: gtf64-exact-head-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    container: debian:13-slim
+    timeout-minutes: 30
+    steps:
+      - name: Install fixed Python dependencies and Debian 13 typesetting stack
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          apt-get update -qq
+          apt-get install -y --no-install-recommends ca-certificates git python3 python3-venv texlive-latex-extra texlive-fonts-recommended lmodern
+          python3 -m venv /opt/gtf64-venv
+          /opt/gtf64-venv/bin/pip install --disable-pip-version-check PyMuPDF==1.26.7 sympy==1.14.0
+      - name: Read-only checkout of triggering publication
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 3
+          persist-credentials: false
+      - name: Rebuild and compare exact source, preserved history, tests and every PDF page
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/gtf64-attestation"
+          /opt/gtf64-venv/bin/python papers/GTF-I-v64-uniform-streaming/build_revision.py --verify-published > "$RUNNER_TEMP/gtf64-attestation/FINAL_HEAD.json"
+          git diff --exit-code
+      - name: Independently rebuild the minimal journal package
+        shell: bash
+        run: |
+          set -euo pipefail
+          /opt/gtf64-venv/bin/python - <<'PY'
+          import os, pathlib, subprocess, zipfile
+          d=pathlib.Path(os.environ['RUNNER_TEMP'])/'gtf64-journal'
+          d.mkdir()
+          with zipfile.ZipFile('papers/GTF-I-v64-uniform-streaming/evidence/JOURNAL_PACKAGE.zip') as z:
+              z.extractall(d)
+          r=subprocess.run(['/opt/gtf64-venv/bin/python',str(d/'journal_verify.py')],check=True,capture_output=True)
+          (pathlib.Path(os.environ['RUNNER_TEMP'])/'gtf64-attestation/JOURNAL_REBUILD.json').write_bytes(r.stdout)
+          PY
+      - name: Upload external read-only attestation
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: gtf-v64-final-head-${{ github.sha }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/gtf64-attestation/
+          if-no-files-found: error
