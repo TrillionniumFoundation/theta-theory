@@ -1,54 +1,50 @@
-# A2 v13 — nonlinear boundary laws and two-contact rigidity
+# A2 v14 — relative observability and the physical normal-form comparison
 
-Complete English revision, 10 September 2026. Start with `main.tex` and
-`RESPONSE_TO_REFEREES.md`. The compiled local main manuscript has 123 pages;
-the repository deliverable is the complete reproducible TeX source.
+**Article:** *Nonlinear boundary laws and two-contact rigidity in dispersing billiards* — Qian Qi, 28 September 2026.
 
-This revision responds to the independent A2 v12 report at review commit
-`2ae2751f61224b66f314915fd5fc22f6321b606f`, reviewing author commit
-`2b515c4ce6ed95f66880f1c2f6e629ff2bd83f86`.
+This is the full native-source revision responding to the v13 reports at
+`a02d58d2b77e3337f001cf13676c5ff70e1ba97c` (28 September) and
+`b3f0ad5843782c221651c9189fc156d20865cab1` (10 September).
+The reviewed author source is `0e54099f079232df233316ae6fe7986fc51b7ea1`.
+The September canonical branch alias was not a later manuscript revision.
 
-## Reading map
+## Manuscript
 
-Theorem 1.1: nonlinear relative physical law on a nonshrinking collar.
-Sections 8 and 12–14: complete smooth energy invariant, Abel stability,
-regularized binary observation and charged self-calibration.
-Theorems 9.1 and 10.1: independent limiting-jet inverse and physical open image.
-Theorem 11.1: the complete independent-contact two-flight inverse.
-Corollary 11.2: finite-order analytic changes between short and limiting jets.
-Theorem 11.3: the finite physical observation design with j0 = 2 for every
-fixed jet order. The earlier long-bridge construction in Theorem 10.3 and
-all auxiliary proofs remain active, not merely in an excluded archive.
+`main.tex` retains every previously active chapter and proof. It adds an
+introductory overview and two active mathematical sections:
 
-## Build and reproduce
+- `article/16_normal_form_comparison.tex`: analytic mixed-boundary estimate,
+  exact physical projection, reference normalization, action limit, geometric
+  identification of the half-line amplitudes, and the precise smooth increment.
+- `article/31_regular_observability.tex`: regular rank and local observable
+  quotient; exact-germ versus finite area normalization; a physical free-area
+  construction; and joint area–jet recovery from `2M-1` positive two-flight windows.
 
-From this directory, with a standard TeX Live installation:
+The original independent even-contact inverse, equal-curvature case,
+fixed-leading physical family, complete smooth profiles and charged acquisition
+results remain active. No other manuscript or review directory is modified.
+`history/v13-reviewed` is the exact reviewed native source tree, including its
+historical verification and response documents. Those are not v14 evidence.
+
+## Build and checks
+
+From this directory in a Git checkout:
 
 ```sh
-pdflatex -interaction=nonstopmode -halt-on-error two_collision.tex
-pdflatex -interaction=nonstopmode -halt-on-error two_collision.tex
-pdflatex -interaction=nonstopmode -halt-on-error main.tex
-pdflatex -interaction=nonstopmode -halt-on-error main.tex
-pdflatex -interaction=nonstopmode -halt-on-error main.tex
-python3 tools/verify_v13.py --output verification/v13.normal.json
-python3 -O tools/verify_v13.py --output verification/v13.optimized.json
-cmp verification/v13.normal.json verification/v13.optimized.json
+python3 tools/verify_v14.py
+python3 -O tools/verify_v14.py
+latexmk -pdf -interaction=nonstopmode -halt-on-error two_collision.tex
+latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex
 ```
 
-The companion is built first for external cross-references. Verification
-uses only Python's standard library. The finite-block reference module
-contains the unchanged routine extracted from the reviewed v12 source.
-`VERIFICATION.json` records the local build and diagnostic scope. Finite
-algebra, source retention and a successful build are not proof certification
-or a remote CI run. The full-profile exponent remains a sufficient bound.
+The checker uses only the Python standard library. `--algebra-only` deliberately
+omits the full-source preservation check. `tools/build_v14.sh` captures command
+logs, source identities and artifact hashes for a full local build. The narrow,
+read-only workflow `.github/workflows/a2-v14-verify.yml` runs on this revision
+branch; it cannot change source or push to the repository.
 
-## Preservation and source pins
-
-All 212 reviewed formal theorem/lemma/proposition/corollary/proof blocks
-remain byte-identical and active; the current total is 218. All reviewed
-active inputs remain included. The prior manuscript directories and review
-branches are unchanged. Replaced v12 front matter and metadata are retained
-under `history/v12-reviewed/` using their original Git blobs. The full prior
-review remains at its original repository path. New work is on a separate
-revision branch; no merge, force-push or permission change is part of this
-revision.
+Read `RESPONSE_TO_REFEREES.md`, `PROOF_LEDGER.md`, `HISTORICAL_DERIVATION_AUDIT.md`,
+`SOURCE_PINS.json`, and `VERIFICATION.json` for the exact scope and provenance.
+Finite algebra, successful typesetting and journal-level mathematical review are
+different forms of evidence. The actual GitHub run, not a historical `pass` field,
+determines the status of the full build of a pushed source commit.

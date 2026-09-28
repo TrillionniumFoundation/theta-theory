@@ -1,40 +1,22 @@
-# A2 v13 proof and information ledger
+# A2 v14 proof ledger
 
-## New main-body results
+The full v13 native tree is frozen at `history/v13-reviewed`, Git tree
+`ee946ef91770778839f15c8c35416d401e99ea1c`. All its active results and proofs remain
+in the current main manuscript. This ledger lists the additional arguments.
 
-| Result | Data and hypotheses | Conclusion and mechanism |
-|---|---|---|
-| Theorem 11.1 | Two oriented normalized two-flight germs; independent even contacts; supplied g, kappa0, kappa1 and labels | Every fixed even-jet pair; exact Schur complement, action and twist variation, weighted ellipse moments, positive binomial separation |
-| Corollary 11.2 | Fixed jet order and the same supplied leading geometry | Analytic triangular changes between finite and limiting coefficient coordinates; not equality of law functions or noisy experiments |
-| Theorem 11.3 | The physical analytic family of Theorem 10.1; fixed M; supplied family and leading data | 2(M−1) positive windows at j0=2; bi-Lipschitz actual means; charged parametric upper bound and physical adaptive lower bound |
+| Source label | Statement and proof | Main dependencies | Verification distinction |
+|---|---|---|---|
+| `lem:v14-mixed-normal-form` | Fixed-box mixed-boundary solution and normalized derivative estimate | Supplied analytic normal form; uniform contraction; analytic logarithm; Cauchy estimates | Exact differentiation checks are finite diagnostics, not a proof of the analytic estimates |
+| `prop:v14-physical-normal-form` | Exact physical flux, common-box factorization and action limit | Canonical transverse charts; preceding lemma; inversion and two-form identity | Nonconstant shear example checks the projection calculation |
+| `cor:v14-amplitude-identification` | Stable/unstable projection interpretation of the normalized half-line amplitudes | Same analytic physical problem in both forward constructions; normalization and uniqueness of limits | No normal-form existence theorem for arbitrary smooth families is inferred |
+| `thm:v14-rank` | Equivalence of regular tangent rank, finite evaluations and local bi-Lipschitz observation | Finite-dimensional duality; inverse-function argument; analytic identity theorem where invoked | Not a claim that every finite-dimensional family has full rank |
+| `cor:v14-observable-quotient` | Constant-rank local observation quotient represented by finitely many means | Submersion chart; identical tangent kernels | Exact local factorization, not noisy statistical sufficiency |
+| `prop:v14-free-area` | Independent physical area and contact coordinates | Retained support family and triangular jet Jacobian; strictly signed exact area derivative | Actual analytic billiard family, not abstract profile perturbations |
+| `thm:v14-area-windows` | Unknown area and finite contact jets from `2M-1` positive two-flight windows, with regular confidence/risk bounds | Retained finite-flight inverse; shared-intercept Vandermonde; controlled remainder; physical alternatives | Fixed family/order/windows; no full-profile or growing-order minimax theorem |
 
-## Main general theorem chain retained
-
-Theorem 1.1 -> finite Jacobi reduction and normalized cofactor -> half-line
-stationarity and trace-norm determinant comparison -> common Morse-domain
-physical integration -> Section 8 energy-profile representation and
-Volterra uniqueness -> Section 12 two-sided Abel stability -> Section 14
-integrated-flux regularity, positive-node reconstruction and actual binary
-acquisition -> separately charged smooth-class self-calibration.
-
-This chain has no evenness or finite-horizon assumption. Its target is the
-complete symmetrized energy profile, not the two individual transverse
-branches. Its final preparation exponent is sufficient, not minimax.
-The calibration removes actual g, A, gamma; not labels, certificates,
-or separate curvatures. The physical finite-family risk and other nuisance
-lower bounds are not lower bounds for the full-profile experiment.
-
-## Retention
-
-All 212 reviewed result/proof environments and all reviewed active input
-files remain active. In particular, `article/23_two_contact_rigidity.tex`,
-`article/24_physical_image.tex` and `article/28_regularized_observation.tex`
-are unchanged. Theorem 10.3 remains as the full alternative long-bridge
-construction. New Theorem 11.3 is the stronger direct design. There are
-218 current formal result/proof environments. The verifier checks their
-multiset of byte hashes, not only section headings or theorem counts.
-
-No inference from all smooth Taylor jets to a full smooth graph, no
-uniform-in-order inverse, and no equivalence of full noisy finite and
-limiting experiments is inserted. All new inverse assertions have explicit
-finite-order, physical-image and supplied-information hypotheses.
+There is also a worked canonical-shear remark. Its charts have determinant one;
+the resulting relative amplitude is nonconstant even for constant `Delta`. This
+illustrates the projection dependence and is not a general billiard realization
+claim. The normal-form benchmark is credited to the prior referee memorandum.
+The rank argument is an elementary general principle; the physical unknown-area
+construction and window design provide the direct response to the data objection.

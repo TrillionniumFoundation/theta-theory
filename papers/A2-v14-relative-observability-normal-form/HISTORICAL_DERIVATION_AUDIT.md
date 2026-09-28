@@ -1,58 +1,48 @@
-# Historical derivation and source audit — A2 v13
+# A2 v14 historical derivation audit
 
-## Authoritative source
+## Frozen chain
 
-The live GitHub v12 author commit is
-`2b515c4ce6ed95f66880f1c2f6e629ff2bd83f86`; its native manuscript tree is
-`cc541ad7590229be38cddf5d25a8461c8f17de30`. The latest report used for this
-revision is at `2ae2751f61224b66f314915fd5fc22f6321b606f`, whose parent is
-that author commit. The new root is based on the review commit and adds a
-new manuscript directory; the earlier sources and report remain unchanged.
+The controlling author source is `0e54099f079232df233316ae6fe7986fc51b7ea1`,
+`papers/A2-v13-two-flight-relative-invariants`, native tree
+`ee946ef91770778839f15c8c35416d401e99ea1c`. The latest review is
+`a02d58d2b77e3337f001cf13676c5ff70e1ba97c` (28 September 2026). The earlier v13
+review and analytic comparator are at `b3f0ad5843782c221651c9189fc156d20865cab1`
+(10 September 2026). The canonical September 28 source alias resolves to the
+same September 10 author commit, so it was not treated as a mathematical revision.
 
-For local compilation, an earlier complete source archive was accepted
-only after checking all 110 native file blob hashes in its manifest. Its
-unchanged subtrees were compared with the live v12 tree. The computed
-sections/v2/v3/v4/v6/v7 subtree hashes match the live native tree exactly.
-Changed v12 main, bibliography and the three new v12 mathematical sections
-were reconstructed from live reads and checked against their Git blob
-hashes. A differently organized v12 payload archive was not substituted
-for the reviewed source. The reference is the pinned live Git tree.
+## Derivations consulted for the new arguments
 
-## Historical mathematical material used
+The v13 two-flight section supplies the full action, twist, ellipse-moment and
+triangular-block calculation and the supplied-family finite-window proof. The
+physical-image section supplies the support-function construction, its area
+compensator and the triangular support-to-contact Jacobian. The v4 boundary-layer
+section supplies the half-line Green operator, trace-class determinant amplitude,
+normalization, and smooth geometric relative theorem. The v13 introduction and
+operator comparison distinguish the smooth physical theorem and its integral
+from finite-flight and global spectral inverses. The existing source-history
+ledger records the retained v3–v12 derivation chain; that ledger is preserved in
+the exact native snapshot rather than being silently recast as a new audit.
 
-`v3/10_geometry_action.tex`: convex first-hit localization, alternating
-Jacobi scaling, finite bridge, relative cofactor and differentiated bounds.
-`v3/20_integration.tex`: full-phase normalization, residual-time interval,
-common Morse-domain integration and uniform onset derivatives.
-`v4/10_boundary_layers.tex`: half-line stationary action, trace-class
-amplitude, relative two-boundary gluing, physical limiting law.
-`v5/15_differentiated_operators.tex` and
-`article/15_operator_comparison.tex`: derivative and operator comparisons.
-`v5/20_contact_rigidity.tex`: highest-jet degree bookkeeping, action and
-amplitude contributions, earlier identical-contact recursion.
-`article/20_boundary_compatibility.tex`: full smooth energy-profile
-representation, Volterra uniqueness and finite coefficient structure.
-`article/21_abel_stability.tex`: the actual Abel seminorm and stability.
-The three v12 core sections supply the independent limiting block,
-physical support realization and corrected integrated-flux observation.
-The latest referee report supplies the all-order two-flight comparator.
+The September 10 companion normal-form memorandum supplies the restricted
+analytic comparator, including the physical projection identity and the
+identification by uniqueness. The September 28 report supplies the explicit
+quantifier and normalization objections. The local normal-form input was checked
+against the primary arXiv text of De Simoi–Kaloshin–Leguil, v4, printed pp. 10 and
+13. The new text credits the referee calculation separately from that publication.
 
-The new proof recomputes the finite Schur complement rather than applying
-the half-line block at finite length. Its twist contribution is checked
-against the reviewed `finite_block_row` routine at j=2. This historical
-connection is acknowledged explicitly; the older finite routine is neither
-deleted nor described as erroneous.
+## Preservation rule
 
-## Preservation method
+The v14 native tree starts from the exact v13 tree. Its complete source snapshot
+is also retained at `history/v13-reviewed`. Existing mathematical input files are
+reused as Git objects; new arguments are additional active inputs. The main
+abstract, date, roadmap and acknowledgments are updated. Root response, status,
+source-pin and verification documents describe v14 rather than reproducing v13
+success claims. Their originals are in the snapshot. The build and checker are
+read-only with respect to tracked source.
 
-The published v13 native tree is built on the exact live v12 native tree.
-Only the new front matter, new Section 11, bibliography addition, current
-revision metadata and verification additions differ. Replaced v12 text
-and metadata are copied to `history/v12-reviewed/` by their original blob
-identifiers. Prior directories, tools, history and proofs are retained.
-The active-source verifier compares the sorted byte-hash multiset of all
-212 reviewed formal blocks and the reviewed input set. All are present;
-six new formal blocks bring the total to 218.
-
-This is a targeted derivation audit for the latest report, not a claim to
-have independently re-proved every historical assertion in the repository.
+`tools/verify_v14.py` compares all old active result and proof environments and
+checks that the old input set remains reachable. In a Git checkout it verifies
+the snapshot's exact tree identity before relying on that baseline. An isolated
+new-section compile or finite algebra run is not reported as a full revalidation
+of every inherited appendix. No previous paper, author branch or review file is
+rewritten by this revision.
