@@ -1,0 +1,117 @@
+name: GTF-I v66 source qualification and publication
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v66-reference-stable-instruments-2026-09-29
+    paths:
+      - papers/GTF-I-v66-reference-stable-instruments/**
+      - .github/workflows/gtf-i-v66-build.yml
+      - .github/workflows/gtf-i-v66-exact-head.yml
+permissions:
+  contents: write
+concurrency:
+  group: gtf66-source-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  qualify:
+    runs-on: ubuntu-22.04
+    container: debian:13-slim@sha256:a99cfc517144bc59b1978475ec53b46ecabec7e43635402ee5b77cc54cd1b20a
+    timeout-minutes: 30
+    steps:
+      - name: Install fixed verifier dependencies and typesetting stack
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          apt-get update -qq
+          apt-get install -y --no-install-recommends ca-certificates git python3 python3-venv texlive-latex-extra texlive-fonts-recommended lmodern
+          python3 -m venv /opt/gtf66-venv
+          /opt/gtf66-venv/bin/pip install --disable-pip-version-check PyMuPDF==1.26.7 sympy==1.14.0
+      - name: Checkout exact source identity
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 2
+      - name: Trust only the exact container checkout
+        shell: bash
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - name: Build manuscripts, exact regressions and isolated source reconstruction
+        shell: bash
+        env:
+          GTF66_SOURCE_COMMIT: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          /opt/gtf66-venv/bin/python papers/GTF-I-v66-reference-stable-instruments/build_revision.py --isolated > "$RUNNER_TEMP/gtf66-build.json"
+      - name: Independently rebuild the minimal journal package
+        shell: bash
+        run: |
+          set -euo pipefail
+          /opt/gtf66-venv/bin/python - <<'PY'
+          import os,pathlib,subprocess,zipfile
+          d=pathlib.Path(os.environ['RUNNER_TEMP'])/'gtf66-journal'
+          d.mkdir()
+          with zipfile.ZipFile('papers/GTF-I-v66-reference-stable-instruments/evidence/JOURNAL_PACKAGE.zip') as z:
+              z.extractall(d)
+          r=subprocess.run(['/opt/gtf66-venv/bin/python',str(d/'journal_verify.py')],check=True,capture_output=True)
+          pathlib.Path('papers/GTF-I-v66-reference-stable-instruments/evidence/JOURNAL_REBUILD_RECEIPT.json').write_bytes(r.stdout)
+          PY
+      - name: Publish only generated artifacts on the unchanged work branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          branch='revision/general-theta-foundations-i-v66-reference-stable-instruments-2026-09-29'
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git ls-remote --heads origin "refs/heads/$branch" | cut -f1)" = "$GITHUB_SHA"
+          /opt/gtf66-venv/bin/python - <<'PY'
+          import json,os,pathlib,subprocess,hashlib
+          r=pathlib.Path('papers/GTF-I-v66-reference-stable-instruments')
+          b=json.loads((r/'evidence/BUILD_RECEIPT.json').read_text())
+          if b['source_commit']!=os.environ['GITHUB_SHA'] or not b['isolated_rebuild']:
+              raise RuntimeError('qualification/source identity mismatch')
+          inv=json.loads((r/'evidence/SOURCE_HASHES.json').read_text())
+          for n,h in inv.items():
+              if hashlib.sha256((r/n).read_bytes()).hexdigest()!=h:
+                  raise RuntimeError('source changed after qualification: '+n)
+          for n in subprocess.check_output(['git','diff','--name-only'],text=True).splitlines():
+              if not (n.startswith(str(r)+'/evidence/') or n in [str(r)+'/'+x for x in b['documents']]):
+                  raise RuntimeError('builder modified native or predecessor source: '+n)
+          p=json.loads((r/'PRESERVATION_MANIFEST.json').read_text())
+          for n,h in p['files'].items():
+              f=pathlib.Path(p['source_root'])/n
+              if not f.is_file() or hashlib.sha256(f.read_bytes()).hexdigest()!=h:
+                  raise RuntimeError('predecessor differs: '+n)
+          loc=json.loads((r/'evidence/THEOREM_LOCATIONS.json').read_text())['quantitative.tex']
+          counts=b['regression']['check_choi.py']
+          lines=['# General Theta Foundations I — Revision 66 referee entry','']
+          for title,name in [('Quantitative','paper.pdf'),('Structural','STRUCTURAL_PAPER.pdf'),('Complete research edition','COMPLETE_REVISION.pdf')]:
+              lines.append(title+': `'+str(r)+'/'+name+'` ('+str(b['documents'][name]['pages'])+' pages).')
+          lines+=['','Native source: `'+b['source_commit']+'`.','Builder run: `'+os.environ['GITHUB_RUN_ID']+'`.','',
+           'Controlling v65/r42 report: `5c0796bc1f0ea24d379dfd28888f16d88315a525`; companion audit: `b5d71e67b879f9ada861993caedf8151734f85ba`. Base v65 final head: `34e5719ce5c7109c8c31f98079716b8ce6dcfffe`.','',
+           'New results: explicit positive, trace-preserving rational Choi rounding with diamond error at most `6 m n^2 d^2 (1+mn)/B`; additive error under a common adaptive quantum tester with arbitrary entangled reference and bounded public stopping; posterior tail control; and a single numerical trajectory program with variable rational Choi input and explicit dimension/input bit costs.',
+           'The diamond theorem compares genuine instrument descriptions. It does not claim that a classical program physically implements an instrument on unknown quantum inputs. Numerical trajectories have a separate charged input and joint dimension. Inherited spectral lower bounds retain fixed-program and matrix-output assumptions.',
+           'All prior complete-edition proofs remain. Duplicated constructive sections are relocated from the focused structural article into the quantitative article and complete edition. The r42 claim that the trace-completed diagonal can leave [0,1] is corrected for promised density inputs; a matrix can still be indefinite through off-diagonal entries.','',
+           'New quantitative theorem locations:']
+          for label in b['new_theorems']:
+              d=loc[label];lines.append('- `'+label+'`: '+d['number']+', page '+d['page']+'.')
+          lines+=['','Exact new regression: '+str(counts['exact_assertions'])+' assertions; '+str(len(counts['negative_controls']))+' named negative controls. Ordinary and optimized results agree. Inherited v65/v64/v63 suites also execute.',
+           'Preserved predecessor: '+str(b['predecessor_native_files'])+' native files and '+str(b['preserved_native_labels'])+' mathematical labels. Current complete edition: '+str(b['complete_active_labels'])+' active labels.',
+           'The response maps all 14 required revisions and 24 detailed r42 comments. The literature comparison credits projected least-squares Choi positivity repair, positive quantum filtering, classical diamond hybrid bounds, and strategy norms.',
+           'Independent priority clearance, cryptographic author signing, journal acceptance, general noisy transcript-only lower bounds and whole A/B/C/D analytic closure are not asserted. Finite tests do not certify universal mathematics or imported full-action gaps.','',
+           'Work branch: `revision/general-theta-foundations-i-v66-reference-stable-instruments-2026-09-29`.',
+           'Referee alias after final-head qualification: `revision/general-theta-foundations-i-v66-referee-ready-2026-09-29`.',
+           'Package hashes: `evidence/PACKAGE_MANIFEST.json`. Final-head attestation is external to the checked tree.','']
+          pathlib.Path('GENERAL_THETA_FOUNDATIONS_I_V66_REVIEW_READY.md').write_text('\n'.join(lines))
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f papers/GTF-I-v66-reference-stable-instruments/paper.pdf papers/GTF-I-v66-reference-stable-instruments/STRUCTURAL_PAPER.pdf papers/GTF-I-v66-reference-stable-instruments/COMPLETE_REVISION.pdf papers/GTF-I-v66-reference-stable-instruments/evidence GENERAL_THETA_FOUNDATIONS_I_V66_REVIEW_READY.md
+          git commit -m 'docs(gtf-i): publish qualified v66 reference-stable instrument manuscripts'
+          git push origin "HEAD:refs/heads/$branch"
+      - name: Upload qualified publication
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: gtf-v66-qualification-${{ github.run_id }}
+          path: |
+            papers/GTF-I-v66-reference-stable-instruments/*.pdf
+            papers/GTF-I-v66-reference-stable-instruments/evidence/
+            GENERAL_THETA_FOUNDATIONS_I_V66_REVIEW_READY.md
+          if-no-files-found: error
