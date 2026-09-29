@@ -1,0 +1,45 @@
+name: A2 v23 exact-source full-package verification
+on:
+  push:
+    branches:
+      - revision/a2-v23-sequential-record-discovery-2026-09-29
+    paths:
+      - 'papers/A2-v23-sequential-record-discovery/**'
+      - '.github/workflows/a2-v23-verify.yml'
+permissions:
+  contents: read
+jobs:
+  manuscript:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Check out the exact triggering commit
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          sparse-checkout: |
+            papers/A2-v23-sequential-record-discovery
+      - name: Install the mathematical build environment
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y texlive-latex-extra texlive-fonts-recommended latexmk python3 python3-numpy python3-scipy poppler-utils
+      - name: Verify source pins and build all declared volumes
+        working-directory: papers/A2-v23-sequential-record-discovery
+        run: python3 tools/validate_v23.py --all-volumes --require-checkout
+      - name: Upload actual execution evidence, including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: A2-v23-${{ github.sha }}
+          path: |
+            papers/A2-v23-sequential-record-discovery/verification/current/
+            papers/A2-v23-sequential-record-discovery/verification/local/
+            papers/A2-v23-sequential-record-discovery/build/
+            papers/A2-v23-sequential-record-discovery/SOURCE_PINS.json
+            papers/A2-v23-sequential-record-discovery/PUBLICATION_BINDING.json
+          include-hidden-files: true
+          retention-days: 30
+          if-no-files-found: error
