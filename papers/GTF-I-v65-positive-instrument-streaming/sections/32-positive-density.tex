@@ -1,0 +1,123 @@
+\section{Positive finite-precision matrix states}\label{sec:positive65}
+Coordinate truncation preserves a Euclidean ball, but not the cone of
+positive matrices. We give a replacement whose output is a density
+matrix in every dimension. The correction is explicit; no spectral
+projection or membership oracle is used in an update.
+Write
+\[
+ \mathcal D_d=\{\rho\in\C^{d\times d}:\rho=\rho^*,\
+                    \rho\ge0,\ \tr\rho=1\},\qquad
+ \|X\|_1=\tr\sqrt{X^*X}.
+\]
+All dimensions and all physical input data below are fixed independently
+of the horizon and the precision. Trace norm is not divided by two.
+
+\subsection{A fixed-denominator positive rounding map}
+Fix an integer $B\ge1$. For $\rho\in\mathcal D_d$, form a Hermitian
+matrix $Q_B(\rho)$ as follows. Truncate the first $d-1$ diagonal
+entries and the real and imaginary parts of every strictly upper
+triangular entry toward zero on the grid $B^{-1}\Z$. Reflect the upper
+triangle by conjugation, and set the last diagonal entry equal to one
+minus the sum of the other diagonal entries. Thus $\tr Q_B(\rho)=1$.
+Define
+\begin{equation}\label{eq:positiveround65}
+ \mathcal R_B(\rho)=
+       \frac{B Q_B(\rho)+2d I}{B+2d^2},
+ \qquad \delta_B=\frac{6d^2}{B}.
+\end{equation}
+
+\begin{lemma}[Positive rounding with fixed denominator]\label{lem:positiveround65}
+For every $\rho\in\mathcal D_d$, the matrix $\mathcal R_B(\rho)$
+belongs to $\mathcal D_d$ and
+\begin{equation}\label{eq:roundtrace65}
+                 \|\mathcal R_B(\rho)-\rho\|_1\le\delta_B.
+\end{equation}
+Its numerator is a Gaussian-integer Hermitian matrix of trace
+$B+2d^2$. If $\rho=P/z$ with $P\in\Z[i]^{d\times d}$, $P\ge0$ and
+$z=\tr P>0$, its numerator is computable by integer multiplication,
+addition and signed division, using $O_d(\log(B+1)+\log(z+1))$
+bits of scratch space.
+\end{lemma}
+\begin{proof}
+Set $E=Q_B(\rho)-\rho$. The first $d-1$ diagonal errors have
+absolute value less than $B^{-1}$; the last is at most
+$(d-1)B^{-1}$. Each off-diagonal real or imaginary error has
+absolute value less than $B^{-1}$. Consequently
+\[
+ \|E\|_{\rm F}^2\le
+ \frac{(d-1)+(d-1)^2+2d(d-1)}{B^2}
+ =\frac{3d(d-1)}{B^2}.
+\]
+In particular $\|E\|_{\rm op}\le2d/B$ and
+$\|E\|_1\le d\|E\|_{\rm op}\le2d^2/B$.
+Since $\rho\ge0$, the matrix $Q_B(\rho)+(2d/B)I$ is positive.
+Its trace is $1+2d^2/B$, proving positivity and trace one in
+\eqref{eq:positiveround65}. With $\eta=2d/B$,
+\[
+ \mathcal R_B(\rho)-\rho
+       =\frac{E+\eta(I-d\rho)}{1+d\eta}.
+\]
+The estimate $\|I-d\rho\|_1\le2d$ proves
+\eqref{eq:roundtrace65}. The bounds deliberately leave slack.
+
+For rational input, the independent entries of $BQ_B(\rho)$ are
+$\operatorname{sgn}(a)\lfloor B|a|/z\rfloor$, where $a$ is the
+corresponding integer part of $P$. The last diagonal entry is
+$B$ minus the other diagonal numerators. Adding $2d$ to each diagonal
+gives the displayed common denominator. Positivity of $P$ gives
+$|P_{ij}|\le\sqrt{P_{ii}P_{jj}}\le z$. Thus a fixed number of
+integer buffers of the asserted length suffices. Binary long division
+uses linear storage and quadratic bit operations in that length.
+\end{proof}
+
+The positivity correction cannot simply be omitted. For
+$\rho=\frac1{13}\left(\begin{smallmatrix}4&6\\6&9\end{smallmatrix}\right)$
+and $B=3$, trace-preserving entry truncation gives
+$Q_B(\rho)=\frac13\left(\begin{smallmatrix}0&1\\1&3\end{smallmatrix}\right)$,
+whose determinant is negative.
+
+The map is not a quantum operation and is not asserted to be affine.
+It is a numerical update on a stored matrix. Its positivity and its
+uniform error are the only properties needed below.
+
+\subsection{The trace-norm estimate for an instrument}
+An instrument with outcomes in a finite set $\mathcal Y$ is a family
+of completely positive maps $(\Phi_y)_{y\in\mathcal Y}$ whose sum is
+trace preserving. The elementary contraction below is standard
+quantum-information theory \cite[Corollary~3.40]{Watrous65}; a proof is
+included to specify the norm and the treatment of zero outcomes.
+
+\begin{lemma}[Contraction and positive branch repair]\label{lem:instrumentcontraction65}
+For every Hermitian $X$,
+\begin{equation}\label{eq:instrumentcontraction65}
+                       \sum_y\|\Phi_y(X)\|_1\le\|X\|_1.
+\end{equation}
+For positive $X$, put
+\[
+ \overline{\mathcal R}_B(X)=
+ \begin{cases}
+   (\tr X)\mathcal R_B(X/\tr X),&\tr X>0,\\
+   0,&X=0.
+ \end{cases}
+\]
+Then $\tr\overline{\mathcal R}_B(X)=\tr X$ and
+\begin{equation}\label{eq:subnormalizedrepair65}
+ \|X-\overline{\mathcal R}_B(X)\|_1\le\delta_B\tr X.
+\end{equation}
+\end{lemma}
+\begin{proof}
+Use the Jordan decomposition $X=X_+-X_-$, with $X_\pm\ge0$ and
+$\tr X_++\tr X_-=\|X\|_1$. Positivity and the triangle inequality give
+\[
+ \sum_y\|\Phi_y(X)\|_1
+ \le\sum_y\tr\Phi_y(X_++X_-)=\tr(X_++X_-).
+\]
+Equation~\eqref{eq:subnormalizedrepair65} is
+\eqref{eq:roundtrace65} multiplied by $\tr X$.
+A positive matrix of trace zero is zero, so no normalization of a
+zero-probability branch is required.
+\end{proof}
+Neither conclusion requires a lower bound on a nonzero outcome
+probability. Complete positivity is needed for the physical
+interpretation of the maps; positivity and preservation of the total
+trace already prove the displayed contraction.

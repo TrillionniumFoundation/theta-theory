@@ -1,0 +1,120 @@
+name: GTF-I v65 source qualification and publication
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v65-positive-instrument-streaming-2026-09-29
+    paths:
+      - papers/GTF-I-v65-positive-instrument-streaming/**
+      - .github/workflows/gtf-i-v65-build.yml
+      - .github/workflows/gtf-i-v65-exact-head.yml
+permissions:
+  contents: write
+concurrency:
+  group: gtf65-source-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  qualify:
+    runs-on: ubuntu-22.04
+    container: debian:13-slim@sha256:a99cfc517144bc59b1978475ec53b46ecabec7e43635402ee5b77cc54cd1b20a
+    timeout-minutes: 30
+    steps:
+      - name: Install fixed Python dependencies and Debian 13 typesetting stack
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          apt-get update -qq
+          apt-get install -y --no-install-recommends ca-certificates git python3 python3-venv texlive-latex-extra texlive-fonts-recommended lmodern
+          python3 -m venv /opt/gtf65-venv
+          /opt/gtf65-venv/bin/pip install --disable-pip-version-check PyMuPDF==1.26.7 sympy==1.14.0
+      - name: Checkout exact source candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 2
+      - name: Trust only the exact container checkout
+        shell: bash
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - name: Build manuscripts, exact regressions and isolated source reconstruction
+        shell: bash
+        env:
+          GTF65_SOURCE_COMMIT: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          /opt/gtf65-venv/bin/python papers/GTF-I-v65-positive-instrument-streaming/build_revision.py --isolated > "$RUNNER_TEMP/gtf65-build.json"
+      - name: Independently rebuild the journal package
+        shell: bash
+        run: |
+          set -euo pipefail
+          /opt/gtf65-venv/bin/python - <<'PY'
+          import os,pathlib,subprocess,zipfile
+          d=pathlib.Path(os.environ['RUNNER_TEMP'])/'gtf65-journal'
+          d.mkdir()
+          with zipfile.ZipFile('papers/GTF-I-v65-positive-instrument-streaming/evidence/JOURNAL_PACKAGE.zip') as z:
+              z.extractall(d)
+          r=subprocess.run(['/opt/gtf65-venv/bin/python',str(d/'journal_verify.py')],check=True,capture_output=True)
+          pathlib.Path('papers/GTF-I-v65-positive-instrument-streaming/evidence/JOURNAL_REBUILD_RECEIPT.json').write_bytes(r.stdout)
+          PY
+      - name: Publish generated artifacts only on the unchanged work branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          branch='revision/general-theta-foundations-i-v65-positive-instrument-streaming-2026-09-29'
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git ls-remote --heads origin "refs/heads/$branch" | cut -f1)" = "$GITHUB_SHA"
+          /opt/gtf65-venv/bin/python - <<'PY'
+          import json,os,pathlib,subprocess,hashlib
+          r=pathlib.Path('papers/GTF-I-v65-positive-instrument-streaming')
+          b=json.loads((r/'evidence/BUILD_RECEIPT.json').read_text())
+          if b['source_commit']!=os.environ['GITHUB_SHA'] or not b['isolated_rebuild']:
+              raise RuntimeError('qualification/source identity mismatch')
+          inv=json.loads((r/'evidence/SOURCE_HASHES.json').read_text())
+          for n,h in inv.items():
+              if hashlib.sha256((r/n).read_bytes()).hexdigest()!=h:
+                  raise RuntimeError('source changed after qualification: '+n)
+          changed=subprocess.check_output(['git','diff','--name-only'],text=True).splitlines()
+          for n in changed:
+              if not (n.startswith(str(r)+'/evidence/') or n in [str(r)+'/'+x for x in b['documents']]):
+                  raise RuntimeError('builder changed native or predecessor source: '+n)
+          # Verify inherited native files directly before publication, not only later at final-head.
+          p=json.loads((r/'PRESERVATION_MANIFEST.json').read_text())
+          for n,h in p['files'].items():
+              f=pathlib.Path(p['source_root'])/n
+              if not f.is_file() or hashlib.sha256(f.read_bytes()).hexdigest()!=h:
+                  raise RuntimeError('predecessor differs: '+n)
+          loc=json.loads((r/'evidence/THEOREM_LOCATIONS.json').read_text())['quantitative.tex']
+          counts=b['regression']['check_instruments.py']
+          lines=['# General Theta Foundations I — Revision 65 referee entry','']
+          for title,name in [('Quantitative','paper.pdf'),('Structural','STRUCTURAL_PAPER.pdf'),('Complete research edition','COMPLETE_REVISION.pdf')]:
+              lines.append(title+': `'+str(r)+'/'+name+'` ('+str(b['documents'][name]['pages'])+' pages).')
+          lines+=['','Native source: `'+b['source_commit']+'`.',
+                  'Builder run: `'+os.environ['GITHUB_RUN_ID']+'`.','',
+                  'New results: positive fixed-denominator density rounding; finite-bit adaptive rational-instrument simulation with disturbance and no outcome-probability floor; sharp matrix-output space in every fixed dimension under full action gap and cap assumptions.',
+                  'Space: `O_input(min(N,L+log(N+1)))`; a matching lower order requires the spectral unitary subsystem and the legal numerical matrix interface. Fixed data and one fixed finite program are explicit.',
+                  'Error is the sum of trace norms of subnormalized history blocks, not total variation of matrix encodings or a rare-posterior guarantee. The finite-response-quotient classifier retains repeatable nondisturbing probes.','',
+                  'New quantitative theorem locations:']
+          for label in b['new_theorems']:
+              d=loc[label]
+              lines.append('- `'+label+'`: '+d['number']+', page '+d['page']+'.')
+          lines+=['','Exact new regression: '+str(counts['exact_assertions'])+' assertions; '+str(len(counts['negative_controls']))+' negative controls. Ordinary and optimized results agree. Inherited v64/v63 suites are also executed.',
+                  'Preserved predecessor: '+str(b['predecessor_native_files'])+' native files and '+str(b['preserved_native_labels'])+' active labels. Current full edition: '+str(b['complete_active_labels'])+' labels.',
+                  'The response maps all 14 required revisions and 24 detailed r41 comments. Chen--Wu arXiv:2604.07058v2 and 2605.10682v1 are compared at their exact semantics.',
+                  'Independent priority clearance, cryptographic author signing and journal acceptance are not asserted. Full-action gaps are imported mathematical inputs, not finite regression results.','',
+                  'Work branch: `revision/general-theta-foundations-i-v65-positive-instrument-streaming-2026-09-29`.',
+                  'Referee alias after final-head qualification: `revision/general-theta-foundations-i-v65-referee-ready-2026-09-29`.',
+                  'Package hashes are in `evidence/PACKAGE_MANIFEST.json`; the final-head attestation is external to the checked tree.','']
+          pathlib.Path('GENERAL_THETA_FOUNDATIONS_I_V65_REVIEW_READY.md').write_text('\n'.join(lines))
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f papers/GTF-I-v65-positive-instrument-streaming/paper.pdf papers/GTF-I-v65-positive-instrument-streaming/STRUCTURAL_PAPER.pdf papers/GTF-I-v65-positive-instrument-streaming/COMPLETE_REVISION.pdf papers/GTF-I-v65-positive-instrument-streaming/evidence GENERAL_THETA_FOUNDATIONS_I_V65_REVIEW_READY.md
+          git commit -m 'docs(gtf-i): publish qualified v65 positive instrument and matrix-space manuscripts'
+          git push origin "HEAD:refs/heads/$branch"
+      - name: Upload qualified publication
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: gtf-v65-qualification-${{ github.run_id }}
+          path: |
+            papers/GTF-I-v65-positive-instrument-streaming/*.pdf
+            papers/GTF-I-v65-positive-instrument-streaming/evidence/
+            GENERAL_THETA_FOUNDATIONS_I_V65_REVIEW_READY.md
+          if-no-files-found: error
