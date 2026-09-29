@@ -1,0 +1,44 @@
+name: A2 v22 exact-source full-package verification
+on:
+  push:
+    branches:
+      - revision/a2-v22-reference-free-certified-recovery-2026-09-29
+    paths:
+      - 'papers/A2-v22-reference-free-certified-recovery/**'
+      - '.github/workflows/a2-v22-verify.yml'
+permissions:
+  contents: read
+jobs:
+  manuscript:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Check out the exact triggering commit
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          sparse-checkout: |
+            papers/A2-v22-reference-free-certified-recovery
+      - name: Install the mathematical build environment
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y texlive-latex-extra texlive-fonts-recommended lmodern latexmk python3 python3-numpy python3-scipy poppler-utils
+      - name: Validate exact sources and all five submission entry documents
+        working-directory: papers/A2-v22-reference-free-certified-recovery
+        run: python3 tools/validate_v22.py --all-volumes --require-checkout
+      - name: Upload actual evidence including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: A2-v22-${{ github.sha }}
+          path: |
+            papers/A2-v22-reference-free-certified-recovery/verification/current/
+            papers/A2-v22-reference-free-certified-recovery/verification/local/
+            papers/A2-v22-reference-free-certified-recovery/build/
+            papers/A2-v22-reference-free-certified-recovery/SOURCE_PINS.json
+          include-hidden-files: true
+          retention-days: 30
+          if-no-files-found: error
