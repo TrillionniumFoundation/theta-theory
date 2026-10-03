@@ -1,0 +1,192 @@
+\section{Constructive patch recovery and finite arithmetic}
+\label{sec:constructive}
+The selection in Theorem~\ref{thm:finite} is an existence regularization.
+It is not an algorithm for searching an infinite-dimensional physical
+class. We now give a different reconstruction from the same fixed-horizon
+scalar commands. No minimization over physical candidates is used.
+
+\begin{lemma}[Threshold clusters and convex hulls]\label{lem:hulls}
+Let the complete convex components needed in a protected inner patch
+have separation at least $d_0$, diameter at most $D_0$ and interior
+rolling radius at least $r_*>0$. Let a square grid of covering radius
+$\rho\le\sigma/8$ cover a surrounding square $U$, with the protective
+collar of Lemma~\ref{lem:grid}. Assume
+$\sigma<\min(r_*/4,d_0/20,1/4)$, and suppose that at every grid node
+\begin{equation}\label{eq:grid-value-error}
+                    |\widehat u(x)-u_\sigma(x)|\le1/8.
+\end{equation}
+Retain nodes with $\widehat u(x)\ge1/2$, join pairs at Euclidean distance
+at most $4\sigma$, and take the convex hull of each graph component.
+For every physical body in the protected patch there is exactly one
+such cluster, and its hull $H_C$ satisfies
+\begin{equation}\label{eq:hull-error}
+                         d_H(H_C,C)\le2\sigma+\rho<3\sigma.
+\end{equation}
+No cluster joins two physical bodies. Outer fragments are excluded by
+using only hulls at distance more than $D_0+1$ from $\partial U$;
+all bodies needed on the smaller protected patch pass this cutoff.
+\end{lemma}
+\begin{proof}
+A retained node is within $\sigma$ of a unique component, since otherwise
+$u_\sigma=0$ and it cannot pass the threshold. Every grid node of
+$C_{-\sigma}$ is retained, since its occupation average is one.
+As in Lemma~\ref{lem:grid}, the rolling condition gives
+$C=C_{-2\sigma}+2\sigma\overline B$.
+
+For a retained node $x$ assigned to $C$, choose $y\in C_{-2\sigma}$
+with $|x-y|\le3\sigma$, and a nearest grid node $z$. Then
+$|z-y|\le\rho$ and $z\in C_{-(2\sigma-\rho)}\subset C_{-\sigma}$,
+so $z$ is retained and $|x-z|<4\sigma$. Any two such deeper nodes can
+be joined by a straight segment in the convex set
+$C_{-(2\sigma-\rho)}$. Partition the segment into lengths at most
+$\rho$ and replace the partition points by nearest grid nodes. The
+new nodes belong to $C_{-(2\sigma-2\rho)}\subset C_{-\sigma}$ and
+successive distances are at most $3\rho<4\sigma$. Thus the whole
+cluster assigned to $C$ is connected. Nodes assigned to different
+bodies are at distance at least $d_0-2\sigma>4\sigma$, so no edge
+joins them.
+
+Every retained node assigned to $C$ belongs to $C+\sigma\overline B$;
+convexity gives the same inclusion for its hull. Conversely, each point
+of $C$ is within $2\sigma$ of $C_{-2\sigma}$ and then within $\rho$
+of a retained grid node. This proves \eqref{eq:hull-error}. The collar
+ensures that all nodes and connecting paths used for an inner component
+are observed. A component meeting $\partial U$ can contribute retained
+nodes only within $D_0+\sigma$ of that boundary, and so cannot supply a
+hull passing the stated cutoff. No unobserved completion of an outer
+fragment is used.
+\end{proof}
+
+\begin{proposition}[Smooth reconstruction from a polygon]\label{prop:hull-smooth}
+Suppose $C$ has a bounded centered $C^6$ support function, its center
+lies in a bounded patch, and $d_H(H,C)\le e$ for a convex polygon $H$.
+The polygon need not satisfy a smoothness prior. With the compensated
+kernel $J$ of Lemma~\ref{lem:smoothing}, set $h=e^{1/6}$. Then
+\begin{equation}\label{eq:polygon-smoothing}
+ \|J_h*p_H-p_C\|_{C^2}\le C(eh^{-2}+h^4)\le Ce^{2/3},
+\end{equation}
+where here $p_H,p_C$ are the uncentered support functions in the same
+laboratory frame. For sufficiently small $e$ this is the support
+function of a smooth strictly convex body. Certified quadrature to
+$C^2$ error $O(e^{2/3})$ gives the same assertion.
+\end{proposition}
+\begin{proof}
+The polygon has $\|p_H-p_C\|_\infty\le e$. Differentiating the kernel,
+not the polygon, bounds $J_h*(p_H-p_C)$ in $C^2$ by $Ceh^{-2}$.
+Apply the moment cancellation estimate only to the smooth true $p_C$,
+which gives the $Ch^4$ term. This does not assume a fictitious $C^6$
+bound for the reconstructed polygon. The true radius of curvature
+$p_C+p_C''$ has a positive lower bound. The same is therefore true
+of the reconstruction when its $C^2$ error is small.
+
+For specificity, use a periodic uniform quadrature mesh of width at
+most $e^2$. The integrands $J_h^{(j)}(\theta-s)p_H(s)$, $j\le2$,
+have uniformly bounded Lipschitz constants $Ch^{-4}$, since the bounded
+polygon has a uniformly Lipschitz support function. The quadrature
+error through two derivatives is $Ce^2h^{-4}=Ce^{4/3}$, uniformly in
+$\theta$. The resulting finite sum of translates of a fixed smooth
+kernel is itself smooth; its curvature radius remains positive. This
+also supplies a finite representation of the reconstruction.
+\end{proof}
+
+\begin{theorem}[Constructive calibrated scalar reconstruction]
+\label{thm:constructive}
+Fix every numerical bound of $\mathcal B_\eta$, including a known
+positive patch margin $\eta$. There are $C,c,\nu_0>0$ such that for
+$0<\nu<\nu_0$ the following deterministic command design and finite
+reconstruction have confidence at least $1-\delta$, $0<\delta<1/4$.
+Use the two nominal directions and nominal duration in \eqref{eq:design},
+localization $\sigma=c\nu^{3/2}$, and $O(\sigma^{-2})$ spatial
+commands in the fixed aperture. Each independent attempt records one
+bit; a solid start and a free miss both give zero and both remain in
+the denominator. Allow actual position, duration and angular errors
+satisfying the coupling model of Theorem~\ref{thm:calibration}, with
+\begin{equation}\label{eq:constructive-calibration}
+                    \ell+\tau+t\alpha\le c\sigma.
+\end{equation}
+With at most
+\begin{equation}\label{eq:constructive-attempts}
+                  C\nu^{-3}\log\frac{C}{\nu\delta}
+\end{equation}
+attempts, the reconstruction gives a smooth finite presentation with
+matched $C^2$ support error, period-basis error and free-area error at
+most $C\nu$. It recovers the true primitive orbit count and exact
+rational relations of the true generating list in a true independent-pair
+basis. Euclidean generator coordinates are estimated, not exact.
+
+For fixed priors, $O(\sigma^{-4})=O(\nu^{-6})$ elementary arithmetic,
+comparison and fixed-kernel evaluations suffice after the scalar means
+are supplied. This conservative arithmetic bound is not an optimized
+bit-complexity bound, a bound on apparatus motion, or a statistical
+minimax assertion. No infinite-dimensional candidate selection occurs
+in this reconstruction. A known positive $\eta$ is required for its
+uniform finite discrete decisions.
+\end{theorem}
+\begin{proof}
+Take a grid on $Q_{R_0}$ with covering radius at most
+$\sigma/(64K)$, and command all the forward chain centers needed for
+\eqref{eq:smoothed-min}. There are $N=O(\sigma^{-2})$ grid nodes and
+at most $2mN$ scalar means. Estimate each actual mean to accuracy
+$1/(128m)$. Decrease the constant in \eqref{eq:constructive-calibration}
+so that the calibration bias is at most $1/(128m)$ as well. The mean
+error relative to the ideal protocol is at most $1/(64m)$; hence the
+finite-chain formula gives occupation error at most $1/32$. Reserve
+another $1/32$ for numerical arithmetic. This is smaller than the
+allowance in \eqref{eq:grid-value-error}. Hoeffding's inequality and a
+union bound give this simultaneous event with
+$C\log(CN/\delta)$ independent attempts per command. All commands
+are fixed before sampling; no selection of an onset or free point is
+required. The resulting cost is \eqref{eq:constructive-attempts}.
+
+Apply Lemma~\ref{lem:hulls}. The aperture margins in
+\eqref{eq:aperture} ensure that every body with center in $Q_{10B}$
+is complete and survives the exterior cutoff. All resulting hulls
+have Hausdorff error $e\le3\sigma$. Compute their Steiner centers and
+support suprema with certified numerical enclosures of error $O(\sigma)$.
+The geometric tests and rational search in Lemma~\ref{lem:locking}
+apply to these convex hulls: that lemma requires Hausdorff control,
+not smoothness of the approximating body or admissibility of an entire
+candidate table. For $\sigma$ below its $\eta$-dependent thresholds,
+the orbit classifications and rational relations are correct, and the
+matched period basis has error $O(\sigma)$.
+
+Use one hull per recovered primitive orbit. Proposition~\ref{prop:hull-smooth}
+turns it into a genuine smooth strictly convex body with $C^2$ error
+$O(\sigma^{2/3})$. Repeat these bodies under the computed basis.
+Its inverse remains bounded, so only a bounded number of integer
+translates can enter any bounded fundamental patch; the true separation
+therefore persists for small $\sigma$. This gives a physical periodic
+presentation in the finite-presentation metric of Section~\ref{sec:finite}.
+The polygonal area estimates and lattice covolume have error $O(\sigma)$;
+the area of the final smoothed presentation has error
+$O(\sigma^{2/3})$, also at most $C\nu$. These are different area
+estimates and are not conflated.
+
+For completeness we account for a finite implementation. The chain
+sums cost $O(mN)$. Testing all pairs of retained grid nodes costs
+$O(N^2)$, and connected components and monotone-chain convex hulls add
+at most $O(N^2+N\log N)$. A hull support value is the maximum of its
+vertex scalar products. Periodic angular meshes of width $O(\sigma^2)$
+therefore compute all center integrals and support suprema to the
+reserved $O(\sigma)$ precision in at most $O(N\sigma^{-2})$
+operations. There are only a prior-bounded number of complete bodies
+and period candidates. The bounded-denominator search and Hermite
+calculation have prior-bounded size. The same angular mesh supplies
+the finite smooth-kernel representation of
+Proposition~\ref{prop:hull-smooth}, again in $O(N\sigma^{-2})$
+operations. Derivative and curvature tests can be enclosed to the
+reserved positive margins. Since $N=O(\sigma^{-2})$, the total is
+$O(\sigma^{-4})$. Fixed elementary functions and the chosen kernel
+are assumed available with certified evaluation; the count is in this
+explicit arithmetic model, not a claim about unrestricted real-number
+oracles in a Turing model. This completes the proof.
+\end{proof}
+
+The new finite procedure and the retained candidate-based procedure
+have different computational claims. Both retain the same conditional
+statistical order and spatial input resolution. The former removes the
+unimplemented search step, not the geometric priors or calibration cost.
+With unknown $\eta$, recomputation at successively finer scales gives
+the pointwise eventual conclusion of Corollary~\ref{cor:pointwise},
+not an observable uniform stopping certificate. The symmetry-increase
+example of Proposition~\ref{prop:jump} remains applicable.
