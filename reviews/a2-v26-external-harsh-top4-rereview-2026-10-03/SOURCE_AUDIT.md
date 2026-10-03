@@ -3,7 +3,7 @@
 ## 1. Reviewed object
 
 Repository: `TrillionniumFoundation/theta-theory`  
-Manuscript: Qian Qi, *Collision-generated geometry for reference-free reconstruction*  
+Manuscript: Qian Qi, *Reference-free certification from intrinsic boundary laws*  
 Active manuscript directory: `papers/A2-v26-adaptive-recognition`
 
 The reviewed source is identified by Git objects:
@@ -47,9 +47,9 @@ No active `.tex` source is changed by that final delivery commit.
 - complete supplement tree `14b2e5379e5b223bc0bdc823c97fd77c2dca2cda`;
 - SHA-256 pins for every active core file, `main.tex` and `references.tex`.
 
-The final comparison and the pin file therefore give an unambiguous mathematical object even though the final branch contains a later response/provenance commit.
+The final comparison and pin file therefore give an unambiguous mathematical object even though the final branch contains a later response/provenance commit.
 
-## 3. Current mathematical files inspected
+## 3. Current files inspected
 
 The rereview read:
 
@@ -68,35 +68,37 @@ The rereview read:
 - `MATHEMATICAL_SOURCE_PINS.json`;
 - `.github/workflows/a2-v26-verify.yml`.
 
-The rereview also inspected the controlling v25 referee report and its source chronology.
+The rereview also inspected the controlling v25 referee report, the v26 branch chronology, the exact-head Actions run and job steps, and primary sources used for the literature comparison.
 
 ## 4. Principal v26 deltas
 
-Relative to v25, version 26 makes the following substantive changes.
-
-### 4.1 Boundary and distance queries are removed
+### 4.1 Boundary and solid-distance queries are removed
 
 The new experiment records collision positions and times from resettable spatial launches. It no longer takes boundary heights, derivatives, normals, arclength, body labels, periods or distance-to-solid values as deterministic sensor outputs.
 
 ### 4.2 Complete bodies are sampled
 
-First-hit point clouds and convex hulls reconstruct the complete encountered convex bodies in bounded laboratory regions. The global theorem no longer analytically continues a short contact germ.
+First-hit point clouds and convex hulls reconstruct complete encountered convex bodies in bounded laboratory regions. The global theorem no longer analytically continues a short contact germ.
 
 ### 4.3 The global class is finite smooth
 
-The primary theorem uses a fixed \(C^{6,\beta}\) compact class. A positive-kernel construction also gives a weaker \(C^{3,\beta}\) route. Smooth nonanalytic perturbations are allowed.
+The primary theorem uses a fixed C^{6,β} compact class. A positive-kernel construction also gives a weaker local regularity route. Smooth nonanalytic perturbations are allowed.
 
 ### 4.4 Recognition is quantitative
 
-The complete-pair support fingerprint has an explicit mesh size and separation threshold determined by numerical shape, symmetry, distance and geometry margins. There is no unknown continuation exponent in the descriptor.
+The complete-pair support fingerprint has an explicit mesh size and separation threshold determined by numerical shape, symmetry, distance and geometry margins. There is no unknown analytic-continuation exponent in the descriptor.
 
 ### 4.5 Geometry is freshly revalidated
 
 Raw proposals are retained, but every epoch reconstructs their clouds, branch validity, registry, signs and endpoint coordinates anew. No erroneous old statistical label is permanent.
 
-### 4.6 The retained inverse is integrated with the cloud geometry
+### 4.6 The retained inverse is integrated with cloud geometry
 
-The endpoint-law action inverse, rational period recovery and completion defect are retained, but complete bodies and incidence are now supplied by collision clouds rather than analytic continuation.
+The endpoint-law action inverse, rational period recovery and completion defect are retained, but complete bodies and incidence are supplied by collision clouds rather than analytic continuation.
+
+### 4.7 Compensated smoothing improves launch exponents
+
+The mathematical checkpoint adds a signed fourth-order kernel under the already stated six-derivative bound. It improves the per-cloud geometric exponent from 3/2 to 3/4 and the cumulative launch exponent from 11/2 to 19/4 while retaining the certificate and stopping tail.
 
 ## 5. Hosted evidence audit
 
@@ -134,12 +136,13 @@ This rereview records those claims but does not promote them to exact-head full-
 
 ## 6. Independent diagnostics
 
-The review's `verify_review.py` imports no author module. It uses exact integer/rational arithmetic except for finite comparisons of \((1-p)^k\) with \(e^{-pk}\). Normal and optimized Python output agree.
+The review's `verify_review.py` imports no author module. It uses exact integer/rational arithmetic except for finite exponential and power-sum comparisons. Ordinary and optimized Python output agree.
 
 It checks finite portions of:
 
 - the normal-distance Hessian;
-- boundary coverage and square preparation;
+- first-hit coupon and square-preparation bounds;
+- convex-hull support and capped-distance stability;
 - positive and compensated smoothing rates;
 - fingerprint constants and registry thresholds;
 - translation invariance;
@@ -156,7 +159,7 @@ The script does not certify compactness, uniform physical margins, actual collis
 
 This is a targeted top-four rereview of the v26 delta and the retained principal inverse chain. It is not a formal re-proof of every result in the multi-volume archive.
 
-No physical sensor was executed. No end-to-end numerical implementation was run. No exhaustive literature or priority search was performed. The independent checks support only finite algebra and the two presentation observations recorded in the report.
+No physical sensor was executed. No end-to-end numerical implementation was run. No exhaustive literature or priority search was performed. The independent checks support only finite algebra, finite inequalities and the presentation observation recorded in the report.
 
 ## 8. Source-audit conclusion
 
