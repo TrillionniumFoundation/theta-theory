@@ -1,0 +1,11 @@
+# Frozen derivations and primary comparisons
+
+The controlling v26 report at `24b9c5f6a586a35975e6f6b67d25ec431390f57a` and all five requested corrections were read. All seven active chapters, front matter, references and delivery state of reviewed head `8c6f1113296c5401258ff052e5ce734fabfb3909` were examined. The native paper tree is `eb47d317f691162303de1686f6c9233cb9d8ccb4`.
+
+Source bytes came from exact-head archive run `37118534591`, artifact `11272192917`. Outer SHA-256: `4151bc433e5ed466a3d07315afa347f5b54c75d20aeb6bb0336e71b5aee85902`. Inner Git archive SHA-256: `e6aef1d101abbe0652935c169fbe5ce9908555078467a46d163fe13fad868fed`. Native modes and symlinks reproduce the exact paper/core/supplement trees. This archive proves source identity only; its build steps were skipped.
+
+The v26 first-hit chapter supplies physical coverage and hull enclosures. Its compensated chapter supplies the six-derivative interpolation bound. Its recognition chapter supplies the precise clearance gap. Its smooth certificate supplies rational reconstruction, but the new proof establishes saturation by aperture coverage rather than by the area defect. Its sequential chapter identifies exactly which adaptive cloud and histogram operations the new route removes. Old proofs are preserved and not reattributed as new.
+
+Primary comparisons checked: Stefanov–Uhlmann–Vasy, arXiv:1702.03638v3 (2021), local boundary metric rigidity and convex-foliation lens results; Gurfinkel–Noakes–Stoyanov, arXiv:2309.11141 and arXiv:2311.07813, exterior obstacle travelling-time rigidity with their stated conditions; Prochno–Schuett–Sonnleitner–Werner, Math. Ann. 392 (2025), 4525–4542, DOI 10.1007/s00208-025-03186-7, whose full publisher text records the classical planar boundary-hull order `(log n/n)^2` and Schneider's earlier work. Schneider, J. Microsc. 151 (1988), 211–227, DOI 10.1111/j.1365-2818.1988.tb04682.x remains the original hull reference.
+
+No unqualified planar conclusion is imported from the higher-dimensional travelling-time result. No general random-polytope or mollifier rate is claimed as new. The new manuscript conclusion concerns finite fixed-aperture first-impact recovery of all periodic types and the full translation group. This is not an exhaustive priority search or a claim of unique priority.
