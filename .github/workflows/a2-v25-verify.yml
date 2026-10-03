@@ -1,0 +1,47 @@
+name: A2 v25 exact-source full-package verification
+on:
+  push:
+    branches:
+      - revision/a2-v25-effective-local-recognition-2026-10-03
+    paths:
+      - 'papers/A2-v25-effective-local-recognition/**'
+      - '.github/workflows/a2-v25-verify.yml'
+permissions:
+  contents: read
+jobs:
+  manuscript:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 80
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Check out the exact triggering commit
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          sparse-checkout: |
+            papers/A2-v25-effective-local-recognition
+      - name: Install mathematical build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3 python3-numpy python3-scipy texlive-latex-extra texlive-fonts-recommended lmodern latexmk poppler-utils
+      - name: Validate current sources and all declared submission volumes
+        working-directory: papers/A2-v25-effective-local-recognition
+        run: /usr/bin/python3 tools/validate_v25.py --all-volumes --require-checkout
+      - name: Archive actual receipts, raw diagnostics and delivered PDFs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: A2-v25-${{ github.sha }}
+          path: |
+            papers/A2-v25-effective-local-recognition/verification/current/
+            papers/A2-v25-effective-local-recognition/verification/local/
+            papers/A2-v25-effective-local-recognition/build/
+            papers/A2-v25-effective-local-recognition/SOURCE_PINS.json
+            papers/A2-v25-effective-local-recognition/PUBLICATION_BINDING.json
+            papers/A2-v25-effective-local-recognition/retained/v24/verification/v25-requalification/
+            papers/A2-v25-effective-local-recognition/retained/v24/build/
+          include-hidden-files: true
+          retention-days: 30
+          if-no-files-found: error
