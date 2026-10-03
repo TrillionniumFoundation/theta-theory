@@ -1,0 +1,191 @@
+\section{Finite-precision gates and stopping-time guarantees}
+\label{sec:statistics}
+The descriptor separation controls class and sign errors. It does not
+make measured arclength origins exact. We now account for that second
+error, as well as the nonuniformity of laboratory-square preparation,
+before applying the deterministic certificate.
+
+\subsection{Registration error enters through cell boundaries}
+Fix symmetric square grids on a rectangle whose closure lies in the
+protected return rectangle, with a further collar for interpolation.
+Suppose the probe reports endpoints $\widehat z=(\widehat s,\widehat t)$
+whose correctly oriented exact coordinates $z$ satisfy
+$\|\widehat z-z\|_\infty\le\nu\le h/4$. Class and sign identification
+are exact by Proposition~\ref{prop:registry}. For a square cell $B$ of
+side $h$, a changed bin assignment is possible only if $z$ lies in
+$B^{+\nu}\setminus B^{-\nu}$. The area of this band is at most
+$8h\nu+4\nu^2$, and its quotient probability is at most $C\nu h$
+under the bounded physical density. Under laboratory-square preparation
+it is at most $C\nu h+\tau_L$.
+
+Let $J$ be a finite number of records chosen before their fresh validation
+samples, let $N$ be the sample size at each of their two times, and put
+\[
+ r_N=\frac{\log(C(J\vee1)N/\alpha)}{N}.
+\]
+For sufficiently large $N$ and the bandwidths below, simultaneous cell
+errors are, with conditional probability at least $1-\alpha$,
+\begin{equation}\label{eq:cell-error}
+ C\{h\sqrt{r_N}+r_N+\tau_L+\nu h\}.
+\end{equation}
+Here is a justification which allows arbitrary bounded numerical probe
+errors. Apply Bernstein's inequality to the true cell indicators and to
+the indicators of their boundary bands, conditional on the fixed records
+and times. Their probabilities are bounded by $Ch^2+\tau_L$ because
+$\nu\le h/4$. The empirical difference between a measured and an exact
+cell indicator is bounded by the empirical band indicator, regardless
+of how the numerical errors were chosen. Add the square-preparation bias
+and use $\sqrt{\tau_Lr_N}\le(\tau_L+r_N)/2$. A union bound over
+$O(Jh^{-2})$ cells proves \eqref{eq:cell-error}. For the bandwidths used
+below $h^{-2}\le CN$, so the displayed logarithm suffices. This does
+not assume that adversarial numerical rounding is independent across trials.
+
+\begin{lemma}[Two-derivative acquisition with local registration error]
+\label{lem:histogram}
+For physical densities bounded in $C^{2,\beta}$ on the larger active
+rectangle, a reconstruction from the finite cell probabilities satisfies
+\begin{equation}\label{eq:density-error}
+ \|\widehat f-f\|_{C^2}\le
+ C\{h^\beta+\sqrt{r_N}h^{-3}+(r_N+\tau_L)h^{-4}
+                                      +\nu h^{-3}\}
+\end{equation}
+on the simultaneous event above. The constants are uniform over genuine
+record lists and their repeated entries.
+\end{lemma}
+\begin{proof}
+The averages of $1,z,z^2$ on three unit intervals centered at
+$i=-1,0,1$ form the invertible matrix with rows $(1,i,i^2+1/12)$.
+Its tensor square reconstructs coordinatewise quadratic polynomials
+from a $3\times3$ cell block. A degree-two Taylor expansion gives
+local derivative error $O(h^{2+\beta-j})$ through order $j\le2$.
+A cell-mass error $\epsilon$ becomes average-density error
+$\epsilon h^{-2}$, and $j$ derivatives cost $h^{-j}$.
+Patch the local polynomials with a smooth uniformly locally finite
+partition of unity. Its derivative costs are offset by the corresponding
+lower-order Taylor errors. Thus the $C^2$ error is bounded by
+$C(h^\beta+\epsilon h^{-4})$. Inserting \eqref{eq:cell-error} proves
+\eqref{eq:density-error}. The observation collar supplies all boundary
+stencils. No $C^2$ estimate is deduced directly from total variation.
+\end{proof}
+
+In particular take, for small $r_N$,
+\begin{equation}\label{eq:balanced}
+ h=r_N^{1/(2\beta+6)},\qquad
+ L\ge C h^{-(\beta+4)},\qquad
+ \nu\le c h^{\beta+3}.
+\end{equation}
+The square bias obeys $\tau_L\le Ch^{\beta+4}$ by \eqref{eq:square}.
+Each term in \eqref{eq:density-error} is then at most
+$C r_N^{\beta/(2\beta+6)}$. Notice the different amplification of the
+two systematic errors: square bias costs $h^{-4}$, whereas a bounded
+coordinate displacement costs $h^{-3}$. Treating a shifted contact origin
+as an exact intrinsic mark would miss this term.
+
+The derivative order $K_*$ for class identification remains fixed.
+Only the coordinate accuracy $\nu$ is refined. Reduce the probe accuracy
+also below $\chi/16$ to keep classification exact. The identities
+$h^{\beta+3}=r_N^{1/2}$ and \eqref{eq:balanced} will be useful in the
+resource accounting.
+
+\subsection{An explicit sequential procedure}
+Epochs are indexed by $k=1,2,\ldots$. First make one fresh discovery
+proposal as in Section~\ref{sec:acquisition}, using its fixed discovery
+square and time grid. Retain any genuine descriptor, allowing repeated
+entries; the list length satisfies $J_k\le k$. If the list is empty,
+continue without certification. Otherwise, conditional on the whole
+proposal history, validate every retained entry at its two active times
+with fresh free preparations. Use
+\begin{equation}\label{eq:schedule}
+ N_k=(k+1)^2,\qquad
+ \alpha_k=\frac{\delta}{8(k+1)^a},\qquad a\ge6,
+\end{equation}
+and the bandwidth, square and coordinate precision in \eqref{eq:balanced}.
+For the finitely many early epochs outside its small-error range one
+may record data but issue no certificate. In particular the fixed
+fingerprint and protected-rectangle conditions are checked before use.
+
+Fit physical density pairs, identify visible types and apply the rational
+and defect test of Theorem~\ref{thm:certificate}. For a prescribed
+accuracy $\xi$, issue a certificate only when the deterministic error
+bound $Ce_k^\theta$ is at most $\xi$ and the theorem's arithmetic and
+defect thresholds hold. The smallest such passing epoch is $T_\xi$.
+The true local laws have common density error at most
+\begin{equation}\label{eq:epoch-error}
+ e_k=C\left\{\frac{\log(C(k+1)^{a+3}/\delta)}{(k+1)^2}
+                              \right\}^{\beta/(2\beta+6)}
+\end{equation}
+except on an event of conditional probability at most $\alpha_k$.
+This bound tends to zero. The current list is fixed when the fresh
+validation begins; it need not have been fixed before the experiment.
+
+\begin{proof}[Proof of Theorem~\ref{thm:main}, part (iii)]
+Let $E_k$ be the accuracy event for all records validated at epoch $k$.
+Conditional concentration followed by iterated conditioning gives
+$\Prob(E_k^c)\le\alpha_k$. Since epochs start at one,
+$\sum_{k\ge1}\alpha_k<\delta/8$. On their simultaneous intersection,
+Theorem~\ref{thm:certificate} applies to every component and every
+chosen deletion of every current list. Thus all issued certificates,
+including at data-dependent stopping times, are correct. No union bound
+over selected graphs or stopping rules is needed.
+
+There is a finite deterministic $k_\xi$ after which
+\eqref{eq:epoch-error} satisfies every required threshold. If the
+saturated witness has appeared by epoch $k\ge k_\xi$ and $E_k$
+holds, some complete component passes and stopping has occurred by $k$.
+Therefore
+\[
+ \{T_\xi>k\}\subset\{K_{\rm cov}>k\}\cup E_k^c.
+\]
+Equations \eqref{eq:coupon} and \eqref{eq:schedule} give
+\eqref{eq:main-tail}, with the chosen $a$. In particular the tail tends
+to zero and $T_\xi$ is almost surely finite. Soundness used only genuine
+local gates; the positive hazard was used for termination and cost, not
+for the validity of an issued certificate.
+\end{proof}
+
+\subsection{Separate resource accounts}
+Through epoch $m$, accepted free preparations, including one proposal
+per epoch, are at most
+\begin{equation}\label{eq:launch-cost}
+ m+2\sum_{k=1}^m J_kN_k\le C(m+1)^4.
+\end{equation}
+At every square size the free probability is at least $\pi_0$ by
+\eqref{eq:square}. A negative-binomial bound, or a binomial Chernoff
+bound at a fixed trial budget, gives at most
+$C_{\pi_0}\{n+\log(1/\gamma)\}$ attempted positions for $n$ accepted
+launches with probability at least $1-\gamma$. Allocate another
+$\delta/[8(k+1)^a]$ to each epoch and sum. The high-probability launch
+budget through $m$ is
+$O(m^4+m\log(m/\delta))$. All solid rejections, return failures and
+out-of-rectangle endpoints are charged.
+
+The largest laboratory-square half-width through $m$ is bounded by
+$C(m+1)^{(\beta+4)/(\beta+3)}$; the fixed discovery square is included
+in the constant. Each trace has time horizon bounded by a prior constant,
+and at most $1+T_{\max}/d_0$ collisions. The local-query work obeys
+\begin{equation}\label{eq:probe-cost}
+ C\sum_{k=1}^m\{1+J_kN_k\}
+ P_{K_*}\!\left(c\min\{\chi,\nu_0,r_k^{1/2}\}\right),\qquad
+ r_k=\frac{\log(C(k+1)^{a+3}/\delta)}{(k+1)^2}.
+\end{equation}
+This is a separate account, not an omitted factor in the preparation
+count. If $P_{K_*}(\nu)\le C\nu^{-s}$, it is $O(m^{4+s})$.
+
+Before epoch $k$, the event that its work is needed is determined by the
+past. Its conditional expected launch cost is at most $Ck^3$ by the
+uniform free-position bound. Multiplying this by the tail at epoch $k-1$
+and summing proves finite expected launch cost when $a>4$, in particular
+for $a=6$. Under the polynomial probe-cost assumption, the corresponding
+term is $Ck^{3+s}$; its sum is finite when $a>4+s$. One can select this
+larger error-spending exponent in advance without changing the powers
+in \eqref{eq:balanced}. If apparatus travel per operation is also
+bounded by a power of $L_k$, its additional exponent must likewise enter
+this summability condition. No expected cost is claimed for arbitrary
+unbounded probe cost or unmodelled travel and setup.
+
+Compact analytic fitting and continuation are still existence procedures,
+not algorithms with a proved polynomial bit complexity. The finite
+integer recovery is effective after its separated inputs are obtained.
+These distinctions also apply to every headline complexity statement.
+The retained pointwise margin-exhaustion theorem has no uniform hazard
+or uniform expected-cost assertion over its exhaustion levels.
