@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Read-only qualification with an explicitly recorded legacy build wrapper.
+"""Read-only qualification with explicitly recorded legacy layout adjustments.
 
-Retained repository sources remain byte-identical. The historical raw v18
-PDF/log is archived before its staged text-height/ragged-bottom adjustment.
+Retained repository sources remain byte-identical. Historical raw v18 and S
+PDFs/logs are archived before disclosed staged layout adjustments.
 All delivered layout-qualified PDFs must pass the strict diagnostics gate.
 A local source-content execution is not an authenticated Git checkout.
 """
@@ -24,6 +24,7 @@ ROOT=Path(__file__).resolve().parents[1]
 SNAPSHOTS={'retained/v23':'357f5bf8c60f73597ccbd503aaf7235d53cda1e6',
            'complete':'14b2e5379e5b223bc0bdc823c97fd77c2dca2cda'}
 LAYOUT='\\addtolength{\\textheight}{8pt}\n\\raggedbottom\n'
+S_LAYOUT='\\raggedbottom\n'
 
 
 def sha(path: Path) -> str:
@@ -62,7 +63,7 @@ def main() -> int:
     receipt={'schema':'a2-v24-source-validation-1','status':'running',
       'started_utc':dt.datetime.now(dt.timezone.utc).isoformat(),
       'execution_kind':'git_checkout' if git('rev-parse','HEAD') else 'source_content_not_git_checkout',
-      'scope':'all_declared_volumes_with_disclosed_v18_layout_wrapper' if args.all_volumes else 'primary_only',
+      'scope':'all_declared_volumes_with_disclosed_layout_adjustments' if args.all_volumes else 'primary_only',
       'source_commit':git('rev-parse','HEAD'),'source_tree':git('rev-parse','HEAD^{tree}'),
       'github_sha':os.getenv('GITHUB_SHA'),'github_run_id':os.getenv('GITHUB_RUN_ID'),
       'runner_image':os.getenv('ImageOS'),'runner_image_version':os.getenv('ImageVersion'),
@@ -70,7 +71,8 @@ def main() -> int:
       'packages':{p:importlib.metadata.version(p) for p in ['numpy','scipy']},
       'commands':[],'documents':[],'raw_historical_documents':[],
       'source_manifest':before,'executed_physical_sensor':False,
-      'formal_proof_certificate':False,'raw_retained_v18_warning_free_asserted':False}
+      'formal_proof_certificate':False,'raw_retained_v18_warning_free_asserted':False,
+      'raw_supplement_s_warning_free_asserted':False}
 
     def run(argv: list[str],cwd: Path,label: str) -> str:
         p=subprocess.run(argv,cwd=cwd,text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,
@@ -88,7 +90,7 @@ def main() -> int:
         match=re.search(r'^Pages:\s+(\d+)',info,re.M)
         item={'source':source,'pages':int(match.group(1)) if match else None,
           'pdf':str(pdf.relative_to(ROOT)),'pdf_sha256':sha(pdf),'tex_log_sha256':sha(log),
-          'final_tex_diagnostics':problems,'layout_wrapper_applied':label=='retained-3'}
+          'final_tex_diagnostics':problems,'layout_wrapper_applied':label in ('retained-3','retained-5')}
         receipt['documents' if strict else 'raw_historical_documents'].append(item)
         if strict and problems: raise RuntimeError(source+': final TeX diagnostics remain')
 
@@ -162,6 +164,41 @@ def main() -> int:
             for pass_no in range(2):
                 for i,(directory,stem,source) in enumerate(targets):
                     compile_tex(directory,stem,f'retained-{i}-pass-{pass_no}')
+            # Archive raw S after cross-references have stabilized, before reflow.
+            supplement=v21/'complete'
+            raw_s=out/'raw-supplement-s'
+            raw_s.mkdir(exist_ok=True)
+            for suffix in ('.pdf','.log'):
+                shutil.copy2(supplement/('main'+suffix),raw_s/('main'+suffix))
+            document(raw_s,'main','complete/main.tex','raw-supplement-s',strict=False)
+            s_main=supplement/'main.tex'
+            s_bib=supplement/'v5/references.tex'
+            originals={s_main:s_main.read_text(),s_bib:s_bib.read_text()}
+            if originals[s_main].count('\\begin{document}')!=1:
+                raise RuntimeError('unexpected S document anchor')
+            bib_anchor='\\begin{thebibliography}{99}'
+            if originals[s_bib].count(bib_anchor)!=1:
+                raise RuntimeError('unexpected S bibliography anchor')
+            changes={s_main:originals[s_main].replace('\\begin{document}',
+                        S_LAYOUT+'\\begin{document}',1),
+                     s_bib:originals[s_bib].replace(bib_anchor,
+                        bib_anchor+'\n\\raggedright',1)}
+            if changes[s_main].replace(S_LAYOUT,'',1)!=originals[s_main]:
+                raise RuntimeError('S main layout changed other content')
+            if changes[s_bib].replace(bib_anchor+'\n\\raggedright',bib_anchor,1)!=originals[s_bib]:
+                raise RuntimeError('S bibliography layout changed other content')
+            adjustments=[]
+            for path,text in changes.items():
+                path.write_text(text)
+                adjustments.append({'path':str(path.relative_to(supplement)),
+                    'source_sha256':hashlib.sha256(originals[path].encode()).hexdigest(),
+                    'staged_source_sha256':sha(path)})
+            receipt['supplement_s_layout']={'adjustments':adjustments,
+                'main_insertion':S_LAYOUT,'bibliography_insertion':'\\raggedright',
+                'repository_source_changed':False,'mathematical_text_changed':False,
+                'raw_diagnostics_archived':True}
+            (out/'supplement-s-layout.json').write_text(json.dumps(receipt['supplement_s_layout'],indent=2)+'\n')
+            compile_tex(supplement,'main','supplement-s-layout-build')
             for i,(directory,stem,source) in enumerate(targets):
                 document(directory,stem,source,f'retained-{i}')
         if manifest()!=before: raise RuntimeError('mathematical/tool sources changed during validation')
