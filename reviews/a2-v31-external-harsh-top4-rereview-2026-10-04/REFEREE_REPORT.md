@@ -216,8 +216,7 @@ Iteration until the first zero gives
 
 \[
 0\le e_n(x)
-\le\mathbb E_x\!\left[
-u(X_n)\mathbf 1_{\{\tau_u>n\}}
+\le\mathbb E_x\!\left[u(X_n)\mathbf 1_{\{\tau_u>n\}}
 \right],
 \]
 
