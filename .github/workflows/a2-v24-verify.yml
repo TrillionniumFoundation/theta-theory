@@ -1,0 +1,44 @@
+name: A2 v24 exact-source full-package qualification
+on:
+  push:
+    branches:
+      - revision/a2-v24-local-gate-reconstruction-2026-10-03
+    paths:
+      - 'papers/A2-v24-local-gate-reconstruction/**'
+      - '.github/workflows/a2-v24-verify.yml'
+permissions:
+  contents: read
+jobs:
+  manuscript:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Check out the exact triggering commit
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          sparse-checkout: |
+            papers/A2-v24-local-gate-reconstruction
+      - name: Install mathematical build environment
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-numpy python3-scipy texlive-latex-extra texlive-fonts-recommended latexmk poppler-utils
+      - name: Validate exact sources and all declared volumes
+        working-directory: papers/A2-v24-local-gate-reconstruction
+        run: /usr/bin/python3 tools/validate_v24.py --all-volumes --require-checkout
+      - name: Archive actual qualification and raw historical diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: A2-v24-${{ github.sha }}
+          path: |
+            papers/A2-v24-local-gate-reconstruction/verification/current/
+            papers/A2-v24-local-gate-reconstruction/verification/local/
+            papers/A2-v24-local-gate-reconstruction/build/
+            papers/A2-v24-local-gate-reconstruction/SOURCE_PINS.json
+          include-hidden-files: true
+          retention-days: 30
+          if-no-files-found: error

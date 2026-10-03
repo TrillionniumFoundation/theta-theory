@@ -1,0 +1,217 @@
+\section{A growing record catalogue and its discovery cost}
+\label{sec:catalogue}
+A positive certificate by itself does not acquire data. This section
+specifies the producer access used in our acquisition theorem. The
+statistical reconstruction in the next section sees only the records,
+not the producer's geometric workspace. We give both an abstract arrival
+condition and a concrete realization using the geometric primitives of
+the retained scanner. We do not replace those primitives by unmarked
+trajectory observations without a proof.
+
+\subsection{A small saturated subcollection}
+A \emph{saturated witness} is a finite set of genuine records whose
+observed graph is connected, covers every type, and has cycle subgroup
+$\Lambda$. It is used in the proof of discovery, not given to the learner.
+Recall $B_0,Q$ from \eqref{eq:denominator-bound}.
+
+\begin{lemma}[Witness size without a primitive pair]\label{lem:small-witness}
+Every covering saturated record graph on the uniform class contains a
+covering saturated subcollection of at most
+\begin{equation}\label{eq:witness-size}
+                  w_0=r_0+1+\lfloor\log_2 Q\rfloor
+\end{equation}
+records. The assertion does not require any pair of recorded cycles to
+be a basis of $\Lambda$.
+\end{lemma}
+\begin{proof}
+Keep a spanning tree, using at most $r_0-1$ records. Its fundamental
+cycle displacements generate $\Lambda$. Choose two independent such
+displacements and keep their two non-tree records. Their subgroup has
+index $n\le Q$ in $\Lambda$. If the currently kept subgroup is proper,
+some remaining fundamental cycle is outside it. Adding this cycle strictly
+enlarges the subgroup; its index in $\Lambda$ becomes a proper divisor
+of the preceding index, hence is at most half of it. After at most
+$\lfloor\log_2 Q\rfloor$ such additions its index is one. A fundamental
+cycle needs only its non-tree record and the already retained tree, so
+the stated bound counts records, not the lengths of their closed walks.
+\end{proof}
+
+\begin{definition}[Predictable genuine-record producer]\label{def:producer}
+Before validation at epoch $k$, a producer makes one proposal, using all
+previous observations and fresh proposal randomness if desired. It returns
+either no record or a replayable genuine record satisfying the local
+physical bounds. The cumulative list $\mathcal L_k$ has $J_k\le k$
+entries and retains all previous entries, including repetitions. A record
+includes its periodic evaluation gate and an onset bracket; it need not
+supply the density functions themselves. Histogram preparations at epoch
+$k$ are fresh, conditional on the proposal history.
+
+For a fixed unknown saturated witness with $w$ record types, let $H_\ell$
+be the set of proposals yielding an instance of witness record $\ell$,
+with any admissible local sign and window choices. We say the producer
+has discovery hazards $p_{k\ell}$ if, conditionally on the past and while
+$\ell$ has not appeared, its next proposal is in $H_\ell$ with probability
+at least the deterministic number $p_{k\ell}\in[0,1]$.
+The sets $H_\ell$, the witness and these bounds are not inputs to the
+stopping test. They are conditions for its termination and cost bounds.
+\end{definition}
+
+\begin{lemma}[Discovery under adaptive arrivals]\label{lem:arrival}
+For a producer as above, let $K_{\rm cov}$ be the first epoch by which
+all witness records have appeared. Then
+\begin{equation}\label{eq:arrival-tail}
+ \Prob\{K_{\rm cov}>k\}\le
+       \sum_{\ell=1}^w\exp\left(-\sum_{j=1}^kp_{j\ell}\right).
+\end{equation}
+If every cumulative hazard diverges, $K_{\rm cov}<\infty$ almost surely.
+If $p_{k\ell}\ge p>0$, the bound is $w e^{-pk}$.
+\end{lemma}
+\begin{proof}
+On the event that record $\ell$ has not appeared before proposal $j$,
+its conditional probability of remaining absent is at most $1-p_{j\ell}$.
+Iterated conditioning bounds its absence probability by
+$\prod_{j\le k}(1-p_{j\ell})\le\exp(-\sum_{j\le k}p_{j\ell})$.
+A union bound proves \eqref{eq:arrival-tail}. For divergent hazards the
+probability of permanent absence is zero for each of the finitely many
+witness records. Independence of different proposals is not required.
+\end{proof}
+
+\subsection{A randomized realization of the geometric scanner}
+We specify the access precisely. On a bounded laboratory disk a geometric
+oracle lists the physical bodies meeting it, represents their complete
+boundaries, and tests shortest-pair clearance against all listed blockers.
+For a retained clear normal pair it installs the local arclength return
+gate at every translated occurrence of that pair and supplies a local
+physical chart with verified margins. Translation classes may be recognized
+from the congruence of complete pair images on the asymmetric
+shape-separated class; no period vectors are required. This is geometric
+access, not inference from collision counts. The reconstruction algorithm
+receives the installed gates and their margins, not these boundary maps.
+The oracle's work is counted as proposal work separately from phase
+preparations. No bit complexity for exact analytic-body operations is asserted.
+
+Let $\rho_* =\sup_x\dist(x,\mathcal O)$. A fundamental parallelogram
+of diameter at most $b$ and any one obstacle point imply $\rho_*\le b$:
+translate the point so that its displacement from $x$ is represented in
+that parallelogram. Choose $R>2b$ and a midpoint aperture radius $B>b$.
+Put $H=B+R/2$ and list bodies meeting the disk of radius $H$, obtaining
+complete bodies in its padding by $D_0$. For distinct bodies separated
+by at least $d_0$, a packing bound is
+\begin{equation}\label{eq:body-count}
+ M\le M_0:=\left\lceil\{1+2(H+D_0)/d_0\}^2\right\rceil.
+\end{equation}
+For example choose one point in each body in the padded disk; the open
+$d_0/2$ disks about these points are disjoint. An epoch chooses uniformly
+an ordered pair of distinct listed bodies. It retains the corresponding
+shortest bridge if its gap is less than $R$, its midpoint lies in the
+aperture, and its verified physical margins are admissible. Otherwise the
+proposal returns no record. Previously obtained records remain available.
+
+\begin{proposition}[Finite discovery without a supplied record list]
+\label{prop:geometric-producer}
+Suppose the clear bridges of gap less than $R$ have the local margins
+required above. The randomized producer contains a saturated witness
+with $w\le w_0$, and each of its witness records has conditional proposal
+probability at least
+\begin{equation}\label{eq:producer-p}
+                    p=\{M_0(M_0-1)\}^{-1}.
+\end{equation}
+Thus it satisfies \eqref{eq:arrival-tail} with this $p$. The body list,
+the selected witness, the period vectors and the complete record catalogue
+are not supplied to the statistical learner. The guarantee uses the
+geometric oracle just specified; it is not a no-geometric-access theorem.
+\end{proposition}
+\begin{proof}
+We first show that the lifted graph of all clear shortest bridges of gap
+less than $R$ is connected. Choose $\rho_*<a<R/2$. Open $a$-neighborhoods
+of the bodies cover the connected plane; their intersection graph is
+connected. Each intersecting pair has gap less than $R$. If its shortest
+segment meets another body, the gaps to that intermediate body from each
+endpoint body are strictly smaller. There are only finitely many pair-gap
+values below $R$ modulo periods: only finitely many lattice translations
+bring two bounded representatives this close. Induction over these values
+replaces every blocked pair by a path of clear smaller-gap pairs. Hence
+the clear graph is connected. Its finite quotient covers all obstacle
+types. A lifted path from one copy to each of its lattice translates
+shows that the closed-walk translations generate every element of $\Lambda$.
+
+Every midpoint translation class has a representative in a fundamental
+parallelogram lying within distance $b$ of the aperture center; the actual
+parallelogram is not used by the scanner. Thus the aperture contains a
+representative of each required bridge. Its endpoint bodies and every
+possible blocker meet the disk of radius $H$. The finite listed pair set
+therefore contains a covering saturated collection of admitted bridges.
+Lemma~\ref{lem:small-witness} reduces it to at most $w_0$ records.
+Each has at least one ordered pair representative, selected with probability
+$1/(M(M-1))\ge p$. Independent uniform pair choices realize the hazards;
+additional adaptive proposals are allowed if this lower probability is
+preserved. Apply Lemma~\ref{lem:arrival}.
+\end{proof}
+
+A proposal primitive that already returns complete body boundaries is a
+strong acquisition resource. Proposition~\ref{prop:geometric-producer}
+does not count that information as if it were learned from noisy endpoint
+histograms. Its purpose is to close the arrival and stopping analysis of
+the previously justified scanner, with an explicit discovery cost and
+without requiring that its full list be completed before validation begins.
+A different producer may replace it if its genuine-branch validity and
+hazards are proved in its own observation model.
+
+\subsection{Countability, effectiveness and exhaustion}
+For a fixed periodic table, physical obstacle copies form a countable
+locally finite family. Pairs of copies are countable, each disjoint strictly
+convex pair has a unique shortest segment, and admissible choices of strictly
+active windows may be restricted to rational times in open intervals.
+A fixed rational rule shrinking contact rectangles inside a valid chart
+then gives a countable sufficient collection of record descriptors. The
+underlying density functions still vary in an infinite-dimensional space;
+we are not enumerating all analytic functions by finite strings.
+
+With the geometric oracle, increasing integer apertures, bounded-range
+pair lists and rational window refinements give an enumeration relative
+to that oracle. Without the oracle or a separately proved record producer,
+countability alone does not make the collection effectively enumerable.
+Exact comparison of arbitrary real-analytic boundaries has no Turing
+complexity consequence here. The rational/Hermite stage, once its finite
+inputs are separated, is an ordinary finite integer computation.
+
+\begin{proposition}[Pointwise discovery by local-margin exhaustion]
+\label{prop:exhaustion}
+Keep the global analytic, area, shape and separation priors, but allow
+record-specific positive local margins and finite onset brackets certified
+by the geometric producer. Suppose a finite covering saturated set of
+strictly clear records exists. There is an oracle-relative growing-list
+experiment that stops almost surely at every prescribed positive accuracy,
+with simultaneous error probability at most $\delta$. No common positive
+local margin for the unknown witness need be supplied. This pointwise
+assertion gives no uniform stopping rate over the exhaustion levels.
+\end{proposition}
+\begin{proof}
+At level $j$ use a finite aperture and gap cutoff, bounded onset brackets
+and time windows, and local margins at least $2^{-j}$, with corresponding
+finite chart bounds. Choose these constraints nested so their union
+contains every strictly valid finite record. Introduce one level per epoch.
+Give each introduced level $j$ proposal probability $2^{-j}$, assigning
+the unused probability to a null proposal. Within a level choose uniformly
+among its finitely many candidate pairs and admissible descriptors from
+the finite refinement used there. Each of the finitely many witness
+records, after choosing one admissible rational descriptor, belongs to
+some fixed finite level. Thus it has a fixed positive proposal probability
+at every later epoch, and is discovered almost surely.
+
+At epoch $k$ validate the records admitted at the first $k$ levels. This
+is a finite union with positive minimum margins and finite maximum bounds;
+Section~\ref{sec:uniform} applies with known level-dependent constants.
+Choose finite sample sizes and launch squares so that the simultaneous
+\emph{table} error is at most $2^{-k}$ and all arithmetic and defect
+thresholds hold, using failure budget $\delta/[8(k+1)^6]$. This is
+possible by Lemma~\ref{lem:biased-histogram}, even if the level-dependent
+constants deteriorate. No comparison of powers with changing constants
+is used. Keep all admitted records. The first Borel--Cantelli lemma gives
+only finitely many inaccurate validation epochs. Once the finite witness
+has appeared, a later accurate epoch with $2^{-k}\le\xi$ must accept.
+A summable union bound gives the same simultaneous soundness as
+Theorem~\ref{thm:sequential}. The resulting sample sizes need not follow
+its polynomial schedule; hence its uniform tail and expected-cost bound
+are not asserted for this exhaustion.
+\end{proof}
