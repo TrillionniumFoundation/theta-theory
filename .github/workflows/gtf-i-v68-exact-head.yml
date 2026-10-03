@@ -1,0 +1,95 @@
+name: GTF-I v68 exact-head reconstruction and v67 reviewed-head audit
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v68-boundary-uniform-coding-2026-10-03
+    paths:
+      - GENERAL_THETA_FOUNDATIONS_I_V68_FINAL_HEAD_REQUEST.json
+permissions:
+  contents: read
+concurrency:
+  group: gtf68-exact-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-22.04
+    container: debian:13-slim@sha256:a99cfc517144bc59b1978475ec53b46ecabec7e43635402ee5b77cc54cd1b20a
+    timeout-minutes: 30
+    steps:
+      - name: Install fixed verifier dependencies and typesetting stack
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          apt-get update -qq
+          apt-get install -y --no-install-recommends ca-certificates git python3 python3-venv texlive-latex-extra texlive-fonts-recommended lmodern
+          python3 -m venv /opt/gtf68-venv
+          /opt/gtf68-venv/bin/pip install --disable-pip-version-check PyMuPDF==1.26.7 sympy==1.14.0
+      - name: Checkout exact source identity
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 3
+          persist-credentials: false
+      - name: Trust only the exact container checkout
+        shell: bash
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - name: Read-only reconstruction of exact v68 sources, pages and tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/gtf68-attestation"
+          /opt/gtf68-venv/bin/python papers/GTF-I-v68-boundary-uniform-coding/build_revision.py --verify-published > "$RUNNER_TEMP/gtf68-attestation/FINAL_HEAD.json"
+          git diff --exit-code
+      - name: Independently rebuild the minimal journal package
+        shell: bash
+        run: |
+          set -euo pipefail
+          /opt/gtf68-venv/bin/python - <<'PYCODE'
+          import os,pathlib,subprocess,zipfile
+          d=pathlib.Path(os.environ['RUNNER_TEMP'])/'gtf68-journal'
+          d.mkdir()
+          with zipfile.ZipFile('papers/GTF-I-v68-boundary-uniform-coding/evidence/JOURNAL_PACKAGE.zip') as z:
+              z.extractall(d)
+          result=subprocess.run(['/opt/gtf68-venv/bin/python',str(d/'journal_verify.py')],check=True,capture_output=True)
+          (pathlib.Path(os.environ['RUNNER_TEMP'])/'gtf68-attestation/JOURNAL_REBUILD.json').write_bytes(result.stdout)
+          PYCODE
+      - name: Verify immutable v67 publication reviewed in r44 without changing its branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          old=98a4b12126502ea41c620b58bad4b9aa30f9c72c
+          git fetch --no-tags --depth=2 origin "$old"
+          git worktree add --detach "$RUNNER_TEMP/gtf67-reviewed" "$old"
+          git config --global --add safe.directory "$RUNNER_TEMP/gtf67-reviewed"
+          /opt/gtf68-venv/bin/python - <<'PYCODE'
+          import os,pathlib,subprocess,json,zipfile
+          temp=pathlib.Path(os.environ['RUNNER_TEMP'])
+          tree=temp/'gtf67-reviewed'
+          old='98a4b12126502ea41c620b58bad4b9aa30f9c72c'
+          actual=subprocess.check_output(['git','rev-parse','HEAD'],cwd=tree,text=True).strip()
+          if actual!=old: raise RuntimeError('wrong predecessor checkout')
+          env=os.environ.copy();env['GITHUB_SHA']=old
+          script=tree/'papers/GTF-I-v67-intrinsic-instrument-entropy/build_revision.py'
+          result=subprocess.run(['/opt/gtf68-venv/bin/python',str(script),'--verify-published'],cwd=tree,env=env,capture_output=True,text=True)
+          if result.returncode:
+              print(result.stderr);print(result.stdout[-8000:]);raise RuntimeError('reviewed v67 reconstruction failed')
+          receipt=json.loads(result.stdout)
+          if receipt['head']!=old or receipt['status']!='success' or not receipt['read_only']:
+              raise RuntimeError('invalid predecessor attestation')
+          receipt['workflow_triggering_v68_sha']=os.environ['GITHUB_SHA']
+          receipt['scope_note']='Exact v67 publication checkout verified within the v68 read-only job; this is not a workflow triggered by v67.'
+          (temp/'gtf68-attestation/PREDECESSOR_V67_FINAL_HEAD.json').write_text(json.dumps(receipt,indent=2)+'\n')
+          d=temp/'gtf67-journal';d.mkdir()
+          with zipfile.ZipFile(script.parent/'evidence/JOURNAL_PACKAGE.zip') as z: z.extractall(d)
+          result=subprocess.run(['/opt/gtf68-venv/bin/python',str(d/'journal_verify.py')],check=True,capture_output=True)
+          (temp/'gtf68-attestation/PREDECESSOR_V67_JOURNAL.json').write_bytes(result.stdout)
+          dirty=subprocess.check_output(['git','status','--porcelain','--untracked-files=no'],cwd=tree,text=True)
+          if dirty: raise RuntimeError('predecessor verifier changed tracked files')
+          PYCODE
+          git diff --exit-code
+      - name: Upload external read-only attestations
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: gtf-v68-final-head-${{ github.sha }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/gtf68-attestation/
+          if-no-files-found: error

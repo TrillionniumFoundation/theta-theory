@@ -1,0 +1,68 @@
+name: GTF-I v68 source qualification and publication
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v68-boundary-uniform-coding-2026-10-03
+    paths:
+      - papers/GTF-I-v68-boundary-uniform-coding/**
+      - .github/workflows/gtf-i-v68-build.yml
+      - .github/workflows/gtf-i-v68-exact-head.yml
+permissions:
+  contents: write
+concurrency:
+  group: gtf68-source-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  qualify:
+    runs-on: ubuntu-22.04
+    container: debian:13-slim@sha256:a99cfc517144bc59b1978475ec53b46ecabec7e43635402ee5b77cc54cd1b20a
+    timeout-minutes: 30
+    steps:
+      - name: Install fixed verifier dependencies and typesetting stack
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          apt-get update -qq
+          apt-get install -y --no-install-recommends ca-certificates git python3 python3-venv texlive-latex-extra texlive-fonts-recommended lmodern
+          python3 -m venv /opt/gtf68-venv
+          /opt/gtf68-venv/bin/pip install --disable-pip-version-check PyMuPDF==1.26.7 sympy==1.14.0
+      - name: Checkout exact source identity
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 2
+      - name: Trust only the exact container checkout
+        shell: bash
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - name: Build all manuscripts, exact regression and isolated source reconstruction
+        shell: bash
+        env:
+          GTF68_SOURCE_COMMIT: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          /opt/gtf68-venv/bin/python papers/GTF-I-v68-boundary-uniform-coding/build_revision.py --isolated > "$RUNNER_TEMP/gtf68-build.json"
+      - name: Independently rebuild the minimal journal package
+        shell: bash
+        run: |
+          set -euo pipefail
+          /opt/gtf68-venv/bin/python - <<'PYCODE'
+          import os,pathlib,subprocess,zipfile
+          d=pathlib.Path(os.environ['RUNNER_TEMP'])/'gtf68-journal'
+          d.mkdir()
+          with zipfile.ZipFile('papers/GTF-I-v68-boundary-uniform-coding/evidence/JOURNAL_PACKAGE.zip') as z:
+              z.extractall(d)
+          result=subprocess.run(['/opt/gtf68-venv/bin/python',str(d/'journal_verify.py')],check=True,capture_output=True)
+          pathlib.Path('papers/GTF-I-v68-boundary-uniform-coding/evidence/JOURNAL_REBUILD_RECEIPT.json').write_bytes(result.stdout)
+          PYCODE
+      - name: Publish only qualified artifacts on the unchanged work branch
+        shell: bash
+        run: /opt/gtf68-venv/bin/python papers/GTF-I-v68-boundary-uniform-coding/publish_revision.py
+      - name: Upload qualified publication
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: gtf-v68-qualification-${{ github.run_id }}
+          path: |
+            papers/GTF-I-v68-boundary-uniform-coding/*.pdf
+            papers/GTF-I-v68-boundary-uniform-coding/evidence/
+            GENERAL_THETA_FOUNDATIONS_I_V68_REVIEW_READY.md
+          if-no-files-found: error
