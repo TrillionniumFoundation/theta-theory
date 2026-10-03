@@ -1,0 +1,67 @@
+name: GTF-I v72 source qualification and publication
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v72-varying-readout-2026-10-03
+    paths:
+      - papers/GTF-I-v72-varying-readout/**
+      - .github/workflows/gtf-i-v72-build.yml
+      - .github/workflows/gtf-i-v72-exact-head.yml
+permissions:
+  contents: write
+concurrency:
+  group: gtf72-source-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  qualify:
+    runs-on: ubuntu-22.04
+    container: debian:13-slim@sha256:a99cfc517144bc59b1978475ec53b46ecabec7e43635402ee5b77cc54cd1b20a
+    timeout-minutes: 30
+    steps:
+      - name: Install fixed verifier dependencies and typesetting stack
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          apt-get update -qq
+          apt-get install -y --no-install-recommends ca-certificates git python3 python3-venv texlive-latex-extra texlive-fonts-recommended lmodern
+          python3 -m venv /opt/gtf72-venv
+          /opt/gtf72-venv/bin/pip install --disable-pip-version-check PyMuPDF==1.26.7 sympy==1.14.0
+      - name: Checkout exact native source candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 2
+      - name: Trust only this container checkout
+        shell: bash
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - name: Build three manuscripts, nine exact suites and isolated native reconstruction
+        shell: bash
+        env:
+          GTF72_SOURCE_COMMIT: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          /opt/gtf72-venv/bin/python papers/GTF-I-v72-varying-readout/build_revision.py --isolated > "$RUNNER_TEMP/gtf72-build.json"
+      - name: Independently reconstruct the minimal journal package
+        shell: bash
+        run: |
+          set -euo pipefail
+          /opt/gtf72-venv/bin/python - <<'PY'
+          import os,pathlib,subprocess,zipfile
+          d=pathlib.Path(os.environ['RUNNER_TEMP'])/'gtf72-journal'
+          d.mkdir()
+          with zipfile.ZipFile('papers/GTF-I-v72-varying-readout/evidence/JOURNAL_PACKAGE.zip') as z:z.extractall(d)
+          r=subprocess.run(['/opt/gtf72-venv/bin/python',str(d/'journal_verify.py')],check=True,capture_output=True)
+          pathlib.Path('papers/GTF-I-v72-varying-readout/evidence/JOURNAL_REBUILD_RECEIPT.json').write_bytes(r.stdout)
+          PY
+      - name: Publish generated artifacts only on the unchanged work branch
+        shell: bash
+        run: /opt/gtf72-venv/bin/python papers/GTF-I-v72-varying-readout/publish_revision.py
+      - name: Upload qualified publication
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: gtf-v72-qualification-${{ github.run_id }}
+          path: |
+            papers/GTF-I-v72-varying-readout/*.pdf
+            papers/GTF-I-v72-varying-readout/evidence/
+            GENERAL_THETA_FOUNDATIONS_I_V72_REVIEW_READY.md
+          if-no-files-found: error
