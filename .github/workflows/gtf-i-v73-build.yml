@@ -1,0 +1,81 @@
+name: GTF-I v73 native-source qualification and publication
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v73-noisy-readout-crossover-2026-10-04
+    paths:
+      - revision-inputs/gtf-v73/**
+      - .github/workflows/gtf-i-v73-build.yml
+      - .github/workflows/gtf-i-v73-exact-head.yml
+      - papers/GTF-I-v73-noisy-readout-crossover/**
+permissions:
+  contents: write
+concurrency:
+  group: gtf73-source-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  qualify:
+    runs-on: ubuntu-22.04
+    container: debian:13-slim@sha256:a99cfc517144bc59b1978475ec53b46ecabec7e43635402ee5b77cc54cd1b20a
+    timeout-minutes: 35
+    steps:
+      - name: Install fixed verifier dependencies and typesetting stack
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          apt-get update -qq
+          apt-get install -y --no-install-recommends ca-certificates git python3 python3-venv texlive-latex-extra texlive-fonts-recommended lmodern
+          python3 -m venv /opt/gtf73-venv
+          /opt/gtf73-venv/bin/pip install --disable-pip-version-check PyMuPDF==1.26.7 sympy==1.14.0
+      - name: Checkout exact transfer candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 2
+      - name: Trust only this container checkout
+        shell: bash
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - name: Verify transfer and commit every native source before qualification
+        id: native
+        shell: bash
+        run: |
+          set -euo pipefail
+          /opt/gtf73-venv/bin/python revision-inputs/gtf-v73/materialize_native.py
+      - name: Build three manuscripts, ten exact suites and isolated native reconstruction
+        shell: bash
+        env:
+          GTF73_SOURCE_COMMIT: ${{ steps.native.outputs.source }}
+          GTF73_TRANSFER_COMMIT: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          /opt/gtf73-venv/bin/python papers/GTF-I-v73-noisy-readout-crossover/build_revision.py --isolated > "$RUNNER_TEMP/gtf73-build.json"
+      - name: Independently reconstruct the minimal journal package
+        shell: bash
+        run: |
+          set -euo pipefail
+          /opt/gtf73-venv/bin/python - <<'PYCODE'
+          import os,pathlib,subprocess,zipfile
+          d=pathlib.Path(os.environ['RUNNER_TEMP'])/'gtf73-journal';d.mkdir()
+          with zipfile.ZipFile('papers/GTF-I-v73-noisy-readout-crossover/evidence/JOURNAL_PACKAGE.zip') as z:z.extractall(d)
+          r=subprocess.run(['/opt/gtf73-venv/bin/python',str(d/'journal_verify.py')],check=True,capture_output=True)
+          pathlib.Path('papers/GTF-I-v73-noisy-readout-crossover/evidence/JOURNAL_REBUILD_RECEIPT.json').write_bytes(r.stdout)
+          PYCODE
+      - name: Publish generated artifacts on the unchanged native-source head
+        shell: bash
+        env:
+          NATIVE_SOURCE: ${{ steps.native.outputs.source }}
+          GTF73_TRANSFER_COMMIT: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          env GITHUB_SHA="$NATIVE_SOURCE" /opt/gtf73-venv/bin/python papers/GTF-I-v73-noisy-readout-crossover/publish_revision.py
+      - name: Upload qualified publication and transfer provenance
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: gtf-v73-qualification-${{ github.run_id }}
+          path: |
+            papers/GTF-I-v73-noisy-readout-crossover/*.pdf
+            papers/GTF-I-v73-noisy-readout-crossover/evidence/
+            GENERAL_THETA_FOUNDATIONS_I_V73_REVIEW_READY.md
+            revision-inputs/gtf-v73/TRANSFER_MANIFEST.json
+            ${{ runner.temp }}/gtf73-native-transfer.json
+          if-no-files-found: error
