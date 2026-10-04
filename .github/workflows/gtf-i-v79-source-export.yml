@@ -1,0 +1,35 @@
+name: GTF-I v79 frozen revision inputs
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v79-r51-response-2026-10-04
+    paths:
+      - .github/workflows/gtf-i-v79-source-export.yml
+permissions:
+  contents: read
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: '1906166f98f47f4fe387143617948766395ba186'
+          fetch-depth: 1
+          persist-credentials: false
+          sparse-checkout: |
+            papers/GTF-I-v78-block-resource-learning
+      - name: Export immutable predecessor inputs and manuscripts
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: gtf79-frozen-v78-inputs
+          path: |
+            papers/GTF-I-v78-block-resource-learning/evidence/NATIVE_SOURCE.zip
+            papers/GTF-I-v78-block-resource-learning/paper.pdf
+            papers/GTF-I-v78-block-resource-learning/COMPLETE_REVISION.pdf
+            papers/GTF-I-v78-block-resource-learning/STRUCTURAL_PAPER.pdf
+            papers/GTF-I-v78-block-resource-learning/evidence/BUILD_RECEIPT.json
+            papers/GTF-I-v78-block-resource-learning/evidence/SOURCE_SHA256.json
+            papers/GTF-I-v78-block-resource-learning/evidence/THEOREM_LOCATIONS.json
+          if-no-files-found: error
+          retention-days: 30
