@@ -1,0 +1,10 @@
+# Targeted literature record for A2 v11
+
+The existing reference list is preserved. The new bibliography entry records the completed-v10 independent report and credits its benchmark calculations. No general priority clearance is claimed.
+
+- Bolotin--Treschev, *Hill's formula*, arXiv:1006.1532, Russian Mathematical Surveys 65 (2010), 191--257. The official arXiv abstract was rechecked in this session. Its periodic determinant context is distinguished in the manuscript from the nonlinear Dirichlet relative flux problem. No new claim of a detailed reduction to the complete paper is made.
+- Dai--Lamm, *Local Regularization for the Nonlinear Inverse Autoconvolution Problem*, SIAM Journal on Numerical Analysis 46 (2008), 832--868, DOI 10.1137/070679247. The prior source-pinned bibliographic comparison is retained. The publisher endpoint returned access denial in this session; no fresh access to its full proof is claimed.
+- Hofmann--Werner--Deng, *On uniqueness and ill-posedness for the deautoconvolution problem in the multi-dimensional case*, arXiv:2212.06534. The official arXiv abstract was rechecked. The retained comparison separates real L2 full/limited data and support assumptions from the normalized singular kernel in this manuscript. No exhaustive re-audit of the external proof is claimed.
+- Independent A2 v10 memorandum, 10 September 2026, commit `2b893b931a894dfc9e7730b853f575124ffb5c55`. The complete report was read and authenticated. The linearization, fixed-class C2 instability, mixed-norm bound and normalized-mean calibration formula are credited. The new weighted norm, global reconstruction and smooth physical pilot have their proofs in Sections 10, 13 and 14.
+
+The new analytical arguments are written out and do not rely on an inaccessible external theorem. The references about geometric and marked-length rigidity remain contextual comparisons with different observations. The novelty and four-journal significance assessment remain open to the subsequent referee.

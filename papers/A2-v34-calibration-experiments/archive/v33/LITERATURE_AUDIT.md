@@ -1,0 +1,9 @@
+# Literature and novelty boundary — A2 v33
+
+The v32 active-boundary comparison is retained verbatim in the primary. Castro–Nowak concern adaptive binary classification and their excess-risk criterion. Locatelli–Carpentier–Kpotufe concern active smooth-boundary learning, including adaptation to unknown parameters. Neither is identified here with the physical collision bit, which confounds a solid start with a free miss. The local reciprocal/Bellman reduction is required before a membership-like query is available. The random-walk and coding mechanisms are credited as classical.
+
+For this revision the official PMLR entry for Locatelli–Carpentier–Kpotufe was checked at https://proceedings.mlr.press/v83/locatelli18a.html, confirming the title, authors, volume 83 (2018), pages 547–571 and the stated adaptation setting. The author preprint is arXiv:1711.09294.
+
+Shannon's original paper was checked in the reprint at https://people.math.harvard.edu/~ctm/home/text/others/shannon/entropy/entropy.pdf. The bibliography records Bell System Technical Journal 27 (1948), 379–423 and 623–656. The stopped-word proof uses classical prefix coding, nonnegativity of relative entropy and an explicitly derived decoding-entropy inequality. It does not claim these abstract principles are new or attribute the manuscript's exact sequential lemma to an unstated theorem of that paper.
+
+The new mathematical comparison is resource-specific: finite descriptions are not physical precision; an expected-length lower bound is not inferred from a deterministic cap; and the physical common-response coupling concerns worst-case start perturbations for short collision commands. No exhaustive priority search or conclusion about journal significance is asserted. The text does not claim to supersede passive billiard rigidity, unknown-smoothness active learning or a known-noise calibration theory.

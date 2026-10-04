@@ -1,0 +1,156 @@
+\section{A finite experiment with pooled reciprocal directions}
+\label{sec:pooled-finite}
+The mean-exit argument includes continuous angular distributions, but
+that exact assertion alone does not give a finite quadrature algorithm.
+Here we specify a finite-support law for which every transition is an
+exact grid operation. Direction labels need not be retained with the
+output, and no infinite-dimensional physical candidate search occurs.
+
+Fix $t=\min(1,d_0/4)$ and the scale bound $\sigma_0$ in
+\eqref{eq:design}. Use the four-direction mixture
+\begin{equation}\label{eq:compass-law}
+ \rho_\square=\tfrac14(\delta_{te_1}+\delta_{-te_1}
+                        +\delta_{te_2}+\delta_{-te_2}).
+\end{equation}
+It has zero mean, second moment $t^2$ and no common positive drift
+projection. Set
+\begin{equation}\label{eq:pooled-design}
+ H_*=(D_0+2\sigma_0+t)^2/t^2,\quad
+ L_*=\lceil2H_*\rceil,\quad n_*=6L_*,\quad
+ M_\sigma=\lceil32t/\sigma\rceil,\quad h_\sigma=t/M_\sigma.
+\end{equation}
+The grid $h_\sigma\Z^2$ has covering radius at most $\sigma/8$,
+and all four displacements are grid translations by $M_\sigma$ indices.
+These choices depend only on the priors and requested scale. In
+particular $n_*$ does not grow as $\sigma$ decreases.
+
+\begin{theorem}[Constructive pooled-direction recovery]
+\label{thm:pooled-recovery}
+Fix all numerical bounds of $\mathcal B_\eta$, including its known
+positive patch margin $\eta$. For sufficiently small $\nu>0$ take
+$\sigma=c\nu^{3/2}$ and the two reciprocal protocols
+\eqref{eq:reciprocal-forcing} with law \eqref{eq:compass-law}.
+At each commanded grid center estimate only the two \emph{pooled}
+mean bits. No direction-resolved probabilities or collision positions
+are observed. Solid-start attempts and free misses are both zero and
+both are counted in the denominator.
+
+A fixed-aperture finite algorithm constructs a smooth periodic
+presentation with matched $C^2$ support error, period-basis error and
+free-area error at most $C\nu$, and identifies the primitive orbit
+count and exact rational generator relations with confidence
+$1-\delta$. There are $O(\nu^{-3})$ spatial centers and at most
+\begin{equation}\label{eq:pooled-budget}
+                  C\nu^{-3}\log\frac{C}{\nu\delta}
+\end{equation}
+attempts. Constants depend on the stated class, including $\eta$.
+Each ideal mean may have independently certified implementation bias
+at most $1/(512n_*)$. For example, the position/timing/angle coupling
+of Theorem~\ref{thm:calibration} satisfies this budget when
+$\ell+\tau+t\alpha\le c\sigma/n_*$. A reciprocal-law total-variation
+error can instead be charged as in \eqref{eq:operator-calibration}.
+
+After the means are supplied, $O(\nu^{-6})$ arithmetic, comparison and
+fixed-kernel evaluations suffice in the model of
+Theorem~\ref{thm:constructive}. This includes $O(n_*\nu^{-3})$
+local transition updates, not an exponentially growing tree of
+randomized paths. No statistical optimality or Turing bit-complexity
+claim is part of this theorem. Exact rational relations do not make
+the estimated Euclidean basis coordinates exact.
+\end{theorem}
+\begin{proof}
+Let the target grid cover $U=Q_{R_0}$ with $R_0$ as in
+\eqref{eq:aperture}. Command both pooled means on a surrounding square
+$W$ containing $U+\overline B_{D_0+2\sigma_0+t+1}$.
+The actual forward and translated reverse starts lie in a further
+collar of width $t+\sigma_0$. This fixed aperture is independent of
+$\nu$, and has $N=O(\sigma^{-2})$ grid nodes.
+
+Estimate each actual mean to accuracy $1/(512n_*)$. Together with the
+allowed bias its error relative to the ideal mean is at most
+$1/(256n_*)$. Their difference $\widehat g$ therefore has error at
+most $1/(128n_*)$. Starting from zero, apply the clipped finite-grid
+recursion
+\[
+ \widehat V_{j+1}(x)=\left[
+   \tfrac14\sum_{a\in\{\pm te_1,\pm te_2\}}
+        \widehat V_j(x+a)-\widehat g(x)\right]_{[0,1]},
+ \qquad j<n_*,
+\]
+using zero extension outside $W$. No wraparound boundary is used.
+The four transitions land exactly on the grid. On that grid, the
+true values $u_\sigma(x)$ have the same containing-set and mean-exit
+bounds as in the continuum. Proposition~\ref{prop:fixed-exit-aperture}
+therefore gives error on $U$ at most
+\[
+       2^{-6}+1/128=3/128.
+\]
+Another $1/128$ may be reserved for finite numerical updates. The
+resulting error $1/32$ is strictly below the threshold allowance $1/8$
+in Lemma~\ref{lem:hulls}. Apply that lemma, then
+Proposition~\ref{prop:hull-smooth} and Lemma~\ref{lem:locking}.
+These provide Hausdorff error $O(\sigma)$, smooth support error
+$O(\sigma^{2/3})$, and the claimed discrete and period conclusions.
+The same protected component cutoffs, known $\eta$ thresholds and
+rational separation bounds are used, not new assumptions of unequal
+shapes or absent individual symmetries. The final smoothed free-area
+error is $O(\sigma^{2/3})$ as in Theorem~\ref{thm:constructive}.
+
+Each pooled attempt remains a Bernoulli trial even though its input
+has been randomized. Hoeffding's inequality and a union bound over the
+$2N$ commanded means give the simultaneous accuracy event with
+$Cn_*^2\log(CN/\delta)$ attempts per mean. Since $n_*$ is fixed by
+the priors, this proves \eqref{eq:pooled-budget}. Independence refers
+to fresh attempts, not to all counterfactual outcomes on one segment.
+
+Every Bellman layer uses four lookups per node; only two layers need be
+stored. It costs $O(n_*N)$ arithmetic operations. The finite cluster,
+hull, support and period stages have the $O(N^2)$ bound proved in
+Theorem~\ref{thm:constructive}. Thus the complete arithmetic order is
+$O(\sigma^{-4})$. This counting does not conceal a continuous averaging
+oracle: the prescribed law has four atoms and the grid is closed under
+its shifts before the explicit aperture killing.
+\end{proof}
+
+\subsection{Interval implementation and the role of calibration}
+The finite transition step admits exact rational enclosures. If
+$g(x)\in[g^-(x),g^+(x)]$ on the observed grid, start $V_0^-=V_0^+=0$
+and use
+\begin{equation}\label{eq:interval-bellman}
+ V_{j+1}^-=[T^W V_j^- -g^+]_{[0,1]},\qquad
+ V_{j+1}^+=[T^W V_j^+ -g^-]_{[0,1]}.
+\end{equation}
+Monotonicity implies that the true exact iterate lies between these
+bounds. On the protected grid the occupation therefore belongs to
+\begin{equation}\label{eq:occupation-enclosure}
+ [\,V_n^-,\ \min(1,V_n^++2^{-\lfloor n/L_*\rfloor})\,].
+\end{equation}
+Empirical proportions, rational confidence allowances and the four
+weights give rational endpoints. Thus the local stage can avoid
+uncontrolled floating-point rounding. These enclosures are conditional
+on the simultaneous mean-accuracy event and the geometric and reciprocal
+preparation hypotheses. They do not validate an apparatus or certify
+those priors from the bit record. Certified kernel evaluation remains
+a separate requirement of the later smooth geometric stage.
+
+For noisy refinement beyond threshold recovery, a valid iteration depth
+balances the two terms in \eqref{eq:mean-exit-noise}; depth tending to
+infinity at fixed forcing error is not justified. The physical-candidate
+bound \eqref{eq:unknown-support-stability} has no such depth factor,
+but does not itself make arbitrary measured forcing physically
+admissible. This distinction prevents the comparison theorem from being
+used as an unjustified stopping certificate for noisy Bellman iterates.
+
+Optimal stopping, killed Green operators and value iteration have a
+well-developed theory. The finite-expected-termination notion in
+\cite{Bertsekas} concerns stochastic control problems with specified
+costs and termination; our unknown is an occupation whose zero set is
+not provided. The collision experiment supplies its signed forcing,
+and the component bounds supply a termination estimate for the proof.
+We use elementary parts of that machinery, not a new general Bellman
+theorem. The new observation conclusion is the recovery from two pooled
+reciprocal spatial-input functionals without a common directional cone,
+and its fixed-aperture, finite-grid realization. The capacity and active
+probing comparisons of Section~\ref{sec:hit-comparison} continue to
+apply. In particular this is not a uniformly prepared count-law or
+passive spectral inverse.

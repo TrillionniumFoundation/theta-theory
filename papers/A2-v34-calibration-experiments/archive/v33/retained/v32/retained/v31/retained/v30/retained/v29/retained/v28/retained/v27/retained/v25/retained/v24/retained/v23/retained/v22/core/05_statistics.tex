@@ -1,0 +1,198 @@
+\section{Finite observations and detection of unseen area}\label{sec:statistics}
+\subsection{Density estimation and simultaneous decisions}
+The statistical experiment keeps the same marked endpoint sensor. A
+preparation at one window supplies one endpoint cell or a failure/outside
+outcome. Its indicators for all cells are obtained from the same trial;
+there is no separate preparation for each cell.
+
+\begin{lemma}[Two derivatives from cell masses]\label{lem:histogram}
+On nested fixed rectangles, a $C^{2,\beta}$ density with norm at most
+$M$ has a linear reconstruction from square-cell probabilities of side
+$h$ satisfying
+\begin{equation}\label{eq:histogram-error}
+ \|\widehat f-f\|_{C^2}\le C(h^\beta+\varepsilon h^{-4})
+\end{equation}
+when every cell probability has error at most $\varepsilon$. There
+are $O(h^{-2})$ cells. With $N$ independent trials at each window in
+a list of $J$ records, the simultaneous bound is
+\begin{equation}\label{eq:bernstein-density}
+ e_N\le C\{h^\beta+\sqrt{r_N}h^{-3}+r_Nh^{-4}\},\qquad
+ r_N=\frac{\log(CJN/\delta)}{N},
+\end{equation}
+at probability at least $1-\delta$, for the mesh chosen below.
+\end{lemma}
+\begin{proof}
+The averages of $1,z,z^2$ on the three unit cells centered at $-1,0,1$
+are the rows $(1,i,i^2+1/12)$ of an invertible matrix. Its tensor square
+recovers a coordinatewise quadratic polynomial from a $3\times3$ cell
+block. The degree-two Taylor polynomial of a $C^{2,\beta}$ function
+has remainder $O(h^{2+\beta})$ on such a block. Polynomial reproduction
+and rescaling give derivative errors $O(h^{2+\beta-j})$, $j\le2$.
+A probability error $\varepsilon$ is an average-density error
+$\varepsilon h^{-2}$ and becomes $O(\varepsilon h^{-2-j})$ after
+$j$ derivatives. Patch the local polynomials with a smooth partition of
+unity of bounded overlap, whose derivatives of order $j$ are $O(h^{-j})$.
+Leibniz's rule preserves these estimates. Use a larger observation
+rectangle to provide all boundary stencils. This proves
+\eqref{eq:histogram-error}.
+
+Each cell probability is at most $Mh^2$. Bernstein's inequality for
+its Bernoulli indicator bounds every cell error by
+$C(\sqrt{h^2r_N}+r_N)$ after a union bound over both windows and
+all records. The mesh $h=r_N^{1/(2\beta+6)}$ has $h^{-2}\le N$
+for sufficiently large $N$, so $\log(CJN/\delta)$ dominates the
+number of cell events in this union bound. Substitution proves
+\eqref{eq:bernstein-density}. Dependence between different cell
+indicators from a single trial is irrelevant to a union bound.
+\end{proof}
+
+A fixed pilot suffices to place the active windows. Under the local
+priors there is a common right collar $d_*>0$ with
+$cd^2\le P(T_0+d)\le Cd^2$ and zero mass before $T_0$. Choose a
+small fixed threshold $\lambda>0$ and a fixed grid in each known onset
+bracket, extended a short distance beyond it. Take
+$\sqrt{4\lambda/c}<d_*/32$, grid spacing less than $d_*/32$, and
+trigger at a reported mass exceeding $2\lambda$. With pilot errors
+below $\lambda/4$, the first trigger $\tau$ lies in
+$(T_0,T_0+d_*/16)$. Use $T_1=\tau+d_*/4$ and
+$T_2=\tau+d_*/2$ and a rectangle on which $W-T_0\le d_*/8$.
+Then both windows lie in the local collar and are strictly active with
+a uniform margin. This argument needs no global monotonicity of the
+three-impact event. It neither supplies nor estimates an exact onset.
+The number of pilot queries is a prior-dependent constant per record.
+
+\begin{proof}[Proof of the finite-histogram assertion of
+Theorem~\ref{thm:stat-main}]
+Use fresh trials at the two windows after the pilot. Conditional on
+the pilot, their times are fixed and the same concentration bound
+applies. The pilot means have an ordinary bounded-variable concentration
+bound, with their fixed number absorbed in $C$. Thus $CJN$ preparations
+suffice for the simultaneous event. The local physical fitting described
+in Section~\ref{sec:uniform} changes $e_N$ by at most a constant.
+
+Take $h=r_N^{1/(2\beta+6)}$. The bias and square-root variance terms
+in \eqref{eq:bernstein-density} are both
+$r_N^{\beta/(2\beta+6)}$; the linear term has exponent
+$(2\beta+2)/(2\beta+6)$ and is smaller when $r_N<1$.
+Theorem~\ref{thm:uniform-main} applies once this density error is below
+its deterministic threshold and gives \eqref{eq:rate-main}. On the
+same event the yes/no completeness decision is correct for every
+connected component, even when the list contains no covering witness.
+Any data-dependent deletion from this finite measured list is allowed
+because all record errors were controlled simultaneously. This is not
+a claim about a law selected after inspecting unboundedly many uncontrolled
+records.
+\end{proof}
+
+\begin{corollary}[Repeated inspection and random loss]\label{cor:sequential}
+At inspection epoch $m$, use fresh measurements and error allocation
+$\delta_m=6\delta/(\pi^2m^2)$. The probability of any false completeness
+certificate over all epochs is at most $\delta$, provided all inspected
+records are genuine and satisfy the uniform model. No actual witness
+retention is assumed for this soundness statement.
+
+Suppose, additionally, an acquisition stream has a fixed finite saturated
+covering set $\mathcal S$ of $s$ record orbits, and each not-yet-retained
+member is encountered at the next epoch with conditional probability
+at least $p>0$. Retain accumulated records. After $m$ epochs the chance
+that $\mathcal S$ has not all appeared is at most $s(1-p)^m$.
+Once they have appeared and measurement precision meets the fixed threshold,
+the certificate accepts. The estimator does not need their identities.
+\end{corollary}
+\begin{proof}
+Sum the epoch failure probabilities. For any one member of $\mathcal S$,
+iterating the conditional failure bound gives probability at most
+$(1-p)^m$ of its absence; union bound over $s$ members gives the second
+assertion. Within-epoch independence between members is unnecessary.
+After their arrival the accumulated component covers and is saturated,
+so the deterministic certificate accepts on the accuracy event.
+\end{proof}
+
+The encounter condition is an explicit assumption about the producer of
+records, not a theorem that unmarked trajectories discover normal channels.
+Likewise, the probability bound counts phase preparations for measuring
+records, not the geometric cost of producing them. The improvement is
+that retention need not be promised for a particular observed list:
+sufficiency of that list is checked by the area-period certificate.
+
+\subsection{A sharp physical missing-area subexperiment}
+The lower area bound $a_0$ is not a harmless normalization. The following
+experiment identifies the decision scale when small unseen bodies are
+allowed. It also specifies precisely the scope of the statistical
+sharpness statement.
+
+\begin{theorem}[Detection of an unseen obstacle]\label{thm:area-testing}
+There is an analytic asymmetric periodic table $\mathcal T_0$ and a
+family $\mathcal T_a$, $0<a<a_1$, obtained by adding one unobserved
+analytic asymmetric obstacle of area $a$ per cell, with the following
+properties. A fixed finite collection of selected local return windows
+has the same actions and conditional successful endpoint distributions
+throughout the family. Its success masses are
+\begin{equation}\label{eq:mass-tilt}
+                p_j(a)=p_j(0)\frac{A_*}{A_*-a},
+\end{equation}
+where $A_*$ is the free area of $\mathcal T_0$. Its visible cycle group
+is the full fixed period lattice, and its completeness defect is exactly $a$.
+
+For any test of $\mathcal T_0$ against $\mathcal T_a$ using at most
+$N$ independent phase preparations, with even adaptive choices among
+these finitely many windows, the maximum of its two error probabilities
+is at least $1/4$ whenever $a\le cN^{-1/2}$. Conversely, in this
+subexperiment the area is estimable to error
+$C\sqrt{\log(2/\delta)/N}$ at probability at least $1-\delta$,
+and alternatives above a corresponding threshold can be detected.
+The constants depend on the fixed experiment. This is not a lower bound
+for an arbitrary trajectory sensor or a whole-table minimax theorem.
+\end{theorem}
+\begin{proof}
+Use the one-body square-lattice example in Proposition~\ref{prop:examples},
+with a finite set of clear return branches generating the lattice and
+small fixed endpoint patches and windows. Their successful phase tubes,
+including the initial and final residual-time pieces, can be confined
+to arbitrarily thin neighborhoods of finitely many segments. Choose a
+point in the complement on the torus and add a sufficiently small scaled
+copy of a different asymmetric analytic body there. Scaling realizes
+every sufficiently small area $a>0$. It remains disjoint from all the
+successful tubes and does not modify any selected branch, action or
+twist. The new shape is noncongruent to the original one.
+
+The unnormalized successful phase sets and their endpoint pushforwards
+are consequently unchanged, while the free area changes from $A_*$
+to $A_*-a$. The local density formula proves \eqref{eq:mass-tilt} and
+equality of the conditional successful marks. The outside/failure outcome
+is kept as one atom in this experiment. Choose the windows so that all
+$p_j(0)$ lie strictly between zero and one and keep $a_1$ small. Every
+one-trial relative entropy is therefore exactly that of its Bernoulli
+success indicator. Since
+\[
+ \KL(\operatorname{Bern}(p)\Vert\operatorname{Bern}(q))
+                  \le\frac{(p-q)^2}{q(1-q)},
+\]
+which follows from $\log x\le x-1$, and
+$|p_j(a)-p_j(0)|\le Ca$, each one-trial divergence is at most $Ca^2$.
+The chain rule gives total divergence at most $CNa^2$ for adaptive
+choices from the same finite menu. Pinsker's inequality and the elementary
+two-point testing inequality imply maximum testing error at least
+$(1-\sqrt{CNa^2/2})/2$. Decreasing $c$ proves the lower bound.
+
+For the upper bound choose one fixed window, with known null success
+probability $p_0>0$. Its empirical proportion $\widehat p$ has
+Hoeffding error $\sqrt{\log(2/\delta)/(2N)}$. On
+$\widehat p\ge p_0/2$, inversion of \eqref{eq:mass-tilt} gives
+\[
+               \widehat a=A_*\left(1-\frac{p_0}{\widehat p}\right),
+\]
+clipped to the allowed area interval. This map has a bounded derivative
+on the indicated range. The exceptional lower-tail event is covered by
+the same concentration bound for sufficiently large $N$. This proves
+the estimation and testing assertions. Finally the visible types and
+cycle group have not changed, so \eqref{eq:defect} gives defect $a$.
+\end{proof}
+
+These alternatives leave the local observed geometry and its derivative
+bounds fixed, but the unseen body's area tends to zero. They need not
+satisfy the uniform global small-body exclusion in
+Section~\ref{sec:uniform}. Thus there is no conflict with that section's
+fixed-gap decision. The theorem proves the sharp scale only for this
+physical area-testing family; no sharp exponent is inferred for analytic
+continuation, shape matching or the count-only germ problem.

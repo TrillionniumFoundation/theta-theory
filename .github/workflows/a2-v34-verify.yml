@@ -1,0 +1,69 @@
+name: A2 v34 exact-source one-article qualification
+on:
+  push:
+    branches:
+      - revision/a2-v34-calibration-experiments-2026-10-04
+    paths:
+      - 'papers/A2-v34-calibration-experiments/**'
+      - '.github/workflows/a2-v34-verify.yml'
+permissions:
+  contents: read
+jobs:
+  manuscript:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Check out exactly the triggering commit
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          sparse-checkout: |
+            papers/A2-v34-calibration-experiments
+            .github/workflows
+      - name: Install the mathematical build environment
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y texlive-latex-extra texlive-fonts-recommended latexmk python3 python3-mpmath poppler-utils
+      - name: Qualify current proofs and the preserved archive
+        working-directory: papers/A2-v34-calibration-experiments
+        run: /usr/bin/python3 tools/validate_v34.py --require-checkout --expected-commit "${{ github.sha }}"
+      - name: Bind actual source and execution outputs
+        if: always()
+        env:
+          QUALIFIED_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          PAPER=papers/A2-v34-calibration-experiments
+          OUT="$PAPER/verification/current"
+          mkdir -p "$OUT"
+          git archive --format=zip --output="$OUT/A2-v34-repository-source.zip" "$QUALIFIED_SHA" "$PAPER" .github/workflows/a2-v34-verify.yml
+          if test -f "$PAPER/build/main.pdf"; then cp "$PAPER/build/main.pdf" "$OUT/A2-v34-primary.pdf"; fi
+          if test -f "$PAPER/build/main.log"; then cp "$PAPER/build/main.log" "$OUT/final-main.log"; fi
+          /usr/bin/python3 - <<'PY'
+          import hashlib, json, os, pathlib, subprocess
+          out=pathlib.Path('papers/A2-v34-calibration-experiments/verification/current')
+          sha=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+          expected=os.environ['QUALIFIED_SHA']
+          if sha!=expected:
+              raise SystemExit('source checkout changed')
+          names=['receipt.json','A2-v34-journal-source.zip','A2-v34-repository-source.zip','A2-v34-primary.pdf']
+          files={n:hashlib.sha256((out/n).read_bytes()).hexdigest() for n in names if (out/n).is_file()}
+          receipt=json.loads((out/'receipt.json').read_text()) if (out/'receipt.json').is_file() else {}
+          binding={'schema':'a2-v34-artifact-binding-1','source_commit':sha,
+                   'github_run_id':os.environ.get('GITHUB_RUN_ID'),
+                   'validation_status':receipt.get('status','receipt_missing'),
+                   'sha256':files,'formal_proof_certificate':False,'physical_sensor_executed':False}
+          (out/'artifact-binding.json').write_text(json.dumps(binding,indent=2,sort_keys=True)+'\n')
+          PY
+      - name: Upload actual evidence including failed qualifications
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: A2-v34-${{ github.sha }}
+          path: papers/A2-v34-calibration-experiments/verification/current/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30

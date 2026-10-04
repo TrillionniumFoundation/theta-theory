@@ -1,0 +1,222 @@
+\section{Adaptive recovery of complete component boundaries}
+\label{sec:boundary}
+We first acquire a coarse, fixed-resolution description. Its purpose
+is to find interior centers and isolated radial brackets, not to supply
+the final accuracy. This avoids both a supplied free reference point
+and a bisection that might accidentally encounter a different obstacle.
+
+\begin{lemma}[Coarse hulls and interior centers]\label{lem:coarse}
+A prior-dependent finite number of queries from
+Proposition~\ref{prop:query}, at one fixed scale $\sigma_c>0$, recovers
+all complete components needed in the protected patch to Hausdorff
+error $e_c\le3\sigma_c$. It supplies, for each such component $C$, a
+polygon $H$ and a computable center $o$ for which
+\begin{equation}\label{eq:inner-ball}
+ \overline B_r(o)\subset C\cap H\subset\overline B_{R_1}(o)
+\end{equation}
+with fixed positive $r,R_1$. For every direction $v$, it supplies a
+radial interval of fixed length at most $C e_c$ containing the boundary
+point of $C$ on $o+\R_+v$. The interval is disjoint from the
+$\sigma$-enlargements of all other components for every sufficiently
+small fine scale $\sigma$.
+\end{lemma}
+\begin{proof}
+The curvature upper bound supplies an interior rolling radius
+$r_* =1/\kappa_+$. In support coordinates this follows from
+$p+p''\ge r_*$: subtracting the support function of the radius-$r_*$
+disk leaves a support function with nonnegative curvature measure.
+In particular $C=C_{-2\sigma_c}+2\sigma_c\overline B$ when
+$2\sigma_c<r_*$. Choose $\sigma_c<\min(r_*/8,d_0/40)$ and a square
+grid of covering radius $\rho_c\le\sigma_c/8$ on a surrounding
+square with collar larger than $2D_0+2$.
+
+At its nodes retain the estimated occupations at least $1/2$, join
+retained nodes at distance at most $4\sigma_c$, and take a convex hull
+for each connected cluster. Every retained node is within $\sigma_c$
+of a unique body; all nodes of $C_{-\sigma_c}$ are retained. For any
+retained node assigned to $C$, choose a point in $C_{-2\sigma_c}$ at
+distance at most $3\sigma_c$, and then a nearest grid node. That node
+is retained and joined to the first. Convexity connects any two such
+deep nodes by a segment; partitioning it into lengths at most $\rho_c$
+and replacing partition points by nearest nodes yields a retained
+path with successive lengths at most $3\rho_c$. Different bodies
+cannot join because $d_0-2\sigma_c>4\sigma_c$. The hull thus lies in
+$C+\sigma_c\overline B$, whereas every point of $C$ is within
+$2\sigma_c+\rho_c$ of a retained deep node. This proves the error.
+Discard clusters whose hulls are within $D_0+1$ of the outer square
+boundary. Fragments cannot survive this cutoff, and the chosen collar
+protects every required complete component.
+
+Compute a largest inscribed disk of $H$ by its finite half-plane
+inequalities, to any fixed reserved precision. Since
+$d_H(H,C)\le e_c$, the support inequalities imply
+$C_{-e_c}\subset H$ and $H_{-e_c}\subset C$. A disk of radius $r_*$
+in $C$ therefore gives an inscribed disk of radius at least $r_*-e_c$
+in $H$. The computed center, with the radii reduced by the error and
+numerical reserve, satisfies \eqref{eq:inner-ball} for a fixed $r>0$.
+Diameter bounds supply $R_1$.
+
+Write $R_H(v),R_C(v)$ for the radial functions about $o$. Since both
+bodies contain $\overline B_r(o)$,
+\[
+ H+e_c\overline B\subset o+(1+e_c/r)(H-o),
+\]
+and the analogous inclusion holds for $C$. The two Hausdorff
+inclusions give $|R_H(v)-R_C(v)|\le C e_c$ uniformly. The polygonal
+radial value is computable from its sides. Use a slightly enlarged
+bracket about it, allowing numerical error. By decreasing the fixed
+$\sigma_c$, its length and every point's distance to $C$ are less
+than $d_0/4$. Separation excludes every other component from the
+bracket and its sufficiently small kernel neighborhood.
+\end{proof}
+
+\begin{lemma}[Bisection with an indeterminate boundary layer]
+\label{lem:bisection}
+On each bracket in Lemma~\ref{lem:coarse}, the derived label of
+Proposition~\ref{prop:query} may be arbitrary, and may depend on the
+past, only when
+\begin{equation}\label{eq:radial-ambiguity}
+                       |a-R_C(v)|\le A\sigma
+\end{equation}
+for a fixed $A$. After $k$ midpoint tests, ordinary bisection returns
+an estimate with error at most $A\sigma+2^{-k-1}w_0$, where $w_0$
+is the initial bracket length. In particular $O(\log(C/\sigma))$
+queries recover $R_C(v)$ to $O(\sigma)$.
+\end{lemma}
+\begin{proof}
+Translate $o$ to zero. The inner ball implies
+\[
+ (1-\sigma/r)C\subset C_{-\sigma},\qquad
+ C+\sigma\overline B\subset(1+\sigma/r)C.
+\]
+Together with $R_C\le R_1$, these show that outside
+\eqref{eq:radial-ambiguity} the label is the true radial inside/outside
+label. Other components were excluded from the bracket. A label one
+at radius $a$ implies $a\le R_C+A\sigma$; a label zero implies
+$a\ge R_C-A\sigma$. If the current endpoints are $l,u$, midpoint
+updates consequently preserve the relaxed invariant
+$R_C\in[l-A\sigma,u+A\sigma]$. This does not require $R_C$ to remain
+in $[l,u]$, or the noisy labels to be monotone. The width halves at
+every step. Its midpoint has the asserted error.
+\end{proof}
+
+\begin{lemma}[Radial regularity and stable interpolation]
+\label{lem:radial}
+Under \eqref{eq:inner-ball} and the physical support priors, the
+$2\pi$-periodic radial function $R_C(\varphi)$ has a uniformly bounded
+$C^{6,\beta}$ norm. Let $h=2\pi/m$ for an integer $m\ge9$. From
+radial values at the $m$ equally spaced angles, each with error at most
+$e$, one can construct a smooth function $\widehat R$ such that
+\begin{equation}\label{eq:radial-interpolation}
+ \|\widehat R-R_C\|_{C^j}
+           \le C(h^{s-j}+e h^{-j}),\qquad 0\le j\le3.
+\end{equation}
+For $e\le C_0h^s$ and sufficiently small $h$, the curve
+$o+\widehat R(\varphi)(\cos\varphi,\sin\varphi)$ is the boundary of
+a smooth strictly convex body $\widehat C$, and
+\begin{equation}\label{eq:geometric-interpolation}
+ d_H(\widehat C,C)\le Ch^s,\qquad
+ \|p_{\widehat C}^{\rm lab}-p_C^{\rm lab}\|_{C^2}\le Ch^{s-2}.
+\end{equation}
+Here uncentered support functions are compared in the same laboratory
+frame; centering preserves these orders.
+\end{lemma}
+\begin{proof}
+Use the support function $p$ relative to $o$, so $p\ge r$. In normal
+angle $\theta$, the boundary is $p n+p' n^\perp$, its radial angle is
+\[
+ \varphi=\theta+\arctan(p'/p),\qquad
+ \frac{\dd\varphi}{\dd\theta}
+             =\frac{p(p+p'')}{p^2+(p')^2}>c>0.
+\]
+The inverse $\theta(\varphi)$ is uniformly $C^{5,\beta}$. Although
+the expression $R=\sqrt{p^2+(p')^2}$ initially gives only five
+ordinary derivatives, differentiation in radial angle cancels the
+curvature factor:
+\begin{equation}\label{eq:radial-cancellation}
+                   R'=R(p'/p)\circ\theta.
+\end{equation}
+Its right side is uniformly $C^{5,\beta}$. Thus $R$ is uniformly
+$C^{6,\beta}$, without losing a derivative from the support prior.
+
+At each angular node interpolate the seven consecutive sampled
+values by a polynomial of degree at most six in a local lift of the
+angle. Combine these polynomials with a fixed translated smooth
+partition of unity supported on neighborhoods of size $O(h)$.
+On each such neighborhood the normalized Vandermonde inverse is
+bounded. A degree-six Taylor polynomial of the true function is
+reproduced exactly, and its remainder and derivatives through order
+three are $O(h^{s-j})$. Errors in the values contribute $O(eh^{-j})$.
+Derivatives falling on the partition have size $O(h^{-j})$ and are
+absorbed by the corresponding lower-order remainders. The overlap
+number is fixed. This proves \eqref{eq:radial-interpolation}, including
+across the angular cut by periodic lifts.
+
+A positive radial function is strictly convex when
+\[
+       F=R^2+2(R')^2-RR''>0.
+\]
+For the true curve this expression has a uniform positive margin,
+by the inradius, curvature and diameter bounds. It persists for
+$\widehat R$ by the $C^2$ estimate. The two radial graphs are uniformly
+$O(h^s)$-close, which proves the Hausdorff bound.
+
+To check the stronger support norm, set
+$\theta=\varphi-\arctan(R'/R)$, now viewing the normal angle as a
+function of radial angle. Its derivative is
+$F/(R^2+(R')^2)>c$. At corresponding angles the support value and
+radius of curvature are
+\[
+ p=\frac{R^2}{\sqrt{R^2+(R')^2}},\qquad
+ p+p''=\frac{(R^2+(R')^2)^{3/2}}{F}.
+\]
+These expressions, and the tangential support derivative, depend
+Lipschitzly on $R,R',R''$ on the bounded set with these margins.
+The inverse normal-angle maps differ by $O(\|\widehat R-R\|_{C^1})$.
+Their composition changes the true expressions by the same order,
+using the uniform $C^3$ bound; the reconstructed functions also have
+such a bound by \eqref{eq:radial-interpolation}. Thus the support
+error through two derivatives is $O(h^{s-2})$. Translation to the
+laboratory frame adds the same first harmonic to both supports. The
+Steiner point is a bounded linear functional of the support, so its
+error is $O(h^s)$ and centering preserves the conclusions.
+\end{proof}
+
+\begin{proposition}[Adaptive patch reconstruction]\label{prop:patch}
+For a fixed protected patch, complete component boundaries can be
+recovered with the errors in \eqref{eq:geometric-interpolation} using
+at most $C h^{-1}\log(C/h)$ local occupation queries. The finest
+localization is $\sigma=c h^s$. With probability at least $1-\delta$
+the attempted-bit cost is at most
+\begin{equation}\label{eq:patch-cost}
+           C h^{-1}\log(C/h)\log(C/(h\delta)).
+\end{equation}
+The number of components, the initial coarse queries and every
+local Bellman stencil size are bounded solely by the fixed prior.
+\end{proposition}
+\begin{proof}
+On the simultaneous accuracy event, obtain the hulls and centers in
+Lemma~\ref{lem:coarse}. Separation and the fixed aperture bound their
+number. For each body use $m$ equally spaced radial directions and
+their isolated coarse brackets. Lemma~\ref{lem:bisection} uses
+$O(\log(C/h))$ midpoint queries per direction to return values with
+error $e\le C\sigma$. Lemma~\ref{lem:radial} gives the claimed
+geometric estimates. The total number of queries is bounded by a
+deterministic $Q_h=C(1+h^{-1}\log(C/h))$. Allocate failure probability
+$\delta/Q_h$ to every query, including the coarse ones, before the
+experiment. Conditional confidence and the union bound in
+Proposition~\ref{prop:query} give the simultaneous event. Its
+preparation cost is \eqref{eq:patch-cost}. Locations chosen using
+coarse or previous fine data do not alter this argument.
+
+For a finite numerical realization, polygon intersections, midpoint
+locations and radial values are enclosed with error $O(\sigma)$.
+The estimate \eqref{eq:radial-interpolation} absorbs those value errors.
+Represent the output by its finite polynomial coefficients and the
+fixed smooth partition functions. They, their derivatives and the
+normal-angle maps can be evaluated to any positive prescribed error
+by finite operations on compact intervals with the stated derivative
+bounds. This constructs an actual smooth convex output, without
+assigning a false smoothness bound to the initial polygons. No
+infinite-dimensional candidate minimization is performed.
+\end{proof}

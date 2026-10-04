@@ -1,0 +1,255 @@
+\section{Reciprocal inversion without a common drift direction}
+\label{sec:mean-exit}
+The finite stopping hypothesis of Theorem~\ref{thm:stopped} is sufficient
+but is not necessary for identification. A centered random displacement
+can remain inside one component for arbitrarily many steps. Nevertheless,
+its mean exit time is uniformly bounded by the component diameter and
+its second moment. We use that bound twice: to recover the occupation
+without specifying its zero set, and to compare two unknown occupations
+with a constant independent of the iteration depth.
+
+\subsection{The observed forcing and the computational walk}
+Let $\rho$ be a prescribed probability measure on $\R^d$. The forward
+protocol draws $q\sim f$ and $a\sim\rho$ independently and attempts the
+straight segment from $q$ to $q+a$. The reverse protocol draws the same
+joint law for $(q,a)$ but attempts the segment from $q+a$ to $q$.
+Each protocol records only its hit bit. A solid start and a free miss
+are both zero; all attempts are counted. No displacement-resolved
+subpopulation mean is required. The direction and duration randomizer
+is part of the input controller, not an additional geometric output.
+
+With $\chi=\one_{\mathcal O}$ and
+$T_\rho w(x)=\int w(x+a)\rho(\dd a)$, the pointwise reversal balance
+and Fubini give
+\begin{equation}\label{eq:reciprocal-forcing}
+ P_\rho^+(f)-P_\rho^-(f)=\int f(T_\rho-I)\chi.
+\end{equation}
+For the translated even kernel commands of Section~\ref{sec:acquisition},
+translation invariance commutes with convolution. Thus the observed
+balance function is $g_\sigma=(T_\rho-I)u_\sigma$, where
+$u_\sigma=\kappa_\sigma*\chi$. The corresponding random walk is a
+\emph{computational} process. Its successive locations are not a
+multi-collision trajectory and its exit from an unknown component is
+not an observed stopping signal.
+
+In this section impose, for known $b,v_*>0$,
+\begin{equation}\label{eq:centered-law}
+ |a|\le b\quad\rho\text{-a.s.},\qquad
+ \int a\,\rho(\dd a)=0,\qquad
+ s_2:=\int|a|^2\rho(\dd a)\ge v_*.
+\end{equation}
+There need not be a direction with positive drift. Neither symmetry,
+a density for $\rho$, nor a positive definite covariance matrix is
+required. The full angular circle, or two equally weighted opposite
+steps, satisfies these conditions when the nonzero step length is fixed.
+The reverse translation in \eqref{eq:reciprocal-forcing} remains essential;
+independently choosing a reverse position with the same marginal
+angular law is a different experiment.
+
+\begin{lemma}[A uniform mean exit bound]\label{lem:mean-exit}
+Let $0\le u\le1$ be measurable. Suppose its positive set is contained
+in a union of sets of diameter at most $D$, separated from one another
+by a distance strictly greater than $b$. Let $X_n=x+a_1+\cdots+a_n$,
+where the increments are independent with law \eqref{eq:centered-law},
+and put $\tau_u=\inf\{n\ge0:u(X_n)=0\}$. Then
+\begin{equation}\label{eq:exit-bound}
+ \sup_x\E_x\tau_u\le H:=\frac{(D+b)^2}{v_*},\qquad
+ \sup_x\Prob_x(\tau_u>n)\le2^{-\lfloor n/L\rfloor},
+ \quad L=\max(1,\lceil2H\rceil).
+\end{equation}
+No regularity of the positive set is used.
+\end{lemma}
+\begin{proof}
+If $u(x)=0$, the exit time is zero. Otherwise, until that time all
+successive locations with positive $u$ lie in the same containing set:
+a step of length at most $b$ cannot jump to a different one. For
+$S=\tau_u\wedge n$ we consequently have $|X_S-x|\le D+b$.
+Independence and zero mean make
+$|X_n-x|^2-ns_2$ a martingale. Applying the bounded stopping identity
+at $S$ gives
+\[
+ s_2\E_x S=\E_x|X_S-x|^2\le(D+b)^2.
+\]
+Monotone convergence proves the expectation estimate, including
+almost-sure finiteness of $\tau_u$. Markov's inequality gives
+$\Prob_x(\tau_u>L)\le H/L\le1/2$. At time $L$, on survival,
+the same expectation estimate applies from the current location.
+Iteration of the Markov property gives the stated geometric tail.
+This argument does not presume optional stopping at an unbounded time;
+only bounded stopping is used before taking the limit.
+\end{proof}
+
+\begin{theorem}[Mean-exit inverse and physical comparison]
+\label{thm:mean-exit-inverse}
+Under Lemma~\ref{lem:mean-exit}, write $g=(T_\rho-I)u$ and define
+\begin{equation}\label{eq:mean-exit-recursion}
+ V_0=0,\qquad V_{n+1}=\max\{0,T_\rho V_n-g\}.
+\end{equation}
+Then $0\le V_n\le V_{n+1}\le u$ and
+\begin{equation}\label{eq:mean-exit-rate}
+ \|u-V_n\|_\infty\le2^{-\lfloor n/L\rfloor}.
+\end{equation}
+If $\widehat g$ has uniform error at most $\xi$, and each transition
+update has additional uniform error at most $\zeta$, clipping the
+perturbed iterates to $[0,1]$ gives
+\begin{equation}\label{eq:mean-exit-noise}
+ \|u-\widehat V_n\|_\infty
+       \le2^{-\lfloor n/L\rfloor}+n(\xi+\zeta).
+\end{equation}
+In particular, increasing the iteration depth without regard to the
+error is not the asserted regularization.
+
+There is a stronger comparison between physical candidates. Suppose
+$u,\widetilde u\in[0,1]$ both satisfy the same containing-set bounds,
+with no prescribed agreement of their zero sets. If
+$g=(T_\rho-I)u$ and $\widetilde g=(T_\rho-I)\widetilde u$, then
+\begin{equation}\label{eq:unknown-support-stability}
+ \|u-\widetilde u\|_\infty
+                  \le H\|g-\widetilde g\|_\infty.
+\end{equation}
+Thus $g$ determines $u$ in this class. This estimate is independent of
+both a convolution scale and the iteration depth. It compares admissible
+occupations, not arbitrary noisy outputs of the recursion.
+\end{theorem}
+\begin{proof}
+Positivity of $T_\rho$ and $T_\rho u-g=u$ give the monotone bounds.
+Every iterate vanishes where $u=0$. For $e_n=u-V_n$, at a point with
+$u>0$ the recursion gives $e_{n+1}=\min(u,T_\rho e_n)\le T_\rho e_n$.
+Iterating until the first zero yields
+\[
+ 0\le e_n(x)\le\E_x\{u(X_n)\one_{\{\tau_u>n\}}\}.
+\]
+Lemma~\ref{lem:mean-exit} proves \eqref{eq:mean-exit-rate}.
+The maximum, clipping and a Markov transition are nonexpansive in
+supremum norm. Induction proves \eqref{eq:mean-exit-noise}.
+
+For the comparison put $w=u-\widetilde u$ and
+$\epsilon=\|g-\widetilde g\|_\infty$. Bounded stopping in the
+martingale for $w$ gives, with $S=\tau_u\wedge n$,
+\[
+ w(x)=\E_x w(X_S)
+       -\E_x\sum_{j<S}(g-\widetilde g)(X_j).
+\]
+At $\tau_u$ the terminal difference is $-\widetilde u\le0$; on
+survival its positive part is at most one. Hence
+$w(x)\le\Prob_x(\tau_u>n)+\epsilon\E_x(\tau_u\wedge n)$.
+Letting $n$ increase gives $w(x)\le H\epsilon$. Interchanging the
+two functions and stopping at $\tau_{\widetilde u}$ proves the reverse
+bound. This uses neither an observed free reference point nor knowledge
+of either stopping set in the reconstruction.
+\end{proof}
+
+\begin{corollary}[Every nontrivial bounded displacement law]
+\label{cor:noncentered-exit}
+The same identification and fixed-aperture comparison hold for any
+prescribed law supported in $|a|\le b$ other than $\delta_0$, provided
+the containing sets have separation greater than $b$. More explicitly,
+suppose for some unit vector $v$ and numbers $\gamma,p>0$ that
+$\rho\{a:a\cdot v\ge\gamma\}\ge p$. Choose an integer $m$ with
+$m\gamma>D$. Then
+\[
+ \Prob_x(\tau_u>n)\le(1-p^m)^{\lfloor n/m\rfloor},\qquad
+ \E_x\tau_u\le m/p^m.
+\]
+In Theorem~\ref{thm:mean-exit-inverse} and
+Proposition~\ref{prop:fixed-exit-aperture}, replace the survival bound
+and $H$ by these quantities. The centered-law bound
+\eqref{eq:exit-bound} is usually substantially better; the constants
+here can be large when the escape cone has small probability.
+\end{corollary}
+\begin{proof}
+Conditional on any surviving starting position, the next $m$
+independent increments all belong to the displayed cone with probability
+at least $p^m$. If the occupation stayed positive throughout those
+steps, they would lie in one containing set and their net projection
+would exceed its diameter. Hence this event forces a visit to zero.
+The Markov property at block endpoints gives the tail. Summing the tail
+in blocks of length $m$ gives the expectation bound. The preceding
+Bellman and stopped-comparison proofs require only these two bounds.
+Finally, any law different from $\delta_0$ has a nonzero point in its
+support; a sufficiently small ball about that point lies in a cone
+$a\cdot v\ge\gamma>0$ and has positive probability. Thus the stated
+condition does not require an almost-sure common drift direction.
+\end{proof}
+
+For mollified occupations under the physical component bounds, take
+\begin{equation}\label{eq:uniform-exit-prior}
+ D=D_0+2\sigma_0,\qquad b<d_0-2\sigma_0,
+ \qquad 0<\sigma\le\sigma_0.
+\end{equation}
+Their positive sets lie in the $\sigma$-enlarged components, which
+satisfy these diameter and separation bounds. Thus the same $H,L$
+work at every scale. Equality of the exact two functionals on smooth
+spatial commands determines every $g_\sigma$, hence every $u_\sigma$.
+Approximate-identity convergence determines $\chi$ almost everywhere.
+For the closed convex physical components this determines the sets
+as closures of their interiors. Analyticity and periodicity are not
+needed in this local inference.
+
+\subsection{Locality, stability of the prescribed law, and sharpness}
+An infinite iteration must not silently turn a local experiment into
+an unbounded aperture experiment. The following localization resolves
+that issue.
+
+\begin{proposition}[A fixed aperture for the mean-exit inverse]
+\label{prop:fixed-exit-aperture}
+Let $U$ be a bounded target set and let a bounded observation set $W$
+contain $U+\overline B_{D+b+\varepsilon_0}$ for some
+$\varepsilon_0>0$. Define $T^Wv=T_\rho(\one_Wv)$ and perform
+\eqref{eq:mean-exit-recursion} on $W$, setting every iterate to zero
+outside $W$. Then \eqref{eq:mean-exit-rate} and
+\eqref{eq:mean-exit-noise} hold on $U$, using only forcing errors on
+$W$. The comparison \eqref{eq:unknown-support-stability} on $U$ likewise
+requires forcing data only on this fixed enlarged set.
+\end{proposition}
+\begin{proof}
+Globally the zero extension gives $T^Wu\le T_\rho u$, so induction
+still gives $0\le V_n\le u$ and zero values on $\{u=0\}$.
+For a start $x\in U$ with $u(x)>0$, the entire containing set of $x$
+and every possible exit location lie in $W$. Along the walk up to
+its first zero, $T^W$ therefore introduces no boundary discrepancy.
+The killed error and stopped comparison proofs apply verbatim along
+this walk. Errors elsewhere in $W$ can propagate through at most $n$
+updates, giving the same bound as before. The argument on $U$ does
+not require the unknown occupation to vanish near $\partial W$.
+\end{proof}
+
+Define total variation by
+$\|\rho-\rho'\|_{\rm TV}=\sup_{0\le h\le1}|\int h\,\dd(\rho-\rho')|$.
+For a physical $u\in[0,1]$,
+\begin{equation}\label{eq:operator-calibration}
+ \|(T_\rho-T_{\rho'})u\|_\infty
+                    \le\|\rho-\rho'\|_{\rm TV}.
+\end{equation}
+Consequently an independently certified error in a reciprocal randomized
+law can be charged directly to the forcing error. A baseline law
+satisfying \eqref{eq:centered-law} suffices for this perturbation
+comparison; the small error need not itself have mean zero. The actual
+forward and reverse preparations must still be reciprocal. Uncoupled
+position, timing and angle errors are instead charged by
+Theorem~\ref{thm:calibration}, with its $\sigma^{-1}$ cost.
+We do not infer either calibration guarantee from the observed bits.
+
+The expectation factor has a familiar potential-theoretic meaning. If
+$Q$ is a finite killed transition matrix with finite mean exit times,
+then $G=(I-Q)^{-1}=\sum_{n\ge0}Q^n$ has nonnegative entries and
+\begin{equation}\label{eq:green-norm}
+             \|G\|_{\infty\to\infty}=\max_x\E_x\tau.
+\end{equation}
+Indeed its row sums are the sums of survival probabilities. The constant
+is attained by forcing identically one on the killed state set. This is
+a sharp Dirichlet resolvent norm, not a minimax lower bound for the
+physical collision experiment with unknown obstacles. Green functions
+and stopped martingales are classical tools; see \cite{LawlerLimic}.
+Our use of them concerns a measured forcing and an unknown zero set,
+with the containing sets needed only for bounds and not given as data.
+
+For the symmetric nearest-neighbor walk on the line and $u=1$ at two
+adjacent sites and zero elsewhere, \eqref{eq:mean-exit-recursion} gives
+$V_n=1-2^{-n}$ at those sites. The mean exit time is two, although no
+finite almost-sure stopping bound exists. This example belongs to the
+new theorem and verifies why it is a genuine extension of
+Theorem~\ref{thm:stopped}, not a claim that its earlier finite stopping
+obstruction has disappeared. If the second moment vanishes, constants
+on a stationary orbit cannot be recovered; the positive moment in
+\eqref{eq:centered-law} has a different role from a common positive drift.
