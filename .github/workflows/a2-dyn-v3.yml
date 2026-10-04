@@ -1,0 +1,53 @@
+name: A2-DYN v3 native manuscript build
+on:
+  push:
+    branches:
+      - 'revision/a2-dyn-v3-*'
+    paths:
+      - 'papers/A2-DYN-v3-uniform-return-stability/**'
+      - '.github/workflows/a2-dyn-v3.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  article:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install TeX
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends latexmk texlive-latex-extra texlive-fonts-recommended lmodern
+      - name: Check retained sources and finite diagnostics
+        working-directory: papers/A2-DYN-v3-uniform-return-stability
+        run: |
+          mkdir -p evidence
+          python3 tools/audit_v3.py > evidence/ci-audit-v3.json
+          python3 -O tools/audit_v3.py > evidence/ci-audit-v3-optimized.json
+          cmp evidence/ci-audit-v3.json evidence/ci-audit-v3-optimized.json
+          python3 tools/certify_winding.py > evidence/ci-winding.json
+          python3 tools/verify.py > evidence/ci-v1-finite.json
+          python3 tools/certify_excursion.py > evidence/certify_excursion.py.json
+          python3 tools/verify_v2.py > evidence/ci-v2-finite.json
+      - name: Build unchanged native TeX
+        working-directory: papers/A2-DYN-v3-uniform-return-stability
+        run: |
+          bash build.sh
+          python3 tools/audit_v3.py > evidence/ci-post-build-audit.json
+          cmp evidence/ci-audit-v3.json evidence/ci-post-build-audit.json
+          printf '%s\n' "$GITHUB_SHA" > evidence/ci-commit.txt
+          sha256sum main.pdf > evidence/ci-pdf.sha256
+          cp main.log evidence/ci-tex.log
+          cp main.fls evidence/ci-tex-inputs.fls
+      - name: Preserve article and exact-source evidence
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: A2-DYN-v3-${{ github.sha }}
+          if-no-files-found: error
+          path: |
+            papers/A2-DYN-v3-uniform-return-stability/main.pdf
+            papers/A2-DYN-v3-uniform-return-stability/evidence/
