@@ -1,0 +1,49 @@
+name: GTF-I v79 exact-head read-only reconstruction
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v79-r51-response-2026-10-04
+    paths:
+      - papers/GTF-I-v79-joint-interior-coding/evidence/**
+      - papers/GTF-I-v79-joint-interior-coding/*.pdf
+      - GENERAL_THETA_FOUNDATIONS_I_V79_REVIEW_ENTRY.md
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: gtf79-final-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Check out the exact submitted commit
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 3
+          sparse-checkout: |
+            .github
+            papers/GTF-I-v78-block-resource-learning
+            papers/GTF-I-v79-joint-interior-coding
+          persist-credentials: false
+      - name: Install pinned dependencies
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends python3-venv texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+          python3 -m venv "$RUNNER_TEMP/gtf79-venv"
+          "$RUNNER_TEMP/gtf79-venv/bin/pip" install --disable-pip-version-check -r papers/GTF-I-v79-joint-interior-coding/requirements.txt
+      - name: Reconstruct all three documents and both packages without changing tracked files
+        run: |
+          "$RUNNER_TEMP/gtf79-venv/bin/python" papers/GTF-I-v79-joint-interior-coding/build_revision.py --verify-published > "$RUNNER_TEMP/gtf79-FINAL_HEAD.json"
+      - name: Preserve exact-head verification
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: gtf-v79-final-head-${{ github.sha }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/gtf79-FINAL_HEAD.json
+          if-no-files-found: error

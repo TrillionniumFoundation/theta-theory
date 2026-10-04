@@ -1,0 +1,111 @@
+name: GTF-I v79 native source and candidate publication
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v79-r51-response-2026-10-04
+    paths:
+      - .github/workflows/gtf-i-v79-native-build.yml
+      - .github/gtf-i-v79-prepare.py
+      - .github/gtf-i-v79-metadata.py
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: gtf79-native-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      PAPER: papers/GTF-I-v79-joint-interior-coding
+    steps:
+      - name: Check out the submitted revision seed
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 3
+          sparse-checkout: |
+            .github
+            papers/GTF-I-v78-block-resource-learning
+            papers/GTF-I-v79-joint-interior-coding
+          persist-credentials: true
+      - name: Install pinned arithmetic and typesetting dependencies
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends python3-venv texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+          python3 -m venv "$RUNNER_TEMP/gtf79-venv"
+          "$RUNNER_TEMP/gtf79-venv/bin/pip" install --disable-pip-version-check -r "$PAPER/requirements.txt"
+      - name: Assemble and commit the exact reviewed native tree
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/gtf79-venv/bin/python" .github/gtf-i-v79-prepare.py
+          "$RUNNER_TEMP/gtf79-venv/bin/python" .github/gtf-i-v79-metadata.py
+          "$RUNNER_TEMP/gtf79-venv/bin/python" "$PAPER/build_revision.py" --check-source > "$RUNNER_TEMP/gtf79-SOURCE_CHECK.json"
+          git add -f -- "$PAPER"
+          TREE=$(git rev-parse "$(git write-tree):$PAPER")
+          test "$TREE" = '2dff7f17234744e1506eded621527c099b34b724'
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'GTF-I v79: joint interior descriptions and further R51 response' -m 'Commit canonical native sources before building. Preserve all 61 predecessor mathematical sections and all active labels; add uniform interior entropy, finite exact coding, randomized prefix rates and learned descriptions. No inherited report or old paper path is changed.'
+          git rev-parse HEAD > "$RUNNER_TEMP/gtf79-SOURCE_SHA.txt"
+      - name: Qualify native sources, all finite regressions and isolated packages
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/gtf79-venv/bin/python" "$PAPER/build_revision.py" --isolated > "$RUNNER_TEMP/gtf79-BUILD.json"
+          "$RUNNER_TEMP/gtf79-venv/bin/python" "$PAPER/publish_revision.py" > "$RUNNER_TEMP/gtf79-PUBLICATION_PLAN.json"
+      - name: Commit artifacts as a direct source child and push a new candidate branch only
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/gtf79-venv/bin/python" - <<'PY'
+          import json,os,pathlib
+          p=pathlib.Path(os.environ['PAPER'])
+          r=json.loads((p/'evidence/BUILD_RECEIPT.json').read_text())
+          lines=['# General Theta Foundations I — Revision 79 review entry','',
+                 'Further R51 response, based on completed v78 `1906166f98f47f4fe387143617948766395ba186`. R51 reviewed v77, not v78 or v79.','',
+                 'Native source: `'+r['source_commit']+'`. Production run: '+os.environ['GITHUB_SERVER_URL']+'/'+os.environ['GITHUB_REPOSITORY']+'/actions/runs/'+os.environ['GITHUB_RUN_ID']+'.','',
+                 '## Manuscripts','']
+          for name,item in r['documents'].items():
+              lines.append('- ['+name+']('+p.as_posix()+'/'+name+') — '+str(item['pages'])+' pages; SHA256 `'+item['sha256']+'`.')
+          lines+=['','## Substantive additions','',
+                  'Active Section 61 proves dimension-uniform interior covering, a finite exact rational public dictionary, randomized expected prefix length, and joint query-optimal learning and transmission. The complete-body and fresh-block results are retained, not replaced by an interior restriction.','',
+                  '[Full point-by-point response]('+p.as_posix()+'/RESPONSE_TO_REFEREE.md), [proof audit]('+p.as_posix()+'/PROOF_AUDIT.md), [history and pipeline]('+p.as_posix()+'/HISTORY_AND_PIPELINE_AUDIT.md), [preservation manifest]('+p.as_posix()+'/PRESERVATION_MANIFEST.json).','',
+                  'All 360 predecessor native files have hash-bound retention, all 61 inherited section files are unchanged, and every predecessor active label remains. Current inventory and active counts are in the build receipt.','',
+                  '## Reproduction and review status','',
+                  'The production receipt records exact-source checks, normal/optimized finite regression agreement, isolated native rebuilding and standalone focused-package rebuilding. A separate read-only workflow must succeed on this exact publication commit before assigning its referee-ready alias. The production run alone is not that final-head check.','',
+                  '[Standalone journal package]('+p.as_posix()+'/evidence/JOURNAL_PACKAGE.zip), [complete research package]('+p.as_posix()+'/evidence/RESEARCH_PACKAGE.zip), [native source archive]('+p.as_posix()+'/evidence/NATIVE_SOURCE.zip).','',
+                  'No independent human specialist priority review has been obtained. CI reconstructs artifacts and finite tests, not continuum proofs or journal acceptance. Full-body dimension optimality and imported trusted-operation synthesis are not asserted. The five independent analytic pipeline closure flags remain unchanged.','']
+          pathlib.Path('GENERAL_THETA_FOUNDATIONS_I_V79_REVIEW_ENTRY.md').write_text('\n'.join(lines))
+          PY
+          git add -f -- "$PAPER/paper.pdf" "$PAPER/COMPLETE_REVISION.pdf" "$PAPER/STRUCTURAL_PAPER.pdf" "$PAPER/evidence" GENERAL_THETA_FOUNDATIONS_I_V79_REVIEW_ENTRY.md
+          git commit -m 'GTF-I v79: publish source-bound manuscripts, exact tests and standalone packages'
+          SOURCE=$(cat "$RUNNER_TEMP/gtf79-SOURCE_SHA.txt")
+          test "$(git rev-parse HEAD^)" = "$SOURCE"
+          CANDIDATE="revision/general-theta-foundations-i-v79-built-${SOURCE:0:12}-2026-10-04"
+          git push origin "HEAD:refs/heads/$CANDIDATE"
+          export CANDIDATE SOURCE
+          "$RUNNER_TEMP/gtf79-venv/bin/python" - <<'PY'
+          import json,os,pathlib,subprocess
+          r={'schema':'gtf79.remote-publication/1','source_commit':os.environ['SOURCE'],
+             'candidate_commit':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),
+             'candidate_branch':os.environ['CANDIDATE'],'trigger_commit':os.environ['GITHUB_SHA'],
+             'run_id':os.environ['GITHUB_RUN_ID'],'exact_head_verification':'required separately'}
+          pathlib.Path(os.environ['RUNNER_TEMP'],'gtf79-PUBLICATION.json').write_text(json.dumps(r,indent=2,sort_keys=True)+'\n')
+          PY
+      - name: Preserve manuscripts and qualification records
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: gtf-v79-production-${{ github.run_id }}
+          path: |
+            papers/GTF-I-v79-joint-interior-coding/paper.pdf
+            papers/GTF-I-v79-joint-interior-coding/COMPLETE_REVISION.pdf
+            papers/GTF-I-v79-joint-interior-coding/STRUCTURAL_PAPER.pdf
+            papers/GTF-I-v79-joint-interior-coding/evidence/**
+            papers/GTF-I-v79-joint-interior-coding/build/*.log
+            ${{ runner.temp }}/gtf79-*.json
+            ${{ runner.temp }}/gtf79-SOURCE_SHA.txt
+          if-no-files-found: warn

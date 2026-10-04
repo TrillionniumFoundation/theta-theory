@@ -1,0 +1,392 @@
+\section{The cost of limiting independent quantum blocks}
+\label{sec:blocklearning78}
+
+The training law changes when the number of calls in one independent
+quantum experiment is prescribed.  The relevant restriction concerns
+access to the next queried input.  Quantum systems retained from completed
+experiments may still be stored and measured together.  This distinction
+allows a direct comparison with tomography based on independently
+prepared probe--reference pairs.
+
+\begin{definition}[Independent blocks with retained outputs]
+\label{def:freshblocks78}
+A training protocol has independent blocks of length at most $b$ if it
+has the following form.  At a block boundary it may apply an arbitrary
+common quantum instrument to all its retained systems.  The resulting
+classical history $h$, including its classical random choices and the
+number of calls already charged, determines whether to stop, or else a
+length $1\le t(h)\le b$ and a fresh $t(h)$-use tester.  Conditional on
+$h$, this tester starts in a parameter-independent state tensor-separated
+from all retained systems.  It may use arbitrary references, entangled
+inputs, and adaptive control within its $t(h)$ calls.
+
+From its preparation until its last call, the entire fresh tester,
+including its reference and unused inputs, is isolated from the retained
+systems.  Those systems are available again at the next block boundary,
+when the new outputs may be joined to them and processed collectively.
+Thus classical feedback may select the next tester, while no retained
+quantum register can be coupled into a block that still has calls to
+make.  A block length is declared before that block and charged in full;
+an internal early exit is padded within its declared length.  The sum of
+declared lengths is at most $M$ on every record.  Stopping at block
+boundaries may depend on the full classical history.  The final estimate
+may use an arbitrary joint measurement of all retained systems.
+Classical record spaces are standard Borel and quantum registers
+are separable.
+\end{definition}
+
+The retained quantum systems belong to the tester; the unknown
+measurement still consumes its input and returns only its ordered binary
+classical label.  The definition permits an unbounded amount of retained
+quantum storage and classical computation.  It also permits all probes to be prepared
+in advance when their states factor into the prescribed independent
+blocks: their preparation can be deferred without changing the
+experiment.  In particular, independent one-call Choi preparations
+followed by a collective measurement belong to the case $b=1$.
+The distinction between classical input control and quantum memory on
+the output side has an antecedent in the channel-discrimination model
+of \cite[Section~II.2]{SHW68}.  The familiar quadratic information gain
+within a block and additive gain across independent blocks also occur
+in the metrological bounds of \cite{Hyllus78,Toth78}.  We give a
+finite-budget fidelity argument because a local information bound alone
+does not supply the confidence dependence needed here.
+
+Write $M_b^\star(d,N,\delta,\eta)$ for the least every-record call
+budget of a protocol in Definition~\ref{def:freshblocks78} whose legal
+estimate satisfies
+\begin{equation}\label{eq:blockrisk78}
+ \sup_{E\in\mathfrak E_d}
+ \mathbb P_E\{d_N(\mathcal M_E,\mathcal M_{\widehat E})>\delta\}
+ \le\eta.
+\end{equation}
+The future distance $d_N$ retains its unrestricted adaptive definition
+and its unhalved trace-norm normalization.  The restriction on $b$
+applies only to training.
+
+\begin{theorem}[Sharp tradeoff for independent training blocks]
+\label{thm:blocklearning78}
+There are absolute constants $c,C,\delta_*>0$ such that, for every
+$d\ge2$, $N\ge1$, $1\le b\le N$, $0<\delta\le\delta_*$, and
+$0<\eta\le1/8$,
+\begin{equation}\label{eq:blockcalls78}
+ c\frac{N^2}{b\delta^2}\log\frac1\eta
+ \le M_b^\star(d,N,\delta,\eta)
+ \le C d^4\frac{N^2}{b\delta^2}\log\frac d\eta.
+\end{equation}
+The upper bound is attained by one procedure common to the entire
+closed effect body.  The lower bound allows classical feedback,
+arbitrary quantum storage and collective processing at block
+boundaries, and every-record bounded stopping.  Consequently, for
+each fixed $d\ge2$,
+\begin{equation}\label{eq:blockminimax78}
+ M_b^\star(d,N,\delta,\eta)
+ =\Theta_d\!\left(\frac{N^2}{b\delta^2}\log\frac1\eta\right).
+\end{equation}
+In dimension $d=1$ the corresponding order is
+$\Theta(N\delta^{-2}\log(1/\eta))$, independently of $b$.
+\end{theorem}
+
+The endpoints $b=1$ and $b=N$ differ by a factor of order $N$.
+The claim is uniform in the block cap, horizon, accuracy, and confidence;
+the upper factor $d^4$ is not asserted to be sharp in growing dimension.
+
+\begin{lemma}[Changing the future horizon]
+\label{lem:blockhybrid78}
+For all effects $E,F$ and integers $N,b\ge1$,
+\begin{equation}\label{eq:blockhybrid78}
+ d_N(\mathcal M_E,\mathcal M_F)
+ \le\left\lceil\frac Nb\right\rceil
+           d_b(\mathcal M_E,\mathcal M_F).
+\end{equation}
+\end{lemma}
+\begin{proof}
+Fix an $N$-use tester and partition its calls into consecutive groups
+of at most $b$.  Replace the device in one group at a time.  For each
+replacement the common prefix prepares a reference-assisted input
+to a tester with at most $b$ calls, including all memory carried from
+the prefix.  The common suffix is a channel on that tester's output
+and cannot increase trace distance.  Each replacement therefore
+costs at most $d_b$.  Sum these costs and take the supremum over the
+original tester.  Public stopping is included by padding to $N$ calls
+with discarded dummy experiments.
+\end{proof}
+
+\begin{proof}[Upper bound in Theorem~\ref{thm:blocklearning78}]
+Put $q=\lceil N/b\rceil$.  Apply
+Theorem~\ref{thm:matrixlearning77} with future horizon $b$, accuracy
+$\delta/q$, and failure allowance $\eta$.  Its construction uses fresh
+independent blocks of length at most $b$, with classical records between
+them, so it satisfies Definition~\ref{def:freshblocks78}.
+Lemma~\ref{lem:blockhybrid78} converts its success event into
+\eqref{eq:blockrisk78}.  On every record its call count is at most
+\[
+ C d^4 bq^2\delta^{-2}\log(d/\eta)
+ \le 4C d^4\frac{N^2}{b\delta^2}\log(d/\eta),
+\]
+because $1\le b\le N$.  Choose $\delta_*$ no larger than the
+accuracy constant in Theorem~\ref{thm:matrixlearning77}.
+\end{proof}
+
+For positive, possibly subnormalized operators define root fidelity by
+\[
+ \mathfrak f(A,B)=\|\sqrt A\sqrt B\|_1.
+\]
+We use its tensor-product identity, its additivity on direct sums, and
+its monotonicity under a common channel.  In particular, for a common
+instrument $(\mathcal J_z)_z$,
+\begin{equation}\label{eq:blockinstrument78}
+ \sum_z\mathfrak f(\mathcal J_z(A),\mathcal J_z(B))
+ \ge\mathfrak f(A,B).
+\end{equation}
+These facts hold for subnormalized operators by homogeneity.  For
+states, the Bures angle $\arccos\mathfrak f$ is a contractive metric;
+see \cite{Watrous65,YF76}.
+
+\begin{lemma}[Fidelity with adaptive choices of fresh blocks]
+\label{lem:blockfidelity78}
+Fix a two-dimensional subspace and, for $\phi\in\mathbb R$, set
+\begin{equation}\label{eq:blockprojective78}
+ E_\phi=\frac12(I_2+\cos\phi\,\sigma_1+
+                         \sin\phi\,\sigma_2)
+                   \mathbin\oplus\frac12 I_{d-2},
+\end{equation}
+with the second summand absent when $d=2$.  If $b|\theta|\le1$,
+the final states $\Gamma_0,\Gamma_\theta$ of any protocol in
+Definition~\ref{def:freshblocks78}, applied to $E_0,E_\theta$ with
+every-record budget $M$, satisfy
+\begin{equation}\label{eq:blockfidelity78}
+ \mathfrak f(\Gamma_0,\Gamma_\theta)
+ \ge\exp(-Mb\theta^2/4).
+\end{equation}
+Furthermore, if $N|\theta|\le\pi$, then
+\begin{equation}\label{eq:blockprojectivedistance78}
+ d_N^{\rm na}(\mathcal M_{E_0},\mathcal M_{E_\theta})
+ =d_N(\mathcal M_{E_0},\mathcal M_{E_\theta})
+ =2\sin(N|\theta|/2).
+\end{equation}
+\end{lemma}
+\begin{proof}
+For qubits, \eqref{eq:blockprojectivedistance78} follows from
+\cite[Corollary~1 and Theorem~2]{PPKKO72}.  We give the calculation
+to specify the normalization and the fidelity estimate needed below.
+
+Let $U_\theta=e^{-\mathrm i\theta\sigma_3/2}\oplus I_{d-2}$.
+Then $E_\theta=U_\theta E_0U_\theta^*$ and
+$\mathcal M_{E_\theta}=\mathcal M_{E_0}\circ
+\operatorname{Ad}_{U_\theta^*}$.  If $|\theta|\le\pi$, every
+purified input $\psi$, including an arbitrary reference, satisfies
+\[
+ \big|\langle\psi,(U_\theta^*\otimes I)\psi\rangle\big|
+ \ge \operatorname{Re}\langle\psi,
+                    (U_\theta^*\otimes I)\psi\rangle
+ \ge\cos(|\theta|/2).
+\]
+The last inequality follows from the spectrum of
+$(U_\theta+U_\theta^*)/2$.  Applying the common measurement and
+discarding a purification can only increase fidelity.  Thus one
+call changes the output Bures angle by at most $|\theta|/2$,
+uniformly over its input and reference.
+
+For a common adaptive tester, apply the triangle inequality before
+each query: the angle between the two current states is contracted
+by the same channel, and changing the channel on the second state
+adds at most $|\theta|/2$.  The interposed controls are common
+channels and also contract the angle.  Induction from the common
+initial state proves that every $t$-use tester has output states
+$\rho_0,\rho_\theta$ satisfying
+\begin{equation}\label{eq:blocklocalfidelity78}
+ \mathfrak f(\rho_0,\rho_\theta)
+ \ge\cos(t|\theta|/2)
+ \quad\hbox{when }t|\theta|\le\pi.
+\end{equation}
+This argument permits arbitrary adaptive quantum memory inside the
+tester.  Its output includes all internal outcomes before any
+postselection.  For $t\le b$ and $b|\theta|\le1$,
+$\cos x\ge e^{-x^2}$ for $0\le x\le1/2$ gives
+\begin{equation}\label{eq:blocklocalexponential78}
+ \mathfrak f(\rho_0,\rho_\theta)
+ \ge e^{-t^2\theta^2/4}\ge e^{-at},
+ \qquad a=b\theta^2/4.
+\end{equation}
+
+We next retain the whole classical history, including all branch
+lengths and stopping decisions.  At a boundary write the two
+classical--quantum states as direct sums of subnormalized retained
+states $A_h,B_h$.  Their traces include the respective probabilities
+of $h$.  Let $m(h)$ be the charged calls in that history, and consider
+\begin{equation}\label{eq:blockpotential78}
+ \Psi=\sum_h e^{-a(M-m(h))}\mathfrak f(A_h,B_h).
+\end{equation}
+Initially $\Psi=e^{-aM}$, since the initial resources are the same.
+A common boundary instrument preserves $m(h)$ along each of its
+children, so \eqref{eq:blockinstrument78} shows that it cannot
+decrease $\Psi$.  The history is kept until the end; in particular,
+records with different charged call counts are never merged in this
+calculation.
+
+At a continuing history $h$, the prescribed fresh tester has the
+same specification under both hypotheses.  Conditional on $h$,
+its output states $\rho_0^h,\rho_\theta^h$ are normalized and are
+tensor-separated from the old retained state.  Immediately after
+this block the contribution of this history is therefore
+\[
+ \begin{split}
+ &e^{-a(M-m(h)-t(h))}
+   \mathfrak f(A_h\otimes\rho_0^h,
+               B_h\otimes\rho_\theta^h)\\
+ &\qquad\ge
+ e^{-a(M-m(h)-t(h))}e^{-at(h)}\mathfrak f(A_h,B_h)
+ =e^{-a(M-m(h))}\mathfrak f(A_h,B_h).
+ \end{split}
+\]
+The subsequent joint instrument is covered by
+\eqref{eq:blockinstrument78}.  A stopped history is carried
+unchanged.  Since each continuing block charges at least one call,
+all histories are terminal after at most $M$ such generations.
+At that time all weights in \eqref{eq:blockpotential78} are at
+most one.  Additivity of root fidelity on the terminal histories
+therefore gives
+\[
+ \mathfrak f\!\left(\bigoplus_h A_h,\bigoplus_h B_h\right)
+ =\sum_h\mathfrak f(A_h,B_h)\ge\Psi\ge e^{-aM}.
+\]
+Any final collective processing or discarding of history again
+increases fidelity.  This proves \eqref{eq:blockfidelity78} without
+asserting independence of the unconditional records or imposing a
+common support condition on their laws.
+
+For general measurable classical outcomes, choose a measure dominating
+the two history laws and interpret $A_h,B_h$ as their operator-valued
+densities.  Direct-sum additivity becomes the corresponding integral
+identity, and the same proof uses integrals in
+\eqref{eq:blockinstrument78} and \eqref{eq:blockpotential78}.
+These identities follow equivalently by finite coarse-graining of
+the classical record and refinement.  The charged call count has
+only the values $0,\ldots,M$ and is retained in every such
+coarse-graining.
+
+Finally, use the first two coordinates for a parallel $N$-input state
+\[
+ \frac{|0\rangle^{\otimes N}
+             +e^{\mathrm i\alpha}|1\rangle^{\otimes N}}{\sqrt2},
+ \qquad \alpha=N\theta/2+\pi/2.
+\]
+The parity of the ordered output signs has mean
+$\cos(N\phi-\alpha)$ under $E_\phi$, hence means
+$-\sin(N\theta/2)$ and $\sin(N\theta/2)$ under the two
+hypotheses.  Its unhalved distance is $2|\sin(N\theta/2)|$.
+For $N|\theta|\le\pi$, apply
+\eqref{eq:blocklocalfidelity78} with $t=N$ to any future adaptive
+tester and use
+$\|\rho-\sigma\|_1\le2\sqrt{1-\mathfrak f(\rho,\sigma)^2}$.
+The resulting upper bound is $2\sin(N|\theta|/2)$, equal to the
+parallel witness.  This proves \eqref{eq:blockprojectivedistance78}.
+\end{proof}
+
+\begin{proof}[Lower bound in Theorem~\ref{thm:blocklearning78}]
+Reduce $\delta_*$ further so that $\delta_*\le1/4$, and set
+$\theta=4\delta/N$ in \eqref{eq:blockprojective78}.
+Then $b|\theta|\le1$, while
+\eqref{eq:blockprojectivedistance78} gives
+\[
+ d_N(\mathcal M_{E_0},\mathcal M_{E_\theta})
+ =2\sin(2\delta)>2\delta.
+\]
+The two radius-$\delta$ success balls are disjoint.  Thus any
+estimate satisfying \eqref{eq:blockrisk78} determines a test with
+both error probabilities $\alpha,\beta$ at most $\eta$: choose
+the first hypothesis precisely when the estimate lies in its
+radius-$\delta$ ball.  The classical root fidelity of that test is
+\[
+ \sqrt{(1-\alpha)\beta}+\sqrt{\alpha(1-\beta)}
+ \le2\sqrt\eta.
+\]
+Fidelity is nondecreasing under the map from the training output to
+this test.  Lemma~\ref{lem:blockfidelity78} consequently implies
+\[
+ e^{-Mb\theta^2/4}\le2\sqrt\eta,
+ \qquad
+ M\ge\frac{N^2}{8b\delta^2}\log\frac1{4\eta}
+ \ge\frac{N^2}{24b\delta^2}\log\frac1\eta,
+\]
+where the last inequality uses $\eta\le1/8$.
+This proves the asserted lower bound in every $d\ge2$.
+
+For $d=1$ every effect is scalar.  Bernoulli endpoint estimation
+in Lemma~\ref{lem:learnendpoint76} gives the upper order with
+independent one-call samples.  The scalar converse in
+Theorem~\ref{thm:matrixlearning77} gives the matching lower order
+even with unrestricted adaptive quantum training.  Thus increasing
+$b$ has no effect in dimension one.
+\end{proof}
+
+\begin{corollary}[The limitation of independent one-call acquisition]
+\label{cor:onecallseparation78}
+Fix $d\ge2$.  Every learner that acquires its data using fresh
+one-call probes and fresh references, with classical feedback and
+arbitrary subsequent collective processing as in
+Definition~\ref{def:freshblocks78}, requires
+$\Omega_d(N^2\delta^{-2}\log(1/\eta))$ calls for
+\eqref{eq:blockrisk78}.  The complete closed effect body admits
+the same risk with $O_d(N\delta^{-2}\log(1/\eta))$ calls when
+independent blocks of length up to $N$ are permitted.
+\end{corollary}
+\begin{proof}
+Use $b=1$ and $b=N$ in Theorem~\ref{thm:blocklearning78}.
+\end{proof}
+
+This conclusion applies to the acquisition interfaces of
+\cite{MB67,ZRK76}.  The channel learner in
+\cite[Section~III.2 and Algorithm~I.2]{MB67} prepares independent
+Choi copies before their collective processing.  The measurement
+tomography procedure in \cite[Section~3]{ZRK76} queries separately
+prepared known inputs.  Both are contained in $b=1$ above.  Any
+estimator retaining these interfaces and required to satisfy the
+present worst-case future-$N$ loss therefore incurs the quadratic
+horizon order, including when its final estimator is collective.
+The block lower bound settles this interface comparison directly;
+it does not rely on substituting $\delta/N$ into a sufficient
+one-use accuracy guarantee.
+
+\begin{corollary}[Learning with bounded blocks into an optimal-order word]
+\label{cor:blocklearnedcode78}
+For fixed $d\ge2$, $1\le b\le N$, rational
+$0<\delta\le\min\{1,\delta_*,\delta_d\}$, and
+$0<\eta\le1/8$, there is a common learner in
+Definition~\ref{def:freshblocks78} that returns a fixed-length word
+whose deterministic public decoder produces a legal effect $C$ with
+\[
+ \sup_{E\in\mathfrak E_d}
+ \mathbb P_E\{d_N(\mathcal M_E,\mathcal M_C)>\delta\}\le\eta.
+\]
+Its every-record training budget is at most
+$Cd^4N^2(b\delta^2)^{-1}\log(d/\eta)$ and its payload has length
+\begin{equation}\label{eq:blockcodebits78}
+ \frac{d^2}{2}\log_2N+
+ \lfloor d/2\rfloor\log_2\log(N+2)+
+ d^2\log_2(1/\delta)+O_d(1).
+\end{equation}
+For each fixed $d$, both the training order in this block model and
+the payload order among fixed public decoders into legal effects are
+optimal.  Encoding uses no additional device calls.
+\end{corollary}
+\begin{proof}
+Run the learner of Theorem~\ref{thm:blocklearning78} at accuracy
+$\delta/2$.  The upper construction inherits the legal rational
+output of Theorem~\ref{thm:matrixlearning77}.  Apply the exact
+codec of Theorem~\ref{thm:matrixcodec77} at accuracy $\delta/2$.
+On the learning success event its decoded effect obeys
+\[
+ d_N(\mathcal M_E,\mathcal M_C)
+ \le\delta/2+11\delta/32=27\delta/32<\delta.
+\]
+The codec is a deterministic computation on the recorded rational
+estimate.  Theorem~\ref{thm:matrixcodec77} gives
+\eqref{eq:blockcodebits78}.  The training converse is
+Theorem~\ref{thm:blocklearning78}.  For the payload converse,
+positive success probability for every $E$ forces the decoded
+family to cover $\mathfrak E_d$ by radius-$\delta$ balls; apply
+Theorem~\ref{thm:matrixcover76}.  As before, reconstruction time,
+workspace, and state-preparation complexity are separate from the
+two resource counts.
+\end{proof}
