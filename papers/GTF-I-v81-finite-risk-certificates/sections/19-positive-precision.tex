@@ -1,0 +1,99 @@
+\section{Positive finite-precision matrix decoders}\label{sec:matrixprecision57}
+The label-width bounds leave real table descriptions uncharged. There is
+nevertheless a finite-description counterpart for each supplied encoded
+realization. Entrywise rounding of a density matrix is unsafe: it need not
+preserve positivity. A Gram-factor construction avoids this problem.
+
+\begin{lemma}[Rational positive rounding]\label{lem:positiveprecision57}
+Let $D\in\mathcal D_d$ and let $L=D^{1/2}$. Approximate the real and imaginary
+parts of every entry of $L$ by dyadic multiples of $2^{-b}$, each within
+$2^{-b}$, to obtain $Q$. Set $\delta=\sqrt2d\,2^{-b}$. If $\delta\le1/4$, then
+\begin{equation}\label{eq:gramround57}
+ \widehat D=\frac{QQ^*}{\tr(QQ^*)}\in\mathcal D_d\cap
+            M_d(\Q+i\Q),\qquad
+ \norm{\widehat D-D}_{\mathrm F}\le8\sqrt2d\,2^{-b}.
+\end{equation}
+The construction is effective when $D$ is given by exact algebraic entries.
+Its rational output has $O(d^2(b+\log(d+1)))$ bits for fixed encoding
+conventions.
+\end{lemma}
+\begin{proof}
+Write $Q=L+E$. Then $\norm E_{\mathrm F}\le\delta$ and
+$\norm L_{\mathrm F}^2=\tr D=1$. Hence $Q\ne0$,
+$\tr(QQ^*)\ge(1-\delta)^2$, and
+\[
+ \norm{QQ^*-D}_{\mathrm F}\le(2+\delta)\delta,
+ \qquad |\tr(QQ^*)-1|\le(2+\delta)\delta.
+\]
+The first estimate follows from the two cross terms and $EE^*$, and the
+second from $\norm Q_{\mathrm F}^2-\norm L_{\mathrm F}^2$. Since
+$\norm D_{\mathrm F}\le1$, division by $\tr(QQ^*)$ gives an error at most
+$2(2+\delta)\delta/(1-\delta)^2\le8\delta$. Positivity and trace one are
+exact, not numerical tolerances. After multiplying $Q$ by $2^b$, the
+normalization is a ratio of integer Gram entries to a positive integer
+sum of squares. Their bit sizes are $O(b+\log(d+1))$. The positive square
+root of an algebraic positive matrix has algebraic entries and can be
+specified and approximated by real-algebraic arithmetic. This proves the
+effectivity assertion without an efficiency claim for obtaining $D$.
+\end{proof}
+
+\begin{theorem}[A supplied realization with finite tables and fair bits]
+\label{thm:matrixbits57}
+Suppose an error-$\varepsilon$ horizon-$N$ realization for a matrix
+interface uses at most $k$ labels, and its initialization, command rows,
+and decoders are supplied with exact algebraic encodings. Let
+$\sqrt2d\,2^{-b}\le1/4$. There is a rational finite-table implementation,
+with the same persistent label widths, whose Frobenius error is at most
+\begin{equation}\label{eq:matrixbits57}
+ \varepsilon+\sqrt2\bigl((N+1)(k-1)+8d\bigr)2^{-b}.
+\end{equation}
+Each hidden draw uses $b$ independent fair bits, so at most $(N+1)b$ such
+bits suffice. For a supplied stationary permutation realization the
+additional error is at most
+\begin{equation}\label{eq:stationarymatrixbits57}
+                  \sqrt2\bigl(k-1+8d\bigr)2^{-b},
+\end{equation}
+and only $b$ fair bits are needed for initialization, independently of the
+horizon. The numerical matrix decoder itself is not a quantum preparation
+or a sampled terminal answer register.
+\end{theorem}
+\begin{proof}
+Apply Lemma~\ref{lem:dyadic56} to each initialization and command row after
+padding to $k$ labels. Each row changes by at most $(k-1)2^{-b}$ in total
+variation. Induction, or a maximal coupling at every actual draw, bounds
+the terminal distribution discrepancy by $(N+1)(k-1)2^{-b}$; this upper
+bound may harmlessly exceed one. Replace each decoder by the legal
+rational matrix in Lemma~\ref{lem:positiveprecision57}. The Frobenius
+diameter of $\mathcal D_d$ is $\sqrt2$, so changing the distribution incurs
+at most $\sqrt2$ times its total-variation discrepancy. The independent
+decoder error is at most $8\sqrt2d\,2^{-b}$. This proves
+\eqref{eq:matrixbits57}. A dyadic probability row of denominator $2^b$ is
+sampled by one uniform $b$-bit integer and its cumulative integer table.
+
+For a permutation realization the command rows already have exact
+integer entries and need not be rounded or sampled. Only the
+initialization distribution and decoder are changed. The same estimate
+therefore gives \eqref{eq:stationarymatrixbits57} and the horizon-independent
+fair-bit bound.
+\end{proof}
+The row tables and their cumulative sums require
+$O((N|\mathcal A|k^2+|\mathcal S|k)b)$ bits in the general case, in addition
+to $O(kd^2(b+\log(d+1)))$ bits for one matrix decoder. Temporary random
+integers and table indices require their own $O(b+\log(k+1))$ workspace;
+this workspace is not hidden in the persistent-label invariant. Multiple
+queries multiply the decoder storage by their number. To implement a
+sampled measurement one must additionally specify and charge its sampler.
+The theorem compiles a supplied encoded realization; it neither computes
+a width minimizer nor assigns finite encodings to arbitrary unspecified
+real tables. Applying it after the exact inner-polytope construction uses
+an explicit extra error budget, not an exact finite-precision claim at an
+extreme zero-error endpoint.
+
+Here an exact algebraic entry is specified by defining polynomials and
+real isolating intervals (for both parts of a complex entry), with
+compatible field operations. The positive square root is the unique
+positive semidefinite solution of $L^2=D$, and its isolating data can be
+obtained by real-algebraic algorithms. These representation and output
+bit-length statements are not running-time bounds for finding the
+original realization or its square root. The constructed rational qubit
+compiler is a separate, more explicit algorithm.
