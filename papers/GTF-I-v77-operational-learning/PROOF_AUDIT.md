@@ -319,7 +319,7 @@ holds on the same stated range `N>=1`, `0<delta<=delta_d`. The power of the hori
 
 ## 8. The common qubit learning subroutine
 
-The learner is a new uniform statistical experiment. Its inputs, branch choices, frames, block lengths, and output are functions only of the public parameters and observed records. It does not know the target pair, eigenvalues, bias, or noise. Its proof uses the upper metric theorem and concentration rather than reinterpreting the pairwise lower witnesses.
+The qubit learner is a uniform statistical experiment. Its inputs, branch choices, frames, block lengths, and output are functions only of the public parameters and observed records. It does not know the target pair, eigenvalues, bias, or noise. Its proof uses the upper metric theorem and concentration rather than reinterpreting the pairwise lower witnesses.
 
 Write the effect as `((1+b)I+r u dot sigma)/2`, with `|b|+r<=1`. The future loss horizon is `N`; the total training calls are a separate quantity. The theorem assumes sufficiently small `delta` and `0<eta<=1/8`, and permits ideal trusted preparation of the specified finite qubit input states. Classical runtime, quantum memory, and hardware are not optimized.
 

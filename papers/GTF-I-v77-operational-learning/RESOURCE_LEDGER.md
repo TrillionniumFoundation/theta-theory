@@ -106,7 +106,7 @@ For `d >= 2`, put `s=binom(d,2)`. Calibration uses `h_d=2d^2-d` product settings
 
 | Stage | Failure allowance | Calls on every record | Output |
 | --- | --- | --- | --- |
-| Simultaneous endpoint calibration | `eta/2` | At most `C d^4 N log(d/eta)` | Legal `A`; on success both regularized support endpoints are comparable and `||E-A||_op <= N^-1/2` |
+| Simultaneous endpoint calibration | `eta/2` | At most `C d^4 N log(d/eta)` | Legal `A`; on success both regularized support endpoints are comparable and `opnorm(E-A) <= N^-1/2` |
 | Each of `s` qubit learners | `eta/(2s)` | At most `C N(d/delta)^2 log(d/eta)` | Legal estimate in one pair of calibration eigenvectors, at requested loss `c_* delta/d` |
 | Weighted legal rational selection | Zero | Zero | Legal Gaussian-rational effect in the public input basis |
 | Subsequent matrix encoding | Zero | Zero | Reusable word when requested |
