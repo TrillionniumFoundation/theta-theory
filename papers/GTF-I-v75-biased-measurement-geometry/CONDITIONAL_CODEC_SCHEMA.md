@@ -1,0 +1,13 @@
+# Conditional instrument code — gtf71.conditional-instrument-code/1
+
+The input is a legal `gtf66.choi-instrument/1` object in input-first unnormalized Choi convention. Each outcome matrix must be block diagonal in the public input basis. Its x-th diagonal block is sigma_xy, and each row x must have total trace one. Nonzero off-diagonal input blocks are rejected by encode. The separate `retract` action computes K composed with complete input dephasing, and can increase Choi rank.
+
+Public parameters: d=input_dimension, n=output_dimension, m=outcome_count, integer N=horizon>=1, canonical fraction 0<requested_unhalved_error<2, and d lists of m ranks r_xy in [0,n], at least one positive per row. V=sum_x(sum_y r_xy(2n-r_xy)-1). The common grid is the least positive integer B satisfying B^2 delta^2>=16 N V. It is calculated using rational integer-square-root comparisons. In the singleton case V=0 take B=1.
+
+`rows` contains d existing `gtf68.preparation-code/1` certificates, each with input_dimension=1, common output/outcome dimensions and grid, and the corresponding rank row. Pivot positions and integer bodies are encoded by that schema. Every row independently decodes to a trace-one positive tuple. Decoded outcome Choi blocks are their direct sums; the common denominator is the least common multiple of row denominators.
+
+`fixed_length_bits` is the sum of the row fixed-length bounds, including their finite pivot masks and fixed-length body. It does not assert that the JSON transport envelope has this byte count. N, delta, dimensions and rank bounds are public. `error_squared_upper` is exactly 16 N sum_x(h_x-1)/B^2, with h_x the decoded factor-coordinate header in row x. The bound must not exceed delta^2. Actual decoded conditional ranks cannot exceed target ranks under encode; directed rounding can lower rank.
+
+Bare `decode` validates type, normalization, syntax, public-parameter agreement and the formal error budget. It cannot certify closeness to an unknown target. `verify` additionally reconstructs the canonical encoding from the supplied rational target and requires exact equality of the whole JSON object. Unknown extra fields are rejected by canonical target replay. CLI failures return exit status 2.
+
+The theorem is about reusable descriptions under the adaptive quantum metric. The common-programme comparison is not a physical classical implementation, and its dN row-state proof resource is not the instrument's N-call budget. Expanded matrices, rational intermediate numerators, bit-operation costs and source-data length are separate resources; no optimal workspace or learning complexity is claimed.

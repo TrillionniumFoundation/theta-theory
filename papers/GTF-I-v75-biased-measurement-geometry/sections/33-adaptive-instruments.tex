@@ -1,0 +1,202 @@
+\section{One-pass simulation of disturbing quantum instruments}
+\label{sec:instruments65}
+We now allow genuine state disturbance. This is a constructive
+finite-horizon statement, not a finite-state classification. It is
+separate from the classification by repeatable nondisturbing probes.
+
+\subsection{Fixed physical data and operational error}
+Fix $d\ge2$, a finite command set $\mathcal A$, finite outcome sets,
+and an instrument $(\Phi_{a,y})_y$ for each $a\in\mathcal A$. Assume
+a fixed Gaussian-rational Kraus description
+\begin{equation}\label{eq:krausdata65}
+ \Phi_{a,y}(X)=q^{-2}\sum_r M_{a,y,r}X M_{a,y,r}^*,\quad
+ M_{a,y,r}\in\Z[i]^{d\times d},\quad
+ \sum_{y,r}M_{a,y,r}^*M_{a,y,r}=q^2I
+\end{equation}
+with one fixed positive integer $q$. The initial density matrix is
+$P_0/z_0$, where $P_0$ is Gaussian integral and positive, and
+$z_0=\tr P_0>0$. Rationality here refers to this supplied finite
+description; no assertion that every rational superoperator has a
+Gaussian-rational Kraus decomposition is needed.
+
+At each step an external classical controller chooses a command as
+a function of the public history, possibly using its own randomness.
+The instrument emits $y$ and updates the physical state accordingly.
+The simulator receives the same kind of command and emits one outcome
+immediately. It cannot reread consumed commands or emitted outcomes;
+any information retained privately is charged. A common controller is
+used when comparing the two experiments. Its memory is not simulator
+memory, and no access to an unrecorded external history is granted to
+the simulator.
+
+For a complete control--outcome history $h$ at time $t$, let $A_h$
+be the true subnormalized state, of trace equal to the probability
+of $h$. Let $\widehat A_h$ be the analogous simulator matrix. Define
+\begin{equation}\label{eq:cqerror65}
+       \mathfrak D_t=\sum_h\|A_h-\widehat A_h\|_1.
+\end{equation}
+This is the trace norm of the difference of the block-diagonal
+classical--quantum states, not an average conditioned on a rare
+observed history. Histories of probability zero contribute the zero
+matrix. Classical transcript total variation is at most
+$\mathfrak D_t/2$. The same bound holds after any common,
+history-dependent terminal measurement. The compared interface consists of the classical transcript
+and its numerical matrix blocks. We do not claim total variation of
+binary matrix encodings, nor simulation of an arbitrary external
+entangled quantum memory.
+
+\begin{theorem}[Charged simulation of rational instruments]\label{thm:instrumentstream65}
+For every fixed input \eqref{eq:krausdata65} there is one randomized
+classical one-pass program which, for all $N\ge2$ and $L\ge2$,
+simulates every $N$-step adaptive control policy and satisfies
+\begin{equation}\label{eq:instrumenterror65}
+                  \sup_{\rm policies}\mathfrak D_t\le2^{-L}
+                         \qquad(0\le t\le N).
+\end{equation}
+Its stored and returned numerical state is always in $\mathcal D_d$.
+Writing
+\[
+ s_*=\min\{N,L+\lceil\log_2(N+1)\rceil\},
+\]
+its writable space is $O_{\rm input}(s_*)$, equivalently
+$O(d^2s_*)$ with constants allowed to depend on the fixed Kraus data.
+Command processing uses $O_{\rm input}(s_*^2)$ expected bit operations
+and $O_{\rm input}(s_*)$ expected fair bits per step. Every step
+terminates almost surely, with a worst-case space bound even during
+rejection sampling. No exact-probability sampling oracle is used.
+
+Exact simulation of the entire adaptive experiment, including its
+conditional numerical matrix states, is possible in
+$O_{\rm input}(N)$ writable bits. No positivity bound on outcome
+probabilities, reversibility, physical return, or spectral gap is
+assumed. For one-outcome instruments the program is deterministic.
+\end{theorem}
+The finite program and physical data are fixed before $N,L$ are
+supplied. Parameter scanning is charged by its actual input length.
+The theorem concerns a classical numerical simulation, not preparation
+of a quantum state. It gives no uniform error bound for normalized
+states conditional on arbitrary rare histories.
+
+\subsection{An integer realization of every step}
+For approximate simulation choose
+\begin{equation}\label{eq:instrumentprecision65}
+ b=L+\left\lceil\log_2\bigl(6d^2(N+1)\bigr)\right\rceil,\qquad
+ B=2^b,\quad m=B+2d^2.
+\end{equation}
+Store $\mathcal R_B(P_0/z_0)$ as $P/m$ with an integral Hermitian
+numerator $P$. Given command $a$, form
+\begin{equation}\label{eq:instrumentintegers65}
+ S_y=\sum_r M_{a,y,r}P M_{a,y,r}^*,\quad
+ s_y=\tr S_y,\quad T=\sum_y s_y=q^2m.
+\end{equation}
+Emit $y$ with probability $s_y/T$. Only positive $s_y$ can be emitted.
+Replace the state by $\mathcal R_B(S_y/s_y)$, using the divisions in
+Lemma~\ref{lem:positiveround65}. Its denominator is again exactly $m$.
+
+These rational probabilities have an explicit fair-bit implementation.
+Let $\ell=\lceil\log_2T\rceil$, draw $\ell$ independent fair bits as an
+integer $J\in\{0,\ldots,2^\ell-1\}$, and retry if $J\ge T$. If $T=1$
+take $J=0$ without drawing a bit. Accept the unique outcome whose
+cumulative interval of integer lengths $(s_y)_y$ contains $J$.
+Acceptance probability is greater than $1/2$, except that for a power
+of two it is one. Thus the expected number of bits is at most $2\ell$.
+Discarded trials are not stored, and their count is not needed.
+Zero-length intervals can never be selected.
+
+There is also an exact mode. Start from $P_0$ and, on each command,
+form $(S_y)_y$ by \eqref{eq:instrumentintegers65}, now with
+$T=q^2\tr P$. Sample the same integer intervals and set $P\leftarrow S_y$.
+The numerical state is $P/\tr P$. This update is precisely the
+normalized physical branch, while the numerator itself is never
+divided. After $t$ commands,
+\begin{equation}\label{eq:exacttrace65}
+                      1\le\tr P\le z_0 q^{2t}.
+\end{equation}
+It is an integer because all input matrices are Gaussian integral.
+The upper bound follows from
+$\tr S_y\le\sum_y\tr S_y=q^2\tr P$.
+All entries have modulus at most $\tr P$ by positivity.
+
+\subsection{Uniform control of the whole path}
+\begin{proof}[Proof of Theorem~\ref{thm:instrumentstream65}]
+In approximate mode, each stored state is legal by
+Lemma~\ref{lem:positiveround65}, and every sampling row has total
+mass one by \eqref{eq:krausdata65}. For an arbitrary common controller,
+write $\pi(a\mid h)$ for its next command law. The true and approximate
+subnormalized updates are
+\[
+ A_{hay}=\pi(a\mid h)\Phi_{a,y}(A_h),\qquad
+ \widehat A_{hay}=\pi(a\mid h)
+                \overline{\mathcal R}_B(\Phi_{a,y}(\widehat A_h)).
+\]
+This expression agrees with the actual emitted probabilities and
+normalized successor matrices. For each history, the triangle
+inequality and Lemma~\ref{lem:instrumentcontraction65} imply
+\begin{align*}
+ \sum_{a,y}\|A_{hay}-\widehat A_{hay}\|_1
+ &\le\|A_h-\widehat A_h\|_1+
+          \delta_B\tr\widehat A_h .
+\end{align*}
+Summing over histories and using $\sum_h\tr\widehat A_h=1$ gives
+$\mathfrak D_{t+1}\le\mathfrak D_t+\delta_B$.
+Initial rounding contributes $\mathfrak D_0\le\delta_B$.
+Hence
+\[
+                  \mathfrak D_t\le(t+1)\delta_B
+                    \le(N+1)6d^2/B\le2^{-L}.
+\]
+This proof works uniformly for every controller. A controller with
+private randomness may be conditioned on its seed, followed by
+integration; the displayed bound is independent of that seed.
+Taking traces gives the classical total-variation assertion.
+Appending a terminal instrument and applying
+\eqref{eq:instrumentcontraction65} gives the assertion about terminal
+measurements. No division by a small target probability has appeared.
+
+In grid mode, the numerator $P$ and the denominator $m$ have
+$O_{\rm input}(b+1)$ bits per entry. The fixed integral Kraus products,
+the outcome traces, the cumulative intervals, and the integer $J$
+have the same order. The numerators in the signed divisions have at
+most $2b+O_{\rm input}(1)$ bits. A constant number, depending on the
+fixed physical data, of matrix buffers suffices. Elementary long
+division gives quadratic bit time and linear scratch space. Rejection
+sampling uses at most $O_{\rm input}(b+1)$ space in every trial,
+and has the stated expected bit and time bounds.
+
+Exact mode reproduces every branch probability and conditional state
+exactly. Equation~\eqref{eq:exacttrace65}, together with the fixed
+Kraus coefficients, bounds all stored and temporary integers by
+$O_{\rm input}(t+1)$ bits. Thus the exact simulation uses linear
+space and has the stated conservative quadratic time bound per step.
+
+Use grid mode when $b<N$ and exact mode otherwise. The choice is made
+before allocating $B$: store $N$, scan $L$ with its value capped at
+$N$, and compute the threshold with binary integer lengths. A
+precision string of arbitrary length is consumed without being stored.
+A counter verifying the number of commands uses $O(\log N)$ bits.
+The fixed-radix numerical matrix output has
+$O_{\rm input}(s_*)$ bits and requires no readable transcript tape.
+These observations complete the charged-space proof.
+\end{proof}
+
+\begin{corollary}[Rational channels with legal matrix outputs]
+\label{cor:channelstream65}
+A fixed finite family of Gaussian-rational Kraus channels and a fixed
+rational initial density matrix admit one deterministic one-pass
+algorithm with pointwise trace-norm error at most $2^{-L}$ at every
+prefix, legal outputs, and space
+$O_{\rm input}(\min\{N,L+\log(N+1)\})$. Exact output uses
+$O_{\rm input}(N)$ bits.
+\end{corollary}
+\begin{proof}
+There is one outcome per command, so its probability is one and no
+random bits are needed. The single block in
+\eqref{eq:cqerror65} is the difference of the two numerical matrices.
+Apply Theorem~\ref{thm:instrumentstream65}.
+\end{proof}
+
+The contraction and hybrid argument are classical. Their use here is
+to give a fully specified positive integer simulator with bounded
+space, exact rational emissions and no rare-outcome assumption.
+This constructive theorem does not replace the repeatable-probe
+hypothesis in the finite-response-quotient classification.
