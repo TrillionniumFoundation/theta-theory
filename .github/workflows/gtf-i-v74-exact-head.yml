@@ -1,0 +1,56 @@
+name: GTF-I v74 exact-head read-only reconstruction
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v74-coupled-boundary-geometry-2026-10-04
+    paths:
+      - GENERAL_THETA_FOUNDATIONS_I_V74_FINAL_HEAD_REQUEST.json
+permissions:
+  contents: read
+concurrency:
+  group: gtf74-final-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-22.04
+    container: debian:13-slim@sha256:a99cfc517144bc59b1978475ec53b46ecabec7e43635402ee5b77cc54cd1b20a
+    timeout-minutes: 35
+    steps:
+      - name: Install fixed dependencies
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          apt-get update -qq
+          apt-get install -y --no-install-recommends ca-certificates git python3 python3-venv texlive-latex-extra texlive-fonts-recommended lmodern
+          python3 -m venv /opt/gtf74-venv
+          /opt/gtf74-venv/bin/pip install --disable-pip-version-check PyMuPDF==1.26.7 sympy==1.14.0
+      - name: Checkout exact final object without retained credentials
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 3
+          persist-credentials: false
+      - name: Trust only this container checkout
+        shell: bash
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - name: Rebuild sources, all pages and all tests read-only
+        shell: bash
+        run: /opt/gtf74-venv/bin/python papers/GTF-I-v74-coupled-boundary-geometry/build_revision.py --verify-published > "$RUNNER_TEMP/gtf74-FINAL_HEAD.json"
+      - name: Independently rebuild minimal journal source package
+        shell: bash
+        run: |
+          /opt/gtf74-venv/bin/python - <<'PYCODE'
+          import os,pathlib,subprocess,zipfile
+          d=pathlib.Path(os.environ['RUNNER_TEMP'])/'gtf74-journal-final';d.mkdir()
+          with zipfile.ZipFile('papers/GTF-I-v74-coupled-boundary-geometry/evidence/JOURNAL_PACKAGE.zip') as z:z.extractall(d)
+          p=subprocess.run(['/opt/gtf74-venv/bin/python',str(d/'journal_verify.py')],check=True,capture_output=True)
+          (pathlib.Path(os.environ['RUNNER_TEMP'])/'gtf74-JOURNAL_FINAL.json').write_bytes(p.stdout)
+          PYCODE
+      - name: Upload external exact-head attestation
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: gtf-v74-final-head-${{ github.sha }}-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/gtf74-FINAL_HEAD.json
+            ${{ runner.temp }}/gtf74-JOURNAL_FINAL.json
+          if-no-files-found: error
