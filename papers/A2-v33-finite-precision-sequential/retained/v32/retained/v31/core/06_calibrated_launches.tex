@@ -1,0 +1,183 @@
+\section{Calibration and randomized opposed launches}
+\label{sec:calibration}
+The scale-independent estimate in Proposition~\ref{prop:mean-stability}
+concerns the propagation of mean error, not the implementation of an
+input law. We first bound physical preparation errors without excluding
+grazing commands. We then allow a calibrated distribution of directions
+and durations rather than a single collimated displacement.
+
+\subsection{A geometric bound for imperfect preparation}
+For a compact convex body $C$ let
+$S_a(C)=C+[-a,0]$. A segment $[q,q+a]$ hits $C$ precisely when
+$q\in S_a(C)$. For a locally finite union of bodies this gives
+\begin{equation}\label{eq:morph-bit}
+ B_a(q)=\one_{\cup_C S_a(C)}(q)-\one_{\mathcal O}(q).
+\end{equation}
+The subtraction is essential: the first indicator counts a solid start
+as a hit, whereas our recorded bit counts it as zero.
+
+\begin{lemma}[Local convex boundary tubes]\label{lem:tube}
+There is an absolute constant $c_0$ such that, for every planar compact
+convex body $C$, disk $B_s(x)$ and $r>0$,
+\[
+ \area\{q\in B_s(x):\dist(q,\partial C)\le r\}
+                 \le c_0(s+r)r.
+\]
+The bound also applies to the convex swept body $S_a(C)$, irrespective
+of its straight sides or nonsmooth junctions.
+\end{lemma}
+\begin{proof}
+Use signed distance, negative inside $C$, and integrate its level sets
+between $-r$ and $r$ by the coarea formula. Its gradient has length one
+almost everywhere away from the boundary and the interior medial set.
+Positive levels are boundaries of outer parallel bodies; negative
+levels are boundaries of convex erosions, until the erosion becomes
+empty. The part of any such convex boundary in $B_s(x)$ has length at
+most $2\pi s$: it is part of the boundary of its intersection with the
+disk, whose perimeter is at most that of the disk by the planar Cauchy
+perimeter formula. Coincident boundary pieces only reduce this bound.
+Approximation by slightly larger disks handles tangencies and exceptional
+levels. Integration gives $4\pi sr$; the displayed weaker bound also
+covers all degenerate limiting cases.
+\end{proof}
+
+\begin{theorem}[Position, duration and angle calibration]\label{thm:calibration}
+Assume the planar components are convex and mutually separated by
+$d_0>0$. A nominal command has density $f_{x,\sigma}$, displacement
+$a=tv$, $|v|=1$, $t\le b$, and $0<\sigma\le\sigma_0$.
+Suppose an actual attempt can be coupled to this command so that
+\[
+ |q'-q|\le\ell,\qquad |t'-t|\le\tau,\qquad
+ \angle(v',v)\le\alpha,
+\]
+and remains a unit-speed straight flight until its first collision.
+Both nominal and actual protocols assign zero to solid starts and free
+misses and count all attempts. Set
+\begin{equation}\label{eq:calibration-size}
+             r=\ell+\tau+b\alpha.
+\end{equation}
+If $r\le\sigma$, then
+\begin{equation}\label{eq:calibration-bias}
+ \left|\E B_{t'v'}(q')-P_a(f_{x,\sigma})\right|
+                  \le C_{d_0,b,\sigma_0,\kappa}\,r/\sigma.
+\end{equation}
+The coupling errors may depend on $q$ and need not have mean zero.
+An exceptional coupling event of probability $\zeta$ adds at most
+$\zeta$ to the bound. The estimate is uniform in the nominal direction
+and includes commands tangent to obstacles.
+\end{theorem}
+\begin{proof}
+One has $|t'v'-tv|\le\tau+b\alpha$. The Hausdorff distance between
+$S_{t'v'}(C)$ and $S_a(C)$ is at most this quantity. For convex bodies
+$K,K'$ with $d_H(K,K')\le s$, the inclusions
+$K_{-s}\subset K'\subset K+s\overline B$ follow directly from their
+support inequalities. Thus a change of swept-body membership, including
+the start displacement, can occur only when the nominal $q$ is within
+$r$ of $\partial S_a(C)$. A change of solid-start membership is similarly
+confined to the $r$-tube of $\partial C$. These containments hold for
+every allowed actual displacement, even if its error depends on $q$.
+
+Only a uniformly bounded number $N_0=N_0(d_0,b,\sigma_0)$ of components
+can contribute such tubes in $B_\sigma(x)$. Indeed each contributing
+component has a point in $B_{\sigma+b+r}(x)$; chosen points from distinct
+components are separated by $d_0$, so disjoint radius-$d_0/2$ disks give
+a uniform packing bound. Apply Lemma~\ref{lem:tube} to these bodies
+and their sweeps in \eqref{eq:morph-bit}. Their exceptional area is at
+most $C N_0(\sigma+r)r$. Since
+$\|f_{x,\sigma}\|_\infty=\sigma^{-2}\|\kappa\|_\infty$ and
+$r\le\sigma$, its probability is at most $Cr/\sigma$. Outside it
+both bits agree. A failed coupling contributes at most its probability
+because the bits belong to $[0,1]$.
+\end{proof}
+
+A systematic center error, angular error and timing error may therefore
+all be charged explicitly to the mean-error budget. For fixed allowed
+mean bias $b_0$, the sufficient condition is
+$\ell+\tau+b\alpha\le c b_0\sigma$, not a scale-free apparatus
+tolerance. No calibration estimate is obtained from the collision bits
+themselves. Arbitrary curved pre-impact paths or an unknown distribution
+outside this coupling model are not included.
+
+\subsection{From one displacement to a stopped averaging operator}
+Let $\rho$ be a known probability measure on displacements. In the
+forward protocol draw $a\sim\rho$ and $q\sim f$ independently and
+attempt $(q,a)$. In the reverse protocol draw the same law for $a$, draw
+$q\sim f$, and attempt $(q+a,-a)$. These two protocols need not use
+the same physical particle or the same random draw. Their prescribed
+joint distributions must, however, have this translated relationship.
+Only their mean bits are used. Write their means as $P_\rho^+(f)$ and
+$P_\rho^-(f)$, and define
+\[
+ (T_\rho u)(x)=\int u(x+a)\rho(\dd a).
+\]
+Averaging Theorem~\ref{thm:balance} shows that their difference is
+$\int f(T_\rho\chi-\chi)$; for the kernel commands it is
+\begin{equation}\label{eq:random-balance}
+       g_\sigma(x)=(T_\rho-I)u_\sigma(x).
+\end{equation}
+This is a coupled preparation design. Independently randomized reverse
+starts without the translation by their sampled displacement do not
+in general give \eqref{eq:random-balance}.
+
+\begin{theorem}[Finite stopped inverse]\label{thm:stopped}
+Let $0\le u\le1$, let $T$ be the transition operator of a Markov chain
+$(X_j)$, and suppose that, for every starting point in the region in
+question, the first visit to $\{u=0\}$ occurs by time $m$ almost surely.
+Values of $u$ and $g=(T-I)u$ need only be defined on its $m$-step
+reachable region. Put
+\begin{equation}\label{eq:bellman}
+ V_0=0,\qquad V_{n+1}=\max\{0,TV_n-g\},\qquad 0\le n<m.
+\end{equation}
+Then $V_m=u$. For a perturbation $\widehat g$ with uniform error
+at most $\xi$, the same recursion, optionally clipped to $[0,1]$,
+has error at most $m\xi$ at step $m$. Each additional uniform error
+in evaluating $TV_n$ adds at most its magnitude to the final bound.
+
+For $T=T_\rho$, the hypothesis holds for $u=\chi$ and $u=u_\sigma$
+under the component bounds if, for some unit $v$ and $\gamma>0$,
+\begin{equation}\label{eq:cone}
+ a\cdot v\ge\gamma,
+ \quad |a|\le b<d_0-2\sigma_0
+ \quad(\rho\text{-almost every }a),
+ \qquad m\gamma>D_0+2\sigma_0.
+\end{equation}
+Thus two averaged scalar-launch functionals with a fixed, possibly
+continuous spread of durations and directions determine the local
+obstacle set. Neither a realized impact position nor a free reference
+point is supplied. The aperture enlargement is at most $mb+\sigma_0$.
+\end{theorem}
+\begin{proof}
+Induction gives $0\le V_n\le u$, because $Tu-g=u$. At a point where
+$u=0$, every $V_n$ is zero. At a point where $u>0$, writing
+$e_n=u-V_n\ge0$ gives
+$e_{n+1}=\min(u,Te_n)\le Te_n$. Consequently
+\[
+ e_m(x)\le\E_x\left[u(X_m)
+                 \prod_{j=0}^{m-1}\one_{\{u(X_j)>0\}}\right]=0.
+\]
+The last equality uses the assumed visit by time $m$, including its
+endpoint. Positivity of $T$ and nonexpansiveness of the maximum prove
+$\|V_{n+1}-\widehat V_{n+1}\|_\infty
+ \le\|V_n-\widehat V_n\|_\infty+\xi$.
+Clipping cannot increase error relative to $V_n\in[0,1]$. This proves
+the stability assertions.
+
+Under \eqref{eq:cone}, a path whose first $m+1$ points have positive
+$u_\sigma$ must stay in a single $\sigma$-enlarged component: successive
+steps are shorter than the distance between distinct enlarged components.
+Its endpoints differ by at least $m\gamma$ in direction $v$, exceeding
+the diameter of that component. This is impossible. The indicator case
+uses the same argument without enlargement. Approximate-identity
+convergence after \eqref{eq:random-balance} recovers $\chi$.
+\end{proof}
+
+The recursion is the elementary finite-horizon obstacle recursion, here
+with a physically supplied forcing $g$ and a geometrically bounded
+zero-hitting time. For $\rho=\delta_a$ its expansion is exactly the
+minimum of partial sums in \eqref{eq:min-inverse}. The finite stopping
+condition cannot be discarded: for a symmetric nearest-neighbor walk
+and $u=1$ on two adjacent sites and zero elsewhere, the two nonzero
+values of $V_n$ are $1-2^{-n}$, not one at any finite $n$.
+Theorem~\ref{thm:calibration} may be conditioned on the sampled nominal
+displacement in either protocol. Uniformly bounded implementation errors
+then perturb each averaged scalar mean by the same explicit bound.

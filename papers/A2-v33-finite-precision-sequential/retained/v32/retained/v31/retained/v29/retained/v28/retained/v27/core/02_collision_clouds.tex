@@ -1,0 +1,174 @@
+\section{Uniform collision clouds and confidence geometry}\label{sec:clouds}
+Put $\tau=\min(1,d_0/8)$, and write $Q_H=z+[-H,H]^2$ for a working
+square. For a capped distance radius $c>0$, launch in
+$Q_{H+c+2D_0+2\tau}$ and keep first impacts up to time $\tau$.
+The square is translated with the observed flight; its area, denoted $S$,
+is known. Only first impacts in $Q_{H+c+D_0+\tau}$ are retained.
+Every body meeting $Q_{H+c}$ and its outward collar of width $\tau/2$
+are contained in the launch square, and its entire boundary is retained.
+
+\begin{lemma}[First-hit minorization]\label{lem:flux-minor}
+For every boundary arc $I$ of such a body and every launch attempt,
+\begin{equation}\label{eq:minor}
+ \Prob\{\hbox{the first impact before }\tau\hbox{ lies in }I\}
+                         \ge \frac{\tau|I|}{8\pi S}.
+\end{equation}
+The bound does not condition on a free initial position or on a collision.
+\end{lemma}
+\begin{proof}
+At $x\in I$ let an incoming direction make angle $\phi\in[-\pi/3,\pi/3]$
+with the inward normal, and put $q=x-rv$, $r\in[\tau/4,\tau/2]$.
+The segment from $q$ to $x$ lies outside the source body by its supporting
+half-plane. It cannot meet another body since its length is below $d_0$.
+Thus $x$ is its first impact. The coordinates $(s,\phi,r)$ give phase
+volume $\cos\phi\,\dd s\dd\phi\dd r$; the first-hit parametrization is
+injective for these states. Dividing by $2\pi S$ gives
+$\sqrt3\tau|I|/(8\pi S)$, which implies \eqref{eq:minor}.
+Solid launch failures are included in the normalization $S$.
+\end{proof}
+
+Only finitely many bodies meet this working region. For example, put
+$H'=H+c+3D_0+2\tau+d_0$ and
+\[
+ M_0=\left\lceil64(1+H'/d_0)^2\right\rceil.
+\]
+Choose one point from each relevant body; their mutual distances are at
+least $d_0$. Disjoint disks of radius $d_0/2$ around these points fit in
+the square enlarged by $D_0+d_0$, proving the conservative bound $M_0$.
+The circumference of a convex body of diameter $D_0$ is at most $\pi D_0$.
+
+\begin{lemma}[Coverage, clustering and Hausdorff enclosures]\label{lem:cloud}
+Choose
+\[
+ 0<q<\min\{d_0/40,1,\pi/\kappa_+\},\qquad
+ \varepsilon_x<\min\{d_0/100,q/10\}.
+\]
+If
+\begin{equation}\label{eq:sample-budget}
+ n\ge\frac{16\pi S}{\tau q}
+       \log\frac{2M_0(1+\pi D_0/q)}{\zeta},
+\end{equation}
+then, with probability at least $1-\zeta$, the following hold simultaneously.
+Every relevant boundary has a retained impact within arclength distance
+$q$ of each point. Connect reported positions at Euclidean distance below
+$d_0/3$. No component joins different physical bodies, and the cloud of
+each fully observed body is connected. Its convex hull $P$ satisfies
+\begin{equation}\label{eq:hull}
+                      d_H(P,C)\le e_q:=\kappa_+q^2/2+\varepsilon_x.
+\end{equation}
+Seeds at the encountered collisions may be included with the same
+localization tolerance.
+\end{lemma}
+\begin{proof}
+Partition each relevant boundary into arcs with lengths between $q/2$
+and $q$; this is possible since its circumference is at least
+$2\pi/\kappa_+>2q$. There are at most $1+\pi D_0/q$ arcs per body.
+By \eqref{eq:minor}, the probability that any one arc is empty after
+$n$ independent attempts is at most $\exp(-n\tau q/(16\pi S))$.
+A union bound gives the assertion about coverage. Every point is within
+arclength $q$ of a sample in its partition arc; consecutive retained
+samples have arclength gaps at most $2q$. Localization therefore still
+connects consecutive samples at distance below $d_0/3$. Points from
+different bodies remain more than $d_0-2\varepsilon_x>d_0/3$ apart.
+Partial clouds from other bodies cannot merge into a complete cloud.
+
+At a support point $x(0)$ in direction $n$, use unit-speed arclength and
+$|x''|\le\kappa_+$. For $|s|\le q$,
+\[
+ 0\le n\cdot(x(0)-x(s))\le\kappa_+s^2/2,
+\]
+since $n\cdot x'(0)=0$. The support function of the exact sample hull
+therefore lies between that of $C$ and that function minus
+$\kappa_+q^2/2$. Localization changes a hull's support function by at
+most $\varepsilon_x$. The support characterization of Hausdorff distance
+proves \eqref{eq:hull}, uniformly in direction.
+\end{proof}
+
+This argument is a finite-sample form of the boundary random-polytope
+mechanism; see \cite{Schneider,PSSW}. What is needed here, and not supplied
+by a boundary-sampling oracle, is the physical first-hit minorization,
+the treatment of unknown neighboring bodies, and the conditional use of
+one finite cloud after an adaptively located flight.
+
+\subsection{No unobserved-solid query}\label{sec:distance}
+Take the union $P_{\rm all}$ of convex hulls of all retained components,
+including partial exterior components. Let
+$d_P(x)=\min\{c,\dist(x,P_{\rm all})\}$, with value $c$ for the empty
+union. On the event of Lemma~\ref{lem:cloud}, for every $x\in Q_H$,
+\begin{equation}\label{eq:distance-cloud}
+ \left|d_P(x)-\min\{c,\dist(x,\mathcal O)\}\right|\le e_q.
+\end{equation}
+Indeed a hull formed from one body's reported points lies in its
+$\varepsilon_x$-neighborhood, so it cannot create a spurious solid farther
+than that error from the true solid. If the true distance is below $c$,
+a nearest body meets $Q_{H+c}$, is completely covered, and has the
+Hausdorff enclosure \eqref{eq:hull}. If the distance is at least $c$,
+only the preceding one-sided bound is needed after capping.
+Thus \eqref{eq:distance-cloud} controls all query positions at once.
+There is no additional pointwise union bound and no distance oracle.
+
+\subsection{Two derivatives and intrinsic coordinates}
+Translate a complete cloud by one observed seed. Its true support
+function has a $C^3$ bound $B_3=2+M_6+2D_0$, enlarged if necessary to
+absorb the seed error. Fix the nonnegative kernel
+\[
+ \varphi(t)=\frac{315}{256}(1-t^2)^4\one_{[-1,1]}(t),\qquad
+ \int\varphi=1,
+\]
+and its periodic rescaling $\varphi_h$. Set
+$\widehat p=p_P*\varphi_h$. This is the support function of an average
+of rotations of $P$, and hence remains a convex support function. Let
+$C_\varphi=1+\|\varphi'\|_1+\|\varphi''\|_1$; the numerical bound
+$C_\varphi\le512$ suffices below. For $h\le1$,
+\begin{equation}\label{eq:mollify}
+ \|\widehat p-p\|_{C^2}
+       \le C_\varphi e_qh^{-2}+B_3h.
+\end{equation}
+For the first term differentiate the kernel up to twice. For the second,
+write $p^{(j)}(\theta-hu)-p^{(j)}(\theta)$ as an integral of
+$p^{(j+1)}$, $j\le2$, and use $\int|u|\varphi(u)\dd u\le1$.
+This proves the displayed inequality without differentiating a noisy hull.
+
+For $0<\nu<1$ choose
+\begin{equation}\label{eq:explicit-cloud-choice}
+ \begin{gathered}
+ h=\frac{\nu}{8B_3},\qquad
+ E_\nu=\frac{\nu^3}{4096C_\varphi B_3^2},\\
+ q=\min\{d_0/80,1/2,\pi/(2\kappa_+),
+                         \sqrt{E_\nu/(4\kappa_+)}\},\\
+ \varepsilon_x\le\min\{E_\nu/8,q/20,d_0/200\}.
+ \end{gathered}
+\end{equation}
+For the small-$\nu$ range where the last entry fixes $q$,
+$e_q\le E_\nu/4$. Equations \eqref{eq:mollify} and
+\eqref{eq:explicit-cloud-choice} give an error smaller than $\nu/4$.
+The finite remaining range is handled by the smaller fixed $q$.
+The sample count \eqref{eq:sample-budget} is
+$C\nu^{-3/2}\log(C/(\nu\zeta))$, with all constants determined by
+bounded local size and the numerical priors. Localization tolerance is
+\emph{at most} the displayed value; smaller tolerated errors cost more,
+not less, measurement precision.
+
+For small enough $\nu$, $\widehat p+\widehat p''$ stays above
+$1/(2\kappa_+)$. The recovered curve
+\[
+ \widehat x(\theta)=\widehat p(\theta)n(\theta)
+                         +\widehat p'(\theta)t(\theta)
+\]
+is regular and strictly convex. Its radius of curvature differs by
+$O(\nu)$ from the true one. Since
+$\dd s=(p+p'')\dd\theta$, integration gives intrinsic arclength errors
+$O(\nu)$ on bounded arcs. Inverting this positive speed and using the
+true $C^3$ bound gives $O(\nu)$ errors for curvature in the common
+intrinsic parameter. The Frenet equations then give intrinsic $C^2$
+arc error $O(\nu)$. Coordinate rotation to a graph whose tangent has
+fixed slack gives $C^2$ graph enclosures with the same order. No
+arclength measurement was requested from the apparatus.
+
+All estimates are uniform conditional on the preceding history: after
+conditioning, the local square and unknown relevant bodies are fixed,
+and only fresh auxiliary launches are used. Quadrature for the convolution
+and arc integrals is over explicit hull support functions and a fixed
+kernel. Its deterministic errors can be included in the budget
+$\nu/4$, since their moduli and the finite hull are known. This proves
+the geometric part of Theorem~\ref{thm:probe-main}.

@@ -1,0 +1,11 @@
+# Historical derivation and immutable-source audit
+
+The latest review is the v31 report at `f2e2a13a9a742c412a4b1a59b43388a2ba385bda`, blob `bf7aed23b625e7a18a77c9f21b47d067f82cb212`. It reviews `27d109b0eba6a03d453834ef9da9418446ac637d`. Both full report ranges and its SOURCE_AUDIT were read. The preceding conversation's v19 manuscript was not used as the current baseline.
+
+The v31 core was consulted for reciprocal all-attempt balance, mollified occupations, calibration through convex swept-body tubes, mean-exit inversion and different-zero-set comparison, fixed-aperture killing, pooled compass realization, threshold hull construction and period/rational locking. The v30 calibration and constructive-hull arguments incorporated in v31 were read in full. The new radial interpolation and information packing are independent additions. No fresh complete proof audit of every historical supplement is claimed.
+
+The v31 hosted artifact `11280059549` from run `37140328128` was downloaded using the GitHub connector. Its outer ZIP SHA256 is `50abf2b4b839d4c4c2ee83357e0903c4550577a97ce3147dc9489fb569b2ad1a`. The artifact contains the exact-source ZIP, prior primary PDF and prior receipts. ZIP executable modes were restored before recomputing native Git trees. The restored complete v31 paper matches `ff74e5124141dc46b0f08f7e38a5cf258b87e642`. This verifies the preserved content; the extracted ZIP is not called a Git checkout of the new revision.
+
+The complete native v31 tree, including twelve active core files, tools, receipts and all nested old volumes, is inserted unchanged at `retained/v31`. Its core tree is `aa9026847310ecd9205fe631b5ed85aa141b70ed`, tools tree `17e95d275c99633656c18747cd6a6403c115b3d0`, and retained v30 paper tree `1a6f8f32ec62aec586883e67753b3a72895f875c`. The new repository commit adds only the v32 paper and v32 read-only workflow, starting from the current review parent. Old author and review paths remain unchanged.
+
+The new local checks/build use only the new primary sources and retain null checkout/run identifiers. The new hosted validator delegates the preserved v31 validator at its own current checkout SHA, rather than relabelling the old v31 success. The source-pin and document-inventory checks fail closed.

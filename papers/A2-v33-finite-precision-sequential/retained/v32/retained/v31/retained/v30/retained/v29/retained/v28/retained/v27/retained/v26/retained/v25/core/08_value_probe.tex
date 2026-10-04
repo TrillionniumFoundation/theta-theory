@@ -1,0 +1,199 @@
+\section{Local gates from boundary values rather than derivative queries}
+\label{sec:value-probe}
+The effective fingerprint permits a weaker local measurement primitive.
+We keep the launch and trace experiment, the local nature of all queries,
+and the distance-to-solid test. We no longer require measured derivatives
+or an intrinsic arclength oracle. Neither this reduction nor its proof
+turns active geometric access into a passive trajectory observation.
+
+\subsection{The value-access model}
+At an encountered impact the apparatus supplies a Cartesian graph chart
+on a certified interval of fixed positive length, with a smaller working
+interval and known transverse-coordinate direction. Chart origins and
+axes are laboratory coordinates, not unknown type or period labels.
+At any requested abscissa in that chart it returns a height enclosure of
+width at most $2\epsilon$. An error in the requested abscissa is charged
+as height error using the known slope bound. The working chart and a
+collar have a numerical $C^3$ bound $M_3$, enlarged to bound all lower
+derivatives. The uniform analytic and curvature priors supply such
+bounds after the chart radius is reduced. The chart domains, coverage
+and nonverticality margins are part of this local access model.
+
+The apparatus also encloses distance to the solid at requested points
+in the permitted neighborhood of the candidate flight, with stated
+absolute error. This query tests all solid in that neighborhood; it is
+not a query only against the two already encountered patches. It remains
+a genuine additional measurement. No complete boundary, body catalogue,
+period, translated-copy label, derivative, or arclength value is returned.
+Let $V(\epsilon)\ge1$ be a calibrated upper bound for the cost of a
+height or distance enclosure of accuracy $\epsilon$, nonincreasing as a function of $\epsilon$, so its cost rises as
+accuracy improves. Bit complexity of the subsequent computation is
+separate unless explicitly included in that bound.
+
+\begin{lemma}[Certified differentiation of a local value chart]
+\label{lem:value-differences}
+Suppose $f$ has third derivative bounded by $M_3$ on $[x-t,x+t]$,
+and the three height measurements there have error at most $\epsilon$.
+Their centered first and second differences $D_1,D_2$ satisfy
+\begin{align}
+ |D_1-f'(x)|&\le M_3t^2/6+\epsilon/t,\label{eq:value-first}\\
+ |D_2-f''(x)|&\le M_3t/3+4\epsilon/t^2.\label{eq:value-second}
+\end{align}
+On a fixed smaller chart interval, finitely many height values produce
+a smooth approximation and certified uniform errors through order two
+of at most $C\nu$. It suffices to use $O(1+\nu^{-1})$ values of
+accuracy $c\nu^3$, where $C,c>0$ depend only on the chart bounds.
+\end{lemma}
+\begin{proof}
+Taylor's formula with integral remainder bounds each third-order
+remainder by $M_3t^3/6$. Subtract the two Taylor formulas for the first
+difference and add them for the second. The coefficient absolute sums
+of the measurement errors are $1/t$ and $4/t^2$, respectively. This
+proves the displayed bounds without assuming any stochastic noise model.
+
+Choose a uniform chart grid of spacing $t=c_0\nu$ inside the collar.
+Fit the quadratic polynomial through three neighboring height values.
+Its degree-two Taylor comparison at the middle point has derivative
+error at most $C M_3t^{3-j}+C\epsilon t^{-j}$ for $0\le j\le2$
+on a fixed enlargement of that cell. Patch these polynomials with a
+smooth partition of unity of bounded overlap, whose $j$th derivatives
+are $O(t^{-j})$. The product rule gives the same errors for the patched
+approximation. Taking $\epsilon\le c_1\nu^3$ proves the claim.
+The constants may be bounded from the three-node interpolation matrix,
+a fixed chosen partition, the interval length and $M_3$. Alternatively,
+\eqref{eq:value-first}--\eqref{eq:value-second} with
+$t\le\min(1,\nu/[4(1+M_3)])$ and
+$\epsilon\le\nu t^2/32$ give pointwise enclosures; the prior third
+and second derivative bounds extend them between grid points.
+\end{proof}
+
+\begin{theorem}[Value-probed construction of periodic local records]
+\label{thm:value-gates}
+On the uniform class, with the numerical priors in
+Section~\ref{sec:effective}, replace the derivative-and-arclength probe
+by the value-access model above. A finite local procedure has the
+validity and protected-return properties of Lemma~\ref{lem:probe}.
+It produces $S_N$ to error less than $\chi_*/16$ and intrinsic endpoint
+coordinates to any prescribed error $\nu>0$. The registry, physical
+hazard, finite-list certificate and stopping conclusions remain valid,
+with constants depending on the same prior and the chart-access margins.
+
+After reducing $\nu$ below fixed prior-dependent thresholds, the number
+of height or distance queries is at most $C(1+N)(1+\nu^{-1})$, each
+requiring accuracy no smaller than $c\nu^3$. In particular their total
+measurement cost is bounded by
+\begin{equation}\label{eq:value-cost}
+ P_{\rm val}(\nu)\le C(1+N)(1+\nu^{-1})V(c\nu^3).
+\end{equation}
+The large but fixed $N$ is given by \eqref{eq:eff-integers}; it is
+not a derivative order or a growing histogram dimension. This is an
+upper bound on local measurements, not a polynomial bound in the prior
+margins or in the bit complexity of analytic fitting.
+\end{theorem}
+\begin{proof}
+\emph{Local normal certification.}
+Apply Lemma~\ref{lem:value-differences} on the slightly larger
+encountered charts. The distance function between two chart points and
+its first two derivatives are continuous rational expressions in the
+chart values, their first two derivatives and the positive distance.
+The gap and chart-transversality margins therefore give certified
+$O(\nu)$ enclosures for these expressions. The normal Hessian in
+\eqref{eq:normal-hessian}, conjugated by the bounded changes from graph
+coordinates to arclength, is uniformly positive in a common neighborhood.
+Its modulus of continuity is bounded using the $C^3$ prior.
+
+One explicit existence test uses a fixed approximate inverse $B_1$ of
+the Hessian and the map $z\mapsto z-B_1\nabla D(z)$. On a small
+closed ball, interval bounds certify both a contraction factor less than
+one and that the ball maps into itself. Banach's theorem then certifies
+a unique normal point there. Interval subdivision and refinement of
+chart values make this test pass on the protected neighborhood: its true
+normal point is interior, the Hessian has a fixed positive lower bound,
+and the inverse and continuity bounds are uniform. Refinement of the
+same contraction gives a normal-point enclosure of size $O(\nu)$.
+Tests without certified slack return no record under a fixed finite
+budget. A fixed number of coarse balls covers the allowed working
+region; the refinement depth for a protected input is logarithmic in
+$1/\nu$ and is dominated by the stated grid budget. No derivative
+returned by a sensor is used in this test.
+
+\emph{Clearance and canonical coordinates.}
+The supporting-half-plane proof of the global shortest property still
+applies to the certified facing normal. Use the same finite
+1-Lipschitz distance-to-solid mesh as in Section~\ref{sec:acquisition},
+with strict error and clearance slack. Its number of queries and required
+accuracy are fixed by the prior. Endpoint collars are controlled by the
+local chart enclosures, convexity and the separation bound. Reducing
+$\nu$ makes the normal root, gap and canonical frame errors at most
+$C\nu$. On the fixed smaller canonical graph interval, nonverticality
+allows conversion of a value chart to the normal graph by one-dimensional
+monotone inversion. Uniform derivative bounds give condition numbers
+bounded by prior constants. The canonical graph values obtained from
+the approximating charts differ from their true values by at most
+$C\nu$, uniformly on the whole interval.
+
+Consequently evaluation at the fixed $N+1$ nodes on each end gives a
+fingerprint error at most $C\nu$. Reduce the working accuracy below
+$\chi_*/(32C)$, including the small error from the approximating gap.
+Theorem~\ref{thm:effective} and Proposition~\ref{prop:registry} give
+exact class and relative sign recognition. The grid used for graph
+approximation need not resolve the spacing between every fingerprint
+node: its certified uniform approximation can be evaluated at every
+node. Counting a separate refinement per node would still satisfy the
+more conservative factor $1+N$ in \eqref{eq:value-cost}.
+
+\emph{Intrinsic offsets and physical returns.}
+The arclength integrand of a graph is $\sqrt{1+(f')^2}$. It is
+1-Lipschitz as a function of $f'$ and has a bounded spatial derivative
+under the $C^2$ prior. Thus the derivative enclosures and a Riemann mesh
+of spacing $c\nu$ give its integral, from the enclosed normal point
+to each measured endpoint, with certified error $C\nu$. The uncertainty
+of that normal point and of the endpoint position contributes the same
+order. Rescale the internal tolerance to obtain the requested final
+error $\nu$. There is no supplied exact intrinsic origin or arclength
+measurement in this step.
+
+These constructions have precisely the margins used in the local
+validity test. On its protected return rectangle every branch is
+recognized, and no foreign branch is accepted; ambiguous inputs are
+rejected. Choose the histogram rectangle and a collar strictly inside
+that protected rectangle. Borderline measured endpoints can affect
+only cell-boundary bands, including the outer histogram boundary.
+The bound in Section~\ref{sec:statistics} charges those errors. The
+ideal recognition rule is translation invariant because the canonical
+values and intrinsic offsets are, while bounded nonperiodic numerical
+errors do not change the registry decision. Fresh launches therefore
+have the same positive protected-return hazard, up to reducing the
+fixed constants. The inherited inverse and certificate apply unchanged.
+
+Finally the chart grids use $O(1+\nu^{-1})$ values at accuracy
+$c\nu^3$. A fixed number of charts and clearance meshes suffices for
+a bounded-time trace. Root refinement, chart conversion and quadrature
+can all use these certified approximations; allowing additional value
+queries per fingerprint node gives the displayed conservative count.
+This proves \eqref{eq:value-cost}. Arithmetic on the approximations
+and evaluating many fingerprint coordinates are real additional work;
+the theorem's measurement bound does not suppress them in a bit-cost claim.
+\end{proof}
+
+\subsection{Tail exponents and the cost of the weaker probe}
+The stopping schedule uses a chosen $a\ge6$ throughout. If a local
+probe has cost $P(\nu)\le C\nu^{-s}$, epoch $k$ requires at most
+$Ck^{3+s}$ such work. Its execution is decided by the past, so summing
+this bound against the tail of $T_\xi$ at $k-1$ gives a finite expectation
+whenever $a>4+s$. At the fixed choice $a=6$, this argument only covers
+$s<2$; for $s=2$ its bound is a harmonic series. This is a limitation
+of that cost guarantee, not a proof that every such apparatus has infinite
+expected cost.
+
+For value access with $V(\epsilon)\le C\epsilon^{-s_v}$,
+\eqref{eq:value-cost} gives $s=1+3s_v$. Thus through epoch $m$ the
+measurement cost is $O(m^{5+3s_v})$, and the sufficient condition is
+\begin{equation}\label{eq:value-expectation}
+                       a\ge6,\qquad a>5+3s_v.
+\end{equation}
+The launch count, laboratory range and statistical powers do not change.
+Larger $a$ changes the logarithmic error-spending factors, not those
+powers. Apparatus movement, arbitrary unbounded query costs and fitting
+complexity still require their own accounts. The original stronger-probe
+result remains a separate valid specialization of the same schedule.

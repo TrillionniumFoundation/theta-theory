@@ -1,0 +1,225 @@
+\section{Local calibration from the onset probabilities}
+\label{sec:v5-calibration}
+The known-gap experiment of Theorem~\ref{thm:v4-acquisition} and an
+experiment which must calibrate that gap are different. We first compute
+the sensitivity of the former statistic, and then give a count-based
+calibration procedure whose preparation cost can be included explicitly.
+Throughout this section $m$ is fixed and $j$ is odd. Constants may depend
+on $m$ and on the compact geometric family, but not on $j$.
+
+\begin{proposition}[The harmonic timing coefficient]\label{prop:v5-harmonic}
+Let $V(d)$ denote either of the normalized physical endpoint variances
+at the chosen flight number, and let $v=V(0)$. For the programmed-offset
+normalization in Proposition~\ref{prop:v4-timing}, put $\tau=j\Delta g$.
+The extrapolated population statistic is
+\[
+ W_m(\tau)=\sum_{l=1}^m\omega_l
+                \left(1-\frac{\tau}{lh}\right)V(lh-\tau).
+\]
+Its first timing derivative satisfies
+\begin{equation}\label{eq:v5-harmonic}
+ W_m'(0)=-\frac{vH_m}{h}+O_m(1),\qquad
+ H_m=\sum_{l=1}^m\frac1l.
+\end{equation}
+The remainder is uniform in $j$. In particular extrapolation does not
+cancel the leading normalization error.
+\end{proposition}
+\begin{proof}
+Differentiate the displayed statistic to obtain
+$-\sum_l\omega_l[V(lh)/(lh)+V'(lh)]$. The uniform estimates
+$V(d)=v+O(d)$ and $V'(d)=O(1)$ reduce the leading term to
+$-v\sum_l\omega_l/lh$. The binomial identity
+\[
+ \sum_{l=1}^m\frac{(-1)^{l-1}\binom ml}{l}
+ =\int_0^1\frac{1-(1-x)^m}{x}\dd x
+ =\sum_{l=1}^m\frac1l
+\]
+proves \eqref{eq:v5-harmonic}. The last equality follows on setting
+$y=1-x$ and summing $1+y+\cdots+y^{m-1}$.
+\end{proof}
+
+\subsection{A population calibration lemma}
+Suppose that a coarse location $g_0$ is supplied with
+\begin{equation}\label{eq:v5-coarse-gap}
+                 |j(g-g_0)|\le h/4.
+\end{equation}
+This is a local bracketing assumption, not a fine calibration at scale
+$h^{m+1}/j$. The cost of locating this coarse bracket is not included
+in the experiment below. Write $\tau=j(g-g_0)$ and observe the selected
+channel at the $m+1$ programmed times $jg_0+lh$, $1\le l\le m+1$.
+Let $p_l$ be the respective probabilities. By the uniform threshold law,
+\begin{equation}\label{eq:v5-calibration-probability}
+ p_l=K_j(lh-\tau)^2F_j(lh-\tau),\qquad
+ K_j=\frac1{2A\sinh(j\gamma)}.
+\end{equation}
+All actual offsets are positive. The common factor $K_j$ is unknown
+and will not have to be estimated.
+
+Given positive approximations $\widehat p_l$, interpolate their square
+roots at $z=lh$ by a polynomial $\widehat P$ of degree at most $m$.
+If it has a unique real zero in $[-h/2,h/2]$, define $\widehat\tau$ to
+be that zero. Otherwise set $\widehat\tau=0$. This convention always
+keeps $\widehat\tau$ in the indicated interval.
+
+\begin{lemma}[Stable extrapolation of the onset zero]\label{lem:v5-calibration}
+There are $h_m,\epsilon_m>0$ such that, if $0<h\le h_m$ and
+$\max_l|\widehat p_l/p_l-1|\le\epsilon\le\epsilon_m$, then
+$\widehat P$ has exactly one zero in $[-h/2,h/2]$ and
+\begin{equation}\label{eq:v5-root-error}
+            |\widehat\tau-\tau|
+                   \le C_m(h^{m+1}+h\epsilon).
+\end{equation}
+After decreasing $h_m,\epsilon_m$, the right side is at most $h/8$.
+The assertion holds uniformly in $j$ without knowing $K_j$.
+\end{lemma}
+\begin{proof}
+Put $H_j(d)=\sqrt{F_j(d)}$. Positivity and the uniform differentiated
+threshold law give $H_j(0)=1$ and bounded right derivatives through
+order $m$. At the positive nodal arguments $d_l=lh-\tau$,
+\[
+ K_j^{-1/2}\sqrt{p_l}=d_lH_j(d_l).
+\]
+Let $Q(z)$ be the degree-$m$ Taylor polynomial obtained by multiplying
+$z-\tau$ by the degree-$(m-1)$ right Taylor polynomial of $H_j$ at zero.
+Then $Q(\tau)=0$, and $Q'(z)=1+O_m(h)$ for $|z|\le h/2$.
+Taylor's integral remainder at the positive $d_l$ shows that the exact
+nodal values differ from $Q(lh)$ by at most $C_mh^{m+1}$.
+
+For the fixed nodes $1,\ldots,m+1$, let $L_l$ be their Lagrange basis.
+On $[-1/2,1/2]$ both $\sum|L_l|$ and $\sum|L_l'|$ are bounded by
+constants depending only on $m$. Therefore interpolation of the nodal
+Taylor remainders changes the value by at most $C_mh^{m+1}$ and the
+$z$ derivative by at most $C_mh^m$ throughout $[-h/2,h/2]$.
+This argument uses Taylor coefficients and polynomial evaluation only;
+it does not evaluate a physical probability at a negative offset.
+
+If the probability errors are at most $\epsilon$ relatively, the
+square-root errors are at most $C\epsilon$ relatively. The normalized
+nodal square roots have size $O_m(h)$. The same Lagrange bounds thus
+add at most $C_mh\epsilon$ to the value error and $C_m\epsilon$ to the
+derivative error. Hence $K_j^{-1/2}\widehat P$ has derivative at least
+$1/2$ on the interval for sufficiently small $h,\epsilon$, and its value
+at $\tau$ is at most $C_m(h^{m+1}+h\epsilon)$ in absolute value.
+Since $|\tau|\le h/4$, its values at the two interval endpoints have
+opposite signs after decreasing these constants' allowed neighborhood.
+Monotonicity proves existence and uniqueness of the root and the
+mean-value theorem proves \eqref{eq:v5-root-error}. The common unknown
+positive factor does not change any zero.
+\end{proof}
+
+\subsection{Calibration and conditional recovery in one cost bound}
+\begin{theorem}[Locally self-calibrated curvature acquisition]
+\label{thm:v5-self-calibration}
+Assume the coarse bracket \eqref{eq:v5-coarse-gap}, a fixed selected
+channel, and independent full-phase preparations. For $0<h\le h_m$
+and $0<\eta<1/2$, there is an experiment with the following properties.
+It estimates the gap by $\widehat g=g_0+\widehat\tau/j$ and the two
+contact curvatures by $\widehat\kappa_b$, and, with probability at
+least $1-\eta$,
+\begin{equation}\label{eq:v5-joint-error}
+ |\widehat g-g|\le C_mh^{m+1}/j,\qquad
+ \max_b|\widehat\kappa_b-\kappa_b|\le C_mh^m.
+\end{equation}
+Its total number $T$ of unconditioned preparations, including calibration
+and conditional-position acquisition, satisfies
+\begin{equation}\label{eq:v5-joint-cost}
+ \E T\le C_me^{j\gamma}h^{-(2m+2)}\log(C_m/\eta),\qquad
+ T\le C_me^{j\gamma}h^{-(2m+2)}\log(C_m/\eta)
+\end{equation}
+with the latter bound holding together with \eqref{eq:v5-joint-error}
+with probability at least $1-\eta$. Thus for curvature accuracy
+$\varepsilon$ a sufficient preparation order remains
+\[
+       C_me^{j\gamma}\varepsilon^{-(2+2/m)}\log(C_m/\eta).
+\]
+Unlike Theorem~\ref{thm:v4-acquisition}, this statement includes the
+fine-gap calibration experiment. It still presupposes the local coarse
+bracket, fixed channel patches, and noiseless collision recording.
+\end{theorem}
+
+\begin{proof}
+For each of the $m+1$ calibration windows, start independent preparations
+until $r$ selected events have occurred. Let $T_l$ be this stopping time
+and put $\widehat p_l=r/T_l$. We record the waiting-time estimate used
+here. For independent Bernoulli trials of probability $p$,
+\begin{equation}\label{eq:v5-negative-binomial}
+ \Pr\{|(r/T_r)/p-1|>\epsilon\}
+                    \le 2e^{-c r\epsilon^2},\qquad
+ \E T_r=r/p,
+\end{equation}
+for $0<\epsilon<1/4$ and $r\ge C\epsilon^{-2}$, with absolute
+constants. Indeed $T_r>n$ is equivalent to fewer than $r$ successes
+in $n$ trials, and $T_r\le n$ is equivalent to at least $r$ successes.
+Apply the binomial exponential Markov bound at the two integers nearest
+$r/(p(1-\epsilon))$ and $r/(p(1+\epsilon))$. Rounding errors are absorbed
+by $r\epsilon\ge C$. The relative deviations of the binomial means
+from $r$ are comparable to $\epsilon$, which gives the exponential
+bound. The expectation is the sum of $r$ independent geometric waiting
+times of mean $1/p$.
+
+Choose $\epsilon=c_mh^m$ with a sufficiently small fixed $c_m$ and
+\[
+       r=\left\lceil C_mh^{-2m}\log(C_m/\eta)\right\rceil.
+\]
+Use \eqref{eq:v5-negative-binomial} and a union bound over the calibration
+windows. Except on an event of probability at most $\eta/4$, their
+relative errors are at most $c_mh^m$. Lemma~\ref{lem:v5-calibration}
+then gives $|\widehat\tau-\tau|\le C_mh^{m+1}$ and the first estimate
+in \eqref{eq:v5-joint-error}.
+
+Use fresh independent preparations for the conditional-position stage,
+at the $m$ programmed windows $j\widehat g+lh$. At each window collect
+$2K$ selected records and form the paired variance estimator of
+Proposition~\ref{prop:v3-sampling}, normalized by the programmed $lh$.
+Take
+$K=\lceil C_mh^{-2m}\log(C_m/\eta)\rceil$ and use the extrapolation
+weights \eqref{eq:v4-richardson}. Conditional on the entire calibration
+experiment, these new preparations are independent, and all the
+variance concentration bounds are uniform in the chosen windows.
+On the calibration success event,
+\[
+ \frac{j|g-\widehat g|}{h}=\frac{|\tau-\widehat\tau|}{h}
+                                                     \le C_mh^m.
+\]
+For small $h$ this is in the timing collar of
+Proposition~\ref{prop:v4-timing}. That proposition and the conditional
+concentration bound give the second estimate of
+\eqref{eq:v5-joint-error}, with a further failure probability at most
+$\eta/4$. Use a fixed compact reconstruction box enlarged slightly to
+include all the supplied nearby gap values.
+
+We check cost also outside the successful calibration event. The root
+rule always gives $|\widehat\tau|\le h/2$, whereas $|\tau|\le h/4$.
+Consequently every actual endpoint-stage offset is
+\[
+          lh+\widehat\tau-\tau\in[h/4,(m+3/4)h].
+\]
+The calibration offsets are in $[3h/4,(m+5/4)h]$. Decrease $h_m$ so
+both ranges lie in the common threshold collar. In both stages every
+success probability is bounded above and below by fixed multiples of
+$h^2e^{-j\gamma}$, uniformly over all calibration outcomes. In
+particular a failed polynomial fit cannot produce a nonpositive offset
+or an infinite waiting-time expectation. The expectation identity in
+\eqref{eq:v5-negative-binomial}, conditioning on the pilot in the second
+stage, gives
+\[
+           \E T\le C_me^{j\gamma}h^{-2}(r+K).
+\]
+For the high-probability cost, the equivalence with binomial counts and
+$\Pr\{\operatorname{Bin}(n,p)<np/2\}\le e^{-np/8}$ show that waiting
+for $r$ or $2K$ successes costs at most
+$C p^{-1}(r+K+\log(C_m/\eta))$, simultaneously over the fixed number
+of windows. These bounds also hold conditionally on the pilot, with
+the same constants. A union bound, allocating the remaining $\eta/2$
+to the waiting-time tails, proves the simultaneous assertion in
+\eqref{eq:v5-joint-cost}. Substituting $r,K$ proves its order, and
+$h=c_m\varepsilon^{1/m}$ gives the final accuracy statement.
+\end{proof}
+
+The calibration gain comes from estimating the zero of the square root
+of an onset probability, not from cancelling the nonzero harmonic
+coefficient in \eqref{eq:v5-harmonic}. The unknown area and the rare-event
+prefactor cancel in that zero. The factor $e^{j\gamma}$ nevertheless
+persists in the number of preparations needed to locate it. No minimax
+claim, independence of successive impacts, or uncharged fine timing
+measurement is used.
