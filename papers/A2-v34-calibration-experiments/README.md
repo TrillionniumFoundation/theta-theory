@@ -20,7 +20,7 @@ The journal source package contains only `main.tex`, `references.tex` and the tw
 
 ## Reproduction and actual evidence
 
-Requirements: Python 3.10+, mpmath, latexmk, amsart/Latin Modern/microtype and Poppler pdfinfo. From this directory run:
+Requirements: Python 3.10+, mpmath, NumPy and SciPy (for the retained suites), latexmk, amsart/Latin Modern/microtype and Poppler pdfinfo. From this directory run:
 
 ```sh
 PYTHONDONTWRITEBYTECODE=1 python3 tools/validate_v34.py
