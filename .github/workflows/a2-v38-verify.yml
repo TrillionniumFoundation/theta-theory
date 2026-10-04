@@ -1,0 +1,45 @@
+name: A2 v38 exact-source manuscript qualification
+on:
+  push:
+    branches:
+      - 'revision/a2-v38-*'
+      - 'review/a2-v38-*'
+    paths:
+      - 'papers/A2-v38-finite-field-rigidity/**'
+      - '.github/workflows/a2-v38-verify.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  manuscript:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Check out the triggering commit
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+          sparse-checkout: |
+            papers/A2-v38-finite-field-rigidity
+            papers/A2-v37-stationary-rigidity
+            reviews/a2-v36-external-harsh-top4-rereview-2026-10-04
+            .github/workflows
+      - name: Install the manuscript build environment
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y texlive-latex-extra texlive-fonts-recommended lmodern latexmk poppler-utils python3
+      - name: Qualify exact source, finite algebra, and the complete primary
+        working-directory: papers/A2-v38-finite-field-rigidity
+        run: python3 tools/validate_v38.py --expected-head "$GITHUB_SHA"
+      - name: Upload the exact-source evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: A2-v38-${{ github.sha }}-${{ github.run_attempt }}
+          path: papers/A2-v38-finite-field-rigidity/verification/current/
+          if-no-files-found: error
+          retention-days: 30

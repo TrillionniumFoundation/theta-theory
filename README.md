@@ -2,6 +2,20 @@
 
 This index separates the current statistical A1 submission from the dynamical and mechanical research programme. Historical manuscripts and reports remain preserved.
 
+## A2 v38: finite-field and isotropic collision rigidity
+
+**Scalar collision laws and recognition of periodic dispersing billiards**
+
+[Complete revision manuscript](papers/A2-v38-finite-field-rigidity/README.md),
+[response to the controlling referee report](papers/A2-v38-finite-field-rigidity/RESPONSE_TO_REFEREES.md),
+and [submission map](papers/A2-v38-finite-field-rigidity/SUBMISSION_MAP.md).
+The revision continues v37 without changing any historical paper or review
+source. Its new results are a fixed-stencil occupation inverse and a
+centered-displacement/isotropic extension of the full rigidity theorem.
+The new author and referee-copy branches are `revision/a2-v38-finite-field-rigidity-2026-10-04`
+and `revision/a2-v38-referee-copy-2026-10-04`. Source qualification is reported
+by the exact-SHA A2 v38 workflow; no journal decision is implied.
+
 ## Statistical A1 v36: frozen author version
 
 **Attainable information and causal compression at exponent collisions**
