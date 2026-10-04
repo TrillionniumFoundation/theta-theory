@@ -1,13 +1,3 @@
-# Independent human specialist brief — Revision 79
-
-No independent human specialist opinion has been obtained or fabricated. This is an actionable brief for the next referee. The journal objective is unchanged. R51 is the controlling report on v77; the candidate now contains v78 plus the new Section 61.
-
-Please assess the exact relation of the dimension-free interior future-use comparison and near-fair adaptive information lower bound to known measurement tomography. Then examine whether the growing-dimensional covering law with arbitrary legal centres, the public exact rational dictionary without an entrywise `d^2 log d` payload loss, and the combined query-optimal learned words occur under equivalent interfaces in prior work. The randomized prefix result expressly uses classical Fano–Kraft and public-erasure ideas; assess the operational formulation rather than novelty of these ingredients. In particular, check the unknown-parameter-independent finite coarse graining and the distinction between ideal trusted operations and efficient synthesis.
-
-Full-body endpoint entropy, the sharp fixed-dimensional independent-block law and their priority questions remain unchanged. The complete previous brief follows, as history and additional questions, not as evidence that a human review has occurred.
-
----
-
 # Independent specialist review brief — Revision 78
 
 **Status: review material prepared; independent human specialist correctness and priority judgment pending.** No outside reviewer has been contacted or commissioned. This brief is an actionable assessment packet, not an opinion, endorsement, or priority clearance. The author-side source comparison is `LITERATURE_AUDIT.md`. The complete preceding brief, including its detailed geometry/calibration/codec questions, remains at `predecessor-v77-audit/INDEPENDENT_REVIEW_BRIEF.md`.

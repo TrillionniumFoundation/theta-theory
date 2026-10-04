@@ -1,15 +1,3 @@
-# Literature audit — Revision 79
-
-The current primary-source comparison was checked against Mele–Bittel, arXiv:2512.10214v3 (15 June 2026), in its primary HTML version. Corollary III.9 and the binary operator-norm identity remain the imported estimator input, as specified in the preserved audit. The new learned-description theorem does not claim that estimator as an invention of this paper.
-
-The new contribution is a dimension-uniform operational description law on the same promised interior, an exact public rational dictionary at that rate, its one-way randomized expected-prefix variant, and joint learning/transmission in the stated ideal-control model. Norm-ball volume comparison, greedy nets, Kraft's inequality, Fano's inequality, public erasure and measurable coarsening are standard mechanisms. The paper proves their specific combination with the dimension-free future-use metric rather than attributing those mechanisms to this revision. No new literature claim that the four theorem objects are globally first is made. The nearest-neighbour priority questions remain in the human specialist brief.
-
-## Complete predecessor theorem-level audit (historical text)
-
-The following is preserved verbatim. Its claims about what was new in v78 and its date-specific checks are records of that stage.
-
----
-
 # Theorem-level literature comparison — Revision 78
 
 Current primary-source checks were made on 4 October 2026. This author-side comparison responds to **FROZEN_R51_REPORT.md**, especially Sections 6.3, 6.5 and required revisions 2, 4, 5 and 10. That report reviewed completed Revision 77 head `5650842e0bc89ca6a8b6d6730115784f0d9ecc12`. The full preceding audit is preserved as `predecessor-v77-audit/LITERATURE_AUDIT.md`, with its older predecessor comparisons intact. Original focused and complete bibliographies were copied into the matching `predecessor-v77-audit` paths before appending new entries.

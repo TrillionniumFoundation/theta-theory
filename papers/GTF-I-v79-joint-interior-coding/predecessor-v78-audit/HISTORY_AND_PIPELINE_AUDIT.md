@@ -1,29 +1,3 @@
-# History and pipeline audit — Revision 79
-
-The immediate source baseline is completed v78 `1906166f98f47f4fe387143617948766395ba186`, not the v77 object that R51 examined. Native source `f893d00e51bf008c530de6046b008a3237001f81` and successful predecessor run 37209850660 identify v78 only. The source/PDF/evidence bundle was exported from that immutable head in run 37210851902; this export is input provenance, not v79 mathematical or build qualification.
-
-Both R51 reports were read, including their proof audits, twelve required revisions, 26 detailed comments, ten risks and submission gates. The historical audit below and frozen pipeline history/ledger were used to trace the paper's development: positive causal experiments, predictive-state compatibility, common-row and reachable-section realization, compact-group thresholds, numerical/instrument precision, full effect geometry, matrix entropy, calibration, exact coding, block resources and interior learning. The present revision preserves this proof spine and does not claim a new independent reproof of every historical lemma.
-
-## New proof dependency graph
-
-`interiormetric78 -> interiorentropy79 -> interiorcodec79 -> prefixrate79`.
-
-`Mele–Bittel III.9 + interiormetric78 + interiorcodec79 -> interiorlearnedcode79`; its call lower bound imports `dimensionlower78`, whose near-fair information lemma and Fano packing remain active. The new entropy proof works directly with operator-norm balls and cancels the unit-ball volume, so no hidden dimension constant enters. The exact codec uses the inherited PSD algorithm, not the matrix midpoint modulus. The randomized lower bound has its own conditional information argument and does not reuse a fixed-decoder cardinality argument outside its scope.
-
-The proof of the learned-word theorem uses spectral clipping with a two-epsilon triangle bound, not an unjustified noncommutative operator-Lipschitz assertion. A Borel finite partition of the final measurement provides a finite classical output without asserting an exact-real side channel or efficient implementation of imported trusted operations.
-
-## Preservation and analytic programme
-
-All 360 predecessor native files are hash-bound. Every changed original is separately archived; all 61 predecessor section files are byte-identical. All 745 complete, 245 focused and 116 structural labels remain active in their respective editions. The old main/focused source files and both old editorial editions remain available. New Section 61 adds four theorem objects and a definition without moving old proofs. The structural source is unchanged.
-
-The independent graph remains `A2 -> A3 -> A4 -> C2 -> D1`, `B2-GC -> B1 -> B2-MC -> B3 -> B4 -> C1/C2 -> D1`, with A1 independent. Unsmoothed local limits, stopped-path entropy recovery, global past kernels, exact-shell conditioning, process CLT/Mosco recovery, nonlinear graph cores, filter QMD/LAN, varying-filtration response and labelled posterior contraction require their own proofs. The measurement description results do not discharge them. The five aggregate flags remain false. This preserves the historical scope instead of changing topics or discarding unresolved content.
-
-## Preserved v78 audit
-
-The complete predecessor audit follows verbatim. Its version-specific statements describe that historical stage, not the current build, source identity or external-review status.
-
----
-
 # History and pipeline audit — Revision 78
 
 ## 1. Frozen review object and source lineage

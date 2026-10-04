@@ -1,11 +1,3 @@
-# Resource ledger — Revision 79
-
-The new `revision_79_interior` entry in `RESOURCE_LEDGER.json` is controlling for Section 61. In particular, worst-record device calls, maximum fresh-block length, trusted tomography operations, exact dictionary enumeration, classical workspace, deterministic index length and randomized expected prefix length are different resources. Public randomness must be independent of the target. The default finite exact codec has no failure or public-randomness requirement. Runtime interruption produces no partial codebook. The learned-word theorem is in the ideal trusted-operation query model, not an efficient synthesis theorem.
-
-The complete predecessor resource ledger is retained below; its version-specific implementation statements refer to v78.
-
----
-
 # Resources and interfaces — Revision 78
 
 Sections 53–60 distinguish finite-use comparison, unknown-device learning, independent training-block resources, finite trusted controls and deterministic public coding. This ledger keeps their physical and computational costs separate. `RESOURCE_LEDGER.json` is its machine-readable counterpart.
