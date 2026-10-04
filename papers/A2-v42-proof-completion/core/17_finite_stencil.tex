@@ -1,0 +1,254 @@
+\section{A finite-stencil inverse and its sampling law}
+\label{sec:finite-stencil}
+The global stopping formula can be evaluated on a fixed finite set of
+nominal centers. In particular, neither its spatial aperture nor its
+forcing precision needs to grow with an iteration horizon. The finite
+inverse is an optimal stopping linear program on a known killed walk.
+Its killing boundary is computational; no assertion that the physical
+occupation vanishes on that boundary is made.
+
+Throughout this section the configuration and launch law satisfy the
+hypotheses of Section~\ref{sec:global-response}. Put
+\begin{equation}\label{eq:stencil-constants}
+ K=\max\{1,\lceil(D+\Delta)/t\rceil\},\quad
+ S=\{-K,\ldots,K\}^2,\quad M=(2K+1)^2,\quad
+ H_S=K^2+(K+1)^2.
+\end{equation}
+For a target $x$, the nominal stencil is $x+tS$. Let $Q$ be the
+substochastic compass matrix on $S$: a step leaving $S$ is killed and
+its mass is not redistributed. Write $o=(0,0)$, let $e_o$ be its unit
+coordinate vector, and set
+\begin{equation}\label{eq:stencil-green}
+ G=(I-Q)^{-1},\qquad h=G\one,\qquad
+ \mathcal M_o=\{m\ge0:(I-Q^{\mathsf T})m\le e_o\}.
+\end{equation}
+Existence of $G$ and compactness of $\mathcal M_o$ are included in the
+next lemma. For a real vector $f$ on $S$ define
+\begin{equation}\label{eq:stencil-functional}
+ \mathcal V(f)=\max_{m\in\mathcal M_o}(-f^{\mathsf T}m).
+\end{equation}
+The matrix, feasible set, and all their coefficients are independent
+of the obstacles, the launch density, and the data.
+
+\begin{lemma}[The killed stopping polytope]
+\label{lem:stencil-polytope}
+The killed compass walk exits $S$ almost surely, and
+$0<h_z\le H_S$ for every $z\in S$. The set $\mathcal M_o$ is a
+nonempty compact polytope. Its elements are precisely the expected
+continuation-visit vectors of randomized stopping rules that stop no
+later than exit from $S$. Moreover,
+\begin{equation}\label{eq:stencil-budget}
+ 0\le m_z\le G_{oz},\qquad \sum_zm_z\le h_o\le H_S.
+\end{equation}
+For every real $f$ one has the attained dual formula
+\begin{equation}\label{eq:stencil-dual}
+ \mathcal V(f)=
+ \min\{u_o:u\ge0,\ (I-Q)u\ge-f\}.
+\end{equation}
+Equivalently, $\mathcal V(f)$ is the value at $o$ of the unique
+solution $u=\max\{0,Qu-f\}$.
+\end{lemma}
+\begin{proof}
+Use lattice units and let $\tau_S$ be the first exit time. The process
+$|X_n|^2-n$ is a martingale. At $n\wedge\tau_S$ the squared norm is
+at most $K^2+(K+1)^2$. Bounded stopping, followed by monotone
+convergence, gives
+$\E_z\tau_S\le H_S-|z|^2\le H_S$. Thus exit is almost sure,
+$Q^n\to0$, and the nonnegative Green series $\sum_{n\ge0}Q^n$
+converges to $G$. Its row sums are the expected exit times.
+
+If $m_z$ counts expected continuations at $z$ and $s_z$ counts
+expected stops there, conservation of visits gives
+\[
+                 m+s=e_o+Q^{\mathsf T}m,\qquad m,s\ge0.
+\]
+Conversely, given these equations, continue at $z$ with probability
+$m_z/(m_z+s_z)$, interpreted as zero when the denominator vanishes.
+The resulting continuation transition matrix is bounded entrywise by
+$Q$ and is therefore transient. Its visit equations have a unique
+solution, namely $m+s$, so its continuation and stopping masses are
+exactly $m$ and $s$. This proves the asserted realization of every
+feasible vector; history-dependent rules satisfy the same conservation
+identities.
+
+Multiplication by the nonnegative matrix $G^{\mathsf T}$ yields
+\[
+             m=G^{\mathsf T}(e_o-s)\le G^{\mathsf T}e_o.
+\]
+Summation proves \eqref{eq:stencil-budget}, which also proves
+compactness. The zero vector is feasible. The dual feasible set is
+nonempty because $u=\|f\|_\infty h$ is feasible. Finite-dimensional
+linear programming duality gives \eqref{eq:stencil-dual} and attainment.
+The visit-measure formulation is the usual total-cost stopping
+formulation; see \cite{Altman}. The argument above states its complete
+finite-state realization in the present experiment.
+
+For completeness, finite-horizon stopping gives the increasing
+iteration $u_0=0$, $u_{n+1}=\max(0,Qu_n-f)$. Its values are bounded
+by $\|f\|_\infty h$ and converge to the stopping value. The Bellman
+map satisfies the componentwise estimate
+$|B(a)-B(b)|\le Q|a-b|$. Hence any two fixed points differ in
+absolute value by at most $Q^n$ times their original difference.
+Transience proves uniqueness. Its value at $o$ equals
+\eqref{eq:stencil-functional} by the visit representation.
+\end{proof}
+
+\begin{theorem}[Exact fixed-stencil occupation recovery]
+\label{thm:finite-stencil}
+For every target $x\in\R^2$, put $f_x(z)=g(x+tz)$, $z\in S$.
+Then
+\begin{equation}\label{eq:finite-stencil-inverse}
+                         v(x)=\mathcal V(f_x).
+\end{equation}
+Thus precisely the same finite-dimensional functional recovers the
+occupation at every point from a prior-bounded stencil. The positive
+set, footprint, density, and containing component are not inputs.
+No periodicity or boundary regularity is required.
+
+The functional is defined also for data that are not the response of
+any physical experiment. For arbitrary real vectors $f,\widetilde f$,
+\begin{equation}\label{eq:stencil-stability}
+ |\mathcal V(f)-\mathcal V(\widetilde f)|
+ \le\sum_{z\in S}G_{oz}|f_z-\widetilde f_z|
+ \le h_o\|f-\widetilde f\|_\infty.
+\end{equation}
+In particular, arbitrary measurement errors incur no factor equal to
+an iteration horizon.
+\end{theorem}
+\begin{proof}
+By the preceding lemma, $\mathcal V(f_x)$ is the supremum of
+$\E_x[-\sum_{k<\tau}g(X_k)]$ over rules stopping by exit from
+$x+tS$. Every such time has finite expectation. The martingale
+identity used in Theorem~\ref{thm:global-occupation} gives
+\[
+ -\E_x\sum_{k<\tau}g(X_k)
+                  =v(x)-\E_xv(X_\tau)\le v(x).
+\]
+If $v(x)=0$, stopping immediately attains equality. Otherwise $x$
+belongs to one expanded component $P_C$. Every point of $P_C$ lies
+within distance $D+\Delta\le Kt$ of $x$. Consequently the first exit
+from its interior occurs no later than exit from $x+tS$ along the
+compass walk. At that first exit occupation is zero, since one step
+cannot reach another positive component. This admissible stopping rule
+attains $v(x)$, proving \eqref{eq:finite-stencil-inverse}.
+
+Other components may meet the edge of the stencil, and occupation
+there may be positive. The inequality for every stopping rule and
+the equality for the containing-component exit are precisely why no
+physical zero boundary condition is needed.
+
+For every feasible $m$, \eqref{eq:stencil-budget} bounds the change
+of its objective by $\sum_zG_{oz}|f_z-\widetilde f_z|$. Taking maxima
+in both directions proves \eqref{eq:stencil-stability}.
+\end{proof}
+
+\begin{corollary}[Local scalar stability]
+\label{cor:stencil-local-stability}
+Two admissible experiments with the same stated geometric bounds,
+but possibly different configurations, footprints, and densities,
+satisfy
+\begin{equation}\label{eq:stencil-local-stability}
+ |v(x)-\widetilde v(x)|
+       \le h_o\max_{z\in S}|g(x+tz)-\widetilde g(x+tz)|.
+\end{equation}
+For a fixed experiment and every vector $a$,
+\begin{equation}\label{eq:stencil-period-defect}
+ |v(x+a)-v(x)|
+       \le h_o\max_{z\in S}|g(x+a+tz)-g(x+tz)|.
+\end{equation}
+These are local estimates on fixed nominal apertures, not whole-field
+error assumptions.
+\end{corollary}
+\begin{proof}
+Apply the same functional at the two targets or experiments and use
+\eqref{eq:stencil-stability}. The stencil matrix does not change under
+translation.
+\end{proof}
+
+\subsection{Finite observations and numerical certificates}
+The inverse gives both a finite sample law and a directly checkable
+interval for every numerical output. If
+$|f_z-\widehat f_z|\le\xi_z$ with $\xi_z\ge0$, then
+\begin{equation}\label{eq:stencil-certified-interval}
+ \mathcal V(\widehat f+\xi)\le\mathcal V(f)
+                      \le\mathcal V(\widehat f-\xi).
+\end{equation}
+This follows because $m\ge0$ in every objective. Any feasible primal
+vector supplies a lower bound and any feasible dual vector supplies
+an upper bound in \eqref{eq:stencil-dual}. Thus finite rational
+feasibility checks and a primal--dual gap certify the computed interval;
+an unverified numerical optimizer status is unnecessary.
+
+\begin{theorem}[A fixed-aperture finite occupation experiment]
+\label{thm:stencil-sampling}
+Fix $0<\varepsilon<1$ and $0<\delta<1$. At any nominal target $x$,
+there is a procedure using at most $M$ distinct nominal sites and
+\begin{equation}\label{eq:stencil-attempt-count}
+ N\le 2M\left\lceil
+       8H_S^2\varepsilon^{-2}\log\frac{4M}{\delta}
+                         \right\rceil
+\end{equation}
+attempted collision bits, whose output has error at most
+$\varepsilon$ with probability at least $1-\delta$. All sites lie
+in $x+[-Kt,Kt]^2$, independently of the target accuracy. The result
+is uniform over the unknown stationary density and convex footprint
+in the exact class, without a quantitative boundary-mass assumption.
+It remains valid conditionally at a target chosen from previous data.
+
+There are $2M$ command-labelled batches, one forward and one reverse
+per site; every batch repetition is included in $N$. Numerical
+arithmetic is separate from these observation counts. If $x$ and $t$
+are rational, all sites and both linear programs have rational data;
+no progressively finer set of nominal positions is needed for this
+occupation query.
+\end{theorem}
+\begin{proof}
+At each site use $n$ fresh attempts for each mean, where $n$ is the
+ceiling in \eqref{eq:stencil-attempt-count}, and let $\widehat f$
+be the empirical forward-minus-reverse vector. Hoeffding's inequality
+and a union bound give
+\[
+ \Prob\left\{\max_z|\widehat f_z-f_z|>
+                      \frac{\varepsilon}{2H_S}\right\}
+ \le4M\exp\left(-\frac{n\varepsilon^2}{8H_S^2}\right)
+ \le\delta.
+\]
+Indeed it suffices to estimate each of the $2M$ means to
+$\varepsilon/(4H_S)$. On this event
+\eqref{eq:stencil-stability} bounds the error of
+$\mathcal V(\widehat f)$ by $\varepsilon/2$. Compute its value to
+certified error at most $\varepsilon/2$ using the finite rational
+primal and dual programs, then project the result onto $[0,1]$.
+Projection cannot increase the error because $v(x)\in[0,1]$.
+
+Every recorded bit, including a solid start or a free miss, is an
+attempt in the displayed count. Fresh preparations give exactly the
+same bounds conditionally on previous observations. The stochastic
+walk and stopping rule are computational objects and require no
+additional physical flights. The rational coefficient and batch-count
+bit lengths grow as $O(\log(1/\varepsilon)+\log\log(4M/\delta))$
+after the rational target, step and fixed priors are specified.
+\end{proof}
+
+\begin{remark}[Aperture, interpretation, and comparison]
+\label{rem:stencil-scope}
+A bound on the absolute position of the footprint is needed only to
+translate the nominal aperture into a fixed physical launch aperture:
+forward and reverse starts lie in
+$x+[-Kt,Kt]^2+A+t\overline B$. The number $M$ may be large; its
+explicit dependence on the ratio $(D+\Delta)/t$ is not suppressed in
+\eqref{eq:stencil-constants}. For a list of adaptive targets, allocate
+conditional failure probabilities and add their batch costs. This
+pointwise occupation theorem does not turn finitely many values into
+a whole-field periodicity certificate.
+
+The iteration of Lemma~\ref{lem:stopped} and
+Corollary~\ref{cor:global-field-locality} remains valid. The present
+finite program removes the horizon-dependent amplification for noisy,
+not necessarily physically admissible, forcing. It does not replace
+the one-sided local rare event of Proposition~\ref{prop:rare-query}:
+estimating a signed occupation value and detecting a physical rare
+collision are different statistical operations. In particular the
+sharp stationary boundary power of
+Corollary~\ref{cor:stationary-minimax} is unchanged.
+\end{remark}
