@@ -1,0 +1,104 @@
+name: A2 v39 exact-source manuscript qualification
+
+on:
+  push:
+    branches:
+      - 'revision/a2-v39-*'
+      - 'review/a2-v39-*'
+    paths:
+      - 'papers/A2-v39-response-rigidity/**'
+      - '.github/workflows/a2-v39-verify.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  manuscript:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Check out exactly the triggering commit
+        id: checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+          sparse-checkout: |
+            papers/A2-v39-response-rigidity
+            papers/A2-v38-finite-field-rigidity
+            .github/workflows
+
+      - name: Install the primary manuscript build environment
+        id: install
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y texlive-latex-extra texlive-fonts-recommended lmodern latexmk poppler-utils python3
+
+      - name: Qualify the exact current source and finite diagnostics
+        id: qualify
+        working-directory: papers/A2-v39-response-rigidity
+        run: /usr/bin/python3 tools/validate_v39.py --expected-head "$GITHUB_SHA"
+
+      - name: Bind successful or failed execution evidence
+        if: always()
+        env:
+          EXPECTED_HEAD: ${{ github.sha }}
+          CHECKOUT_OUTCOME: ${{ steps.checkout.outcome }}
+          INSTALL_OUTCOME: ${{ steps.install.outcome }}
+          QUALIFY_OUTCOME: ${{ steps.qualify.outcome }}
+        run: |
+          /usr/bin/python3 - <<'PY'
+          import datetime, hashlib, json, os, pathlib, subprocess
+          out = pathlib.Path('papers/A2-v39-response-rigidity/verification/current')
+          out.mkdir(parents=True, exist_ok=True)
+          result = subprocess.run(['git', 'rev-parse', 'HEAD'], text=True,
+                                  stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+          head = result.stdout.strip() if result.returncode == 0 else None
+          receipt_path = out / 'receipt.json'
+          if not receipt_path.is_file():
+              receipt = {
+                  'schema': 'a2-v39-validation-1', 'status': 'failed',
+                  'source_commit': head, 'expected_head': os.environ['EXPECTED_HEAD'],
+                  'exact_commit_qualified': False,
+                  'error': 'The qualification command did not produce a receipt.',
+                  'checkout_outcome': os.environ['CHECKOUT_OUTCOME'],
+                  'install_outcome': os.environ['INSTALL_OUTCOME'],
+                  'qualify_outcome': os.environ['QUALIFY_OUTCOME'],
+                  'finished_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                  'formal_proof_certificate': False, 'physical_sensor_executed': False,
+              }
+              receipt_path.write_text(json.dumps(receipt, indent=2, sort_keys=True) + '\n')
+          else:
+              receipt = json.loads(receipt_path.read_text())
+          hashes = {p.name: hashlib.sha256(p.read_bytes()).hexdigest()
+                    for p in sorted(out.iterdir()) if p.is_file() and p.name != 'artifact-binding.json'}
+          binding = {
+              'schema': 'a2-v39-artifact-binding-1',
+              'expected_head': os.environ['EXPECTED_HEAD'], 'source_commit': head,
+              'github_run_id': os.environ.get('GITHUB_RUN_ID'),
+              'github_run_attempt': os.environ.get('GITHUB_RUN_ATTEMPT'),
+              'validation_status': receipt.get('status', 'receipt_invalid'),
+              'exact_commit_qualified': receipt.get('exact_commit_qualified', False),
+              'sha256': hashes,
+              'formal_proof_certificate': False, 'physical_sensor_executed': False,
+          }
+          (out / 'artifact-binding.json').write_text(json.dumps(binding, indent=2, sort_keys=True) + '\n')
+          if head != os.environ['EXPECTED_HEAD']:
+              raise SystemExit('The checkout differs from the triggering commit.')
+          if os.environ['QUALIFY_OUTCOME'] == 'success' and (
+                  receipt.get('status') != 'passed' or not receipt.get('exact_commit_qualified')):
+              raise SystemExit('The successful step did not qualify the expected commit.')
+          PY
+
+      - name: Upload receipt, logs, pinned source, and generated primary
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: A2-v39-${{ github.sha }}-${{ github.run_attempt }}
+          path: papers/A2-v39-response-rigidity/verification/current/
+          if-no-files-found: error
+          retention-days: 30
