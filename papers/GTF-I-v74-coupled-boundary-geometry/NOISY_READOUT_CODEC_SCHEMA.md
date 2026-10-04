@@ -1,0 +1,13 @@
+# Exact noisy-readout codec — Revision 73
+
+The top-level target schema is `gtf73.noisy-readout-target/1`: exactly `schema`, `visibility`, `direction`, plus optional `preparations`. Visibility and each direction component are canonical rational strings. The direction has exactly two components of squared norm one. Visibility lies in [0,1]. Optional preparations are exactly two canonical one-outcome input-dimension-one Choi instruments of equal output dimension.
+
+`encode --input TARGET --horizon N --error FRACTION` emits a `gtf73.noisy-readout-code/1` for scalar outputs. Conditional outputs additionally accept `--ranks '[r_plus,r_minus]'` and emit `gtf73.noisy-conditional-code/1`. N is a positive integer; 0<error<2. Matching lower/upper asymptotics are asserted only in the theorem's explicit small-error ranges; the upper algorithm remains valid over its larger accepted interval.
+
+For eta=1-lambda^2 define K^2=lambda^2 min(N^2,N/eta), using N^2 at eta=0. The bare grid is max(1,ceil(sqrt(16K^2/error^2))) at positive visibility. At zero visibility grid and payload are zero. The chart point for sign s and integer j in [-B,B] is s((B^2-j^2)/(B^2+j^2),2Bj/(B^2+j^2)). The index has 4B+2 slots, with a fixed chart sign convention; fixed_length_bits is ceil(log2(4B+2)). Hexadecimal is only the transport notation for this index. The encoder uses a canonical nearest-integer tie rule.
+
+The decoder validates exact field sets, canonical rational spelling, integer types excluding booleans, grid equality, body range, lowercase hexadecimal without leading zeros, bit count and the complete error certificate. Every accepted body is a legal family point. There is no floating-point positivity tolerance.
+
+The conditional wrapper allocates error/2 to readout and error/4 to each of two state N-copy codes, validates common N/ranks/dimension and charges the sum of index/factor bit lengths. It assembles input-first unnormalized Choi blocks E_y^T tensor rho_y and checks CP/TP exactly. Extra nested fields are rejected. Inherited state decoders check legality; complete target-bound `verify` additionally recomputes and compares every field, including scope strings, through canonical JSON equality. A legally decoded codeword need not match an unspecified target.
+
+`decode --input CODE` emits the canonical expanded rational Choi instrument. `verify --input TARGET --certificate CODE` succeeds only on exact canonical replay. Duplicate JSON keys, malformed inputs, noncanonical headers, altered budgets and rank understatements are errors. No command estimates an unknown quantum device, and no JSON payload specifies the physical resource cost of a universal quantum processor.
