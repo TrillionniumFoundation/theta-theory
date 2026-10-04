@@ -1,0 +1,239 @@
+\section{An information cost of a fixed common launch density}
+\label{sec:stationary-information}
+The universal one-bit converse does not measure the information lost
+through a fixed random launch spread. We now prove a stronger lower
+bound in the stationary experiment itself. Both competing tables use
+exactly the same known density and exact implementation. There is no
+table-dependent noise map. The proof combines a uniform geometric
+bound on the variation of every controlled collision probability with
+a conditional binary-channel bound. It applies to expected stopping
+times and to continuously selected adaptive commands.
+
+\subsection{Uniform contraction of short-command probabilities}
+For two periodically indexed tables with the same lattice and component
+correspondences, write
+$\epsilon=\max_i d_H(C_i,\widetilde C_i)$ in fixed laboratory frames.
+Only the physical packing from Lemma~\ref{lem:packing} will be needed;
+there is no matching problem in this definition. Let a fresh launch
+law have density $j$ of compact support in a fixed ball and
+$\|j\|_\infty\le J$. The density may be given in full to the controller.
+Let $t_{\max}$ be a fixed upper bound on command length. Constants below
+may depend on $J,t_{\max}$, the footprint envelope and the physical
+priors, but not on the command center or the number of observations.
+
+\begin{lemma}[Lipschitz contraction of collision means]
+\label{lem:mean-contraction}
+For the matched tables above and $0\le\epsilon\le1$,
+\begin{equation}\label{eq:mean-contraction}
+ \sup_{x,\,|a|\le t_{\max}}
+ \left|\int j(z)B_a^{\mathcal O}(x+z)\dd z
+       -\int j(z)B_a^{\widetilde{\mathcal O}}(x+z)\dd z\right|
+                      \le C J\epsilon.
+\end{equation}
+The same bound holds for translated reverse commands and for any
+parameter-independent mixture of these directions. It holds uniformly
+for a family of available launch densities having a common compact
+support envelope and a common $L^\infty$ bound.
+\end{lemma}
+\begin{proof}
+For convex compact bodies $A,A'$ at Hausdorff distance at most
+$\epsilon$, the inclusions
+$A\subset A'+\epsilon\overline B$ and $A'\subset A+\epsilon\overline B$,
+together with the planar parallel-area formula, give
+\begin{equation}\label{eq:symmetric-difference-area}
+ \area(A\mathbin\triangle A')
+ \le\{\operatorname{Per}(A)+\operatorname{Per}(A')\}\epsilon
+                                                   +2\pi\epsilon^2.
+\end{equation}
+The bodies and their sweeps $S_a(C)=C+[-a,0]$ have uniformly bounded
+perimeters; for example each is at most $\pi$ times its diameter.
+Minkowski addition by the same segment does not increase Hausdorff
+distance. Thus \eqref{eq:symmetric-difference-area} bounds both solid
+and swept symmetric differences by $C\epsilon$ for each matched pair.
+These are standard parallel-body facts \cite{Schneider}.
+
+Under the closed-solid convention,
+$B_a=\one_{\cup_C S_a(C)}-\one_{\cup_C C}$.
+The absolute difference of two union indicators is at most the sum
+of absolute differences of the matched member indicators. A fixed
+translate of the launch support can meet only a uniformly bounded
+number of relevant solids or sweeps: their parent components meet a
+ball of prior-bounded radius, and points selected from distinct parent
+components are $d_0$-separated. This also bounds components whose matched
+partners, rather than themselves, meet that ball. Integrate the indicator
+bound and multiply by $J$ to prove \eqref{eq:mean-contraction}.
+The estimate is uniform in $x$, so it also applies after the reverse
+translation $x\mapsto x+a$. Integrating the bound over a commanded
+mixture, or choosing among densities satisfying the same bounds,
+preserves it. The noise realization is never part of the observed bit.
+\end{proof}
+
+\subsection{A binary channel with a narrow range of means}
+All entropies and mutual informations in this section are in bits.
+Let $h_2$ denote binary entropy, with its endpoint values defined by
+continuity.
+
+\begin{lemma}[Range bound for one binary observation]
+\label{lem:binary-range}
+Let $V$ have any distribution on a finite set. Conditional on $V=v$,
+let $Y$ be Bernoulli with success probability $p_v$. Then
+\begin{equation}\label{eq:binary-range}
+                     I(V;Y)\le \max_v p_v-\min_v p_v.
+\end{equation}
+This holds without a positive lower bound on $p_v$ or $1-p_v$ and
+also holds conditional on any prior observation history.
+\end{lemma}
+\begin{proof}
+Put $a=\min_vp_v$ and $b=\max_vp_v$. Introduce $U$ uniform on $[0,1]$
+and independent of $V$, and generate $Y=\one_{\{U\le p_V\}}$.
+Revealing this auxiliary variable can only increase information. Hence
+\[
+ I(V;Y)\le I(V;Y,U)=I(V;Y\mid U)\le H(Y\mid U).
+\]
+For $U<a$ or $U>b$ the bit is deterministic independently of $V$.
+For $a\le U\le b$ its conditional entropy is at most one.
+Integration gives $H(Y\mid U)\le b-a$. A conditional distribution
+of $V$ gives the identical proof after every history. This is an
+elementary erasure comparison, not a new source-coding principle.
+\end{proof}
+
+\begin{proposition}[Stopped experiments with contracted responses]
+\label{prop:stopped-contraction}
+Consider $M$ parameters and an adaptive binary protocol with independent
+controller seed $U_0$ and almost surely finite stopping time $\mathsf T$.
+Stopping and commands are measurable from $U_0$ and preceding bits.
+Suppose, after each nonterminal history and for every permitted command,
+the possible response means lie in an interval of length at most $d$.
+Under the uniform parameter distribution, the stopped transcript $Z$
+satisfies
+\begin{equation}\label{eq:contracted-transcript}
+                         I(V;Z,U_0)\le d\,\E\mathsf T.
+\end{equation}
+If the parameters have disjoint acceptable output sets and the average
+error probability is at most $\delta<1/2$, then
+\begin{equation}\label{eq:contracted-Fano}
+ d\,\frac1M\sum_{v=1}^M\E_v\mathsf T
+                 \ge (1-\delta)\log_2M-h_2(\delta).
+\end{equation}
+An infinite expected cost satisfies the latter conclusion automatically.
+\end{proposition}
+\begin{proof}
+Condition on the independent seed. Pad the transcript with a fixed
+symbol after stopping and apply the chain rule up to time $n$.
+A stopped history contributes zero, since stopping is determined by the
+earlier history and seed. At an active history Lemma~\ref{lem:binary-range}
+bounds the conditional information by $d$. Thus the information in the
+first $n$ padded entries and the seed is at most
+$d\sum_{k=1}^n\Prob(\mathsf T\ge k)=d\E\min(n,\mathsf T)$.
+The increasing sigma fields generated by the finite padded records and
+the seed generate the stopped record. Since $V$ has a finite alphabet,
+conditional probabilities converge by the bounded martingale convergence
+theorem; continuity and boundedness of their entropy give convergence
+of the conditional entropies. Monotone convergence on the cost side
+proves \eqref{eq:contracted-transcript}. Decoding by the unique acceptable
+output set and the error-indicator entropy argument used in
+Section~\ref{sec:sequential} give
+$H(V\mid Z,U_0)\le h_2(\delta)+\delta\log_2M$.
+This proves \eqref{eq:contracted-Fano}. Input coordinates, directions,
+batch sizes and the stopping time supply no additional information:
+conditional on the seed they are functions of the same observed record.
+The launch randomness in Lemma~\ref{lem:binary-range} is an auxiliary
+comparison variable, not a new physical observation.
+\end{proof}
+
+\begin{theorem}[A stationary fixed-spread lower bound]
+\label{thm:stationary-lower}
+For each $s=6+\beta$, there is a fixed nondegenerate subclass
+$\mathcal P\subset\mathcal B_\eta$ and a single fixed, known uniform
+disk launch density with the following property. Every adaptive protocol
+using fresh draws of that same law, exact nominal centers, and collision
+bits from commands of length at most a fixed $t_{\max}$, and having
+centered component $C^2$ error at most $\nu$ with probability at least
+$1-\delta$ uniformly on $\mathcal P$, satisfies, for fixed
+$0<\delta<1/4$ and all small $\nu$,
+\begin{equation}\label{eq:stationary-lower}
+       \sup_{\mathcal O\in\mathcal P}\E_{\mathcal O}\mathsf T
+                            \ge c\nu^{-(s+1)/(s-2)}.
+\end{equation}
+The lattice, primitive orbit count, component species and the
+parameter-independent laboratory frame may all be supplied. The unknown
+actual starts are not observed. Arbitrary input precision, adaptive
+nominal centers and direction-specific short commands are permitted,
+so the lower bound applies in particular to the pooled reciprocal
+compass experiment.
+
+The same conclusion holds if the controller may choose a launch scale
+$\lambda$ in any fixed interval $0<\lambda_-\le\lambda\le\lambda_+<\infty$;
+at each chosen scale the density is the known dilation of the same fixed
+uniform disk law. It therefore also bounds the two-scale experiment even
+after the footprint and density are disclosed in full.
+\end{theorem}
+\begin{proof}
+Use the fixed lattice, fixed second obstacle, and support-bump family
+of Lemmas~\ref{lem:packing} and \ref{lem:centered-packing}.
+For every small $h$ it has $M=2^m$ parameters, $m\ge c_0/h$,
+pairwise centered $C^2$ separation at least $c_1h^{s-2}$, and
+\begin{equation}\label{eq:packing-small-Hausdorff}
+                  \max_{\omega,\omega'}d_H(C_\omega,C_{\omega'})
+                                         \le C_0h^s.
+\end{equation}
+The last assertion follows from the disjoint bump supports in
+\eqref{eq:packing}; it is a bound in the fixed laboratory frame, not
+a disclosure of a parameter-dependent translation. All other component
+copies either agree or are translates of these matched bodies.
+
+Choose a fixed $0<t_{\max}<d_0$. Choose once a disk of positive radius
+small enough that its largest allowed dilation, together with $t_{\max}$,
+obeys the strict separation margin. Its uniform density and all its
+allowed dilations have one finite common $L^\infty$ bound and a bounded
+support envelope. They also meet the stationary boundary-mass condition
+with $\gamma=0$ and a fixed known $b_0>0$. The same law is used under
+every parameter; indeed it is disclosed to the controller.
+
+Lemma~\ref{lem:mean-contraction} and
+\eqref{eq:packing-small-Hausdorff} imply that the range of every
+permitted response probability across the packing has length at most
+$d_h=C_2h^s$. This estimate is uniform over all nominal locations,
+short directions, scale choices and adaptive histories. Conditioning
+on a posterior supported on fewer parameters only shortens that range.
+Take $h$ proportional to $\nu^{1/(s-2)}$, with its fixed factor
+large enough that $c_1h^{s-2}>2\nu$. The accuracy sets are disjoint,
+and Proposition~\ref{prop:stopped-contraction} gives
+\[
+ C_2h^s\frac1M\sum_\omega\E_\omega\mathsf T
+       \ge (1-\delta)m-h_2(\delta)\ge c_3h^{-1}.
+\]
+The maximum expected cost is at least the average, proving
+\eqref{eq:stationary-lower}. If a deterministic cap is imposed, it is
+at least the same maximum expected cost. No adversarial implementation,
+change of nuisance law between parameters or uncertainty in the period
+structure was used.
+\end{proof}
+
+For a fixed class containing this packing, let $N^*_{\rm stat}(\nu)$
+be the infimum of the worst-case expected attempts at fixed confidence
+in the known uniform-disk, fixed-scale reciprocal experiment. The lower
+bound applies even to a more informative direction-controlled design;
+the upper bound of Theorem~\ref{thm:rare-stationary} uses only the pooled
+reciprocal design, with the fixed step chosen to satisfy its strict
+separation margin. Thus
+\begin{equation}\label{eq:stationary-bracket}
+ c\nu^{-(s+1)/(s-2)}
+       \le N^*_{\rm stat}(\nu)
+       \le C\nu^{-(3s/2+1)/(s-2)}\log^2(C/\nu).
+\end{equation}
+This is not a matching minimax theorem. It establishes a genuine
+polynomial information penalty for a fixed common random spread,
+beyond the universal one-bit packing bound, with a remaining gap of
+$s/(2(s-2))$ between the displayed exponents. The older upper bound
+of Theorem~\ref{thm:stationary-jitter}, with exponent $(3s+1)/(s-2)$,
+remains valid. The new local query reduces the difference of the
+upper and lower exponents by a factor of four. Neither the old factor
+$2\gamma+3$ nor the new factor $\gamma+3/2$ in a sufficient boundary
+query has been proved necessary for the full collision experiment. The lower
+bound holds at exact nominal positions; allowing unlimited coordinate
+precision cannot remove it. Conversely its constants are for a fixed
+positive spread, and the proof cannot be reused with a spread tending
+to zero as though those constants were uniform. This distinction
+separates the stationary lower bound from both the localized upper
+bound and the worst-case calibration nonidentifiability theorem.
