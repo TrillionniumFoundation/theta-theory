@@ -1,0 +1,18 @@
+# Revision 71 mathematical audit
+
+## New dependencies and checks
+
+1. `lem:multiplicity71`: one common tester, disjoint events, target success >=1-eta, unhalved trace radius delta. A centre has Q(A_i)>=1-eta-delta/2 for every assigned target, hence at most the reciprocal number of assignments. This remains valid for a legal memoryful N-slot centre. No product-state premise is used for the centre.
+2. `lem:tomography71`: b=m(dn)^2 fixed Hermitian block coordinates of the normalized flagged Choi state. Binary +/-1 outcomes have variance <=1. At k=floor(N/b) samples per coordinate, MSE<=2d^2 b^2/N. N<b uses the zero estimator. No rank floor, Gaussian limit or asymptotic normal approximation occurs.
+3. `thm:fullpacking71`: a fixed bi-Lipschitz patch, Markov concentration, and disjoint estimator balls of radius sqrt(C0/(eta N)). eta=(2-delta_*)/4 makes the multiplicity coefficient >=eta for every delta<=delta_*<2. A singleton handles coarse scales. This is not pairwise packing at distance >2delta for delta>=1.
+4. `cor:fullrange71`: combine the preceding N^(dimension/2) bound at delta>1/32 with the inherited small-error joint law. On the remaining interval log(1/delta) is bounded, uniformly in N and delta with fixed cap. The coherent N-scale law is not extended by this argument.
+5. `prop:inputretraction71`: insert one fixed CPTP idempotent input map before each call. Targets fixed by right composition are unchanged, and the centre becomes K Pi. Common tester data processing proves the radius inequality. Rank-preserving retraction is not claimed.
+6. `lem:cqmetric71`: for each slot a common quantum processor has one programme state per input row. It measures the true input, retains the conditional reference operator and selects the matching row. Unused programmes are discarded. This works under adaptive feedback and stopping. It uses dN programme states in the proof, not dN instrument calls. The pairwise upper bound is not declared exact for N>1.
+7. `lem:cqcodec71`: inherited exact singular factor encoders are applied independently in every row. Separate row normalization enforces the exact marginal. Pure programme fidelity gives squared error <=16 N sum(h_x-1)/B^2. Row masks have fixed cardinality; total free ratio-coordinate exponent is V. Rank nonincrease, zeros, denominator bounds and rational encoding follow row by row.
+8. `thm:cqentropy71`: product of local maximal-rank row charts has dimension V. The old pairwise Choi lemma proves the small-error packing; the common estimator proves the large-error part. This controls arbitrary legal centres, including ones outside the rank family. The upper construction covers real targets with rational centres; only the executable encoder restricts target data to rational input. V=0 is treated as a known singleton.
+
+## Distinctions retained
+
+The fixed-readout family has input-dependent outcomes and destroys coherence, unlike a replacer or the v70 coherent tensor family. It does not vary the readout basis or cover every entanglement-breaking map. Conditional output ranks sum to each Choi rank; they are not arbitrary independent Choi-stratum dimensions. The full-error cap is strictly below two. At radius two all legal instruments lie within one ball.
+
+The finite checker covers exact integer/rational formulas, singular and zero blocks, rank tests independent of the factor recursion, classical feedback policies, pure-programme trace errors, input-coherence rejection, metadata tampering and target replay. Those checks do not establish continuum optimality, spectral hypotheses, or independent priority. Universal claims rest on the written proofs and their stated inherited dependencies.

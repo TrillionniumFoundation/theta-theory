@@ -1,0 +1,49 @@
+name: GTF-I v80 exact-head read-only reconstruction
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v80-r51-response-2026-10-05
+    paths:
+      - papers/GTF-I-v80-resource-complete-learning/evidence/**
+      - papers/GTF-I-v80-resource-complete-learning/*.pdf
+      - GENERAL_THETA_FOUNDATIONS_I_V80_*
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: gtf80-final-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Check out the exact submitted object
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 3
+          sparse-checkout: |
+            .github
+            papers/GTF-I-v79-joint-interior-coding
+            papers/GTF-I-v80-resource-complete-learning
+          persist-credentials: false
+      - name: Install typesetting and pinned finite-arithmetic dependencies
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends python3-venv texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+          python3 -m venv "$RUNNER_TEMP/gtf80-venv"
+          "$RUNNER_TEMP/gtf80-venv/bin/pip" install --disable-pip-version-check -r papers/GTF-I-v80-resource-complete-learning/requirements.txt
+      - name: Verify ancestry, reconstruct all three documents, and rebuild the two-article journal package read-only
+        run: |
+          "$RUNNER_TEMP/gtf80-venv/bin/python" papers/GTF-I-v80-resource-complete-learning/build_revision.py --verify-published > "$RUNNER_TEMP/gtf80-FINAL_HEAD.json"
+      - name: Preserve source-bound exact-head reconstruction evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: gtf-v80-final-head-${{ github.sha }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/gtf80-FINAL_HEAD.json
+          if-no-files-found: error
