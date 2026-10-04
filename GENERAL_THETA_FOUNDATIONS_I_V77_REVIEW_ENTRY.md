@@ -4,7 +4,7 @@
 
 The focused article is **Finite-Use Geometry and Learning of Ordered Binary Quantum Measurements**, dated 4 October 2026. The complete research edition remains **General Theta Foundations I: Stochastic Realization and Finite-Use Measurement Geometry**. The subject, general mathematics journal objective, and inherited proof corpus are retained.
 
-The qualified native-source commit is **`91df620ec7b6e02a6f0fe1c7798639c2626c742b`**. The publication commit containing this entry is its direct child. Its exact-head GitHub Actions run supplies read-only reconstruction evidence; use the run whose `head_sha` equals that publication commit, rather than an earlier revision's successful run. The referee-ready branch is assigned only after this final-head verification succeeds.
+The qualified native-source commit is **`91df620ec7b6e02a6f0fe1c7798639c2626c742b`**. The candidate publication **`dadb88a90d37f18f19af1db45a89cfe2e7aad7f4`** is its direct child. The final review head adds only this clarified review entry and the matching final-head request records. The verifier checks both ancestry steps. Its exact-head GitHub Actions run supplies read-only reconstruction evidence; use the run whose `head_sha` equals the final review head, rather than an earlier revision's successful run. The referee-ready branch is assigned only after this final-head verification succeeds.
 
 ### Read in this order
 
@@ -50,7 +50,7 @@ in the stated fixed-dimensional small-error range. **Corollary 6.2** learns dire
 
 All **296** predecessor native files are pinned, and all **658** predecessor complete-edition labels remain actively typeset. The new complete edition has **707** labels. The focused article explicitly relocates 149 earlier labels into the complete research edition, preserving the full proofs. Of the 56 predecessor section files, 53 remain byte-identical; three receive the documented proof-detail and algorithm-specification revisions. No historical proof section is removed.
 
-The qualified build covers **330** native files, all three manuscripts, and **15** exact suites in ordinary and optimized Python with identical results. All typesetting diagnostics are resolved. Isolated native-source reconstruction reproduces every page's text and raster. The standalone journal reconstruction requires no historical PDF or repository history. The executed records are:
+The qualified build covers **330** native files, all three manuscripts, and **15** exact suites in ordinary and optimized Python with identical results. There are no unresolved references or citations and no overfull or underfull boxes. The raw pdfTeX logs retain font-expansion warnings; rendered-page inspection found no associated layout defect. Isolated native-source reconstruction reproduces every page's text and raster. The standalone journal reconstruction requires no historical PDF or repository history. The executed records are:
 
 - [BUILD_RECEIPT.json](papers/GTF-I-v77-operational-learning/evidence/BUILD_RECEIPT.json)
 - [JOURNAL_REBUILD.json](papers/GTF-I-v77-operational-learning/evidence/JOURNAL_REBUILD.json)
