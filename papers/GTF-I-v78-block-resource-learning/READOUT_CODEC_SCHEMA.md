@@ -1,0 +1,13 @@
+# Exact observable-readout code schema
+
+Input `gtf72.readout-target/1` has exactly `schema`, `flag`, `rows`. A flag has a positive integer `denominator` and an ordered list of d Gaussian-integer d-by-d `projectors`. Dividing by the common denominator gives mutually orthogonal Hermitian rank-one projections with sum identity. Each row is an input-dimension-one `gtf66.choi-instrument/1` state instrument, with the same quantum output dimension and number of y outcomes.
+
+Output `gtf72.observable-readout-code/1` records the public dimensions, horizon N, canonical rational unhalved error delta in (0,2), public row rank bounds, flag dimension b=d(d-1), and row dimension V. Its `flag` contains a grid, a permutation, and b signed integer digits. The chart permutation is selected by largest squared-modulus partial pivoting with first-index tie breaking. Rational projector columns are chosen at their first positive diagonal position. The b digits are the real/imaginary subdiagonal entries of the unit lower triangular factor, rounded toward zero. Each digit is in [-B_f,B_f].
+
+C_d=4d^2(2d)^(d-1). For d>1, B_f=ceil(2C_d N/delta); d=1 has no flag digits and uses B_f=1. The row grid is max(1,ceil_sqrt(64NV/delta^2)). Each row body uses the unchanged preparation factor codec, including its mask and anchor. Payload length is ceil(log2 d!)+b ceil(log2(2B_f+1)) plus row payload lengths. Public metadata, JSON punctuation and expanded Choi matrices are not substituted for this payload.
+
+The certified basis error is C_d N/B_f (zero for d=1), and the squared row error is 16N sum_x(h_x-1)/B_s^2. Each uses at most half the requested error. The covering optimality theorem uses 0<delta<=1/32; the upper encoder remains valid for larger delta<2. The known singleton may use the theorem's empty word even though the generic JSON demonstration includes an envelope.
+
+The decoder constructs successive orthogonal rank-one projections from unnormalized rational Gram--Schmidt, so it uses no square roots or numerical eigenvectors. It validates every row through the inherited exact decoder. The returned instrument has labelled outcomes (x,y), and input-first unnormalized Choi blocks transpose(P_x) tensor sigma_xy. Zero blocks and conditional ranks are preserved by encoding a valid target.
+
+Bare decoding establishes a legal mathematical instrument with validated metadata. It does not bind an unknown target. `verify` re-encodes the supplied rational target and compares the complete canonical object; a legal but changed chart digit must be rejected by this target-bound check. Expanded numerators, denominators, encoder time and workspace are separate resources. The command-line interface does not implement quantum measurement hardware or learn a device.

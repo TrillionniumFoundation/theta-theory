@@ -1,0 +1,9 @@
+# Brief for the next independent referee — Revision 73
+
+Please review the exact final commit named in GENERAL_THETA_FOUNDATIONS_I_V73_FINAL_HEAD_REQUEST.json and its three source-bound PDFs. The controlling external reports are v71/r46, not a review of the new mathematics. The v72 observable-readout and seizing proofs are completed predecessors but had no separate external report located at the start of this revision.
+
+The new proof is sections/49-noisy-readout-crossover.tex. The key questions are the exact two-point programme with adaptive reference assistance; the visibility-uniform GHZ block selection and finite Bernoulli bound; circle packing against arbitrary legal centres; rational grid legality and bit accounting; and the Cartesian lower packing with conditional rank-state coordinates. Check both lambda endpoints and noise sequences depending on N or delta. The new coherent family is restricted to a small-error interval; no full-error assertion should be inferred.
+
+The primary comparison explicitly credits noisy metrological scaling and classical simulation to Demkowicz-Dobrzanski–Kolodynski–Guta, and adaptive environment processing to Das–Wilde, Wilde–Berta–Hirche–Kaur and Wang–Wilde. Please assess equivalent finite-use family covering/rational realization formulations independently. This document is a request for that review, not a substitute for it.
+
+All predecessor labels and source files remain preserved. Exact arithmetic tests and read-only source/PDF reconstruction are available as reproduction evidence only. No author signature, independent priority clearance, editorial acceptance or A/B/C/D analytic closure is certified by this package. The complete research edition retains the prior results while the focused quantitative paper is the principal new mathematical object.
