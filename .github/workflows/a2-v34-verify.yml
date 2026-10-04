@@ -26,7 +26,10 @@ jobs:
       - name: Install the mathematical build environment
         run: |
           sudo apt-get update
-          sudo apt-get install -y texlive-latex-extra texlive-fonts-recommended latexmk python3 python3-mpmath python3-numpy python3-scipy poppler-utils
+          sudo apt-get install -y texlive-latex-extra texlive-fonts-recommended latexmk python3 python3-mpmath python3-numpy python3-scipy python3-shapely poppler-utils
+      - name: Check all numerical dependencies before qualification
+        run: |
+          /usr/bin/python3 -c 'import mpmath, numpy, scipy, shapely; print({m.__name__: m.__version__ for m in (mpmath, numpy, scipy, shapely)})'
       - name: Qualify current proofs and the preserved archive
         working-directory: papers/A2-v34-calibration-experiments
         run: /usr/bin/python3 tools/validate_v34.py --require-checkout --expected-commit "${{ github.sha }}"
