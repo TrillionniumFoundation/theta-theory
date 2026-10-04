@@ -1,0 +1,159 @@
+\section{Fourth-order confidence geometry}
+\label{sec:compensated}
+The positive smoothing kernel in Section~\ref{sec:clouds} uses only a
+third-derivative bound. The class of Definition~\ref{def:prior} has six
+bounded derivatives. Exploiting those derivatives reduces both the number
+of geometric launches and the localization precision required by the
+same certificate. No additional observation or regularity assumption is
+introduced. The positive-kernel construction remains available under its
+weaker local smoothness hypothesis.
+
+Let $\varphi$ be the even kernel in Section~\ref{sec:clouds}, and define
+\begin{equation}\label{eq:comp-kernel}
+ K_h=\tfrac43\varphi_h-\tfrac13\varphi_{2h},\qquad 0<h\le\tfrac12.
+\end{equation}
+The periodic rescalings have support in an interval of radius $2h$ before
+periodization. This is a signed kernel. Its zeroth moment is one and its
+moments of orders one, two and three are zero. Indeed the odd moments
+vanish by symmetry, while the second moments of $\varphi_h$ and
+$\varphi_{2h}$ are in the ratio $1:4$.
+
+\begin{lemma}[Compensated support approximation]\label{lem:comp-smoothing}
+Let $p$ be a periodic support function with $\|p\|_{C^6}\le B_6$, and
+suppose $\|p_P-p\|_\infty\le e$. With
+$C_\varphi=1+\|\varphi'\|_1+\|\varphi''\|_1$ and
+$\widetilde p=K_h*p_P$, one has
+\begin{equation}\label{eq:comp-bound}
+ \|\widetilde p-p\|_{C^2}
+       \le 2C_\varphi e h^{-2}+B_6h^4.
+\end{equation}
+Here the $C^j$ norm is the maximum of the sup norms of derivatives
+through order $j$. If the right side is less than $1/(4\kappa_+)$
+and $p+p''\ge1/\kappa_+$, then
+$\widetilde p+\widetilde p''>1/(2\kappa_+)$. In particular the
+signed correction still defines a regular strictly convex closed curve.
+\end{lemma}
+\begin{proof}
+For $0\le j\le2$,
+\[
+ \|K_h^{(j)}\|_1\le
+ \left(\tfrac43+\tfrac13\,2^{-j}\right)
+       h^{-j}\|\varphi^{(j)}\|_1\le 2C_\varphi h^{-2}.
+\]
+This proves the noise term without differentiating the polygonal support
+function. Apply Taylor's formula of degree three to $p^{(j)}$.
+The moment identities cancel every nonconstant polynomial term. The
+absolute fourth moment is bounded by
+\[
+ \int |t|^4|K_h(t)|\,\dd t
+ \le \left(\tfrac43+\tfrac{16}3\right)h^4
+                            \int u^4\varphi(u)\,\dd u
+ \le \tfrac{20}3h^4.
+\]
+The remainder is consequently bounded by
+$(20/72)B_6h^4\le B_6h^4$, including $j=2$.
+The periodic statement follows by using the periodic lift of $p$ in
+this local Taylor calculation. Finally, the errors of $p$ and $p''$
+add to at most twice the displayed $C^2$ bound. The positive lower bound
+for the radius of curvature proves strict convexity and regularity.
+Convexity here follows from this inequality, not from averaging convex
+bodies with positive coefficients.
+\end{proof}
+
+\begin{theorem}[Reduced geometric launch budget]\label{thm:comp-probe}
+Use the full $C^{6,\beta}$ class of Definition~\ref{def:prior}. The
+outputs and conditional confidence guarantee of
+Theorem~\ref{thm:probe-main} can instead be obtained with
+\begin{equation}\label{eq:comp-probe}
+ C\nu^{-3/4}\log\frac{C}{\nu\zeta}
+\end{equation}
+auxiliary launch attempts and impact-position error tolerance at most
+$c\nu^{3/2}$. The constants depend only on the same numerical priors.
+Neither an analytic continuation constant nor a boundary-query oracle
+is used. Deterministic convolution and quadrature errors are included
+in the geometric error budget; their arithmetic work is not included
+in the launch count.
+\end{theorem}
+\begin{proof}
+Translate the cloud by one of its measured seeds. One may take
+$B_6=2+M_6+2D_0$ for the true support in this frame. For all sufficiently
+small $\nu$, use
+\begin{equation}\label{eq:comp-choices}
+ \begin{gathered}
+ h=(\nu/(8B_6))^{1/4},\qquad
+ E_\nu=\frac{\nu h^2}{128C_\varphi},\\
+ q=\min\{d_0/80,1/2,\pi/(2\kappa_+),
+                         \sqrt{E_\nu/(4\kappa_+)}\},\\
+ \varepsilon_x\le\min\{E_\nu/8,q/20,d_0/200\}.
+ \end{gathered}
+\end{equation}
+The remaining bounded range uses the smaller fixed thresholds. The
+confidence hull of Lemma~\ref{lem:cloud} has error
+$e_q\le E_\nu/4$. Equation~\eqref{eq:comp-bound} gives
+\[
+ 2C_\varphi e_qh^{-2}+B_6h^4
+                 \le\nu/256+\nu/8.
+\]
+Allow an additional $\nu/16$ for numerical convolution and integration.
+The total is below $\nu/4$. For small $\nu$ the preceding lemma
+therefore supplies a strictly convex support function, and the intrinsic
+coordinate, normal-root, fingerprint and clearance arguments apply with
+the same errors. Distance-to-solid enclosures continue to use the original
+hulls and \eqref{eq:distance-cloud}, rather than an unjustified
+monotonicity of the signed reconstruction.
+
+In the asymptotic range $E_\nu=c_1\nu^{3/2}$ and
+$q=c_2\nu^{3/4}$. Substitution into the exact first-hit coverage budget
+\eqref{eq:sample-budget} proves \eqref{eq:comp-probe}. These are
+attempts, including solid initial positions and no-impact trajectories.
+The confidence argument is unchanged after conditioning on any preceding
+history: the square and bodies are fixed and the auxiliary launches are
+fresh. Every new smoothness bound used here is already supplied by
+Definition~\ref{def:prior}. No differentiability of the noisy hull is
+assumed.
+\end{proof}
+
+\begin{corollary}[Reduced total launch cost]\label{cor:comp-work}
+In Theorem~\ref{thm:main}, replace each positive-kernel cloud call by
+Theorem~\ref{thm:comp-probe}, keeping the same raw proposals, fresh
+validation, error spending and schedule \eqref{eq:schedule}.
+The anytime certificate, the stopping tail \eqref{eq:tail-main} and
+the certified reconstruction error are unchanged. The cumulative launch
+bound improves from \eqref{eq:cost-main} to
+\begin{equation}\label{eq:comp-work}
+ C(m+1)^{19/4}\log\frac{C(m+1)}{\delta},
+\end{equation}
+with the same separate rejection-tail allowance. Impact localization
+need only satisfy $\varepsilon_{x,k}\le c\nu_k^{3/2}$.
+The expected total number of launches up to $T_\xi$ is finite whenever
+the spending exponent satisfies $a>19/4$ and the retained validity
+conditions hold; in particular every stipulated $a\ge6$ suffices.
+\end{corollary}
+\begin{proof}
+There are at most $C_1(k+1)^3$ clouds at epoch $k$.
+The schedule gives $\nu_k^{-3/4}\le C(k+1)^{3/4}$ in the small-error
+range, and
+$\log(C/(\nu_k\zeta_{k,j}))\le C\log(C(k+1)/\delta)$.
+Thus the epoch budget is
+$C(k+1)^{15/4}\log(C(k+1)/\delta)$, including the smaller expected
+primary-rejection cost. Summation gives \eqref{eq:comp-work} and the
+same rejection event as before. No probability argument in
+Section~\ref{sec:sequential} depends on the internal smoothing choice:
+it uses only genuine uniform geometric enclosures, conditional failure
+allowances and deterministically capped call counts, all retained here.
+
+The event that epoch $k$ is executed is measurable before its fresh
+randomness. Multiplying the conditional expected epoch cost by the tail
+bound at $k-1$ gives a convergent series because
+$15/4-a<-1$. The exponentially decaying witness term is summable as well.
+The finitely many early epochs contribute a finite amount. Localization
+work, apparatus travel and geometric postprocessing remain distinct from
+the launch count; no polynomial bit-complexity or minimax claim follows.
+\end{proof}
+
+The order reduction is a consequence of the already stated smoothness,
+not a stronger identifiability assumption. In particular the original
+third-derivative confidence construction and all of its bounds remain
+valid. The sharper implementation records explicitly where the six
+bounded derivatives improve acquisition rather than being used only for
+the regularity of the endpoint density.

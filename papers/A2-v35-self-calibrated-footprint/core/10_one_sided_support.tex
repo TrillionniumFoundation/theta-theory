@@ -1,0 +1,312 @@
+\section{One-sided support queries from pooled collision bits}
+\label{sec:one-sided}
+The high-accuracy occupation query estimates a difference of two means.
+For boundary location this is not always necessary. On a short line
+outside an expanded component, the forward collision probability itself
+has a known zero side. Randomizing the nominal center along that line
+turns detection of a positive response into a one-sided support query.
+The four-direction law is unchanged and its realized direction remains
+unobserved. Only the spatial commands are redesigned.
+
+Put $\alpha=\gamma+3/2$. In this section choose the fixed dyadic
+compass step sufficiently small that
+\begin{equation}\label{eq:line-step}
+                  8t+\overline d_K<d_0,
+\end{equation}
+where $\overline d_K$ is a known upper bound for $\diam K$ strictly
+less than $d_0$. This is a choice of control at a fixed prior scale,
+not a shrinking flight length. It is available whenever the footprint
+has the separation required for a stationary experiment. The earlier
+results remain valid for their larger range of steps.
+
+\subsection{Coarse support frames}
+Write $P=C+(-K)$ and $p=p_P^{\rm lab}$. For a unit normal
+$n=n(\theta)$ its support point is
+$z_P(n)=p(\theta)n+p'(\theta)n^\perp$. The coarse acquisition and
+interpolation already proved supply, at any prescribed sufficiently
+small \emph{fixed} tolerance, a support approximation in $C^1$ and
+hence approximate support points uniformly in $n$. To justify this
+without presupposing the new query, apply Proposition~\ref{prop:jitter-query}
+and Lemmas~\ref{lem:coarse}--\ref{lem:radial} at fixed numerical scales.
+Their cost depends on the tolerance and the priors, but not on the
+subsequent accuracy $e$. The construction concerns $P$ alone and uses
+only bounds for $K$, not evaluations of its support function. It works
+also for a single isolated reference body in a calibration scene.
+
+The components $P$ are separated by at least
+$g_*=d_0-\overline d_K>8t$. Choose small constants $b,w>0$, and a
+coarse error smaller than both, as follows. All line segments below
+must lie within distance $t+b+3w$ of their designated support point,
+with $t+b+3w<g_*-t$. Require also $3w<t/(2\sqrt2)$.
+If $r_P>0$ is a common interior rolling radius for the expanded
+bodies, reduce $w$ so that $3w<r_P/4$ and
+$\sqrt{3r_Pw}/2<b/4$. Obtain a coarse support approximation
+$\widetilde p$ with
+$\|\widetilde p-p\|_{C^1}<\min(w/4,b/4)$, reducing constants further
+when needed. All these choices are at fixed prior scales.
+
+Let $\mathcal D=\{te_1,-te_1,te_2,-te_2\}$. For each $n$ choose
+one maximizer $a_*(n)$ of $-a\cdot n$ over $a\in\mathcal D$ and set
+\begin{equation}\label{eq:compass-support}
+ m(n)=-a_*\cdot n=t\max(|n_1|,|n_2|)\ge t/\sqrt2,
+ \qquad s_P(n)=p(n)+m(n).
+\end{equation}
+A tie is resolved by a fixed ordering; no geometric sign information
+is supplied by this choice. Set
+$u_0(n)=\widetilde p'(\theta)-a_*\cdot n^\perp$.
+At level $r$, draw a controller variable $U$ uniformly on $[-b,b]$
+and use the nominal center
+\begin{equation}\label{eq:line-command}
+             X=r n+(u_0(n)+U)n^\perp.
+\end{equation}
+At this center execute the usual forward command with independent
+$Z\sim j$ and $a\sim\rho$. Let $q_P(r,n)$ be the mean of its one
+returned bit. The normal, line, and nominal center are controller
+inputs; neither the actual start nor the random compass direction is
+observed.
+
+\begin{lemma}[A zero-side support response]\label{lem:line-response}
+On the fixed bracket
+$|r-(\widetilde p(n)+m(n))|\le w$, there are uniform constants $c,w_1>0$
+such that
+\begin{align}
+ r>s_P(n)&\quad\Longrightarrow\quad q_P(r,n)=0,
+                                               \label{eq:line-zero}\\
+ 0<d=s_P(n)-r<w_1&\quad\Longrightarrow\quad
+                q_P(r,n)\ge c d^{\gamma+2}.     \label{eq:line-mass}
+\end{align}
+The bracket is chosen to lie in the stated collar. Other components
+contribute no collisions to these commands. The assertions hold at
+compass ties and uniformly over the unknown density class.
+\end{lemma}
+\begin{proof}
+A collision with another component $D$ would require
+$X\in P_D+[-a,0]$. But $X$ lies within $t+b+3w$ of the chosen
+point of $P$, while $P_D$ is at distance at least $g_*$ from $P$.
+The preceding constants make $\dist(X,P_D)>t$ for every possible
+center on the line. Thus neither a start in $D$ nor a collision with
+$D$ is possible.
+
+For any $z\in K$, any $a\in\mathcal D$ and $0\le\lambda\le1$,
+\[
+ (X+z+\lambda a)\cdot n
+ \ge r-p_{-K}(n)-m(n)
+   =p_C^{\rm lab}(n)+r-s_P(n).
+\]
+If $r>s_P(n)$, the entire attempted segment lies beyond a supporting
+line of $C$. This proves \eqref{eq:line-zero} pointwise. On the
+interior side, $r=s_P(n)-d$ with $d<3w$, every start satisfies
+\[
+ (X+z)\cdot n\ge p_C^{\rm lab}(n)+m(n)-d
+                         >p_C^{\rm lab}(n).
+\]
+Every start is therefore free. Conditional on the single compass
+choice $a=a_*$, an endpoint $X+z+a_*\in C$ necessarily produces a
+hit. Consequently
+\begin{equation}\label{eq:line-positive-bound}
+       q_P(r,n)\ge\frac14\E_U v_j(X+a_*).
+\end{equation}
+No independent direction-resolved mean is being measured: the factor
+$1/4$ is a lower bound for one contribution to the same pooled bit.
+
+Now $X+a_*$ has normal coordinate $p(n)-d$ and tangential coordinate
+$\widetilde p'(\theta)+U$. The disk of radius $r_P$ centered at
+$z_P(n)-r_Pn$ lies in $P$. When
+\[
+ |\widetilde p'(\theta)+U-p'(\theta)|
+                            \le\tfrac12\sqrt{r_Pd},
+\]
+the distance of $X+a_*$ from the boundary of this disk is at least
+$d/2$, for $d$ below the chosen fixed threshold. Indeed
+$(r_P-d)^2+r_Pd/4\le(r_P-d/2)^2$ for $d\le r_P$.
+The entire displayed interval of $U$ lies in $[-b,b]$ by the coarse
+reserve and the choice of $w$. Its uniform probability is at least
+$c_1\sqrt d$. Lemma~\ref{lem:cap-mass} gives
+$v_j(X+a_*)\ge c_2d^\alpha$ on that interval. Substitution in
+\eqref{eq:line-positive-bound} proves
+$d^{\alpha+1/2}=d^{\gamma+2}$. This argument uses any maximizing
+$a_*$ and therefore includes ties. Boundary conventions cause no
+ambiguity in the strict zero side or the interior lens.
+\end{proof}
+
+\subsection{Detection, interpolation and the sample exponent}
+\begin{proposition}[One-sided finite detection]\label{prop:line-query}
+For each line bracket, $0<e<e_0$ and conditional failure allowance
+$0<\varepsilon<1/4$, at most
+\begin{equation}\label{eq:line-query-cost}
+                 C e^{-(\gamma+2)}\log(C/\varepsilon)
+\end{equation}
+forward attempts give a label that is correct for $r>s_P(n)$ and
+$r<s_P(n)-e$, with conditional probability at least $1-\varepsilon$.
+A label is unrestricted in the remaining layer. Only the pooled bit
+is used. Dyadic nominal centers with error $O(e)$ enlarge the layer
+to $O(e)$ without changing this order.
+\end{proposition}
+\begin{proof}
+Return one if at least one hit occurs in the prescribed batch, and
+zero otherwise. A true zero response produces no hit. If
+$q_P(r,n)\ge c e^{\gamma+2}$, the probability of no hit in $M$
+independent attempts is at most
+$(1-q_P)^M\le\exp(-cMe^{\gamma+2})$.
+This proves \eqref{eq:line-query-cost} and the conditional assertion
+with fresh preparations. In particular, an estimate of two means to
+absolute error $e^{\gamma+3/2}$ is not required.
+
+For an explicitly finite control law, replace $U$ by a uniform choice
+on a power-of-two grid in $[-b,b]$ with spacing at most $c_3e$.
+Every interval of length $c_1\sqrt d$ in the proof, for $d\ge e$,
+still receives mass at least $c_4\sqrt d$. Round each nominal center
+with Euclidean error at most $c_5e$. Its normal coordinate moves by
+at most that amount, so the zero assertion holds beyond the enlarged
+layer. On a shorter tangential interval the perturbed endpoint remains
+in $P_{-c_6d}$, giving the same lower bound. This is a geometric
+argument and asks for no upper or derivative bound on $j$. Certified
+normal and support-frame evaluations of error $O(e)$ are absorbed in
+these reserves. The fixed compass displacement itself remains exact.
+\end{proof}
+
+\begin{theorem}[An improved fixed-spread upper bound]
+\label{thm:line-reconstruction}
+For the stationary experiment on $\mathcal B_\eta$, with known
+footprint $K$ and the step chosen as in \eqref{eq:line-step}, there is
+a finite controller independent of $j$ giving the same geometric and
+primitive discrete conclusions as Theorem~\ref{thm:stationary-jitter},
+with probability at least $1-\delta$, and using at most
+\begin{equation}\label{eq:line-total}
+ C\nu^{-((\gamma+2)s+1)/(s-2)}
+                   \log(C/\nu)\log(C/(\nu\delta))
+\end{equation}
+attempted bits. For $\gamma=0$ the power is $(2s+1)/(s-2)$.
+The initial coarse phase uses reciprocal commands; the fine phase
+uses forward pooled commands with randomized nominal centers on short
+lines. The footprint remains fixed. Nominal precision is
+$O(\nu^{s/(s-2)})$ and no additional arbitrary position, angle or
+flight-time error is allowed in this stationary model.
+
+There are $O(h^{-1}\log(C/h))$ line-test batches, where
+$h\asymp\nu^{1/(s-2)}$. These are not that many distinct centers:
+with $e\asymp h^s$ the finite tangential grids have at most
+$C h^{-1}e^{-1}\log(C/h)$ possible centers, and at most one center
+command is issued per attempted bit. The bound prices attempts,
+not apparatus travel, footprint manufacture or numerical bit operations.
+It is an improved upper bound, not a stationary-noise minimax theorem.
+\end{theorem}
+\begin{proof}
+Condition on successful coarse frames. For $m\asymp h^{-1}$ equally
+spaced normals, bisect the scalar support bracket with
+Proposition~\ref{prop:line-query} at $e=c h^s$.
+The relaxed bisection invariant of Lemma~\ref{lem:bisection} applies
+to the threshold $s_P(n)$ exactly as it did to a radial value; no
+monotonicity inside the layer is used. Subtract the \emph{known}
+number $m(n)$ from each returned value. This supplies values of the
+smooth support function $p_P$ with error $O(e)$. The function $m(n)$
+need not be differentiable at compass ties: subtraction is done on
+the sample values before interpolation, not after differentiating an
+estimated nonsmooth envelope.
+
+The degree-six interpolation and partition argument in
+Lemma~\ref{lem:radial} applies directly to support functions. It gives
+\[
+ \|\widehat p_P-p_P\|_{C^j}
+      \le C(h^{s-j}+eh^{-j}),\qquad 0\le j\le3.
+\]
+Subtract $p_{-K}$ and retain the positive curvature margin. The result
+is an actual smooth convex output after the disclosed finite smoothing
+in Theorem~\ref{thm:stationary-jitter}; the latter costs no new
+collision bits. Its support error is $O(h^{s-2})$ in $C^2$ and
+$O(h^s)$ in supremum norm. Apply Lemma~\ref{lem:locking} to these
+original components. Exact rational relations and orbit counts are
+then correct, while real generators and free area remain estimates.
+
+The fixed coarse phase costs a prior-dependent multiple of
+$\log(C/\delta)$. The fine phase uses at most
+$Q_h=C h^{-1}\log(C/h)$ batches. Allocate each conditional failure
+allowance $\delta/(2Q_h)$ and reserve $\delta/2$ for coarse recovery.
+The union bound and \eqref{eq:line-query-cost} give
+\[
+ N\le C h^{-1}e^{-(\gamma+2)}
+                           \log(C/h)\log(C/(h\delta)).
+\]
+Substitute $e=c h^s$ to obtain \eqref{eq:line-total}. Every launch,
+including unsuccessful batches and solid starts in the coarse phase,
+is charged. The nominal-grid and command counts follow from the
+power-of-two tangential grid in each batch. Normal approximations with
+error $O(e)$ change the sampled support values by $O(e)$ on the bounded
+laboratory aperture, hence fit the same interpolation reserve. This
+also supplies a finite dyadic description of each issued command.
+\end{proof}
+
+The gain is specific and does not imply that the old occupation
+estimator has smaller variance. A zero-side response is detected at
+cost inverse in its mean. Tangential randomization adds one half to
+the lens exponent, yielding $\gamma+2$ instead of $2\gamma+3$ in
+the fine-scale cost. The algorithm uses additional spatial command
+locations and does not establish optimality. The two constructions
+remain useful distinct inverses in the same pooled-bit information
+category.
+
+\subsection{A matching cost for a fixed support-line test}
+\begin{proposition}[Physical depth exponent for one line]
+\label{prop:line-depth-sharp}
+There are disk components and one common stationary launch density
+satisfying the stated footprint class for which the pooled line response
+at inward depth $e$ has probability comparable to $e^{\gamma+2}$,
+whereas at the support level it has probability zero. A procedure that
+uses only repeated independent trials of this fixed line command and
+distinguishes these two alternatives with error at most
+$0<\delta<1/4$ in each world must use, under a deterministic sample cap,
+at least
+\[
+                         c e^{-(\gamma+2)}\log(1/\delta)
+\]
+attempts. This is a lower bound for the stipulated line experiment,
+not for controllers that may choose other lines or arbitrary commands.
+\end{proposition}
+\begin{proof}
+Take a disk of radius $r>0$, a footprint disk of radius $R>0$, and
+\[
+ j(z)=c_\gamma(R^2-|z|^2)^\gamma\one_{|z|<R},\qquad
+              c_\gamma=\frac{\gamma+1}{\pi R^{2\gamma+2}}.
+\]
+The density is normalized and satisfies the required boundary-distance
+lower bound. Use $n=e_1$ and the line with first coordinate
+$r+R+t-e$. For small $e<t$, every direction except $-te_1$ misses
+because the entire segment has first coordinate greater than $r$.
+Starts are free. For direction $-te_1$, the endpoint has first
+coordinate at least $r-e>0$, so the segment hits precisely when its
+endpoint is in the disk. Taking the tangential interval long enough
+to include this shrinking contact lens gives
+\[
+ q(e)=\frac{c_\gamma}{8b}
+ B\!\left(\frac12,\gamma+1\right)
+ \int_0^e (2Rw-w^2)^{\gamma+1/2}
+                 2\sqrt{2r(e-w)-(e-w)^2}\,\dd w.
+\]
+Here $B$ is the beta integral. Scaling $w=ev$ bounds the integral
+above and below by positive multiples of $e^{\gamma+2}$; the
+remaining beta integral is finite and strictly positive. At $e=0$
+the probability is zero. Placing identical disks on a sufficiently
+widely spaced lattice yields physical periodic examples with the
+other components outside the protective command aperture. The two
+alternatives can be realized by translating that table by $en$ while
+holding the reference line and the common noise law fixed.
+
+The lower bound remains valid when the tangential controller draws
+are recorded. Couple those independent draws and all parameter-independent
+test randomness in the two worlds. Under the zero alternative every bit
+is zero. Conditional on the draws, let $w$ be the probability of the
+all-zero word under the positive alternative, and let $\phi$ be the
+probability that the test accepts the positive alternative on this word.
+Then $0\le w\le1$ and $\E\phi\le\delta$, while
+$\E w=(1-q(e))^M$ for $M$ independent repetitions of the same line
+experiment. Its error under the positive alternative is at least
+\[
+ \E[(1-\phi)w]\ge (1-q(e))^M-\delta.
+\]
+Uniform error at most $\delta$ implies $(1-q(e))^M\le2\delta$.
+For small $e$, $-\log(1-q(e))\le2q(e)\le C e^{\gamma+2}$,
+which proves the bound for $0<\delta<1/4$.
+A procedure with a deterministic cap and earlier stopping can be
+padded with unused independent bits; the same argument still applies.
+The lower bound deliberately excludes changing the command location.
+\end{proof}
