@@ -125,7 +125,7 @@ The retained deterministic-cap lower bound has the same power in `nu`, up to log
 Version 33 adds:
 
 - a finite dyadic command and output encoding;
-- an expected-stopping lower bound of order `nu^{-1/(s-2)`;
+- an expected-stopping lower bound of order `nu^{-1/(s-2)}`;
 - a centered-gauge proof for the packing; and
 - a worst-case calibration necessity of order `nu^{s/(s-2)}`.
 
