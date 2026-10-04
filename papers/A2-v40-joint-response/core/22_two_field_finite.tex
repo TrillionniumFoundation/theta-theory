@@ -1,0 +1,600 @@
+\section{Finite geometry from the same two fixed flights}
+\label{sec:two-field-finite}
+The two-field inverse has a finite realization which keeps both the
+flight length and the two flight directions fixed.  Its statistical
+step estimates three geometric supports.  Collision locations are not
+observed: every point used in a sampled hull is a commanded nominal
+center at which the recorded bit was one.  Positivity permits these
+same observations to serve all support directions.
+
+Throughout this section $s=6+\beta$, the obstacles have the bounds
+\eqref{eq:two-field-geometric-priors}, and the unknown footprint and density obey
+\begin{equation}\label{eq:two-field-finite-priors}
+ \begin{gathered}
+ \diam A\le\Delta<d_0,\qquad
+ \|p_A^\circ\|_{C^{6,\beta}}\le M_A,\\
+ 0<r_A^-\le p_A^\circ+(p_A^\circ)''\le r_A^+,
+ \qquad j(z)\ge b_0\dist(z,\partial A)^\gamma
+       \quad\hbox{for a.e. }z\in A,
+ \qquad \gamma\ge0.
+ \end{gathered}
+\end{equation}
+No density upper bound, continuity modulus, or density evaluations are
+supplied.  Fix a dyadic $t>0$ with $2t+\Delta<d_0$, put $a=te_1$,
+and use only the two ordinary forward commands $a$ and $-a$.
+The unknown law is identical in every attempt.  Write
+$P_C=C+(-A)$, $a_0=s(A)$, and $A_0=A-a_0$.
+The width of $A$ need not be smaller than an obstacle width.
+
+\subsection{Two-direction boundary acquisition}
+The prefix inverse in Lemma~\ref{lem:two-field-prefix} already provides
+a finite occupation query.  Put
+\[
+ K=1+\left\lceil (D_0+\Delta)/t\right\rceil.
+\]
+At a target $x$ its input consists of $2K$ mean values, with nominal
+centers on $x+\{0,a,\ldots,Ka\}$.  If every mean has error at most
+$\xi$, the computed prefix maximum has error at most $2K\xi$.
+Hoeffding's inequality therefore estimates $v(x)$ to error $\eta$
+with at most
+\begin{equation}\label{eq:two-field-occupation-cost}
+ C K^3\eta^{-2}\log\frac{CK}{\varepsilon}
+\end{equation}
+attempted bits and conditional failure probability at most
+$\varepsilon$.  Constants and integer ceilings are understood.
+This bound is uniform over the unknown law, and its aperture is fixed.
+The coarse threshold uses the known boundary-mass lower bound.
+Fix a small prior-dependent depth $d_*>0$ and put
+$\lambda=c d_*^{\gamma+3/2}$, using the uniform cap-mass constant
+in Lemma~\ref{H-lem:cap-mass}.  Estimate $v$ to error
+$\lambda/4$ and retain a grid node when its estimate is at least
+$\lambda/2$.  Nodes outside all $P_C$ are discarded, and every
+node in $(P_C)_{-d_*}$ is retained.  This is the boundary-layer label
+needed in the proof of Lemma~\ref{H-lem:coarse}; its fixed grid,
+clustering, interior-ball construction and isolated radial brackets
+therefore apply to $P_C$.  The cap-mass estimate is uniform under
+\eqref{eq:two-field-finite-priors}, so this construction does not
+require knowledge of $A$.
+
+The following refinement uses only the two prescribed directions, even
+where they are tangent to the expanded boundary.
+\begin{lemma}[A two-direction rare boundary test]
+\label{lem:two-field-rare}
+There is a fixed collar width $d_c>0$, determined by the stated priors,
+with the following property.  Fixed-accuracy occupation data supply
+radial brackets for each protected $P_C$ and sufficiently accurate
+normals throughout their fixed neighborhoods.  At a target $y$ in such
+a neighborhood and an accuracy $0<e<d_c$, a test using only commands
+$a,-a$ returns zero surely if $y\notin P_C$, and returns one with
+conditional probability at least $1-\varepsilon$ if
+$y\in(P_C)_{-e}$.  Its output in the intervening inner layer is
+unrestricted.  The test uses at most two nominal centers and
+\begin{equation}\label{eq:two-field-rare-cost}
+ C e^{-(\gamma+3/2)}\log\frac C\varepsilon
+\end{equation}
+attempted bits.
+\end{lemma}
+\begin{proof}
+Let $R$ be a fixed upper bound for the curvature radii of $P_C$,
+increased if necessary to be positive and larger than $t$.
+At a boundary point $y_0$ with outward normal $n$ one has
+\begin{equation}\label{eq:two-field-outer-disk}
+                 P_C\subset\overline B_R(y_0-Rn).
+\end{equation}
+Indeed, in support coordinates with the normal angle of $n$ as zero,
+\[
+ h_{P_C}(\phi)-y_0\cdot n_\phi
+   =\int_0^\phi r_{P_C}(u)\sin(\phi-u)\dd u
+   \le R(1-\cos\phi),\qquad 0\le\phi\le\pi.
+\]
+The reverse angular interval proves the same inequality for
+$-\pi\le\phi\le0$.  These are exactly the support inequalities
+of the disk in \eqref{eq:two-field-outer-disk}.
+
+Choose the fixed collar so that
+\[
+ d_c<\min\{R/2,t^2/(32R),d_0-\Delta-t\},
+\]
+and below a fixed interior rolling radius of $P_C$.
+Write a collar point uniquely as $y=y_0-dn$, where $|d|\le d_c$.
+The coarse construction in Lemma~\ref{H-lem:rare-coarse-normals}, with
+its occupation queries replaced by \eqref{eq:two-field-occupation-cost},
+can give a rational $\widehat n$ satisfying
+$|\widehat n-n|\le\eta_n$ uniformly on each bracket neighborhood,
+where a fixed rational $\eta_n>0$ is chosen with
+$6\eta_n\le t/(8R)$.  That proof uses only the uniform support,
+curvature, and inball bounds of $P_C$: its finite radial interpolation
+may be refined to any fixed accuracy before the fine experiment.
+
+Set $E_1=\{e_1,-e_1\}$ and
+\[
+ V(\widehat n)=\{v\in E_1:\widehat n\cdot v
+                  \ge\max_{w\in E_1}\widehat n\cdot w-4\eta_n\}.
+\]
+Every true maximizer of $n\cdot v$ is in this set.  Every candidate
+satisfies $n\cdot v\ge-6\eta_n\ge-t/(8R)$.
+For each candidate make ordinary forward attempts from nominal center
+$y+tv$ with displacement $-tv$.  Mark the candidate if at least one
+bit is one, and return the conjunction of the candidate marks.
+
+Suppose $0<d\le d_c$.  For every candidate,
+\begin{align*}
+ |y+tv-(y_0-Rn)|^2-R^2
+ &=t^2+2t(R-d)n\cdot v-2Rd+d^2\\
+ &\ge t^2-t^2/4-t^2/16>0.
+\end{align*}
+Thus $y+tv$ is outside $P_C$ by
+\eqref{eq:two-field-outer-disk}, so every physical start
+$y+tv+z$, $z\in A$, is outside $C$.  On the event $y+Z\in C$
+the attempted flight ends in $C$ and its bit is one.  Its probability
+is at least $c e^{\gamma+3/2}$ if $d\ge e$, by
+Lemma~\ref{H-lem:cap-mass}.
+
+Other obstacles cannot occur in these flights.  At $y_0=c_0-z_0$,
+the points $c_0\in C$ and $z_0\in A$ have normals $n$ and $-n$.
+Every point of a candidate flight has distance at most
+$\Delta+t+d_c<d_0$ from $c_0$.
+If $d<0$, choose a true maximizing $v_*$.  Since
+$n\cdot v_*\ge0$ and $n\cdot(z-z_0)\ge0$ for every $z\in A$,
+\[
+ n\cdot(y+tv_*+z-u tv_*)
+   \ge h_C(n)-d+t(1-u)n\cdot v_*>h_C(n),\quad 0\le u\le1.
+\]
+This candidate always misses.  Its mark, and hence the conjunction,
+is zero surely.  For inner depth at least $e$, a batch of
+$C e^{-(\gamma+3/2)}\log(C/\varepsilon)$ attempts at each of the
+at most two centers marks both candidates except with probability
+$\varepsilon$.  Fresh attempts make the same assertion conditional
+on all prior data.  No actual start or direction realization has
+been observed.
+\end{proof}
+
+Apply this test in the relaxed radial bisection of
+Lemma~\ref{H-lem:bisection}.  With radial angular spacing
+$h\asymp\epsilon^{1/s}$ and inner layer $e\asymp\epsilon$, the
+interpolation of Lemma~\ref{H-lem:radial} recovers all complete protected
+expanded bodies with
+\begin{equation}\label{eq:two-field-expanded-errors}
+ \|\widehat h_{P_C}-h_{P_C}\|_\infty\le C\epsilon,
+ \qquad
+ \|\widehat h_{P_C}-h_{P_C}\|_{C^2}
+                 \le C\epsilon^{(s-2)/s}.
+\end{equation}
+The attempted-bit cost, including coarse acquisition, is
+\begin{equation}\label{eq:two-field-expanded-cost}
+ C\epsilon^{-(\gamma+3/2+1/s)}
+       \log\frac C\epsilon\log\frac C{\epsilon\delta}.
+\end{equation}
+These steps construct the expanded bodies before footprint subtraction.
+Their proof and conditional confidence allocation are exactly the
+radial construction just cited; its label premise is supplied by
+Lemma~\ref{lem:two-field-rare}.  Rounding a target to a dyadic grid
+of mesh $O(\epsilon)$ changes only the indeterminate geometric layer.
+The fixed opposite vectors are exact.
+
+\subsection{Convex hulls of positive nominal records}
+Write $S_C^\pm=E_{\pm,C}$ for the closed strips in
+\eqref{eq:two-field-strips}, and put
+\[
+                       Q_C^\pm=\operatorname{conv}(S_C^\pm)+(-A).
+\]
+Their support functions are those in
+Lemma~\ref{lem:two-field-supports}.  The positive response itself may
+have a nonconvex support.  The following sampling statement concerns
+its convex hull and does not use convexity of that positive set.
+
+\begin{lemma}[Uniform caps and shared hull acquisition]
+\label{lem:two-field-hulls}
+For each complete protected obstacle and each sign, the convex body
+$Q_C^\pm$ can be estimated from the same two fixed commands by an
+inscribed rational polygon $\widehat Q_C^\pm$ with Hausdorff error
+at most $C\epsilon$, simultaneously with probability at least
+$1-\delta$, using
+\begin{equation}\label{eq:two-field-hull-cost}
+ N\le C\epsilon^{-(\gamma+9/2)}
+                         \log\frac C{\epsilon\delta}
+\end{equation}
+attempted bits.  A dyadic nominal grid of mesh comparable to a
+sufficiently small multiple of $\epsilon^{\gamma+9/2}$ suffices.
+The same positive records are used for all support directions.
+\end{lemma}
+\begin{proof}
+First fix one strip $S=S_C^+$, the other sign being identical after
+reversing $e_1$.  Its parameterization is
+\[
+ y=c_C(\phi)-u e_1,\qquad
+          n_\phi\cdot e_1\le0,\quad 0\le u\le t.
+\]
+On the incoming open half-circle this parameterization is one-to-one
+up to null boundary sets and has Jacobian
+$r_C(\phi)|n_\phi\cdot e_1|$.  These assertions also follow by
+using the transverse coordinate of each incoming boundary point.
+There are uniform $c,r_0>0$ such that
+\begin{equation}\label{eq:two-field-strip-ball}
+             \area(S\cap B(y,r))\ge c r^3,
+                     \qquad y\in S,\quad 0<r<r_0.
+\end{equation}
+To check the endpoint case as well, represent $y$ by $(\phi_0,u_0)$.
+Choose an interval of $u$ of length $c r$ in $[0,t]$ within distance
+$Ccr$ of $u_0$.  Choose an angular interval of length $c r$ within
+the incoming half-circle and distance $Ccr$ of $\phi_0$, displaced
+inward if $\phi_0$ is an endpoint.  It can be chosen so that
+$|n_\phi\cdot e_1|\ge c' r$ on this interval.  The upper curvature
+radius bounds $|c_C(\phi)-c_C(\phi_0)|$ by $Ccr$.
+For a sufficiently small fixed $c$, this parameter rectangle maps
+inside $B(y,r)$.  Its Jacobian, the lower curvature radius, and its
+two side lengths give \eqref{eq:two-field-strip-ball}.  Take $r_0$
+smaller than a fixed multiple of $t$ and of the geometric radii.
+
+For any unit vector $u$, choose a maximizer $y_u\in S$ of
+$u\cdot y$.  Equation \eqref{eq:two-field-strip-ball}, with
+$r$ a small multiple of $\epsilon$, gives a subset of the strip of
+area at least $c\epsilon^3$ whose support deficit in direction $u$
+is at most $\epsilon/3$.  The footprint cap satisfies
+\begin{equation}\label{eq:two-field-footprint-cap}
+ \int_{\{z\in A: h_A(-u)+u\cdot z\le\epsilon/3\}}j(z)\dd z
+                       \ge c\epsilon^{\gamma+3/2}.
+\end{equation}
+Indeed an interior tangent disk of fixed radius in $A$ contains a
+rectangle of tangential width $c\sqrt\epsilon$ and normal depth
+between $c_1\epsilon$ and $c_2\epsilon$ beneath its contact point.
+Every point of a slightly smaller rectangle has distance at least
+$c_3\epsilon$ from $\partial A$.  Integration of the stated lower
+density bound on this rectangle proves
+\eqref{eq:two-field-footprint-cap}.
+
+Let $W$ be a fixed rational rectangle containing the strip differences
+needed for all protected components and a collar.  Uniformly choosing
+a continuous nominal center $X$ from $W$ and making the positive
+command gives
+\begin{align}
+ &\Prob\{X+Z\in S_C^+,\ X\in\operatorname{cap}(Q_C^+,u,\epsilon)\}
+       \nonumber\\
+ &\quad=|W|^{-1}\int_Aj(z)
+       \int_{S_C^+}\one_{\operatorname{cap}(Q_C^+,u,\epsilon)}(y-z)
+                                         \dd y\dd z
+       \ge c\epsilon^{\gamma+9/2}.
+       \label{eq:two-field-positive-cap}
+\end{align}
+The cap consists of points $x\in Q_C^+$ satisfying
+$u\cdot x\ge h_{Q_C^+}(u)-\epsilon$.  The event displayed uses
+only the indicated strip, and every such event gives a positive bit
+belonging to $C$, up to null boundary events.  Its obstacle label is
+used only in this probability calculation.  The finite assignment
+rule below recovers that label from coarse expanded-body data.
+The two cap deficits add under Minkowski addition, so
+the product of the preceding strip and footprint subsets proves the
+inequality.
+
+Replace $X$ by the centers of a uniform finite square grid in $W$.
+Conditioning first on $Z=z$, the integrand is the indicator of a
+translated strip intersected with a half-plane and $W$.  Each strip
+is the difference of a convex swept body and a convex body.  The
+perimeters of these bodies, and the lengths of the added straight
+cuts in $W$, have a common bound.  Grid cells meeting those
+boundaries have total area at most $C\ell$ for mesh $\ell$.
+All other cells give the exact indicator integral.  This error bound
+is uniform in $z$; integration against the probability density uses
+only its total mass.  Consequently the cap probability on the finite
+grid differs by at most $C\ell$ from its continuous value.
+Choose a dyadic $\ell$ comparable to a sufficiently small multiple
+of $\epsilon^{\gamma+9/2}$.  The lower bound in
+\eqref{eq:two-field-positive-cap} then remains valid with a smaller
+constant.  No regularity modulus of $j$ has been used.
+
+The fixed coarse expanded-body hulls assign records to obstacles.
+More precisely choose their Hausdorff error $\sigma_c>0$ so that
+$2t+4\sigma_c<d_0-\Delta$.  A positive record of the plus or minus
+command belonging to $C$ lies within distance $t+\sigma_c$ of its
+coarse hull $H_C$.  Every record belonging to another obstacle has
+distance at least $d_0-\Delta-t-\sigma_c$ from $H_C$.
+Testing distance at the threshold $t+2\sigma_c$ therefore gives a
+unique correct assignment, with a fixed reserve for finite arithmetic.
+The surrounding aperture and complete-component cutoff retain every
+record from each required complete component.  Exterior fragments are
+not used as complete components.  Alternatively, it suffices to retain
+one chosen complete component for the calibration below.
+
+For each sign take the convex hull of the assigned positive nominal
+centers.  It lies in $Q_C^\pm$ surely.  A fixed-aperture support
+function is uniformly Lipschitz in direction, so a net of at most
+$C\epsilon^{-1}$ unit directions with spacing $c\epsilon$ suffices
+to control its supremum error by $C\epsilon$.  For each net cap the
+probability of receiving no assigned positive center after $N$ attempts
+is at most $\exp(-cN\epsilon^{\gamma+9/2})$.  The union bound over
+the finitely many components, two signs, and this net proves
+\eqref{eq:two-field-hull-cost}.  The net is only an analysis device:
+the same collection of known nominal centers supplies every support
+value of the resulting polygon.  All solid starts and free misses
+are counted in $N$ and produce no retained point.
+\end{proof}
+
+\subsection{Stable extraction of the contact chord}
+The next estimate gives the quantitative step from three support
+functions to smooth geometry.  It uses the isolated negative atoms in
+\eqref{eq:two-field-curvature-measure}; it does not differentiate an
+empirical support function pointwise.
+
+\begin{lemma}[A stable chord correction]
+\label{lem:two-field-stable-chord}
+Let $C$ satisfy the fixed smoothness and curvature priors.  Let $L$
+join its two contact points with normals $e_2,-e_2$, let
+$\ell$ be the length of this chord, and let $\theta$ be its normal
+angle chosen with $n_\theta\cdot e_1>0$.  Put
+$H=h_C-h_L$.  If a computable function $\widehat H$ has
+$\|\widehat H-H\|_\infty\le\epsilon$, then finite deterministic
+operations produce estimates $\widehat\theta,\widehat\ell$ and a
+smooth strictly convex centered body $\widehat C^\circ$ such that
+\begin{align}
+ |\widehat\theta-\theta|&\le C\epsilon,
+             \label{eq:two-field-chord-angle-error}\\
+ |\widehat\ell-\ell|&\le C\epsilon^{(s-1)/s},
+             \label{eq:two-field-chord-length-error}\\
+ \|p_{\widehat C^\circ}-p_C^\circ\|_{C^2}
+             &\le C\epsilon^{(s-2)/s},
+             \label{eq:two-field-chord-C2-error}\\
+ \|p_{\widehat C^\circ}-p_C^\circ\|_\infty
+             &\le C\epsilon^{(s-1)/s}.
+             \label{eq:two-field-chord-C0-error}
+\end{align}
+All constants are uniform in the geometric class.  Numerical
+integration and representation errors can be included in these bounds.
+\end{lemma}
+\begin{proof}
+The uniform interior radius gives a known lower chord bound
+$w_*>0$, while $\ell\le D_0$ and
+$n_\theta\cdot e_1\ge w_*/D_0$.  The distributional identity is
+\[
+ (\partial_\phi^2+1)H
+   =r_C(\phi)\dd\phi-\ell(\delta_\theta+\delta_{\theta+\pi}).
+\]
+For $0<b<\pi/4$ set
+\[
+ \mathcal D_b f(\alpha)
+     =f(\alpha+b)+f(\alpha-b)-2\cos b\,f(\alpha).
+\]
+Solving the scalar differential equation on $[\alpha-b,\alpha+b]$,
+or integrating twice by parts, gives
+\begin{equation}\label{eq:two-field-sine-difference}
+ \mathcal D_b H(\alpha)
+ =\int_{-b}^b\sin(b-|u|)r_C(\alpha+u)\dd u
+    -\ell\sum_{\zeta\in\{\theta,\theta+\pi\}:|\zeta-\alpha|<b}
+                                   \sin(b-|\zeta-\alpha|).
+\end{equation}
+If the interval contains no atom this is nonnegative.  If an atom
+lies within $b/16$ of its center, it is at most
+$-c\ell b+Cb^2$.  Replacing $H$ by $\widehat H$ changes the
+expression by at most $4\epsilon$.
+
+Take $b_0=L\epsilon$ with a sufficiently large fixed $L$ depending
+on $w_*$.  Evaluate $\mathcal D_{b_0}\widehat H$ on an angular grid
+of spacing at most $b_0/8$, with numerical error at most $\epsilon$,
+and retain centers where it is smaller than $-w_*b_0/4$.
+For sufficiently small $\epsilon$, there is a retained center near
+each atom, and every retained center is within $b_0$ of an atom.
+The criterion $n_\alpha\cdot e_1\ge w_*/(2D_0)$ selects exactly
+the neighborhood of $\theta$, once $\epsilon$ is small.
+Choosing one such center proves
+\eqref{eq:two-field-chord-angle-error}.
+The length of this computational grid has no observation cost.
+
+Fix an even smooth function $\psi$ supported in $(-1,1)$, equal to
+one on $[-1/8,1/8]$, and satisfying
+$\int u^k\psi(u)\dd u=0$ for $0\le k\le4$.
+Such a signed function is obtained from an even central plateau by
+adding three pairs of disjoint smooth bumps outside that plateau.
+Choose their positive centers distinct.  The matrix of their zeroth,
+second and fourth moments is invertible when the supports are small,
+by continuity from its Vandermonde limit; choose one such fixed set
+and solve the three linear equations.  Odd moments vanish by symmetry.
+This construction is fixed and computable.
+
+Put $b=\epsilon^{1/s}$, up to a fixed dyadic factor, and
+$\psi_b(\phi)=\psi((\phi-\widehat\theta)/b)$.
+For small $\epsilon$ the true atom is in its plateau and the other
+atom is outside its support.  Define
+\[
+ \widetilde\ell
+       =-\int\widehat H(\phi)(\psi_b''(\phi)+\psi_b(\phi))\dd\phi.
+\]
+The true integral equals
+$\ell-\int r_C\psi_b$.  Since $r_C\in C^{4,\beta}$ uniformly,
+Taylor expansion about $\widehat\theta$ and the vanishing moments
+bound the latter integral by $Cb^{5+\beta}=Cb^{s-1}$.
+The data error is at most
+$C\epsilon(b^{-1}+b)$.  Thus projection of
+$\widetilde\ell$ onto $[w_*,D_0]$ proves
+\eqref{eq:two-field-chord-length-error}.
+An integration error of $O(\epsilon/b)$ is harmless.
+
+Let $L^\circ$ be the centered chord, so
+$h_{L^\circ}(\phi)=(\ell/2)|\sin(\phi-\theta)|$.
+Let $\widehat L^\circ$ have the estimated parameters and let $T_b$
+be convolution with the fixed signed approximation kernel of
+Section~\ref{H-sec:stationary}, with moments through degree six
+vanishing, at scale $b$.  The function
+\[
+              \widetilde p=T_b(\widehat H+h_{\widehat L^\circ})
+\]
+approximates $h_C-m\cdot n_\phi$, where $m$ is the chord midpoint.
+For $f_\theta(\phi)=|\sin(\phi-\theta)|$ the curvature identity
+$f_\theta''+f_\theta=2(\delta_\theta+\delta_{\theta+\pi})$
+gives
+\[
+ \|T_b f_\theta\|_{C^2}\le Cb^{-1},\qquad
+ \|\partial_\theta T_b f_\theta\|_{C^2}\le Cb^{-2}.
+\]
+The first derivative and supremum norms in the first bound are
+bounded independently of $b$.  Consequently the error caused by
+estimating the chord is at most
+\[
+ C\{\epsilon^{(s-1)/s}b^{-1}+\epsilon b^{-2}\}
+       =C\epsilon^{(s-2)/s}
+\]
+in $C^2$.  Smoothing the data error costs $C\epsilon b^{-2}$,
+and smoothing the true $C^{6,\beta}$ support costs $Cb^{s-2}$.
+The corresponding supremum error is at most $Cb^{s-1}$.
+Steiner centering, a bounded linear operation on support functions,
+proves \eqref{eq:two-field-chord-C2-error} and
+\eqref{eq:two-field-chord-C0-error}.
+
+For small $\epsilon$ the uniform lower curvature radius makes this
+smooth centered function an actual strictly convex support.
+Its third derivatives remain uniformly bounded: the three error
+terms above at derivative order three are bounded by
+$C(b^{s-1}b^{-2}+\epsilon b^{-3}+b^{s-3})$.
+Finite evaluation and quadratic local interpolation with the fixed
+smooth partition used in the retained support construction therefore
+give a finite smooth representation with any reserved $O(b^{s-2})$
+$C^2$ error and $O(b^{s-1})$ supremum error.  The polygonal input
+supports, their known Lipschitz bounds, and the fixed smooth kernels
+permit certified finite integration at the precisions just specified.
+This completes all numerical operations in the assertion.
+\end{proof}
+
+\begin{theorem}[Finite reconstruction from two fixed opposite fields]
+\label{thm:two-field-finite-geometry}
+Fix the priors \eqref{eq:two-field-finite-priors}, the bounded periodic
+class $\mathcal B_\eta$, and one dyadic $t>0$ satisfying
+$2t+\Delta<d_0$.  A finite controller using only the two forward
+commands $te_1,-te_1$ at one unknown stationary launch law reconstructs
+$A_0$ and a smooth strictly convex periodic table approximating
+$\mathcal O-a_0$.  Its footprint support error in $C^2$ and its
+geometric loss are at most $C\nu$, and its primitive discrete data
+are correct, with probability at least $1-\delta$.
+
+For sufficiently small $\nu>0$ and $0<\delta<1/4$, put
+\begin{equation}\label{eq:two-field-finite-exponent}
+                    Q_{\rm pair}=\frac{(\gamma+9/2)s}{s-2}.
+\end{equation}
+The attempted-bit and command counts satisfy
+\begin{equation}\label{eq:two-field-finite-cost}
+ N_\nu\le C\nu^{-Q_{\rm pair}}
+              \log\frac C\nu\log\frac C{\nu\delta},
+                     \qquad S_\nu\le J_\nu\le N_\nu.
+\end{equation}
+Every occurrence of a selected nominal center and its sign is included
+in $J_\nu$, and every fresh preparation is included in $N_\nu$.
+The two flight vectors and their nonzero length remain fixed as
+$\nu\downarrow0$.  A nominal dyadic grid of mesh comparable to
+\begin{equation}\label{eq:two-field-finite-mesh}
+                         \nu^{Q_{\rm pair}}
+\end{equation}
+suffices.  The controller description is at most
+$CJ_\nu\log(C/(\nu\delta))$ bits for fixed computable priors.
+The theorem also retains finite approximations to the expanded bodies
+$P_C$, their locations, and one pair of raw convex hulls
+$\widehat Q_C^+,\widehat Q_C^-$.  In particular a rational polygon
+approximating any selected complete $P_C$ to Hausdorff error $C\nu$
+can be included in the output without additional observations.
+
+The nominal aperture depends only on the fixed geometric priors.
+Actual starts lie in its Minkowski sum with $A$, and flights in the
+$t$-parallel body of that sum.  A coarse bound on $|a_0|$ gives an
+absolute physical aperture; it does not supply $a_0$.  Computational
+support fitting, movements, and realization of the coordinate grid
+are distinct from the attempted-bit bound.  No sharpness of
+$Q_{\rm pair}$ is asserted.
+\end{theorem}
+\begin{proof}
+Choose $\epsilon$ comparable to a sufficiently small multiple of
+$\nu^{s/(s-2)}$.  First obtain the fixed-accuracy expanded-body
+hulls and all complete protected components.  The bounded
+presentation supplies a complete obstacle in a prior-bounded nominal
+region after any common translation.  Choose one such component $C_*$
+for calibration, using the finite coarse hulls and the
+complete-component cutoff.  Neither its label nor a free point was
+an input.  Enlarge the fixed aperture to contain all required
+$P_C$, both strip hulls for $C_*$, their assignment collars, and
+all prefix-query sites.  The finite-cloud alternative below supplies
+the corresponding complete aperture directly.
+
+Recover the smooth expanded bodies by
+\eqref{eq:two-field-expanded-errors}, and the two strip hulls of
+$C_*$ by Lemma~\ref{lem:two-field-hulls}.  On their common accuracy
+event form
+\[
+ \widehat H
+    =2\widehat h_{P_{C_*}}
+       -h_{\widehat Q_{C_*}^+}-h_{\widehat Q_{C_*}^-}
+                                  +t|n_\phi\cdot e_1|.
+\]
+The support identities give
+$\|\widehat H-(h_{C_*}-h_{L_*})\|_\infty\le C\epsilon$.
+Lemma~\ref{lem:two-field-stable-chord} recovers the centered shape
+$C_*^\circ$ with $C^2$ error $C\nu$.  Center the expanded support
+and set
+\[
+  \widehat p_{-A_0}
+        =\widehat p_{P_{C_*}}^\circ-
+                                    p_{\widehat C_*^\circ}.
+\]
+This estimates $p_{-A_0}$ in $C^2$ error $C\nu$, since Steiner
+centering commutes with Minkowski addition.  Its curvature is positive
+for small $\nu$ by the footprint radius reserve.  Reflection gives
+the required centered footprint.  Every original component is now
+recovered by the same support subtraction
+\begin{equation}\label{eq:two-field-finite-subtraction}
+       \widehat h_{C-a_0}
+                   =\widehat h_{P_C}-\widehat p_{-A_0}.
+\end{equation}
+The uniform obstacle curvature margin again gives smooth strictly
+convex outputs.  Finite smooth representation, with its numerical
+errors reserved, is supplied as in the last paragraph of
+Lemma~\ref{lem:two-field-stable-chord}.
+The observation error in the footprint and all reconstructed
+components has support supremum order
+$\epsilon^{(s-1)/s}$ and $C^2$ order
+$\epsilon^{(s-2)/s}$.  The expanded components themselves retain the
+stronger supremum order $\epsilon$.
+
+Apply the retained period-locking and periodic assembly argument to
+these original component estimates, in the frame $\mathcal O-a_0$.
+The nonperiod-patch margin is invariant under a common translation,
+as in Lemma~\ref{H-lem:registration-period-margin}.  The bounds just
+obtained tend to zero uniformly, so the fixed locking thresholds are
+met.  Primitive relations and orbit counts are exact on the common
+event; a matched period basis and free area have error
+$O(\epsilon^{(s-1)/s})$, which is $O(\nu)$.
+
+The hull cost \eqref{eq:two-field-hull-cost} dominates the expanded
+boundary cost \eqref{eq:two-field-expanded-cost}, since
+$\gamma+9/2>\gamma+3/2+1/s$.  Splitting the confidence budget among
+coarse acquisition, adaptive boundary queries, and the two hull
+experiments proves \eqref{eq:two-field-finite-cost} after substituting
+$\epsilon\asymp\nu^{s/(s-2)}$.
+The nominal grid in Lemma~\ref{lem:two-field-hulls} is finer than the
+$O(\epsilon)$ geometric rounding required in the boundary queries.
+Choose it dyadically so that $t$ is an integer multiple of its mesh.
+All shifts then preserve the grid, and
+\eqref{eq:two-field-finite-mesh} follows.  Only two displacements
+occur.  Every sampled grid point has a finite index of
+$O(\log(C/\nu))$ bits in the fixed aperture.  Recording these indices,
+signs, and batch counts gives the stated description bound.
+
+Finally, the expanded-body estimates have uniformly bounded curvature
+radii.  Sampling their smooth boundaries at sufficiently fine
+numerical angular spacing and rounding those values gives inscribed
+or nearby rational polygons of any reserved $O(\nu)$ Hausdorff error.
+This is a finite computation on the already acquired functions and
+uses no new collision records.  Their locations are those of the
+measured nominal-coordinate bodies $P_C$.
+\end{proof}
+
+\begin{corollary}[A complete finite configuration]
+\label{cor:two-field-finite-cloud}
+Suppose instead there are between one and $n_0$ obstacles, with the
+same uniform priors, and a known protected aperture contains every
+expanded body $C-A$ and the fixed collars above.  The same controller
+recovers $A_0$ and all of $\mathcal O-a_0$ in $C^2$ error $C\nu$
+with probability at least $1-\delta$ and the bounds
+\eqref{eq:two-field-finite-cost}--\eqref{eq:two-field-finite-mesh}.
+No periodicity or positive nonperiod-patch margin is used.
+\end{corollary}
+\begin{proof}
+The complete aperture supplies all coarse expanded components and a
+calibration component.  The hull acquisition, chord correction, and
+common support subtraction in the theorem recover every body.
+Omit the period test and periodic assembly; all preceding estimates
+and observation counts remain unchanged.
+\end{proof}
