@@ -1,0 +1,5 @@
+# Revision 74 authored-source status
+
+The new proof treats the entire unbiased ordered binary-qubit measurement ball, with both visibility and direction included in the target. Its finite-use comparison is controlled by sqrt(N/(1-s^2+1/N)) times Euclidean Bloch distance, where s is the smaller radius. A weighted Ahlfors-regular covering theorem and depth-contact criterion give joint disk covering order N log(N+2)/delta^2 and joint ball order N^2/delta^3 on a fixed small-error range. The rational encoder charges the radial layer and angular chart in one payload index and handles rational Cartesian inputs even when their norm is irrational.
+
+The drafted response maps all 17 required revisions and 30 detailed comments of v73/r47. The independent human priority report and author signature are not claimed. All 502 predecessor active mathematical labels are retained. Local typesetting currently produces 46 quantitative pages, 41 structural pages and 146 complete-edition pages; final source qualification and exact-head reconstruction are still pending. This status note is not a replacement for the written proofs or actual build receipt.
