@@ -1,0 +1,495 @@
+\section{Moment reconstruction with an estimated geometric factor}
+\label{sec:moment-factor-details}
+The finite law theorem uses three different approximations: a geometric
+factor is reconstructed, occupation moments are sampled, and a positive
+probability is fitted to those moments.  We give quantitative interfaces
+between these operations.  In particular, the fitted geometric moments
+can be the exact moments of a rational polygon.  They then belong to an
+actual probability measure at every degree used in the reconstruction.
+
+Fix the complete component used in
+Theorem~\ref{thm:two-field-finite-law}.  The constants in the lemmas below
+depend only on a bound for its aperture, a lower bound $g_*>0$ for the
+gap between expanded components, a lower bound $v_*>0$ for the obstacle
+area, an upper bound $p_*$ for the relevant convex perimeters, and the
+fixed prefix length $M$.  These bounds are supplied by the quantitative
+geometric priors.  All assertions about estimated geometry are made on
+the geometric stage's common accuracy event.  Numerical integration and
+rational arithmetic are deterministic operations conditional on that
+event.
+
+Enlarge the fixed rational scale $R$ of
+Section~\ref{sec:two-field-finite-law}, if necessary, so that the selected
+body, the centered footprint, and their small approximation collars lie
+in $(-R/4,R/4)^2$.  The cutoff support lies in $(-R/2,R/2)^2$.
+This is a choice of coordinates within the fixed aperture.  We shall use
+candidate normalized displacements in $[-1/2,1/2]^2$; consequently all
+coordinate differences appearing in the factorization have absolute
+value less than one.  For a finite signed measure, $\|\cdot\|_{\rm TV}$
+denotes its full variation norm.
+
+\subsection{A complete component and a rational geometric factor}
+\begin{lemma}[A protected cutoff with rational values]
+\label{lem:moment-protected-cutoff}
+Let $P=C_0+(-A_0)$ be a complete expanded component, and let
+$\widehat P$ be a rational convex polygon with
+$d_H(\widehat P,P)\le\xi$.  Choose a fixed positive rational $r$ with
+$r<g_*/(16\sqrt2)$ and suppose $\xi<r$.  There is an explicitly
+specified cutoff $H$, with $0\le H\le1$, which is one on $P$, zero
+on every other expanded component, and has Lipschitz constant at most
+$r^{-1}$.  Its support is contained in
+$\widehat P+[-2r,2r]^2$, and its values at rational points are rational.
+For every compact launch probability with support $A_0$, including a
+singular probability, one has the pointwise identity
+\begin{equation}\label{eq:moment-cutoff-identity}
+ H(x)v(x)=v_C(x)=\int\one_{C_0}(x+z)\,\dd\mu_0(z).
+\end{equation}
+\end{lemma}
+\begin{proof}
+Let $d_\infty(x,\widehat P)$ be distance for the maximum norm, and put
+\[
+ \chi(u)=
+ \begin{cases}
+ 1,&0\le u\le1,\\
+ 2-u,&1<u<2,\\
+ 0,&u\ge2,
+ \end{cases}
+ \qquad
+ H(x)=\chi\bigl(d_\infty(x,\widehat P)/r\bigr).
+\]
+Distance to a closed set is one-Lipschitz.  The bound on $\xi$ gives
+$H=1$ on $P$.  If $P'$ is another expanded component, then
+\[
+ \inf_{x\in P'}d_\infty(x,\widehat P)
+       \ge g_*/\sqrt2-\xi>2r,
+\]
+so $H$ is zero there, including the boundary.  The support and
+Lipschitz assertions follow directly from the definition.  Distance
+from a rational point to a rational polygon in the maximum norm is
+the optimum of a finite rational linear programme; its optimum is
+rational.  Thus $H$ has the asserted rational values.
+
+For any component $C'$, its occupation contribution vanishes outside
+$C'+(-A_0)$: if $x$ is outside this Minkowski sum, $x+z$ is outside
+$C'$ for every $z\in A_0$.  The local finiteness and compact support
+make the sum of these contributions locally finite.  Multiplication
+by $H$ therefore retains precisely the contribution of $C_0$.
+This argument is pointwise and does not discard boundary atoms.
+\end{proof}
+
+\begin{lemma}[Rational polygon factors and normalization]
+\label{lem:moment-rational-factor}
+Suppose the recovered convex body $\widehat C$ has a finite
+computable support representation and
+$d_H(\widehat C,C_0)\le\xi$.  For every positive rational $\zeta$
+one can construct a rational convex polygon $D\supset\widehat C$
+with $d_H(D,\widehat C)\le\zeta$.  Put $\tau=\xi+\zeta$ and assume
+it is sufficiently small.  Then $|D|\ge v_*/2$ and
+\begin{equation}\label{eq:moment-factor-TV}
+ \left\|\frac{\one_{C_0}}{|C_0|}\dd x
+              -\frac{\one_D}{|D|}\dd x\right\|_{\rm TV}
+       \le C\tau.
+\end{equation}
+All normalized moments
+\begin{equation}\label{eq:moment-rational-factor-moments}
+ c_\alpha=\frac1{|D|}\int_D(x/R)^\alpha\dd x
+\end{equation}
+are rational and can be computed exactly by finite arithmetic;
+$c_0=1$.  Their discrepancies from the corresponding moments of
+the uniform law on $C_0$ are at most $C\tau$, independently of
+degree.
+
+Suppose rational estimates $\widehat I_\alpha$ of the occupation
+moments have errors at most $\eta$.  Define
+\begin{equation}\label{eq:moment-rational-data}
+ \widetilde y_0=1,\qquad
+ \widetilde y_\alpha=\widehat I_\alpha/|D|
+                              \quad(\alpha\ne0).
+\end{equation}
+If $X$ is uniform on $C_0$ and independent of $Z\sim\mu_0$, then
+\begin{equation}\label{eq:moment-normalization-error}
+ \left|\widetilde y_\alpha-
+                   \E\bigl((X-Z)/R\bigr)^\alpha\right|
+       \le C(\eta+\tau).
+\end{equation}
+\end{lemma}
+\begin{proof}
+Here is a finite outer-polygon construction.  Take a sufficiently
+fine net of rational normal vectors, including the four coordinate
+directions.  Compute rational upper bounds for the support of
+$\widehat C$ at these vectors, with a prescribed rational error,
+and intersect the corresponding half-planes.  The coordinate
+directions bound this intersection in a fixed square.  If $q$ is
+within $\omega$ of a unit vector $u$, then, for every point $x$ in
+that square,
+\[
+ u\cdot x\le q\cdot x+C\omega,
+ \qquad
+ |h_{\widehat C}(q)-h_{\widehat C}(u)|\le C\omega.
+\]
+Consequently, normal mesh and support-value errors at most
+$c\zeta$ imply $h_D(u)\le h_{\widehat C}(u)+\zeta$ for every $u$.
+The reverse inequality follows from containment.  The vertices of
+this bounded intersection are rational.  The finite geometric
+representation supplies support values with certified error, so all
+operations in this construction terminate.
+
+For convex bodies at Hausdorff distance at most $\tau$, the two
+containments in their $\tau$-parallel bodies and the planar
+parallel-body formula give
+\[
+ |C_0\mathbin\triangle D|
+       \le (\operatorname{Per}(C_0)+\operatorname{Per}(D))\tau
+                    +2\pi\tau^2
+       \le 2p_*\tau+2\pi\tau^2.
+\]
+The relevant perimeters have a uniform bound because the bodies
+are convex and lie in a fixed ball.  This also proves
+$|D|\ge v_*/2$ for sufficiently small $\tau$.  Directly comparing
+the two normalized indicator densities yields
+\[
+ \left\|\frac{\one_{C_0}}{|C_0|}
+              -\frac{\one_D}{|D|}\right\|_1
+ \le \frac{2|C_0\mathbin\triangle D|}
+                       {\min\{|C_0|,|D|\}},
+\]
+which proves \eqref{eq:moment-factor-TV}.  A normalized coordinate
+monomial is bounded by one on both bodies.  Integration against the
+signed difference of their uniform probabilities therefore gives
+the degree-independent moment estimate.
+
+Triangulate $D$ using its rational vertices.  An affine map from
+the reference triangle converts each monomial integral into a finite
+sum of rational multiples of
+\[
+ \int_{\substack{s,t\ge0\\s+t\le1}}s^p t^q\dd s\dd t
+                       =\frac{p!q!}{(p+q+2)!}.
+\]
+Its Jacobian, coefficients, and the scale $R$ are rational.  This
+computes both the area and every integral in
+\eqref{eq:moment-rational-factor-moments} exactly.  In particular,
+the resulting array is the moment array of the actual uniform
+probability on $D$.
+
+Finally, Fubini gives
+$I_\alpha=|C_0|\E((X-Z)/R)^\alpha$.  The scale is in the
+monomial, so this identity has the physical area $|C_0|$ as its
+normalizing factor.  Since $|I_\alpha|\le|C_0|$,
+\[
+ \left|\frac{\widehat I_\alpha}{|D|}
+                    -\frac{I_\alpha}{|C_0|}\right|
+ \le \frac{\eta+\bigl||D|-|C_0|\bigr|}{|D|}
+ \le C(\eta+\tau).
+\]
+For degree zero the assigned value is exact.  This proves
+\eqref{eq:moment-normalization-error}.
+\end{proof}
+
+\subsection{Shared observations and the conditioning bound}
+\begin{lemma}[Uniform quadrature for all the occupation moments]
+\label{lem:moment-shared-quadrature}
+Conditional on the cutoff in Lemma~\ref{lem:moment-protected-cutoff},
+let $n\ge1$, $0<\eta<1/4$, and $0<\delta<1/4$.  Fresh observations
+with the two fixed commands give rational estimates of all
+$I_\alpha$, $|\alpha|\le n$, with simultaneous error at most
+$\eta$ and conditional probability at least $1-\delta$, using at
+most
+\begin{equation}\label{eq:moment-shared-quadrature-cost}
+ C(n+1)^2\eta^{-4}
+                   \log\frac{C(n+1)}{\eta\delta}
+\end{equation}
+attempted bits.  The nominal mesh is dyadic and comparable to
+$\eta/(n+1)$.  The same empirical occupation values serve every
+multi-index.  This conclusion is uniform over all compact launch
+probabilities with the stated support bound.
+\end{lemma}
+\begin{proof}
+Tile a fixed square containing the support of $H$, with a fixed
+collar, by squares of side $\ell$.  Use one fixed grid corner
+$x_Q$ of each square $Q$.  There are at most $C\ell^{-2}$ such
+points.  For fixed $z$, put
+\[
+ w_\alpha(x)=H(x)(x/R)^\alpha,
+ \qquad
+ f_{\alpha,z}(x)=w_\alpha(x)\one_{C_0}(x+z).
+\]
+On the square under consideration, the weight is bounded by one
+and has Lipschitz constant at most $C(n+1)$.  The union of the
+grid squares that meet $\partial(C_0-z)$ has area at most
+$C\ell$, uniformly in $z$.  Indeed, it lies in the
+$\sqrt2\ell$-neighborhood of this convex boundary, whose area is
+bounded by a constant times its perimeter times $\ell$, plus
+$C\ell^2$.  On each remaining square the indicator is constant,
+and the weight varies by at most $C(n+1)\ell$.  It follows that
+\begin{equation}\label{eq:moment-fixed-z-quadrature}
+ \left|\ell^2\sum_Q f_{\alpha,z}(x_Q)
+                   -\int f_{\alpha,z}(x)\dd x\right|
+                       \le C(n+1)\ell.
+\end{equation}
+Values on a closed obstacle boundary occur only in the boundary
+squares already counted.  Thus the estimate holds for every $z$,
+and integration against any $\mu_0$ preserves it.  This establishes
+the required quadrature bound without regularity of the occupation
+field.
+
+At every $x_Q$, use the $2M$ means in the finite-prefix formula.
+Estimate each of these means to accuracy $\sigma/(2M)$ with fresh
+Bernoulli observations.  The Lipschitz bound for the prefix maximum
+then gives $|\widehat v(x_Q)-v(x_Q)|\le\sigma$; truncation to
+$[0,1]$ preserves this bound.  Hoeffding's inequality and a union
+bound over the at most $2MC\ell^{-2}$ means require at most
+\[
+ C\ell^{-2}\sigma^{-2}\log\frac{C}{\ell\delta}
+\]
+attempted bits.  Constants absorb the fixed powers of $M$.
+On the resulting event, replacing $v(x_Q)$ by $\widehat v(x_Q)$
+in any weighted sum changes it by at most $C\sigma$.
+Choose $\ell$ dyadic and comparable to $c\eta/(n+1)$ and set
+$\sigma=c\eta$, with $c$ sufficiently small.  Together with
+\eqref{eq:moment-fixed-z-quadrature}, this proves the simultaneous
+accuracy and \eqref{eq:moment-shared-quadrature-cost}.  All sums
+are rational.  The confidence bound is conditional on earlier data
+because this stage uses fresh preparations.  The event controlling
+the occupation values is common to every monomial, so the number
+of moments does not multiply the observation bound.
+\end{proof}
+
+\begin{lemma}[An explicit amplification factor]
+\label{lem:moment-explicit-conditioning}
+Under the hypotheses of Lemma~\ref{lem:two-field-moment-separation},
+with moment discrepancy bounded by $b$ through degree $4m$, one has
+\begin{equation}\label{eq:moment-explicit-amplification}
+ W_1(\mathcal L(Z),\mathcal L(\widetilde Z))
+       \le \frac{C}{m}+\Lambda_m b,
+ \qquad
+ \Lambda_m=C_*m^2 24^{4m}(4m)!,
+\end{equation}
+where $C_*$ is numerical.  In particular
+$\Lambda_m\le(Cm)^{4m+2}$ after increasing the numerical $C$.
+\end{lemma}
+\begin{proof}
+The triangular identity
+\eqref{eq:two-field-triangular-moments} gives, for the largest
+degree-$k$ discrepancy $D_k$ in the unknown factor,
+\[
+ D_0=0,\qquad
+ D_k\le b(1+2^k)+\sum_{j=0}^{k-1}\binom{k}{j}D_j.
+\]
+The coefficient of the unknown degree-$k$ moment has modulus one;
+all moments of the two individual factors are bounded by one.
+Induction gives $D_k\le2b8^k k!$.  To check the induction
+quantitatively, the lower-degree sum divided by $2b8^k k!$ is
+at most
+\[
+ \sum_{j=1}^k\frac{8^{-j}}{j!}
+            \le\sum_{j=1}^\infty8^{-j}=1/7,
+\]
+whereas the forcing term divided by the same bound is at most
+$1/4$ for $k\ge1$.  The case $b=0$ follows directly from the
+triangular identity.
+
+The tensor polynomial construction in the proof of
+Lemma~\ref{lem:two-field-moment-separation} approximates any
+one-Lipschitz function, after subtraction of its value at zero,
+with uniform error at most $C/m$.  Its total degree is at most
+$4m$, and the sum of its absolute monomial coefficients is at
+most $Cm^2 3^{4m}$.  Applying the preceding moment bound gives
+an integration error at most
+$Cb m^2 3^{4m}8^{4m}(4m)!$.  Transportation duality proves
+\eqref{eq:moment-explicit-amplification}.  Finally
+$(4m)!\le(4m)^{4m}$ gives the stated elementary upper bound for
+$\Lambda_m$.
+\end{proof}
+
+\subsection{Positive reconstruction and its finite output}
+\begin{lemma}[A positive rational programme with a feasible comparison law]
+\label{lem:moment-positive-programme}
+Let $D$ and $c_\alpha$ be as in
+Lemma~\ref{lem:moment-rational-factor}, and let $K_A$ be a rational
+polygon with $d_H(K_A,A_0)\le\rho$, where $\rho$ is a known
+positive rational bound on the geometric accuracy event.  For a
+sufficiently small positive dyadic $h$, retain the grid
+\begin{equation}\label{eq:moment-padded-grid}
+ G=\left\{g\in h\Z^2\cap[-1/2,1/2]^2:
+   d_\infty(g,R^{-1}K_A)\le\rho/R+2h\right\}.
+\end{equation}
+It is nonempty and can be computed by rational arithmetic.  Every
+point of $R^{-1}A_0$ has a retained grid point within $\sqrt2h$.
+
+Put $n=4m$, and let the rational numbers $\widetilde y_\alpha$
+have errors at most $e_y$ as moments of $Y=(X-Z)/R$.  For a
+probability vector $p=(p_g)_{g\in G}$ define
+\begin{equation}\label{eq:moment-positive-convolution}
+ T_\alpha(p)=\sum_{\beta\le\alpha}\binom\alpha\beta
+     c_{\alpha-\beta}(-1)^{|\beta|}
+                              \sum_{g\in G}p_g g^\beta.
+\end{equation}
+The finite programme
+\begin{equation}\label{eq:moment-positive-LP}
+ \min q\quad\hbox{subject to}\quad
+ p_g\ge0,\quad\sum_gp_g=1,\quad q\ge0,\quad
+ |T_\alpha(p)-\widetilde y_\alpha|\le q
+                                      \quad(|\alpha|\le n)
+\end{equation}
+has a rational optimizer $p^*$.  If $e_f$ is the variation norm in
+\eqref{eq:moment-factor-TV}, its minimum satisfies
+\begin{equation}\label{eq:moment-feasible-residual}
+ q_*\le e_y+e_f+n\sqrt2h.
+\end{equation}
+The probability $\widehat\mu_0=\sum_gp_g^*\delta_{Rg}$ obeys
+\begin{equation}\label{eq:moment-positive-output-bound}
+ W_1(\widehat\mu_0,\mu_0)
+ \le R\left\{\frac{C}{m}
+            +\Lambda_m(2e_y+e_f+4m\sqrt2h)\right\}.
+\end{equation}
+Every output atom lies within $C(\rho+Rh)$ of $A_0$ and retains
+the canonical coordinates supplied by the geometric stage.
+\end{lemma}
+\begin{proof}
+Round a point $z\in R^{-1}A_0$ to a nearest point of $h\Z^2$,
+using a fixed rule in case of a tie.  The rounding distance in
+maximum norm is at most $h/2$.  The prior coordinate reserve puts
+the rounded point in $[-1/2,1/2]^2$ for small $h$, and
+\[
+ d_\infty(g,R^{-1}K_A)\le\rho/R+h/2.
+\]
+It is therefore retained.  Conversely, every retained point has
+Euclidean distance at most $C(\rho/R+h)$ from $R^{-1}A_0$.
+The rational distance computation in
+Lemma~\ref{lem:moment-protected-cutoff} proves that $G$ is a
+finite, explicitly decidable set.
+
+Let $U=X/R$, let $\widetilde U$ be the scaled uniform point of
+$D$, and let $Z_0=Z/R$.  The exact polygon moments imply
+\[
+ T_\alpha(p)=\E(\widetilde U-Z_p)^\alpha,
+ \qquad \mathcal L(Z_p)=\sum_gp_g\delta_g,
+\]
+with independent factors.  Thus \eqref{eq:moment-positive-convolution}
+has a positive probabilistic realization for every feasible $p$.
+For fixed $z$ in the allowed box, the monomial
+$(u-z)^\alpha$ is bounded by one.  Replacing $U$ by
+$\widetilde U$ changes its expectation, even after averaging in
+$z$, by at most $e_f$.  On the same box its gradient with respect
+to $z$ has Euclidean norm at most $|\alpha|$.  Quantizing $Z_0$
+by the rounding just described therefore changes the convolution
+moment by at most $n\sqrt2h$.
+
+The resulting grid law, whose weights need not be rational, is a
+comparison point of the real probability simplex.  Its discrepancy
+from the rational data is at most $e_y+e_f+n\sqrt2h$, which
+proves \eqref{eq:moment-feasible-residual}.  To obtain a rational
+optimizer, add the harmless bound
+$q\le1+\max_{|\alpha|\le n}|\widetilde y_\alpha|$.
+Every $T_\alpha$ has absolute value at most one, so this makes a
+nonempty compact rational polytope without changing the minimum.
+A linear functional attains its minimum at a vertex, and a vertex
+is obtained by solving a nonsingular rational linear system.
+The optimum and an optimizing vector are therefore rational and
+can be found by finite exact linear programming.  The unknown
+comparison law was needed only to bound the optimum.
+
+For the optimizer, the true and fitted convolution moments differ
+by at most $q_*+e_y\le2e_y+e_f+n\sqrt2h$.  The two individual
+geometric factors have moment discrepancy at most $e_f$.
+Lemma~\ref{lem:moment-explicit-conditioning} consequently applies
+with $b=2e_y+e_f+n\sqrt2h$.  Scaling transportation distance by
+$R$ proves \eqref{eq:moment-positive-output-bound}.  The support
+claim follows from the padding estimate already established.
+\end{proof}
+
+\begin{corollary}[A sparse positive output]
+\label{cor:moment-positive-compression}
+The optimizer in Lemma~\ref{lem:moment-positive-programme} can be
+chosen with at most
+\begin{equation}\label{eq:moment-sparse-output-size}
+             \binom{4m+2}{2}=8m^2+6m+1
+\end{equation}
+nonzero rational weights.  This reduction preserves every fitted
+convolution moment through degree $4m$, the objective value, and
+the transportation bound.  It uses no further observations.
+\end{corollary}
+\begin{proof}
+There are $d=\binom{4m+2}{2}-1$ nonconstant monomials of total
+degree at most $4m$.  Associate to each retained grid point the
+rational vector of these $d$ convolution moments together with a
+first coordinate equal to one.  If more than $d+1$ weights of a
+rational optimizer are positive, the corresponding columns have
+a nonzero rational linear dependence $v$.  Its first coordinate
+gives $\sum_gv_g=0$, so $v$ has both positive and negative
+entries.  Set
+\[
+       \lambda=\min_{v_g>0}p_g/v_g,
+                  \qquad p'_g=p_g-\lambda v_g.
+\]
+The new weights are nonnegative and rational; their sum and all
+the convolution moments are unchanged.  At least one positive
+weight vanishes.  Repeating this finite reduction proves the
+stated bound.  The hypotheses used in
+\eqref{eq:moment-positive-output-bound} are preserved exactly.
+\end{proof}
+
+\begin{proposition}[The complete finite factorization budget]
+\label{prop:moment-complete-budget}
+The construction of Theorem~\ref{thm:two-field-finite-law} may use
+the rational factor, shared acquisition, padded programme, and
+sparse output above.  Its stated observation, coordinate, and
+transportation bounds are unchanged, and its probability output
+can have at most $\binom{4m+2}{2}$ atoms.
+Conditional on geometric estimates with the stated bounds, the
+entire moment construction remains valid for an arbitrary compact
+launch probability.
+\end{proposition}
+\begin{proof}
+Let $a_m$ be the dyadic tolerance in
+\eqref{eq:two-field-moment-tolerance}.  Reconstruct geometry at
+tolerance $c a_m$ with failure allowance $\delta/2$.  Refine the
+rational polygons deterministically so that $\xi+\zeta\le Cc a_m$
+and $\rho\le Cc a_m$.  Choose the occupation moment tolerance
+$\eta=c a_m$ and the normalized mesh $h$ dyadic and comparable
+to $c a_m/m$.  The two factor errors in
+\eqref{eq:moment-positive-output-bound} satisfy
+\[
+ e_y\le C a_m,\qquad e_f\le C a_m,
+          \qquad 4m\sqrt2h\le C a_m.
+\]
+Since $\Lambda_m\le(Cm)^{4m+2}$, taking the fixed constant $C_1$
+in \eqref{eq:two-field-moment-tolerance} sufficiently large gives
+$C\Lambda_m a_m\le1/m$ for every $m\ge2$.  The positive output
+therefore has $W_1$ error at most $C/m$.  With
+$m=\lceil C_0/\varepsilon\rceil$, this is the asserted
+$C\varepsilon$ error.  The geometry was obtained at the finer
+tolerance $Ca_m$.
+
+Apply Lemma~\ref{lem:moment-shared-quadrature} with $n=4m$ and
+the remaining failure allowance $\delta/2$.  Its conditional
+confidence bound is uniform over every outcome in the geometric
+accuracy event.  Thus both stages succeed with probability at
+least $1-\delta$, and their observation total is
+\[
+ N_{\rm geom}(c a_m,\delta/2)
+          +Cm^2a_m^{-4}\log\frac{Cm}{a_m\delta}.
+\]
+Substituting the polynomial geometric bound and
+$\log(1/a_m)\le C m\log(Cm)$ gives
+\eqref{eq:two-field-joint-exponential-cost}.  All occupation
+queries use the original vectors $te_1,-te_1$ and their fixed
+prefix translates.  Their dyadic coordinate denominators have
+logarithms at most $C m\log(Cm)$; the geometric-stage coordinates
+have the same bound.  Charging every attempted bit and command
+occurrence therefore gives the stated command-description bound.
+
+The candidate grid has at most $C(m/a_m)^2$ points, whereas
+Corollary~\ref{cor:moment-positive-compression} bounds the number
+of nonzero output atoms by \eqref{eq:moment-sparse-output-size}.
+Their locations and weights are rational and are obtained by
+finite exact arithmetic.  Construction of the polygons, moment
+integration, linear programming, and weight reduction use no
+additional observations.  Their arithmetic work and the
+representation lengths of the output weights are separate from
+the attempted-bit and command-description bounds.  The moment
+proofs used compact support, the component gap, and the geometric
+factor estimates; they used no density assumption.  For the joint
+uniform experiment, the quantitative density priors enter through
+$N_{\rm geom}$ exactly as stated in the geometric theorem.
+\end{proof}
