@@ -1,0 +1,40 @@
+name: A2-DYN v1 exact-source research qualification
+on:
+  push:
+    branches: ['research/a2-dyn-v1-*', 'revision/a2-dyn-v1-*']
+    paths: ['papers/A2-DYN-v1-raw-local-limits/**', '.github/workflows/a2-dyn-v1-verify.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  qualify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - name: Exact source checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 2
+          persist-credentials: false
+          sparse-checkout: |
+            papers/A2-DYN-v1-raw-local-limits
+            .github/workflows
+      - name: Capture exact source and preservation before installation
+        working-directory: papers/A2-DYN-v1-raw-local-limits
+        run: python3 tools/qualify.py --expected-head "$GITHUB_SHA" --capture-source
+      - name: Install document environment
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended lmodern latexmk poppler-utils
+      - name: Rational geometry, finite diagnostics, and article
+        working-directory: papers/A2-DYN-v1-raw-local-limits
+        run: python3 tools/qualify.py --expected-head "$GITHUB_SHA"
+      - name: Archive exact-source evidence including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: A2-DYN-v1-${{ github.sha }}-${{ github.run_attempt }}
+          path: papers/A2-DYN-v1-raw-local-limits/evidence/
+          if-no-files-found: error
+          retention-days: 30
