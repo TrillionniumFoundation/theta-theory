@@ -1,0 +1,218 @@
+\section{Linear acquisition on a protected component}
+\label{sec:linear-moment-acquisition}
+The preceding all-node construction is deterministic in its nominal
+mesh and remains a valid acquisition rule. Once a complete expanded
+component is located, its prefix can instead be stopped geometrically.
+This makes the inverse linear and permits direct estimation of its
+integrals. In particular, one need not estimate the occupation at
+every point of a fine mesh. Throughout this subsection $a=te_1$ is
+the fixed command vector; $\tau$ denotes a moment tolerance.
+
+\begin{lemma}[A geometrically stopped prefix]
+\label{lem:protected-linear-prefix}
+Let $P=C_0-A_0$ be one complete expanded component, separated from
+all other expanded components by at least $g>t$. Suppose a known
+compact rational convex polygon $Q$ satisfies
+\begin{equation}\label{eq:protected-outer-polygon}
+ P\subset Q\subset P+\rho\overline B,
+                 \qquad \rho+t<g,
+\end{equation}
+where $\overline B$ is the closed Euclidean unit disk.
+Choose a known integer $K$ with $Kt>\diam Q$. For $x\in Q$ put
+\[
+ m_Q(x)=\min\{j\ge1:x+ja\notin Q\},
+\]
+and put $m_Q(x)=0$ for $x\notin Q$. Then $m_Q(x)\le K$, and the
+component occupation has the pointwise representation
+\begin{equation}\label{eq:protected-linear-prefix}
+ v_C(x)=\sum_{k=0}^{K-1}\one_{\{k<m_Q(x)\}}
+       \bigl(F_-(x+(k+1)a)-F_+(x+ka)\bigr).
+\end{equation}
+At rational $x$, the integer $m_Q(x)$ is found by finitely many exact
+rational polygon membership tests. It does not depend on observed bits.
+\end{lemma}
+\begin{proof}
+If $x\notin Q$, then $x\notin P$ and both sides vanish. Suppose
+$x\in Q$. Since $Kt>\diam Q$, the point $x+Ka$ is outside $Q$,
+so $1\le m_Q(x)\le K$. Put $y=x+m_Q(x)a$. By the definition of
+first exit, $y-a\in Q$, whence
+\[
+                 \dist(y,P)\le\rho+t<g.
+\]
+The point $y$ is not in $P$, since it is outside $Q$; the displayed
+strict inequality also excludes every other expanded component.
+Thus $v(y)=0$. Furthermore $Q$ meets no other expanded component,
+so $v(x)=v_C(x)$. Sum the endpoint increment
+\eqref{eq:two-field-occupation-increment} from $x$ to $y$ with its
+sign reversed. This gives \eqref{eq:protected-linear-prefix}.
+The argument uses the physical mean fields and the closed-solid
+convention, including atoms charging boundary starts. For rational
+vertices, membership in the closed polygon is a finite family of
+rational linear inequalities. Enumeration through $K$ gives the
+claimed exact rule, with boundary membership resolved without a
+numerical tolerance.
+\end{proof}
+
+The polygon required by the lemma follows from the existing geometric
+output. Indeed, let $\widehat P$ be a rational convex polygon with
+$d_H(\widehat P,P)\le\xi$. Fix a positive dyadic $r$ so small that
+$3r+t<g$, and require $\xi\le r$. Then
+\begin{equation}\label{eq:protected-polygon-construction}
+ Q=\widehat P+[-r,r]^2,\qquad
+ P\subset Q\subset P+3r\overline B.
+\end{equation}
+The first inclusion uses $P\subset\widehat P+\xi\overline B$;
+the second uses $\xi+\sqrt2r\le3r$. Thus $\rho=3r$ works.
+Only fixed coarse accuracy is needed for this construction. The
+prior diameter bound fixes $K$ independently of $\tau$ and of the
+realized geometric estimate. Complete-component acquisition and its
+error reserve, not a component clipped by an observation window,
+are essential here. The component and the fixed prefix extension
+must both lie in the protected acquisition aperture; enlarging the
+prior-dependent aperture by this fixed collar suffices.
+
+\begin{theorem}[Shared moments from bounded two-bit records]
+\label{thm:linear-moment-sampling}
+Assume \eqref{eq:protected-outer-polygon}. Fix a dyadic square $W$
+containing $Q$ with a collar, and choose the rational normalization
+$R$ so that $W\subset(-R/2,R/2)^2$. Let $n\ge1$,
+$0<\tau<1/4$, and $0<\delta<1/4$. A randomized finite controller
+using only $a$ and $-a$ returns rational estimates of all
+\[
+ I_\alpha=\int v_C(x)x_R^\alpha\dd x,
+                   \qquad |\alpha|\le n,
+\]
+with simultaneous errors at most $\tau$ and probability at least
+$1-\delta$. Conditional on the stated geometry, its attempted-bit
+bound is
+\begin{equation}\label{eq:linear-moment-cost}
+ N_{\rm lin}\le
+ 2\left\lceil 8|W|^2K^2\tau^{-2}
+                 \log\frac{2d_n}{\delta}\right\rceil,
+        \qquad d_n=\binom{n+2}{2}.
+\end{equation}
+All moments use the same records. The nominal mesh size is comparable
+to $\tau/(n+1)$, but the controller samples mesh points rather than
+visiting the entire mesh. Distinct sites and command occurrences
+are at most $N_{\rm lin}$, and their coordinate description length
+per occurrence is $C\log(C(n+1)/\tau)$ under the fixed aperture
+bound. Controller random-bit generation, polygon arithmetic,
+evaluation and storage of moments, physical positioning and travel
+are not included in the attempted-bit count. The law may be any
+compact probability satisfying the support and separation assumptions;
+no density upper bound, lower bound or regularity modulus is required
+for this conditional moment stage.
+\end{theorem}
+\begin{proof}
+Partition $W$ into equal dyadic squares of side $\ell$, and let
+$G_\ell$ consist of their centers. Take $\ell$ comparable to
+$\tau/(n+1)$ with a sufficiently small fixed constant. At each
+independent block choose $X$ uniformly from $G_\ell$ and $L$
+uniformly from $\{0,\ldots,K-1\}$, independently. Make two fresh
+preparations: a bit $Y_+$ at nominal center $X+La$ with command $a$,
+and a bit $Y_-$ at nominal center $X+(L+1)a$ with command $-a$.
+Both are charged, even when the coefficient in the following record
+vanishes. Form
+\begin{equation}\label{eq:linear-two-bit-record}
+ Z=K\one_{\{L<m_Q(X)\}}(Y_--Y_+),
+           \qquad T_\alpha=|W|X_R^\alpha Z.
+\end{equation}
+Conditioning first on $X,L$ and then averaging over $L$ gives
+\begin{equation}\label{eq:linear-record-unbiasedness}
+ \E(Z\mid X)=v_C(X),\qquad
+ \E T_\alpha=\ell^2\sum_{x\in G_\ell}x_R^\alpha v_C(x).
+\end{equation}
+The two hidden launches are independent fresh draws from the same
+stationary law; equality of their realized displacements is neither
+required nor observed. The signed record can be negative. Clipping
+it to a probability would destroy the displayed unbiasedness and
+is not part of the rule.
+
+We bound the difference between the last Riemann sum and $I_\alpha$.
+For each fixed $z\in A_0$, the indicator $\one_{C_0-z}$ has support
+in $P\subset\operatorname{int}W$. The total area of mesh cells
+meeting its boundary is at most $C\ell$, uniformly in $z$, by the
+uniform perimeter and diameter bounds for a convex body. On all
+other cells the normalized monomial has magnitude at most one and
+Lipschitz constant at most $C(n+1)$. The quadrature error is therefore
+at most $C(n+1)\ell$. Boundary membership affects only the boundary
+cells. Integration against the arbitrary probability $\mu_0$
+preserves this estimate, by the finite sum and Tonelli's theorem.
+Our choice of mesh makes the bias at most $\tau/2$. No regularity
+of the discontinuous coefficients $m_Q$ is needed: the expectation
+in \eqref{eq:linear-record-unbiasedness} is the original occupation.
+
+For every $\alpha$, $|T_\alpha|\le |W|K$. For $q$ independent
+blocks, the bounded-variable exponential estimate gives
+\[
+ \Pr\left(\left|q^{-1}\sum_{j=1}^qT_{\alpha,j}
+                  -\E T_\alpha\right|>\tau/2\right)
+       \le 2\exp\left(-\frac{q\tau^2}{8|W|^2K^2}\right).
+\]
+Taking $q$ to be the ceiling in \eqref{eq:linear-moment-cost} and
+summing these probabilities over the $d_n$ multi-indices proves the
+claim, after adding the quadrature bias. The samples for different
+multi-indices need not be independent; the union bound uses only
+the independent blocks. Every block has exactly two attempted bits.
+The signed rational records and their averages are rational.
+
+Each center is a mesh center plus one of finitely many fixed dyadic
+translates $ka$. Thus its description has the asserted length. The
+number of available grid points does not multiply the number of
+observations: an exact uniform finite choice determines a target,
+and no bit at an unchosen target is acquired. This is a finite
+controller using only computational randomization. Conditional on
+any earlier valid geometric output the same bounds hold, since all
+random choices and preparations at this stage are fresh.
+\end{proof}
+
+\begin{corollary}[Default separated budget for the joint inverse]
+\label{cor:linear-joint-budget}
+Under the hypotheses and notation of
+Theorem~\ref{thm:two-field-finite-law}, its geometric, probability,
+discrete and prediction conclusions hold with the default bound
+\begin{equation}\label{eq:linear-joint-budget}
+ N\le N_{\rm geom}(c a_m,\delta/2)
+                   +Ca_m^{-2}\log\frac{Cm}{\delta}.
+\end{equation}
+The two command vectors, the positive rational probability output
+with at most $\binom{4m+2}{2}$ atoms, and the coordinate-description
+bound \eqref{eq:two-field-joint-description} are unchanged. The
+mesh of candidate output atoms and deterministic optimization costs
+are not observation counts. The exponential sufficient bound
+\eqref{eq:two-field-joint-exponential-cost} remains valid; no
+parametric rate for the complete joint inverse is asserted.
+\end{corollary}
+\begin{proof}
+Run the geometric stage with failure allowance $\delta/2$ and
+accuracy $c a_m$. On its success event choose the complete component
+and form \eqref{eq:protected-polygon-construction}, with the fixed
+$r$ and a prior-dependent $K$. For small $a_m$ its certified error
+is at most $r$. Apply Theorem~\ref{thm:linear-moment-sampling} with
+$n=4m$, tolerance $c a_m$ and failure allowance $\delta/2$.
+It replaces only the acquisition of the unnormalized moments in
+the proof of Theorem~\ref{thm:two-field-finite-law}.
+
+For clarity, the remaining factorization is the positive construction
+in Appendix~\ref{sec:moment-factor-details}: use the exact moments
+of the actual rational polygon factor, divide the estimated moments
+by its positive area, and solve the rational nonnegative fitting
+programme on the padded footprint grid. The bounds for factor,
+normalization, grid and fitting errors are unchanged. The moment
+conditioning and \eqref{eq:two-field-moment-tolerance} yield the
+same $W_1$ error. Corollary~\ref{cor:moment-positive-compression}
+compresses the positive output without new observations. A union
+bound over the geometric event and the conditional moment event gives
+probability at least $1-\delta$. Equation~\eqref{eq:linear-moment-cost}
+gives \eqref{eq:linear-joint-budget}. Its two terms, including the
+geometric cost, are both bounded by the existing exponential bound.
+The prediction arguments depend only on the geometric and probability
+errors, so their conclusions are unchanged.
+\end{proof}
+
+The improvement concerns the separated moment acquisition term. It
+does not remove the small moment tolerance, the conditioning of the
+positive factorization, or the fine geometry needed to supply that
+factor. The all-node estimator above is retained as a deterministic
+alternative. Both use exactly the same physical command alphabet
+and the same unknown stationary preparation law.
