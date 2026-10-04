@@ -1,0 +1,71 @@
+\section{Finite descriptions and decision complexity}\label{sec:complexity56}
+The qualitative reduction is insensitive to the encoding of real numbers. Complexity statements are not. We first specify a finite input model and then give an explicit finite-precision counterpart to label width.
+
+\begin{theorem}[Finite-group stationary minimization is $\exists\R$-complete]\label{thm:ETR56}
+The input consists of a finite group $G$ given by its full multiplication table, finite seed and query sets, rational categorical vectors $F_{s,j}(g)$ for every $g\in G$, a nonnegative rational tolerance $\varepsilon$, and an integer $k\ge1$ in binary. Deciding whether $M_\varepsilon\le k$ is complete, under polynomial-time many-one reductions, for the existential theory of the reals. Hardness already holds for the trivial group, one query, and zero error. In particular the rational orthogonal polynomial-interface stationary problem is $\exists\R$-hard even with constant readouts and trivial dynamics.
+\end{theorem}
+\begin{proof}
+Let $n=|G|$. If $k\ge n|\mathcal S|$, a deterministic seed--group register realizes every target exactly, so the answer is yes. Otherwise $k$ is bounded by a polynomial in the explicit input length, even though its encoding is binary.
+
+For membership, Theorem~\ref{thm:equivariant56} permits permutation matrices $P_g$ forming a representation of $G$. Introduce real variables for their entries, constrain each entry $x$ by $x(x-1)=0$, impose every row and column sum equal to one, and impose
+\[
+                         P_1=I,
+                 \qquad P_gP_h=P_{gh}\quad(g,h\in G).
+\]
+Introduce simplex variables $\alpha_s$ and categorical decoder rows $d_j(i)$. For every $s,j,g$ and output coordinate $c$, use a nonnegative auxiliary variable $z_{s,j,g,c}$ with
+\[
+ z_{s,j,g,c}\ge\pm\bigl((\alpha_sP_{g^{-1}}d_j)_c-F_{s,j}(g)_c\bigr),
+ \qquad\sum_c z_{s,j,g,c}\le2\varepsilon.
+\]
+This is an existential real formula with rational coefficients, degree at most three, and polynomial size. Padding a representation by fixed unused labels handles an optimum strictly smaller than $k$. Theorem~\ref{thm:equivariant56} proves equivalence with the original unrestricted stationary problem. There is no group-closure computation in this explicit finite-group input model.
+
+For hardness, let $A$ be a rational nonnegative matrix and let $k$ be a proposed nonnegative rank. Delete zero rows; the all-zero case is decided directly. Normalize each remaining row by its positive row sum to obtain a rational row-stochastic matrix $F$. This transformation is polynomial-time and preserves nonnegative rank. Interpret the rows as seeds and the columns as the categories of one query on the trivial group. A zero-error realization gives a stochastic factorization $F=\alpha d$ of inner dimension at most $k$, so the nonnegative rank is at most $k$.
+
+Conversely, from any nonnegative factorization $F=UV$ delete a zero row of $V$ together with its column of $U$, and let $s_i=\sum_cV_{ic}>0$. Put $d_{ic}=V_{ic}/s_i$ and $\alpha_{bi}=U_{bi}s_i$. Then $d$ is row-stochastic and $\sum_i\alpha_{bi}=\sum_cF_{bc}=1$, so $\alpha$ is row-stochastic. Identity command rows yield an exact stationary realization. Thus $M_0$ equals the real nonnegative rank of $F$. Shitov's universality theorem, specifically its complexity consequence \cite[Theorem~2]{Shitov}, makes this decision problem $\exists\R$-complete. The last assertion follows by using the one-dimensional identity matrix as the only physical command and constant rational polynomial readouts.
+\end{proof}
+The upper bound is for an explicitly tabulated finite group. The hardness transfers to rational matrix input, but a polynomial-size existential description of an arbitrary compact matrix closure has not been supplied. Theorem~\ref{thm:effectivemin55} remains the separate termination result for that broader input class. The complexity obstruction above already occurs in randomized initialization and decoding; it is not caused solely by closure algorithms.
+
+\subsection{A finite-table resource counterpart}
+For a categorical interface, a dyadic table of precision $b$ has each probability in $2^{-b}\Z$. Besides peak label width $k$, charge its binary table length, all retained working registers, and the number of fair random bits used. A horizon-$N$ clocked implementation can store initialization, $N$ command tables, and terminal decoders. Its probability-table length is
+\[
+ O\left(b\left(|\mathcal S|k+N|\mathcal A|k^2+
+                                k\sum_jM_j\right)\right).
+\]
+A uniform implementation is one finite algorithm that produces or accesses these tables from the encoded input, horizon, and accuracy. This requirement is additional to the original nonuniform model. An arbitrary real table, without an effective encoding, is not such an algorithm.
+
+\begin{lemma}[Dyadic rounding of a probability row]\label{lem:dyadic56}
+A probability row $p$ with $m$ entries has a dyadic row $\widehat p$ of precision $b$ such that
+\[
+                   \TV(p,\widehat p)\le(m-1)2^{-b}.
+\]
+One exact draw from $\widehat p$ uses at most $b$ independent fair bits.
+\end{lemma}
+\begin{proof}
+Round the first $m-1$ entries down to multiples of $2^{-b}$ and put the remaining mass in the last entry. This is a probability row. Its total variation error equals the mass transferred to the last entry, which is at most $(m-1)2^{-b}$. For sampling, draw a uniform integer in $\{0,\ldots,2^b-1\}$ using $b$ bits and compare it with the integer cumulative row sums. Degenerate rows can use fewer bits.
+\end{proof}
+
+\begin{theorem}[Precision and random-bit budgets]\label{thm:bits56}
+A categorical horizon-$N$ realization of peak width $k$ and error at most $\varepsilon$ admits a dyadic realization on the same registers whose error is at most
+\begin{equation}\label{eq:clockround56}
+       \varepsilon+\bigl((N+1)(k-1)+M_*-1\bigr)2^{-b},
+                         \qquad M_* =\max_j M_j.
+\end{equation}
+Sampling initialization, all transitions, and one terminal answer requires at most $(N+2)b$ fair bits.
+
+For a stationary compact-group realization of width $k$, the corresponding error bound can instead be made independent of $N$:
+\begin{equation}\label{eq:stationaryround56}
+                    \varepsilon+(k+M_*-2)2^{-b}.
+\end{equation}
+The stationary dyadic realization has at most $k$ labels, permutation command tables, table length
+\[
+ O\left(|\mathcal A|k\log(k+1)+
+                   b\left(|\mathcal S|k+k\sum_jM_j\right)\right),
+\]
+and uses at most $2b$ fair bits in total for one experiment of any length. Given exact algebraic encodings of the selected initialization and decoder rows, the rounding and sampling are effective finite procedures.
+\end{theorem}
+\begin{proof}
+Apply Lemma~\ref{lem:dyadic56} to every row. Couple the initial draws maximally and then, as long as the two labels agree, maximally couple their next transition draws. The probability of any disagreement is at most the sum of the initialization and $N$ row errors, hence at most $(N+1)(k-1)2^{-b}$. Conditioned on matching terminal labels, the terminal categorical rows have total variation error at most $(M_*-1)2^{-b}$. The coupling inequality gives \eqref{eq:clockround56}, uniformly over words and queries. The sample count is the number of draws times $b$.
+
+For the stationary claim, first use Theorem~\ref{thm:purification55}. Its transition matrices are permutations and are already dyadic at every precision. Round only initialization and terminal categorical rows. The initialization discrepancy cannot increase under a permutation, so the same coupling gives \eqref{eq:stationaryround56} with no factor $N$. There are no random transition draws, leaving only initialization and one terminal answer. A permutation is stored as $k$ integer images, giving the displayed description bound. Exact comparison of algebraic numbers with dyadic rationals computes the necessary floors and handles equality, after which integer cumulative sampling is immediate.
+\end{proof}
+For a prescribed extra error $\eta>0$, choosing $b$ with the added term in \eqref{eq:clockround56} or \eqref{eq:stationaryround56} at most $\eta$ gives an explicit precision budget. The persistent label uses $\lceil\log_2k\rceil$ bits; an implementation of the sampler also retains a $b$-bit random integer and bounded indexing registers while sampling. These temporary registers are not disguised as free persistent randomness. The description and random-bit bounds do not assert a polynomial time bound for constructing an algebraic optimum. They also do not turn an exact irrational realization into an exact finite-bit one: the extra tolerance is essential in that case.
