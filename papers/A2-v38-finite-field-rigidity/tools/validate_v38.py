@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Qualify an exact committed A2 v38 source; finite checks are not proofs."""
 import argparse
-import collections
 import hashlib
 import json
 import pathlib
@@ -86,6 +85,15 @@ def main():
         require(outputs[0] == outputs[1], 'Ordinary and optimized diagnostics differ')
         (OUT/'finite-diagnostics.json').write_text(outputs[0])
         receipt['diagnostics'] = json.loads(outputs[0])
+        inherited = 'papers/A2-v37-stationary-rigidity/tools/verify_v37.py'
+        require(run(['git','rev-parse','HEAD:'+inherited]).strip()
+                == '5cab78b7f6ea455b675dd4001a9ebf0d1c7dde2b',
+                'Inherited diagnostic script changed')
+        previous = [run([sys.executable]+flags+[str(repo/inherited)])
+                    for flags in [[],['-O']]]
+        require(previous[0] == previous[1], 'Inherited diagnostics differ under -O')
+        (OUT/'retained-finite-diagnostics.json').write_text(previous[0])
+        receipt['retained_diagnostics'] = json.loads(previous[0])
         # Source hashes and archive are taken only from the committed path list.
         rel = PAPER.relative_to(repo).as_posix()
         tracked = run(['git','ls-files','--',rel],cwd=repo).splitlines()
@@ -111,6 +119,13 @@ def main():
                ('undefined' in line.lower() and ('reference' in line.lower() or 'citation' in line.lower()))
                or 'multiply defined' in line or 'Overfull \\hbox' in line or 'Overfull \\vbox' in line]
         (OUT/'layout-findings.json').write_text(json.dumps(bad,indent=2)+'\n')
+        if bad:
+            lines = log.splitlines()
+            contexts = []
+            for index, line in enumerate(lines):
+                if line in bad:
+                    contexts.append('\n'.join(lines[max(0,index-16):index+12]))
+            receipt['layout_context'] = contexts
         require(not bad, 'Primary has reference or layout findings: '+repr(bad))
         shutil.copy2(build/'main.pdf',OUT/'main.pdf')
         metadata = run(['pdfinfo',str(OUT/'main.pdf')])
