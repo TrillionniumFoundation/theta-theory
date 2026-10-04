@@ -1,0 +1,25 @@
+# Primary-source comparison — Revision 72
+
+This is an author-side theorem comparison, not an independent priority clearance. The v71/r46 reports requested the three direct environment/channel-box antecedents below. Their mechanisms are explicitly credited in both the focused article and the written proofs. No claim to exclude every equivalent result in other formulations is made.
+
+## Direct programme and channel-box antecedents
+
+**Das–Wilde, Quantum reading capacity: General definition and bounds.** IEEE Transactions on Information Theory 65 (2019), 7566–7583, DOI 10.1109/TIT.2019.2929925; arXiv:1703.03706v3. Definition 3 uses a common interaction with target-dependent environment states. Proposition 2 reduces an adaptive reading protocol to processing those states. This is the direct antecedent for the conditional-row common-programme upper bound. A reading capacity is not the finite-use covering cardinality of a rank-stratified supplied instrument family. We do not claim either common processing or product-state data processing as new.
+
+**Wilde–Berta–Hirche–Kaur, Amortized channel divergence for asymptotic quantum channel discrimination.** Letters in Mathematical Physics 110 (2020), 2277–2336, DOI 10.1007/s11005-020-01297-7; arXiv:1808.01498v2. Definition 36 and Theorem 37 give environment seizing and exact finite-use discrimination equalities. Their discussion also extends seizing to multiple channels. The covering corollary here specifies a fixed ambient state domain and a family-uniform left inverse, then maps all arbitrary covering centres through the same superchannel. The reduction itself is theirs; its rank-state covering and rational-code consequences use additional inherited geometry. The publisher's volume is 110; the arXiv abstract's journal field says 100 and is not copied.
+
+**Wang–Wilde, Resource theory of asymmetric distinguishability for quantum channels.** Physical Review Research 1 (2019), 033169, DOI 10.1103/PhysRevResearch.1.033169; arXiv:1907.06306v2. Section III.A (not “III.1”) treats common transformations between environment-seizable channel boxes and state boxes; subsequent sections distinguish parallel and sequential tasks. This is the direct superchannel antecedent. Our family covering includes unrestricted centre classes and a rank-stratified supplied programme domain, rather than asserting novelty for binary equivalence. The Pauli/Bell example is standard. The state-resource companion has article number 033170 and is not substituted for this channel paper.
+
+## Imported measurement-discrimination theorem
+
+**Puchała–Pawela–Krawiec–Kukulski–Oszmaniec, Multiple-shot and unambiguous discrimination of von Neumann measurements.** Quantum 5 (2021), 425, DOI 10.22331/q-2021-04-06-425; arXiv:1810.05122v4. Corollary 1 gives the exact N-query parallel distance through the phase-optimized eigenvalue arc; Theorem 2 proves optimality against adaptive networks. With one-use distance z<2, this yields 2 sin(min(N arcsin(z/2),pi/2)); z=2 is handled directly. This full result, not a new local contraction estimate, supplies the readout scale. It does not itself count rank-aware conditional-state families or provide our direct rational-projector description.
+
+## What is added and what is inherited
+
+The mixed basis/conditional-state product covering and rational flag chart are proved here. The chart uses classical partial-pivot LU and rational orthogonalization; neither algorithm is an invention of this revision. Its use removes every column phase, gives a bounded d^2-d-dimensional covering with exact legal rational images, and composes with the existing singular conditional-row code. An earlier unfinished v72 proposal planned exhaustive Givens flag search; the completed implementation instead constructs a chart directly from rational projectors. The v70 projective-unitary atlas remains unchanged as an inherited result.
+
+The v71 fixed-readout/full-error theorems, v70 coherent/preparation law, and earlier rank-state, Choi, streaming and compact-group results remain in their proof graphs. Earlier literature records are retained under predecessor-v71-audit and the unchanged repository paths. Classical local geometry, purification, programme reductions and finite-dimensional estimators are credited rather than represented as isolated new principles.
+
+The observable-readout and coherent tensor laws retain small-error ranges. Full fixed submaximal error transfers to seizable state families by exact identification, not by treating coherent resolution as a tomography scale. The unresolved priority comparison concerns equivalent finite-use family covering formulations and approximate programmable measurements; no external expert report has been obtained or simulated.
+
+Primary documents consulted: https://arxiv.org/abs/1703.03706 ; https://arxiv.org/abs/1808.01498 ; https://arxiv.org/abs/1907.06306 ; https://quantum-journal.org/papers/q-2021-04-06-425/ . The proofs and numbered premises were checked in the respective versioned papers, not inferred from these abstract links alone.
