@@ -1,0 +1,33 @@
+name: GTF-I v88 request frozen v87 verification
+on:
+  push:
+    branches: [revision/general-theta-foundations-i-v88-r57-response-2026-10-05]
+    paths: [.github/workflows/gtf-i-v88-baseline-dispatch.yml]
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: write
+jobs:
+  request:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Verify the unchanged reviewed ref and request its existing read-only workflow
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import json,os,urllib.request
+          base='https://api.github.com/repos/TrillionniumFoundation/theta-theory'
+          branch='revision/general-theta-foundations-i-v87-r56-response-2026-10-05'
+          expected='aab076189b7276f6a0b4113b472ea09a7ac640cc'
+          headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'}
+          with urllib.request.urlopen(urllib.request.Request(base+'/git/ref/heads/'+branch,headers=headers)) as response:
+              ref=json.load(response)
+          if ref['object']['sha']!=expected:raise RuntimeError('the reviewed branch moved; refusing unpinned dispatch')
+          body=json.dumps({'ref':branch}).encode()
+          req=urllib.request.Request(base+'/actions/workflows/gtf-i-v87-exact-head.yml/dispatches',data=body,headers=headers,method='POST')
+          with urllib.request.urlopen(req) as response:
+              if response.status!=204:raise RuntimeError('unexpected dispatch response')
+          print(json.dumps({'requested_source':expected,'workflow':'gtf-i-v87-exact-head.yml','status':'dispatch_accepted','verification_success_claimed':False}))
+          PY
