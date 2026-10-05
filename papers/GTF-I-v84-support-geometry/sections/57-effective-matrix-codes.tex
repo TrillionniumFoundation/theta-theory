@@ -1,0 +1,252 @@
+\section{A finite rational code in every dimension}
+\label{sec:matrixcodec77}
+
+The volume argument can be made into a single deterministic code whose
+decoder reconstructs its dictionary from the public parameters.  The
+construction is finite and exact.  Its purpose is to settle the
+constructive description problem; the enumeration below can be very
+large.
+
+\begin{theorem}[Deterministic rational matrix code]
+\label{thm:matrixcodec77}
+Let $d,N\ge1$ be integers and let $0<\delta\le1$ be rational.  There is
+a deterministic finite procedure, using rational arithmetic, that
+constructs an ordered list
+\[
+ \mathcal C_{d,N,\delta}=(C_0,\ldots,C_{M-1})\subset\mathfrak E_d
+\]
+of Gaussian-rational effects with the following properties.
+Every $E\in\mathfrak E_d$ has an assigned index $j(E)$ satisfying
+\begin{equation}\label{eq:matrixcodecerror77}
+ d_N(\mathcal M_E,\mathcal M_{C_{j(E)}})\le\frac{11}{16}\delta.
+\end{equation}
+For fixed $d$,
+\begin{equation}\label{eq:matrixcodecsize77}
+ M\le C_d N^{d^2/2}[\log(N+2)]^{\lfloor d/2\rfloor}\delta^{-d^2},
+\end{equation}
+uniformly in $N$ and $\delta$.  The encoder on a supplied
+Gaussian-rational effect and the decoder on its index both terminate
+using exact arithmetic.  They require no matrix-dependent advice or
+preassigned list of centres.  With $(d,N,\delta)$ public, the payload
+length is $\lceil\log_2 M\rceil$, and for
+$0<\delta\le\delta_d$ it is
+\begin{equation}\label{eq:matrixcodecbits77}
+ \frac{d^2}{2}\log_2N
+ +\lfloor d/2\rfloor\log_2\log(N+2)
+ +d^2\log_2(1/\delta)+O_d(1).
+\end{equation}
+Here $\delta_d$ may be the small-error constant in
+Theorem~\ref{thm:matrixcover76}.  The procedure makes no assertion
+of polynomial running time in the payload length.
+\end{theorem}
+
+\begin{proof}
+Set
+\begin{equation}\label{eq:matrixcodeck77}
+ K=\left\lceil\frac{32dN}{\delta}\right\rceil,
+ \qquad s=\frac{2d}{K},\qquad \eta=\frac{\delta}{16}.
+\end{equation}
+Fix the order of independent real coordinates to be the $d$ diagonal
+entries, followed by the real and imaginary parts of $G_{ij}$ for
+$i<j$ in lexicographic order.  Let $\mathcal G_{d,K}$ consist of the
+legal Hermitian matrices whose diagonal coordinates belong to
+$\{0,1/K,\ldots,1\}$ and whose remaining coordinates belong to
+$\{-1,-1+1/K,\ldots,1\}$.  List these matrices in the induced
+lexicographic order.  This list is finite, and it contains zero.
+
+Traverse the list once.  Retain its first element.  Retain a subsequent
+element $G$ exactly when
+\begin{equation}\label{eq:matrixcodecgreedy77}
+ Q_N(G,C)^2>\eta^2
+ \quad\hbox{for every previously retained element }C.
+\end{equation}
+The retained elements, in their order of appearance, form
+$\mathcal C_{d,N,\delta}$.  Every grid element either is retained or
+has a retained predecessor $C$ with $Q_N(G,C)\le\eta$.
+No triangle inequality for $Q_N$ is used.
+
+We first verify that the whole procedure is exact.  Legality of a
+Gaussian-rational Hermitian matrix is decidable by exact Schur
+elimination, applied to $G$ and $I-G$.  A negative pivot excludes
+positive semidefiniteness.  A zero pivot in a positive semidefinite
+matrix forces the corresponding row and column of the remaining
+matrix to vanish; otherwise the test rejects.  A positive pivot
+reduces the question to the exact Schur complement.  These rules
+terminate after at most $d$ pivots, including on singular strata.
+For a legal rational pair, its midpoint $A$ and variance $A(I-A)$
+are Gaussian rational.  The equation
+\[
+ A(I-A)X+XA(I-A)+N^{-1}X=G-C
+\]
+has an invertible Gaussian-rational coefficient matrix.  Solving it
+gives
+$Q_N(G,C)^2=N\operatorname{tr}((G-C)X)\in\mathbb Q_{\ge0}$.
+Consequently \eqref{eq:matrixcodecgreedy77} is an exact rational
+comparison.  It requires neither spectral coordinates nor a numerical
+eigenvalue threshold.
+
+To encode $E$, first form the inward displacement
+\[
+ E_s=(1-2s)E+sI.
+\]
+Since $s\le1/16$, its spectrum lies in $[s,1-s]$.
+Round each independent real coordinate of $E_s$ to its nearest
+multiple of $1/K$, choosing the larger multiple at a tie, and call
+the resulting Hermitian matrix $G(E)$.  A diagonal entry changes by
+at most $1/(2K)$ and the modulus of an off-diagonal entry changes by
+at most $\sqrt2/(2K)$.  Thus
+\[
+ \|G(E)-E_s\|_{\rm op}\le\frac dK.
+\]
+In particular,
+\begin{equation}\label{eq:matrixcodecgridlegal77}
+ \frac dK I\preceq G(E)\preceq\left(1-\frac dK\right)I.
+\end{equation}
+Every coordinate lies in the prescribed grid range, and hence
+$G(E)\in\mathcal G_{d,K}$.  Moreover,
+\begin{equation}\label{eq:matrixcodecround77}
+ \|E-G(E)\|_{\rm op}
+ \le s+\frac dK=\frac{3d}{K}
+ \le\frac{3\delta}{32N}.
+\end{equation}
+Choose the first retained centre with
+$Q_N(G(E),C_j)^2\le\eta^2$.  Such a centre exists by the completed
+greedy traversal.  The hybrid inequality and
+Theorem~\ref{thm:matrixmetric76} yield
+\[
+ \begin{split}
+ d_N(\mathcal M_E,\mathcal M_{C_j})
+ &\le 2N\|E-G(E)\|_{\rm op}+8Q_N(G(E),C_j)\\
+ &\le\frac{3\delta}{16}+\frac\delta2
+ =\frac{11\delta}{16}.
+ \end{split}
+\]
+This proves \eqref{eq:matrixcodecerror77}.  If $E$ is Gaussian
+rational, the prescribed rounding and every subsequent operation
+are exact finite rational calculations.
+
+For two distinct retained centres,
+Theorem~\ref{thm:matrixmetric76} gives
+\begin{equation}\label{eq:matrixcodecseparation77}
+ d_N(\mathcal M_C,\mathcal M_{C'})
+ \ge\frac1{8192d}\min\{1,Q_N(C,C')\}
+ >\frac{\delta}{131072d},
+\end{equation}
+where $\delta\le1$ was used.  Let $a_d,r_d$ be the constants of
+Lemma~\ref{lem:matrixball76}, and put
+\[
+ b_d=\min\left\{r_d,\frac1{393216d}\right\},\qquad r=b_d\delta.
+\]
+The operational balls of radius $r$ about distinct retained centres
+are disjoint, by \eqref{eq:matrixcodecseparation77} and the triangle
+inequality for $d_N$.  Their measures are each at least
+$a_d(b_d\delta)^{d^2}$.  Hence
+\[
+ M a_d(b_d\delta)^{d^2}\le\mu_N(\mathfrak E_d).
+\]
+Proposition~\ref{prop:matrixvolume76} proves
+\eqref{eq:matrixcodecsize77}.
+
+Both parties reconstruct this same finite list from $(d,N,\delta)$.
+The encoder transmits the binary representation of $j$ in
+$\lceil\log_2 M\rceil$ bits.  The decoder reconstructs the list and
+returns $C_j$ for $j<M$; every unused word of the same length is
+assigned the legal effect $I/2$.
+The codeword contains no additional centre coordinates.  Equation
+\eqref{eq:matrixcodecsize77} gives the upper bound in
+\eqref{eq:matrixcodecbits77}; the covering lower bound of
+Theorem~\ref{thm:matrixcover76} gives the matching lower bound,
+since this list is a radius-$\delta$ cover by
+\eqref{eq:matrixcodecerror77}.  The description of the fixed
+reconstruction algorithm contributes only a constant.  As usual,
+if the parameters are not public, their explicitly chosen header
+representation must be charged separately.
+\end{proof}
+
+\paragraph{Real input and finite precision.}
+The covering statement concerns the entire real effect body.  To
+interpret its encoder computationally on a real input, a representation
+of that input must be supplied.  A certified rational approximation
+of each independent real coordinate to error at most $1/(8K)$ is
+sufficient.  Apply the inward displacement to this approximation
+and then use the same exact nearest-grid rounding.  Relative to the
+true $E_s$, each independent coordinate then has error at most
+$5/(8K)$; each complex off-diagonal error is at most
+$5\sqrt2/(8K)<1/K$.  Therefore
+\eqref{eq:matrixcodecgridlegal77}--\eqref{eq:matrixcodecround77}
+and the full error bound remain valid.  The exact supplied-matrix
+implementation takes Gaussian-rational input; no physical-device
+learning operation is implicit in that interface.
+
+\paragraph{Computational scope.}
+The ambient grid contains at most
+\begin{equation}\label{eq:matrixcodecwork77}
+ (K+1)^d(2K+1)^{d(d-1)}
+\end{equation}
+candidate coordinate tuples.  The literal algorithm performs exact
+legality tests and, for each legal tuple, comparisons with the retained
+list.  Retaining the list uses $O(Md^2)$ rational entries, and the
+decoder repeats the same construction.  These are finite bounds,
+but their dependence on the requested horizon and precision prevents
+an efficiency assertion in the payload length.  The exact kernel
+\texttt{matrix\_codec.py} implements this specified enumeration,
+greedy test, rounding, and replay.  A resource cutoff is reported as
+an incomplete construction and never as a codebook.  Regression
+checks of small complete cases and of matrix kernels certify those
+computations; they do not assert that a full large-dimensional
+dictionary has been enumerated.
+
+\begin{corollary}[Learning into an optimal-order description]
+\label{cor:matrixlearnedcode77}
+For every fixed $d\ge1$, every integer $N\ge1$, every rational
+$0<\delta\le\min\{1,\delta_0,\delta_d\}$, and every
+$0<\eta\le1/8$, there is one learner, common to all
+$E\in\mathfrak E_d$, which returns a fixed-length word whose
+deterministic public decoder produces a legal effect $C$ with
+\[
+ \sup_{E\in\mathfrak E_d}
+ \mathbb P_E\{d_N(\mathcal M_E,\mathcal M_C)>\delta\}
+ \le\eta.
+\]
+The training budget on every record is at most
+$Cd^4N\delta^{-2}\log(d/\eta)$, and each entangled block has at
+most $N$ calls. The word has length
+\begin{equation}\label{eq:matrixlearnedbits77}
+ \frac{d^2}{2}\log_2N+
+ \lfloor d/2\rfloor\log_2\log(N+2)+
+ d^2\log_2(1/\delta)+O_d(1).
+\end{equation}
+For fixed $d$, both the training order
+$N\delta^{-2}\log(1/\eta)$ and the payload order in
+\eqref{eq:matrixlearnedbits77} are optimal. Payload optimality is
+among fixed-length words with a fixed public decoder into legal
+memoryless ordered binary effects. Encoding after learning uses no
+additional calls to the unknown device.
+\end{corollary}
+\begin{proof}
+Apply Theorem~\ref{thm:matrixlearning77} with accuracy $\delta/2$.
+It returns a legal effect $F$ with rational entries in the public
+input basis. Encode $F$ using Theorem~\ref{thm:matrixcodec77} with
+accuracy $\delta/2$. On the learning success event, the triangle
+inequality gives
+\[
+ d_N(\mathcal M_E,\mathcal M_C)
+ \le\frac\delta2+\frac{11\delta}{32}
+ =\frac{27\delta}{32}<\delta.
+\]
+The second operation is a deterministic computation on the recorded
+estimate. It uses no device calls and does not increase the failure
+probability. Replacing $\delta$ by $\delta/2$ changes the training
+constant and adds only $O_d(1)$ to the payload length.
+
+The scalar subfamily converse in
+Theorem~\ref{thm:matrixlearning77} applies to this learning task as
+well. For the payload converse, a $B$-bit word and fixed decoder have
+at most $2^B$ possible decoded effects. Every $E$ has a strictly
+positive success probability, so at least one of these effects lies
+within distance $\delta$ of $E$. The decoded family is therefore a
+radius-$\delta$ cover of $\mathfrak E_d$. The lower bound in
+Theorem~\ref{thm:matrixcover76} gives
+\eqref{eq:matrixlearnedbits77} with the opposite inequality up to
+$O_d(1)$.
+\end{proof}

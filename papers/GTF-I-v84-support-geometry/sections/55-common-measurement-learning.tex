@@ -1,0 +1,790 @@
+\section{Learning the complete binary qubit effect body}
+\label{sec:commonlearn76}
+
+We now pass from supplied descriptions to an unknown device.  Throughout
+this section the input dimension is two.  Write
+\[
+ E=\tfrac12\bigl((1+b)I+r u\cdot\sigma\bigr),\qquad
+ 0\le r\le1,\qquad |b|+r\le1,
+\]
+with the direction absent when $r=0$.  The bias, contrast, and direction
+are all unknown.  The outputs are ordered and classical, and each call
+consumes its input without a residual quantum output.  A learning
+procedure may prepare entangled input blocks, retain the unused input
+qubits, and use classical feedback between blocks.  It has no access
+to a measurement environment.  Its choices depend only on the public
+parameters and the observed record.
+
+The integer $N$ below is the horizon of a future comparison, measured
+by $d_N$.  The number $M$ of training calls is a separate resource.
+The output is a classical description of a legal effect.
+For a unit vector $w$ set $P_w=(I+w\cdot\sigma)/2$ and write
+$\mathcal M_{p,q,w}$ for the measurement associated with
+$pP_w+q(I-P_w)$, where $p=(1+b+r)/2$ and $q=(1+b-r)/2$.
+We use the spectral quantities
+\[
+ V=p(1-p)+q(1-q),\qquad
+ K_N(p,q)=r\sqrt{N/(V+N^{-1})}.
+\]
+
+\begin{theorem}[Common learning at the finite-use scale]
+\label{thm:commonlearn76}
+There are absolute constants $c,C,\delta_0>0$ such that, for every
+$N\ge1$, $0<\delta\le\delta_0$, and $0<\eta\le1/8$, one common
+learning procedure returns an effect $\widehat E\in\mathfrak E_2$ with
+\begin{equation}\label{eq:commonrisk76}
+ \sup_{E\in\mathfrak E_2}
+  \mathbb P_E\{d_N(\mathcal M_E,\mathcal M_{\widehat E})>\delta\}
+       \le\eta.
+\end{equation}
+On every record it uses at most
+\begin{equation}\label{eq:commoncalls76}
+ M\le C N\delta^{-2}\log(1/\eta)
+\end{equation}
+calls, and every entangled input block has length at most $N$.
+Conversely, every common procedure satisfying
+\eqref{eq:commonrisk76}, with at most $M$ calls on every record,
+obeys
+\begin{equation}\label{eq:commonlower76}
+ M\ge cN\delta^{-2}\log(1/\eta).
+\end{equation}
+The converse permits arbitrary reference-assisted adaptive training
+and bounded public stopping.  The constants are uniform over the
+closed effect body, including scalar, deterministic, and projective
+effects.
+\end{theorem}
+
+The budget in \eqref{eq:commoncalls76} is a deterministic upper
+bound for each completed record, including unsuccessful records.
+It counts calls during training; $N$ specifies only the subsequent
+loss.  The construction uses independent input blocks, retaining at
+most $N-1$ unused input qubits after the next qubit has been supplied,
+and no quantum system between blocks.  Its preparation model permits
+ideal trusted finite-state preparation and fresh fair random signs.
+Preparation cost, classical running time, and classical workspace are
+separate resources.  The reusable payload is charged separately in
+Corollary~\ref{cor:learncode76}.  The proof below specifies a written
+statistical algorithm; the accompanying finite identity checks do not
+constitute a software implementation of its risk guarantee.
+
+The proof constructs one decision tree for the entire parameter body.
+Its experiments are not selected from a known pair of hypotheses.
+The angular part uses multiscale phase estimation, a method with
+antecedents in \cite{HB76,KLY76}.  We give the phase and confidence
+bounds explicitly.  A data-dependent amplitude threshold selects the
+block length without prior calibration of the spectrum.
+
+\subsection{Bernoulli errors and estimated axes}
+
+For $s,t\in[0,1]$ put
+\begin{equation}\label{eq:learnhell76}
+ \mathfrak h(s,t)^2=(\sqrt s-\sqrt t)^2
+                     +(\sqrt{1-s}-\sqrt{1-t})^2.
+\end{equation}
+Write $B_N(s,t)$ for the unhalved distance between the two
+$N$-fold Bernoulli product laws.
+We use the following elementary estimates at both support endpoints.
+
+\begin{lemma}[Endpoint estimation]
+\label{lem:learnendpoint76}
+For every $s,t\in[0,1]$,
+\begin{equation}\label{eq:learnproduct76}
+ B_N(s,t)\le2\sqrt N\,\mathfrak h(s,t).
+\end{equation}
+For each fixed $A>0$ there is $C_A$ such that, if $0<\lambda\le1$ and
+\begin{equation}\label{eq:learnvariance76}
+ |s-t|\le A\bigl(\sqrt{t(1-t)\lambda}+\lambda\bigr),
+\end{equation}
+then $\mathfrak h(s,t)\le C_A\sqrt\lambda$.
+If two estimates of an ordered pair $(p,q)$ each have
+$\mathfrak h$ error at most $\varepsilon$, sorting the estimates
+preserves this bound up to an absolute constant.
+\end{lemma}
+\begin{proof}
+The root fidelity is $1-\mathfrak h^2/2$.  Tensorization and the
+trace--fidelity inequality give
+\[
+ B_N(s,t)\le
+ 2\sqrt{1-(1-\mathfrak h(s,t)^2/2)^{2N}}
+ \le2\sqrt N\,\mathfrak h(s,t).
+\]
+For the first square root in \eqref{eq:learnhell76}, if $t\ge\lambda$
+divide the difference by $\sqrt t$ in
+\eqref{eq:learnvariance76}.  If $t<\lambda$, both $t$ and $s$ are
+at most $C_A\lambda$.  Apply the same argument to their complements.
+For sorting, set $\phi(t)=\arcsin\sqrt t$.  Then
+\[
+ \mathfrak h(s,t)=2\sin\bigl(|\phi(s)-\phi(t)|/2\bigr).
+\]
+The two distances are uniformly comparable on $[0,\pi/2]$.
+Sorting is nonexpansive for the sup norm against an already ordered
+pair of real numbers.  Apply this fact in the $\phi$ coordinate.
+\end{proof}
+
+If $\widehat t$ is the empirical frequency in $n$ Bernoulli trials,
+Bernstein's inequality gives, with failure at most $2e^{-L}$,
+\begin{equation}\label{eq:learnbernstein76}
+ |\widehat t-t|
+ \le\sqrt{2t(1-t)L/n}+\frac{2L}{3n}.
+\end{equation}
+Thus Lemma~\ref{lem:learnendpoint76} applies with
+$\lambda=L/n$, including at $t=0,1$.
+
+For a unit estimate $w$ of $u$, write
+\begin{equation}\label{eq:learnmisalignment76}
+ h=\angle(u,w),\qquad
+ \gamma=\tfrac r2(1-u\cdot w).
+\end{equation}
+The input states on the axes $+w$ and $-w$ have respective success
+probabilities
+\begin{equation}\label{eq:learnaxisprob76}
+ s_+=p-\gamma,\qquad s_-=q+\gamma,
+ \qquad p=\tfrac12(1+b+r),\quad q=\tfrac12(1+b-r).
+\end{equation}
+If $\widehat x$ estimates $x=ru$ with Euclidean error at most $e$,
+normalizing $\widehat x$ gives
+\begin{equation}\label{eq:learnaxiserror76}
+ rh\le\pi\min(r,e),\qquad
+ \gamma\le\min(r,e^2/r)\quad(r>0).
+\end{equation}
+Indeed $\|u-w\|\le2e/r$, $h\le(\pi/2)\|u-w\|$, and
+$\gamma=r\|u-w\|^2/4$.  If $\widehat x=0$, choose a fixed direction;
+then $e\ge r$ gives the same bounds.  At $r=0$ both quantities vanish.
+
+\begin{lemma}[Product learning away from unit contrast]
+\label{lem:productlearn76}
+Suppose $r\le7/8$.  There is a product-input procedure, not requiring
+$b,r,u$ as input, which uses eight groups of $n$ calls and returns a
+legal effect $F$ such that, for $1\le L\le n$,
+\begin{equation}\label{eq:productlearn76}
+ d_N(\mathcal M_E,\mathcal M_F)
+       \le C\bigl(\sqrt{NL/n}+NL/n\bigr)
+\end{equation}
+outside an event of probability at most $Ce^{-L}$.
+\end{lemma}
+\begin{proof}
+First use the positive and negative eigenstates of each of the three
+Pauli axes, with $n$ calls per state.  Encode an observed outcome as
+$Z\in\{-1,1\}$.  The two means on axis $j$ are
+$b+x_j$ and $b-x_j$.  Estimate $x_j$ by half their empirical
+difference.  Put
+\[
+ w_0=1-b^2,\qquad \lambda=L/n.
+\]
+The two variances on axis $j$ sum to $2(w_0-x_j^2)$.
+Bernstein's inequality and a union bound therefore give
+\begin{equation}\label{eq:learnproductvector76}
+ e=\|\widehat x-x\|
+       \le3\bigl(\sqrt{w_0\lambda}+\lambda\bigr).
+\end{equation}
+More explicitly, the coordinate error is at most
+$\sqrt{2w_0\lambda}+4\lambda/3$; the sign observation has range
+length two.  Taking the Euclidean norm gives
+\eqref{eq:learnproductvector76}, since $\sqrt6<3$ and
+$4\sqrt3/3<3$.
+
+Normalize to a direction $w$.  Feasibility and $r\le7/8$ imply
+\begin{equation}\label{eq:learnlowvariance76}
+ w_0\ge r(2-r),\qquad
+ V=\tfrac12(w_0-r^2)\ge w_0/9.
+\end{equation}
+Use \eqref{eq:learnaxiserror76} and
+Theorem~\ref{thm:biasedangular75}.  The square-root term in
+\eqref{eq:learnproductvector76} contributes at most
+$C\sqrt{N\lambda}$ to $K_N(p,q)h$, and its additive term
+contributes at most $CN\lambda$.  Consequently,
+\begin{equation}\label{eq:learnlowangle76}
+ d_N(\mathcal M_{p,q,u},\mathcal M_{p,q,w})
+       \le C\bigl(\sqrt{N\lambda}+N\lambda\bigr).
+\end{equation}
+This calculation does not require a lower bound on $r$ or $w_0$.
+
+It remains to control both endpoint probabilities in
+\eqref{eq:learnaxisprob76}.  For either $t=p$ or $t=q$ put
+$v_t=t(1-t)$.  Since
+\[
+ |p(1-p)-q(1-q)|=r|b|\le r,
+ \qquad w_0=2V+r^2\le4v_t+3r,
+\]
+we claim
+\begin{equation}\label{eq:learngammabound76}
+ \gamma\le9\sqrt{v_t\lambda}+72\lambda.
+\end{equation}
+Equation~\eqref{eq:learnproductvector76} gives
+$e^2\le18(w_0\lambda+\lambda^2)$.  If $r\le\lambda$, use
+$\gamma\le r$.  If $r>\lambda$, use
+\[
+ \gamma\le72v_t\lambda/r+72\lambda,
+ \qquad \gamma\le r,
+\]
+and $\min(r,72v_t\lambda/r)\le\sqrt{72v_t\lambda}$.
+This proves \eqref{eq:learngammabound76}.
+
+Make two fresh groups of $n$ calls, along $+w$ and $-w$.
+Conditional on the previous record, these are Bernoulli trials with
+the parameters in \eqref{eq:learnaxisprob76}.  Their variances differ
+from $v_t$ by at most $\gamma$.  Equations
+\eqref{eq:learnbernstein76} and \eqref{eq:learngammabound76} imply
+\[
+ |\widehat t_{\rm raw}-t|
+       \le C\bigl(\sqrt{v_t\lambda}+\lambda\bigr).
+\]
+For the additional term use
+$\sqrt{\gamma\lambda}
+ \le C(\sqrt{v_t\lambda}+\lambda)$, which follows from
+$\sqrt{AB}\le(A+B)/2$ with
+$A=\sqrt{v_t\lambda}$ and $B=\lambda$.
+Lemma~\ref{lem:learnendpoint76} gives root-distance error
+$C\sqrt\lambda$ for both endpoints.  Sort the two empirical
+parameters to obtain $\widehat p\ge\widehat q$ and return
+$F=\widehat pP_w+\widehat q(I-P_w)$.  The aligned programme
+bound \eqref{eq:alignedspectral75} and
+\eqref{eq:learnproduct76} give a spectral contribution at most
+$C\sqrt{N\lambda}$.  Combine with \eqref{eq:learnlowangle76}.
+All concentration bounds for the fresh groups hold conditionally,
+so their failure probabilities may be added to those of the first
+six groups.
+\end{proof}
+
+\subsection{A common entangled experiment with unknown bias}
+
+\begin{lemma}[Two-plane phase observation]
+\label{lem:ghzreadout76}
+Fix an orthonormal frame $(e_1,e_2,w)$ known to the experimenter.
+For each $i=1,2$ and integer $m\ge1$, there is an $m$-call experiment
+with an observation $Y\in\{-1,1\}$ whose mean, for a chosen phase
+$\varphi$, is
+\begin{equation}\label{eq:ghzreadout76}
+ \mathbb E_EY=\Re(e^{i\varphi}Z_i),\qquad
+ Z_i=\bigl[x\cdot w+i x\cdot e_i\bigr]^m,
+ \quad x=ru.
+\end{equation}
+Two phases estimate the complex number $Z_i$.  For $0<\zeta\le1$
+and $0<\epsilon\le1/2$, four settings, using the two planes,
+estimate both complex numbers with error at most $\zeta$ and
+failure at most $\epsilon$, with at most
+$C\zeta^{-2}\log(C/\epsilon)$ independent blocks per setting.
+
+Fix $a=1/64$.  If $r>0$ and $h=\angle(u,w)\le2a/m$, then
+\begin{equation}\label{eq:ghzamplitude76}
+ .99r^m\le |Z_i|\le r^m,
+ \qquad
+ \operatorname{Arg}Z_i
+       =m\arctan\frac{u\cdot e_i}{u\cdot w},
+\end{equation}
+where the principal argument is used.  If the amplitudes are bounded
+below by a fixed positive constant and $\zeta$ is sufficiently small,
+these observations produce a direction estimate $w'$ with
+\begin{equation}\label{eq:ghzphaseerror76}
+ \angle(u,w')\le C\zeta/m.
+\end{equation}
+\end{lemma}
+\begin{proof}
+Choose a computational basis along the axis perpendicular to the
+plane spanned by $w,e_i$, with phase convention such that the
+off-diagonal matrix element of
+$O=2E-I=bI+ru\cdot\sigma$ is
+$r(u\cdot w+i u\cdot e_i)$.  Prepare
+\[
+ |G_{\varphi,s}\rangle
+       =\frac{|0\rangle^{\otimes m}
+                    +s e^{i\varphi}|1\rangle^{\otimes m}}{\sqrt2},
+\]
+where $s$ is a fresh fair sign for this block.  Conditional on the
+entire preceding record, the two signs have probability $1/2$ each;
+the random draw is independent of all earlier preparation randomness.
+Pass its qubits through the
+measurement and record $Y=s\prod_{j=1}^m Z_j$, where each output
+is encoded as $Z_j\in\{-1,1\}$.  Memorylessness makes the joint
+outcome law the product POVM on the entangled input; the qubits may
+be supplied sequentially while the unused ones are retained.
+
+The expansion of $\langle G_{\varphi,s}|O^{\otimes m}
+|G_{\varphi,s}\rangle$ has diagonal term
+\[
+ \tfrac12\bigl((b+ru\cdot f_i)^m+(b-ru\cdot f_i)^m\bigr),
+\]
+where $f_i$ is the chosen perpendicular axis.  It is independent
+of $s$ and disappears after multiplication by $s$ and averaging.
+The off-diagonal terms give \eqref{eq:ghzreadout76}.  At $x=0$
+the mean is zero and no direction is needed.  In particular
+the experiment removes the unknown bias exactly.  The phases
+$0,\pi/2$ give the real part and the negative imaginary part.
+More precisely, at each of the four settings use
+\begin{equation}\label{eq:learnblockcount77}
+ B(\zeta,\epsilon)
+   =\left\lceil4\zeta^{-2}\log(8/\epsilon)\right\rceil
+\end{equation}
+fresh independent blocks.  Hoeffding's inequality bounds the error
+of each real sample mean by $\zeta/\sqrt2$ outside an event of
+probability $2\exp(-B\zeta^2/4)$.  The union bound over the four
+means is at most $\epsilon$, and each complex error is at most
+$\zeta$.  This bound holds conditional on every preceding record:
+the frame and the setting are then fixed, and the memoryless device
+acts on fresh blocks.  Each estimate batch uses its prescribed
+number of blocks without stopping within the batch.
+
+For the phase conclusions assume $r>0$ and put
+$\theta_i=\arctan((u\cdot e_i)/(u\cdot w))$.  Then
+$|m\theta_i|\le2a$ and
+\[
+ |Z_i|=r^m\bigl(1-(u\cdot f_i)^2\bigr)^{m/2}
+       \ge r^m\cos(h)^m
+       \ge r^m(1-2a^2/m).
+\]
+This proves \eqref{eq:ghzamplitude76}, with no phase ambiguity.
+For the estimates set
+\[
+ \widehat\theta_i=\operatorname{Arg}(\widehat Z_i)/m,
+ \qquad
+ w'=\frac{w+\tan(\widehat\theta_1)e_1
+                   +\tan(\widehat\theta_2)e_2}
+              {\|w+\tan(\widehat\theta_1)e_1
+                   +\tan(\widehat\theta_2)e_2\|}.
+\]
+The exact formula with $\theta_i$ recovers $u$.  For
+$|\widehat Z_i-Z_i|\le|Z_i|/2$,
+\[
+ |\operatorname{Arg}(\widehat Z_i)-\operatorname{Arg}(Z_i)|
+       \le2|\widehat Z_i-Z_i|/|Z_i|.
+\]
+On $|\theta_i|\le1/4$ the displayed map from two angles to a unit
+vector is Lipschitz; a bound of $16$ for angular distance against
+the largest coordinate error follows from differentiation of
+$\tan$ and normalization.  This proves
+\eqref{eq:ghzphaseerror76}.  Our fixed cone lies strictly inside
+the principal-argument interval, and the argument uses no
+unwrapping threshold from a separate phase-estimation theorem.
+\end{proof}
+
+We make the reconstruction rule total.  Fix a coordinate basis of
+$\mathbb R^3$ and a tie-breaking order.  Given a unit vector $w$,
+choose the first coordinate vector minimizing its absolute inner
+product with $w$, normalize its projection onto $w^\perp$ to obtain
+$e_1$, and put $e_2=w\times e_1$.  The projection has norm at least
+$\sqrt{2/3}$, so the frame is defined at every $w$.
+For complex estimates $z_1,z_2$ use the phase formula in the preceding
+proof only when both pass the guard
+\begin{equation}\label{eq:learnphaseguard77}
+ \Re z_i>0,\qquad 8|\Im z_i|\le\Re z_i\quad(i=1,2).
+\end{equation}
+Write $\mathcal R_m(w;z_1,z_2)=(\mathrm{ok},w')$ for the resulting
+update, and set $\mathcal R_m=(\mathrm{fail},w)$ otherwise.  A passed
+guard gives $|\operatorname{Arg}z_i|\le\arctan(1/8)<1/4$;
+the vector to be normalized has inner product one with $w$ and
+cannot vanish.  Zero complex estimates, the branch cut, and an
+out-of-cone phase therefore have prescribed outcomes before an
+argument or tangent is evaluated.
+
+\begin{lemma}[Selecting a block length from the observations]
+\label{lem:noiseblock76}
+Suppose $r\ge5/8$ and an initial known direction $w$ satisfies
+$\angle(u,w)\le a=1/64$.  A common adaptive procedure selects a
+length $m_*$ and a direction $w_*$, for $N\ge1$ and
+$0<\eta\le1/8$, using at most $CN\log(C/\eta)$ calls on every
+record.  With failure at most
+$\eta/16$,
+\begin{align}
+ \tfrac18\min\{N,(1-r)^{-1}\}&\le m_*\le N,
+                                      \label{eq:learnblockscale76}\\
+ r^{m_*}&\ge1/5,
+ &\angle(u,w_*)&\le a/m_*.
+                                      \label{eq:learnblockaxis76}
+\end{align}
+The reciprocal at $r=1$ is interpreted as infinity.  New observations
+at $m_*,w_*$ have both complex amplitudes at least $1/6$.
+\end{lemma}
+\begin{proof}
+Fix $\kappa=a/1024$, and let $H$ be the largest power of two not
+exceeding $N$.  At a tested length $m$, estimate both complex
+numbers in Lemma~\ref{lem:ghzreadout76} to error at most $\kappa$
+with $B(\kappa,\epsilon_m)$ blocks per setting, where
+\begin{equation}\label{eq:learnstagebudget76}
+ \epsilon_m=\frac{\eta m}{32N}.
+\end{equation}
+The following procedure stops at the first rejection; it never
+tests a larger length after that rejection.  Here $w_0$ is the input
+direction and $\bot$ denotes an empty register.
+\begin{center}
+\begin{minipage}{.96\linewidth}
+\small
+\textsc{SelectBlock}$(N,\eta,w_0)$\par
+\begin{tabular}{@{}r@{\quad}p{.88\linewidth}@{}}
+1.& Set $m\gets1$, $w\gets w_0$, and $A\gets\bot$.\\
+2.& Obtain $z_1,z_2$ from the four fresh settings at length $m$
+     and frame $w$, with budgets \eqref{eq:learnstagebudget76}.\\
+3.& If $\min_i|z_i|<1/4$, return $A$ if $A\ne\bot$, and
+     return $(1,w_0)$ otherwise.\\
+4.& Set $(s,v)\gets\mathcal R_m(w;z_1,z_2)$.  If
+     $s=\mathrm{fail}$, return $A$ if $A\ne\bot$, and return
+     $(1,w_0)$ otherwise.\\
+5.& Set $A\gets(m,v)$.  If $m=H$, return $A$.\\
+6.& Set $w\gets v$, $m\gets2m$, and return to step 2.
+\end{tabular}
+\end{minipage}
+\end{center}
+Equality in the amplitude threshold is accepted, and equality in
+the second phase guard is allowed.  All registers, decisions, and
+fallbacks are functions of the observed record.
+
+We prove the assertions on the event that the successive complex
+estimates obey their bounds.  Before a length $m$ is tried the
+angular error is at most $2a/m$: this holds initially, and is
+preserved by each accepted update.  If the amplitude test passes,
+each true amplitude $\rho=|Z_i|$ is at least $1/4-\kappa>1/5$.
+Since $|\operatorname{Arg}Z_i|\le2a$,
+\[
+ \Re z_i\ge\rho(1-2a^2)-\kappa
+       >8(2a\rho+\kappa)\ge8|\Im z_i|.
+\]
+The strict inequality follows directly from $a=1/64$,
+$\kappa=a/1024$, and $\rho\ge1/4-\kappa$.  Thus the guard
+cannot reject such a stage on this event.  The argument bound and
+the Lipschitz constant in Lemma~\ref{lem:ghzreadout76} give an
+updated angular error at most
+\[
+ \frac{32\kappa}{(1/4-\kappa)m}\le\frac{a}{4m}.
+\]
+Furthermore $r^m\ge1/4-\kappa$, whence $m(1-r)\le2$.
+
+On rejection, the amplitude test must have failed, and
+\eqref{eq:ghzamplitude76} gives
+$r^m<(1/4+\kappa)/.99<1/3$.
+Since $r\ge5/8$,
+\[
+ -\log r\le(1-r)/r\le2(1-r),
+ \qquad m(1-r)\ge(\log3)/2.
+\]
+The procedure returns the preceding accepted length $m/2$, which
+is therefore at least
+$(\log3)/(4(1-r))$.  Length one is always accepted on the good
+event, since its true amplitudes exceed $.99(5/8)$.  If the cap is
+reached, the selected length is $H\ge N/2$.  These facts prove
+\eqref{eq:learnblockscale76} and \eqref{eq:learnblockaxis76}.
+At the updated direction the amplitude is at least
+$r^{m_*}\cos(a/m_*)^{m_*}>1/6$.
+
+For completeness, let $\mathcal F_m$ contain the record immediately
+before a possible stage $m$, let $T_m\in\mathcal F_m$ be the event
+that this stage is reached, and let $G_m$ be its complex-error event.
+On every reached record the concentration bound gives
+$\mathbb P_E(G_m^c\mid\mathcal F_m)\le\epsilon_m$.
+Consequently
+\begin{equation}\label{eq:learnconditionalunion77}
+ \mathbb P_E\!\left(\bigcup_m(T_m\cap G_m^c)\right)
+ \le\sum_m\mathbb E_E\!\left[
+       \boldsymbol1_{T_m}\mathbb P_E(G_m^c\mid\mathcal F_m)\right]
+ \le\sum_{m=1,2,4,\ldots,H}\epsilon_m\le\eta/16.
+\end{equation}
+The sample-mean bound holds for every preceding record, even one
+whose frame has left the cone; the cone is needed only to turn
+those sample means into directional information.  Independence
+between stage-failure events is not assumed.
+By Lemma~\ref{lem:ghzreadout76}, the number of calls is bounded by
+an absolute constant times
+\begin{equation}\label{eq:learndyadiccost76}
+ \sum_{m=1,2,4,\ldots,H}
+       m\log\frac{CN}{\eta m}
+       \le C'N\log(C'/\eta).
+\end{equation}
+To see this, write $m=H/2^k$ and use the convergent sums of
+$2^{-k}$ and $k2^{-k}$, together with $1\le N/H<2$.
+The public cap and these budgets bound the cost on every record,
+including records on which an estimate fails.  Rejection can only
+shorten the sum.
+\end{proof}
+
+\subsection{The learning bound and its converse}
+
+All statistical batches use fresh inputs and fresh randomization.
+Table~\ref{tab:learnconfidence77} allocates their error probabilities.
+Each conditional bound is uniform over the preceding record.  A row
+belonging to a branch not taken contributes no failure event.
+
+\begin{table}[ht]
+\caption{Confidence allocation for one execution of the learner.}
+\label{tab:learnconfidence77}
+\small
+\begin{tabular}{@{}p{.27\linewidth}p{.19\linewidth}p{.44\linewidth}@{}}
+\toprule
+Batch & Failure allowance & Conditioning and scope\\
+\midrule
+Coarse Pauli vector & $\eta/8$ & Unconditional; all six input groups
+ jointly.\\[2pt]
+Product-branch Pauli vector & $\eta/8$ & Given the coarse record;
+ six fresh input groups jointly.\\[2pt]
+Dyadic stage $m$ & $\eta m/(32N)$ & Given the record before that
+ stage; all reached stages together have allowance at most
+ $\eta/16$.\\[2pt]
+Fine two-plane estimate & $\eta/8$ & Given the complete search
+ record, including the selected $m_*,w_*$.\\[2pt]
+Fresh endpoint groups & $\eta/16$ each & Given the final estimated
+ axis; the two allowances sum to $\eta/8$, in either branch.\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The conservative sum of all rows is $9\eta/16<\eta$.
+The conditional union calculation \eqref{eq:learnconditionalunion77}
+applies to every row, so this sum requires no independence between
+the events attached to different batches.
+
+\begin{proof}[Proof of Theorem~\ref{thm:commonlearn76}]
+We choose constants in the following order.  Fix the local cone
+$a=1/64$ and $\kappa=a/1024$ as above.  Choose a sufficiently small
+absolute constant $c_*>0$ in the final phase tolerance below.
+Then choose the absolute multipliers in the Bernoulli sample counts
+sufficiently large.  Finally reduce $\delta_0$, if needed, so that
+$\delta_0\le1/4096$ and $c_*\delta_0\le a/100$.  No optimized
+value of these constants is used.  Set
+\begin{equation}\label{eq:learnpublicsamples77}
+ L=\log(C_2/\eta),\qquad
+ n_0=\lceil C_0L\rceil,\qquad
+ n=\lceil C_1N\delta^{-2}L\rceil,
+\end{equation}
+where $C_0,C_1,C_2$ are absolute constants large enough for the
+concentration bounds and loss estimates below.  The common procedure
+is the following.
+\begin{enumerate}
+\item Make the six coarse Pauli experiments, with $n_0$ calls per
+ input, and form their half-difference vector $\widehat x_0$.
+\item If $\|\widehat x_0\|<3/4$, make six fresh Pauli groups of
+ $n$ calls per input and form $\widehat x$.  Set
+ $w_f=\widehat x/\|\widehat x\|$, using the fixed third coordinate
+ direction if $\widehat x=0$, and proceed to step 4.
+\item Otherwise set $w_0=\widehat x_0/\|\widehat x_0\|$ and run
+ \textsc{SelectBlock}$(N,\eta,w_0)$.  At its returned $(m_*,w_*)$,
+ obtain two fresh complex estimates with tolerance
+ $\zeta_*=c_*\delta\sqrt{m_*/N}$ and failure allowance $\eta/8$.
+ Apply $\mathcal R_{m_*}$ to them; take its updated direction as
+ $w_f$ on success and retain $w_f=w_*$ on failure.
+\item Make $n$ fresh calls along each of $+w_f$ and $-w_f$.
+ If the empirical success frequencies are $s_+,s_-$, return
+ \[
+   \widehat E=\max(s_+,s_-)P_{w_f}
+                  +\min(s_+,s_-)(I-P_{w_f}).
+ \]
+\end{enumerate}
+The empirical frequencies already lie in $[0,1]$.  Ties in the
+coarse comparison use step 3; ties between endpoint frequencies
+give a scalar effect.  Together with the frame, phase, and
+first-rejection conventions above, these rules define an output
+for every record, with no retry or additional calibration step.
+
+We verify the risk.  With failure at most $\eta/8$, the coarse
+half-difference estimate satisfies
+\[
+ \|\widehat x_0-x\|\le\varepsilon_0,
+ \qquad \varepsilon_0\le a/100.
+\]
+On this event the two decisions have the explicit overlap
+\[
+\begin{aligned}
+ \|\widehat x_0\|<3/4
+       &\ \Longrightarrow\ r<3/4+1/6400<7/8,\\
+ \|\widehat x_0\|\ge3/4
+       &\ \Longrightarrow\ r\ge3/4-1/6400>5/8.
+\end{aligned}
+\]
+For the product branch, Lemma~\ref{lem:productlearn76} gives error
+at most $\delta/2$ with the sample sizes in
+\eqref{eq:learnpublicsamples77}, after increasing $C_1$.
+Its first six groups have joint allowance $\eta/8$ conditional on
+the coarse record.  After their axis is fixed, each endpoint group
+has allowance $\eta/16$.  These are the product-branch and endpoint
+rows of Table~\ref{tab:learnconfidence77}, and all samples here are
+fresh relative to the coarse test.
+
+For the entangled branch, the normalized initial estimate has
+angular error at most
+$\pi\varepsilon_0/r\le8\pi a/500<a$ by
+\eqref{eq:learnaxiserror76}.  Apply Lemma~\ref{lem:noiseblock76}.
+At the selected length and updated direction, make fresh
+two-plane observations with complex error tolerance
+\begin{equation}\label{eq:learnfinetolerance76}
+ \zeta_*=c_*\delta\sqrt{m_*/N},
+\end{equation}
+and failure allowance $\eta/8$, conditional on the full selection
+record.  On the preceding good event, the two true amplitudes are
+at least $1/6$ and their phases have absolute value at most $a$.
+On the current complex-error event, $\zeta_*\le a/100$ and the inequalities
+$|\sin t|\le|t|$ and $\cos t\ge1-t^2/2$ show that both phase
+guards pass.  The resulting direction $w_f$
+satisfies
+\begin{equation}\label{eq:learnfineaxis76}
+ h_f=\angle(u,w_f)
+       \le Cc_*\delta/\sqrt{Nm_*}.
+\end{equation}
+The calls used in this step are at most
+\begin{equation}\label{eq:learnfinecost76}
+ Cm_*\zeta_*^{-2}\log(C/\eta)
+       \le C'N\delta^{-2}\log(C/\eta).
+\end{equation}
+
+Put $\nu=1-r$.  Since $|b|\le\nu$ and $r\ge5/8$,
+\[
+ r\nu\le V=\tfrac12(1-r^2-b^2)\le\nu.
+\]
+Equation~\eqref{eq:learnblockscale76} implies
+\begin{equation}\label{eq:learnblockvariance76}
+ m_*(V+N^{-1})\ge c_0>0
+\end{equation}
+for an absolute $c_0$.  Thus \eqref{eq:learnfineaxis76} and
+Theorem~\ref{thm:biasedangular75} give
+\begin{equation}\label{eq:learnhighangle76}
+ d_N(\mathcal M_{p,q,u},\mathcal M_{p,q,w_f})
+       \le Cc_*\delta.
+\end{equation}
+The endpoint misalignment is also bounded:
+\begin{equation}\label{eq:learnhighgamma76}
+ \gamma=\tfrac r2(1-u\cdot w_f)
+       \le rh_f^2/4\le Cc_*^2\delta^2/N.
+\end{equation}
+
+The final fresh groups have the public size $n$ in
+\eqref{eq:learnpublicsamples77}.  Conditional on the record fixing
+$w_f$, their success probabilities are exactly
+$p-\gamma$ and $q+\gamma$, and each group obeys Bernstein's
+bound with allowance $\eta/16$.  Conditional Bernstein bounds,
+Lemma~\ref{lem:learnendpoint76}, and
+$\mathfrak h(s,t)^2\le2|s-t|$ give
+\begin{align}
+ \mathfrak h(\widehat p_{\rm raw},p),\,
+ \mathfrak h(\widehat q_{\rm raw},q)
+ &\le C\sqrt{\log(C/\eta)/n}+C\sqrt\gamma\notag\\
+ &\le c'\delta/\sqrt N.
+                                      \label{eq:learnhighend76}
+\end{align}
+The constant $c'$ can be made as small as required by the preceding
+choices of $c_*$ and the sample multiplier.  Sort the estimates and
+return $\widehat E=\widehat pP_{w_f}+\widehat q(I-P_{w_f})$.
+Equations~\eqref{eq:alignedspectral75} and
+\eqref{eq:learnproduct76} make the spectral loss at most
+$\delta/4$; choose $c_*$ so that
+\eqref{eq:learnhighangle76} contributes at most $\delta/4$.
+Table~\ref{tab:learnconfidence77} now gives the stated risk.
+
+Finally we check the budget for every record.  The product branch
+uses exactly $6n_0+8n$ calls.  The entangled branch uses at most
+\begin{equation}\label{eq:learnrecordbudget77}
+ 6n_0+
+ 4\sum_{m=1,2,4,\ldots,H}mB(\kappa,\epsilon_m)
+ +4m_*B(\zeta_*,\eta/8)+2n.
+\end{equation}
+This is a pathwise upper bound: the sum includes even the stages
+not reached after the first rejection.  Its dyadic term is
+$O(N\log(C/\eta))$ by \eqref{eq:learndyadiccost76}, including the
+ceilings in \eqref{eq:learnblockcount77}.  For every returned
+$1\le m_*\le N$, even on a failed record,
+\[
+ 4m_*B(\zeta_*,\eta/8)
+ \le4N+16c_*^{-2}N\delta^{-2}\log(64/\eta).
+\]
+Here $m_*\zeta_*^{-2}=c_*^{-2}N\delta^{-2}$ exactly.
+Since $N\ge1$, $\delta\le\delta_0$, and $\eta\le1/8$, both
+branches satisfy \eqref{eq:commoncalls76}.  The prescribed fallbacks
+always leave a unit direction and a legal effect, and every block
+has at most $H\le N$ inputs.  This proves the upper bound with the
+same worst-record convention as the converse.
+
+For the converse consider the scalar effects
+\begin{equation}\label{eq:learnscalarpair76}
+ E_0=\tfrac12I,
+ \qquad E_1=(\tfrac12+\Delta)I,
+ \qquad \Delta=256\delta/\sqrt N.
+\end{equation}
+Since $\delta\le1/4096$, both parameters lie in $[1/2,9/16]$.
+The finite Bernoulli lower bound in
+Lemma~\ref{lem:bernoulliproduct75} yields
+\begin{align}
+ d_N(\mathcal M_{E_0},\mathcal M_{E_1})
+ &=B_N(1/2,1/2+\Delta)\notag\\
+ &\ge\tfrac1{64}
+       \min\{1,\Delta\sqrt{N/(5/4)}\}>2\delta.
+                                      \label{eq:learnscalarsep76}
+\end{align}
+For these devices every call gives a fresh Bernoulli bit independent
+of the input.  On an entangled input, each conditional reference
+block is the same reduced state multiplied by the scalar outcome
+probability.  Thus any adaptive learning record, including its
+final classical estimate, is a common stochastic processing of
+$M$ independent Bernoulli bits and parameter-independent resources.
+Publicly stopped records may be padded.  The relative entropy before
+processing is at most
+\begin{equation}\label{eq:learnscalarkl76}
+ M D\bigl(\operatorname{Bern}(1/2)\,\|\,
+                \operatorname{Bern}(1/2+\Delta)\bigr)
+   =-\tfrac M2\log(1-4\Delta^2)
+   \le3M\Delta^2.
+\end{equation}
+The two radius-$\delta$ success balls are disjoint by
+\eqref{eq:learnscalarsep76}.  Testing whether the estimated effect
+belongs to the first ball therefore gives two errors at most $\eta$.
+For classical laws $P,Q$, Jensen's inequality gives root fidelity
+at least $e^{-D(P\|Q)/2}$.  The trace--fidelity inequality then
+implies that the sum of testing errors is at least
+$\tfrac12e^{-D(P\|Q)}$.  Consequently
+\[
+ 2\eta\ge\tfrac12e^{-3M\Delta^2},
+ \qquad
+ M\ge\frac{N}{3\cdot256^2\delta^2}
+                    \log\frac1{4\eta}.
+\]
+For $\eta\le1/8$ this proves \eqref{eq:commonlower76}.
+\end{proof}
+
+\begin{corollary}[A learned joint description]
+\label{cor:learncode76}
+For rational $\delta$ in the range of
+Theorem~\ref{thm:commonlearn76}, the learner may return one word of
+the rational joint code, with the same risk and call-count bounds.
+Its payload length is
+\begin{equation}\label{eq:learnpayload76}
+ 2\log_2N+\log_2\log(N+2)
+             +4\log_2(1/\delta)+O(1),
+ \qquad 0<\delta\le\delta_0.
+\end{equation}
+The decoding centre is a legal rational effect.  This is a statement
+about device calls and payload length; classical arithmetic,
+workspace, and state-preparation costs are separate resources.
+\end{corollary}
+\begin{proof}
+Use the learner with loss budget $\delta/2$.  Its output is a finite
+computable expression determined by a finite record.  In particular,
+the empirical frequencies are rational, and the guarded phase roots
+and normalized frames specify algebraic directions.  Choose a
+positive rational $\varepsilon\le\delta/(100N)$ and rational
+approximations $(b_0,x_0)$ to its bias and Bloch vector with
+\[
+ |b_0-\widehat b|+\|x_0-\widehat x\|\le\varepsilon.
+\]
+Set $(b_1,x_1)=(b_0,x_0)/(1+2\varepsilon)$.  Then
+\[
+ |b_1|+\|x_1\|
+       \le\frac{1+\varepsilon}{1+2\varepsilon}\le1,
+\]
+and the exact one-use formula \eqref{eq:biasedoneuse75} bounds the
+distance from the unrounded hypothesis by $3\varepsilon$.
+The $N$-use hybrid inequality adds at most $3N\varepsilon$.
+Apply Theorem~\ref{thm:biasedcodec75} to this rational estimated
+effect with public accuracy $\delta/2$.  Its certified radius is
+$\delta/4$, so the total loss is less than $\delta$.
+The capacity estimate in that theorem, at a constant rescaling of
+accuracy, gives \eqref{eq:learnpayload76}.  This postprocessing uses
+no additional device calls and receives no exact description of the
+unknown target.
+\end{proof}
+
+The loss in Theorem~\ref{thm:commonlearn76} is a future adaptive
+distance.  One-use measurement tomography is studied in
+\cite{MB67,ZRK76}; combining the stated one-use accuracy bounds
+only with the hybrid inequality gives a quadratic dependence on
+the future horizon.  The argument here uses finite-use geometry
+and data-dependent entangled blocks to obtain the linear dependence
+in \eqref{eq:commoncalls76}, with a matching scalar converse.
+Learning a stored programme from which a measurement is later
+retrieved, as in \cite{BDPS76}, has a different output resource.
+The present theorem gives a classical estimate over the entire
+ordered binary qubit body.  Section~\ref{sec:matrixlearning77} uses
+this common qubit procedure after a separate calibration to obtain
+the corresponding learning law on the full matrix effect body.
