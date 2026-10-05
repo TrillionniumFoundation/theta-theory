@@ -1,0 +1,54 @@
+name: GTF-I v89 pinned R58 inputs and read-only predecessor
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v89-r58-response-2026-10-05
+    paths:
+      - .github/workflows/gtf-i-v89-r58-inputs.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inputs:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Check out the immutable reviewed predecessor
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: d1add4a7ba45230b3cba71b47ef46da5e4a88d72
+          fetch-depth: 4
+          sparse-checkout: |
+            .github
+            papers/GTF-I-v88-feedback-reset-width
+          persist-credentials: false
+      - name: Fetch and freeze the immutable controlling reports
+        run: |
+          mkdir -p "$RUNNER_TEMP/gtf89-inputs"
+          git fetch --no-tags --depth=1 origin 601b5b72ce223ee6650e346457a8915ea38a51de c493692c529b0bfe73fcb3c7de9a3b676308f233
+          git show 601b5b72ce223ee6650e346457a8915ea38a51de:GENERAL_THETA_FOUNDATIONS_I_V88_REFEREE_REPORT_R58.md > "$RUNNER_TEMP/gtf89-inputs/FROZEN_R58_REPORT.md"
+          git show c493692c529b0bfe73fcb3c7de9a3b676308f233:GENERAL_THETA_FOUNDATIONS_I_V88_PROOF_PIPELINE_AUDIT_R58.md > "$RUNNER_TEMP/gtf89-inputs/FROZEN_R58_PIPELINE_AUDIT.md"
+          git archive --format=zip --output="$RUNNER_TEMP/gtf89-inputs/predecessor-workflows.zip" HEAD .github
+          sha256sum "$RUNNER_TEMP/gtf89-inputs/"*.md > "$RUNNER_TEMP/gtf89-inputs/report-sha256.txt"
+      - name: Install reconstruction dependencies
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends python3-venv texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+          python3 -m venv "$RUNNER_TEMP/gtf89-venv"
+          "$RUNNER_TEMP/gtf89-venv/bin/pip" install --disable-pip-version-check -r papers/GTF-I-v88-feedback-reset-width/requirements.txt
+      - name: Verify v88 publication read-only in this separate job
+        run: |
+          test "$(git rev-parse HEAD)" = d1add4a7ba45230b3cba71b47ef46da5e4a88d72
+          "$RUNNER_TEMP/gtf89-venv/bin/python" papers/GTF-I-v88-feedback-reset-width/build_revision.py --verify-published > "$RUNNER_TEMP/gtf89-inputs/V88_INDEPENDENT_READONLY.json"
+      - name: Preserve input reports and the independently obtained receipt
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: gtf89-r58-inputs-${{ github.run_id }}
+          path: ${{ runner.temp }}/gtf89-inputs/
+          if-no-files-found: error
+          retention-days: 90
