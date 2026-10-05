@@ -1,0 +1,55 @@
+name: A2-DYN v10 exact-source qualification
+on:
+  push:
+    branches:
+      - revision/a2-dyn-v10-referee-response-2026-10-05
+      - revision/a2-dyn-v10-referee-copy-2026-10-05
+    paths:
+      - papers/A2-DYN-v10-referee-response/**
+      - .github/workflows/a2-dyn-v10-qualification.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: a2-dyn-v10-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  qualify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out exact event source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Archive exact source and preceding mathematical baseline
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          mkdir -p papers/A2-DYN-v10-referee-response/evidence
+          git archive --format=tar HEAD papers/A2-DYN-v10-referee-response papers/A2-DYN-v9-referee-response papers/A2-DYN-v8-referee-response papers/A2-DYN-v7-referee-response papers/A2-DYN-v6-referee-response reviews/a2-dyn-v4-external-top4-review-2026-10-05 reviews/a2-dyn-v8-external-top4-review-2026-10-05 reviews/a2-dyn-v9-external-top4-review-2026-10-05 .github/workflows/a2-dyn-v10-qualification.yml > papers/A2-DYN-v10-referee-response/evidence/exact-source.tar
+      - name: Install native TeX and finite-diagnostic dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra lmodern python3-mpmath
+      - name: Preserve, verify and typeset the complete article
+        env:
+          TZ: UTC
+        run: |
+          export PATH="/usr/bin:$PATH"
+          export SOURCE_DATE_EPOCH="$(git show -s --format=%ct HEAD)"
+          bash papers/A2-DYN-v10-referee-response/build.sh
+      - name: Archive source-bound article and qualification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a2-dyn-v10-${{ github.sha }}
+          if-no-files-found: error
+          retention-days: 90
+          path: |
+            papers/A2-DYN-v10-referee-response/build/main.pdf
+            papers/A2-DYN-v10-referee-response/build/main.log
+            papers/A2-DYN-v10-referee-response/build/main.fls
+            papers/A2-DYN-v10-referee-response/build/pass*.txt
+            papers/A2-DYN-v10-referee-response/evidence/*
