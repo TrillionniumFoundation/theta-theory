@@ -1,0 +1,45 @@
+name: GTF-I v88 immutable R57 inputs
+on:
+  push:
+    branches: [revision/general-theta-foundations-i-v88-r57-response-2026-10-05]
+    paths: [.github/workflows/gtf-i-v88-inputs.yml]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inputs:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: aab076189b7276f6a0b4113b472ea09a7ac640cc
+          fetch-depth: 1
+          sparse-checkout: .github
+          persist-credentials: false
+      - name: Preserve immutable report bytes and current primary literature
+        run: |
+          mkdir -p "$RUNNER_TEMP/gtf88-inputs"
+          git fetch --no-tags --depth=1 origin 796657054bac22426f33520474e4b6020892ee32 0546af1e2f9caebbbc29376e9eee192440f2e1a2
+          git show 796657054bac22426f33520474e4b6020892ee32:GENERAL_THETA_FOUNDATIONS_I_V87_REFEREE_REPORT_R57.md > "$RUNNER_TEMP/gtf88-inputs/FROZEN_R57_REPORT.md"
+          git show 0546af1e2f9caebbbc29376e9eee192440f2e1a2:GENERAL_THETA_FOUNDATIONS_I_V87_PROOF_PIPELINE_AUDIT_R57.md > "$RUNNER_TEMP/gtf88-inputs/FROZEN_R57_PIPELINE_AUDIT.md"
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib,json,os,urllib.request
+          root=Path(os.environ['RUNNER_TEMP'])/'gtf88-inputs'
+          urls={'HMNW.html':'https://arxiv.org/html/2511.10832v2','GHPS.html':'https://arxiv.org/html/2609.40355v1','SHW.html':'https://arxiv.org/html/2011.06569','SHW.pdf':'https://arxiv.org/pdf/2011.06569','GHPS.pdf':'https://arxiv.org/pdf/2609.40355'}
+          records={}
+          for name,url in urls.items():
+              try:
+                  with urllib.request.urlopen(url,timeout=45) as r:
+                      data=r.read();resolved=r.geturl();ctype=r.headers.get('Content-Type','')
+                  (root/name).write_bytes(data)
+                  records[name]={'url':url,'resolved_url':resolved,'content_type':ctype,'sha256':hashlib.sha256(data).hexdigest(),'bytes':len(data),'success':True}
+              except Exception as exc:records[name]={'url':url,'success':False,'error':str(exc)}
+          (root/'RETRIEVAL.json').write_text(json.dumps(records,indent=2)+'\n')
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: gtf88-controlling-inputs
+          path: ${{ runner.temp }}/gtf88-inputs/
+          if-no-files-found: error
