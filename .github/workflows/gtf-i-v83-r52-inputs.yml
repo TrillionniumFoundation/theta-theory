@@ -1,0 +1,31 @@
+name: GTF-I v83 immutable R52 inputs
+on:
+  push:
+    branches: [revision/general-theta-foundations-i-v83-r52-response-2026-10-05]
+    paths: [.github/workflows/gtf-i-v83-r52-inputs.yml]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  freeze:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: 57937576a6f413594589d0509a6816ca4ea3a83e
+          fetch-depth: 1
+          sparse-checkout: .github
+      - name: Freeze the exact external report and proof-pipeline audit
+        run: |
+          git fetch --no-tags --depth=1 origin 5bb27a43c0f78ba99020f605a0489bcbd403e236 7d5b1033f31c348ae60ebfb04e8b8d57b3b9e75e
+          mkdir -p "$RUNNER_TEMP/gtf83-inputs"
+          git show 5bb27a43c0f78ba99020f605a0489bcbd403e236:GENERAL_THETA_FOUNDATIONS_I_V82_REFEREE_REPORT_R52.md > "$RUNNER_TEMP/gtf83-inputs/FROZEN_R52_REPORT.md"
+          git show 7d5b1033f31c348ae60ebfb04e8b8d57b3b9e75e:GENERAL_THETA_FOUNDATIONS_I_V82_PROOF_PIPELINE_AUDIT_R52.md > "$RUNNER_TEMP/gtf83-inputs/FROZEN_R52_PIPELINE_AUDIT.md"
+          cd "$RUNNER_TEMP/gtf83-inputs"
+          sha256sum *.md > SHA256SUMS
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: gtf83-controlling-reports
+          path: ${{ runner.temp }}/gtf83-inputs/
+          if-no-files-found: error
