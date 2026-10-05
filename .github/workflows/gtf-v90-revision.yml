@@ -38,7 +38,7 @@ jobs:
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq texlive-latex-extra texlive-fonts-recommended lmodern
-          python -m pip install --disable-pip-version-check pymupdf sympy numpy
+          python -m pip install --disable-pip-version-check pymupdf==1.26.7 sympy==1.14.0 numpy==2.3.5
       - name: Stage, qualify and publish without touching other papers
         if: ${{ hashFiles('tools/gtf90/stage.py') != '' }}
         env:
@@ -54,7 +54,7 @@ jobs:
           SOURCE=$(git rev-parse HEAD)
           echo "$SOURCE" > /tmp/gtf90-native-sha.txt
           python "$PAPER/build_revision.py" --isolated > /tmp/gtf90-build.json
-          git add "$PAPER"
+          git add "$PAPER/evidence" "$PAPER"/*.pdf
           git commit -m 'publication(GTF-I v90): four manuscripts and source-bound reconstruction evidence'
           PUBLISHED=$(git rev-parse HEAD)
           echo "$PUBLISHED" > /tmp/gtf90-publication-sha.txt
@@ -79,14 +79,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 4
           persist-credentials: false
           ref: ${{ github.sha }}
       - name: Install read-only reconstruction tools
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq texlive-latex-extra texlive-fonts-recommended lmodern
-          python -m pip install --disable-pip-version-check pymupdf sympy numpy
+          python -m pip install --disable-pip-version-check pymupdf==1.26.7 sympy==1.14.0 numpy==2.3.5
       - name: Reconstruct the exact triggering head without write credentials
         run: |
           set -euo pipefail
