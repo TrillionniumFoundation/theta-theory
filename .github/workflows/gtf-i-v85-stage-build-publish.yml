@@ -1,0 +1,109 @@
+name: GTF-I v85 native-source qualification and publication
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v85-r54-response-2026-10-05
+    paths:
+      - .github/workflows/gtf-i-v85-stage-build-publish.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: gtf85-revision-publication
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      PAPER: papers/GTF-I-v85-smooth-boundary-geometry
+      RESPONSE: revision/general-theta-foundations-i-v85-r54-response-2026-10-05
+    steps:
+      - name: Check out this revision anchor and the immutable predecessor
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 20
+          sparse-checkout: |
+            .github
+            papers/GTF-I-v84-support-geometry
+            papers/GTF-I-v85-smooth-boundary-geometry
+      - name: Fetch the two immutable controlling reports
+        run: |
+          git fetch --no-tags --depth=1 origin e96b4d271e60ec636e1e6022d1708b755a9e4d4a 57d23a10cb08171b2ab23464fca8ba89e808f253
+      - name: Install typesetting and pinned exact-arithmetic dependencies
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends python3-venv texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+          python3 -m venv "$RUNNER_TEMP/gtf85-venv"
+          "$RUNNER_TEMP/gtf85-venv/bin/pip" install --disable-pip-version-check -r papers/GTF-I-v84-support-geometry/requirements.txt
+      - name: Expand checked native delta and verify all predecessor proofs
+        run: |
+          "$RUNNER_TEMP/gtf85-venv/bin/python" .github/gtf85/stage_revision.py > "$RUNNER_TEMP/gtf85-STAGING.json"
+          "$RUNNER_TEMP/gtf85-venv/bin/python" "$PAPER/build_revision.py" --check-source > "$RUNNER_TEMP/gtf85-SOURCE_CHECK.json"
+      - name: Commit and push native source only to the existing response branch
+        run: |
+          test "$(git ls-remote origin "refs/heads/$RESPONSE" | cut -f1)" = "$GITHUB_SHA"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'GTF-I v85: prove smooth boundary-curve classification and certified-control stability; respond to R54'
+          git rev-parse HEAD > "$RUNNER_TEMP/gtf85-NATIVE_SHA.txt"
+          git push origin "HEAD:refs/heads/$RESPONSE"
+      - name: Build four manuscripts and 23 exact suites; reconstruct full source and linked journal package
+        run: |
+          "$RUNNER_TEMP/gtf85-venv/bin/python" "$PAPER/build_revision.py" --isolated > "$RUNNER_TEMP/gtf85-BUILD.json"
+          "$RUNNER_TEMP/gtf85-venv/bin/python" "$PAPER/publish_revision.py" > "$RUNNER_TEMP/gtf85-PUBLICATION_PLAN.json"
+      - name: Commit qualified artifacts directly on their native-source parent
+        run: |
+          "$RUNNER_TEMP/gtf85-venv/bin/python" - <<'PY'
+          from pathlib import Path
+          import json, os, subprocess
+          root=Path(os.environ['PAPER'])
+          receipt=json.loads((root/'evidence/BUILD_RECEIPT.json').read_text())
+          head=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+          if receipt['source_commit']!=head or not all(receipt[x] for x in
+              ['qualified_git_source','isolated_native_rebuild','standalone_journal_rebuild']):
+              raise RuntimeError('native qualification missing')
+          names=list(json.loads((root/'evidence/PACKAGE_MANIFEST.json').read_text()))
+          names.append('evidence/PACKAGE_MANIFEST.json')
+          allowed={'paper.pdf','BINARY_SUPPLEMENT.pdf','STRUCTURAL_PAPER.pdf','COMPLETE_REVISION.pdf'}
+          for name in names:
+              path=Path(name)
+              if path.is_absolute() or '..' in path.parts or not(name.startswith('evidence/') or name in allowed):
+                  raise RuntimeError('invalid publication path')
+          meta={k:receipt[k] for k in ['source_commit','source_git_tree','base_commit','documents',
+              'source_files','regression_suites','normal_optimized_identical','isolated_native_rebuild',
+              'standalone_journal_rebuild','preservation','physical_learner_executed',
+              'independent_human_priority_clearance']}
+          meta.update(schema='gtf85.publication/1',publication_identity='The commit containing this file',
+              controlling_reports={'external':'e96b4d271e60ec636e1e6022d1708b755a9e4d4a',
+              'pipeline':'57d23a10cb08171b2ab23464fca8ba89e808f253'},
+              primary_directory=str(root),external_referee_approval_claimed=False)
+          marker=Path('GENERAL_THETA_FOUNDATIONS_I_V85_BUILD_AND_REVIEW.json')
+          marker.write_text(json.dumps(meta,indent=2,sort_keys=True)+'\n')
+          subprocess.run(['git','add','-f','--',*[str(root/n) for n in names],str(marker)],check=True)
+          staged=subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines()
+          if set(staged)!={str(root/n) for n in names}|{str(marker)}:
+              raise RuntimeError('publication contains unintended changes')
+          PY
+          git commit -m 'GTF-I v85: publish four referee manuscripts and source-qualified reconstruction evidence'
+          test "$(git rev-parse HEAD^)" = "$(cat "$RUNNER_TEMP/gtf85-NATIVE_SHA.txt")"
+          git rev-parse HEAD > "$RUNNER_TEMP/gtf85-PUBLICATION_SHA.txt"
+          git push origin "HEAD:refs/heads/$RESPONSE"
+      - name: Verify the exact publication head read-only
+        run: |
+          "$RUNNER_TEMP/gtf85-venv/bin/python" "$PAPER/build_revision.py" --verify-published > "$RUNNER_TEMP/gtf85-PUBLICATION_HEAD.json"
+      - name: Preserve manuscripts, native packages and execution receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: gtf-v85-publication-${{ github.run_id }}
+          path: |
+            ${{ env.PAPER }}/*.pdf
+            ${{ env.PAPER }}/evidence/
+            ${{ runner.temp }}/gtf85-*.json
+            ${{ runner.temp }}/gtf85-*_SHA.txt
+          if-no-files-found: warn
