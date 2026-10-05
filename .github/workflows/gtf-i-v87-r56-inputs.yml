@@ -1,0 +1,32 @@
+name: GTF-I v87 immutable R56 inputs
+on:
+  push:
+    branches: [revision/general-theta-foundations-i-v87-r56-response-2026-10-05]
+    paths: [.github/workflows/gtf-i-v87-r56-inputs.yml]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: 0a7d65923c12334ecc60ec42084bdd0c612e2e49
+          fetch-depth: 1
+          sparse-checkout: .github
+          persist-credentials: true
+      - name: Preserve immutable review inputs
+        run: |
+          git fetch --no-tags --depth=1 origin 9098548d4c8e347193141b34f4a631344500695a 884087a1a62d5d8af4861fed4c4535d8e6eacd0f
+          mkdir -p "$RUNNER_TEMP/gtf87-inputs"
+          git show 9098548d4c8e347193141b34f4a631344500695a:GENERAL_THETA_FOUNDATIONS_I_V86_REFEREE_REPORT_R56.md > "$RUNNER_TEMP/gtf87-inputs/FROZEN_R56_REPORT.md"
+          git show 884087a1a62d5d8af4861fed4c4535d8e6eacd0f:GENERAL_THETA_FOUNDATIONS_I_V86_PROOF_PIPELINE_AUDIT_R56.md > "$RUNNER_TEMP/gtf87-inputs/FROZEN_R56_PIPELINE_AUDIT.md"
+          cd "$RUNNER_TEMP/gtf87-inputs"
+          sha256sum FROZEN_*.md > SHA256SUMS
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: gtf87-controlling-reports
+          path: ${{ runner.temp }}/gtf87-inputs/
+          if-no-files-found: error
