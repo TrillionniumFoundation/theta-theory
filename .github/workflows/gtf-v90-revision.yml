@@ -1,0 +1,100 @@
+name: GTF-I v90 source publication and exact-head reconstruction
+on:
+  push:
+    branches: [revision/general-theta-foundations-i-v90-r59-response-2026-10-06]
+    paths:
+      - '.github/workflows/gtf-v90-revision.yml'
+      - 'tools/gtf90/**'
+      - 'GENERAL_THETA_FOUNDATIONS_I_V90_FINAL_HEAD_REQUEST.json'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: gtf90-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  collect:
+    if: ${{ !contains(github.event.head_commit.message, 'verify-final-head') }}
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Freeze both controlling reports
+        run: |
+          mkdir -p /tmp/gtf90-reports
+          cp GENERAL_THETA_FOUNDATIONS_I_V89_REFEREE_REPORT_R59.md /tmp/gtf90-reports/FROZEN_R59_REPORT.md
+          git fetch --no-tags --depth=1 origin 994c41dbeec1da13b6b6486876855fa30ad7cfd5
+          git show 994c41dbeec1da13b6b6486876855fa30ad7cfd5:GENERAL_THETA_FOUNDATIONS_I_V89_PROOF_PIPELINE_AUDIT_R59.md > /tmp/gtf90-reports/FROZEN_R59_PIPELINE_AUDIT.md
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gtf90-controlling-reports-${{ github.run_id }}
+          path: /tmp/gtf90-reports
+      - name: Install manuscript build tools
+        if: ${{ hashFiles('tools/gtf90/stage.py') != '' }}
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq texlive-latex-extra texlive-fonts-recommended lmodern
+          python -m pip install --disable-pip-version-check pymupdf sympy numpy
+      - name: Stage, qualify and publish without touching other papers
+        if: ${{ hashFiles('tools/gtf90/stage.py') != '' }}
+        env:
+          REVISION_BRANCH: revision/general-theta-foundations-i-v90-r59-response-2026-10-06
+        run: |
+          set -euo pipefail
+          git config user.name 'GTF revision automation'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          python tools/gtf90/stage.py
+          PAPER=papers/GTF-I-v90-operational-memory
+          git add "$PAPER"
+          git commit -m 'revision(GTF-I v90): exact operational memory hierarchy and R59 response'
+          SOURCE=$(git rev-parse HEAD)
+          echo "$SOURCE" > /tmp/gtf90-native-sha.txt
+          python "$PAPER/build_revision.py" --isolated > /tmp/gtf90-build.json
+          git add "$PAPER"
+          git commit -m 'publication(GTF-I v90): four manuscripts and source-bound reconstruction evidence'
+          PUBLISHED=$(git rev-parse HEAD)
+          echo "$PUBLISHED" > /tmp/gtf90-publication-sha.txt
+          git push origin HEAD:"$REVISION_BRANCH"
+          git push origin "$SOURCE":refs/heads/revision/general-theta-foundations-i-v90-native-source-2026-10-06
+          git push origin "$PUBLISHED":refs/heads/revision/general-theta-foundations-i-v90-publication-2026-10-06
+      - uses: actions/upload-artifact@v4
+        if: ${{ always() && hashFiles('tools/gtf90/stage.py') != '' }}
+        with:
+          name: gtf90-publication-${{ github.run_id }}
+          path: |
+            papers/GTF-I-v90-operational-memory
+            /tmp/gtf90-*.json
+            /tmp/gtf90-*-sha.txt
+          if-no-files-found: warn
+  final-head:
+    if: ${{ contains(github.event.head_commit.message, 'verify-final-head') }}
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ github.sha }}
+      - name: Install read-only reconstruction tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq texlive-latex-extra texlive-fonts-recommended lmodern
+          python -m pip install --disable-pip-version-check pymupdf sympy numpy
+      - name: Reconstruct the exact triggering head without write credentials
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python papers/GTF-I-v90-operational-memory/build_revision.py --verify-published > /tmp/gtf90-FINAL_HEAD.json
+          python -c 'import json,os; x=json.load(open("/tmp/gtf90-FINAL_HEAD.json")); assert x["verified_head"]==os.environ["GITHUB_SHA"] and x["read_only"] and x["status"]=="success"'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gtf90-exact-final-head-${{ github.sha }}
+          path: /tmp/gtf90-FINAL_HEAD.json
+          if-no-files-found: error
