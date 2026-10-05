@@ -1,0 +1,49 @@
+name: GTF-I v85 immutable R54 inputs
+on:
+  push:
+    branches: [revision/general-theta-foundations-i-v85-r54-response-2026-10-05]
+    paths: [.github/workflows/gtf-i-v85-r54-inputs.yml]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inputs:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 1
+          sparse-checkout: .github
+          persist-credentials: false
+      - name: Retrieve immutable reports and the primary covariant-learning text
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/gtf85-inputs"
+          curl --fail --location --retry 2 --max-time 60 https://raw.githubusercontent.com/TrillionniumFoundation/theta-theory/e96b4d271e60ec636e1e6022d1708b755a9e4d4a/GENERAL_THETA_FOUNDATIONS_I_V84_REFEREE_REPORT_R54.md -o "$RUNNER_TEMP/gtf85-inputs/FROZEN_R54_REPORT.md"
+          curl --fail --location --retry 2 --max-time 60 https://raw.githubusercontent.com/TrillionniumFoundation/theta-theory/57d23a10cb08171b2ab23464fca8ba89e808f253/GENERAL_THETA_FOUNDATIONS_I_V84_PROOF_PIPELINE_AUDIT_R54.md -o "$RUNNER_TEMP/gtf85-inputs/FROZEN_R54_PIPELINE_AUDIT.md"
+          python3 - <<'PY'
+          from pathlib import Path
+          from urllib.request import Request, urlopen
+          import hashlib, json, os
+          root=Path(os.environ['RUNNER_TEMP'])/'gtf85-inputs'
+          records=[]
+          for url in ['https://arxiv.org/html/2609.39280','https://arxiv.org/html/2609.39280v1','https://arxiv.org/abs/2609.39280']:
+              item={'url':url}
+              try:
+                  with urlopen(Request(url,headers={'User-Agent':'GTF-I scholarly revision literature check'}),timeout=45) as response:
+                      data=response.read(); item.update(status=response.status,final_url=response.url)
+                  name='literature-'+str(len(records))+'.html'
+                  (root/name).write_bytes(data)
+                  item.update(file=name,bytes=len(data),sha256=hashlib.sha256(data).hexdigest())
+              except Exception as exc:
+                  item.update(error=str(exc))
+              records.append(item)
+          (root/'RETRIEVAL.json').write_text(json.dumps(records,indent=2)+'\n')
+          PY
+          cd "$RUNNER_TEMP/gtf85-inputs" && sha256sum *.md > REPORT_SHA256.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: gtf85-controlling-inputs
+          path: ${{ runner.temp }}/gtf85-inputs/
+          if-no-files-found: error
