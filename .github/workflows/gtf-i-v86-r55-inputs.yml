@@ -1,0 +1,33 @@
+name: GTF-I v86 immutable R55 inputs
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v86-r55-response-2026-10-05
+    paths:
+      - .github/workflows/gtf-i-v86-r55-inputs.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inputs:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ca39533970c77a156cafe916ee6287c54c91fa00
+          fetch-depth: 1
+          sparse-checkout: papers/GTF-I-v85-smooth-boundary-geometry
+          persist-credentials: false
+      - name: Freeze exact external report and pipeline audit
+        run: |
+          git fetch --no-tags --depth=1 origin 107182f19e0534ae99cd68fc10cd71dddd1563a7 7dc5d76ace1aa993c946770e0b5b2d8b853e5419
+          mkdir -p "$RUNNER_TEMP/gtf86-inputs"
+          git show 107182f19e0534ae99cd68fc10cd71dddd1563a7:GENERAL_THETA_FOUNDATIONS_I_V85_REFEREE_REPORT_R55.md > "$RUNNER_TEMP/gtf86-inputs/FROZEN_R55_REPORT.md"
+          git show 7dc5d76ace1aa993c946770e0b5b2d8b853e5419:GENERAL_THETA_FOUNDATIONS_I_V85_PROOF_PIPELINE_AUDIT_R55.md > "$RUNNER_TEMP/gtf86-inputs/FROZEN_R55_PIPELINE_AUDIT.md"
+          sha256sum "$RUNNER_TEMP/gtf86-inputs/"*.md > "$RUNNER_TEMP/gtf86-inputs/INPUT_DIGESTS.txt"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: gtf86-controlling-inputs
+          path: ${{ runner.temp }}/gtf86-inputs
+          if-no-files-found: error
