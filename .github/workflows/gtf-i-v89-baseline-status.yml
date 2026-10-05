@@ -1,0 +1,54 @@
+name: GTF-I v88 pinned publication independent status
+on:
+  push:
+    branches: [revision/general-theta-foundations-i-v89-r58-response-2026-10-05]
+    paths: [.github/workflows/gtf-i-v89-baseline-status.yml]
+permissions:
+  contents: read
+  statuses: write
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      BASE: d1add4a7ba45230b3cba71b47ef46da5e4a88d72
+    steps:
+      - name: Check out pinned v88 without persisted credentials
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: d1add4a7ba45230b3cba71b47ef46da5e4a88d72
+          fetch-depth: 4
+          sparse-checkout: papers/GTF-I-v88-feedback-reset-width
+          persist-credentials: false
+      - name: Install exact reconstruction tools
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends python3-venv texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+          python3 -m venv "$RUNNER_TEMP/verify-venv"
+          "$RUNNER_TEMP/verify-venv/bin/pip" install --disable-pip-version-check -r papers/GTF-I-v88-feedback-reset-width/requirements.txt
+      - name: Rebuild the exact old publication read-only
+        run: |
+          test "$(git rev-parse HEAD)" = "$BASE"
+          "$RUNNER_TEMP/verify-venv/bin/python" papers/GTF-I-v88-feedback-reset-width/build_revision.py --verify-published > "$RUNNER_TEMP/V88_STATUS_RECEIPT.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          r=json.loads((Path(os.environ['RUNNER_TEMP'])/'V88_STATUS_RECEIPT.json').read_text())
+          if r['verified_head']!=os.environ['BASE'] or r['status']!='success' or not r['read_only']:
+              raise RuntimeError('wrong verified publication')
+          PY
+      - name: Preserve exact baseline receipt before status attachment
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: gtf-v88-independent-status-${{ github.run_id }}
+          path: ${{ runner.temp }}/V88_STATUS_RECEIPT.json
+          retention-days: 90
+          if-no-files-found: error
+      - name: Attach successful independent reconstruction to the verified v88 SHA
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api --method POST "repos/$GITHUB_REPOSITORY/statuses/$BASE" -f state=success -f context='gtf-v88/independent-pinned-reconstruction' -f description='Pinned v88 rebuilt read-only; trigger and verified SHA are recorded separately' -f target_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
