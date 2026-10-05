@@ -1,0 +1,53 @@
+name: GTF-I v89 exact-head read-only reconstruction
+on:
+  push:
+    branches: [revision/general-theta-foundations-i-v89-r58-response-2026-10-05]
+    paths: [GENERAL_THETA_FOUNDATIONS_I_V89_FINAL_HEAD_REQUEST.json]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: gtf89-final-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Check out the exact submitted object without write credentials
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 4
+          sparse-checkout: |
+            .github
+            papers/GTF-I-v89-resource-profile
+          persist-credentials: false
+      - name: Install pinned reconstruction dependencies
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends python3-venv texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+          python3 -m venv "$RUNNER_TEMP/gtf89-venv"
+          "$RUNNER_TEMP/gtf89-venv/bin/pip" install --disable-pip-version-check -r papers/GTF-I-v89-resource-profile/requirements.txt
+      - name: Reconstruct source, four manuscripts, all regressions and the linked journal package read-only
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          "$RUNNER_TEMP/gtf89-venv/bin/python" papers/GTF-I-v89-resource-profile/build_revision.py --verify-published > "$RUNNER_TEMP/gtf89-FINAL_HEAD.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          r=json.loads((Path(os.environ['RUNNER_TEMP'])/'gtf89-FINAL_HEAD.json').read_text())
+          if r['status']!='success' or r['verified_head']!=os.environ['GITHUB_SHA'] or not r['read_only']:
+              raise RuntimeError('receipt is not for the exact successful read-only head')
+          PY
+      - name: Preserve the source-bound exact-head receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: gtf-v89-final-head-${{ github.sha }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/gtf89-FINAL_HEAD.json
+          retention-days: 90
+          if-no-files-found: error
