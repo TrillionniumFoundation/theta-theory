@@ -19,8 +19,6 @@ jobs:
       PYTHONDONTWRITEBYTECODE: '1'
       PAPER: papers/GTF-I-v83-coupled-boundary-geometry
       RESPONSE: revision/general-theta-foundations-i-v83-r52-response-2026-10-05
-      NATIVE: revision/general-theta-foundations-i-v83-coupled-boundary-native-2026-10-05
-      PUBLICATION: revision/general-theta-foundations-i-v83-coupled-boundary-publication-2026-10-05
     steps:
       - name: Check out this revision anchor and the immutable predecessor
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -46,16 +44,14 @@ jobs:
         run: |
           "$RUNNER_TEMP/gtf83-venv/bin/python" .github/gtf83/stage_revision.py > "$RUNNER_TEMP/gtf83-STAGING.json"
           "$RUNNER_TEMP/gtf83-venv/bin/python" "$PAPER/build_revision.py" --check-source > "$RUNNER_TEMP/gtf83-SOURCE_CHECK.json"
-      - name: Commit and push the actual native source without force or earlier-branch changes
+      - name: Commit and push native source only to the existing response branch
         run: |
           test "$(git ls-remote origin "refs/heads/$RESPONSE" | cut -f1)" = "$GITHUB_SHA"
-          test -z "$(git ls-remote origin "refs/heads/$NATIVE")"
-          test -z "$(git ls-remote origin "refs/heads/$PUBLICATION")"
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git commit -m 'GTF-I v83: prove closed-body covariance upper bounds, noise crossover and polynomial affine legalization; respond to R52'
           git rev-parse HEAD > "$RUNNER_TEMP/gtf83-NATIVE_SHA.txt"
-          git push --atomic origin "HEAD:refs/heads/$RESPONSE" "HEAD:refs/heads/$NATIVE"
+          git push origin "HEAD:refs/heads/$RESPONSE"
       - name: Build three manuscripts and 21 exact suites; reconstruct full source and standalone journal package
         run: |
           "$RUNNER_TEMP/gtf83-venv/bin/python" "$PAPER/build_revision.py" --isolated > "$RUNNER_TEMP/gtf83-BUILD.json"
@@ -96,7 +92,7 @@ jobs:
           git commit -m 'GTF-I v83: publish three referee manuscripts and source-qualified exact reconstruction evidence'
           test "$(git rev-parse HEAD^)" = "$(cat "$RUNNER_TEMP/gtf83-NATIVE_SHA.txt")"
           git rev-parse HEAD > "$RUNNER_TEMP/gtf83-PUBLICATION_SHA.txt"
-          git push --atomic origin "HEAD:refs/heads/$RESPONSE" "HEAD:refs/heads/$PUBLICATION"
+          git push origin "HEAD:refs/heads/$RESPONSE"
       - name: Verify the exact publication head read-only
         run: |
           "$RUNNER_TEMP/gtf83-venv/bin/python" "$PAPER/build_revision.py" --verify-published > "$RUNNER_TEMP/gtf83-PUBLICATION_HEAD.json"
