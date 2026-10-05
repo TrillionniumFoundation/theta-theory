@@ -1,0 +1,46 @@
+name: GTF-I v86 exact-head read-only reconstruction
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v86-r55-response-2026-10-05
+    paths:
+      - GENERAL_THETA_FOUNDATIONS_I_V86_FINAL_HEAD_REQUEST.json
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: gtf86-final-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Check out the exact submitted object
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 4
+          sparse-checkout: |
+            .github
+            papers/GTF-I-v86-one-sided-boundary-geometry
+          persist-credentials: false
+      - name: Install pinned reconstruction dependencies
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends python3-venv texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+          python3 -m venv "$RUNNER_TEMP/gtf86-venv"
+          "$RUNNER_TEMP/gtf86-venv/bin/pip" install --disable-pip-version-check -r papers/GTF-I-v86-one-sided-boundary-geometry/requirements.txt
+      - name: Verify native ancestry, four manuscripts, exact regressions and linked journal package read-only
+        run: |
+          "$RUNNER_TEMP/gtf86-venv/bin/python" papers/GTF-I-v86-one-sided-boundary-geometry/build_revision.py --verify-published > "$RUNNER_TEMP/gtf86-FINAL_HEAD.json"
+      - name: Preserve the exact-head receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: gtf-v86-final-head-${{ github.sha }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/gtf86-FINAL_HEAD.json
+          if-no-files-found: error
