@@ -1,0 +1,40 @@
+name: GTF-I v82 pinned revision inputs
+on:
+  push:
+    branches:
+      - revision/general-theta-foundations-i-v82-r51-response-2026-10-05
+    paths:
+      - .github/workflows/gtf-i-v82-source-export.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out the immutable completed predecessor
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: 67ada63a593d452f23e8d26540504b8fb8ab8acc
+          fetch-depth: 1
+          sparse-checkout: |
+            .github
+            papers/GTF-I-v80-resource-complete-learning
+            papers/GTF-I-v81-finite-risk-certificates
+          persist-credentials: false
+      - name: Export existing sources without executing or modifying them
+        run: |
+          test "$(git rev-parse HEAD)" = 67ada63a593d452f23e8d26540504b8fb8ab8acc
+          git archive --format=zip --output="$RUNNER_TEMP/gtf-v82-pinned-inputs.zip" HEAD .github papers/GTF-I-v80-resource-complete-learning papers/GTF-I-v81-finite-risk-certificates
+          printf '%s\n' '{"schema":"gtf82.input-anchor/1","completed_predecessor":"67ada63a593d452f23e8d26540504b8fb8ab8acc","controlling_external_report":"96a3666ed516ea12fcdb8ede341b7082e4ff2c78","controlling_pipeline_audit":"d01b5b4d48955e8c6f0c5592213b8628e12a66dd","revision_complete":false,"purpose":"Immutable inputs for a new R51 response; no manuscript qualification is claimed."}' > "$RUNNER_TEMP/gtf-v82-input-anchor.json"
+          sha256sum "$RUNNER_TEMP/gtf-v82-pinned-inputs.zip" > "$RUNNER_TEMP/gtf-v82-pinned-inputs.sha256"
+      - name: Preserve pinned manuscript inputs
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: gtf-v82-pinned-inputs-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/gtf-v82-pinned-inputs.zip
+            ${{ runner.temp }}/gtf-v82-input-anchor.json
+            ${{ runner.temp }}/gtf-v82-pinned-inputs.sha256
+          if-no-files-found: error
