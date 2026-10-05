@@ -1,4 +1,4 @@
-name: GTF-I v88 request frozen v87 verification
+name: GTF-I v88 independent frozen-v87 reconstruction
 on:
   push:
     branches: [revision/general-theta-foundations-i-v88-r57-response-2026-10-05]
@@ -6,28 +6,66 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
-  actions: write
 jobs:
-  request:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Check out the exact reviewed v87 publication read-only
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: aab076189b7276f6a0b4113b472ea09a7ac640cc
+          fetch-depth: 4
+          sparse-checkout: |
+            papers/GTF-I-v87-entanglement-width
+          persist-credentials: false
+      - name: Install pinned reconstruction dependencies
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends python3-venv texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+          python3 -m venv "$RUNNER_TEMP/gtf87-venv"
+          "$RUNNER_TEMP/gtf87-venv/bin/pip" install --disable-pip-version-check -r papers/GTF-I-v87-entanglement-width/requirements.txt
+      - name: Reconstruct all v87 documents and suites without modifying the publication
+        run: |
+          test "$(git rev-parse HEAD)" = aab076189b7276f6a0b4113b472ea09a7ac640cc
+          "$RUNNER_TEMP/gtf87-venv/bin/python" papers/GTF-I-v87-entanglement-width/build_revision.py --verify-published > "$RUNNER_TEMP/gtf87-INDEPENDENT_HEAD.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ['RUNNER_TEMP'])/'gtf87-INDEPENDENT_HEAD.json'
+          r=json.loads(p.read_text())
+          if r['verified_head']!='aab076189b7276f6a0b4113b472ea09a7ac640cc' or r['status']!='success' or not r['read_only']:
+              raise RuntimeError('wrong object or incomplete verification')
+          PY
+      - name: Retain the independent exact-object receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: gtf87-independent-aab076189b7276f6a0b4113b472ea09a7ac640cc-${{ github.run_id }}
+          path: ${{ runner.temp }}/gtf87-INDEPENDENT_HEAD.json
+          retention-days: 90
+          if-no-files-found: error
+  exact_object_status:
+    needs: verify
     runs-on: ubuntu-24.04
     timeout-minutes: 5
+    permissions:
+      statuses: write
     steps:
-      - name: Verify the unchanged reviewed ref and request its existing read-only workflow
+      - name: Attach the successful independent check to the reviewed SHA
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           python - <<'PY'
           import json,os,urllib.request
-          base='https://api.github.com/repos/TrillionniumFoundation/theta-theory'
-          branch='revision/general-theta-foundations-i-v87-r56-response-2026-10-05'
-          expected='aab076189b7276f6a0b4113b472ea09a7ac640cc'
+          repo='TrillionniumFoundation/theta-theory'
+          sha='aab076189b7276f6a0b4113b472ea09a7ac640cc'
+          body={'state':'success','context':'gtf-i-v87/independent-read-only','description':'Exact publication reconstructed read-only in a separate job','target_url':'https://github.com/'+repo+'/actions/runs/'+os.environ['GITHUB_RUN_ID']}
           headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'}
-          with urllib.request.urlopen(urllib.request.Request(base+'/git/ref/heads/'+branch,headers=headers)) as response:
-              ref=json.load(response)
-          if ref['object']['sha']!=expected:raise RuntimeError('the reviewed branch moved; refusing unpinned dispatch')
-          body=json.dumps({'ref':branch}).encode()
-          req=urllib.request.Request(base+'/actions/workflows/gtf-i-v87-exact-head.yml/dispatches',data=body,headers=headers,method='POST')
+          req=urllib.request.Request('https://api.github.com/repos/'+repo+'/statuses/'+sha,data=json.dumps(body).encode(),headers=headers,method='POST')
           with urllib.request.urlopen(req) as response:
-              if response.status!=204:raise RuntimeError('unexpected dispatch response')
-          print(json.dumps({'requested_source':expected,'workflow':'gtf-i-v87-exact-head.yml','status':'dispatch_accepted','verification_success_claimed':False}))
+              if response.status!=201:raise RuntimeError('status attachment failed')
           PY
