@@ -1,0 +1,101 @@
+name: GTF-I v88 native-source qualification and publication
+on:
+  push:
+    branches: [revision/general-theta-foundations-i-v88-r57-response-2026-10-05]
+    paths: [.github/workflows/gtf-i-v88-stage-build-publish.yml]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: gtf88-revision-publication
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      PAPER: papers/GTF-I-v88-feedback-reset-width
+      RESPONSE: revision/general-theta-foundations-i-v88-r57-response-2026-10-05
+    steps:
+      - name: Check out this revision anchor and immutable predecessor
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 20
+          sparse-checkout: |
+            .github
+            papers/GTF-I-v87-entanglement-width
+            papers/GTF-I-v88-feedback-reset-width
+      - name: Fetch the two immutable controlling reports
+        run: |
+          git fetch --no-tags --depth=1 origin 796657054bac22426f33520474e4b6020892ee32 0546af1e2f9caebbbc29376e9eee192440f2e1a2
+      - name: Install typesetting and pinned exact-arithmetic dependencies
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends python3-venv texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+          python3 -m venv "$RUNNER_TEMP/gtf88-venv"
+          "$RUNNER_TEMP/gtf88-venv/bin/pip" install --disable-pip-version-check -r papers/GTF-I-v87-entanglement-width/requirements.txt
+      - name: Expand checked native delta and verify complete predecessor proof preservation
+        run: |
+          "$RUNNER_TEMP/gtf88-venv/bin/python" .github/gtf88/stage_revision.py > "$RUNNER_TEMP/gtf88-STAGING.json"
+          "$RUNNER_TEMP/gtf88-venv/bin/python" "$PAPER/build_revision.py" --check-source > "$RUNNER_TEMP/gtf88-SOURCE_CHECK.json"
+      - name: Commit and push native source only to the existing response branch
+        run: |
+          test "$(git ls-remote origin "refs/heads/$RESPONSE" | cut -f1)" = "$GITHUB_SHA"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'GTF-I v88: prove conditional-fidelity reset-width interpolation with classical feedback; address R57'
+          git rev-parse HEAD > "$RUNNER_TEMP/gtf88-NATIVE_SHA.txt"
+          git push origin "HEAD:refs/heads/$RESPONSE"
+      - name: Build four manuscripts and 26 exact suites; reconstruct native source and linked journal package
+        run: |
+          "$RUNNER_TEMP/gtf88-venv/bin/python" "$PAPER/build_revision.py" --isolated > "$RUNNER_TEMP/gtf88-BUILD.json"
+          "$RUNNER_TEMP/gtf88-venv/bin/python" "$PAPER/publish_revision.py" > "$RUNNER_TEMP/gtf88-PUBLICATION_PLAN.json"
+      - name: Commit qualified artifacts directly on the native-source parent
+        run: |
+          "$RUNNER_TEMP/gtf88-venv/bin/python" - <<'PY'
+          from pathlib import Path
+          import json,os,subprocess
+          root=Path(os.environ['PAPER'])
+          receipt=json.loads((root/'evidence/BUILD_RECEIPT.json').read_text())
+          head=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+          if receipt['source_commit']!=head or not all(receipt[x] for x in ['qualified_git_source','isolated_native_rebuild','standalone_journal_rebuild']):
+              raise RuntimeError('native qualification missing')
+          names=list(json.loads((root/'evidence/PACKAGE_MANIFEST.json').read_text()))
+          names.append('evidence/PACKAGE_MANIFEST.json')
+          allowed={'paper.pdf','BINARY_SUPPLEMENT.pdf','STRUCTURAL_PAPER.pdf','COMPLETE_REVISION.pdf'}
+          for name in names:
+              path=Path(name)
+              if path.is_absolute() or '..' in path.parts or not(name.startswith('evidence/') or name in allowed):
+                  raise RuntimeError('invalid publication path')
+          meta={k:receipt[k] for k in ['source_commit','source_git_tree','base_commit','documents','source_files','regression_suites','normal_optimized_identical','isolated_native_rebuild','standalone_journal_rebuild','preservation','physical_learner_executed','independent_human_priority_clearance']}
+          meta.update(schema='gtf88.publication/1',publication_identity='The commit containing this file',controlling_reports={'external':'796657054bac22426f33520474e4b6020892ee32','pipeline':'0546af1e2f9caebbbc29376e9eee192440f2e1a2'},primary_directory=str(root),external_referee_approval_claimed=False,baseline_independent_verification_run=37311040200)
+          marker=Path('GENERAL_THETA_FOUNDATIONS_I_V88_BUILD_AND_REVIEW.json')
+          marker.write_text(json.dumps(meta,indent=2,sort_keys=True)+'\n')
+          subprocess.run(['git','add','-f','--',*[str(root/n) for n in names],str(marker)],check=True)
+          staged=subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines()
+          if set(staged)!={str(root/n) for n in names}|{str(marker)}:
+              raise RuntimeError('publication contains unintended changes')
+          PY
+          git commit -m 'GTF-I v88: publish four referee manuscripts and source-qualified exact reconstruction evidence'
+          test "$(git rev-parse HEAD^)" = "$(cat "$RUNNER_TEMP/gtf88-NATIVE_SHA.txt")"
+          git rev-parse HEAD > "$RUNNER_TEMP/gtf88-PUBLICATION_SHA.txt"
+          git push origin "HEAD:refs/heads/$RESPONSE"
+      - name: Verify the exact publication head read-only
+        run: |
+          "$RUNNER_TEMP/gtf88-venv/bin/python" "$PAPER/build_revision.py" --verify-published > "$RUNNER_TEMP/gtf88-PUBLICATION_HEAD.json"
+      - name: Preserve manuscripts, native packages and execution receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: gtf-v88-publication-${{ github.run_id }}
+          path: |
+            ${{ env.PAPER }}/*.pdf
+            ${{ env.PAPER }}/evidence/
+            ${{ runner.temp }}/gtf88-*.json
+            ${{ runner.temp }}/gtf88-*_SHA.txt
+          retention-days: 90
+          if-no-files-found: warn
