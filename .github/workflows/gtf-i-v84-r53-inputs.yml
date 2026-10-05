@@ -1,0 +1,31 @@
+name: GTF-I v84 immutable R53 inputs
+on:
+  push:
+    branches: [revision/general-theta-foundations-i-v84-r53-response-2026-10-05]
+    paths: [.github/workflows/gtf-i-v84-r53-inputs.yml]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: 58cbb2608fa65f1fba1b5d56ab1fd55dfd9dacd7
+          fetch-depth: 1
+          sparse-checkout: .github
+          persist-credentials: false
+      - name: Fetch immutable public report commits and export exact bytes
+        run: |
+          git fetch --no-tags --depth=1 origin 0077ff4b39633c3e9b6947e89f0bbcdd8e5ffe2e 89c8c9cb3d1494d90c3d449d981a7424665256ab
+          mkdir -p "$RUNNER_TEMP/gtf84-inputs"
+          git show 0077ff4b39633c3e9b6947e89f0bbcdd8e5ffe2e:GENERAL_THETA_FOUNDATIONS_I_V83_REFEREE_REPORT_R53.md > "$RUNNER_TEMP/gtf84-inputs/FROZEN_R53_REPORT.md"
+          git show 89c8c9cb3d1494d90c3d449d981a7424665256ab:GENERAL_THETA_FOUNDATIONS_I_V83_PROOF_PIPELINE_AUDIT_R53.md > "$RUNNER_TEMP/gtf84-inputs/FROZEN_R53_PIPELINE_AUDIT.md"
+          sha256sum "$RUNNER_TEMP/gtf84-inputs/"*.md > "$RUNNER_TEMP/gtf84-inputs/SHA256SUMS"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: gtf84-controlling-reports
+          path: ${{ runner.temp }}/gtf84-inputs/
+          if-no-files-found: error
