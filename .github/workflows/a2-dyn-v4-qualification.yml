@@ -1,0 +1,55 @@
+name: A2-DYN v4 exact-source qualification
+on:
+  push:
+    branches:
+      - revision/a2-dyn-v4-referee-response-2026-10-05
+    paths:
+      - papers/A2-DYN-v4-quantitative-periods-and-clock/**
+      - .github/workflows/a2-dyn-v4-qualification.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact event source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install native TeX dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends python3 texlive-latex-extra texlive-fonts-recommended lmodern
+      - name: Verify and build the complete manuscript
+        working-directory: papers/A2-DYN-v4-quantitative-periods-and-clock
+        run: |
+          sh build.sh
+          cmp evidence/source-audit.json build/v4-audit.json
+          if grep -E 'LaTeX Warning|Package .* Warning|Overfull|Underfull|undefined' build/main.log; then
+            echo 'Unresolved TeX diagnostic' >&2
+            exit 1
+          fi
+          python3 - <<'PY'
+          import hashlib, json, os, subprocess
+          from pathlib import Path
+          head = subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+          core = subprocess.check_output(['git','rev-parse','HEAD:papers/A2-DYN-v4-quantitative-periods-and-clock/core'],text=True).strip()
+          if head != os.environ['GITHUB_SHA'] or core != '37509bf72fe8b9e28a7831b2b87fb56a5cff9913':
+              raise SystemExit('Exact source mismatch')
+          row = {'head_sha':head,'core_tree':core,'native_build':'passed','source_and_finite_checks':'passed','pdf_sha256':hashlib.sha256(Path('build/main.pdf').read_bytes()).hexdigest(),'full_raw_LLT_verified':False,'independent_human_review':False}
+          Path('build/remote-build.json').write_text(json.dumps(row,indent=2,sort_keys=True)+'\n')
+          PY
+          git diff --exit-code
+      - name: Upload source-bound article and evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: a2-dyn-v4-${{ github.sha }}
+          if-no-files-found: error
+          retention-days: 90
+          path: |
+            papers/A2-DYN-v4-quantitative-periods-and-clock/build/main.pdf
+            papers/A2-DYN-v4-quantitative-periods-and-clock/build/*.json
+            papers/A2-DYN-v4-quantitative-periods-and-clock/build/main.log
