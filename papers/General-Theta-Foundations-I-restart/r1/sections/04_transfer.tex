@@ -1,0 +1,54 @@
+\section{Causal morphisms and joint error budgets}\label{sec:transfer}
+A causal morphism $\Gamma:\cE\to\cF$ uses a source experiment to implement a target experiment. Its data are a parameter-independent nonanticipating report transformer, a target-to-source strategy lift, internal simulator state, and explicit correspondences for legal actions, task readout, clock, and costs. Randomization is permitted; access to the unknown parameter or future reports is not. For a parameterized family, its defect is
+\begin{equation}\label{eq:defect}
+ \epsilon_\Gamma=\sup_{\lambda,\alpha\in\mathcal A_\cF}
+ \norm{\law_\lambda^\cE(\Gamma;\mathsf L_\Gamma\alpha)
+          -P^{\alpha}_{\cF,\lambda}}_\TV,
+ \qquad \norm{P-Q}_\TV=\sup_A|P(A)-Q(A)|.
+\end{equation}
+The law includes the common loss-relevant target readout and published cost/clock observations. The supremum is only over the stated horizons and strategy class. Taking the infimum over a declared simulator class gives its causal deficiency; a particular simulator supplies an upper certificate, not an optimality assertion. The fixed-preparation version omits the parameter supremum.
+
+The resource vector is $(N,m,R,D_c,Q,W,P,b_{\rm cal},\tau)$. Here $m$ is the representative label count, $R$ the simulator state count, $D_c$ the controller state count, $Q$ an internally stored clock count, $W$ temporary workspace in bits, $P$ program/readonly description length, $b_{\rm cal}$ calibration precision, and $\tau$ physical elapsed time. An externally supplied visible clock is declared as such; it is not an unacknowledged free memory tape. Acquisition and time budgets are pathwise unless explicitly marked expected or tail budgets. The raw cost of any calibration pilot is included in $N$.
+
+\begin{theorem}[Resource and common-risk composition]\label{thm:morphism}
+Let $\Gamma_1:\cE\to\cF$ and $\Gamma_2:\cF\to\mathfrak G$ have compatible action, task, clock, and strategy interfaces. Suppose their defect bounds are uniform over the lifted strategy classes. Their serial composition is causal, parameter independent, and has defect at most $\min(1,\epsilon_1+\epsilon_2)$. Its resource map is $\rho_1\circ\rho_2$.
+
+In particular a representative machine of $m$ labels, a controller of $D_c$ states, a simulator of $R$ states, and an internal clock of $Q$ states have an implementation with at most $mD_cRQ$ persistent states. If a target raw call requires at most $n_\Gamma$ source calls, and a pilot costs $n_{\rm pil}$ calls, the source acquisition budget is at most $n_{\rm pil}+n_\Gamma N$. Corresponding physical times are added according to the actual protocol. Workspaces and descriptions must be accounted for independently; the state-product formula is not a bound on them.
+
+For a common loss $0\le\ell\le1$ and a target resource vector $b$,
+\begin{equation}\label{eq:risktransfer}
+ \mathcal R_\cE(\rho_\Gamma(b))\le\mathcal R_\cF(b)+\epsilon_\Gamma.
+\end{equation}
+For the prediction task of Theorem~\ref{thm:main}, a source implementation consequently satisfies
+\begin{equation}\label{eq:joint}
+ \mathcal R_\cE(n_{\rm pil}+n_\Gamma N,mD_cRQ)
+ \le B_N+\left(C\sqrt{\Gamma_N\Psi_N(m)}
+       +L\norm{U_N}_{L^2}+v_N^{\rm num}\right)^2+\epsilon_\Gamma+p_{\rm bad},
+\end{equation}
+when the displayed deterministic approximation certificates fail only on an event of probability at most $p_{\rm bad}$. If report approximation is a separate causal step, its bounded-horizon defect from \eqref{eq:pathallowance} is added once, not counted again inside $\epsilon_\Gamma$.
+\end{theorem}
+\begin{proof}
+Interleave the two simulators in causal order. Their joint internal state, with the target controller and clock, is the Cartesian product just counted. Legal actions and readout/clock correspondences compose by their hypotheses. At the path-law level, applying the second nonanticipating kernel to the first simulation cannot increase total variation. Insert the exact intermediate experiment and use the triangle inequality. Resource maps compose in the same execution order; a pathwise acquisition bound composes pathwise, not merely in expectation.
+
+For any target algorithm, execute it through the simulator. The expectation of a $[0,1]$-valued common loss changes by at most the total variation defect, by the layer-cake formula. Infimize over target algorithms to obtain \eqref{eq:risktransfer}. Apply the upper bound of Theorem~\ref{thm:main} to obtain \eqref{eq:joint}. On a bad-certificate event the loss is at most one; on its complement use the valid error bound. This adds at most $p_{\rm bad}$, without claiming that conditioning on the good event preserves the original acquired law.
+\end{proof}
+
+Calibration and numerical update errors are added in $u_t$ before the products in \eqref{eq:transport}; their propagated root-mean-square contributions add before squaring. State counts multiply, so their ideal label-bit accounts add as logarithms. Acquisition and physical-time costs use their actual protocol maps. An upper bound with $m=\lfloor M/(D_cRQ)\rfloor$ applies only when this integer is positive. A matching law in the \emph{total} persistent budget $M$ follows with constant overhead only if $D_c,R,Q$ are uniformly bounded, or if a separate lower bound certifies the same mandatory state cut. There is no unproved reverse memory monotonicity.
+
+\subsection{Which error terms have matching converses?}
+An allowed tolerance is not an unavoidable error. A perfectly calibrated instance belongs to every larger tolerance class. Similarly, a simulator with zero defect satisfies any positive defect allowance. Thus the following converse is formulated for an explicitly specified robust class, rather than silently inserted into \eqref{eq:matching}.
+
+\begin{proposition}[Attainable robust error floors]\label{prop:floors}
+The following common-task subexperiments give sharp error orders.
+
+\textup{(i)} An unobserved target probability is either $1/2-h$ or $1/2+h$, with equal prior probabilities, $0\le h\le1/4$. Every calibration report before the terminal forecast is identical in the two cases. The terminal report is Bernoulli with that target probability. Relative to the oracle that knows the sign, the minimum excess square score is $h^2$.
+
+\textup{(ii)} A hidden fair bit $Z$ is observed exactly in a target experiment. A source experiment instead reports $Z$ with probability $1-\theta$ and an erasure symbol with probability $\theta$, independently of $Z$. The task is to predict a terminal report equal to $Z$ under square loss. With enough labels to retain the source report, its minimum risk is $\theta/4$. A parameter-independent simulator that fills an erasure by a fair bit has parameter-uniform defect $\theta/2$ from the exact-bit target experiment, when the hidden parameter is $Z\in\{0,1\}$ and the terminal readout is included.
+
+Consequently, for a declared class containing these alternatives and a geometry subexperiment of Theorem~\ref{thm:main}, a uniformly available upper bound of order $I_N+\Psi_N(m)+h^2+\epsilon$ is matched from below up to a constant, provided all subexperiments use the same loss normalization and the compared quantity is the same specified excess risk in each member. Witnesses for the four nonnegative terms may be different members of this one class; no single simultaneous hardest member is required.
+\end{proposition}
+\begin{proof}
+In (i), the posterior mean is $1/2$; the projection identity gives the excess $\E(p-1/2)^2=h^2$. It is attained by the constant forecast. In (ii), the posterior mean is $0$ or $1$ on a nonerased report and $1/2$ on erasure. Its conditional variance is zero or $1/4$, so the Bayes risk is $\theta/4$. At either fixed $Z$, filling an erasure produces the wrong report with probability $\theta/2$; the joint terminal target still equals $Z$, proving the claimed defect. Finally a supremum over a class dominates each subexperiment's lower bound, and the maximum of four nonnegative numbers is at least one quarter of their sum. The last assertion is conditional on the stated common-class embedding and on its uniform upper, not an assertion that arbitrary physical families contain these alternatives.
+\end{proof}
+
+The calibration witness also describes compulsory finite-precision information loss when two distinct physical probabilities yield the same numerical input. It does not give a lower bound merely because an implementation \emph{may} use inaccurate arithmetic. A source lower bound cannot be transported by a forward simulator alone. It requires a source witness, or a reverse morphism with its own resource certificate. These distinctions keep \eqref{eq:joint} within the same task metric.

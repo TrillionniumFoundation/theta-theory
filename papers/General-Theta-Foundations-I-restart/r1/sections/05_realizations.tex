@@ -1,0 +1,122 @@
+\section{Two raw-kernel realizations}\label{sec:realizations}
+\subsection{A controlled binary hidden-state filter}\label{sec:filter}
+Let $X_t\in\{0,1\}$ have transition probability $q_0\in(0,1/2)$ of flipping at each raw call. The preparation is $P(X_0=1)=1/2$. A command selects $a$ from a fixed finite subset of $[a_-,a_+]\subset(0,1)$. Conditional on the new hidden state, the report $y\in[-1,1]$ has density
+\begin{equation}\label{eq:hmm-kernel}
+ g(y\mid X_{t+1}=x,a)=\tfrac12(1+a(2x-1)y).
+\end{equation}
+Each call costs one acquisition and one unit of physical time. The exploration may be any specified causal command rule, fixed independently of the encoder. A terminal probe reads $X_N$ and ends the experiment. Further filtering reports and this terminal probe are the designated future tests.
+
+\begin{theorem}[Filtering realization]\label{thm:hmm}
+For this raw-kernel class, the predictive quotient is the scalar conditional probability $p_t=P(X_t=1\mid H_t)$, with the terminal/continuation interface. It has a common compact invariant interval after initialization. For all $N\ge1$ and $m\ge1$,
+\begin{equation}\label{eq:hmm-law}
+ R_\cp(N,m)-B_N\asymp R_\on(N,m)-B_N\asymp m^{-2},
+ \qquad B_N=\E[p_N(1-p_N)].
+\end{equation}
+The constants depend only on $q_0,a_-,a_+$, not on $N$ or on the specified command rule. The upper has a finite recursive implementation. A uniform update/numerical error $u$ in log-odds distance contributes at most $u/(2q_0)$ to the propagated state error. The constants in this statement are not asserted uniform as $q_0\downarrow0$.
+\end{theorem}
+\begin{proof}
+Direct normalization of \eqref{eq:hmm-kernel} gives, with $r=q_0+(1-2q_0)p$,
+\begin{equation}\label{eq:hmm-update}
+ f_a(y\mid p)=\tfrac12[1+ay(2r-1)],\qquad
+ F_{a,y}(p)=\frac{r(1+ay)}{1+ay(2r-1)}.
+\end{equation}
+All denominators are at least $1-a_+$. Conditional laws of all future report words and the terminal probe are functions of $p$ by induction. Conversely the terminal probe has mean $p$, so different $p$ are predictively different. This proves quotient identification and minimality without assuming a covariance or information matrix.
+
+Let
+\[
+ c_- =\frac{q_0(1-a_+)}{1+a_+(1-2q_0)},\qquad c_+=1-c_-.
+\]
+The interval $D=[c_-,c_+]$ contains $1/2$ and is invariant, because the prediction $r$ always lies in $[q_0,1-q_0]$ and the update is increasing in $r$ and $ay$. Use the metric
+$d(p,p')=|\operatorname{logit}(p)-\operatorname{logit}(p')|$.
+On $D$ it is equivalent to Euclidean distance, with constants depending only on the displayed parameters. The map $p\mapsto p$ is the task map, and its inverse-coordinate Lipschitz constants follow from the bounded derivative $1/[p(1-p)]$. This provides a one-dimensional global chart and an effective valid domain.
+
+For update stability, put $v=p(1-p)$ and $\rho=1-2q_0$. The derivative of the predicted log-odds with respect to previous log-odds equals
+\[
+ \frac{\rho v}{q_0(1-q_0)+\rho^2 v}\le\rho.
+\]
+Indeed $v\le1/4$ and $1-\rho^2=4q_0(1-q_0)$, so the denominator is at least $v$. The observation then adds $\log[(1+ay)/(1-ay)]$, independently of the previous state. Thus every same-report update is $\rho$-Lipschitz in $d$. Proposition~\ref{prop:mechanisms}(a) gives $\Gamma_N\le(2q_0)^{-2}$, including initialization rounding.
+
+It remains to verify actual acquired mass. For each preceding history and command,
+\begin{equation}\label{eq:hmm-jacobian}
+ \frac{\partial F_{a,y}(p)}{\partial y}
+ =\frac{2ar(1-r)}{[1+ay(2r-1)]^2}
+ \ge c_y:=\frac{2a_-q_0(1-q_0)}{(1+a_+)^2}>0.
+\end{equation}
+The conditional density of $y$ is at most $(1+a_+)/2$. Change of variables therefore gives a conditional density of $p_{t+1}$ at most $(1+a_+)/(2c_y)$ on its conditional interval and zero elsewhere. Mixtures over the actual histories and commands preserve this upper bound. Its integral is one. Consequently \eqref{eq:mass} holds on the fixed interval $D$ at every $N\ge1$, with $C_g$ this bound times $|D|$. No uniform posterior law has been inserted. Equations~\eqref{eq:chart} and \eqref{eq:mass} give $\Psi_N(m)=|D|^2/m^2$.
+
+For report continuity, direct integration of the density difference gives
+\[
+ \norm{f_a(\cdot\mid p)-f_a(\cdot\mid p')}_\TV
+ =\frac{a\rho}{2}|p-p'|\le\frac{a_+\rho}{8}d(p,p').
+\]
+The terminal Bernoulli kernel has total variation $|p-p'|\le d(p,p')/4$. Hence all loss-relevant reports satisfy \textup{(C)}. An equally spaced rational grid in $p$, rational update \eqref{eq:hmm-update}, and nearest-grid threshold comparisons give an explicit implementation. Approximate input and arithmetic with certified absolute errors are absorbed into $u_t$; denominator and log-odds conversion bounds above translate them to the common metric. For rational calibration, interval arithmetic terminates to any prescribed positive error. The persistent datum is the grid index; a bounded-precision register for the current report and arithmetic is temporary, not a retained real state. Summing the geometric error series gives the last error assertion. Apply Theorem~\ref{thm:main} to conclude.
+\end{proof}
+
+This is a repeatedly updated nonlinear filter, not a once-prepared finite measurement ensemble. The acquired law is generated by the actual observation density at every positive time. Formula~\eqref{eq:hmm-law} concerns prediction along the selected exploration, not the unrestricted optimal information-gathering controller.
+
+\subsection{Singular geometric acquisition with an absorbing report}\label{sec:sensor}
+We next construct a class with no strict contraction during waiting and with genuinely intersecting, different-dimensional acquired supports. Fix finitely many compact boxes $Q_j$ and maps
+\[
+ z_j:Q_j\longrightarrow[1/4,3/4]^d
+\]
+that are bi-Lipschitz with uniform constants in physical Euclidean coordinates. They may be nonlinear and their images may intersect. A dimension-zero box is a point. Prepare a latent mark $J_0$ with probabilities $\pi_j$ and, conditionally on $J_0=j$, a point $V$ uniformly on $Q_j$. The hidden target is $Z=z_{J_0}(V)$. After preparation the raw hidden state is $(Z,A_t)$; the latent mark is retained only on the preparation probability space for analyzing its pushforward law. The mark and any zero-width source coordinates are not supplied to the observer.
+
+The apparatus has an unresolved/absorbed flag $A_t\in\{0,1\}$, initially zero. At each raw attempt, when unresolved, an independent coin with success probability $s\in[0,1]$ is tossed. Failure reports $\bot$ and changes nothing. Success reports $Z$ and sets the flag to one. Thereafter every raw attempt reports $\bot$ and preserves $Z$ and the flag. All attempts, including these holds, cost one acquisition and one unit of physical time. The action ``attempt'' is available in both modes, so no unrecorded action-legality bit is assumed. The terminal menu consists of a flag probe returning $A_N$, and $d$ binary probes with success probabilities $Z_i$, each executed only once as a terminal experiment. Give these $d+1$ probes equal weights.
+
+After failure while unresolved, the hidden target distribution is unchanged: failure probability is independent of $Z$. After a successful report the future target probabilities are exactly the reported $Z$, whether or not the latent mark is identifiable. Thus the predictive quotient is the unresolved point $o$, together with the \emph{glued} set of absorbed predictions $z\in\bigcup_jz_j(Q_j)$. At an intersection the mark is quotiented out, not secretly retained. The flag probe distinguishes $o$ from an absorbed state even when their coordinate means coincide.
+
+Set
+\begin{equation}\label{eq:sensor-baseline}
+ b_* =\frac1{d+1}\sum_{i=1}^d\E[Z_i(1-Z_i)],\quad
+ V_* =\frac1{d+1}\sum_{i=1}^d\Var(Z_i),\quad
+ h_N=(1-s)^N.
+\end{equation}
+For $N=0$ take $h_0=1$, including $s=1$. Let $\Psi^{\rm acq}(m)$ be \eqref{eq:psi} for the absorbed component charts with weights $\pi_j$. Widths there are the actual physical chart widths with the fixed task-weight scaling absorbed into the chart constants.
+
+\begin{theorem}[Stratified acquisition law through rank collapse]\label{thm:sensor}
+For every $s\in[0,1]$, $N\ge0$, and $m\ge2(J+1)$,
+\begin{equation}\label{eq:sensor-law}
+ R_\cp(N,m)-b_*\asymp R_\on(N,m)-b_*
+ \asymp h_NV_*+(1-h_N)\Psi^{\rm acq}(m).
+\end{equation}
+The constants depend only on the finite chart and task constants, not on $s,N$, positive widths, or the distance between intersecting strata. When positive widths vanish, zero coordinates are removed from the predictive quotient and the same assertion holds, including point components. If all component score images (including the unresolved point) are separated, Theorem~\ref{thm:main} gives the all-budget version using the full mixture allocation \eqref{eq:psi}, for every $m\ge1$.
+
+The online construction has $\Gamma_N=1$ in the full-mixture transport certificate. It retains no success count or latent component mark. Finite-precision successful reports with metric error at most $\eta$ give a root-mean-square prediction allowance at most $C\sqrt{1-h_N}\eta$, when all hold operations are exact.
+\end{theorem}
+\begin{proof}
+The preparation is the pushforward of the specified box mixture, and the transition is a normalized nonnegative Borel kernel on the compact target space with its two flags. The admissible belief domain is the unresolved prepared law together with the point beliefs at absorbed targets. It is a disjoint compact union. All determining future-test evaluations are continuous on it; the explicit overwrite/hold versions below also verify the zero-denominator extension clause of Proposition~\ref{prop:quotient}. The probability of $N$ consecutive failures is exactly $h_N$. Conditional on success by $N$, the target law is still the prepared mixture, because all acquisition coins are independent of it. The acquired predictive law is therefore
+\begin{equation}\label{eq:sensor-acquired}
+ h_N\delta_o+(1-h_N)\sum_j\pi_j\,(z_j)_\#\operatorname{Unif}(Q_j),
+\end{equation}
+with the absorbed flag coordinate included in the score. In particular the formal union of all prepared values does not have weight one before it is acquired.
+
+The conditional terminal variance of the flag is zero. On an absorbed history the coordinate variance is $Z_i(1-Z_i)$. On an unresolved history it is
+$\E[Z_i(1-Z_i)]+\Var(Z_i)$, by total variance. Averaging proves
+\begin{equation}\label{eq:sensor-B}
+ B_N=b_*+h_NV_*.
+\end{equation}
+Conditioned on the raw component mark, the acquired charts have exactly uniform physical box densities. Their bi-Lipschitz constants give \textup{(G)}. Their union can have intersections, different local dimensions, and atomic mass. All these properties follow from the raw preparation and report map.
+
+Equip the quotient with Euclidean distance on its weighted score vector. Report continuity holds as follows. Between two absorbed states the next-attempt kernels are identical, namely $\delta_\bot$. Between unresolved and absorbed modes, the variation distance is at most one, while the flag-score distance is $1/\sqrt{d+1}$; a finite global Lipschitz constant follows. Terminal coordinate kernels are Bernoulli and their variation distance is $|Z_i-Z'_i|$; the flag kernel is bounded by the same mode-separation argument. There is no assertion that distinct Dirac reveal channels are TV-continuous: the reveal action is used only from the single unresolved quotient point. On a successful report define the predictive update to overwrite with that reported absorbed state from every previous representative, including the conditional version at a null report in the absorbed mode. On $\bot$, it is the identity.
+
+The machine initially encodes $o$. At a success it chooses a nearest representative in the union codebook, using the reported physical coordinates; on every failure or later hold it leaves the label unchanged. It never reads $J_0$. Conditional on any raw mark $j$, the success-rounding error is bounded by that chart's cover. Therefore the coefficients are exactly those of Proposition~\ref{prop:mechanisms}(c), with the unresolved point as component zero. This proves $\Gamma_N=1$, irrespective of how many holds occur. It also proves the finite-precision allowance: a single error of size $C\eta$ is introduced on an event of probability $1-h_N$, and none on the complementary event.
+
+For completeness one can see the separated oracle and acquisition terms directly. Lemma~\ref{lem:projection}, conditioned on the success event and its latent mark, and the proof of Corollary~\ref{cor:crossing} give an excess of at least $c(1-h_N)\Psi^{\rm acq}(m)$, even if the decoder also uses centers for the unresolved point. For the upper use one exact unresolved label and $m-1$ absorbed grid labels. Allocation scaling gives
+$\Psi^{\rm acq}(m-1)\le C_J\Psi^{\rm acq}(m)$ for $m\ge2(J+1)$: allocating $\lfloor(m-1)/J\rfloor$ to every chart and using the estimate in Corollary~\ref{cor:crossing} proves it. The finite machine just constructed then incurs at most $C(1-h_N)\Psi^{\rm acq}(m)$. Add \eqref{eq:sensor-B}. At $s=0$ or $N=0$ the success term is zero and a single known forecast attains the acquisition term. With zero surviving widths all component charts are points and sufficiently many labels give zero acquired distortion, as the formula states.
+
+For effective implementation, take algebraic calibrated widths and weights, and chart maps with certified finite-precision evaluation. The finite allocation minimum is an algebraic comparison problem. A nearest representative can be selected to within absolute distance $\eta$ by comparing approximated distances; this adds at most $2\eta$ to the best covering radius. No exact comparison of arbitrary input reals is required. A finite readonly table of approximated representatives or a grid-generation program, with separately charged description and temporary workspace, suffices. Thresholds are compared in physical coordinates; no uniform error estimate divides by a collapsing width. This proves the claimed implementation statements.
+\end{proof}
+
+\paragraph{A concrete singular family.}
+In two coordinate dimensions take equal mixture weights on
+\[
+ z_1(u)=(1/2+u,1/2),\quad |u|\le a/2,
+ \qquad
+ z_2(v,w)=(1/2+v,1/2+w),\quad |v|\le b/2,\ |w|\le c/2,
+\]
+where $0\le a,b,c\le1/4$. The actual acquired law has a one-dimensional singular component on a line and a two-dimensional component on a rectangle. The former lies inside the latter when their horizontal ranges overlap. If $c=0$, the rectangle becomes a line; if also $b=0$, it becomes an atom. Before acquisition the support consists only of the unresolved predictive point. The physical scales are
+\[
+ \psi_1(k)=a^2/k^2,\qquad
+ \psi_2(k)=\max\{\max(b,c)^2/k^2,bc/k\}\quad(bc>0),
+\]
+with zero widths removed at the boundary. There is no single smooth acquired manifold at the crossing or a single ambient-dimension exponent. Theorem~\ref{thm:sensor} applies with constants uniform through all these changes. Smooth nonalgebraic bi-Lipschitz distortions of the two charts yield the same conclusion, with their uniform metric constants. Thus the extension is not a statement about a preassigned Hilbert-space rank cut.

@@ -1,0 +1,100 @@
+\section{Proof of the transfer theorem}\label{sec:proof}
+\begin{lemma}[Checkpoint projection]\label{lem:projection}
+For the task \eqref{eq:score},
+\begin{equation}\label{eq:projection}
+ R_\cp(N,m)=B_N+
+ \inf_{c_1,\ldots,c_m\in\mathcal C}\int\min_l\norm{x-c_l}^2\,\nu_N(dx),
+ \qquad \mathcal C=\prod_i[0,\sqrt{v_i}].
+\end{equation}
+Randomized encoders and decoders do not improve this infimum.
+\end{lemma}
+\begin{proof}
+For each executed probe, condition on $H_N$ and on any independent encoder randomization. The cross term in
+\[
+ (T_i-a_i)^2=(T_i-\E[T_i\mid H_N])^2+
+ (\E[T_i\mid H_N]-a_i)^2+
+ 2(T_i-\E[T_i\mid H_N])(\E[T_i\mid H_N]-a_i)
+\]
+has conditional expectation zero. Sum with weights $v_i$. For a retained label, replace a randomized decoder by its conditional mean; convexity cannot increase the risk. For fixed centers, replace a randomized label by a nearest center with the first-index tie rule. This is measurable. Conversely, this rule is a legal checkpoint encoder and attains its codebook distortion. Independent shared random seeds only average the costs of such deterministic codebooks, so cannot lower their infimum. Projection of a center to the box $\mathcal C$ is nonexpansive relative to all points of $\mathcal C$. Compactness gives attainment of the codebook minimum, although only its infimum is needed.
+\end{proof}
+
+\begin{lemma}[Actual anisotropic mass and allocation]\label{lem:geometry}
+Under \textup{(G)}, the distortion in \eqref{eq:projection} lies between $c\Psi_N(m)$ and $C\Psi_N(m)$ for every $m\ge1$. Each component with $k\ge1$ has a $k$-point valid-state cover of radius at most $B\sqrt{d_*\psi_j(k)}$. The conclusions hold with the same constants when any collection of widths is removed at zero.
+\end{lemma}
+\begin{proof}
+Fix a component of positive dimension $d$ and write
+$h=\sqrt{\psi_j(k)}$. Put $R=2h$. For coordinates with $a_i>R$, divide the interval into $n_i=\lceil a_i/R\rceil$ equal pieces; for the other coordinates take one piece. If there are $l$ active coordinates, they are the first $l$, and
+\[
+ \prod_i n_i\le\prod_{i=1}^l\frac{2a_i}{R}
+ =\frac{\prod_{i=1}^la_i}{h^l}\le k.
+\]
+The assertion also holds when $l=0$. Every coordinate interval has length at most $R$. Its midpoint product grid has Euclidean covering radius at most $\sqrt d\,h$, and \eqref{eq:chart} gives the valid-state radius. A point component takes one label and has zero radius. An omitted component can use any retained representative with error at most $D_0$. Minimizing the allocation proves the upper bound, including the cases $m<J$ and atoms of arbitrary weight.
+
+For the lower bound, a score ball of radius $r$ has preimage of Euclidean diameter at most $2r/b$. If it meets the component, its projection on any one coordinate is contained in an interval of length at most $4r/b$. Integrating the actual density in \eqref{eq:mass} over the remaining coordinates gives, for $1\le l\le d$,
+\begin{equation}\label{eq:smallball}
+ P^\beta\{p_N(s_N)\in B(c,r)\mid E_{N,j}\}
+ \le C_g\frac{(4r/b)^l}{\prod_{i=1}^la_i}.
+\end{equation}
+The center $c$ need not lie on the image. This is a bound on the actual experiment, not on a fictitious uniform distribution.
+
+If $J=1$, all $m$ centers can be used in the union bound. For a fixed $l$, choose $r=c_l(\prod_{i=1}^la_i/m)^{1/l}$ so that the union has probability at most $1/2$. The expected squared error is at least $r^2/2$. Maximize over $l$.
+
+If $J>1$, assign each decoder center to a component whose score image is at distance less than $\Delta/3$, if such a component exists. Separation makes this assignment unique. Let $k_j$ be the number assigned. For $r<\Delta/3$, unassigned or differently assigned centers do not cover any point of component $j$. When $k_j\ge1$, use \eqref{eq:smallball} and the preceding radius, capped at $\Delta/4$. Since $\psi_j(k_j)\le D_0^2$, the cap changes the lower-bound constant only by a factor depending on $D_0/\Delta$, $b$, and $C_g$. For $k_j=0$, the component's distortion is at least $\Delta^2/9$, hence at least a fixed multiple of $\psi_j(0)$. At a point with $k_j\ge1$ the required lower bound is zero. Multiply each component bound by its actual weight and sum. We have $\sum_jk_j\le m$. If this sum is zero, give one component a label: its $\psi_j$ cannot increase, since $a_{j,1}\le D_0$. Thus the sum is bounded below by a constant times the minimum in \eqref{eq:psi}. This proves the lower bound for arbitrary decoder centers and all budgets.
+
+Only surviving coordinates were used. No constant in the covering or small-ball argument contains $a_i^{-1}$ except within the displayed physical volume, which is eliminated in the final scale. This proves the rank-uniform assertion.
+\end{proof}
+
+\begin{lemma}[Innovation transport]\label{lem:transport}
+Under \textup{(I)}, for every admitted path,
+\begin{equation}\label{eq:unrolled}
+ e_N\le C_0\sum_jZ_{N,j}r_j+U_N.
+\end{equation}
+Consequently \textup{(T)} implies
+\[
+ \norm{e_N}_{L^2}\le C_0\sqrt{\Gamma_N\sum_jw_{N,j}r_j^2}
+                      +\norm{U_N}_{L^2}.
+\]
+\end{lemma}
+\begin{proof}
+Induct in \eqref{eq:innovation}, distributing each nonnegative multiplicative coefficient. This gives precisely \eqref{eq:transport} and \eqref{eq:unrolled}. Minkowski's inequality and \eqref{eq:energy}, evaluated at $z_j=r_j$, give the second assertion. No independence of the coefficients is used.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:main}]
+Lemma~\ref{lem:projection} and Lemma~\ref{lem:geometry} give the lower bound for every checkpoint encoder. The terminal output of any online encoder is a checkpoint encoder, so $R_\cp\le R_\on$. Choose a minimizing allocation in \eqref{eq:psi} and its valid grids. Execute the label update in \textup{(I)}. By \eqref{eq:task-lip}, its score error has $L^2$ norm at most $L\norm{e_N}_{L^2}+v_N^{\rm num}$. The conditional projection identity is valid for this online encoder as well. Apply Lemma~\ref{lem:transport}, and absorb $LC_0$ into $C$. This proves \eqref{eq:main}. Its exact-arithmetic specialization gives \eqref{eq:matching}; adding the same nonnegative $I_N$ yields \eqref{eq:phi}.
+
+For path comparison, run the exact and representative report experiments with the same controller at identical visible prefixes. At such a prefix the action kernels coincide, the retained label is the same function of the prefix, and the next-report kernels differ by at most $\kappa_te_t+\zeta_t$. Maximal coupling of the next report is possible on standard Borel spaces. The common-prefix subprobability law is dominated by the exact prefix law. Hence the probability of a first disagreement at step $t+1$ is at most $\E_{P^\beta}[\kappa_te_t+\zeta_t]$, or the corresponding expectation for the controller actually being compared. Summing proves \eqref{eq:pathallowance}. Append the common label update and resource readout; these do not increase the discrepancy. After the common stopping decision, both processes are absorbed, which inserts the active-step indicator. To use the numerical bound from \textup{(T)} for a different controller, that controller must have its own certificate; the fixed-$\beta$ certificate is not automatically uniform over policies. Composition and common-loss transfer are proved in the next section.
+\end{proof}
+
+\subsection{How to verify the transport certificate}
+\begin{proposition}[Three kernel-level mechanisms]\label{prop:mechanisms}
+The following are sufficient verifications of \textup{(T)}.
+
+\textup{(a)} With one component of weight one, $A_t\le\rho<1$, $B_{t,1}\le1$, and $B_{0,1}\le1$, one may take $\Gamma_N\le(1-\rho)^{-2}$.
+
+\textup{(b)} Suppose each update is either an exact hold with $A_t=1$, $B_{t,1}=0$, or an active step with $A_t\le\rho<1$, $B_{t,1}\le1$. Then the same constant works, without a lower bound on the probability or frequency of active steps. Here $w_{N,1}=1$; an initial rounding is permitted.
+
+\textup{(c)} Suppose the process starts at one known unresolved point, waits there, and at a first successful acquisition moves into component $j$, thereafter holding. The update on a successful report overwrites the old prediction, including its conditional version at an otherwise impossible report. Let $B_{0,0}=1$, and let $B_{t,j}=1$ only at the acquisition into $j$. Then
+\[
+ Z_{N,0}=\mathbf1_{\{\text{no acquisition by }N\}},\qquad
+ Z_{N,j}=\mathbf1_{\{\text{acquired component }j\text{ by }N\}}.
+\]
+For the corresponding actual component weights, \eqref{eq:energy} is an equality with $\Gamma_N=1$.
+\end{proposition}
+\begin{proof}
+In (a), sum a geometric series. In (b), delete the exact holds from the error recurrence, not from the raw acquisition or time account. The resulting pathwise series is the same geometric series indexed by active events. In (c), failure and post-acquisition holds have $A=1,B=0$, while the acquisition has $A=0$ and the appropriate $B=1$. Thus the initial contribution is killed by the first acquisition and the new contribution persists. The displayed indicators are disjoint and exhaustive. Squaring their weighted sum and taking expectation gives the assertion.
+\end{proof}
+
+Mechanism (b) permits arbitrarily long metastable waiting periods. It is different from replacing the raw horizon by an uncharged number of successful reports. Mechanism (c) additionally preserves the small acquired mass in the upper bound, rather than paying the full geometric cost on paths that never acquire it. More general nonuniform stability is covered whenever the positive moment inequality \eqref{eq:energy} is separately established; it is not asserted from a negative average logarithmic Lipschitz exponent alone. The relation to average contraction theory \cite{diaconis} is thus precise: here the required object is a forced, acquisition-weighted second moment, not merely convergence of unforced iterates.
+
+\begin{corollary}[Intersecting strata]\label{cor:crossing}
+Remove the separation assumption from \textup{(G)}, allow the score images of the $J$ component charts to intersect, and let the raw preparation carry a latent component mark with probabilities $w_{N,j}$. The mark need not be available to the algorithm or retained by the quotient. Suppose the conditional laws and the other certificates remain valid, with chart rounding certified conditionally on the raw mark. Then \eqref{eq:main} and \eqref{eq:matching} hold for every $m\ge2J$, with constants also depending on $J$, and without any inverse distance between strata.
+\end{corollary}
+\begin{proof}
+The global upper cover is still the union of the component grids. Encode into a nearest valid representative in $d$; its error on component $j$ is no greater than that component grid's error. Duplicate representatives may be merged. The algorithm does not need the latent mark.
+
+For the lower bound apply \eqref{eq:smallball} with all $m$ decoder centers to each positive-dimensional conditional law. This gives distortion at least $c\sum_jw_{N,j}\psi_j(m)$; point components contribute zero. Set $k=\lfloor m/J\rfloor\ge1$. Directly from \eqref{eq:psi}, for $m\ge k\ge1$,
+\[
+ \psi_j(k)\le(m/k)^2\psi_j(m)\le(2J)^2\psi_j(m).
+\]
+The allocation of $k$ labels to every component is feasible. Thus $\Psi_N(m)\le(2J)^2\sum_jw_{N,j}\psi_j(m)$. Combining the last two bounds proves the claimed lower, and the remaining causal proof is unchanged. In particular neither smoothness at an intersection nor identifiability of the latent mark was used.
+\end{proof}
