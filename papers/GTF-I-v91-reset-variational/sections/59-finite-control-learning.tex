@@ -1,0 +1,217 @@
+\section{Learning with finite trusted control specifications}
+\label{sec:finitecontrol78}
+
+The learning theorems count unknown-device calls.  We now remove
+exact physical preparation from their hypotheses, while keeping
+their loss and call orders.  A trusted preparation instruction has a
+finite classical description and a certified trace-norm error; a
+trusted control instruction has a finite description and a certified
+diamond-norm error.  These are accuracy assumptions on the available
+controls.  They assert neither a universal hardware implementation
+nor a bound on preparation time, gate count, or classical workspace.
+All trace norms in this section are unhalved.
+
+\begin{lemma}[An adaptive control-error budget]
+\label{lem:controlhybrid78}
+Fix a finite classical decision tree of experiments, with bounded
+numbers of calls and trusted instructions on every record.  Its
+unknown channel is unchanged.  At a scheduled trusted event $j$,
+conditional on the preceding classical history $h$, replace a
+channel $\mathcal C_{j,h}$ by a channel $\widetilde{\mathcal C}_{j,h}$
+such that
+\begin{equation}\label{eq:controlbudget78}
+ \|\widetilde{\mathcal C}_{j,h}-\mathcal C_{j,h}\|_\diamond
+ \le e_j(h),\qquad
+ \sum_{j\text{ on }h_*}e_j(h_{<j})\le e
+ \quad\hbox{for every complete record }h_*.
+\end{equation}
+For a fresh state preparation, its trace-norm error suffices in
+place of the diamond norm: conditional on $h$, the new state is
+tensor-separated from every carried system in both experiments.
+The final classical--quantum states
+satisfy
+\begin{equation}\label{eq:controlhybrid78}
+ \|\widetilde\rho_{\rm out}-\rho_{\rm out}\|_1\le e.
+\end{equation}
+In particular, the laws of any unchanged classical output have
+total variation distance at most $e/2$.
+\end{lemma}
+\begin{proof}
+Include each observed outcome in the classical history and pad
+stopped branches by identities.  Quantum registers of different
+sizes can be placed in a finite direct sum.  Each event is then a
+channel on the complete classical--quantum state.  A quantum
+instrument means its complete channel
+$\rho\mapsto\sum_x|x\rangle\langle x|\otimes\mathcal C_x(\rho)$:
+if errors are instead supplied separately for its completely
+positive branches, their sum is the event's error charge.
+
+At each event, insert the ideal preceding state between the actual
+and ideal updates.  Contractivity of the actual channel and the
+diamond-norm bound give
+\[
+ D_j\le D_{j-1}
+       +\sum_h p_{j-1}(h)e_j(h),
+\]
+where $D_j$ is the unhalved trace-norm difference and $p_{j-1}$ is
+the ideal history law.  Unknown-channel calls and unchanged
+classical calculations have charge zero.  Summing the inequality
+gives the ideal expectation of the pathwise sum in
+\eqref{eq:controlbudget78}, which is at most $e$.
+A replacement preparation channel has diamond distance equal to
+the trace distance of the prepared states, including when another
+register is retained.  Finally, classical readout and deterministic
+postprocessing are contractions, and classical total variation is
+one half of the trace norm.  No continuity of the decision rules
+or of the final loss is used.
+\end{proof}
+
+We check that the learners to which this lemma is applied have
+finite, computable control specifications.  Take integer dimensions
+and horizons and rational positive accuracy and confidence targets.
+All absolute proof constants may be fixed once as sufficiently
+conservative rational numbers.  For sample budgets, replace each
+$\log x$, $x>1$ rational, by
+\[
+ \ell(x)=\min\{k\in\mathbb N:2^k\ge x\}.
+\]
+Here $\log x\le\ell(x)\le1+\log x/\log2$.
+Thus the concentration bounds and call orders are preserved, while
+ceilings of the resulting rational sample budgets are decidable by
+integer arithmetic.  This convention avoids requiring an exact
+comparison of a transcendental expression with an integer.
+
+Calibration frequencies and all complex empirical means are
+rational.  The ordered spectral projections, fixed-order
+Gram--Schmidt procedure, clipping, normalized frames, and tie rules
+of Sections~\ref{sec:commonlearn76}--\ref{sec:matrixlearning77} use
+algebraic arithmetic.  The notation for phase recovery does not
+require a transcendental oracle.  For a nonzero empirical $z$ passing
+\eqref{eq:learnphaseguard77}, put $q=z/|z|$ and select the root $v$
+of $v^m=q$ with largest real part.  It is unique: the passed guard
+places $\operatorname{Arg}q$ strictly between $-\pi$ and $\pi$,
+so its principal $m$th root is strictly closer in angle to $1$
+than every other root.  All roots are algebraic, and comparison of
+their real parts is decidable.  Consequently
+\[
+ \tan\bigl(\operatorname{Arg}(z)/m\bigr)
+       =\frac{\Im v}{\Re v}
+\]
+is algebraic; its denominator is positive under the guard.
+Zero, amplitude, frame-selection, and phase-guard equalities are
+therefore decidable exactly.  The finite rational legalization grid
+in Theorem~\ref{thm:matrixlearning77} is in the public input basis;
+its positivity tests are exact, and its finitely many algebraic
+objectives can be evaluated with the prescribed slack.  The same
+holds for the exact rational codec.  Every record consequently has
+a finite, terminating classical computation and a legal output.
+
+There are finitely many records at fixed public parameters: the
+device outputs and preparation signs have finite alphabets and
+their numbers are bounded on every path.  This does not discretize
+the unknown effect or the retained quantum state.  Within a block
+the state still lies in its full continuous quantum state space.
+Only the experiment's classical instructions and observations have
+finite descriptions.
+
+Finite descriptions can also specify controls with any required
+positive accuracy.  If a computable unit vector $\psi\in\mathbb C^D$
+is prescribed and $0<\epsilon\le1$, compute a nonzero Gaussian
+rational vector $z$ with
+$\|z-\psi\|_2\le\epsilon/8$ and set
+$\phi=z/\sqrt{\sum_k|z_k|^2}$.  Then
+\begin{equation}\label{eq:controlstate78}
+ \bigl\||\phi\rangle\langle\phi|
+              -|\psi\rangle\langle\psi|\bigr\|_1
+ \le2\|\phi-\psi\|_2\le4\|z-\psi\|_2\le\epsilon/2.
+\end{equation}
+Coordinate accuracy $O(\epsilon/\sqrt D)$ suffices, so $z$ and
+its normalization rule have a description of
+$O(D\log(D/\epsilon))$ bits.  The normalization is specified
+algebraically; rational normalized amplitudes are not assumed.
+A trusted preparation within $\epsilon/2$ of this finitely
+specified target has total error at most $\epsilon$ from the ideal
+state.
+
+For completeness, finite specifications can preserve the exact
+channel constraints as well.  Approximate a known algebraic
+Stinespring isometry $V$ by a Gaussian rational matrix $A$ with
+$\|A-V\|_{\rm op}\le r<1/2$, and specify
+$W=A(A^*A)^{-1/2}$.  Then $W^*W=I$ and
+$\|W-V\|_{\rm op}\le2r$: every singular value of $A$ differs
+from one by at most $r$.  The channels obtained from these
+isometries differ in diamond norm by at most $4r$, by expansion of
+$W\rho W^*-V\rho V^*$ and partial-trace contractivity.  Keeping a
+finite outcome flag gives the same construction for instruments.
+Their actual trusted realizations are charged separately in
+\eqref{eq:controlbudget78}.  Independent rounding of Kraus entries
+without restoring the channel constraints would not suffice.
+
+\begin{theorem}[Finite-control form of the learning guarantees]
+\label{thm:finitecontrollearning78}
+The common matrix learner of Theorem~\ref{thm:matrixlearning77}
+and the learner with training-block cap $1\le b\le N$ of
+Theorem~\ref{thm:blocklearning78} admit the preceding finite
+trusted-control model in their stated ranges.
+They have the original success target
+\[
+ \sup_{E\in\mathfrak E_d}
+ \mathbb P_E\{d_N(\mathcal M_E,\mathcal M_{\widehat E})>\delta\}
+ \le\eta
+\]
+with every-record call orders, respectively,
+\begin{equation}\label{eq:finitecontrolcalls78}
+ Cd^4N\delta^{-2}\log(d/\eta),\qquad
+ Cd^4\frac{N^2}{b}\delta^{-2}\log(d/\eta).
+\end{equation}
+Their original block caps and exact legality of the returned
+classical effect are preserved.  The same transfer applies when the
+classical output is the public codeword.
+In dimension one the order remains
+$CN\delta^{-2}\log(1/\eta)$ independently of $b$.
+\end{theorem}
+\begin{proof}
+Use the corresponding ideal learner at the same accuracy $\delta$
+and confidence $\eta/2$, with the finite sample-budget convention
+above.  Fix a computable public upper bound $M_*$ on its calls
+on every record.  The explicit constructions use fresh product
+states or fresh GHZ states embedded into a known two-dimensional
+subspace.  They can be implemented by one preparation event per
+block, hence at most $M_*$ such events.  Given any preceding
+record, compute that record's prescribed state to trace accuracy
+$\eta/M_*$, using \eqref{eq:controlstate78} and the trusted
+realization allowance.  Lemma~\ref{lem:controlhybrid78} gives final
+output total variation at most $\eta/2$.  For each fixed unknown
+$E$, apply it to the set of returned effects whose original loss
+exceeds $\delta$.  The ideal probability is at most $\eta/2$,
+so the actual probability is at most $\eta$.  Discontinuous
+decisions, unsuccessful records, and exact equality branches are
+included in this comparison.
+
+Classical postprocessing is identical in the two experiments; it
+does not round the returned effect or test a perturbed loss.
+Thus legality is exact on every actual record and no additional
+$\delta$-dependent loss allowance is needed.  Halving $\eta$ and
+upper-rounding sample budgets change only the absolute constants
+in \eqref{eq:finitecontrolcalls78}.
+\end{proof}
+
+Each approximate preparation above supplies a state on the same
+$m\le b$ probe registers as its ideal block; preparation workspace
+is discarded or reset before the experiment and no quantum system
+is passed to the next block.  Approximation therefore does not
+enlarge entangled input width or introduce coherent coupling from
+old memory into fresh probes.  In a realization with $S$ additional
+scheduled control instructions, use a public bound on the total
+number of trusted events and charge every instruction in
+\eqref{eq:controlbudget78}.  Per-event norm precision is then of
+order $\eta/(M_*+S)$.  For an $m$-probe state the direct coordinate
+description has $D=d^m$ and size
+$O(D\log(D(M_*+S)/\eta))$ bits.  The precision per coordinate
+is logarithmic in $(M_*+S)/\eta$, with its dimension dependence
+explicitly charged; this is not a polynomial preparation bound.
+Real-valued target tolerances may be replaced by supplied rational
+targets between one half and the requested values, preserving all
+orders and the requested guarantees.  No representation of an
+arbitrary real input, and no oracle for the unknown effect, is
+assumed.

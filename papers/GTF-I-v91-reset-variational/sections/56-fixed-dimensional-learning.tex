@@ -1,0 +1,513 @@
+\section{Common learning in arbitrary input dimension}
+\label{sec:matrixlearning77}
+
+The two-dimensional learner extends to the full effect body through a
+calibration step.  The calibration must resolve the two support
+endpoints simultaneously.  A bound in operator norm alone does not
+provide this information: after compression, a poorly aligned
+subspace can introduce noise at a scale larger than $N^{-1}$.  The
+procedure below learns a basis in which this additional noise is
+bounded by the finite-horizon cutoff.
+
+Throughout this section, $\mathcal M_E$ is the ordered binary
+measurement associated with $E\in\mathfrak E_d$.  Training may use
+entangled input blocks and classical feedback, but it has no access
+to the measurement environment.  Its output is a classical
+description of a legal effect.  The future horizon $N$ and the number
+of training calls remain separate resources.
+
+\begin{theorem}[Common learning on the matrix effect body]
+\label{thm:matrixlearning77}
+There are absolute constants $c,C,\delta_0>0$ with the following
+property.  For every $d,N\ge1$, $0<\delta\le\delta_0$, and
+$0<\eta\le1/8$, one common procedure returns a legal effect
+$\widehat E\in\mathfrak E_d$ such that
+\begin{equation}\label{eq:matrixlearningrisk77}
+ \sup_{E\in\mathfrak E_d}
+ \mathbb P_E\{d_N(\mathcal M_E,\mathcal M_{\widehat E})>\delta\}
+ \le\eta.
+\end{equation}
+On every record its number of calls satisfies
+\begin{equation}\label{eq:matrixlearningcalls77}
+ M\le C d^4N\delta^{-2}\log(d/\eta),
+\end{equation}
+and every entangled input block has length at most $N$.  Conversely,
+any common procedure satisfying \eqref{eq:matrixlearningrisk77}
+with at most $M$ calls on every record satisfies
+\begin{equation}\label{eq:matrixlearninglower77}
+ M\ge cN\delta^{-2}\log(1/\eta).
+\end{equation}
+The converse permits arbitrary reference-assisted adaptive training
+and bounded public stopping.  In particular, for each fixed $d$, the
+minimax number of calls is
+$\Theta_d(N\delta^{-2}\log(1/\eta))$ on the complete closed effect
+body.  The displayed dependence on $d$ in the upper bound is not
+asserted to be optimal.
+\end{theorem}
+
+We first give the calibration, including its finite budgets.  All
+matrix orders below are Loewner orders.  The use of a basis selected
+from earlier observations is always followed by fresh samples.
+
+\begin{lemma}[Simultaneous endpoint calibration]
+\label{lem:matrixcalibration77}
+Let $\tau=N^{-1}$ and $0<\epsilon\le1/8$.  There is a common
+product-input procedure returning $A\in\mathfrak E_d$ with at most
+$Cd^4N\log(d/\epsilon)$ calls on every record.  With probability at
+least $1-\epsilon$, it satisfies
+\begin{align}
+ \tfrac12(A+\tau I)&\preceq E+\tau I\preceq2(A+\tau I),
+                                      \label{eq:matrixcalibrationplus77}\\
+ \tfrac12(I-A+\tau I)&\preceq I-E+\tau I
+                                  \preceq2(I-A+\tau I),
+                                      \label{eq:matrixcalibrationminus77}\\
+ \|E-A\|_{\rm op}&\le\sqrt\tau.
+                                      \label{eq:matrixcalibrationnorm77}
+\end{align}
+The input states depend only on the public parameters and the
+preceding record; no spectral data about $E$ are supplied.
+\end{lemma}
+\begin{proof}
+Set $J=\lceil\log_2N\rceil$, $H=2^J$, and $t_j=2^{-j}$ for
+$0\le j\le J$.  Thus $N\le H<2N$ unless $N=1$, and
+$\tau/2<t_J\le\tau$.  Start from $A_0=I/2$.  If $J=0$, return
+$A_0$: all three conclusions hold without samples.
+
+We use
+\[
+ h_d=d+4\binom d2=2d^2-d,
+ \qquad K_d=(320d)^2,
+ \qquad \alpha=1/16.
+\]
+At stage $j\ge1$, assign failure allowance and sample size
+\begin{equation}\label{eq:matrixcalibrationbudget77}
+ \epsilon_j=\frac{\epsilon 2^j}{4H},\qquad
+ L_j=\log\frac{2h_d}{\epsilon_j},\qquad
+ n_j=\left\lceil K_d t_j^{-1}L_j\right\rceil.
+\end{equation}
+Choose an orthonormal eigenbasis $e_1,\ldots,e_d$ of the current
+legal estimate $A_{j-1}$.  The choice is deterministic and measurable,
+including at multiple eigenvalues.  More explicitly, fix a public
+input basis.  All calibration matrices have algebraic entries in that
+basis: the sample frequencies are rational, and spectral projections,
+clipping at rational endpoints, and normalization preserve algebraic
+entries.  Order the distinct eigenvalues, project the public basis
+onto each eigenspace, and apply Gram--Schmidt in that fixed order,
+discarding exactly zero vectors.  Exact algebraic arithmetic
+therefore supplies a finite choice at every stage and requires no
+oracle for arbitrary real spectral data.
+Make $n_j$ independent calls on each of the $h_d$ states
+\begin{equation}\label{eq:matrixcalibrationstates77}
+ e_i,\qquad
+ \frac{e_i+e_j}{\sqrt2},\quad
+ \frac{e_i-e_j}{\sqrt2},\quad
+ \frac{e_i+\mathrm i e_j}{\sqrt2},\quad
+ \frac{e_i-\mathrm i e_j}{\sqrt2}
+ \quad(i<j).
+\end{equation}
+Here and below a unit vector denotes its pure input state.  Estimate
+each diagonal entry of $E$ by its empirical outcome frequency.
+Estimate the real part of each off-diagonal entry by half the
+frequency difference between the positive and negative real
+superpositions.  Its imaginary part is half the frequency on
+$(e_i-\mathrm i e_j)/\sqrt2$ minus half the frequency on
+$(e_i+\mathrm i e_j)/\sqrt2$.  These formulas define a Hermitian
+matrix $B_j$.
+
+To define the procedure on every record, clip the eigenvalues of
+$B_j$ to $[-\alpha t_j,1+\alpha t_j]$, obtaining $\widetilde B_j$,
+and set
+\begin{equation}\label{eq:matrixcalibrationupdate77}
+ A_j=\frac{\widetilde B_j+\alpha t_jI}{1+2\alpha t_j}.
+\end{equation}
+The returned matrix is always a legal effect.  In particular, a
+failed concentration event cannot affect the subsequent call budget
+or require an additional experiment.
+
+We prove the invariant
+\begin{equation}\label{eq:matrixcalibrationinvariant77}
+ \tfrac12(A_j+t_jI)\preceq E+t_jI\preceq2(A_j+t_jI),
+ \qquad
+ \tfrac12(I-A_j+t_jI)\preceq I-E+t_jI
+                                      \preceq2(I-A_j+t_jI)
+\end{equation}
+on the successive good events.  It holds for $j=0$ because
+$0\preceq E\preceq I$.
+
+Fix a preceding good record and abbreviate
+$t=t_j$, $A=A_{j-1}$, $B=B_j$, $D=B-E$, and $q=L_j/n_j$.
+All expectations and probabilities in the next calculation are
+conditional on that record.  Bernstein's inequality and a union
+bound over the $h_d$ groups show, with failure at most
+$2h_de^{-L_j}=\epsilon_j$, that every empirical frequency has error
+at most
+\[
+ \sqrt{2p(1-p)q}+2q/3.
+\]
+For a pair of opposite superposition states, the sum of the outcome
+probabilities is $E_{ii}+E_{jj}$.  Cauchy--Schwarz in each
+half-difference therefore gives the following two simultaneous
+bounds, also valid for $i=j$ after enlarging the constants:
+\begin{equation}\label{eq:matrixcalibrationentry77}
+ |D_{ij}|\le\sqrt{2(E_{ii}+E_{jj})q}+2q,
+ \qquad
+ |D_{ij}|\le\sqrt{2(2-E_{ii}-E_{jj})q}+2q.
+\end{equation}
+For an off-diagonal complex entry, apply the real estimate to the
+two quadratures and take their Euclidean norm.  The factor $\sqrt2$
+in \eqref{eq:matrixcalibrationentry77} includes this operation.
+
+Write $a_i$ for the eigenvalues of $A$.  The preceding invariant,
+whose regularization is $2t$, gives
+\[
+ E_{ii}\le2a_i+2t,
+ \qquad 1-E_{ii}\le2(1-a_i)+2t,
+ \qquad q\le t/K_d.
+\]
+Since
+\[
+ t(a_i+a_j+2t)\le2(a_i+t)(a_j+t),
+ \qquad t\le\sqrt{(a_i+t)(a_j+t)},
+\]
+the first bound in \eqref{eq:matrixcalibrationentry77} yields
+\begin{equation}\label{eq:matrixcalibrationnormalized77}
+ \frac{|D_{ij}|}{\sqrt{(a_i+t)(a_j+t)}}
+ \le\frac{2\sqrt2}{\sqrt{K_d}}+\frac2{K_d}
+ \le\frac5{\sqrt{K_d}}.
+\end{equation}
+Replacing $a_i$ by $1-a_i$ gives the same estimate for the
+complement.  The Hilbert--Schmidt norm bounds the operator norm, so
+our choice of $K_d$ implies
+\begin{align}
+ -\tfrac1{64}(A+tI)&\preceq D\preceq\tfrac1{64}(A+tI),\notag\\
+ -\tfrac1{64}(I-A+tI)&\preceq D
+                            \preceq\tfrac1{64}(I-A+tI).
+                                      \label{eq:matrixcalibrationraworder77}
+\end{align}
+The preceding invariant and $t_{j-1}=2t$ also imply
+\[
+ A+tI\preceq4(E+tI),\qquad
+ I-A+tI\preceq4(I-E+tI).
+\]
+Consequently
+\begin{equation}\label{eq:matrixcalibrationtrueorder77}
+ -\alpha(E+tI)\preceq D\preceq\alpha(E+tI),
+ \qquad
+ -\alpha(I-E+tI)\preceq D\preceq\alpha(I-E+tI).
+\end{equation}
+These inequalities place the spectrum of $B$ inside
+$[-\alpha t,1+\alpha t]$.  Thus the clipping in
+\eqref{eq:matrixcalibrationupdate77} does nothing on this event.
+On it,
+\[
+ A_j-E=\frac{D+\alpha t(I-2E)}{1+2\alpha t}.
+\]
+Since $-I\preceq I-2E\preceq I$, equations
+\eqref{eq:matrixcalibrationtrueorder77} imply
+\begin{align*}
+ -2\alpha(E+tI)&\preceq A_j-E\preceq2\alpha(E+tI),\\
+ -2\alpha(I-E+tI)&\preceq A_j-E
+                                      \preceq2\alpha(I-E+tI).
+\end{align*}
+Adding the corresponding regularized endpoint gives factors
+$1-2\alpha=7/8$ and $1+2\alpha=9/8$.  This proves the weaker
+factor-two invariant \eqref{eq:matrixcalibrationinvariant77} for
+stage $j$.
+
+The unweighted entry estimate also gives the operator-norm bound
+needed later.  Because $E_{ii}+E_{jj}\le2$, we have
+\[
+ \|D\|_{\rm op}\le4d\sqrt{t/K_d}=\sqrt t/80.
+\]
+It follows that
+\begin{equation}\label{eq:matrixcalibrationstageerror77}
+ \|A_j-E\|_{\rm op}
+ \le\sqrt t/80+\alpha t\le\sqrt t.
+\end{equation}
+At the final stage, adding $(\tau-t_J)I$ preserves the factor-two
+orders, and \eqref{eq:matrixcalibrationstageerror77} gives
+\eqref{eq:matrixcalibrationnorm77}.
+
+The conditional failure allowances sum to less than $\epsilon/2$,
+since $\sum_{j=1}^J2^j<2H$.  This proves the asserted probability
+bound.  Finally, the deterministic call count is $h_d\sum_j n_j$.
+Writing $2^j=H/2^k$ yields
+\[
+ \sum_{j=1}^J2^jL_j
+ \le H\sum_{k=0}^{J-1}2^{-k}
+       \left(\log\frac{8h_d}{\epsilon}+k\log2\right)
+ \le CH\log(d/\epsilon).
+\]
+The ceiling terms contribute at most $h_dJ\le h_dH$.
+As $h_dK_d\le Cd^4$ and $H<2N$ when $N>1$, the stated bound
+holds on every record.  In particular, the number of dyadic stages
+does not introduce a factor $\log N$.
+\end{proof}
+
+\begin{lemma}[Calibrated variance and compression]
+\label{lem:matrixcompression77}
+Suppose $A,E\in\mathfrak E_d$ satisfy
+\eqref{eq:matrixcalibrationplus77}--\eqref{eq:matrixcalibrationnorm77}.
+Set $W_G=G(I-G)+\tau I/2$.  Then
+\begin{equation}\label{eq:matrixcalibratedvariance77}
+ \tfrac1{12}W_A\preceq W_E\preceq12W_A.
+\end{equation}
+If $P$ is any orthogonal projection commuting with $A$ and
+$C=PEP|_{P\C^d}$, then, on $P\C^d$,
+\begin{equation}\label{eq:matrixcompressionvariance77}
+ \tfrac1{12}PW_AP\preceq W_C\preceq14PW_AP.
+\end{equation}
+All constants are independent of the spectrum, its multiplicities,
+and the rank of $P$.
+\end{lemma}
+\begin{proof}
+For a legal effect $G$, define the harmonic mean without a factor
+of two by
+\[
+ R_G=\bigl((G+\tau I)^{-1}+(I-G+\tau I)^{-1}\bigr)^{-1}.
+\]
+The two factors commute because both are functions of $G$, so
+\begin{equation}\label{eq:matrixharmonicidentity77}
+ R_G=\frac{G(I-G)+(\tau+\tau^2)I}{1+2\tau},
+ \qquad
+ \tfrac13\bigl(G(I-G)+\tau I\bigr)
+       \preceq R_G\preceq G(I-G)+\tau I.
+\end{equation}
+The inequalities use only $0<\tau\le1$.
+Inversion reverses Loewner order.  Apply it to both endpoint
+comparisons, add, and invert again to get
+$R_E\asymp R_A$ with factors two.  Equation
+\eqref{eq:matrixharmonicidentity77} therefore compares
+$E(I-E)+\tau I$ and $A(I-A)+\tau I$ with factors six.
+Replacing the regularization $\tau I$ by $\tau I/2$ proves
+\eqref{eq:matrixcalibratedvariance77}.
+
+The compression identity is exact:
+\begin{equation}\label{eq:matrixcompressionidentity77}
+ C(I-C)=PE(I-E)P+PE(I-P)EP.
+\end{equation}
+Because $P$ commutes with $A$,
+$PE(I-P)=P(E-A)(I-P)$.  Thus
+\[
+ 0\preceq PE(I-P)EP
+       \preceq\|E-A\|_{\rm op}^2P\preceq\tau P.
+\]
+The first term in \eqref{eq:matrixcompressionidentity77}, after
+adding $\tau P/2$, is $PW_EP$.  Apply
+\eqref{eq:matrixcalibratedvariance77} and use
+$PW_AP\succeq\tau P/2$ to absorb the final $\tau P$ with a
+factor two.  This gives \eqref{eq:matrixcompressionvariance77}.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:matrixlearning77}]
+For $d=1$, Bernoulli sampling and
+Lemma~\ref{lem:learnendpoint76} give the upper bound directly.
+Assume $d\ge2$ and put $s=\binom d2$.  Apply
+Lemma~\ref{lem:matrixcalibration77} with failure allowance $\eta/2$.
+Conditional on its good event, fix an orthonormal eigenbasis of
+the returned $A$, with eigenvalues $a_i$, and write
+\[
+ w_i=a_i(1-a_i)+\tau/2.
+\]
+For each $i<j$, let $P_{ij}$ project onto
+$\operatorname{span}(e_i,e_j)$ and let $C_{ij}$ be the corresponding
+compression of $E$.  An input qubit, including its entanglement
+with other input qubits or a retained reference, can be embedded
+isometrically into this two-dimensional subspace.  The resulting
+observed channel is exactly $\mathcal M_{C_{ij}}$.
+
+Run the common qubit learner of
+Theorem~\ref{thm:commonlearn76} on each compression, using fresh
+records, accuracy
+\begin{equation}\label{eq:matrixlearningpairaccuracy77}
+ \varepsilon=c_*\delta/d,
+\end{equation}
+and failure allowance $\eta/(2s)$.  The constant $c_*>0$ will be
+chosen below.  This returns legal $2\times2$ effects $\widehat C_{ij}$.
+Every guarantee is conditional on the calibration record and is
+uniform over the resulting compression.  A union bound therefore
+shows that, with total failure at most $\eta$, calibration succeeds
+and
+\begin{equation}\label{eq:matrixlearningpairrisk77}
+ d_N(\mathcal M_{C_{ij}},\mathcal M_{\widehat C_{ij}})
+ \le\varepsilon\quad\hbox{for every }i<j.
+\end{equation}
+
+We record explicitly how an operational error controls an endpoint
+form.  Theorem~\ref{thm:matrixmetric76} in dimension two and
+Lemma~\ref{lem:matrixlocal76} imply that there are absolute
+$a_0,A_0>0$ such that, for legal $C,D\in\mathfrak E_2$,
+\begin{equation}\label{eq:matrixlearninglocal77}
+ d_N(\mathcal M_C,\mathcal M_D)\le u\le a_0
+ \quad\Longrightarrow\quad g_{N,C}(D-C)\le A_0u.
+\end{equation}
+Indeed, for $u<1/16384$ the lower metric bound forces
+$Q_N(C,D)\le16384u$; decreasing $a_0$ makes this at most $1/4$,
+where the local comparison applies.  Choose $c_*$ small enough that
+$\varepsilon\le a_0$ and lies within the qubit learner's accuracy
+range.
+
+For a Hermitian matrix $X$ on $\operatorname{span}(e_i,e_j)$ put
+\[
+ \gamma_{ij}(X)^2
+ =N\left(\frac{|X_{ii}|^2}{2w_i}
+          +\frac{|X_{jj}|^2}{2w_j}
+          +\frac{2|X_{ij}|^2}{w_i+w_j}\right).
+\]
+Equation \eqref{eq:matrixcompressionvariance77}, applied to left
+plus right multiplication and then inverted, gives
+\[
+ \gamma_{ij}(X)\le\sqrt{14}\,g_{N,C_{ij}}(X).
+\]
+Hence \eqref{eq:matrixlearningpairrisk77} and
+\eqref{eq:matrixlearninglocal77} imply
+\begin{equation}\label{eq:matrixlearningpairform77}
+ \gamma_{ij}(\widehat C_{ij}-C_{ij})
+ \le\sqrt{14}A_0\varepsilon.
+\end{equation}
+
+Assemble a Hermitian matrix $B$ by taking each off-diagonal entry
+from its corresponding estimate $\widehat C_{ij}$.  For each
+diagonal entry choose once and for all one incident pair and use
+that pair's estimate.  No consistency among different estimates of
+the same diagonal entry is assumed.  In the diagonal coordinates of
+$A$, the form $g_{N,A}$ is the sum of the nonnegative coordinate
+terms displayed above.  Each coordinate used in $B-E$ occurs in at
+least one of the pair forms, while unused duplicate diagonal terms
+can be discarded.  Therefore
+\begin{equation}\label{eq:matrixlearningassembly77}
+ g_{N,A}(B-E)^2
+ \le\sum_{i<j}
+       \gamma_{ij}(\widehat C_{ij}-C_{ij})^2
+ \le14sA_0^2\varepsilon^2.
+\end{equation}
+
+The assembled matrix need not be legal.  Define the estimate by
+minimizing its distance to the legal effect body in the known
+positive quadratic norm $g_{N,A}$.  The minimum is attained and is
+unique.  An exact minimizer $F$ satisfies
+\[
+ g_{N,A}(F-E)\le2g_{N,A}(B-E),
+\]
+because $E$ is a feasible competitor.  To obtain a finite procedure
+with a rational legal output, it suffices instead to choose
+$F\in\mathfrak E_d$ with rational entries such that
+\begin{equation}\label{eq:matrixlearningprojection77}
+ g_{N,A}(F-B)
+ \le\inf_{G\in\mathfrak E_d}g_{N,A}(G-B)+\varepsilon.
+\end{equation}
+This changes the bound only to
+\begin{equation}\label{eq:matrixlearningprojectionerror77}
+ g_{N,A}(F-E)
+ \le2\sqrt{14s}A_0\varepsilon+\varepsilon
+ \le C_0d\varepsilon
+\end{equation}
+for an absolute $C_0$.
+
+For completeness, \eqref{eq:matrixlearningprojection77} is an
+effective finite selection, not a query to the unknown effect.
+Since $W_A\succeq\tau I/2$,
+$g_{N,A}(X)\le N\|X\|_{\rm HS}$.  A finite rational grid covering
+$\mathfrak E_d$ in Hilbert--Schmidt norm to
+$\varepsilon/(4N)$ therefore covers it in $g_{N,A}$ to
+$\varepsilon/4$.  Such a legal grid is obtained by rounding after
+the inward move $G\mapsto(1-2r)G+rI$: entrywise rounding with
+Hilbert--Schmidt error at most $r/2$ preserves positivity of both
+outcomes, and the total rounding displacement is at most $C_dr$.
+Concretely, choose positive rational
+$r\le\varepsilon/[4N(\sqrt d+1)]$ and a rational entry mesh at
+most $r/(2d)$.  The inward displacement is at most $r\sqrt d$,
+and the rounding displacement is at most $r/2$, so their sum is
+at most $\varepsilon/(4N)$.
+The grid and its rational entries are defined in the fixed public
+input basis, independently of the random eigenbasis used for
+calibration.  Enumerate this bounded grid, retain legal matrices
+using exact positivity tests, and evaluate its finitely many
+objective values to tolerance $\varepsilon/4$.  Selecting the
+smallest computed value proves
+\eqref{eq:matrixlearningprojection77} with slack.  The calibration
+matrices are algebraic, and the qubit subroutine's outputs are finite
+computable expressions in its record, so these evaluations require
+no oracle for the unknown effect.  Only the observed matrices, the
+public parameters, and finite classical calculations are used.
+Arithmetic and state preparation are not included in the device-call
+bound.
+
+Finally, \eqref{eq:matrixcalibratedvariance77} gives
+\[
+ g_{N,E}(F-E)\le\sqrt{12}\,g_{N,A}(F-E)
+                  \le\sqrt{12}C_0d\varepsilon.
+\]
+Choose the absolute $c_*$ in
+\eqref{eq:matrixlearningpairaccuracy77} so that this is at most
+$\delta/(8\sqrt2)$, and reduce $\delta_0$ if necessary so that
+it is also at most $1/4$.  The endpoint-to-midpoint comparison in
+Lemma~\ref{lem:matrixlocal76} and the upper bound in
+Theorem~\ref{thm:matrixmetric76} then give
+\[
+ d_N(\mathcal M_E,\mathcal M_F)
+ \le8Q_N(E,F)\le8\sqrt2\,g_{N,E}(F-E)\le\delta.
+\]
+This proves the risk bound.
+
+The calibration costs at most $Cd^4N\log(d/\eta)$ calls.  There
+are $s\le d^2/2$ qubit learners, each with accuracy
+$c_*\delta/d$ and confidence $\eta/(2s)$.  Their combined call
+count is at most $Cd^4N\delta^{-2}\log(d/\eta)$ by
+Theorem~\ref{thm:commonlearn76}.  All budgets hold on every record,
+all compressed entangled blocks have length at most $N$, and
+postprocessing uses no additional calls.
+
+The confidence and resource allocation can be recorded as follows;
+the constants in the call bounds are absolute.
+\begin{center}
+\begin{tabular}{lll}
+\hline
+Stage & Failure allowance & Calls on every record\\
+\hline
+Endpoint calibration & $\eta/2$
+    & $Cd^4N\log(d/\eta)$\\
+Each of $s=\binom d2$ pair learners & $\eta/(2s)$
+    & $CN(d/\delta)^2\log(d/\eta)$\\
+Legal rational selection & $0$ & $0$\\
+\hline
+\end{tabular}
+\end{center}
+The conditional guarantees of the pair learners allow their
+allowances to be added after calibration, despite the dependence of
+the selected basis on its record.
+
+For the lower bound take
+\[
+ E_0=\tfrac12I_d,\qquad
+ E_1=(\tfrac12+\Delta)I_d,
+ \qquad \Delta=256\delta/\sqrt N.
+\]
+Choose $\delta_0\le1/4096$.  The Bernoulli separation in
+\eqref{eq:learnscalarsep76} is unchanged by the input dimension,
+and the two effects are separated by more than $2\delta$ under
+$d_N$.  Every use of either scalar device produces a fresh
+Bernoulli bit independent of the input.  Its conditional reference
+state is the same reduced state multiplied by that scalar outcome
+probability.  Thus an arbitrary adaptive training record with at
+most $M$ calls, padded if necessary, is a common processing of
+$M$ independent Bernoulli bits and parameter-independent
+resources.  Its relative entropy is at most $3M\Delta^2$ by
+\eqref{eq:learnscalarkl76}.  The two disjoint success balls turn
+the estimated effect into a test with both errors at most $\eta$.
+The same fidelity inequality used in the proof of
+Theorem~\ref{thm:commonlearn76} gives
+\[
+ 2\eta\ge\tfrac12e^{-3M\Delta^2},\qquad
+ M\ge\frac{N}{3\cdot256^2\delta^2}\log\frac1{4\eta}.
+\]
+For $\eta\le1/8$ this is
+\eqref{eq:matrixlearninglower77}.
+\end{proof}
+
+The common learner now has the same dimension and boundary scope
+as the metric and entropy theorems.  Its calibration is a sequence
+of product experiments, while the compression learners provide the
+enhanced angular resolution when an estimated two-dimensional
+subspace is close to opposite support endpoints.  No pair of
+candidate hypotheses is supplied to either part of the procedure.
