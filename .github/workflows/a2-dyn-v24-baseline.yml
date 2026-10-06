@@ -15,16 +15,17 @@ jobs:
           ref: ${{ github.sha }}
           fetch-depth: 1
           persist-credentials: false
-      - name: Archive complete source before testing
+      - name: Archive A2-DYN source before testing
         run: |
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           mkdir -p audit
-          git archive HEAD papers reviews .github/workflows > audit/exact-source.tar
+          paths=(papers/A2-DYN* reviews/a2-dyn* .github/workflows/a2-dyn*)
+          git archive HEAD "${paths[@]}" > audit/exact-source.tar
           git rev-parse HEAD > audit/source-sha.txt
       - name: Install native TeX and numerical checks
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra lmodern python3-mpmath python3-sympy
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra lmodern python3-mpmath python3-sympy python3-numpy
       - name: Test recovered v23 source without edits
         run: bash papers/A2-DYN-v23-referee-response/build.sh
       - uses: actions/upload-artifact@v4
