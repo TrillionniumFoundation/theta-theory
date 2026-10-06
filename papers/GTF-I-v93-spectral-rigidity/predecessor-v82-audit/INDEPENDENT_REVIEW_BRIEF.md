@@ -1,0 +1,9 @@
+# Independent specialist review brief — v82
+
+No independent human assessment is represented as obtained. Reviewers should receive `paper.pdf`, both frozen R51 reports, the current response, and this native source object. The structural companion is separate. The general mathematics journal objective is retained.
+
+Please assess the complete binary effect-body metric and endpoint logarithmic entropy against equivalent matrix-volume and channel-geometry literature; the common learner against direct future-loss reanalyses of published estimators; the all-parameter binary interior lower against the latest coherent tomography bounds; and the new normalized noncommuting finite-outcome horizontal ODE, affine entropy, exact tuple code, binary-simulation learner and coherent converse. In particular, determine what part of the finite-outcome theorem is already implicit in existing full-rank channel extension bounds and which stated operational/payload conclusions require the new arguments. Standard methods and the Mele–Bittel upper primitive are explicitly credited.
+
+The new learning claim is sharp jointly in d,N,delta,eta for each fixed k; it is not sharp in a growing k, not a full-boundary multi-outcome law, and not a residual-output instrument theorem. The generic rational-net certificate concerns a fixed ideal readout and explicitly charges implementation error separately. Finite controls in the actual learner come from the inherited budgeted procedure. The exact scalar ternary replay is evidence for that finite instance, not execution of the general optimal learner or a substitute for a continuous proof.
+
+The original v81 brief remains at `predecessor-v81-audit/INDEPENDENT_REVIEW_BRIEF.md`, including all prior scope and priority questions. An external editorial significance judgment is still needed; source hashes and AI-assisted audits cannot supply it.
