@@ -1,0 +1,227 @@
+name: General Theta restart r2 native source, publication and read-only verification
+on:
+  push:
+    branches:
+      - foundation/general-theta-restart-r2-kernel-transport-research-2026-10-07
+    paths:
+      - .github/workflows/general-theta-restart-r2-publication.yml
+permissions:
+  contents: read
+concurrency:
+  group: general-theta-restart-r2-publication
+  cancel-in-progress: false
+env:
+  PAPER: papers/General-Theta-Foundations-I-restart/r2
+  RESEARCH: foundation/general-theta-restart-r2-kernel-transport-research-2026-10-07
+  REVISION: revision/general-theta-restart-r2-kernel-transport-2026-10-07
+  CANONICAL: 18000b21e4bfd89180ccb069e46ac0f21621f34d
+jobs:
+  native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    outputs:
+      source_sha: ${{ steps.commit.outputs.source_sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 4
+          persist-credentials: true
+          sparse-checkout: |
+            papers/General-Theta-Foundations-I-restart/r2
+            .github/workflows
+      - name: Validate exact publication scope and native payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REPOSITORY" = TrillionniumFoundation/theta-theory
+          test "$GITHUB_REF" = "refs/heads/$RESEARCH"
+          test "$(git ls-remote origin "refs/heads/$RESEARCH" | cut -f1)" = "$GITHUB_SHA"
+          python3 - <<'PY'
+          import hashlib,io,json,os,pathlib,shutil,tarfile
+          root=pathlib.Path(os.environ['PAPER']); transfer=root/'.transfer'
+          names=[f'{i:02d}.part' for i in range(10)]
+          if sorted(p.name for p in transfer.iterdir())!=names:
+              raise RuntimeError('unexpected transfer inventory')
+          data=b''.join((transfer/n).read_bytes() for n in names)
+          if hashlib.sha256(data).hexdigest()!='bfa577848d92e5ac310689fc24a004a0fe6e0498433e2fd750260e756b1f85d2':
+              raise RuntimeError('source transport hash mismatch')
+          payload={}
+          with tarfile.open(fileobj=io.BytesIO(data),mode='r:xz') as archive:
+              for member in archive.getmembers():
+                  p=pathlib.PurePosixPath(member.name)
+                  if not member.isfile() or p.is_absolute() or '..' in p.parts or member.name in payload:
+                      raise RuntimeError('unsafe or duplicate source member')
+                  stream=archive.extractfile(member)
+                  if stream is None: raise RuntimeError('missing source bytes')
+                  payload[member.name]=stream.read()
+          manifest=payload['SOURCE_MANIFEST.json']
+          if hashlib.sha256(manifest).hexdigest()!='ea34d03a89e603112ea8a00142c1c970d182e482b92488826158db3be95bd143':
+              raise RuntimeError('manifest hash mismatch')
+          entries=json.loads(manifest)['files']
+          if set(payload)!=set(entries)|{'SOURCE_MANIFEST.json'} or len(payload)!=29:
+              raise RuntimeError('native inventory mismatch')
+          for name,digest in entries.items():
+              if hashlib.sha256(payload[name]).hexdigest()!=digest:
+                  raise RuntimeError('source hash mismatch: '+name)
+          for name,content in payload.items():
+              dest=root/name
+              if dest.exists(): raise RuntimeError('refusing to overwrite native source: '+name)
+              dest.parent.mkdir(parents=True,exist_ok=True); dest.write_bytes(content)
+          shutil.rmtree(transfer)
+          PY
+          python3 "$PAPER/build.py" --audit-only
+      - name: Commit and non-force push native source before build
+        id: commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git ls-remote origin "refs/heads/$RESEARCH" | cut -f1)" = "$GITHUB_SHA"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add --sparse -A -- "$PAPER"
+          python3 - <<'PY'
+          import os,subprocess
+          names=subprocess.check_output(['git','diff','--cached','--name-only','--no-renames'],text=True).splitlines()
+          if not names or any(not n.startswith(os.environ['PAPER']+'/') for n in names):
+              raise RuntimeError('native commit escaped paper directory')
+          PY
+          git commit -m 'feat(General Theta restart r2): kernel-derived transport, growing-state converse and joint minimax revision'
+          SOURCE_SHA=$(git rev-parse HEAD)
+          git push origin "HEAD:refs/heads/$RESEARCH"
+          echo "source_sha=$SOURCE_SHA" >> "$GITHUB_OUTPUT"
+  build:
+    needs: native
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.native.outputs.source_sha }}
+          fetch-depth: 4
+          persist-credentials: false
+          sparse-checkout: |
+            papers/General-Theta-Foundations-I-restart/r2
+            .github/workflows
+      - name: Install typesetting dependencies
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+      - name: Build exact source and reconstruct independently
+        env:
+          SOURCE_SHA: ${{ needs.native.outputs.source_sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git cat-file -e "$CANONICAL^{commit}"
+          python3 "$PAPER/build.py" --source-sha "$SOURCE_SHA" --out "$RUNNER_TEMP/gtf-r2-build"
+          git archive --format=tar.gz "$SOURCE_SHA" -- "$PAPER" > "$RUNNER_TEMP/gtf-r2-build/native-source.tar.gz"
+          test -z "$(git status --porcelain)"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: general-theta-r2-source-build-${{ needs.native.outputs.source_sha }}
+          path: |
+            ${{ runner.temp }}/gtf-r2-build/paper.pdf
+            ${{ runner.temp }}/gtf-r2-build/BUILD_RECEIPT.json
+            ${{ runner.temp }}/gtf-r2-build/REGRESSION.json
+            ${{ runner.temp }}/gtf-r2-build/native-source.tar.gz
+          if-no-files-found: error
+  publish:
+    needs: [native, build]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    outputs:
+      artifact_sha: ${{ steps.commit.outputs.artifact_sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.native.outputs.source_sha }}
+          fetch-depth: 2
+          persist-credentials: true
+          sparse-checkout: |
+            papers/General-Theta-Foundations-I-restart/r2
+            .github/workflows
+      - uses: actions/download-artifact@v4
+        with:
+          name: general-theta-r2-source-build-${{ needs.native.outputs.source_sha }}
+          path: ${{ runner.temp }}/gtf-r2-built
+      - name: Verify receipt and publish artifact-only child on a new revision branch
+        id: commit
+        env:
+          SOURCE_SHA: ${{ needs.native.outputs.source_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git ls-remote origin "refs/heads/$REVISION")"
+          python3 - <<'PY'
+          import hashlib,json,os,pathlib,shutil
+          src=pathlib.Path(os.environ['RUNNER_TEMP'])/'gtf-r2-built'; dst=pathlib.Path(os.environ['PAPER'])
+          receipt=json.loads((src/'BUILD_RECEIPT.json').read_text())
+          if receipt['status']!='success' or receipt['binding']['source_sha']!=os.environ['SOURCE_SHA']:
+              raise RuntimeError('wrong build receipt binding')
+          if hashlib.sha256((src/'paper.pdf').read_bytes()).hexdigest()!=receipt['pdf_sha256']:
+              raise RuntimeError('wrong PDF hash')
+          (dst/'evidence').mkdir(exist_ok=True)
+          shutil.copyfile(src/'paper.pdf',dst/'paper.pdf')
+          for name in ('BUILD_RECEIPT.json','REGRESSION.json'):
+              shutil.copyfile(src/name,dst/'evidence'/name)
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add --sparse -f -- "$PAPER/paper.pdf" "$PAPER/evidence/BUILD_RECEIPT.json" "$PAPER/evidence/REGRESSION.json"
+          python3 - <<'PY'
+          import json,os,pathlib,subprocess
+          root=pathlib.Path(os.environ['PAPER']); policy=json.loads((root/'PUBLICATION_POLICY.json').read_text())
+          names=set(subprocess.check_output(['git','diff','--cached','--name-only'],text=True).splitlines())
+          if names!={os.environ['PAPER']+'/'+n for n in policy['artifact_paths']}:
+              raise RuntimeError('artifact-only commit scope mismatch')
+          PY
+          git commit -m 'build(General Theta restart r2): exact-source PDF and independent reconstruction receipts'
+          test "$(git rev-parse HEAD^)" = "$SOURCE_SHA"
+          git push origin "HEAD:refs/heads/$REVISION"
+          echo "artifact_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+  final_verify:
+    needs: [native, publish]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.publish.outputs.artifact_sha }}
+          fetch-depth: 5
+          persist-credentials: false
+          sparse-checkout: |
+            papers/General-Theta-Foundations-I-restart/r2
+            .github/workflows
+      - name: Install identical typesetting dependencies
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+      - name: Verify exact published head with read-only permission
+        env:
+          SOURCE_SHA: ${{ needs.native.outputs.source_sha }}
+          ARTIFACT_SHA: ${{ needs.publish.outputs.artifact_sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$ARTIFACT_SHA"
+          git cat-file -e "$CANONICAL^{commit}"
+          python3 "$PAPER/build.py" --verify-published --source-sha "$SOURCE_SHA" --out "$RUNNER_TEMP/gtf-r2-final"
+          test -z "$(git status --porcelain)"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: general-theta-r2-read-only-final-${{ needs.publish.outputs.artifact_sha }}
+          path: |
+            ${{ runner.temp }}/gtf-r2-final/paper.pdf
+            ${{ runner.temp }}/gtf-r2-final/BUILD_RECEIPT.json
+            ${{ runner.temp }}/gtf-r2-final/REGRESSION.json
+          if-no-files-found: error
