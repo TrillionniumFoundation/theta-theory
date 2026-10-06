@@ -1,0 +1,9 @@
+# Historical derivation audit: v16
+
+The latest located review is v14, commit `43d797ce65ad5e4cf92f874a6656c9cd0af9d572`. The latest located author revision is v15, commit `656104408b8f9d62ccab0b1d7bc847e3be950a08`. Its exact-source artifact `11392969555` from successful run `37422661618` was downloaded, and its archive SHA-256 `b3e39854ccd1698ce45edc50ed300f7f6d257829b05aa2e1c847254ee54a9bd9` was checked. This evidence belongs to v15, not v16.
+
+The complete latest report was read. The source archive was extracted for revision work. The new proof was checked against the collision splitting and smooth multiplier module (15), BV smoothing and residual variance (22), shrinking-scale spectral expansion (23), genuine exponential and cumulative return tails (15,20), marked recentering (28), actual moments and covariance (30), full covariance nondegeneracy (32,33), and the complete arithmetic/quantitative BV reconstruction modules (34,35). The raw inversion and all-branch residual requirements (05,09,19,27) remain distinct and preserved.
+
+The v15 compact logarithmic coercivity allows growing regularity at fixed radius and fixed nonzero frequency band; the v15 parameter-uniform compactness theorem fixes the regularity budget. Neither theorem was used as though it supplied a uniform near-origin rate. V16 derives that rate separately from the elliptic diffusive collision expansion and untwisted endpoint blocks. The v15 truncation lemma is used with its actual pointwise bound, including zeros.
+
+The exact lift is not declared BV. Its regularization is proved using a new finite-record graph argument, and the normalization distinguishes the return-time-weighted lifted norm from the top-localized defect. All 35 inherited core files and all inherited diagnostic scripts are kept byte-identical. The edit ledger records only main-text additions and the new bibliography item.
