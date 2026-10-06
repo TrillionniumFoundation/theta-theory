@@ -48,7 +48,7 @@ def source_checks() -> dict:
     main = (ROOT / 'main.tex').read_text()
     require('A2-DYN, revision 13' in main, 'stale revision metadata')
     inputs = re.findall(r'\\input\{(core/[^}]+)\}', main)
-    require(len(inputs) == len(set(inputs)) == 30, 'missing or duplicate core inclusion')
+    require(len(inputs) == len(set(inputs)) == 31, 'missing or duplicate core inclusion')
     require(set(s + '.tex' for s in inputs) ==
             {str(p.relative_to(ROOT)) for p in (ROOT / 'core').glob('*.tex')},
             'unlisted mathematical source')
@@ -73,6 +73,7 @@ def source_checks() -> dict:
     expected = {'lem:bv-finite-product', 'prop:unsmoothed-fourth',
                 'thm:marked-L2-stopping', 'thm:marked-quadratic-moments',
                 'cor:induced-cesaro-covariance', 'cor:marked-conditional-moments',
+                'cor:positive-count-variance',
                 'thm:LLT', 'thm:marked-return-band', 'lem:raw-residual-sum'}
     require(expected <= set(labels), 'missing new or retained theorem')
     require(manifest['full_raw_LLT_proved'] is False, 'unsupported raw LLT flag')
@@ -86,6 +87,10 @@ def source_checks() -> dict:
 
 
 def new_finite_checks() -> dict:
+    # The exact eigenphase is 2*pi*c* = 91/5000, in (0, 6),
+    # hence strictly between 0 and 2*pi since pi > 3.
+    count_phase = F(91, 5000)
+    require(0 < count_phase < 6, 'count eigenphase could equal zero modulo 2*pi')
     l2_window = F(2, 3)
     characteristic_window = F(5, 9)
     require(1-l2_window == 2*l2_window-1 == F(1, 3), 'L2 window imbalance')
@@ -138,7 +143,7 @@ def new_finite_checks() -> dict:
     # fourth-moment bound must be rejected by the same arithmetic checks.
     require(4*F(3,5)-2 != (1-F(3,5))/2, 'bad window escaped negative control')
     require(3*64**2-2*64 > 10*64, 'linear fourth-moment claim escaped control')
-    return {'L2_squared_rate': '1/3', 'L2_and_covariance_rate': '1/6',
+    return {'count_eigenphase': str(count_phase), 'L2_squared_rate': '1/3', 'L2_and_covariance_rate': '1/6',
             'characteristic_stopping_rate': '2/9',
             'integrated_stopping_rates': [str(x) for x in losses],
             'rademacher_moment_cases': 64, 'ordered_gap_cases': gap_cases,

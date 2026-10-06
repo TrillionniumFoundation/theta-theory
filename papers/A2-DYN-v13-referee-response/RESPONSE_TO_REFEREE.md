@@ -30,7 +30,9 @@ The proof has six steps, all in the article.
 
 The induced Green--Kubo expression now converges with the actual Cesaro lag weights, at the same rate. Absolute convergence of the induced series is not assumed or asserted. Thus the covariance identification does not depend on a new induced-mixing theorem.
 
-This advance does not by itself prove a positive lower eigenvalue bound. The referee's periodic-representative objection remains valid: an `L2` transfer function is not evaluated at a periodic point. The explicit rank and coercivity results are retained, and no periodic regularity conclusion is smuggled into the new moment argument.
+There is also a direct nondegeneracy advance: `cor:positive-count-variance` proves `e_3^T D_R e_3 >= d_N > 0` uniformly. If this variance vanished, the existing actual L2 coboundary theorem for `1-eta_R/c*` would yield a circle-valued eigenfunction with eigenvalue `exp(-2 pi i c*)`. This eigenvalue is not one because `0<c*<1`, contradicting collision mixing. Compactness and covariance continuity give the uniform lower bound. No periodic representative is used.
+
+This closes nondegeneracy of the count component, not a positive lower bound for the smallest eigenvalue of the full four-dimensional matrix. The referee's periodic-representative objection in general joint directions remains valid: an `L2` transfer function is not evaluated at a periodic point. The explicit rank and coercivity results are retained, and no periodic regularity conclusion is smuggled into the new moment argument.
 
 ## C. Complementary frequencies
 
