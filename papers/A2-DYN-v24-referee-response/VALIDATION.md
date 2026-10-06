@@ -1,0 +1,11 @@
+# A2-DYN v24 validation
+
+The immutable recovered v23 baseline is paper tree 37e6f9a75ad1a6bb4f2c8710494cc50edac9e7c9, attached on the new branch at 699f17e6bd75c3c8a741a9f00837ab4654e8c3d1. The v22 controlling report is retained and checked by its Git blob hash. The first baseline audit, run 37491888772, failed at the NumPy import before source verification; it is not a passed source qualification. The environment was subsequently corrected.
+
+The final verifier checks the complete baseline and actual SHA-256 maps, immutable baseline Git tree, all 51 core inclusions, every old mathematical label, all 49 unchanged inherited core files, all unchanged inherited Python files and bibliography, five exact introduction edits, cross-references, citations, theorem environments and completion flags. It invokes the retained finite diagnostic chain normally and under Python -O and compares the full outputs.
+
+New finite checks independently verify the exact frequency and kernel exponents, strict shell summability, the fourth-root scaling identity, fixed marked moment-cumulant partitions, Gaussian parity counting, and pathwise clock/compensation/window identities on finite invertible cyclic words. Two negative controls reject a nonsummable shell order and a radius that fails the displayed rate balance. Finite rotations do not model billiard mixing and these checks do not certify continuum proofs.
+
+The six retained geometric/return/inversion diagnostics run separately. Native TeX runs without shell escape until cross-references stabilize and rejects LaTeX/package warnings, undefined references, missing characters and overfull boxes. The final read-only workflow archives the exact A2-DYN source and report scope and emits a dynamic build receipt carrying the event SHA, workflow run and attempt, clean scoped-source status, PDF/log hashes and verified source hashes.
+
+No later workflow is predeclared successful in this static record. Consult the matching GitHub run and dynamic receipt. Successful execution does not establish the remaining raw complement, long-time density derivative bounds, local edge smallness or exact-event replacement, and is not independent human review or journal acceptance.
