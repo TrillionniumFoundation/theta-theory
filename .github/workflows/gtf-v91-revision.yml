@@ -10,8 +10,8 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: gtf91-${{ github.ref }}
-  cancel-in-progress: true
+  group: gtf91-source-bound-${{ github.ref }}-${{ github.sha }}
+  cancel-in-progress: false
 jobs:
   publish:
     if: ${{ !contains(github.event.head_commit.message, 'verify-final-head') }}
@@ -67,7 +67,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: gtf91-publication-${{ github.run_id }}
+          name: gtf91-publication-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             papers/GTF-I-v91-reset-variational
             tools/gtf91
@@ -104,6 +104,6 @@ jobs:
           PY
       - uses: actions/upload-artifact@v4
         with:
-          name: gtf91-exact-final-head-${{ github.sha }}
+          name: gtf91-exact-final-head-${{ github.sha }}-${{ github.run_attempt }}
           path: /tmp/gtf91-FINAL_HEAD.json
           if-no-files-found: error
