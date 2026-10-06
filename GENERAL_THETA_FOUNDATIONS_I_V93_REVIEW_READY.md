@@ -32,7 +32,11 @@ New primary Section 19 contains six numbered results:
 | Proposition 19.5 | `prop:spectralloss93` | The distance to the capped spectral set is exactly `2 tr(rho-I/r)_+`, yielding a quantitative necessary reward loss. |
 | Proposition 19.6 | `prop:qubitpinching93` | The exceptional qubit/rank-one equality face is commutation with a pure factor, including commuting mixed factors; an exact pinching identity replaces a false common-pure-state conclusion. |
 
-The new source module is `sections/86-initial-spectra-and-rank-rigidity.tex`. Its archival source number is not its printed primary section number. The generated [theorem-location record](papers/GTF-I-v93-spectral-rigidity/evidence/THEOREM_LOCATIONS.json) supplies exact printed theorem and page numbers in each edition.
+The new source module is `sections/86-initial-spectra-and-rank-rigidity.tex`. Its archival source number is not its printed primary section number. The generated [theorem-location record](papers/GTF-I-v93-spectral-rigidity/evidence/THEOREM_LOCATIONS.json) supplies theorem numbers and LaTeX auxiliary page anchors in each edition. These anchors can precede a heading moved by page breaking and must not be mistaken for a visual location check.
+
+### Visible PDF locations
+
+In the submitted primary PDF, whose SHA-256 is `ec779e6cab12ba579e315c794d875824239d89f8d8549a6538e39fe626634129`, the headings of Theorem 19.1, Corollary 19.2, Lemma 19.3, Corollary 19.4 and Propositions 19.5–19.6 appear on pages **60, 62, 62, 63, 64 and 64**, respectively. Corollary 19.2 is the relevant pagination edge case: its auxiliary label is recorded on page 61, while its visible heading and statement begin on page 62. Use the visible page numbers here for reading and the source labels for cross-referencing. This locator clarification changes no theorem source, submitted PDF, or build receipt.
 
 For clarity, write `s=min(q,k,ell)` for the first-reference, old-receiver and fresh-reference dimension bounds. On the fixed finite once-selected basis family, the exact equal-prior value is
 
