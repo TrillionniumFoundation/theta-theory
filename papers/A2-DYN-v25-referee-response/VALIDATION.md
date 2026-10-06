@@ -1,0 +1,11 @@
+# Validation: revision 25
+
+The baseline is frozen at paper tree `f15ab9854d022319db374f8ce38f4e6a4273dd84`, author commit `c1d6940a875f501ee1957204e81772df7b9b39d6`. The controlling v24 report blob is `9f58ef5d84b9e91d5eadd8d4a49317158db695e0`.
+
+The source verifier recomputes the baseline ordinary tree and all baseline file hashes, replays exactly six main.tex edits, checks byte identity of all 51 inherited core files, all old Python sources and the bibliography, retains every old mathematical label, and verifies the complete new source manifest. It checks all 54 core inputs and Theorems A--O. It verifies the exact report blob in GitHub Actions. Local runs against an extracted baseline archive may use the explicit `--allow-missing-report` option; this is disallowed in Actions and is reported in the local result rather than treated as verified.
+
+The new finite checks cover the full nonsingleton partition recurrence through order 32, exact moments of centered three-point residual distributions and independent sums, a heterogeneous centered four-factor cumulant comparison, the P=2 recovery of the cubic formula, all 16 concrete residual powers and logarithmic margins, the distinct analytic and fine-scale inequalities, chronological words including repeated and endpoint multipliers, feasible-width examples and rejected invalid choices, and the active count-kernel coordinate. Normal and `-O` outputs must match. The entire inherited v24 finite-check chain and six original diagnostics are rerun.
+
+The native TeX build uses no shell escape, stabilizes references, and rejects undefined references, missing characters, warnings and overfull boxes. The dynamic receipt is emitted only after successful verification and build. The read-only workflow checks the exact event SHA and clean source, archives the A2-DYN source/report scope, records PDF metadata, and renders entry pages selected by actual labels. The receipt and artifact, not this static file, record successful execution.
+
+Finite models do not establish a continuum collision-space theorem. The geometric and operator dependencies, full complementary integral, long-time raw-density bounds and relative event replacement still require mathematical proof or independent review. Generated renders are not labeled as human-reviewed merely because a renderer ran.
