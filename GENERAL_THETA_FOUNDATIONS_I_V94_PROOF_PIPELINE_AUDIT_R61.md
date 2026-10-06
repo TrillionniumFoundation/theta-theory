@@ -9,8 +9,8 @@
 **Predecessor native source:** `2595ee56f70138c58b1924591d32e09cbad31381`  
 **Prior external report:** r60, `cf13712c54e9ef0c9c54a240b1f26efc78cc3568`  
 **Prior proof/pipeline audit:** r60, `e4e72a512bf747e7bd190196cd8dc3db35689e3c`  
-**Exact-final-head run:** `37436686847`, success  
-**Exact-final-head job:** `112092683893`, success  
+**Exact-final-head run:** `37436686847`, conclusion `success`  
+**Exact-final-head job:** `112180114437`, conclusion `success`  
 **Audit branch:** `review/general-theta-foundations-i-v94-spectral-value-proof-pipeline-audit-r61-2026-10-06`  
 **Date:** 6 October 2026
 
@@ -18,42 +18,44 @@
 
 | Dimension | Independent audit result |
 |---|---|
-| Highest numerical branch | **v95 exists but is not a complete revision.** It contains four incomplete transport payloads only. |
-| Latest complete reviewable revision | **Pass: v94.** The v95 transport metadata itself preserves v94 as the latest complete publication. |
-| Reviewed final head | **Pass.** `db6739...` is the current v94 complete-branch head. |
+| Highest numerical branch | **v95 exists but is not a complete revision.** It contains four incomplete source-transport chunks only. |
+| Latest complete reviewable revision | **Pass: v94.** |
+| Reviewed final head | **Pass.** `db6739...` is the exact reconstructed v94 complete-branch head. |
 | Mathematical publication | **Pass.** `0919ff...` is the artifact publication represented by the final head. |
-| Qualified native source | **Pass.** `24f48c...` is recorded by the build receipt and is the theorem-source parent of the publication. |
-| Predecessor identity | **Pass.** v93 publication/native identities and both r60 reports are pinned. |
+| Qualified native source | **Pass.** `24f48c...` is the theorem-source parent recorded by the build receipt. |
+| Predecessor identity | **Pass.** v93 publication/native and both r60 reports are pinned. |
 | Publication/source delta | **Pass.** Rendered objects and evidence are added after source qualification; theorem source is unchanged. |
-| Exact-final-head reconstruction | **Pass.** Run `37436686847`, job `112092683893`, reconstructed exact `db6739...` read-only. |
+| Exact-final-head reconstruction | **Pass.** Run `37436686847`, job `112180114437`, reconstructed exact `db6739...` read-only. |
+| Direct run on publication SHA | **Absent.** The successful run is bound to the later review/final head, not directly to `0919ff...`. |
+| Legacy combined statuses | **Empty.** No populated legacy status list should be inferred. |
 | Human signature | **Absent.** Native/publication commits are unsigned; no verified human authorship is claimed. |
-| Primary document | **Pass.** Seventy-eight-page focused quantitative article. |
-| Linked supplement | **Pass.** Eighty-seven pages. |
-| Structural article | **Pass.** Forty-one pages and logically independent. |
+| Primary document | **Pass.** 78-page focused quantitative article. |
+| Linked supplement | **Pass.** 87 pages. |
+| Structural article | **Pass.** 41 pages and logically independent. |
 | Complete edition | **Pass as archive.** 289 pages; not a second submission. |
 | Source preservation | **Pass by receipt.** 841 predecessor native files and inherited mathematical sections retained byte-identically. |
-| Current source inventory | **Pass.** 870 source files, 1088 complete labels, 256 quantitative-package labels, 116 structural labels. |
-| Regression suites | **Pass as finite evidence.** Thirty-six suites, ordinary/optimized identity. |
-| Main new theorem | **Substantial.** Exact biased value at every prescribed pure initial Gram spectrum and two rank cuts. |
-| Fixed acquisition | **Correctly enforced.** The pure first acquisition is not replaced by a classical ensemble. |
-| Active rank | **Pass.** Only `r=min(k,l)` enters the value, with rank understood as at most `r`. |
-| Secular functional | **Pass.** Matrix maximum and unique positive-root descriptions agree. |
-| Boundary convention | **Pass.** Support size at most one gives secular value zero. |
+| Current source inventory | **Pass.** 870 files, 1088 complete labels, 256 quantitative-package labels, 116 structural labels. |
+| Regression suites | **Pass as finite evidence.** 36 suites; ordinary/optimized output identity. |
+| Main v94 theorem | **Substantial.** Exact biased value for every prescribed pure initial Gram spectrum and two rank cuts. |
+| Fixed first acquisition | **Correctly enforced.** It is not replaced by a classical ensemble of distinct acquisitions. |
+| Active rank | **Pass.** The exact value depends on `r=min(k,l)` with rank interpreted as at most `r`. |
+| Secular functional | **Pass.** Matrix maximum and positive-root descriptions agree. |
+| Boundary convention | **Pass.** Support size at most one gives value zero. |
 | Concavity/homogeneity | **Pass in the finite-dimensional form used.** |
-| Strict spectral comparison | **Pass with boundary qualifications.** Used only for `2<=r<rank(rho)`. |
-| Leaf optimization | **Pass.** Rank-capped filtered-swap value equals one-half of the truncated secular value. |
-| Singular leaf case | **Pass.** Support compression/pseudoinverse treatment avoids illegal inversion. |
-| Commuting leaf optimizer | **Pass.** Optimizer lies on leading eigenspaces with stated fresh spectrum. |
-| Least rank-capped majorant | **Pass.** Water-filling construction has the required majorization property. |
-| Rank-capped roof upper | **Pass.** Ky Fan plus Jensen/concavity. |
+| Strict spectral comparison | **Pass with stated boundary qualifications.** |
+| Leaf optimization | **Pass.** The rank-capped filtered-swap value is one half of the truncated secular value. |
+| Singular leaf case | **Pass.** Support compression/pseudoinverse avoids illegal inversion. |
+| Commuting leaf optimizer | **Pass.** An optimizer exists on leading eigenspaces with the stated fresh spectrum. |
+| Least rank-capped majorant | **Pass.** The water-filled spectrum has the required minimal-majorant property. |
+| Rank-capped roof upper | **Pass.** Ky Fan majorization plus Jensen/Schur concavity. |
 | Rank-capped roof attainment | **Pass.** Finite commuting Schur–Horn/Birkhoff decomposition. |
-| Exact value converse | **Pass.** Common fixed Gram decompositions are bounded by the spectral roof. |
+| Exact value converse | **Pass.** Every common-barycenter decomposition is bounded by the spectral roof. |
 | Exact value attainment | **Pass.** At most `d` receiver outcomes; initial acquisition unchanged. |
-| Same instrument across first labels | **Pass and stronger than necessary.** |
+| Same instrument across first labels | **Pass and stronger than required.** |
 | No-message comparator | **Pass.** Exact truncated-spectrum secular value. |
 | Strict message gain | **Pass.** For `t>0`, iff `2<=r<rank(rho)`. |
 | Saturation | **Pass.** No gain at `r=1` or once `r` reaches the initial rank. |
-| Fixed-Gram/global distinction | **Correctly stated.** Positive fixed-Gram message value is compatible with global no-feedback optimizers. |
+| Fixed-Gram/global distinction | **Correctly stated.** Fixed-Gram message value does not imply every global optimum uses feedback. |
 | Rational executable | **Pass within scope.** Supplied rational spectra, exact water filling, certified bisection. |
 | Spectrum estimation | **Not supplied and correctly false.** |
 | Physical instrument synthesis | **Not supplied and correctly false.** |
@@ -70,15 +72,15 @@
 | C2 aggregate | **False/open.** |
 | Eleven-paper aggregate | **False/open.** |
 | Whole Theta programme | **False/open.** |
-| Four-leading-general-journal threshold | **Not met.** Negative significance/editorial judgment, not a correctness rejection. |
+| Four-leading-general-journal threshold | **Not met.** This is a significance/editorial judgment, not a correctness rejection. |
 
-The v94 mathematical package is coherent in the load-bearing portions inspected. Its central achievement is an exact rank-capped spectral evaluation of the biased reset decision problem at a prescribed pure initial Gram state, together with a finite optimizer and a sharp receiver-message criterion. I found no fatal gap in the new theorem chain.
+The v94 package is coherent in the load-bearing portions inspected. Its central achievement is an exact rank-capped spectral evaluation of the biased reset decision problem at a prescribed pure initial Gram state, together with a finite optimizer and a sharp receiver-message criterion. I found no fatal gap in the new theorem chain.
 
 ---
 
 ## 1. Frozen branch and object genealogy
 
-### 1.1 Highest numerical branch
+### 1.1 The incomplete v95 transport branch
 
 The branch survey contains
 
@@ -92,7 +94,7 @@ at head
 fd2b0d8d49fe0ab72886df89966b03cfe62057d7.
 ```
 
-Its tree contains only:
+Its visible tree contains only:
 
 ```text
 tools/gtf95/payload-0.b64
@@ -101,556 +103,107 @@ tools/gtf95/payload-2.b64
 tools/gtf95/payload-3.b64.
 ```
 
-The four blobs concatenate into a gzip stream that does not reach an end-of-stream marker. Partial decompression exposes staging metadata and proposed v95 prose, but not a complete repository tree. The metadata says:
+The chunks concatenate into a compressed stream that does not reach a valid end-of-stream marker. There is no materialized v95 paper directory, complete native source, PDF package, build receipt, review entry or Actions run. The branch is therefore staging/transport, not a referee-ready manuscript.
 
-```text
-publication_transport_state = source_payload_transport_only
-publication_state = staged-for-remote-materialization
-full_current_revision_present_on_branch = false
-stage3_remote_assembly_still_required = true.
-```
+A numerical revision label is not sufficient evidence of a completed object. The review target must have a stable source identity, complete theorem text, reconstructible documents and a reviewable branch head. v95 fails those minimum conditions at audit time.
 
-No Actions run exists for that branch. It therefore fails the minimum object-identity, completeness, build and reproducibility conditions for referee review. Branch numbering alone cannot make it the latest manuscript.
+### 1.2 The complete v94 chain
 
-### 1.2 Latest complete v94 chain
-
-The complete v94 branch ends at
+The complete branch ends at
 
 ```text
 db6739da3487be8787a67fc175b9086bd62f0e80.
 ```
 
-The root review entry records:
+The frozen identities are:
 
 ```text
-v93 native source:       2595ee56f70138c58b1924591d32e09cbad31381
-v93 publication:         3b660839818d6ef676da72fb6e9969501be4e59a
-r60 external report:     cf13712c54e9ef0c9c54a240b1f26efc78cc3568
-r60 pipeline audit:      e4e72a512bf747e7bd190196cd8dc3db35689e3c
-v94 native source:       24f48c90d6bcc1eae1d4c38ac5195405ac21da7d
-v94 publication:         0919ff61895716ea3de1d6a0f2a6a291935764d0
-v94 exact final head:     db6739da3487be8787a67fc175b9086bd62f0e80.
+v93 native source:        2595ee56f70138c58b1924591d32e09cbad31381
+v93 publication:          3b660839818d6ef676da72fb6e9969501be4e59a
+r60 external report:      cf13712c54e9ef0c9c54a240b1f26efc78cc3568
+r60 pipeline audit:       e4e72a512bf747e7bd190196cd8dc3db35689e3c
+v94 native source:        24f48c90d6bcc1eae1d4c38ac5195405ac21da7d
+v94 publication:          0919ff61895716ea3de1d6a0f2a6a291935764d0
+v94 exact final head:      db6739da3487be8787a67fc175b9086bd62f0e80.
 ```
 
-The mathematical source is frozen at `24f48c...`. The publication `0919ff...` adds four rendered manuscripts, build records, source archives and regression evidence. Later metadata commits expose the review identities and preserve an exact-final-head reconstruction receipt. No theorem source changes after the native source commit.
+The mathematical source is frozen at `24f48c...`. The publication `0919ff...` adds four rendered manuscripts, source archives, build records and regression evidence. The commits from publication to final head add review/provenance metadata only. No theorem source changes after the native source commit.
 
 ### 1.3 Exact-head run
 
-Workflow run `37436686847` checked out the triggering `db6739...` with `persist-credentials:false`, installed pinned reconstruction dependencies, ran
+Workflow run `37436686847` was triggered on `db6739...`. Its successful `final-head` job is `112180114437`. The job:
 
-```text
-build_revision.py --verify-published
-```
+1. checked out the triggering SHA;
+2. did not persist write credentials;
+3. installed the reconstruction environment;
+4. executed the published-source verifier;
+5. asserted that the verified head equals the triggering SHA; and
+6. uploaded the resulting receipt.
 
-and asserted:
+The `publish` job in that run was skipped because publication had already occurred. This is an exact-head reconstruction of the final review head, not a new artifact publication.
 
-```text
-receipt.status == success
-receipt.verified_head == GITHUB_SHA
-receipt.read_only == true.
-```
+There is no direct Actions run returned for publication SHA `0919ff...`. The correct provenance sentence is therefore:
 
-Job `112092683893` completed successfully and preserved a head-bound artifact. This verifies the exact final review object, including the publication it references.
+> the mathematical publication is represented inside exact final head `db6739...`, and that final head was reconstructed read-only by run `37436686847`, job `112180114437`.
 
-The Actions run is attached to `db6739...`, not directly to `0919ff...`. Release prose must not collapse those two identities.
+It is inaccurate to say that the publication SHA itself has a directly bound run or populated legacy status unless such evidence is later added.
+
+### 1.4 Review alias
+
+Documentation refers to a review-ready identity. No separate review-ready alias branch was located in the final survey. Either create and pin that alias or remove the promise. The current exact head remains unambiguous, but the documentation should match the branch topology.
 
 ---
 
-## 2. Submitted document objects
+## 2. Submitted objects and editorial boundaries
 
-### 2.1 Primary quantitative article
+### 2.1 Focused quantitative article
 
-The seventy-eight-page primary is titled *Finite-Use Discrimination Geometry of Ordered Quantum Measurements*. Its active route is:
+The current primary is 78 pages and is titled *Finite-Use Discrimination Geometry of Ordered Quantum Measurements*. Its journal-facing path includes:
 
-1. coupled covariance and global upper certificates;
-2. finite Bernoulli prerequisites;
-3. complete support kernel;
-4. finite orbits and smooth curves;
-5. certified controls;
-6. one-sided tangent tubes;
-7. selected higher jets and nonempty neighborhoods;
-8. entanglement width;
-9. conditional reset feedback;
-10. allocation profiles and hard quadratic budgets;
-11. common-barycenter reset variational principle;
-12. operational memory hierarchy;
-13. equal-prior hierarchy;
-14. rank-resolved reset memory;
-15. initial spectra and rigidity; and
-16. exact prescribed-spectrum values.
+1. finite-use measurement-channel geometry;
+2. support and covariance structure;
+3. one-sided tangent tubes and width laws;
+4. reset and feedback resource classes;
+5. finite operational memory examples;
+6. common-barycenter variational and dual principles;
+7. rank-resolved reset memory;
+8. fixed initial spectra, equality and rigidity; and
+9. exact prescribed-spectrum values and message gain.
 
-The terminal theorem is visible in the abstract, but the paper still combines two largely independent stories: local finite-use measurement geometry and a finite two-call decision game.
+The current title remains broader than the v90–v94 finite game. A specialist submission should either narrow the title and contents or explain the relation between the local geometric and exact finite-game halves more tightly.
 
 ### 2.2 Linked binary supplement
 
-The eighty-seven-page supplement preserves binary boundary, coding, finite-control and learning material. It remains a current linked proof object and is reconstructed from current source.
+The 87-page supplement carries inherited binary proofs, coding constructions, finite certificates and supporting comparisons. It is rebuilt from current source and is not merely a historical PDF.
 
 ### 2.3 Structural companion
 
-The forty-one-page structural article is logically independent of the spectral theorem. It must not be presented as a premise of v94 or as a second contribution of the same submission.
+The 41-page structural article is source-graph independent of the spectral theorem. It is not a premise of the v94 proof and should not be counted as a second contribution to the same submission.
 
-### 2.4 Complete research edition
+### 2.4 Complete edition
 
-The 289-page complete edition preserves the historical development. It is not a normal journal manuscript and should not be used as a significance multiplier.
-
----
-
-## 3. Operational decision interface
-
-### 3.1 Device family
-
-The finite ensemble is inherited from the exact hierarchy. A basis index is selected once. The associated ordered measurement is used at both calls. The alternative is a deformation of a scalar measurement toward the selected basis. The prior is fixed by the construction.
-
-The shared latent basis is essential. Independent redraws would factor the second moment and remove the signal used by the theorem.
-
-### 3.2 Fixed pure first acquisition
-
-The first probe–reference preparation is pure and represented by an amplitude `C_0` with Gram state
-
-```text
-rho=C_0^* C_0,  tr rho=1.
-```
-
-The theorem fixes this physical acquisition, not merely its average density after a classical ensemble resolution. A public mixture of different amplitudes realizing the same `rho` is a different acquisition protocol and is not silently allowed.
-
-### 3.3 Receiver normal form
-
-The old receiver processing produces positive branch Gram operators `A_{y,h}` obeying, for every first device label `y`,
-
-```text
-sum_h A_{y,h}=rho.
-```
-
-This is the common-barycenter constraint. The trace weights
-
-```text
-w_{y,h}=tr A_{y,h}
-```
-
-are algebraic Gram weights. They are not substituted for record probabilities under one of the two hypotheses.
-
-### 3.4 Rank cuts
-
-The old retained receiver register has dimension `k`, the fresh reference has dimension `l`, and the effective rank cap is
-
-```text
-r=min(k,l).
-```
-
-The theorem shows that this game depends only on `r`. It does not imply that old memory and fresh reference dimensions are interchangeable in arbitrary protocols.
-
-### 3.5 Message and no-message classes
-
-The message-enabled class permits the receiver outcome `h` to influence the next fresh preparation. The no-message comparator permits dependence on the first device label and on an independent public seed, but not on `h`. Old receiver processing and the final joint readout remain unrestricted within the stated dimensions.
-
-The no-message comparator is not the v90 complete-measure-and-reprepare class and is not a product-acquisition class.
+The 289-page complete edition is a preservation object. Its size and breadth are provenance, not evidence of editorial significance.
 
 ---
 
-## 4. Spectral definitions
+## 3. Preservation and build evidence
 
-Let the ordered eigenvalues be
-
-```text
-lambda_1>=...>=lambda_d>=0,
-sum_i lambda_i=1.
-```
-
-### 4.1 Secular value
-
-For a nonnegative vector `u`, put `v_i=sqrt(u_i)` and define
+The v94 receipt reports:
 
 ```text
-chi(u)=lambda_max(v v^* - diag(u)).
+current source files:                 870
+predecessor native files:             841
+complete-edition labels:              1088
+quantitative-package labels:          256
+structural labels:                    116
+regression suites:                    36
+isolated native rebuild:              success
+standalone journal rebuild:           success
+ordinary/optimized Python identity:   success
+unresolved references/citations:      none reported
 ```
 
-If at least two `u_i` are positive, the matrix has one positive eigenvalue, characterized by
-
-```text
-sum_i u_i/(u_i+chi)=1.
-```
-
-If the support has size zero or one, `chi(u)=0`.
-
-The manuscript proves the following properties used downstream:
-
-- permutation invariance;
-- continuity on the nonnegative cone;
-- positive homogeneity;
-- coordinate monotonicity;
-- concavity;
-- superadditivity as a consequence of homogeneous concavity; and
-- strict Schur-concavity on the relevant fixed-trace strata modulo permutations and zero-padding exceptions.
-
-### 4.2 Least rank-capped majorant
-
-For `1<=r<=d`, the vector `q^(r)(lambda)` is obtained as follows. Retain an initial segment of entries that exceed the water level; distribute the remaining mass uniformly over the remaining active positions up to position `r`; set all later entries to zero.
-
-Equivalently, choose the stopping index `m` and level
-
-```text
-tau = [sum_{i>m} lambda_i]/(r-m)
-```
-
-so that the retained prefix is decreasing above `tau` and the previous water-filling test fails at the correct boundary. Then
-
-```text
-q^(r)=(lambda_1,...,lambda_m,tau,...,tau,0,...,0).
-```
-
-This is the least decreasing rank-at-most-`r` probability vector that majorizes `lambda`.
-
-Define
-
-```text
-H_r(rho)=chi(q^(r)(lambda(rho))).
-```
-
----
-
-## 5. Audit of the secular lemma
-
-### 5.1 Root characterization
-
-For `x>0`, the matrix determinant lemma applied to
-
-```text
-x I + diag(u) - v v^*
-```
-
-shows that a positive eigenvalue is a root of
-
-```text
-1-sum_i u_i/(u_i+x)=0.
-```
-
-The sum is continuous and strictly decreasing from the number of positive coordinates to zero. Thus a unique positive root exists exactly when the support contains at least two coordinates.
-
-### 5.2 Continuity and boundary
-
-The matrix definition gives continuity without choosing a root branch. The root description is used only on the multi-coordinate support. Letting coordinates vanish is compatible with the matrix limit. This avoids division by a vanishing coordinate.
-
-### 5.3 Homogeneity
-
-Scaling `u` by `c>=0` scales both `v v^*` and `diag(u)` by `c`, so `chi(cu)=c chi(u)`. This is needed because branch Gram operators are subnormalized before they are divided by their trace.
-
-### 5.4 Concavity
-
-The proof uses the variational characterization of the largest eigenvalue after a suitable reparameterization/infimum form. Trace-weighted combinations of positive Gram operators are therefore compatible with a homogeneous concave branch score. The proof audit correctly does not infer concavity from the largest-eigenvalue map alone, which would have the wrong direction.
-
-### 5.5 Strictness
-
-The strict message result does not require an indiscriminate claim of strict Schur-concavity on the entire closed simplex. It uses strictness after a nonzero tail is moved into a rank-capped water-filled majorant with at least two active coordinates. The exceptional cases are separately treated:
-
-```text
-r=1;
-t=0;
-rank(rho)<=r;
-support size <=1;
-permutation/equality plateaus.
-```
-
-I find the strictness application coherent. The main paper should state this restricted strictness theorem explicitly rather than relying on a broad phrase.
-
----
-
-## 6. Audit of the rank-capped leaf problem
-
-For an old positive Gram operator `A`, the fresh branch optimization has a rank cap `l`.
-
-### 6.1 Support compression
-
-The proof first restricts to `supp A`. Every term outside the support is irrelevant to the filtered-swap contraction. This permits the inverse expressions to be interpreted on the support or through the Moore–Penrose inverse.
-
-### 6.2 Filtered-swap reduction
-
-The payoff inherited from the finite family reduces the positive gain to the negative part of a filtered swap built from old and fresh Gram factors. The rank of the fresh factor limits the number of old eigenmodes that can contribute.
-
-### 6.3 Spectral rearrangement
-
-The optimization aligns the fresh support with the leading eigenvalues of `A`. A trace/inverse-trace inequality and rearrangement show that a noncommuting choice cannot improve the value. The resulting scalar optimization is exactly the secular equation.
-
-The value is
-
-```text
-max_{rank B<=l} N(A,B)
-  = (1/2) chi(a_1,...,a_l),
-```
-
-where `a_1>=...` are the eigenvalues of `A`.
-
-### 6.4 Attainment
-
-The optimizer may be chosen diagonal in the eigenbasis of `A`, supported on leading eigenspaces. For an exact rational secular root the executable can display the fresh eigenvalues directly; for a general real spectrum the mathematical optimizer is defined by the root and remains exact even though numerical output is an interval.
-
-### 6.5 Singular cases
-
-If fewer than two selected eigenvalues are nonzero, the secular value and branch gain are zero. If `A` is singular but has at least two active selected modes, support restriction makes the same derivation valid. No full-space inverse is used.
-
-I find no fatal issue in the leaf lemma.
-
----
-
-## 7. Audit of the rank-capped spectral roof
-
-Let `f` be continuous, symmetric, homogeneous and concave on the nonnegative cone. Consider decompositions
-
-```text
-rho=sum_h A_h,
-rank A_h<=r.
-```
-
-The branch objective is
-
-```text
-sum_h f(lambda(A_h)).
-```
-
-### 7.1 Upper bound
-
-Ky Fan inequalities give spectral majorization constraints for sums of rank-capped positive operators. After normalizing nonzero atoms by their traces, Jensen and symmetry bound every decomposition by the value at a rank-`r` probability vector majorizing `lambda(rho)`. Since `q^(r)(lambda)` is the least such majorant and `f` is Schur-concave, the best upper is
-
-```text
-f(q^(r)(lambda(rho))).
-```
-
-The majorization direction is correct: a more concentrated rank-capped vector majorizes the original spectrum, and a Schur-concave function decreases with concentration. The least majorant maximizes the attainable value.
-
-### 7.2 Finite attainment
-
-Schur–Horn realizes the diagonal/spectral relation by a doubly stochastic map. A finite Birkhoff decomposition writes that map as a finite convex combination of permutations. Reintroducing the eigenbasis of `rho` yields commuting positive atoms, all with the same normalized spectrum `q^(r)`, whose sum is `rho`.
-
-Carathéodory/finite-dimensional reduction bounds the number of required atoms; the manuscript obtains at most `d` receiver outcomes for the operational realization.
-
-### 7.3 Application to `chi`
-
-Taking `f=chi` gives
-
-```text
-sup sum_h chi(lambda(A_h))
-  = chi(q^(r)(lambda(rho)))
-  = H_r(rho).
-```
-
-This is the exact common-barycenter value required by the operational theorem.
-
-I find the roof lemma correct in the stated finite-dimensional setting.
-
----
-
-## 8. Audit of the prescribed-spectrum theorem
-
-### 8.1 Constants
-
-The finite family has
-
-```text
-L_0=2(d+1)-t^2,
-p_E=(d+1)/L_0.
-```
-
-### 8.2 Converse
-
-The dimension-preserving receiver normal form supplies, for every first device label `y`, a decomposition
-
-```text
-rho=sum_h A_{y,h}
-```
-
-with each branch's effective old rank bounded by `k`. The fresh rank is bounded by `l`, so the leaf score uses `r=min(k,l)`.
-
-The leaf lemma bounds each branch by one-half of its secular value. Homogeneity permits unnormalized branch operators. The spectral roof then bounds the sum by `H_r(rho)`. Summing first labels with the exact finite-family constants gives
-
-```text
-P^b_{k,l}(rho)
- <= p_E + [t^2/(2L_0)] H_r(rho).
-```
-
-No hypothesis-dependent branch probability is inserted into the common Gram decomposition.
-
-### 8.3 Attainment
-
-The commuting roof decomposition gives a receiver instrument with at most `d` outcomes and branch Gram atoms with common normalized spectrum `q^(r)`. The dimension-preserving normal form realizes those atoms without changing the initial amplitude `C_0`.
-
-For every nonzero branch, the commuting leaf optimizer supplies a fresh state of reference dimension at most `r`. The final decision is the positive-part test associated with the payoff block. Summing the exact branch values reaches the converse bound.
-
-The construction can use the same receiver instrument after every first device label. Fresh preparation need not depend on that label for the strict-gain construction.
-
-### 8.4 Exact theorem
-
-Therefore
-
-```text
-P^b_{k,l}(rho)
- = p_E + [t^2/(2L_0)] H_r(rho),
-r=min(k,l).
-```
-
-This is an exact optimum over the complete stated class, not merely an exhibited lower bound.
-
----
-
-## 9. Audit of the no-message value
-
-Fix old dimension `d` and fresh dimension `r`. The fresh preparation may depend on the first device label and public randomness, but not on the receiver outcome.
-
-Without that message, all old processing may be postponed to the final joint readout. Each first-label branch therefore retains the same Gram `rho` for purposes of the fresh leaf problem. The leaf lemma yields
-
-```text
-P^nm_{d,r}(rho)
- = p_E + [t^2/(2L_0)] chi(lambda_1,...,lambda_r).
-```
-
-Public mixing cannot improve a linear score after the leaf optimum is taken.
-
-### 9.1 Strict gain
-
-For `t>0`:
-
-- if `r=1`, both secular values vanish;
-- if `r>=rank(rho)`, `q^(r)(lambda)=lambda`, so the values agree;
-- if `2<=r<rank(rho)`, the rank-capped majorant moves a nonzero spectral tail and strict Schur-concavity gives
-
-```text
-chi(q^(r)(lambda))
- > chi(lambda_1,...,lambda_r).
-```
-
-Hence
-
-```text
-P^b_{d,r}(rho)>P^nm_{d,r}(rho)
- iff 2<=r<rank(rho).
-```
-
-At `t=0` the overall scale is zero and no gain occurs.
-
-### 9.2 Compatibility with v93
-
-The v93 global result may choose the initial Gram to optimize the entire protocol and can have a no-feedback attaining preparation. The v94 statement holds the initial Gram fixed. There is no contradiction: communication can improve a suboptimal or constrained fixed initial acquisition even when another globally optimized initial acquisition needs no message.
-
----
-
-## 10. Exact three-dimensional check
-
-For
-
-```text
-lambda=(1/2,1/4,1/4), r=2,
-```
-
-the least rank-two majorant is
-
-```text
-q^(2)=(3/4,1/4,0).
-```
-
-Direct evaluation gives
-
-```text
-chi(q^(2))=sqrt(3)/4,
-chi(lambda_1,lambda_2)=sqrt(6)/8.
-```
-
-Thus the exact message gain is
-
-```text
-t^2(2sqrt(3)-sqrt(6))/(16L_0)>0
-```
-
-for `t>0`. The proposed two commuting atoms average to `rho`, and the leaf optimizers attain the two branch values. This provides a useful nondegenerate check of the general theorem.
-
----
-
-## 11. Countable instruments and finite attainment
-
-The receiver normal form may be stated for finite or countable outcomes. The proof uses nonnegative trace-class sums. Finite truncations converge monotonically in trace, while the branch score is continuous and homogeneous on the finite-dimensional positive cone. Thus the upper extends to countable outcomes.
-
-The attaining roof is finite. The manuscript derives an at-most-`d` outcome realization from the commuting majorization decomposition. No measurable-selection theorem over an infinite parameter space is required for attainment.
-
-The paper should move this reduction into the theorem proof. At present it is distributed across the normal-form and proof-audit documents.
-
----
-
-## 12. Executable audit
-
-`spectral_value.py` implements the finite spectral arithmetic.
-
-### 12.1 Input validation
-
-It requires:
-
-- a list of at least two nonnegative rational eigenvalues summing to one;
-- genuine integer old/fresh dimensions in `[1,d]`;
-- rational `t` in `[0,1]`;
-- a genuine integer bisection count in `[1,4096]`;
-- no unknown fields;
-- no floats or booleans.
-
-### 12.2 Majorant
-
-The `majorant` routine sorts the spectrum, finds the water-filling stopping index and returns a decreasing rank-at-most-`r` rational vector summing to one.
-
-### 12.3 Secular bracket
-
-`root_interval` removes zero coordinates. For support size below two it returns `[0,0]`. Otherwise it bisects the monotone secular function on `[0,sum u]` using exact rational arithmetic.
-
-For probability inputs the bracket length after `B` iterations is at most `2^{-B}` unless an exact root is found earlier.
-
-### 12.4 Scores
-
-The certificate returns:
-
-```text
-active rank;
-initial rank;
-rank-capped majorant;
-message-enabled score interval;
-no-message score interval;
-gain interval;
-strict-gain criterion.
-```
-
-The no-message calculation correctly uses the truncated leading spectrum, not merely the largest eigenvalue.
-
-### 12.5 Scope flags
-
-The executable explicitly records that:
-
-```text
-spectrum_supplied_not_measured = true
-physical_reset_calibration = false
-continuum_proof_by_replay = false
-independent_priority_clearance = false
-general_efficient_design_synthesis = false.
-```
-
-This is an appropriate boundary.
-
-### 12.6 Complexity qualification
-
-The algorithm is exact rational bisection, but rational numerator/denominator lengths grow with the requested bits. The program does not compute an eigenbasis, solve the physical instrument realization from raw device data, or estimate an unknown spectrum. Any complexity claim must distinguish arithmetic operations, bit complexity and physical acquisition.
-
----
-
-## 13. Build and regression evidence
-
-The v94 build receipt records:
-
-```text
-source files:                     870
-predecessor native files:         841
-complete-edition labels:         1088
-quantitative-package labels:       256
-structural labels:                 116
-regression suites:                  36
-isolated native rebuild:          true
-standalone journal rebuild:       true
-normal/optimized outputs equal:   true
-unresolved references/citations:  false.
-```
-
-Rendered objects are:
+Inherited mathematical section files are reported byte-identical. The publication contains:
 
 ```text
 paper.pdf:                 78 pages
@@ -659,207 +212,682 @@ STRUCTURAL_PAPER.pdf:      41 pages
 COMPLETE_REVISION.pdf:    289 pages.
 ```
 
-The new spectral profile and resource suites report substantial positive and negative finite checks. These results support source integrity, input rejection and arithmetic identities. They are not formal proofs of the continuum spectral roof or the operational normal form.
+This evidence supports exact object identity, source preservation and deterministic finite execution. It is not formal proof-assistant verification and does not establish priority, physical implementation or editorial acceptance.
 
 ---
 
-## 14. Literature and priority audit
+## 4. Operational model and resource boundary
 
-### 14.1 Majorization
+### 4.1 Device family
 
-Nielsen's pure-state conversion criterion and Jonathan–Plenio-type ensemble transformations are direct mathematical antecedents for the use of spectral majorization and finite decompositions. The present paper does not introduce those principles.
+The exact operational theorem uses a finite family indexed by a latent basis. The basis is selected once and reused at the two unknown-device calls. The shared latent variable creates a second-moment signal. Independent redrawing would define another statistical experiment.
 
-### 14.2 Concave roofs and assistance
+### 4.2 Prior and deformation
 
-Entanglement-of-assistance and related assisted optimization problems provide a broad antecedent for maximizing homogeneous concave spectral quantities over decompositions. The novelty claim must be the operational identification and exact functional for this game, not the abstract idea of a concave roof.
+The v94 closed form is for the biased prior of the engineered experiment. The deformation satisfies `0<=t<=1`, and
 
-### 14.3 Memory-constrained discrimination
+```text
+L_0=2(d+1)-t^2,
+p_E=(d+1)/L_0.
+```
 
-Ohst–Zhang–Nguyen–Plávala–Quintino study constrained quantum/classical memory in channel discrimination through separability formulations. Recent work by Zonnios–Binder addresses bounded coherent memory in multi-time process discrimination. Those models are not identical to the submitted two-cut reset interface, but they are close priority and taxonomy references.
+The prior is not optimized in v94. Equal-prior formulas from earlier sections have a different objective and must not be conflated with the v94 value.
 
-### 14.4 Current defensible novelty
+### 4.3 Fixed first acquisition
 
-The repository evidence supports the narrower statement that the following combination is not supplied by the cited antecedents:
+The first probe–reference state is pure with Gram matrix
 
-- the exact once-selected finite measurement game;
-- the prescribed pure initial Gram constraint;
-- the two-cut rank normal form;
-- the singular-safe secular leaf value;
-- the least-majorant spectral roof as the exact biased optimum; and
-- the exact iff receiver-message criterion.
+```text
+rho=C_0^* C_0.
+```
 
-No independent human specialist priority clearance is present. Repository chronology and finite tests cannot replace it.
+The phrase “fixed initial spectrum” means that the actual pure acquisition is fixed up to its Gram representation. It may not be replaced by a public random mixture of different initial acquisitions.
+
+### 4.4 Receiver instrument
+
+After the first device call, a common receiver instrument may act on accessible systems, retain an old quantum register and produce a public outcome `h`. That outcome may choose the fresh second preparation. The receiver operation is common under the two hypotheses.
+
+### 4.5 Rank cuts
+
+The old retained register has dimension at most `k`; the fresh reference has dimension at most `l`. The active overlap rank is
+
+```text
+r=min(k,l).
+```
+
+The theorem requires rank at most `r`, not exact rank. Singular cases and zero padding are legal.
+
+### 4.6 Common barycenter
+
+The receiver branches produce positive Gram atoms whose weighted sum is the fixed initial Gram state. Raw trace weights sum to `d`; normalized public probabilities are obtained after division by `d`. This is a bookkeeping point with mathematical consequences and must remain explicit.
+
+### 4.7 No-message class
+
+The no-message subclass does not allow the receiver outcome to change the fresh second preparation. It may still retain quantum systems for final readout. It is not the same as the fully classical measure-and-reprepare class.
 
 ---
 
-## 15. Relation to the full paper pipeline
+## 5. Mathematical dependency graph
 
-### 15.1 Local geometry route
+The cumulative chain used by v94 is:
 
-The older finite-use geometry route is:
+```text
+finite shared-basis two-call experiment
+  -> exact first/second moment identities
+  -> common-barycenter reset normal form
+  -> exact variational principle
+  -> Hermitian-majorant dual
+  -> rank-resolved old/fresh memory cuts
+  -> globally optimized rank formulas
+  -> prescribed initial spectrum and optimal face
+  -> projection-frame attainment and rigidity
+  -> secular leaf functional
+  -> rank-capped least-majorant roof
+  -> exact prescribed-spectrum value
+  -> exact no-message value
+  -> strict receiver-message criterion.
+```
+
+The v94 proof does not depend on the independent structural article or on the wider A/B/C/D analytic programme.
+
+The inherited local tangent/width chain remains logically separate:
 
 ```text
 coupled covariance
- -> complete support kernel
- -> fixed-orbit finite-angle laws
- -> smooth two-sided curves
- -> certified controls
- -> one-sided quadratic tubes
- -> selected higher jets/nonempty tubes
- -> entanglement width
- -> conditional reset width
- -> allocation profiles
- -> hard quadratic budgets.
+  -> support kernel
+  -> one-sided tangent tubes
+  -> block/reset width laws
+  -> finite local learning consequences.
 ```
 
-Its sharp local orders are preserved:
+The current primary contains both chains, but one does not prove the other.
+
+---
+
+## 6. Common-barycenter variational principle
+
+### 6.1 Normal form
+
+A legal two-call reset strategy with a fixed first Gram state is reduced to a common-barycenter family of positive branch Gram operators. The receiver outcome labels the atoms. Conditional on that outcome, an admissible continuation is chosen under the stated old/fresh rank cuts.
+
+The reduction is exact: it is not merely a relaxation. The converse implementer uses factor matrices of the atoms and the support pseudoinverse of the fixed initial factor.
+
+### 6.2 Null support
+
+If `rho` is singular, all inverse operations are restricted to `supp(rho)`. The receiver operators vanish on the orthogonal complement before a harmless completion is added. No ordinary inverse of a singular Gram factor is used.
+
+### 6.3 Hermitian-majorant dual
+
+The primal is a concave-roof/common-barycenter optimization. Its dual minimizes a Hermitian majorant of the branch continuation functional subject to domination on the feasible Gram body.
+
+The dual is useful for arbitrary experiments even when no explicit spectral evaluation is available. The v94 closed form is therefore an evaluation of one primal/dual instance, not a replacement of the general theorem.
+
+---
+
+## 7. Rank-resolved memory and initial-spectrum geometry
+
+### 7.1 Active rank
+
+For the engineered family, the old retained and fresh reference cuts interact only through `r=min(k,l)`. This is proved through the filtered-swap block structure, not assumed from dimension counting.
+
+### 7.2 Globally optimized values
+
+Earlier sections evaluate the globally optimized biased and equal-prior values for each active rank. These values optimize the first acquisition as well as the continuation. They do not imply that an arbitrary prescribed `rho` attains the same optimum.
+
+### 7.3 Optimal face
+
+The fixed-spectrum theorem identifies the equality face
 
 ```text
-regular:        min(1,sqrt(N)s)
-coherent:       min(1,sqrt(V)s) or min(1,sqrt(Q)s)
-opening:        min(1,Ns).
+rho <= I/r.
 ```
 
-Those statements have different quantifiers from the finite spectral game.
+Equivalently, the largest eigenvalue is at most `1/r`. On this face, a rank-`r` projection-frame decomposition attains the global rank value while preserving the fixed barycenter.
 
-### 15.2 Exact decision route
+### 7.4 Rigidity and stability
 
-The finite-game route is:
+Near-optimal decompositions are shown to concentrate near the projection-frame structure under the stated finite-dimensional norms. These are stability statements for the engineered game, not general self-testing or physical implementation theorems.
+
+---
+
+## 8. Secular functional audit
+
+For `u=(u_i)>=0`, let
 
 ```text
-v90 exact three-class Bayes separation
- -> v91 common-barycenter variational/primal-dual form
- -> v92 dimension-preserving normal form and two cuts
- -> v93 fixed initial spectra, equality set and rigidity
- -> v94 exact prescribed-spectrum value and communication gain.
+v_i=sqrt(u_i),
+K(u)=v v^* - diag(u),
+chi(u)=lambda_max(K(u)).
 ```
 
-This route is self-contained enough to form a separate paper.
+### 8.1 Secular equation
 
-### 15.3 Wider analytic programme
+On the positive support, a rank-one determinant identity gives
 
-The repository-wide routes A1, A2–A4, B1–B4, C1–C2 and D1 retain independent analytic obligations. In particular, the v94 finite spectral theorem does not prove:
+```text
+sum_i u_i/(u_i+x)=1.
+```
+
+The left side is strictly decreasing for `x>0`, exceeds one near zero when at least two coordinates are positive, and tends to zero at infinity. Hence there is a unique positive root. If the support size is at most one, the largest eigenvalue is zero and the root convention is set accordingly.
+
+### 8.2 Symmetry and homogeneity
+
+Permutation of coordinates conjugates `K(u)`, and scaling `u` scales `K(u)`. Thus `chi` is symmetric and positively homogeneous of degree one.
+
+### 8.3 Coordinate monotonicity
+
+The manuscript derives monotonicity from the root representation/variational form. This is needed when branch spectra are compared after truncation and water filling.
+
+### 8.4 Concavity
+
+The largest-eigenvalue expression is rewritten in a variational form whose dependence on `u` is concave after optimizing the normalized test vector. This supplies the Jensen step in the roof theorem.
+
+### 8.5 Strict Schur concavity
+
+For nontrivial support, the derivative/secular comparison shows strict improvement under a nontrivial balancing transfer, subject to boundary and proportionality exceptions. The strict message criterion invokes this only when
+
+```text
+2<=r<rank(rho),
+```
+
+so neither the one-coordinate nor already-saturated boundary is misused.
+
+I find the properties sufficient for the later proof. A revision should gather the equality conditions into one formal lemma.
+
+---
+
+## 9. Rank-capped leaf optimization
+
+### 9.1 Filtered-swap reduction
+
+For a positive old Gram operator `A` and a fresh density `B` with rank at most `l`, the Bayes improvement is represented by the negative spectral mass of a filtered swap operator. The trace-norm/negative-part conversion supplies a factor one half.
+
+### 9.2 Support compression
+
+Only the intersection of the old and fresh active subspaces contributes. This immediately produces the cap `r=min(k,l)`.
+
+### 9.3 Alignment
+
+A rearrangement/Rayleigh argument permits an optimizer `B` commuting with `A` on the leading eigenspaces. The value then depends only on the leading admissible eigenvalues of `A`.
+
+### 9.4 Secular solution
+
+The scalar stationarity equation for the optimized fresh spectrum is precisely the secular equation defining `chi`. Therefore the leaf value is
+
+```text
+(1/2) chi(lambda_1(A),...,lambda_r(A)).
+```
+
+with the expected zero convention at active rank one.
+
+### 9.5 Degeneracies
+
+When the `r`th eigenvalue is repeated, optimizer subspaces are nonunique. The spectral value is invariant. The source proof is compatible with this, although the prose should avoid suggesting a canonical optimizer.
+
+---
+
+## 10. Least rank-capped majorant
+
+Let `lambda` be a decreasing probability vector. The vector
+
+```text
+q^(r)(lambda)
+```
+
+is obtained by retaining coordinates above a water level, equalizing the remaining active mass among at most `r` positions, and setting later coordinates to zero.
+
+It satisfies:
+
+1. `q^(r)(lambda)` is decreasing and supported on at most `r` coordinates;
+2. it majorizes `lambda`;
+3. every other rank-at-most-`r` spectrum majorizing `lambda` also majorizes `q^(r)(lambda)`;
+4. it varies continuously when the active water-filling index changes; and
+5. if `r>=rank(lambda)`, then `q^(r)(lambda)=lambda`.
+
+This is the exact spectrum required by the rank-capped concave roof.
+
+---
+
+## 11. Rank-capped concave roof
+
+For a continuous symmetric concave functional `f`, consider decompositions of a density matrix with branch states of rank at most `r`.
+
+### 11.1 Upper bound
+
+Ky Fan inequalities imply that the average branch spectrum majorizes the barycenter spectrum. Since every branch has rank at most `r`, the least-majorant property places `q^(r)(lambda)` below the relevant average in majorization order. Schur concavity and Jensen then give
+
+```text
+sum_h mu_h f(lambda(sigma_h))
+  <= f(q^(r)(lambda(rho))).
+```
+
+For subnormalized atoms, the positively homogeneous extension of `f` is used. Concavity plus homogeneity gives the required superadditivity.
+
+### 11.2 Attainment
+
+Because `q^(r)(lambda)` majorizes `lambda`, finite-dimensional majorization theory represents `lambda` in the convex hull of permutations of `q^(r)(lambda)`. Choosing commuting density matrices with those permuted spectra yields the barycenter.
+
+The source sharpens the generic convex-hull cardinality to at most `d` atoms in the commuting simplex. This should be explained directly in the journal-facing text.
+
+### 11.3 Conclusion
+
+The rank-capped roof equals
+
+```text
+f(q^(r)(lambda(rho))).
+```
+
+For `f=chi`, this becomes `H_r(rho)`.
+
+I find the upper and lower directions coherent.
+
+---
+
+## 12. Exact v94 value theorem
+
+### 12.1 Converse
+
+Every legal reset strategy gives a common-barycenter family. The leaf lemma bounds each branch by one half of the truncated secular functional. Summing with Gram weights and applying the homogeneous rank-capped roof gives
+
+```text
+P^b_{k,l}(rho)
+  <= p_E + [t^2/(2L_0)] H_r(rho).
+```
+
+No diagonalization of the actual receiver outcome is assumed in the upper bound.
+
+### 12.2 Attainment
+
+Choose a commuting decomposition of `rho` into rank-at-most-`r` atoms, all with normalized spectrum `q^(r)(lambda(rho))`. Build the receiver instrument using the fixed initial factor and support pseudoinverse. On each outcome choose the fresh leaf optimizer.
+
+This realizes the upper value while preserving the first acquisition. At most `d` public outcomes and retained dimensions at most `r` are needed. The same receiver instrument works after every first device label.
+
+### 12.3 Exact formula
+
+The result is
+
+```text
+P^b_{k,l}(rho)
+  = p_E + [t^2/(2L_0)] chi(q^(r)(lambda(rho))).
+```
+
+The constants and trace conventions are internally consistent with the earlier engineered-game normalization.
+
+---
+
+## 13. No-message subclass and strict gain
+
+### 13.1 Postponement
+
+Without a receiver message influencing the fresh second preparation, common receiver processing can be postponed to the end. The fresh state is optimized once against the fixed unconditioned initial Gram operator.
+
+### 13.2 Exact no-message value
+
+The leaf lemma gives
+
+```text
+P^nm_{d,r}(rho)
+  = p_E + [t^2/(2L_0)] chi(lambda_1(rho),...,lambda_r(rho)).
+```
+
+### 13.3 Comparison
+
+The communicated class replaces the truncated spectrum by the least rank-`r` majorant before applying `chi`. Strict Schur concavity yields
+
+```text
+P^b_{d,r}(rho) > P^nm_{d,r}(rho)
+```
+
+exactly when
+
+```text
+t>0 and 2<=r<rank(rho).
+```
+
+At `r=1`, both spectral terms vanish. At `r>=rank(rho)`, water filling is inactive and the values coincide. At `t=0`, all improvements vanish.
+
+### 13.4 Interpretation
+
+This is an exact criterion for the value of one classical receiver message in this fixed-Gram reset game. It is not a theorem that feedback is useful or useless for arbitrary channel discrimination.
+
+---
+
+## 14. Global optimum and spectral loss
+
+The globally optimized rank-`r` spectral value is `(r-1)/r`. The fixed-spectrum loss is
+
+```text
+[t^2/(2L_0)] * [(r-1)/r - H_r(rho)].
+```
+
+It is zero exactly on `rho<=I/r`, agreeing with the earlier optimal-face theorem. For a fixed initial rank `s`, the optimized value strictly increases across active ranks until `r=s` and then saturates.
+
+This cross-check connects the v94 formula to the v93 equality and rigidity results.
+
+---
+
+## 15. Computational audit
+
+### 15.1 `spectral_value.py`
+
+The executable accepts canonical rational data for:
+
+- the supplied spectrum;
+- `d` and the old/fresh dimension cuts;
+- the rational deformation parameter; and
+- a requested bisection precision/cap.
+
+It reconstructs the water-filling active set exactly, computes rational brackets for the secular root, and propagates them to intervals for the communicated value, no-message value and message gain.
+
+### 15.2 Correct scope flags
+
+The executable explicitly does not claim:
+
+```text
+spectrum estimation
+general physical reset certification
+physical instrument execution
+efficient circuit synthesis
+exact floating-point algebraic roots
+continuum proof by replay
+independent priority clearance.
+```
+
+### 15.3 Regression evidence
+
+The v94 suite reports:
+
+```text
+755 exact checks
+600 deterministic numerical sanity checks
+12 negative controls.
+```
+
+These complement, but do not replace, the analytic proof.
+
+### 15.4 Remaining executable request
+
+A specialist release should expose one small canonical example in the primary text and bind its certificate hash to the exact source head. The current script is useful, but its role is verification of formulas for supplied inputs rather than discovery or learning.
+
+---
+
+## 16. Literature and priority audit
+
+The current literature comparison recognizes:
+
+1. entanglement-of-assistance and concave-roof traditions;
+2. majorization and finite ensemble conversion;
+3. swap/partial-transpose/negativity spectral calculations;
+4. constrained classical/quantum memory in adaptive discrimination;
+5. coherent-memory dimension as a resource; and
+6. adaptive versus parallel discrimination separations.
+
+The manuscript does not appear to claim invention of those mechanisms. Its asserted contribution is the exact prescribed-spectrum value for the present reset game, its finite implementer and strict message criterion.
+
+The comparison remains author-side. Repository chronology, exact source hashes and absence of an identical formula in a targeted search do not establish priority. Independent specialist assessment remains required before strong firstness or general-journal significance language is justified.
+
+The following distinctions should remain theorem-level rather than bibliographic:
+
+- generic concave roofs versus the current rank-capped least-majorant evaluation;
+- general majorization conversion versus the at-most-`d` commuting implementer;
+- generic negativity calculations versus the filtered-swap leaf optimization;
+- general memory-constrained protocols versus the present two-call reset interface; and
+- global memory-dimension resources versus the two local rank cuts `k,l`.
+
+---
+
+## 17. Editorial audit
+
+### 17.1 Strength
+
+The v90–v94 chain is now a coherent specialist paper:
+
+```text
+strict exact operational hierarchy
+-> exact reset variational/dual theorem
+-> rank-resolved values
+-> fixed-spectrum optimal face and rigidity
+-> full fixed-spectrum value
+-> exact message criterion.
+```
+
+### 17.2 Weakness
+
+The 78-page primary still carries many historical layers unrelated to the shortest route through that chain. The principal theorem is harder to recognize than necessary.
+
+### 17.3 Recommended extraction
+
+A specialist version should contain:
+
+1. the finite shared-basis experiment;
+2. formal resource classes;
+3. common-barycenter normal form and dual;
+4. rank-resolved theorem;
+5. initial-spectrum face/rigidity;
+6. secular leaf lemma;
+7. rank-capped roof;
+8. exact v94 formula;
+9. no-message criterion; and
+10. current literature comparison.
+
+The older local geometry, coding, learning and preservation layers may remain in the linked supplement or archive.
+
+---
+
+## 18. Wider pipeline separation
+
+The v94 audits correctly keep the following aggregate flags false:
+
+```text
+historical_A2_replacement = false
+B4_aggregate = false
+C2_aggregate = false
+eleven_paper_aggregate = false
+whole_Theta_program = false.
+```
+
+The finite measurement theorem does not prove:
 
 - raw unsmoothed local limits;
 - stopped-path recovery;
 - global past kernels;
 - exact shell conditioning;
-- process CLT and positive Mosco recovery;
-- nonlinear Nisio resolvent/core results;
-- filtering/QMD/LAN;
-- response under changing filtrations; or
+- process CLT plus positive Mosco recovery;
+- nonlinear Nisio graph-core results;
+- filtering/QMD/LAN under changing filtrations;
+- response theory; or
 - labelled posterior contraction.
 
-The five aggregate fields remain false. This is the correct status.
+The structural article and A/B/C/D routes remain logically independent.
 
 ---
 
-## 16. Risk register
+## 19. Risk register
 
-| Risk | Status and required treatment |
-|---|---|
-| K1: v95 mistaken for latest manuscript | **Active pipeline risk.** It is incomplete transport only. |
-| K2: publication/final-head identity collapsed | **Controlled if prose remains exact.** `0919ff...` and `db6739...` are distinct. |
-| K3: fixed Gram replaced by a classical ensemble | **Mathematically fatal if allowed.** Current theorem correctly forbids it. |
-| K4: Gram weights called hypothesis probabilities | **Presentation risk.** Keep common-barycenter language. |
-| K5: wrong majorization direction | **Passed in current proof.** Preserve the least-majorant argument. |
-| K6: illegal pinching in leaf proof | **Passed.** Current proof uses rearrangement/support analysis. |
-| K7: inverse used on singular support | **Passed.** Current proof compresses/pseudoinverts. |
-| K8: `rank-r` interpreted as exact rank | **Terminology risk.** Use rank at most `r`. |
-| K9: strict Schur-concavity overclaimed at boundary | **Presentation risk.** State exact stratum and exceptions. |
-| K10: no-message class confused with product/classical adaptation | **Active exposition risk.** Repeat the definition. |
-| K11: fixed-Gram gain confused with global feedback necessity | **Active interpretation risk.** Preserve v93/v94 distinction. |
-| K12: bisection certificate called physical synthesis | **Controlled by scope flags.** Keep them visible. |
-| K13: finite regressions treated as proof | **Controlled in current audit.** |
-| K14: independent priority inferred from search | **Open.** Obtain specialist review. |
-| K15: complete edition counted as contribution | **Editorial risk.** Treat as archive only. |
-| K16: local geometry and finite game conflated | **Editorial/quantifier risk.** Separate the two routes. |
-| K17: wider A/B/C/D closure inferred | **Controlled by false aggregate flags.** |
-| K18: unsigned commits described as human-authenticated | **Open provenance limit.** Do not overclaim. |
-| K19: dimension cuts generalized to all memory models | **Scope risk.** The `min(k,l)` collapse is game-specific. |
-| K20: arbitrary-pair/global theorem inferred | **Scope risk.** Explicitly false/open. |
+### K1 — Incomplete v95 mistaken for latest manuscript
+
+**Risk:** automated branch ordering selects transport staging.  
+**Treatment:** review v94 only; require v95 materialization before review.
+
+### K2 — Publication and final-head identities conflated
+
+**Risk:** `0919ff...` and `db6739...` are described as the same commit.  
+**Treatment:** preserve native/publication/final-head distinction.
+
+### K3 — Wrong exact-head job identity
+
+**Risk:** provenance points to a nonexistent or unrelated job.  
+**Treatment:** the correct successful job is `112180114437` in run `37436686847`.
+
+### K4 — Empty legacy statuses represented as populated
+
+**Risk:** source qualification is overstated.  
+**Treatment:** state that legacy combined-status results are empty; rely on the exact-head run receipt.
+
+### K5 — Fixed acquisition silently relaxed
+
+**Risk:** a mixture of first acquisitions enlarges the feasible set.  
+**Treatment:** keep one fixed pure Gram matrix throughout.
+
+### K6 — Gram weights confused with probabilities
+
+**Risk:** a missing factor `d` corrupts the objective.  
+**Treatment:** separate raw trace weights and normalized public probabilities.
+
+### K7 — Rank-at-most confused with exact rank
+
+**Risk:** singular endpoints are excluded.  
+**Treatment:** use `rank<=r` and allow zero padding.
+
+### K8 — Illegal inverse at singular `rho`
+
+**Risk:** receiver construction is undefined.  
+**Treatment:** use support pseudoinverse and explicit complement completion.
+
+### K9 — Secular root asserted on one-point support
+
+**Risk:** no positive root exists.  
+**Treatment:** set `chi=0` for support size at most one.
+
+### K10 — Strict Schur concavity overused
+
+**Risk:** false strict gain at boundaries.  
+**Treatment:** invoke only for `2<=r<rank(rho)` and `t>0`.
+
+### K11 — Majorization direction reversed
+
+**Risk:** roof upper fails.  
+**Treatment:** use least rank-`r` majorant and Ky Fan inequalities in the audited direction.
+
+### K12 — Generic Carathéodory count substituted for `d`
+
+**Risk:** message cardinality is misstated.  
+**Treatment:** expose the commuting simplex argument producing at most `d` atoms.
+
+### K13 — No-message class conflated with classical adaptation
+
+**Risk:** operational interpretation is wrong.  
+**Treatment:** add an inclusion/resource diagram.
+
+### K14 — Biased and equal priors conflated
+
+**Risk:** one exact formula is represented as prior independent.  
+**Treatment:** state objectives separately.
+
+### K15 — Fixed-Gram gain promoted to global feedback necessity
+
+**Risk:** stronger false claim.  
+**Treatment:** distinguish fixed acquisition from global optimization.
+
+### K16 — Finite script promoted to analytic proof
+
+**Risk:** continuum theorem is inferred from tests.  
+**Treatment:** retain explicit false scope flags.
+
+### K17 — Existence promoted to efficient synthesis
+
+**Risk:** finite convex decomposition is treated as a practical circuit.  
+**Treatment:** make no efficiency claim without a complexity theorem.
+
+### K18 — Priority inferred from repository dates
+
+**Risk:** novelty is overstated.  
+**Treatment:** obtain independent specialist review.
+
+### K19 — Archive breadth used as significance evidence
+
+**Risk:** unrelated historical sections inflate editorial claims.  
+**Treatment:** judge the focused theorem only.
+
+### K20 — Local geometry promoted to global POVM metric
+
+**Risk:** fixed-tube results are globalized.  
+**Treatment:** retain fixed-base/fixed-direction qualifications.
+
+### K21 — Wider programme marked closed
+
+**Risk:** finite measurement results replace independent analytic obligations.  
+**Treatment:** keep all aggregate flags false.
 
 ---
 
-## 17. Acceptance gates for a revised specialist article
+## 20. Acceptance gates for a revised specialist submission
 
 ### Mathematical gates
 
 | Gate | Required evidence |
 |---|---|
-| M1 | Complete operational interface before the theorem. |
-| M2 | Self-contained secular lemma with boundary convention. |
-| M3 | Singular-safe leaf proof and equality conditions. |
-| M4 | Self-contained least-majorant roof theorem. |
-| M5 | Exact converse and finite attainment at fixed pure Gram. |
-| M6 | Exact no-message value and complete iff proof. |
-| M7 | Explicit countable-to-finite outcome treatment. |
-| M8 | Worked nondegenerate example. |
+| M1 | Formal fixed-acquisition definition adjacent to the variational theorem. |
+| M2 | Self-contained common-barycenter normal form with singular support. |
+| M3 | Self-contained filtered-swap leaf lemma with all factors and rank conventions. |
+| M4 | Canonical definition and proof of the least rank-`r` majorant. |
+| M5 | Homogeneous-extension/superadditivity lemma before roof use. |
+| M6 | Complete rank-capped roof upper and finite attainment. |
+| M7 | Exact v94 converse and implementer with message count. |
+| M8 | Standalone no-message postponement lemma. |
+| M9 | Strict-gain theorem with `t=0`, `r=1` and saturation boundaries. |
+| M10 | Explicit link to the v93 optimal face and rigidity theorem. |
 
 ### Priority gates
 
 | Gate | Required evidence |
 |---|---|
-| P1 | Theorem-level Nielsen/Jonathan–Plenio comparison. |
-| P2 | Assisted-roof comparison. |
-| P3 | Ohst et al. memory-taxonomy comparison. |
-| P4 | Recent bounded-memory process comparison. |
+| P1 | Theorem-level comparison with concave-roof/assistance antecedents. |
+| P2 | Theorem-level comparison with majorization ensemble conversion. |
+| P3 | Theorem-level comparison with swap/negativity spectral optimizations. |
+| P4 | Theorem-level comparison with finite-memory discrimination work. |
 | P5 | Independent specialist priority assessment. |
+| P6 | No firstness claim from search absence or repository chronology. |
 
 ### Editorial gates
 
 | Gate | Required evidence |
 |---|---|
-| E1 | Standalone v90–v94 paper. |
-| E2 | Primary theorem and message criterion on page one. |
-| E3 | Historical local geometry reduced to context. |
-| E4 | Structural article and complete edition excluded from submission claim. |
-| E5 | Normal theorem numbering rather than historical section numbering. |
+| E1 | Shorter primary centered on v90–v94. |
+| E2 | General variational theorem separated from engineered closed form. |
+| E3 | Resource-class diagram including no-message and classical classes. |
+| E4 | Consistent biased/equal-prior terminology. |
+| E5 | Current theorem map independent of the 289-page archive. |
+| E6 | Structural article and complete edition presented only in their actual roles. |
 
 ### Reproducibility gates
 
 | Gate | Required evidence |
 |---|---|
-| R1 | Native source, publication and final-head identities separated. |
-| R2 | Read-only exact-head reconstruction retained. |
-| R3 | Exact rational verifier with explicit bit-complexity limits. |
-| R4 | v95 transport resolved or clearly archived as incomplete. |
-| R5 | No signature, hardware, priority or proof-assistant claims invented. |
+| R1 | Exact native, publication and review-head identities. |
+| R2 | Correct run/job identity: `37436686847` / `112180114437`. |
+| R3 | Accurate statement that the successful run verifies `db6739...`. |
+| R4 | No claim of direct publication-SHA run or populated legacy status without evidence. |
+| R5 | Canonical script inputs and rational interval outputs. |
+| R6 | Scope flags excluding physical execution, spectrum learning and continuum proof. |
+| R7 | v95 either materialized and qualified or marked incomplete. |
+| R8 | Promised review-ready alias either created or removed from prose. |
+| R9 | Unsigned commit status stated without invented human signature. |
 
 ---
 
-## 18. Four-leading-general-journal assessment
+## 21. Final audit classification
 
-### 18.1 Correctness
+### Mathematical correctness
 
-No fatal gap was found in the new v94 theorem chain. The exact formula, finite attainment and message criterion are supported by a coherent proof architecture.
+**Pass in the load-bearing portions inspected.** I found no fatal gap in the common-barycenter reduction, rank-resolved leaf optimization, least-majorant concave roof, exact value theorem, finite attainment, no-message formula or strict-gain criterion.
 
-### 18.2 Originality
+### Reproducibility
 
-The operational identification is nontrivial and appears genuinely new relative to the sources compared in the repository. The spectral machinery itself belongs to established majorization and concave-roof traditions. Independent specialist priority clearance remains absent.
+**Pass with a provenance qualification.** The exact review head `db6739...` was reconstructed read-only by run `37436686847`, job `112180114437`. The publication SHA `0919ff...` has no separately returned direct run, and legacy combined statuses are empty. The distinction must remain explicit.
 
-### 18.3 Breadth
+### Priority
 
-The theorem is restricted to a constructed finite two-call shared-device family, fixed prior, fixed pure initial Gram and two dimension cuts. It is not a general memory hierarchy, arbitrary-pair discrimination theorem or global geometric classification.
+**Open.** The current audit is author-side and no independent human specialist priority clearance is supplied.
 
-### 18.4 Conceptual displacement
+### Editorial suitability
 
-The result sharpens and completes a specialist finite-game programme. It does not reorganize a broad area of mathematics at the level ordinarily expected by Annals, Inventiones, JAMS or Acta.
+**Not suitable for Annals / Inventiones / JAMS / Acta in the present form.** The result is exact and substantial but remains tied to one engineered two-call finite experiment and does not provide the breadth or general conceptual classification expected at those venues.
 
-### 18.5 Presentation
+### Specialist-journal suitability
 
-The current 78-page primary combines two distinct programmes and is accompanied by a large historical package. The new theorem would be stronger editorially in a much shorter standalone article.
+**Strong candidate after major revision.** The v90–v94 chain should be extracted into a shorter self-contained paper with sharper literature comparison, a clearer separation between general variational and special closed-form results, and corrected release semantics.
 
-### 18.6 Recommendation
+### Wider programme
 
-**Reject at the four-leading-general-journal level, not for correctness.** Recommend substantial extraction and resubmission to a leading specialist journal.
-
----
-
-## 19. Final audit statement
-
-The exact reviewed object is v94 final head `db6739...`, containing publication `0919ff...` built from native source `24f48c...`. The current theorem source and release evidence are internally consistent. The read-only exact-head run succeeded. The numerically later v95 branch is incomplete transport and was not reviewed as a manuscript.
-
-Within the stated finite shared-device interface, the prescribed-spectrum theorem, rank-capped secular roof, finite attainment, no-message comparator and strict receiver-message criterion pass this audit. The executable matches the mathematics within its declared rational-input scope. The wider local geometry and A/B/C/D programmes remain separate and open where flagged.
-
-This is an author-requested, repository-pinned independent audit. It is not a commissioned editorial decision, formal verification, human-authorship signature, independent priority clearance, hardware certification or proof of the entire Theta programme.
+**Open.** No A/B/C/D aggregate or whole-programme closure follows from v94.
