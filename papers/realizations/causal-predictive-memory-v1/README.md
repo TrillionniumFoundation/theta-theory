@@ -1,4 +1,4 @@
-# General Theta Foundations I — first complete manuscript
+# Theta Realization CPM-1 — archived first complete manuscript
 
 **Causal Experiments, Predictive Quotients, and Resource-Aware Reduction**  
 Qian Qi · Version 1 · 22 September 2026
@@ -9,8 +9,8 @@ bibliography. It does not need an A1/A2 checkout or historical source generator.
 The build executed for this delivery produces **34 pages**.
 
 The preserved Chinese research outline is at
-[`../../foundations/general-theta/General_Theta_Foundations_v0.1.md`](../../foundations/general-theta/General_Theta_Foundations_v0.1.md).
-The [implementation addendum](../../foundations/general-theta/GTF_I_IMPLEMENTATION_2026-09-22.md)
+[`../../../foundations/general-theta/General_Theta_Foundations_v0.1.md`](../../../foundations/general-theta/General_Theta_Foundations_v0.1.md).
+The [implementation addendum](../../../foundations/general-theta/GTF_I_IMPLEMENTATION_2026-09-22.md)
 records what this paper proves and what remains a program-level research objective.
 
 ## Main results
@@ -66,7 +66,7 @@ verification of the universal proofs or a journal decision.
 
 ## Mathematical and publication status
 
-This is an author-requested first research manuscript, not an independently refereed
+This is a preserved realization manuscript extracted from the General Theta Foundations line, not an independently refereed
 or accepted paper. Classical kernel, sufficient-statistic, filtering, and quantization
 results are attributed. `LITERATURE_AND_SCOPE.md` distinguishes the established
 background from the two quantitative results developed here; it does not certify
