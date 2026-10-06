@@ -26,14 +26,14 @@ EPOCH='1791244800'
 DOCS={'quantitative.tex':'paper.pdf','supplement.tex':'BINARY_SUPPLEMENT.pdf','structural.tex':'STRUCTURAL_PAPER.pdf',
       'main.tex':'COMPLETE_REVISION.pdf'}
 NEW_SECTIONS=['sections/83-reset-variational-principle.tex', 'sections/84-equal-prior-memory-hierarchy.tex']
-NEW_LABELS=['lem:countable91', 'lem:resetnormal91', 'thm:resetvariational91', 'thm:resetdual91', 'cor:contactdefect91', 'cor:feedbackroof91', 'thm:classicalroof91', 'cor:gapcertificate91', 'prop:causalnormal91', 'lem:centeredswap91', 'thm:equalprior91', 'cor:gamestability91', 'lem:stableswap91', 'cor:resetstability91']
+NEW_LABELS=['lem:countable91', 'lem:resetnormal91', 'thm:resetvariational91', 'thm:resetdual91', 'cor:feedbackroof91', 'thm:classicalroof91', 'cor:gapcertificate91', 'prop:causalnormal91', 'lem:centeredswap91', 'thm:equalprior91', 'cor:gamestability91']
 JOURNAL_EXTRAS={'paper.pdf','BINARY_SUPPLEMENT.pdf','REPRODUCIBILITY.md','journal_verify.py'}
 # These established parsing/rendering helpers and regression names are retained
 # byte-for-byte. All tests below are executed anew on this revision's files.
 spec=importlib.util.spec_from_file_location('v81_build_helpers',ROOT/'predecessor-v81-audit/build_revision.py')
 old=importlib.util.module_from_spec(spec);spec.loader.exec_module(old)
 sha=old.sha;require=old.require;put=old.put;graph=old.graph;sources=old.sources
-SCRIPTS=(*old.REGRESSION_SCRIPTS,'finite_outcome_check.py','covariance_check.py','support_check.py','curve_check.py','cone_check.py','block_check.py','feedback_check.py','profile_check.py','resource_check.py','memory_check.py','budget_domain_check.py','reset_variational_check.py','equal_prior_check.py','rigidity_check.py')
+SCRIPTS=(*old.REGRESSION_SCRIPTS,'finite_outcome_check.py','covariance_check.py','support_check.py','curve_check.py','cone_check.py','block_check.py','feedback_check.py','profile_check.py','resource_check.py','memory_check.py','budget_domain_check.py','reset_variational_check.py','equal_prior_check.py')
 
 
 def run(cmd,cwd=ROOT,timeout=240,env=None):
@@ -95,16 +95,6 @@ def check_source():
             if entry=='structural.tex':
                 require(name in files and inv[name]==baseline['files'][name],
                         'independent structural source changed: '+name)
-    staged=json.loads((ROOT/'STAGED_V91_BASELINE.json').read_text())
-    require(staged['commit']=='d28546aad99cd1ce3846ca74ccedb90c24ebd37b','wrong staged v91 identity')
-    for name,digest in staged['files'].items():
-        require(name in inv,'staged native file removed: '+name)
-        if inv[name]!=digest:
-            require(sha((ROOT/'staged-v91-audit'/name).read_bytes())==digest,
-                    'staged native file not preserved: '+name)
-    for entry,prior in staged['graphs'].items():
-        require(set(prior['labels'])<=set(graphs[entry]['labels']),
-                'staged v91 active label lost: '+entry)
     require(not(set(graphs['quantitative.tex']['labels'])&set(graphs['supplement.tex']['labels'])),
             'ambiguous primary/supplement labels')
     for section in NEW_SECTIONS:
@@ -133,8 +123,7 @@ def check_source():
       'preserved_quantitative_package_labels':len(baseline['graphs']['quantitative.tex']['labels']),
       'preserved_structural_labels':len(baseline['graphs']['structural.tex']['labels']),
       'relocated_to_current_supplement':relocated,'relocated_count':len(relocated),
-      'new_theorems':NEW_LABELS,'regression_suites':len(SCRIPTS),'graphs':graphs,
-      'staged_v91_source_files':len(staged['files']),'staged_v91_source_preserved':True}
+      'new_theorems':NEW_LABELS,'regression_suites':len(SCRIPTS),'graphs':graphs}
 
 
 def source_commit_inventory(source,inv):

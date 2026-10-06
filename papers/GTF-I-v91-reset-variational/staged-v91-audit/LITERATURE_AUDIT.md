@@ -25,10 +25,3 @@ Eid and Quintino, arXiv:2602.12258, study measurement discrimination with access
 ## Independent assessment boundary
 
 A human specialist should assess whether the common-barycenter formula and finite realization have equivalent earlier formulations in quantum comb or experiment-comparison theory, and whether the centered-swap equal-prior optimization is known under another ensemble description. Search absence, repository timestamps, exact arithmetic and author-side review cannot close this question. `independent_human_priority_clearance` remains false.
-
-
-## Completion source recheck — 6 October 2026
-
-The original texts were checked again: Ohst et al., arXiv:2411.08110v2, Definition 23 / equation (64) and Theorem 24; Zonnios–Binder, arXiv:2606.19511v1, Proposition 2, Theorem 1 and Corollary 1; Uhlmann, arXiv:1108.3218, with the Entropy 2010 journal record; and Boyd–Vandenberghe's official book, Sections 5.2.3 and 5.9.1. The current dual uses proper closed homogeneous hypograph cones, a positive-definite common barycenter and strictly negative heights, so its Slater step supplies dual attainment rather than just formal weak duality. The quantum/classical receiver comparison is not a first claim of memory-constrained optimization: the constrained-separability and autonomous-memory antecedents remain explicit.
-
-The completion's quantitative contact identity is a nonnegative-slack refinement of the attained dual. The near-optimality estimate is proved directly from the centered-swap defect, polar decomposition and Hilbert–Schmidt inequalities. It does not claim a universal self-testing theorem or an identification of the physical implementation. Independent specialist assessment of the exact envelope and hierarchy statements remains outstanding; it is not supplied by the current source recheck or regression results.
