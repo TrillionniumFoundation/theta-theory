@@ -4,6 +4,7 @@ on:
     branches: [revision/general-theta-foundations-i-v96-r62-response-2026-10-06]
     paths:
       - '.github/workflows/gtf-v96-revision.yml'
+      - 'tools/gtf96/**'
       - 'papers/GTF-I-v96-referee-resolution/**'
       - 'GENERAL_THETA_FOUNDATIONS_I_V96_FINAL_HEAD_REQUEST.json'
   workflow_dispatch:
@@ -19,6 +20,9 @@ jobs:
     permissions:
       contents: write
     timeout-minutes: 50
+    env:
+      REVISION_BRANCH: revision/general-theta-foundations-i-v96-r62-response-2026-10-06
+      PAPER: papers/GTF-I-v96-referee-resolution
     steps:
       - uses: actions/checkout@v4
         with:
@@ -37,24 +41,48 @@ jobs:
           name: gtf96-controlling-reports-${{ github.run_id }}
           path: /tmp/gtf96-reports
           if-no-files-found: error
-      - name: Install manuscript tools
-        if: ${{ hashFiles('papers/GTF-I-v96-referee-resolution/build_revision.py') != '' }}
+      - name: Install pinned manuscript tools
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq texlive-latex-extra texlive-fonts-recommended lmodern
           python -m pip install --disable-pip-version-check pymupdf==1.26.7 sympy==1.14.0 numpy==2.3.5
-      - name: Qualify already-pushed source and publish artifacts
-        if: ${{ hashFiles('papers/GTF-I-v96-referee-resolution/build_revision.py') != '' }}
-        env:
-          REVISION_BRANCH: revision/general-theta-foundations-i-v96-r62-response-2026-10-06
+      - name: Materialize, validate and push readable native source first
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           test "$(git ls-remote origin refs/heads/$REVISION_BRANCH | cut -f1)" = "$GITHUB_SHA"
-          PAPER=papers/GTF-I-v96-referee-resolution
-          python "$PAPER/build_revision.py" --isolated > /tmp/gtf96-build.json
           git config user.name 'GTF revision automation'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          if [ ! -d "$PAPER" ]; then
+            python tools/gtf96/stage.py
+            python "$PAPER/build_revision.py" --check-source > /tmp/gtf96-source-check.json
+            cat > README.md <<'EOF'
+          # General Theta Foundations I — Revision 96
+
+          This branch contains the response to the independent R62 report and R61 proof/pipeline audit. The manuscript subject and four-leading-general-mathematics-journal objective are retained.
+
+          Read [the native manuscript directory](papers/GTF-I-v96-referee-resolution), then [the current response](papers/GTF-I-v96-referee-resolution/RESPONSE_TO_REFEREE.md) and [the theorem map](papers/GTF-I-v96-referee-resolution/THEOREM_MAP.md). The final handoff is recorded in `GENERAL_THETA_FOUNDATIONS_I_V96_REVIEW_READY.md` after publication. Source transport by itself is not a review-ready paper. A production build receipt and a separately observed read-only exact-final-head receipt identify qualified objects.
+
+          The controlling referee reviewed complete v94 at `db6739da3487be8787a67fc175b9086bd62f0e80`. The separate remote v95 spectral-decision branch was incomplete transport at the frozen survey. The supplied local v95 equal-prior-initial manuscript is imported by exact file inventory, not represented as remote Git ancestry. Neither parallel branch is changed here.
+
+          The primary now follows the finite reset-experiment chain. The local tangent-tube and coding results remain active in the linked supplement and complete research edition. The archive is not a second submission or a substitute for independent specialist priority assessment.
+          EOF
+            git add "$PAPER" README.md
+            git commit -m 'revision(GTF-I v96): complete R62 manuscript, message criterion and preserved local v95 proofs'
+            git push origin HEAD:"refs/heads/$REVISION_BRANCH"
+          else
+            python "$PAPER/build_revision.py" --check-source > /tmp/gtf96-source-check.json
+          fi
+          SOURCE=$(git rev-parse HEAD)
+          test "$(git ls-remote origin refs/heads/$REVISION_BRANCH | cut -f1)" = "$SOURCE"
+          echo "$SOURCE" > /tmp/gtf96-native-sha.txt
+      - name: Reconstruct pushed native source and publish artifacts
+        run: |
+          set -euo pipefail
+          SOURCE=$(cat /tmp/gtf96-native-sha.txt)
+          test "$(git rev-parse HEAD)" = "$SOURCE"
+          python "$PAPER/build_revision.py" --isolated > /tmp/gtf96-build.json
+          test "$(git ls-remote origin refs/heads/$REVISION_BRANCH | cut -f1)" = "$SOURCE"
           git add -f "$PAPER/evidence" "$PAPER/paper.pdf" "$PAPER/BINARY_SUPPLEMENT.pdf" "$PAPER/STRUCTURAL_PAPER.pdf" "$PAPER/COMPLETE_REVISION.pdf"
           git commit -m 'publication(GTF-I v96): R62 manuscripts and freshly reconstructed evidence'
           git push origin HEAD:"refs/heads/$REVISION_BRANCH"
@@ -65,8 +93,9 @@ jobs:
           name: gtf96-publication-${{ github.run_id }}
           path: |
             papers/GTF-I-v96-referee-resolution
-            /tmp/gtf96-build.json
-            /tmp/gtf96-publication-sha.txt
+            /tmp/gtf96-*.json
+            /tmp/gtf96-*-sha.txt
+          if-no-files-found: warn
   final-head:
     if: ${{ contains(github.event.head_commit.message, 'verify-final-head') }}
     runs-on: ubuntu-24.04
