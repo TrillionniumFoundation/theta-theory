@@ -6,7 +6,7 @@ python3 tools/verify_v24.py > evidence/v24-source-and-finite-checks.json
 python3 -O tools/verify_v24.py > evidence/v24-source-and-finite-checks-optimized.json
 cmp evidence/v24-source-and-finite-checks.json evidence/v24-source-and-finite-checks-optimized.json
 for script in certify_winding certify_excursion verify verify_v2 check_v5 check_v6; do
-  python3 "tools/${script}.py" > "evidence/${script}.json"
+  python3 "tools/${script}.py" > "evidence/${script}.py.json"
 done
 last=''
 for pass in 1 2 3 4 5 6; do
