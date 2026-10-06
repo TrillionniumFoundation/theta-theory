@@ -1,0 +1,11 @@
+# Historical derivation audit: revision 14
+
+The controlling report is the complete v13 external review at `014dbfa28501551a30388b44c0509fb7fbfbc444`; the reviewed author source is `47d2430dc14c4d98a9e80db6fd573b049be8808c`. The downloaded v13 source archive has SHA-256 `3e640c907341d098cbf1caee37c825ce1e5cb4ae34c0ac36619f373a0d8d891f`, matching the GitHub artifact for successful run `37402522539`. It contains the exact v13, v12, v11 and v10 sources and the earlier substantive v11 review. The present revision starts remotely from the new v13 review commit, retaining that report too.
+
+The new proof uses the original single-collision coordinates and physical root convention in `02_physical_records.tex`; the lattice geometry and actual record in `01_interfaces.tex` and the periodic modules; the qualitative collision mixing input in file 15; the continuous collision covariance in file 22; the actual `L2` kernel characterization in file 23; the physical projection in file 24; the actual moment rate in file 30; and the integer-indicator scalar argument in file 31. The old periodic-evaluable criterion in file 19 is retained, but full nondegeneracy is no longer made contingent on proving that stronger representation.
+
+The growing and marked inversion interfaces in files 27 and 28 are updated to use the proved positive lower eigenvalue. Their complementary-transform and raw-edge conditions are not removed. Files 04, 05, 09, 17 and 18 retain the historical edge, inverse, operator and exact-conditioning work. No collision moment or qualitative phase argument is relabeled as a full derivative-sum or high-frequency bound.
+
+Young's author manuscript was checked at the local product, ordinary-length, absolute-continuity and finite-horizon ergodicity locations recorded in `GEOMETRIC_INPUT_MAP.md`. The new argument uses no unchecked theorem that makes the discontinuous section multiplier smooth or evaluates its measurable transfer function at a periodic orbit.
+
+The source replay file records every inherited change, including the requested `L2` mixing approximation and exact count-phase clarification. Every old mathematical label is retained, as are all inherited diagnostic scripts and the bibliography. The new sections concern the same physical family and the same raw mixed-density endpoint.
