@@ -1,0 +1,122 @@
+name: Extract Theta realization OMD-1
+on:
+  push:
+    branches: [realization/ordered-measurement-discrimination-v1-2026-10-06]
+    paths: ['.github/workflows/theta-realization-omd-extract.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: theta-realization-omd-extract
+  cancel-in-progress: false
+jobs:
+  extract:
+    if: ${{ !contains(github.event.head_commit.message, 'materialize ordered-measurement realization') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 4
+          ref: ${{ github.sha }}
+      - name: Materialize independent realization tree
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git merge-base --is-ancestor e38f757ee13158c315e9328c961eb84e3e9a000d HEAD
+          test -d papers/GTF-I-v96-referee-resolution
+          test ! -e THETA_REALIZATION_OMD_INDEX.md
+
+          mkdir -p papers/realizations
+          git mv papers/GTF-I-v96-referee-resolution \
+            papers/realizations/ordered-measurement-discrimination-v1
+
+          mkdir -p archive/general-theta-review-history
+          for f in GENERAL_THETA_FOUNDATIONS_I_*; do
+            [ -e "$f" ] || continue
+            git mv "$f" archive/general-theta-review-history/
+          done
+
+          mkdir -p archive/general-theta-workflows
+          for f in .github/workflows/gtf-*.yml; do
+            [ -e "$f" ] || continue
+            git mv "$f" archive/general-theta-workflows/
+          done
+
+          mkdir -p archive/general-theta-transport
+          for d in tools/gtf*; do
+            [ -e "$d" ] || continue
+            git mv "$d" archive/general-theta-transport/
+          done
+
+          # Earlier numbered paper directories remain byte-addressable in the
+          # frozen archive branch and in Git history; they are not duplicated in
+          # this independent realization worktree.
+          git rm -r --ignore-unmatch papers/GTF-I-v*
+
+          mkdir -p realizations/ordered-measurement-discrimination-v1
+          cat > THETA_REALIZATION_OMD_INDEX.md <<'EOF'
+          # Theta Realization OMD-1
+
+          **Paper:** *Finite-Use Discrimination Geometry of Ordered Quantum Measurements*  
+          **Canonical branch:** `realization/ordered-measurement-discrimination-v1-2026-10-06`  
+          **Source directory:** `papers/realizations/ordered-measurement-discrimination-v1/`
+
+          OMD-1 is the ordered-measurement realization extracted from historical General Theta revisions 90--96. It contains the two-call reset normal form, arbitrary finite-experiment variational and message criteria, exact shared-basis hierarchies, rank cuts, prescribed-spectrum values, rigidity, finite attainment and the preserved local ordered-measurement geometry.
+
+          It is not the canonical General Theta Foundations I manuscript. The canonical foundations restart is `foundation/general-theta-foundations-i-restart-2026-10-06`. Historical names, reports and release records are retained under `archive/`; the complete v2--v96 repository state is pinned at `archive/general-theta-development-v2-v96-frozen-2026-10-06`.
+
+          Start with `papers/realizations/ordered-measurement-discrimination-v1/paper.pdf`, `THEOREM_MAP.md` and `RESPONSE_TO_REFEREE.md`. The complete edition remains an archive, not a second submission.
+          EOF
+
+          cat > realizations/ordered-measurement-discrimination-v1/README.md <<'EOF'
+          # OMD-1 classification
+
+          This realization studies finite-use discrimination of ordered quantum measurements under acquisition, reset, receiver-message and retained-register constraints. Its mathematical source is the completed historical v96 object, moved without theorem edits.
+
+          The move changes repository classification and paths only. It does not claim a new mathematical revision, journal acceptance, independent priority clearance, or closure of the wider Theta programme.
+          EOF
+
+          cat > REALIZATION_EXTRACTION_MANIFEST.json <<'EOF'
+          {
+            "schema": "theta.realization-extraction/1",
+            "identifier": "TR-OMD-1",
+            "date": "2026-10-06",
+            "historical_final_head": "e38f757ee13158c315e9328c961eb84e3e9a000d",
+            "historical_native_source": "d19a424f19ab5c1492b621a55bb3c8a20de7392d",
+            "historical_artifact_publication": "30449959be3565d16031af69da86ed26d3ad422b",
+            "old_path": "papers/GTF-I-v96-referee-resolution",
+            "new_path": "papers/realizations/ordered-measurement-discrimination-v1",
+            "canonical_foundations_restart": "foundation/general-theta-foundations-i-restart-2026-10-06",
+            "complete_history_archive": "archive/general-theta-development-v2-v96-frozen-2026-10-06",
+            "theorem_source_changed_by_extraction": false,
+            "historical_branches_deleted": false,
+            "historical_refs_force_rewritten": false,
+            "independent_priority_clearance": false
+          }
+          EOF
+
+          PAPER=papers/realizations/ordered-measurement-discrimination-v1
+          python "$PAPER/build_revision.py" --check-source > /tmp/omd-source-check.json
+          python "$PAPER/referee_resolution_check.py" > /tmp/omd-check.json
+          python -O "$PAPER/referee_resolution_check.py" > /tmp/omd-check-opt.json
+          cmp /tmp/omd-check.json /tmp/omd-check-opt.json
+
+          git config user.name 'Theta realization migration automation'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'restructure(TR-OMD-1): materialize ordered-measurement realization outside Foundations tree'
+          NEW_HEAD=$(git rev-parse HEAD)
+          git push origin HEAD:refs/heads/realization/ordered-measurement-discrimination-v1-2026-10-06
+          git tag -a theta-realization-ordered-measurement-discrimination-v1 "$NEW_HEAD" -m 'Ordered-measurement discrimination realization extracted from historical GTF v90-v96'
+          git push origin refs/tags/theta-realization-ordered-measurement-discrimination-v1
+          echo "$NEW_HEAD" > /tmp/omd-realization-head.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-realization-omd-1-${{ github.run_id }}
+          path: |
+            /tmp/omd-source-check.json
+            /tmp/omd-check.json
+            /tmp/omd-check-opt.json
+            /tmp/omd-realization-head.txt
+          if-no-files-found: error
