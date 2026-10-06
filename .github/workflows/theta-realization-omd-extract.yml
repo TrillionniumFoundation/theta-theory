@@ -23,8 +23,15 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-          git merge-base --is-ancestor e38f757ee13158c315e9328c961eb84e3e9a000d HEAD
           test -d papers/GTF-I-v96-referee-resolution
+          test -f GENERAL_THETA_FOUNDATIONS_I_V96_FINAL_HEAD_REQUEST.json
+          python3 - <<'PY'
+          import json
+          x=json.load(open('GENERAL_THETA_FOUNDATIONS_I_V96_FINAL_HEAD_REQUEST.json'))
+          assert x['native_source_commit']=='d19a424f19ab5c1492b621a55bb3c8a20de7392d'
+          assert x['artifact_only_publication_commit']=='30449959be3565d16031af69da86ed26d3ad422b'
+          assert x['review_ready_alias_after_observed_success']=='revision/general-theta-foundations-i-v96-referee-resolution-review-ready-2026-10-06'
+          PY
           test ! -e THETA_REALIZATION_OMD_INDEX.md
 
           mkdir -p papers/realizations
