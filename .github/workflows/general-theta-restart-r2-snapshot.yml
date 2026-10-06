@@ -1,0 +1,39 @@
+name: General Theta restart r2 immutable research inputs
+on:
+  push:
+    branches:
+      - foundation/general-theta-restart-r2-kernel-transport-research-2026-10-07
+    paths:
+      - .github/workflows/general-theta-restart-r2-snapshot.yml
+permissions:
+  contents: read
+jobs:
+  snapshot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 4454ad669ebdbccb93d10d828484600dce58845d
+          fetch-depth: 1
+          persist-credentials: false
+          sparse-checkout: |
+            foundations/general-theta
+            papers/General-Theta-Foundations-I-restart
+            papers/realizations/causal-predictive-memory-v1
+      - name: Archive immutable inputs without altering any repository ref
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/research-inputs"
+          git ls-tree -r --name-only HEAD > "$RUNNER_TEMP/research-inputs/REVIEW_TREE.txt"
+          git show HEAD:GENERAL_THETA_FOUNDATIONS_I_RESTART_R1_EXTERNAL_REFEREE_REPORT_R1.md > "$RUNNER_TEMP/research-inputs/REFEREE_REPORT.md"
+          git archive HEAD foundations/general-theta papers/General-Theta-Foundations-I-restart papers/realizations/causal-predictive-memory-v1 > "$RUNNER_TEMP/research-inputs/inputs.tar"
+          printf '%s\n' 4454ad669ebdbccb93d10d828484600dce58845d > "$RUNNER_TEMP/research-inputs/REVIEW_SHA"
+          cd "$RUNNER_TEMP/research-inputs"
+          sha256sum inputs.tar REFEREE_REPORT.md > SHA256SUMS
+      - uses: actions/upload-artifact@v4
+        with:
+          name: general-theta-restart-r2-immutable-inputs
+          path: ${{ runner.temp }}/research-inputs/
+          if-no-files-found: error
