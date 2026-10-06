@@ -1,0 +1,89 @@
+\section{Search-free legalization of balanced estimates}
+\label{sec:affinerepair83}
+
+The exact public dictionary and the statistical legalization step
+have different purposes.  A dictionary exploits global packing to
+reduce transmitted length.  Legalizing a collection of component
+estimates need not reconstruct such a dictionary.
+
+\begin{theorem}[Affine repair with a uniform error bound]
+\label{thm:affinerepair83}
+Let $B=(B_1,\ldots,B_k)$ be Hermitian matrices and $a>0$.  Define
+\begin{align}
+ A_j&=B_j+\frac{I_d-\sum_iB_i}{k},\label{eq:affineprojection83}\\
+ L_a(B)_j&=\frac{A_j+4a I_d}{1+4ka}.\label{eq:affinerepair83}
+\end{align}
+Suppose $E\in\mathfrak P_{d,k}$, the balanced interior from
+\eqref{eq:balancedbody82}, and
+$\max_j\|B_j-E_j\|_{\rm op}\le a$.
+Then $L_a(B)\in\mathfrak P_{d,k}$ and
+\begin{equation}\label{eq:affineerror83}
+ \max_j\|L_a(B)_j-E_j\|_{\rm op}
+ \le\frac{4a}{1+4ka}\le4a.
+\end{equation}
+For rational input and rational $a$, this is a rational map.  Testing
+its balanced legality and returning the uniform tuple upon failure
+defines a total legal procedure on every Hermitian input record.
+It uses $O(kd^2)$ rational arithmetic operations apart from $2k$
+exact positive-semidefinite tests of order $d$, and polynomial bit
+complexity.  There is no grid enumeration.
+\end{theorem}
+\begin{proof}
+Let $\Delta_j=B_j-E_j$.  Then
+$A_j-E_j=\Delta_j-k^{-1}\sum_i\Delta_i$, whose norm is at most $2a$,
+and $\sum_jA_j=I_d$.  Consequently
+\[
+ (1/(2k)-2a)I_d\preceq A_j\preceq(3/(2k)+2a)I_d.
+\]
+Adding $4aI_d$ and dividing by $1+4ka$ gives exactly the two
+balanced spectral inequalities.  The sum of the repaired effects
+is $I_d$.  Finally,
+\[
+ L_a(B)_j-E_j
+ =\frac{A_j-E_j+4ka(I_d/k-E_j)}{1+4ka}.
+\]
+The balanced hypothesis gives $\|I_d/k-E_j\|_{\rm op}\le1/(2k)$,
+proving \eqref{eq:affineerror83}.  Rationality and the operation count
+follow from the formula.  The exact legality test makes no good-event
+assumption; if it fails the uniform tuple is an explicitly specified
+legal output.  On the good event it never fails.
+\end{proof}
+
+\begin{corollary}[A common learner with polynomial legalization]
+\label{cor:affinelearner83}
+Under the range and access conventions of
+Theorem~\ref{thm:multioutcomelearning82}, replace its tuple-grid
+legalization by the guarded map in Theorem~\ref{thm:affinerepair83}.
+Taking
+\[
+ a=\frac{\delta}{32k\lceil\sqrt N\rceil}
+\]
+and allocating failure $\eta/k$ to each fresh binary component
+learner gives, on every record,
+\[
+ M\le Ck^3N\delta^{-2}[d^2+d\log(k/\eta)]
+\]
+for an absolute $C$, with future-use error at most $\delta/4$ on a
+common event of probability at least $1-\eta$.
+Encoding with the public dictionary at parameter $\delta/2$ gives
+error at most $\delta/2$ on the same event, without further calls,
+and retains the optimal fixed-$k$ fixed-length description order.
+Only the legalization cost is made polynomial; neither dictionary
+construction nor general collective-readout synthesis is asserted
+to be efficient.
+\end{corollary}
+\begin{proof}
+Use precisely the reference-preserving binary simulation and actual
+finite-control component learners from
+Theorem~\ref{thm:multioutcomelearning82}, at the displayed smaller
+accuracy.  Its conditional good-event argument gives component
+error at most $a$ with total failure at most $\eta$.  Affine repair
+then gives tuple error at most $4a$.  The balanced metric upper
+bounds the future-use error by
+$8k\sqrt N a\le\delta/4$.  The dictionary adds at most $\delta/4$.
+Fresh calls and all finite-control budgets are charged exactly as in
+the component theorem; decreasing the component accuracy by a factor
+two changes its call bound only by an absolute factor.  The guarded
+map is total even off the good event, so the recordwise call bound
+and public stopping convention are unchanged.
+\end{proof}

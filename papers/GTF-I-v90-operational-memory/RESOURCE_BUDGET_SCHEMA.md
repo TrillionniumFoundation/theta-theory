@@ -1,0 +1,13 @@
+# Exact profile, quadratic budget and conditional reset certificates
+
+`profile_geometry.py` verifies a prescribed positive-integer allocation, its first and second moments, and the exact packed width budget `floor(N/b)*b²+(N mod b)²`. The theorem applies to independent complete groups and prescribed-profile reset feedback, but arithmetic does not establish physical tensor independence. The original unpublished profile source and its schema are archived separately.
+
+`resource_budget.py` accepts exactly `schema,N,Q` and optionally `policy,reset_defects`. Use `schema="gtf89.quadratic-input/1"`, genuine integers `1<=N<=Q<=N²`, and no Boolean substitutes. The compressed witness uses `b=floor(Q/N)`, `floor(N/b)` full blocks and one positive residual. It never allocates an N-element list. Its square sum V obeys `Q/4<=V<=Q`, not V=Q in general.
+
+An optional policy uses the preserved `gtf88.reset-policy/1` format of `feedback_budget.py`. Its reachable directed acyclic graph may share subtrees. Complete successor declarations, cycles, hard reservations, and every worst-path cost are checked. The quadratic certificate rejects a policy exceeding either N or Q; costs are never averaged over path probabilities. `FEEDBACK_SCHEMA.md` is preserved unchanged; this paragraph explicitly records its DAG interpretation requested in R58.
+
+Optional `reset_defects` requires a policy and exactly one canonical rational string per graph node, in [0,2], zero at terminal nodes. The same successor recursion computes the largest path sum epsilon and reports the conditional additive two-hypothesis allowance `2epsilon`. It does not verify the diamond error of a physical channel. The ideal reset comparison channel and uniform auxiliary-reference validity must be certified separately.
+
+`--verify receipt.json` recomputes the complete typed canonical receipt. It rejects omitted/extra data, noncanonical rationals, duplicate JSON keys, changed witnesses, false flags and an insufficient hard budget. There is no partial-success output after a resource cap. The test records preserve these false scope flags: physical reset independence, local fidelity calibration, reset-defect calibration, exact operational distance, recovery synthesis, physical protocol execution, continuum proof by replay and priority clearance.
+
+The Bell-reference experiment in `resource_check.py` verifies positive tester effects, deterministic normalization, all 36 specified measurement contractions and a partial-transpose eigenvalue of -1/8 exactly. This proves an algebraic fact for that finite witness, not an optimal-score gap for all channel ensembles. Complete small reset-deviation laws check the finite hybrid allowance; no general physical preparation is being certified.
