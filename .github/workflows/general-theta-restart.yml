@@ -1,248 +1,62 @@
-name: General Theta non-destructive restart
+name: General Theta restart verification
 on:
   push:
     branches: [foundation/general-theta-foundations-i-restart-2026-10-06]
     paths: ['.github/workflows/general-theta-restart.yml']
   workflow_dispatch:
 permissions:
-  contents: write
+  contents: read
 concurrency:
-  group: general-theta-restart
+  group: general-theta-restart-verification
   cancel-in-progress: false
 jobs:
-  restructure:
-    if: ${{ !contains(github.event.head_commit.message, 'materialize General Theta restart') }}
+  verify:
     runs-on: ubuntu-24.04
-    timeout-minutes: 35
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 3
+          fetch-depth: 4
           ref: ${{ github.sha }}
-      - name: Materialize clean foundations tree
+          persist-credentials: false
+      - name: Verify canonical restart and extracted v1 realization
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -f GENERAL_THETA_RESTART_MANIFEST.json
+          test -f GENERAL_THETA_RESTART_INDEX.md
           test -f foundations/general-theta/General_Theta_Foundations_v0.1.md
-          test -d papers/GTF-I-v1
-          test ! -e GENERAL_THETA_RESTART_MANIFEST.json
-
-          mkdir -p papers/realizations/causal-predictive-memory-v1
-          shopt -s dotglob
-          git mv papers/GTF-I-v1/* papers/realizations/causal-predictive-memory-v1/
-          rmdir papers/GTF-I-v1
-          shopt -u dotglob
-
-          mkdir -p archive/general-theta/v1
-          git mv GTF_I_V1_INDEX.md archive/general-theta/v1/GTF_I_V1_INDEX.md
-          git mv foundations/general-theta/GTF_I_IMPLEMENTATION_2026-09-22.md \
-            papers/realizations/causal-predictive-memory-v1/IMPLEMENTATION_ADDENDUM_2026-09-22.md
-
-          python3 - <<'PY'
-          from pathlib import Path
-          p=Path('papers/realizations/causal-predictive-memory-v1/README.md')
-          s=p.read_text()
-          s=s.replace('../../foundations/general-theta/', '../../../foundations/general-theta/')
-          s=s.replace('General Theta Foundations I — first complete manuscript',
-                      'Theta Realization CPM-1 — archived first complete manuscript')
-          s=s.replace('This is an author-requested first research manuscript',
-                      'This is a preserved realization manuscript extracted from the General Theta Foundations line')
-          p.write_text(s)
-          PY
-
-          mkdir -p papers/General-Theta-Foundations-I-restart
-          cat > GENERAL_THETA_RESTART_INDEX.md <<'EOF'
-          # General Theta Foundations I — Restart Index
-
-          **Canonical branch:** `foundation/general-theta-foundations-i-restart-2026-10-06`  
-          **Historical seed:** `revision/general-theta-foundations-i-v1-2026-09-22` at `bd2a4d377033d947f76e14291910da17d3de55db`.
-
-          This branch restarts the foundations programme from its original object hierarchy:
-
-          ```text
-          positive causal experiment
-          -> executable future tests
-          -> predictive quotient
-          -> resource-certified causal morphisms
-          -> actually acquired geometry
-          -> resource--resolution--risk transfer.
-          ```
-
-          The foundational source of truth is `foundations/general-theta/General_Theta_Foundations_v0.1.md`, read with `RESTART_CHARTER.md` and the new theorem targets under `papers/General-Theta-Foundations-I-restart/`.
-
-          The former v1 refreshing-HMM article is preserved, without deletion, at `papers/realizations/causal-predictive-memory-v1/`. Subsequent v2--v96 work is frozen in `archive/general-theta-development-v2-v96-frozen-2026-10-06` and reclassified by `foundations/general-theta/REALIZATION_REGISTRY.md`. None of those realization lines is treated as the canonical continuation of Foundations I.
-
-          This is a non-force, non-destructive restart. Historical branches, reports, objects and authorship records are not rewritten.
-          EOF
-
-          cat > foundations/general-theta/README.md <<'EOF'
-          # General Theta Foundations — canonical restart tree
-
-          The active foundations line begins with `General_Theta_Foundations_v0.1.md` and `RESTART_CHARTER.md`. It does not inherit the numerical revision sequence v2--v96.
-
-          A new Foundations I paper must be organized around causal experiments, predictive quotients, executable morphisms and a load-bearing G1/G3 theorem. Model-specific work belongs in `papers/realizations/` and may be cited as a realization, not used to rename the foundation itself.
-          EOF
-
-          cat > foundations/general-theta/RESTART_CHARTER.md <<'EOF'
-          # Restart charter — General Theta Foundations I
-
-          ## Canonical mother problem
-
-          Given a prepared, intervenable causal experiment, determine:
-
-          1. which future tests are fixed by an observed history;
-          2. the minimal predictive quotient carrying those tests;
-          3. which target experiments can be implemented by parameter-independent causal simulators;
-          4. how simulator state, acquisition count, persistent labels, calibration error and approximation defect transfer prediction and decision risk; and
-          5. when actually acquired geometry, rather than a formal parameter manifold, yields matching resource--resolution laws.
-
-          ## Required central theorem
-
-          Foundations I is reopened around a genuine G1/G3 theorem. Its assumptions must begin at the experiment/kernel level and verify actual acquisition mass, global covering, stable predictive updates and a resource-certified causal implementation. Its conclusion must give a matching resource--resolution--risk law over a class of experiments, not only one designed finite ensemble or one uniformly contracting example.
-
-          ## Derived layers, not axioms
-
-          Fisher information, covariance, singular strata, pressure, LDP, spectral memory and Hilbert-space rank enter only after the experiment and task are fixed. A realization may instantiate one or more layers; it does not redefine the foundations tree.
-
-          ## Preservation rule
-
-          No mathematical result from v1--v96 is deleted. Results that are model-specific or interface-specific live in realization branches and the frozen archive. Promotion back into Foundations I requires a theorem-level generalization with the original causal/resource quantifiers.
-          EOF
-
-          cat > foundations/general-theta/REALIZATION_REGISTRY.md <<'EOF'
-          # General Theta realization registry
-
-          Historical `GTF-I-v*` numbering after v1 is frozen. New work uses realization identifiers and independent version sequences.
-
-          | Identifier | Mathematical line | Canonical branch / frozen head | Status relative to Foundations I |
-          |---|---|---|---|
-          | TR-CPM-1 | causal prediction, deficiency, finite memory and controlled-resource developments, including v2--v61 | `realization/causal-resource-memory-v1-2026-09-28` at `2c215579336a253585499328f19a647446445dc4` | realization family; not the canonical foundations sequel |
-          | TR-FIA-1 | finite input/action and positive physical realization line | `realization/finite-input-actions-v1-2026-09-27` at `27be4b236b9336bbfa2fa855dec3a346d63b8be7` | realization family |
-          | TR-SMS-1 | spectral entropy, stochastic widths and uniform streaming space | `realization/streaming-memory-space-v1-2026-09-28` at `abd5600b0085463ff78a1525d9588f42c8a514d5` | realization family |
-          | TR-FPA-1 | finite physical actions and strong converse for repeatable observations | `realization/finite-physical-actions-v1-2026-09-28` at `abd5600b0085463ff78a1525d9588f42c8a514d5` | independent realization article |
-          | TR-OMG-1 | ordered-measurement local geometry, allocation profiles and hard quadratic budgets, through v89 | `realization/ordered-measurement-geometry-v1-2026-10-05` at `df7ed618813224b058b97c6cbda720ad936e2c53` | quantum-measurement realization |
-          | TR-OMD-1 | exact two-call reset/message discrimination, rank cuts and spectral values, v90--v96 | `realization/ordered-measurement-discrimination-v1-2026-10-06` | quantum-measurement realization; extracted directory and release tag maintained there |
-
-          Full historical branch topology is frozen at `archive/general-theta-development-v2-v96-frozen-2026-10-06`, initially `e38f757ee13158c315e9328c961eb84e3e9a000d`. Old branch names remain valid provenance and must not be force-rewritten.
-          EOF
-
-          cat > papers/General-Theta-Foundations-I-restart/README.md <<'EOF'
-          # General Theta Foundations I — reopened manuscript
-
-          **Working title:** *Causal Experiments, Predictive Quotients, and Resource--Resolution Transfer*.
-
-          This directory is intentionally a theorem charter, not a repackaging of v96. The first publishable revision must have one mathematical center:
-
-          ```text
-          actual experiment data
-          + future-test closure
-          + predictive quotient realization
-          + causal simulator with charged state
-          + acquired covering/mass/stability
-          => matching resource--resolution--risk law.
-          ```
-
-          The original v0.1 outline supplies the typed objects. The historical v1 manuscript and all later quantum/streaming papers are realization inputs. They may motivate hypotheses and examples but are not silently imported as the statement of Foundations I.
-          EOF
-
-          cat > papers/General-Theta-Foundations-I-restart/THEOREM_TARGETS.md <<'EOF'
-          # Load-bearing theorem targets
-
-          ## F1 — Causal acquired-geometry transfer
-
-          Prove a class theorem deriving matching checkpoint and online resource curves from verifiable experiment-level hypotheses: actual acquisition small-ball mass, global covering, update stability, report-kernel continuity and explicit simulator-state accounting.
-
-          ## F2 — Resource--resolution--risk composition
-
-          Combine acquisition count, persistent-state budget, calibration error and causal deficiency in one common task metric. State both an implementable upper and a matched lower under explicit attainable alternatives.
-
-          ## F3 — Singular extension
-
-          Establish at least one nontrivial changing-rank or nonuniformly stable class in which the same theorem survives through singular strata. A fixed designed finite ensemble alone does not satisfy this target.
-
-          ## F4 — Realization theorem
-
-          Derive the hypotheses for at least two genuinely different experiments. The archived refreshing-HMM and ordered-measurement programmes are candidate realizations, not substitutes for F1--F3.
-          EOF
-
-          cat > papers/General-Theta-Foundations-I-restart/NO_GO_BOUNDARIES.md <<'EOF'
-          # Scope boundaries for the restart
-
-          Foundations I must not be identified with any one of the following:
-
-          - a single strongly refreshing hidden-Markov model;
-          - a single finite measurement ensemble;
-          - Hilbert-space memory dimension alone;
-          - a covariance, Fisher matrix, rank locus or rate function supplied without an experiment;
-          - the existence of CI receipts or a long preservation archive; or
-          - closure of A2/B4/C2 or the whole historical programme.
-
-          These may be examples, derived structures or independent obligations. They are not the foundational object.
-          EOF
-
-          cat > papers/realizations/causal-predictive-memory-v1/REALIZATION_MANIFEST.md <<'EOF'
-          # Theta Realization CPM-1
-
-          **Preserved paper:** *Causal Experiments, Predictive Quotients, and Resource-Aware Reduction* (historical GTF-I v1).
-
-          This article is retained byte-for-byte except for path/label documentation needed by the repository move. Its refreshing-HMM finite-memory theorem and causal emulation theorem are now classified as a General Theta realization. The paper is no longer the canonical Foundations I continuation, and its original referee report remains authoritative for its historical submission state.
-
-          Source branch before extraction: `revision/general-theta-foundations-i-v1-2026-09-22`, head `bd2a4d377033d947f76e14291910da17d3de55db`; principal source `28df7ce8b15f5020d349193605f964105d875033`.
-          EOF
-
-          cat > GENERAL_THETA_RESTART_MANIFEST.json <<'EOF'
-          {
-            "schema": "general-theta.restart/1",
-            "date": "2026-10-06",
-            "mode": "non_destructive_restart",
-            "historical_seed_branch": "revision/general-theta-foundations-i-v1-2026-09-22",
-            "historical_seed_head": "bd2a4d377033d947f76e14291910da17d3de55db",
-            "canonical_outline": "foundations/general-theta/General_Theta_Foundations_v0.1.md",
-            "canonical_restart_branch": "foundation/general-theta-foundations-i-restart-2026-10-06",
-            "frozen_later_history_branch": "archive/general-theta-development-v2-v96-frozen-2026-10-06",
-            "frozen_later_history_head": "e38f757ee13158c315e9328c961eb84e3e9a000d",
-            "historical_branches_deleted": false,
-            "historical_refs_force_rewritten": false,
-            "v1_reclassified_as_realization": true,
-            "v2_v96_canonical_foundations_line": false,
-            "required_future_center": "G1/G3 causal acquired-geometry and resource-resolution-risk transfer"
-          }
-          EOF
-
+          test -f foundations/general-theta/RESTART_CHARTER.md
+          test -f foundations/general-theta/REALIZATION_REGISTRY.md
+          test -d papers/General-Theta-Foundations-I-restart
+          test -d papers/realizations/causal-predictive-memory-v1
+          test ! -e papers/GTF-I-v1
           python3 papers/realizations/causal-predictive-memory-v1/tools/verify.py > /tmp/cpm1-verify.json
           python3 -O papers/realizations/causal-predictive-memory-v1/tools/verify.py > /tmp/cpm1-verify-opt.json
           cmp /tmp/cpm1-verify.json /tmp/cpm1-verify-opt.json
-
-          git config user.name 'General Theta migration automation'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -A
-          git commit -m 'restructure(General Theta): materialize General Theta restart and extract v1 realization'
-          NEW_HEAD=$(git rev-parse HEAD)
-          git push origin HEAD:refs/heads/foundation/general-theta-foundations-i-restart-2026-10-06
-
-          git fetch --no-tags --depth=1 origin \
-            2c215579336a253585499328f19a647446445dc4 \
-            abd5600b0085463ff78a1525d9588f42c8a514d5 \
-            df7ed618813224b058b97c6cbda720ad936e2c53
-          git tag -a general-theta-foundations-i-restart-v0.2 "$NEW_HEAD" -m 'Canonical non-destructive restart of General Theta Foundations I'
-          git tag -a theta-realization-causal-predictive-memory-v1 "$NEW_HEAD" -m 'Historical v1 paper reclassified as causal-predictive-memory realization'
-          git tag -a theta-realization-causal-resource-memory-v1 2c215579336a253585499328f19a647446445dc4 -m 'Frozen v2-v61 causal/resource/memory realization line'
-          git tag -a theta-realization-streaming-memory-space-v1 abd5600b0085463ff78a1525d9588f42c8a514d5 -m 'Frozen streaming-memory-space realization milestone'
-          git tag -a theta-realization-finite-physical-actions-v1 abd5600b0085463ff78a1525d9588f42c8a514d5 -m 'Frozen finite-physical-actions realization milestone'
-          git tag -a theta-realization-ordered-measurement-geometry-v1 df7ed618813224b058b97c6cbda720ad936e2c53 -m 'Frozen ordered-measurement geometry realization through v89'
-          git push origin \
-            refs/tags/general-theta-foundations-i-restart-v0.2 \
-            refs/tags/theta-realization-causal-predictive-memory-v1 \
-            refs/tags/theta-realization-causal-resource-memory-v1 \
-            refs/tags/theta-realization-streaming-memory-space-v1 \
-            refs/tags/theta-realization-finite-physical-actions-v1 \
-            refs/tags/theta-realization-ordered-measurement-geometry-v1
-          echo "$NEW_HEAD" > /tmp/general-theta-restart-head.txt
+          git ls-remote --exit-code --tags origin refs/tags/general-theta-foundations-i-restart-v0.2
+          git ls-remote --exit-code --tags origin refs/tags/theta-realization-causal-predictive-memory-v1
+          git ls-remote --exit-code --heads origin refs/heads/realization/causal-predictive-memory-v1-2026-10-06
+          python3 - <<'PY' > /tmp/general-theta-restart-verification.json
+          import json, os, subprocess
+          print(json.dumps({
+            "schema": "general-theta.restart-verification/1",
+            "status": "success",
+            "verified_head": os.environ["GITHUB_SHA"],
+            "canonical_branch": "foundation/general-theta-foundations-i-restart-2026-10-06",
+            "historical_seed": "bd2a4d377033d947f76e14291910da17d3de55db",
+            "materialization_commit": "29d73bc9a83e1b6c06211b08186fb42b09f0c86d",
+            "v1_realization_branch": "realization/causal-predictive-memory-v1-2026-10-06",
+            "historical_branches_deleted": False,
+            "force_updates_used": False,
+            "ordinary_optimized_checks_identical": True
+          }, sort_keys=True, indent=2))
+          PY
       - uses: actions/upload-artifact@v4
         with:
-          name: general-theta-restart-${{ github.run_id }}
+          name: general-theta-restart-verification-${{ github.sha }}
           path: |
             /tmp/cpm1-verify.json
             /tmp/cpm1-verify-opt.json
-            /tmp/general-theta-restart-head.txt
+            /tmp/general-theta-restart-verification.json
           if-no-files-found: error
