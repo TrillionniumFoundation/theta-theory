@@ -1,0 +1,9 @@
+# Source and execution validation: revision 18
+
+The frozen author baseline is v17 at `253f7c56de1f198ff9bd5e13fa2009baf4551495`. The latest located report is the v16 substantive report at `b0b7ddfcd90f493e02254742b33174e9108fc5a7`. No build outcome for a different SHA qualifies this revision.
+
+The source verifier checks all inherited core/script byte identities, all retained mathematical labels, exact replay of the six introduction/bibliography edits, old bibliography-entry retention, every declared source hash, all core inclusions, references/citations and balanced theorem/proof environments. The new mathematical finite checks independently test C2 cutoff traces, power-log jet selection, 50 logarithmic integrals at 60-digit precision, 18 explicit raw fiber densities, endpoint remainders, exact count-localized convolution cancellation and Fourier-tail constants. Negative controls detect the omitted value/slope boundary distributions and omitted high-count convolution. All inherited finite-check chains and the six mechanical/return/inversion diagnostics are retained.
+
+Normal and optimized Python outputs must agree byte-for-byte. The native build runs without shell escape and rejects unresolved references, missing characters, package/LaTeX warnings and overfull boxes. The dynamic receipt records the checked-out SHA, GitHub event SHA, run ID/attempt, source hashes, and PDF/log hashes after the checks succeed. The archived source is the exact event tree, not a separately assembled candidate.
+
+This static file does not predeclare a future workflow successful. The matching GitHub run and its receipt are the execution evidence. Neither numerical regression checks nor compilation certify the imported constructible theorem, the continuum collision graph, the uniform growth of every raw germ, the complete complementary integral or an independent journal decision.
