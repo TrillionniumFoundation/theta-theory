@@ -1,0 +1,11 @@
+# Validation protocol: A2-DYN revision 23
+
+The frozen author baseline is `a656998fee8176316850ef87ac447970d712aae2`, ordinary paper tree `48ee252fdffc68d779069ce7a6c43ac564f8217f`. Its downloaded qualification archive is `11421367256`, SHA-256 `2028543de2b832847fd310eda5615610be1513a9fe308219f75d10b1d5539bec`. That is baseline evidence only.
+
+The new source checker validates the complete baseline file map and Git tree, every actual file hash except the self-referential manifest hash, all 49 core inclusions, all inherited labels, all 47 byte-identical inherited core files, every inherited script and the unchanged bibliography. Five exact introduction edits are replayed from `INHERITED_EDITS.json`. It checks reference and environment consistency and explicit mathematical status fields.
+
+New finite tests check exact rational scale margins; exact moment/cumulant reconstruction through degree twenty; centered binomial small-residual fourth moments; chronological multiplier/power words on a finite nonreversible stationary chain, including repeated times and endpoint marks; and the cubic exponential remainder. Negative controls reject reversal of the wrong chronology, inappropriate first-order unsmoothing, insufficient old stopping order, and an infeasible target exponent. All inherited finite-check chains are retained and executed. Normal and `-O` outputs must agree byte-for-byte.
+
+The native build runs without shell escape until references stabilize and rejects undefined references, missing glyphs, LaTeX/package warnings and overfull boxes. The read-only workflow checks out and archives the exact event SHA, verifies and compiles the ordinary committed source, and uploads the PDF, log and source evidence. The dynamic receipt records the real SHA, run ID/attempt, scoped clean status, paper tree, source checks and PDF hash. A static file does not predeclare any future workflow result.
+
+Rendering checks concern typesetting. Finite models are algebraic regressions, not proofs of billiard mixing, fixed-count continuum cancellation, uniform raw derivative budgets, local edge smallness or exact physical-event replacement. No independent human review or formal proof certification is claimed.
