@@ -15,7 +15,7 @@
 **Controlling external report:** r60, `cf13712c54e9ef0c9c54a240b1f26efc78cc3568`  
 **Controlling proof/pipeline audit:** r60, `e4e72a512bf747e7bd190196cd8dc3db35689e3c`  
 **Exact-final-head read-only run:** `37436686847`, conclusion `success`  
-**Exact-final-head job:** `112092683893`, conclusion `success`  
+**Exact-final-head job:** `112180114437`, conclusion `success`  
 **Review branch:** `review/general-theta-foundations-i-v94-spectral-value-external-referee-r61-2026-10-06`  
 **Date:** 6 October 2026
 
@@ -25,27 +25,39 @@
 
 This is **not a correctness rejection**.
 
-Revision 94 is a genuine and mathematically substantial advance over the object reviewed in r60. The earlier exact operational hierarchy established that, for a specially designed two-use shared-device ensemble, classical measure-and-reprepare adaptation, unit-reset strategies, and unrestricted adaptive strategies have different exact Bayes values. Revisions 91–93 then introduced the common-barycenter normal form, rank-resolved cuts, fixed initial spectra, equality sets and rigidity. Revision 94 now solves the biased fixed-initial-spectrum optimization itself.
+Revision 94 is a genuine and mathematically substantial advance over the object reviewed in r60. The earlier exact operational hierarchy established, for a specially designed two-use shared-device ensemble, different exact Bayes values for classical measure-and-reprepare adaptation, unit-reset strategies and unrestricted adaptive strategies. Revisions 91–93 then supplied the common-barycenter normal form, rank-resolved resource cuts, fixed-initial-spectrum geometry, equality sets and rigidity. Revision 94 now evaluates the biased fixed-initial-spectrum optimization itself.
 
-For a fixed pure first acquisition with Gram state `rho`, old and fresh retained dimensions `k,l`, active rank
+For a fixed pure first acquisition with Gram state `rho`, old and fresh retained dimensions `k,l`, and
 
 ```text
 r = min(k,l),
 ```
 
-the paper defines a rank-at-most-`r` least majorant `q^(r)(lambda(rho))` and the secular spectral functional
+the paper defines the least rank-at-most-`r` majorant
 
 ```text
-H_r(rho) = chi(q^(r)(lambda(rho))),
+q^(r)(lambda(rho))
 ```
 
-where, on nonzero coordinates `u_i`, `chi(u)` is the nonnegative solution of
+and the secular spectral functional
 
 ```text
-sum_i u_i/(u_i+chi) = 1.
+H_r(rho) = chi(q^(r)(lambda(rho))).
 ```
 
-With
+For a nonzero vector `u`, `chi(u)` is equivalently
+
+```text
+lambda_max(v v^* - diag(u)),   v_i = sqrt(u_i),
+```
+
+or the nonnegative secular root
+
+```text
+sum_i u_i/(u_i+chi) = 1,
+```
+
+with value zero when the support has size at most one. With
 
 ```text
 L_0 = 2(d+1)-t^2,
@@ -59,11 +71,11 @@ P^b_{k,l}(rho)
   = p_E + [t^2/(2L_0)] H_r(rho).
 ```
 
-The upper is attained by an instrument with at most `d` outcomes, by commuting Gram atoms of a common spectrum, without modifying the prescribed initial acquisition. The fresh state after the receiver outcome uses reference dimension at most `r`; the old retained register also has dimension `r`. The manuscript additionally computes the exact no-message comparison
+The upper is attained by a finite receiver instrument with at most `d` recorded outcomes, using commuting Gram atoms of one common spectrum, without changing the prescribed initial acquisition. The old retained register and the fresh reference may both be chosen of dimension at most `r`. The manuscript also evaluates the no-message subclass:
 
 ```text
 P^nm_{d,r}(rho)
-  = p_E + [t^2/(2L_0)] chi(lambda_1,...,lambda_r)
+  = p_E + [t^2/(2L_0)] chi(lambda_1(rho),...,lambda_r(rho)),
 ```
 
 and proves, for `t>0`,
@@ -73,467 +85,536 @@ P^b_{d,r}(rho) > P^nm_{d,r}(rho)
   iff 2 <= r < rank(rho).
 ```
 
-This is a clean, sharp operational statement. It identifies exactly when communicating a receiver outcome to the next fresh preparation has positive value while the initial acquisition is held fixed. It also identifies the initial-rank saturation threshold and treats singular spectra and the endpoints of the deformation.
+This is a clean operational theorem. It identifies exactly when communication of a receiver outcome to the next fresh preparation has positive value while the initial acquisition is held fixed. It also identifies the initial-rank saturation threshold and treats singular spectra and the deformation endpoints.
 
-I have not found a fatal mathematical gap in the new spectral-value section or in the v91–v93 machinery on which it depends. The load-bearing steps are coherent:
+I did not find a fatal mathematical gap in the new spectral-value section or in the v91–v93 machinery on which it depends. The load-bearing steps are coherent:
 
-1. the fixed initial acquisition is represented by a single pure Gram matrix and is not silently replaced by a classically resolved mixture;
-2. the common-barycenter weights are Gram decomposition weights, not hypothesis-dependent branch probabilities;
-3. the leaf optimization is reduced to a rank-capped filtered-swap problem and solved by a secular equation;
-4. singular support is handled by compression and a pseudoinverse/support restriction rather than by an illegal inverse;
+1. the fixed pure initial acquisition is represented by one Gram matrix and is not silently replaced by a public mixture of different first acquisitions;
+2. common-barycenter weights are Gram-decomposition weights, not hypothesis-dependent branch probabilities;
+3. the leaf problem is reduced to a rank-capped filtered-swap optimization and solved by a secular equation;
+4. singular support is handled by compression and pseudoinverse/support restriction rather than an illegal inverse;
 5. the leaf optimizer can be chosen commuting on the leading eigenspaces;
-6. the rank-capped concave roof is identified by the least majorizing rank-`r` spectrum;
+6. the rank-capped concave roof is identified by the least rank-`r` majorizing spectrum;
 7. the converse uses Ky Fan inequalities, concavity and majorization in the correct direction;
-8. the commuting finite decomposition is supplied by Schur–Horn/Birkhoff-type finite convexity;
+8. the finite commuting decomposition follows from finite-dimensional Schur–Horn/Birkhoff convexity;
 9. the same receiver instrument may be used after every first device label;
-10. the no-message class is distinguished from complete measure-and-reprepare adaptation;
-11. the strict message-gain criterion follows from the strict spectral comparison in the only nontrivial range; and
-12. the exact rational executable is correctly limited to supplied spectra and certified bisection intervals.
+10. the no-message class is distinguished from full measure-and-reprepare adaptation;
+11. the strict message-gain criterion is invoked only in the nontrivial range; and
+12. the exact executable is correctly limited to supplied spectra and certified root intervals.
 
-The four-leading-general-journal conclusion nevertheless remains negative. The exact theorem is proved for a deliberately engineered, finite, two-call shared-basis experiment with a fixed prior, a once-selected latent basis reused at both calls, a fixed pure initial Gram state, and two finite rank cuts. It does not solve arbitrary-pair quantum channel or measurement discrimination, classify finite-memory strategies in general, produce a global metric geometry of the ordered-POVM body, or establish a general law for the value of classical communication in quantum decision problems. The proof's spectral core is an elegant application and synthesis of established majorization, concave-roof, filtered-swap and finite-dimensional convexity methods. In my judgment, the theorem is strong specialist mathematics but does not yet cause the breadth or conceptual displacement expected at the four leading general mathematics journals.
+The four-leading-general-journal conclusion nevertheless remains negative. The exact theorem concerns a deliberately engineered, finite, two-call shared-basis experiment with a fixed prior, a once-selected latent basis reused at both calls, a prescribed pure initial Gram state and two finite rank cuts. It does not solve arbitrary-pair quantum channel or measurement discrimination, classify finite-memory strategies in general, produce a global metric geometry of the ordered-POVM body, or establish a general law for the value of classical communication in quantum decision problems. Its spectral core is an elegant synthesis of established majorization, concave-roof, filtered-swap and finite-dimensional convexity mechanisms. In my judgment, this is strong specialist mathematics but not yet the breadth or conceptual displacement required by the four leading general mathematics journals.
 
-**Disposition outside the four leading general journals:** the focused v90–v94 finite-game development should be seriously considered by a leading specialist journal in mathematical quantum information, quantum statistics, operator theory or mathematical physics after substantial editorial extraction and the priority revisions below. I would not request another wholesale reconstruction of the historical corpus.
+**Disposition outside the four leading general journals:** the focused v90–v94 finite-game development is a serious candidate for a leading specialist journal in mathematical quantum information, quantum statistics, operator theory or mathematical physics after substantial editorial extraction and the priority revisions below. I would not request another wholesale reconstruction of the historical corpus.
 
 ---
 
 ## 1. Reviewable object and branch chronology
 
-A complete branch survey finds a numerically later branch,
+A numerically later branch exists:
 
 ```text
-revision/general-theta-foundations-i-v95-r60-spectral-decision-2026-10-06,
+revision/general-theta-foundations-i-v95-r60-spectral-decision-2026-10-06.
 ```
 
-but its current head contains only four base64 transport payloads. The concatenated compressed stream is incomplete, the branch has no materialized paper directory, no complete native source, no PDFs, no build receipt, and no GitHub Actions run. The transport metadata itself says that remote assembly is still required and identifies v94 as the latest actual complete publication. I therefore do **not** treat v95 as a submitted manuscript.
+At review time its tree contains only four base64 transport chunks. Their concatenation begins a compressed source stream but does not reach an end-of-stream marker. The branch has no materialized paper directory, no complete native source, no PDFs, no build receipt and no Actions run. It is therefore a source-transport staging branch, not a submitted revision. Branch numbering alone cannot make an incomplete transport object the review target.
 
-The latest complete reviewable object is v94 at exact final head
+The latest complete reviewable object is v94 at
 
 ```text
 db6739da3487be8787a67fc175b9086bd62f0e80.
 ```
 
-The mathematical publication contained in this chain is
+The mathematical publication in that chain is
 
 ```text
 0919ff61895716ea3de1d6a0f2a6a291935764d0,
 ```
 
-whose direct parent is the qualified native source
+whose qualified native-source parent is
 
 ```text
 24f48c90d6bcc1eae1d4c38ac5195405ac21da7d.
 ```
 
-The publication child adds rendered manuscripts and evidence; it does not alter theorem source. Subsequent commits add the review entry and exact-head verification record. The exact final head was reconstructed read-only by run `37436686847`, job `112092683893`, with credentials persistence disabled and an explicit assertion that the verified head equals the triggering SHA.
+The commits after the publication add a review entry and an exact-final-head request/receipt; they do not alter theorem source. Run `37436686847`, job `112180114437`, checked out exact head `db6739...` without persisted write credentials and reconstructed the four manuscripts and regression package read-only.
 
 The package contains:
 
 ```text
-focused primary article:       78 pages,
-linked binary supplement:      87 pages,
-independent structural paper:  41 pages,
-complete preservation edition:289 pages.
+focused primary article:        78 pages,
+linked binary supplement:       87 pages,
+independent structural paper:   41 pages,
+complete preservation edition: 289 pages.
 ```
 
-The primary is the journal-facing object. The complete edition is an archive and must not be counted as an additional submission or as evidence of significance.
+The primary is the journal-facing object. The complete edition is an archive and should not be counted as a second submission or as evidence of significance.
 
-The build receipt records 870 current source files, 841 predecessor native files, 1088 complete-edition labels, 256 quantitative-package labels, 116 structural labels and 36 regression suites. Inherited mathematical sections are reported byte-identical. This is strong preservation evidence, but it is not a formal proof certificate.
+The build receipt records 870 current source files, 841 predecessor native files, 1088 complete-edition labels, 256 quantitative-package labels, 116 structural labels and 36 regression suites. Inherited mathematical sections are reported byte-identical. This is strong source-preservation evidence, but not a formal proof certificate.
 
 ---
 
 ## 2. Exact operational interface
 
-The exact theorem is meaningful only with its complete interface visible.
+The theorem is meaningful only with its complete interface visible.
 
 ### 2.1 Shared finite family
 
-The unknown device belongs to the finite once-selected basis family introduced in the operational hierarchy. One latent basis index is sampled once and the same device is used at both calls. Redrawing the basis independently at each use would destroy the second-moment signal and would be a different experiment.
+The unknown device belongs to the finite once-selected basis family introduced in the operational hierarchy. One latent basis is sampled once and the same device is queried twice. Redrawing the basis independently at each use would destroy the shared second-moment signal and would be a different experiment.
 
-The deformation parameter satisfies `0<=t<=1`, the dimension is fixed at `d>=2`, and the prior is the biased prior built into the experiment. The theorem does not optimize the prior.
+The deformation parameter satisfies `0<=t<=1`, the dimension is fixed at `d>=2`, and the prior is the biased prior built into the experiment. Revision 94 does not optimize the prior.
 
 ### 2.2 Fixed pure initial acquisition
 
-The first acquisition is fixed by a pure probe–reference state whose Gram matrix is
+The first acquisition is fixed by a pure probe–reference state with Gram matrix
 
 ```text
 rho = C_0^* C_0 in D_d.
 ```
 
-This is stronger than fixing only the reduced density operator after a classical resolution. The first acquisition may not be replaced by an ensemble of distinct acquisitions selected by a public seed. Such a replacement would change the feasible common-barycenter problem and can change the value.
+This is stronger than fixing only a reduced state after a classical resolution. The first acquisition may not be replaced by an ensemble of distinct acquisitions selected by a public seed. Such a replacement would change the feasible common-barycenter problem.
 
-### 2.3 Two rank cuts
+### 2.3 Receiver outcome and common barycenter
 
-The old receiver memory has effective dimension at most `k`, the fresh reference has effective dimension at most `l`, and only
+After the first use, a receiver instrument produces a classical outcome `h` and an old retained quantum register. The same outcome may choose the fresh second-use preparation. The branch Gram matrices satisfy a common-barycenter identity whose total trace weight is normalized only after division by `d`. The manuscript must keep this distinction visible: Gram weights are not ordinary probabilities before normalization.
+
+### 2.4 Rank cuts
+
+The old retained register has dimension at most `k`; the fresh reference has dimension at most `l`. Only
 
 ```text
 r=min(k,l)
 ```
 
-enters the spectral value. The theorem is therefore a two-cut result, not a classification of every memory architecture with dimensions `k,l`.
+enters the exact value. Every occurrence of “rank `r`” should be read as rank at most `r`, with zero padding allowed.
 
-### 2.4 Receiver message
+### 2.5 No-message subclass
 
-The biased value permits a receiver outcome to be communicated to the fresh source. The no-message comparator still permits dependence on the first device label and an independent public seed, arbitrary old receiver processing, and a final joint readout. It forbids only the receiver-to-source message. It is not the complete measure-and-reprepare class from v90.
-
-The exact gain theorem is consequently a theorem about one precise communication edge in one finite causal experiment. This precision is a strength and must remain visible in every summary.
+The no-message comparator fixes the fresh second-use state independently of `h`. It is not the same as a fully classical strategy that measures and re-prepares every quantum register. The distinction is essential to the strict-message theorem.
 
 ---
 
-## 3. Mathematical assessment
+## 3. Cumulative v91–v94 theorem chain
 
-### 3.1 The secular functional
+Revision 94 should be read as the endpoint of a cumulative chain, not as an isolated formula.
 
-For a nonnegative vector `u`, let `v_i=sqrt(u_i)` and consider
+### 3.1 Common-barycenter variational principle
 
-```text
-v v^* - diag(u).
-```
+The earlier revision reduces every legal two-call reset strategy to a finite or closed common-barycenter decomposition. Conversely, every legal decomposition is implementable by a receiver instrument through a support pseudoinverse. This supplies an exact variational principle rather than an upper bound.
 
-Its largest eigenvalue is `chi(u)`. When at least two coordinates are nonzero, the positive eigenvalue is the unique solution of
+The corresponding Hermitian-majorant dual is important because it separates the fixed barycenter from branchwise continuation values. This general result applies beyond the particular rank-capped closed form of v94.
 
-```text
-sum_i u_i/(u_i+chi)=1.
-```
+### 3.2 Rank-resolved memory cuts
 
-For support size at most one the value is zero. The manuscript proves continuity, symmetry, positive homogeneity, coordinate monotonicity and concavity. On a fixed-trace simplex it establishes the strict Schur-concavity needed for the strict message criterion.
+The next stage constrains the old and fresh retained dimensions and shows that their operational effect depends on the active overlap `r=min(k,l)`. For the globally optimized engineered experiment, explicit biased- and equal-prior rank formulas are obtained.
 
-The secular description is exact and numerically stable for the stated finite-dimensional problem. The manuscript should make the support-one convention and the boundary form of strictness especially prominent, because several corollaries use zero padding and rank-deficient spectra.
+Those formulas do not yet answer the prescribed-initial-spectrum question: a globally optimal first acquisition may itself depend on `r`.
 
-### 3.2 Leaf optimization
+### 3.3 Initial spectra, equality and rigidity
 
-For a positive old Gram operator `A`, the rank-`l` fresh optimization has value
+The subsequent stage fixes the initial Gram spectrum, identifies when the global rank-`r` optimum remains attainable, gives commuting projection-frame decompositions and proves quantitative rigidity/stability near the optimal face.
 
-```text
-(1/2) chi(a_1,...,a_l),
-```
-
-where the selected coordinates are the leading eigenvalues of `A` under the stated convention. The proof compresses to the support, rewrites the rank-capped filtered-swap term, uses a trace/inverse-trace inequality and rearrangement, and rescales to obtain a commuting optimizer.
-
-This avoids a common error: simply pinching an arbitrary optimizer in the eigenbasis of `A` need not preserve the nonlinear objective. The submitted proof does not rely on that invalid step. The singular case is also not obtained by pretending that `A` is invertible; it is treated on its support and by a limiting/pseudoinverse formulation.
-
-I regard this lemma as correct in the submitted finite-dimensional setting. A future version should nonetheless isolate the equality conditions and the zero-eigenvalue approximation in a separate proposition, because those details are load-bearing for the global attainment statement.
-
-### 3.3 Rank-capped least majorant
-
-For the decreasing eigenvalue vector `lambda`, the paper constructs the least rank-at-most-`r` majorant
-
-```text
-q^(r)(lambda)
-```
-
-by retaining the large coordinates and water-filling the remaining mass over the remaining active positions. The construction allows rank strictly below `r` through zero tails.
-
-The majorization direction is the correct one for the concave spectral roof. Every rank-`r` barycentric decomposition is bounded by the spectral value at this least majorant, while a commuting finite ensemble with common spectrum `q^(r)` attains the bound. The finite converse is obtained from Schur–Horn and finite doubly stochastic decompositions rather than from an unproved measurable-selection assertion.
-
-This is standard majorization technology used effectively. The application-specific content is the identification of this roof as the exact operational value and the simultaneous realization within the reset normal form.
-
-### 3.4 Concave roof
-
-For a continuous symmetric concave homogeneous spectral function `f`, the rank-capped concave envelope over positive Gram atoms is
-
-```text
-f(q^(r)(lambda(rho))).
-```
-
-The upper uses Ky Fan inequalities and Jensen. The lower uses commuting atoms of common spectrum and a finite convex decomposition of `rho`. Taking `f=chi` yields `H_r`.
-
-The proof correctly distinguishes trace weights in a Gram decomposition from probabilities of histories under either hypothesis. This distinction should be repeated immediately before the main theorem; otherwise readers may incorrectly normalize branch operators using hypothesis-dependent record probabilities.
-
-### 3.5 Exact prescribed-spectrum value
-
-The upper applies the dimension-preserving normal form from the earlier rank hierarchy. For each first device label, the receiver branches decompose the same fixed Gram state:
-
-```text
-sum_h A_{y,h}=rho.
-```
-
-Applying the leaf bound branchwise and then the spectral roof gives the exact upper. The commuting roof decomposition supplies an instrument with at most `d` outcomes. The fresh leaf optimizer supplies the matching preparation and final positive-part decision. The construction preserves the initial acquisition and requires no extra retained environment.
-
-This is a real theorem, not a numerical conjecture or a comparison of two exhibited protocols. It solves the complete stated class `R_{k,l}`.
-
-### 3.6 Exact message value
-
-Without a receiver message, old processing can be postponed to the final readout and every first-label branch retains the Gram state `rho`. The leaf lemma therefore gives
-
-```text
-P^nm_{d,r}(rho)
- = p_E + [t^2/(2L_0)] chi(lambda_1,...,lambda_r).
-```
-
-The message-enabled value replaces the truncated spectrum by the rank-capped majorant roof. At `r=1`, both secular values vanish. At `r>=rank(rho)`, no tail is moved and the values agree. In the intermediate range `2<=r<rank(rho)`, strict Schur-concavity yields strict gain for `t>0`.
-
-The iff statement is sharp and is one of the strongest parts of the revision. It should be stated next to the main value theorem in the introduction rather than being separated by several layers of historical material.
-
-### 3.7 Example and boundary checks
-
-The three-dimensional example with
-
-```text
-lambda=(1/2,1/4,1/4), r=2
-```
-
-gives
-
-```text
-q^(2)=(3/4,1/4,0),
-chi(q^(2))=sqrt(3)/4,
-chi(lambda_1,lambda_2)=sqrt(6)/8,
-```
-
-and hence a strictly positive exact communication gain for `t>0`. This example should move into the main exposition. It makes clear that the gain is neither an artifact of rank deficiency nor a statement about globally optimizing the initial Gram.
-
-### 3.8 Countable outcomes and finite attainment
-
-The theorem permits the general receiver class inherited from the normal form, while the optimizer has at most `d` outcomes. The upper only needs positive trace-class sums and finite-dimensional compactness. The final paper should state in one place how countable instruments are reduced by monotone finite truncation/upper semicontinuity or directly covered by the normal-form lemma. I see no fatal gap, but the current presentation makes this reduction more implicit than is desirable for a top-level submission.
+Revision 94 then evaluates the whole prescribed-spectrum value, not only its equality set.
 
 ---
 
-## 4. Relation to the v90–v94 proof pipeline
+## 4. Mathematical audit of the new spectral theorem
 
-The exact finite-game line now has a coherent progression:
+### 4.1 The secular functional
 
-```text
-v90: exact three-class two-call operational hierarchy;
-  -> v91: common-barycenter variational principle and attained dual;
-  -> v92: rank-preserving normal form and two independent cuts;
-  -> v93: fixed initial spectra, three-cut equality and rigidity;
-  -> v94: exact biased value for every prescribed pure initial spectrum,
-          exact message gain, and rank saturation.
-```
-
-Revision 94 positively answers the central mathematical request left by r60: it moves beyond an equality set and rigidity estimate to the exact value function on the entire prescribed-spectrum domain.
-
-This finite-game line is logically distinct from the older local tangent-tube line:
+For `u>=0`, let `v_i=sqrt(u_i)` and
 
 ```text
-coupled covariance
- -> support kernel
- -> finite orbit and smooth-curve laws
- -> one-sided tangent tubes
- -> entanglement/reset width
- -> allocation profiles and hard quadratic budgets.
+K(u)=v v^* - diag(u).
 ```
 
-The latter remains active and correctly preserved, but it is not needed to prove the spectral roof theorem. The primary manuscript currently combines both lines in seventy-eight pages and then links a large supplement and a complete archival edition. That architecture obscures the new theorem. For specialist publication, the v90–v94 finite-game chain should be extracted as a standalone paper, with the local geometry summarized only as contextual work.
+The largest eigenvalue is nonnegative. On support size at least two it is the unique positive solution of
 
-The wider repository A/B/C/D programme remains logically independent. Raw local limits, stopped-path recovery, grand-canonical/microcanonical transfer, Mosco recovery, nonlinear resolvent/core results, filtering/QMD/LAN, changing-filtration response and labelled posterior contraction are not consequences of the finite spectral value theorem. All five aggregate closure flags correctly remain false.
+```text
+sum_i u_i/(u_i+x)=1.
+```
+
+On support size at most one it is zero. This agrees with the matrix formula and makes the singular boundary continuous.
+
+The manuscript proves the properties needed later: symmetry, positive homogeneity, coordinatewise monotonicity, concavity and strict Schur concavity away from the trivial boundary. The variational matrix formula is the cleanest source of concavity; the secular formula is the cleanest source of strict comparison and computation.
+
+I find these arguments sound in the finite-dimensional setting used here. The strict statement should continue to be accompanied by its support and non-proportionality qualifications.
+
+### 4.2 Rank-capped leaf optimization
+
+The branchwise decision problem reduces to the negative part of a filtered swap, with a positive old Gram operator `A` and a fresh density operator `B` of rank at most `l`. Compression to the leading support and a rearrangement argument align an optimizer with the leading eigenspaces of `A`. The remaining scalar optimization is the secular problem.
+
+The resulting branch value is one half of the secular functional applied to the leading admissible eigenvalues. The factor one half, normalization of `B`, support convention and unhalved/halved discrimination conventions must remain explicit.
+
+The optimizer may be chosen commuting with `A` on the active support. Degenerate leading eigenspaces produce nonuniqueness but do not change the value.
+
+### 4.3 Least rank-capped majorant and concave roof
+
+For a probability spectrum `lambda`, the water-filled vector `q^(r)(lambda)` is the least spectrum supported on at most `r` coordinates that majorizes `lambda`. Equivalently, it preserves the largest coordinates above a water level and equalizes the remaining active mass, with zero padding thereafter.
+
+For any continuous symmetric concave functional `f`, the paper proves that the rank-capped concave roof over decompositions with barycenter spectrum `lambda` equals
+
+```text
+f(q^(r)(lambda)).
+```
+
+The upper follows from Ky Fan majorization of the average branch spectra, the minimality of `q^(r)`, Schur concavity and Jensen. The lower follows by representing `lambda` in the convex hull of permutations of `q^(r)(lambda)` and choosing commuting atoms. The finite-dimensional construction can be reduced to at most `d` atoms.
+
+This is the central convex-geometric step. I find the direction of the majorization inequalities and the attainment construction coherent.
+
+### 4.4 Exact converse
+
+The common-barycenter normal form expresses every strategy as a weighted family of branch Gram operators. Applying the leaf bound branchwise and the homogeneous extension of the secular functional gives a rank-capped concave-roof upper. The roof lemma then yields `H_r(rho)`.
+
+The paper does not assume that the first receiver outcome diagonalizes `rho`; that restriction appears only in the commuting attainment construction.
+
+### 4.5 Exact attainment
+
+A finite commuting decomposition of `rho` into rank-at-most-`r` atoms with common spectrum `q^(r)(lambda(rho))` is chosen. The receiver instrument is constructed from the atom factors and the support pseudoinverse of the fixed initial factor. Completeness follows from the common-barycenter identity. The branchwise fresh state is chosen from the leaf optimizer.
+
+This keeps the first acquisition fixed, uses at most `d` public outcomes and realizes the upper value. The same receiver instrument may be used for each first device label, which is stronger than required.
+
+### 4.6 No-message value
+
+When `h` is not communicated to the second preparation, common processing can be postponed and the fresh state is optimized against the unconditioned fixed Gram state. The leaf lemma then gives the truncated-spectrum expression.
+
+This postponement argument should be isolated as a named lemma in a revised specialist submission. It is conceptually important and presently too compressed relative to the main theorem.
+
+### 4.7 Strict message gain
+
+The communicated and no-message values compare
+
+```text
+chi(q^(r)(lambda(rho)))
+```
+
+with
+
+```text
+chi(lambda_1(rho),...,lambda_r(rho)).
+```
+
+For `r=1` both vanish. Once `r>=rank(rho)`, water filling changes nothing and there is no gain. In the remaining range `2<=r<rank(rho)`, strict Schur concavity gives a strict gain for `t>0`.
+
+The theorem correctly does not claim that a receiver message is always useful, or that the same criterion holds for arbitrary devices and losses.
+
+### 4.8 Saturation and exact spectral loss
+
+The gap to the globally optimized rank-`r` value is
+
+```text
+[t^2/(2L_0)] * [(r-1)/r - H_r(rho)].
+```
+
+It vanishes precisely on the previously identified optimal face `rho<=I/r`. For a fixed initial rank `s`, the optimized value increases through the active ranks and saturates once `r>=s`.
+
+This is a useful consistency check linking v94 to the earlier equality and rigidity theorem.
 
 ---
 
-## 5. Novelty and literature position
+## 5. Computational evidence
 
-The current literature audit is materially better than the one available at r60. It recognizes the following distinct antecedent layers:
+The v94 executable accepts a supplied rational spectrum, rank cuts and rational deformation parameter. It computes the water-filled majorant exactly, isolates the secular root with rational bisection, and returns certified intervals for the communicated value, no-message value and their difference.
 
-1. pure-state majorization and finite ensemble transformations, including Nielsen and Jonathan–Plenio;
-2. Schur–Horn, doubly stochastic decompositions and concave spectral roofs;
-3. entanglement-of-assistance and related assisted convex/concave roofs;
-4. filtered-swap and antisymmetric tests;
-5. constrained-memory quantum channel discrimination, including Ohst–Zhang–Nguyen–Plávala–Quintino;
-6. recent bounded coherent-memory and multi-time process discrimination, including Zonnios–Binder; and
-7. the earlier Bures, reset-width and channel-metrology antecedents already discussed in the manuscript.
+The suite records 755 exact checks, 600 deterministic numerical sanity checks and 12 rejection controls, in addition to the inherited suites. Ordinary and optimized Python outputs agree.
 
-I do not see in these sources the exact submitted formula for the once-selected finite measurement family, its least-majorant secular roof, or the sharp message criterion at fixed initial Gram. But the underlying mathematical mechanism is close to classical majorization/assistance technology, and the memory-resource question has an active recent literature. An author-side audit cannot settle priority. A written assessment by an independent specialist familiar with both quantum combs and majorization roofs is still required before any strong firstness claim.
+The executable does **not**:
 
-The paper should avoid claiming that it classifies the value of communication or quantum memory in general. Its defensible novelty is narrower and still significant:
+- estimate an unknown spectrum from device calls;
+- verify that a physical laboratory instrument realizes the common-barycenter decomposition;
+- synthesize an efficient general receiver;
+- prove the continuum theorem by finite tests;
+- establish optimal constants outside the stated game; or
+- supply independent priority clearance.
 
-- an exact rank-resolved operational value for the specific finite shared-device game;
-- a singular-safe leaf optimization;
-- an explicit rank-capped spectral roof;
-- a finite attained normal form preserving a prescribed pure acquisition; and
-- an iff criterion for receiver-to-source communication gain within that interface.
+The manuscript and machine-readable flags correctly preserve these limits.
 
 ---
 
-## 6. Computation and finite evidence
+## 6. Literature and priority
 
-`spectral_value.py` accepts a supplied rational spectrum, dimensions `k,l`, deformation `t` and a bisection bit count. It:
+The current comparison now acknowledges the relevant traditions:
 
-- rejects floats, booleans, illegal spectra and illegal dimensions;
-- constructs the rational water-filled majorant exactly;
-- brackets the secular root by rational bisection;
-- returns score and gain intervals;
-- implements the same strict-gain criterion as the theorem; and
-- explicitly states that the spectrum is supplied rather than measured.
+- concave roofs and assistance-type optimizations;
+- finite-dimensional majorization and Schur–Horn/Birkhoff convexity;
+- swap/partial-transpose and negativity calculations;
+- constrained classical and quantum memory in channel discrimination;
+- coherent-memory-dimension resource measures; and
+- adaptive versus nonadaptive channel discrimination.
 
-It does not reconstruct an unknown device, find an eigenbasis, certify physical reset independence, synthesize the receiver instrument, prove the continuum theorem, or establish priority. These limitations are correctly machine-readable.
+The manuscript should not claim first introduction of concave-roof optimization, majorization-based ensemble construction, memory restrictions or filtered-swap spectral analysis. Its plausible novelty lies in the exact synthesis for the prescribed-initial-spectrum reset game, the rank-capped least-majorant evaluation, the finite implementer and the sharp message criterion.
 
-The executable is useful reproducibility evidence. The manuscript should state arithmetic-operation and bit-length growth separately. A bisection count of `B` gives an interval width controlled by `2^{-B}` only after the normalization and initial bracket are fixed; the size of rational numerators and denominators grows with `B`. Calling the procedure “efficient” without this qualification would be misleading.
-
-The build receipt reports 36 regression suites, ordinary/optimized identity, isolated native rebuild, standalone journal reconstruction and no unresolved references or citations. This supports source integrity and catches implementation regressions. It does not prove the majorization theorem or the physical operational model.
+An author-side targeted comparison and unsuccessful search for an identical formula are not independent priority clearance. Before a strong novelty statement is made, a specialist familiar with finite-memory discrimination, entanglement assistance and rank-constrained matrix convexity should assess whether an equivalent roof evaluation or message criterion already appears in another language.
 
 ---
 
-## 7. Provenance assessment
+## 7. Why the four-leading-general-journal threshold is not met
 
-The release chain is substantially cleaner than the v88 object reviewed previously.
+### 7.1 Speciality of the exact game
 
-- `24f48c...` is the qualified native source.
-- `0919ff...` is the artifact publication.
-- `db6739...` is the current exact final head containing review metadata and the exact-head receipt.
-- Run `37436686847` checked out `db6739...` without persisted write credentials and reconstructed the published package read-only.
+The theorem is exact because the experiment has unusually strong structure: a finite basis family, reuse of one latent basis, two calls, a particular block form, a prescribed prior, a pure initial Gram state and dimension cuts that reduce to one active rank. The result does not presently survive as an explicit formula for a generic pair of measurements or channels.
 
-The paper must keep these identities distinct. The successful exact-final-head run is attached to the final branch head, not directly to the artifact publication SHA. It verifies the final head and the publication object referenced from it; it should not be described as a workflow whose triggering SHA was `0919ff...`.
+### 7.2 General result remains variational
 
-The native and publication commits are unsigned. Git object identity, checksums, read-only reconstruction and Actions logs establish reproducibility and provenance of bytes, not verified human authorship or independent mathematical certification.
+For arbitrary two-call reset experiments, the manuscript has an exact variational principle and dual, but not a universal closed form or classification. The v94 formula evaluates one important family inside that general framework.
 
-The numerically later v95 transport branch must not be listed as a completed revision until its payload has been fully materialized, source-qualified, built and exact-head verified. A branch number is not a publication state.
+### 7.3 No general memory hierarchy
+
+The paper does not classify bounded quantum memory across arbitrary horizons, bounded classical memory, mixed initial resources, coherent communication across nominal reset boundaries, networks or indefinite causal order. Nor does it prove an arbitrary fixed-pair separation between every adjacent resource class.
+
+### 7.4 Local geometry remains nonuniform
+
+The inherited tangent-tube theorems are fixed-base, fixed-direction and fixed-remainder statements. Their constants may degenerate near changing support or collapsing correction gaps. They do not yet give a global bi-Lipschitz or stratified metric geometry of the whole ordered-POVM body.
+
+### 7.5 Broader statistical programme remains open
+
+Full-boundary entropy, common learning, sharp growing-outcome minimax laws, efficient dictionaries, general recovery synthesis and collective-readout synthesis remain separate problems.
+
+### 7.6 Conceptual mechanisms are established
+
+Helstrom optimization, majorization, concave roofs, finite convex decompositions, secular rank-one perturbations and memory-constrained discrimination are established mechanisms. The manuscript uses them effectively, but the conceptual displacement is not yet of general-journal scale.
 
 ---
 
-## 8. Required revisions before specialist submission
+## 8. Required revisions for a specialist-journal submission
 
-### R1 — Extract the finite-game paper
+### R01 — Freeze the actual review object
 
-Create a standalone journal object centered on v90–v94: the shared finite family, operational hierarchy, common-barycenter normal form, rank cuts, fixed spectra, exact value and communication gain. Do not require a reader to traverse the full historical geometry corpus.
+State explicitly that v94 at `db6739...` is the latest complete reviewable object and that the higher-numbered v95 branch is incomplete source transport. Do not use “latest revision” for an unmaterialized transport branch.
 
-### R2 — Put the complete interface on page one
+### R02 — Put the cumulative theorem chain on page one
 
-State the fixed prior, once-selected latent basis, two calls, fixed pure initial Gram, rank cuts, permitted receiver message, final joint readout and no-message comparator before displaying the theorem.
+The abstract and introduction should explain the sequence:
 
-### R3 — State the two exact values together
+```text
+common-barycenter variational principle
+-> rank-resolved cuts
+-> fixed-spectrum optimal face and rigidity
+-> exact prescribed-spectrum value
+-> exact receiver-message criterion.
+```
 
-Place `P^b_{k,l}(rho)` and `P^nm_{d,r}(rho)` together, followed immediately by the iff gain criterion and saturation cases.
+The novelty is this cumulative chain, not the isolated secular equation.
 
-### R4 — Explain why the initial Gram cannot be classically resolved
+### R03 — Separate the general and special results
 
-Give an explicit one-paragraph warning that an ensemble decomposition of `rho` used to select distinct first acquisitions changes the experiment and is not allowed.
+Distinguish visibly between:
 
-### R5 — Expand the singular leaf proof
+1. the exact variational/dual theorem for arbitrary two-call reset experiments; and
+2. the closed spectral formula for the engineered shared-basis game.
 
-Isolate support compression, pseudoinverse convention, commuting optimizer and equality conditions. Avoid relying on a reader to reconstruct these from several inherited lemmas.
+Do not let readers infer that every two-call memory problem has the displayed formula.
 
-### R6 — Expand the roof proof
+### R04 — Define the least rank-capped majorant once and canonically
 
-State the majorization direction, least-majorant property, Ky Fan/Jensen upper and finite commuting Schur–Horn/Birkhoff attainment in one self-contained theorem.
+Give a formal definition of `q^(r)`, its water-level construction, uniqueness, support convention and minimal-majorant property before its first theorem use.
 
-### R7 — Close the countable-outcome presentation
+### R05 — Expand the leaf lemma
 
-State explicitly why the general instrument class is covered and why finite `d`-outcome attainment loses no value.
+State the filtered-swap operator, trace convention, rank convention, singular support case, secular equation and optimizer normalization in one self-contained result.
 
-### R8 — Sharpen strictness at the boundary
+### R06 — Define the homogeneous extension before use
 
-Separate `r=1`, `2<=r<rank(rho)`, `r>=rank(rho)`, support-one spectra, zero padding and `t=0`. State the exact boundary version of strict Schur-concavity used.
+The converse uses superadditivity of the homogeneous extension of the concave functional. Define that extension and prove the needed superadditivity before the theorem proof invokes it.
 
-### R9 — Move the `d=3` gain example into the main text
+### R07 — Isolate the no-message postponement lemma
 
-Use it to distinguish fixed-initial-Gram message gain from global optimization over the initial acquisition.
+Prove as a named lemma that common processing can be postponed in the no-message class, and identify exactly which stored systems remain available at final readout.
 
-### R10 — Add theorem-level literature comparison
+### R08 — Clarify weights and probabilities
 
-Compare exact assumptions and conclusions with majorization transformations, assisted roofs, constrained-memory channel discrimination and recent bounded-memory process discrimination. Do not rely on broad thematic citations.
+The branch trace weights sum to `d`, while normalized public probabilities sum to one. Use separate notation and repeat the normalization at the variational theorem and the finite implementer.
 
-### R11 — Obtain independent specialist priority review
+### R09 — Separate prior-dependent formulas
 
-Repository chronology, targeted search and successful finite tests are not a priority opinion.
+The v94 closed form is biased-prior. The equal-prior rank formula belongs to an earlier globally optimized theorem. Do not combine them into a prior-independent “memory law.”
 
-### R12 — State computational complexity honestly
+### R10 — Clarify the finite decomposition bound
 
-Separate exact rational correctness, arithmetic-operation count, bit-length growth, physical design synthesis and unknown-spectrum estimation.
+Explain why at most `d` outcomes suffice in the commuting construction, rather than merely citing an unrestricted Carathéodory bound.
 
-### R13 — Keep provenance identities distinct
+### R11 — Treat eigenvalue ties explicitly
 
-Identify native source, publication object and exact final head separately in every release document.
+State how the leaf optimizer and the finite decomposition behave when the `r`th eigenvalue is repeated. Value invariance is clear, but optimizer nonuniqueness should be acknowledged.
 
-### R14 — Resolve or retire the incomplete v95 transport branch
+### R12 — Strengthen theorem-level literature comparison
 
-Materialize and qualify it, or mark it unambiguously as an incomplete transport. It must not displace v94 in “latest completed manuscript” statements.
+Compare the actual optimization objects, feasible decompositions, rank restrictions and losses in the concave-roof, majorization, negativity and finite-memory antecedents. Bibliographic proximity is not enough.
 
-### R15 — Separate the wider Theta programme
+### R13 — Obtain independent specialist priority assessment
 
-Do not use the complete edition, structural companion or unrelated A/B/C/D programme as a significance multiplier for the spectral theorem.
+No repository chronology, build identity or regression suite can replace an independent assessment of mathematical priority.
+
+### R14 — Extract the specialist paper
+
+A 78-page primary carrying many generations of retained results is too diffuse. A specialist submission should center the v90–v94 finite-game chain and move most historical coding, learning and preservation material to the linked supplement or archive.
+
+### R15 — Correct release semantics
+
+Use the exact identities:
+
+```text
+native theorem source: 24f48c...
+artifact publication:  0919ff...
+review/exact-head:      db6739...
+read-only run/job:      37436686847 / 112180114437.
+```
+
+The read-only run verifies `db6739...`; it is not a direct run on `0919ff...`. Legacy combined-status lists are empty and should not be represented as populated.
+
+### R16 — Resolve the promised review alias
+
+If documentation promises a `review-ready` alias, create it and pin it, or remove the promise. A reader should not have to infer the review head from chronology.
+
+### R17 — Clean up v95 transport staging
+
+Complete, validate and publish the transport, or mark the branch unambiguously as incomplete staging. Do not let automated “latest branch” selection choose it as a manuscript.
+
+### R18 — Preserve wider-pipeline separation
+
+Continue to state that the finite measurement theorem does not close the historical A2 replacement, B4, C2, eleven-paper or whole-programme aggregates.
 
 ---
 
 ## 9. Detailed comments
 
-### D1 — Meaning of `rank-r`
+### D01 — Rank means “at most”
 
-Use “rank at most `r`” consistently. The water-filled majorant may have smaller rank when zero tails occur.
+Use `rank<=r` consistently. Exact rank is not required, and zero padding is used at singular points.
 
-### D2 — Ordering of eigenvalues
+### D02 — Endpoint `t=0`
 
-State once that `lambda_1>=...>=lambda_d>=0` and keep that convention in the executable documentation and examples.
+State next to the strict-gain theorem that all values collapse to the baseline at `t=0`.
 
-### D3 — Definition of `chi`
+### D03 — Endpoint `r=1`
 
-Give both the matrix definition and the secular equation, including the support-size-one convention.
+The secular value is zero. This should be visible in the theorem statement rather than left to a convention several pages earlier.
 
-### D4 — Homogeneity
+### D04 — Initial rank one
 
-Specify whether homogeneity is used on subnormalized positive Gram operators before the trace-one spectral roof.
+A pure Gram spectrum saturates immediately; messages cannot improve the value. This is a useful sanity check.
 
-### D5 — Strict Schur-concavity
+### D05 — Full active rank
 
-State precisely the domain on which strictness holds modulo permutations and zero padding.
+When `r>=rank(rho)`, `q^(r)(lambda)=lambda` and the communicated/no-message values agree. State the identity explicitly.
 
-### D6 — Water-filling index
+### D06 — Matrix versus root definitions of `chi`
 
-Give the unique stopping-index characterization and explain the equality case at a plateau.
+Prove their equivalence once and use one notation thereafter. The matrix definition handles boundaries; the root definition handles computation.
 
-### D7 — Gram weights
+### D07 — Zero coordinates
 
-Do not call `tr A_{y,h}` branch probabilities without qualification. They are common Gram weights in the barycenter identity.
+Terms with `u_i=0` should be removed from the secular sum before uniqueness is asserted.
 
-### D8 — Null branches
+### D08 — Strict Schur concavity
 
-State that zero-weight atoms are omitted and that all formulas extend continuously to singular endpoints.
+List the exact equality cases. Proportionality and one-point support are boundary exceptions.
 
-### D9 — Same instrument after every label
+### D09 — Water level
 
-Highlight this stronger attainment feature in the theorem statement, not only in the proof audit.
+Give the index-selection rule for the water level and verify continuity as the active set changes.
 
-### D10 — Fresh-state dependence
+### D10 — Leading-eigenspace ties
 
-The message-gain construction does not require first-device-label dependence of the fresh state. This is conceptually useful and deserves a sentence in the introduction.
+Avoid language suggesting a canonical optimizer when the leading spectral subspace is degenerate.
 
-### D11 — No-message class
+### D11 — Factor one half
 
-Repeat that the no-message class still permits dependence on the first device label and public randomness. Otherwise readers may confuse it with v90 classical adaptation.
+Keep the factor connecting negative filtered-swap mass to Bayes improvement visible in every transition.
 
-### D12 — Globally optimized acquisition
+### D12 — Trace norm convention
 
-Explain why the no-feedback global attainments from v93 are compatible with positive fixed-Gram message gain in v94.
+The broader paper uses unhalved trace separation, while Bayes formulas introduce their own halves. Repeat conventions at the finite game.
 
-### D13 — Endpoints in `t`
+### D13 — Pseudoinverse
 
-State separately what remains at `t=0` and how the formulas extend to `t=1`.
+Specify that the support pseudoinverse is taken on `supp(rho)` and that the constructed instrument vanishes on the orthogonal complement before completion.
 
-### D14 — Dimension cuts
+### D14 — Common instrument across labels
 
-The value depends on `min(k,l)`, but the physical interpretations of old and fresh cuts differ. Do not describe them as interchangeable resources beyond this game.
+This strengthening is interesting and should be highlighted as a corollary, not buried in the attainment proof.
 
-### D15 — Attainment cardinality
+### D15 — At most `d` messages
 
-Give the precise finite-convexity reason for the `d`-outcome bound and whether `d` is sharp.
+Give the actual convexity argument producing this cardinality.
 
-### D16 — Eigenbasis knowledge
+### D16 — No-message versus classical adaptation
 
-The mathematical optimizer may use an eigenbasis of a supplied `rho`. This does not imply an efficient unknown-state or unknown-device procedure.
+These are different resource classes. Add a small inclusion diagram.
 
-### D17 — Exact bisection
+### D17 — Fixed-Gram versus global optimum
 
-The executable brackets the value; except for special algebraic inputs it does not return a closed-form root. Use “certified interval” rather than “exact decimal value.”
+A positive fixed-Gram message gain is compatible with a globally optimized strategy that needs no feedback. Repeat this qualification near the operational interpretation.
 
-### D18 — Build evidence
+### D18 — Biased versus equal prior
 
-Keep regression counts out of mathematical theorem statements. They belong in reproducibility material.
+Do not use one formula as evidence for the other without restating the objective.
 
-### D19 — Historical labels
+### D19 — Example
 
-The active source sequence is long. A focused paper should renumber its theorems rather than exposing historical section numbers 82–87.
+The `d=3,r=2` spectrum `(3/4,1/8,1/8)` is useful; include the actual two values or their certified intervals in the primary text.
 
-### D20 — Editorial claim
+### D20 — Real spectra
 
-“General Theta Foundations” is much broader than the submitted finite-game theorem. The specialist article title should describe the exact operational and spectral content.
+The theorem is analytic for arbitrary real spectra. Rationality belongs only to the executable interface.
+
+### D21 — Numerical bisection
+
+Report an interval certificate, not a floating-point point estimate, when the secular root is irrational.
+
+### D22 — Physical synthesis
+
+Existence of a finite receiver instrument does not give an efficient circuit. Preserve this distinction.
+
+### D23 — Spectrum acquisition
+
+The script assumes the spectrum as input. It is not a tomography or learning algorithm.
+
+### D24 — Page length
+
+The primary should be shortened sharply for journal submission. Preservation concerns should not determine the journal-facing organization.
+
+### D25 — Bibliography
+
+Consolidate duplicate historical bibliographies and make the current comparison the sole journal-facing priority map.
+
+### D26 — Theorem numbering
+
+A reader should not need the complete 289-page edition to identify the v90–v94 dependency chain. Add a current theorem map.
+
+### D27 — Build evidence
+
+Keep the PDF hashes and source identities, but move long regression inventories out of the mathematical narrative.
+
+### D28 — Status language
+
+Use “verified by the source-bound read-only reconstruction” rather than “approved,” “certified mathematics,” or “independently accepted.”
+
+### D29 — Unsigned commits
+
+Object identity is not human authorship authentication. The current package correctly avoids that claim; preserve the distinction.
+
+### D30 — Open programme
+
+Do not use the size of the archive or the existence of many prior sections as a significance multiplier for this submission.
 
 ---
 
-## 10. Final disposition
+## 10. Verification and interpretive boundary
 
-The new theorem is mathematically serious. It gives an exact prescribed-spectrum value, a finite attained optimizer, a sharp rank threshold and a precise operational value for a receiver-to-source message. It closes the main mathematical question left by the v90–v93 sequence, and I found no fatal gap in the proof architecture inspected.
+The source/build package is unusually careful. The native source was isolated, the publication artifacts were rebuilt, inherited source was preserved, 36 suites were executed under ordinary and optimized Python, and the exact review head was reconstructed read-only by run `37436686847`, job `112180114437`.
 
-It does not, however, classify general memory-constrained quantum discrimination, establish global ordered-measurement geometry, or replace the standard majorization and concave-roof frameworks on which its spectral argument rests. The manuscript is also burdened by a very large historical package whose breadth is not the same as conceptual breadth of the new theorem.
+These facts establish a strong relationship among repository objects and finite computations. They do not establish:
 
-My recommendation at the four leading general mathematics journals is therefore **reject**, explicitly on significance, scope and editorial-focus grounds rather than on correctness. A substantially extracted v90–v94 article would be a strong specialist-journal submission after the revisions above.
+- formal proof-assistant verification;
+- independent mathematical priority;
+- verified human authorship;
+- physical realization of the reset condition;
+- efficient quantum-control synthesis;
+- arbitrary-pair or arbitrary-horizon generalization; or
+- closure of the wider Theta programme.
 
-This report is an author-requested, repository-pinned external assessment. It is not a commissioned journal decision, a formal proof-assistant certificate, a verified human-priority opinion or an endorsement of the wider Theta programme.
+## Final disposition
+
+The v94 spectral theorem is mathematically serious, appears correct in the load-bearing portions inspected, and materially improves the paper. It should be preserved and developed. My negative recommendation is specifically a judgment about the breadth, priority clearance and conceptual scale required by the four leading general mathematics journals.
+
+For a leading specialist journal, I would recommend **major revision**, centered on a shorter self-contained v90–v94 article, a sharper theorem-level priority comparison, exact release semantics and a cleaner separation between the general variational theorem and the engineered closed form.
