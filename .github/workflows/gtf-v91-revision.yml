@@ -11,7 +11,7 @@ permissions:
   contents: read
 concurrency:
   group: gtf91-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   publish:
     if: ${{ !contains(github.event.head_commit.message, 'verify-final-head') }}
@@ -39,6 +39,7 @@ jobs:
         run: |
           set -euo pipefail
           python tools/gtf91/stage.py
+          python tools/gtf91/enrich.py
           PAPER=papers/GTF-I-v91-reset-variational
           python "$PAPER/build_revision.py" --check-source > /tmp/gtf91-source-check.json
           python "$PAPER/reset_variational_check.py" > /tmp/gtf91-variational-check.json
@@ -53,7 +54,7 @@ jobs:
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           PAPER=papers/GTF-I-v91-reset-variational
           git add "$PAPER"
-          git commit -m 'revision(GTF-I v91): general reset variational principle, duality and equal-prior hierarchy'
+          git commit -m 'revision(GTF-I v91): general receiver envelopes, exact duality and equal-prior hierarchy'
           SOURCE=$(git rev-parse HEAD)
           echo "$SOURCE" > /tmp/gtf91-native-sha.txt
           python "$PAPER/build_revision.py" --isolated > /tmp/gtf91-build.json
