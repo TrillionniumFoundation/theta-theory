@@ -1,0 +1,114 @@
+name: GTF-I v94 spectral-value revision and exact-head reconstruction
+on:
+  push:
+    branches: [revision/general-theta-foundations-i-v94-r60-spectral-value-2026-10-06]
+    paths:
+      - '.github/workflows/gtf-v94-revision.yml'
+      - 'tools/gtf94/**'
+      - 'GENERAL_THETA_FOUNDATIONS_I_V94_FINAL_HEAD_REQUEST.json'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: gtf94-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: ${{ !contains(github.event.head_commit.message, 'verify-final-head') }}
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          ref: ${{ github.sha }}
+      - name: Install pinned Python dependencies
+        run: python -m pip install --disable-pip-version-check pymupdf==1.26.7 sympy==1.14.0 numpy==2.3.5
+      - name: Stage and push the exact native source
+        env:
+          REVISION_BRANCH: revision/general-theta-foundations-i-v94-r60-spectral-value-2026-10-06
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python tools/gtf94/stage.py
+          PAPER=papers/GTF-I-v94-spectral-value
+          python "$PAPER/build_revision.py" --check-source > /tmp/gtf94-source-check.json
+          git config user.name 'GTF revision automation'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$PAPER"
+          git commit -m 'revision(GTF-I v94): exact prescribed-spectrum values, rank roofs and strict receiver-message advantage'
+          SOURCE=$(git rev-parse HEAD)
+          echo "$SOURCE" > /tmp/gtf94-native-sha.txt
+          test "$(git ls-remote origin refs/heads/$REVISION_BRANCH | cut -f1)" = "$GITHUB_SHA"
+          git push origin HEAD:"refs/heads/$REVISION_BRANCH"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gtf94-native-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            papers/GTF-I-v94-spectral-value
+            /tmp/gtf94-source-check.json
+            /tmp/gtf94-native-sha.txt
+          if-no-files-found: warn
+      - name: Install manuscript tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq texlive-latex-extra texlive-fonts-recommended lmodern
+      - name: Reconstruct and publish source-bound manuscripts
+        env:
+          REVISION_BRANCH: revision/general-theta-foundations-i-v94-r60-spectral-value-2026-10-06
+        run: |
+          set -euo pipefail
+          PAPER=papers/GTF-I-v94-spectral-value
+          SOURCE=$(cat /tmp/gtf94-native-sha.txt)
+          test "$(git rev-parse HEAD)" = "$SOURCE"
+          python "$PAPER/build_revision.py" --isolated > /tmp/gtf94-build.json
+          git add -f "$PAPER/evidence" "$PAPER/paper.pdf" "$PAPER/BINARY_SUPPLEMENT.pdf" "$PAPER/STRUCTURAL_PAPER.pdf" "$PAPER/COMPLETE_REVISION.pdf"
+          git commit -m 'publication(GTF-I v94): four manuscripts, 36 regression suites and isolated reconstruction evidence'
+          git rev-parse HEAD > /tmp/gtf94-publication-sha.txt
+          test "$(git ls-remote origin refs/heads/$REVISION_BRANCH | cut -f1)" = "$SOURCE"
+          git push origin HEAD:"refs/heads/$REVISION_BRANCH"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gtf94-publication-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            papers/GTF-I-v94-spectral-value
+            /tmp/gtf94-*.json
+            /tmp/gtf94-*-sha.txt
+          if-no-files-found: warn
+  final-head:
+    if: ${{ contains(github.event.head_commit.message, 'verify-final-head') }}
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 6
+          persist-credentials: false
+          ref: ${{ github.sha }}
+      - name: Install pinned read-only reconstruction tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq texlive-latex-extra texlive-fonts-recommended lmodern
+          python -m pip install --disable-pip-version-check pymupdf==1.26.7 sympy==1.14.0 numpy==2.3.5
+      - name: Reconstruct the exact triggering head without write credentials
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python papers/GTF-I-v94-spectral-value/build_revision.py --verify-published > /tmp/gtf94-FINAL_HEAD.json
+          python - <<'PY'
+          import json,os
+          x=json.load(open('/tmp/gtf94-FINAL_HEAD.json'))
+          if not (x['verified_head']==os.environ['GITHUB_SHA'] and x['read_only'] and x['status']=='success'):
+              raise RuntimeError('Exact-head reconstruction identity failed')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gtf94-exact-final-head-${{ github.sha }}
+          path: /tmp/gtf94-FINAL_HEAD.json
+          if-no-files-found: error
