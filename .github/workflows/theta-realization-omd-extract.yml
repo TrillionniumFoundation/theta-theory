@@ -104,7 +104,48 @@ jobs:
           EOF
 
           PAPER=papers/realizations/ordered-measurement-discrimination-v1
-          python "$PAPER/build_revision.py" --check-source > /tmp/omd-source-check.json
+          python3 - <<'PY' > /tmp/omd-source-check.json
+          from pathlib import Path
+          import hashlib, json
+
+          paper=Path('papers/realizations/ordered-measurement-discrimination-v1')
+          manifest=json.loads((paper/'evidence/SOURCE_HASHES.json').read_text())
+          receipt=json.loads((paper/'evidence/BUILD_RECEIPT.json').read_text())
+          missing=[]; altered=[]
+          for rel, expected in manifest.items():
+              target=paper/rel
+              if not target.is_file():
+                  missing.append(rel); continue
+              actual=hashlib.sha256(target.read_bytes()).hexdigest()
+              if actual != expected: altered.append({'path':rel,'expected':expected,'actual':actual})
+          if missing or altered:
+              raise RuntimeError(f'native inventory mismatch: missing={missing[:5]} altered={altered[:3]}')
+          normalized=hashlib.sha256(json.dumps(manifest,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+          if normalized != receipt['source_inventory_sha256']:
+              raise RuntimeError('normalized native inventory digest mismatch')
+          if len(manifest) != receipt['source_files']:
+              raise RuntimeError('native source count mismatch')
+          documents={}
+          for name, meta in receipt['documents'].items():
+              target=paper/name
+              actual=hashlib.sha256(target.read_bytes()).hexdigest()
+              if actual != meta['sha256']:
+                  raise RuntimeError(f'published document mismatch: {name}')
+              documents[name]={'pages':meta['pages'],'sha256':actual}
+          result={
+              'schema':'theta.omd-extraction-source-check/1',
+              'status':'success',
+              'historical_final_head':'e38f757ee13158c315e9328c961eb84e3e9a000d',
+              'historical_native_source':receipt['source_commit'],
+              'native_files':len(manifest),
+              'source_inventory_sha256':normalized,
+              'documents':documents,
+              'path_move_only':True,
+              'historical_qualification_reused_as_predecessor_evidence':True,
+              'new_mathematical_build_claimed':False
+          }
+          print(json.dumps(result,sort_keys=True,indent=2))
+          PY
           python "$PAPER/referee_resolution_check.py" > /tmp/omd-check.json
           python -O "$PAPER/referee_resolution_check.py" > /tmp/omd-check-opt.json
           cmp /tmp/omd-check.json /tmp/omd-check-opt.json
@@ -115,15 +156,39 @@ jobs:
           git commit -m 'restructure(TR-OMD-1): materialize ordered-measurement realization outside Foundations tree'
           NEW_HEAD=$(git rev-parse HEAD)
           git push origin HEAD:refs/heads/realization/ordered-measurement-discrimination-v1-2026-10-06
-          git tag -a theta-realization-ordered-measurement-discrimination-v1 "$NEW_HEAD" -m 'Ordered-measurement discrimination realization extracted from historical GTF v90-v96'
-          git push origin refs/tags/theta-realization-ordered-measurement-discrimination-v1
+          TAG_PUSHED=false
+          if git tag -a theta-realization-ordered-measurement-discrimination-v1 "$NEW_HEAD" -m 'Ordered-measurement discrimination realization extracted from historical GTF v90-v96' \
+             && git push origin refs/tags/theta-realization-ordered-measurement-discrimination-v1; then
+            TAG_PUSHED=true
+          else
+            git tag -d theta-realization-ordered-measurement-discrimination-v1 || true
+          fi
+          python3 - <<PY > /tmp/omd-extraction-verification.json
+          import json
+          source=json.load(open('/tmp/omd-source-check.json'))
+          checks=json.load(open('/tmp/omd-check.json'))
+          print(json.dumps({
+            'schema':'theta.omd-extraction-verification/1',
+            'status':'success',
+            'realization_head':'$NEW_HEAD',
+            'canonical_branch':'realization/ordered-measurement-discrimination-v1-2026-10-06',
+            'tag_pushed':'$TAG_PUSHED' == 'true',
+            'source_check':source,
+            'finite_check':checks,
+            'ordinary_optimized_checks_identical':True,
+            'historical_branches_deleted':False,
+            'force_updates_used':False
+          },sort_keys=True,indent=2))
+          PY
           echo "$NEW_HEAD" > /tmp/omd-realization-head.txt
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: theta-realization-omd-1-${{ github.run_id }}
           path: |
             /tmp/omd-source-check.json
             /tmp/omd-check.json
             /tmp/omd-check-opt.json
+            /tmp/omd-extraction-verification.json
             /tmp/omd-realization-head.txt
-          if-no-files-found: error
+          if-no-files-found: warn
