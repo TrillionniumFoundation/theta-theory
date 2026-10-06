@@ -1,0 +1,339 @@
+\section{The joint cost of dimension, horizon, and confidence}
+\label{sec:confidencelearning80}
+
+The fixed-confidence interior law has a sharp extension to arbitrary
+confidence.  The dependence on dimension and on the confidence
+logarithm is additive after their respective dimensional factors are
+included.  In this section the unknown measurement is still ordered,
+binary, consuming, and classical-output.  Put
+$\mathfrak I_d=\{E:I_d/4\preceq E\preceq3I_d/4\}$ as in
+Section~\ref{sec:interiorcoding79}.  Logarithms in call bounds are
+natural unless indicated otherwise.
+
+\begin{theorem}[Uniform interior learning at every confidence]
+\label{thm:interiorconfidence80}
+There are absolute $c,C>0$ such that, for every $d,N\ge1$,
+$0<\delta\le2^{-13}$, and $0<\eta\le1/8$, the minimax
+every-record call budget for
+\begin{equation}\label{eq:interiorconfidencerisk80}
+ \sup_{E\in\mathfrak I_d}
+ \mathbb P_E\{d_N(\mathcal M_E,\mathcal M_{\widehat E})>\delta\}
+ \le\eta
+\end{equation}
+is between
+\begin{equation}\label{eq:interiorconfidence80}
+ c\,\frac{N}{\delta^2}
+       \left(d^2+d\log\frac1\eta\right)
+ \quad\hbox{and}\quad
+ C\,\frac{N}{\delta^2}
+       \left(d^2+d\log\frac1\eta\right).
+\end{equation}
+The lower bound permits arbitrary coherent adaptive training,
+references, quantum memory, and public bounded stopping.  The estimate
+may be any legal effect.  The upper bound uses independent one-call
+Choi preparations and collective processing of completed outputs.
+Consequently the same order, with absolute constants, holds for
+every fresh-block cap $1\le b\le N$.
+\end{theorem}
+
+The proof combines the dimension lower bound of
+Theorem~\ref{thm:dimensionlower78} with a separate confidence
+obstruction and an amplification of the estimator in \cite{MB67}.
+The latter procedure is the tomography primitive throughout; the
+amplification uses its dimension-dependent tail guarantee.
+
+\begin{lemma}[Confidence requires observations in every coordinate]
+\label{lem:diagonalconfidence80}
+In the parameter range of Theorem~\ref{thm:interiorconfidence80},
+every learner satisfying \eqref{eq:interiorconfidencerisk80} has
+\begin{equation}\label{eq:diagonalconfidence80}
+ M\ge\frac{dN}{6\cdot512^2\delta^2}\log\frac1\eta.
+\end{equation}
+This bound already holds when the unknown effects are diagonal in
+a fixed known basis.
+\end{lemma}
+\begin{proof}
+Set $\Delta=512\delta/\sqrt N\le1/16$ and consider
+\[
+ E_0=I/2,\qquad E_i=I/2+\Delta|i\rangle\langle i|,
+ \quad 1\le i\le d.
+\]
+All these effects belong to $\mathfrak I_d$.  For each pair
+$(E_0,E_i)$, repeating the input $|i\rangle$ gives Bernoulli
+parameters $1/2$ and $1/2+\Delta$.  The comparison quantity in
+Lemma~\ref{lem:bernoulliproduct75} satisfies
+\[
+ T_N\ge\tfrac12\sqrt N\,\Delta=256\delta.
+\]
+That lemma, together with $256\delta\le1$, therefore gives
+\begin{equation}\label{eq:diagonalseparation80}
+ d_N(\mathcal M_{E_0},\mathcal M_{E_i})\ge4\delta.
+\end{equation}
+
+We bound the information used to distinguish all these alternatives
+from the same null effect.  For a diagonal effect with entries
+$p_1,\ldots,p_d$, the reference-assisted output is unchanged if
+the input is first measured in the known basis, yielding $J=j$,
+and a Bernoulli bit of parameter $p_j$ is then drawn.  We retain
+the basis label in an extra register for the analysis.  Discarding
+it gives the original device, so any original learner, including
+its final estimate, is recovered by ignoring these extra registers.
+This is the diagonal classicalisation used in
+\cite[Lemma~IV.19]{MB67}; the following relative-entropy calculation
+also treats different quantum inputs under the two hypotheses.
+
+For an input-reference state $\rho_{AR}$, write
+$\tau_j=\langle j|\rho_{AR}|j\rangle$.  The revealed output is
+\[
+ \widetilde{\mathcal M}_{p}(\rho_{AR})
+ =\sum_{j=1}^d |j\rangle\langle j|\otimes
+      \bigl((1-p_j)|0\rangle\langle0|
+                 +p_j|1\rangle\langle1|\bigr)\otimes\tau_j.
+\]
+Let $\rho_0,\rho_i$ be arbitrary current input-reference states,
+where the reference includes all retained memory.  The common
+channel $\rho\mapsto\sum_j|j\rangle\langle j|\otimes\tau_j$
+cannot increase relative entropy.  Appending the coin conditional
+on $j$ adds its classical relative entropy with weight
+$\operatorname{tr}\tau_j^0$.  Thus the classical--quantum
+relative-entropy identity gives
+\begin{equation}\label{eq:diagonalchain80}
+ \begin{split}
+ D\bigl(\widetilde{\mathcal M}_{0}(\rho_0)
+       \,\big\|\,\widetilde{\mathcal M}_{i}(\rho_i)\bigr)
+ &\le D(\rho_0\|\rho_i)
+       +\kappa_\Delta\operatorname{tr}\tau_i^0,\\
+ \kappa_\Delta
+ &=D\bigl(\operatorname{Bern}(1/2)
+            \,\big\|\,\operatorname{Bern}(1/2+\Delta)\bigr)\\
+ &=-\tfrac12\log(1-4\Delta^2)\le3\Delta^2 .
+ \end{split}
+\end{equation}
+The subscript on $\widetilde{\mathcal M}$ now denotes the
+hypothesis.  This calculation uses no equality or independence
+assumption for $\rho_0,\rho_i$.  Starting from the common initial
+state, it also establishes finite relative entropy at every stage.
+
+Keep each revealed label without feeding it into the original
+controls.  All intervening operations, including classically
+controlled or coherent ones, are common channels.  Pad a stopped
+record to its every-record cap $M$ using ignored dummy calls.
+Let $T_i$ count the revealed labels equal to $i$ among these $M$
+calls, and let $\Omega_0,\Omega_i$ denote the complete final states
+with the extra labels retained.  Iterating
+\eqref{eq:diagonalchain80} yields
+\[
+ D(\Omega_0\|\Omega_i)\le3\Delta^2\mathbb E_0T_i,
+ \qquad
+ \sum_{i=1}^d\mathbb E_0T_i=M.
+\]
+The same null experiment appears for every $i$, which is essential
+for summing these inequalities.  General measurable records are
+included by the relative-entropy chain rule for classical--quantum
+states; no countability assumption on the learner's observations
+is required.
+
+By \eqref{eq:diagonalseparation80}, choose hypothesis $0$ precisely
+when the returned effect lies in its closed radius-$\delta$ ball.
+This is a common binary test with both errors $\alpha_i,\beta_i$
+at most $\eta$.  The test is measurable by the hybrid continuity
+bound for $d_N$.  Data processing to this test gives
+\[
+ \begin{split}
+ D(\Omega_0\|\Omega_i)
+ &\ge D\bigl(\operatorname{Bern}(1-\alpha_i)
+                  \,\big\|\,\operatorname{Bern}(\beta_i)\bigr)\\
+ &\ge(1-\eta)\log(1/\eta)-\log2
+ \ge\tfrac12\log(1/\eta),
+ \end{split}
+\]
+where $\eta\le1/8$ was used.  Summing over $i$ and substituting
+$\Delta$ proves \eqref{eq:diagonalconfidence80}.
+\end{proof}
+
+\begin{lemma}[Amplification using a dimension-dependent seed]
+\label{lem:binaryconfidenceupper80}
+For all $d\ge1$, $0<\epsilon\le1$, and $0<\eta\le1/8$,
+there is a common estimator on $\mathfrak E_d$ with legal output
+$F$ such that
+\begin{equation}\label{eq:binaryconfidenceupper80}
+ \sup_{E\in\mathfrak E_d}
+       \mathbb P_E\{\|F-E\|_{\rm op}>\epsilon\}\le\eta,\qquad
+ M\le C\epsilon^{-2}
+             \left(d^2+d\log\frac1\eta\right).
+\end{equation}
+The acquisition uses independent one-call input/reference pairs.
+The output is a Borel function of collective measurements on their
+completed outputs.
+\end{lemma}
+\begin{proof}
+Corollary~III.9 of \cite{MB67} gives a legal binary-effect estimator
+with operator error $u$ and failure $q$ using
+$O(u^{-2}(d^2+d\log(1/q)))$ calls when
+$q>4e^{-4d^2}$.  Choose the rational seed probability
+\[
+ q_d=2^{-3d}.
+\]
+It satisfies that strict condition for every $d\ge1$, since
+$4d^2-3d\log2-\log4>0$.  A seed run with $u=\epsilon/3$
+therefore costs at most $Cd^2\epsilon^{-2}$ calls.
+
+Let $k$ be the smallest positive odd integer with
+$k\ge2d^{-1}\log_2(1/\eta)$.  Make $k$ independent seed runs,
+obtaining legal effects $F_1,\ldots,F_k$.  Select the first index
+$j$ for which more than $k/2$ of the effects have operator distance
+at most $2\epsilon/3$ from $F_j$.  If there is no such index,
+return $F_1$.  Norm continuity and the fixed tie rule make this
+selection Borel, and it always returns a legal effect.
+
+If more than half the seed estimates are within $\epsilon/3$
+of $E$, a selectable index exists.  Every selectable index has a
+neighbour among these good estimates, and so its distance from
+$E$ is at most $\epsilon$.  The probability of at least $k/2$
+failed seeds is at most
+\[
+ 2^k q_d^{\,k/2}
+ =2^{k-3dk/2}\le2^{-dk/2}\le\eta.
+\]
+This proves the risk bound.  Since
+$k<2d^{-1}\log_2(1/\eta)+2$, the total call count has the order
+in \eqref{eq:binaryconfidenceupper80}.  Each seed uses fresh Choi
+preparations; all subsequent joint processing acts on completed
+outputs.  The amplification is a modification of the repetition
+option in \cite[Remark~III.4]{MB67}, with seed failure chosen at
+the dimension scale rather than fixed independently of $d$.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:interiorconfidence80}]
+Theorem~\ref{thm:dimensionlower78} gives
+$M\ge c_1d^2N\delta^{-2}$ throughout the stated range.
+Lemma~\ref{lem:diagonalconfidence80} supplies
+$M\ge c_2dN\delta^{-2}\log(1/\eta)$.
+The maximum of these two bounds is at least half their sum after
+decreasing the absolute constant, which proves the lower bound in
+\eqref{eq:interiorconfidence80}.
+
+For the upper bound apply Lemma~\ref{lem:binaryconfidenceupper80}
+at $\epsilon=\delta/(8\sqrt N)$.  On its good event,
+$\|F-E\|_{\rm op}\le\epsilon\le1/8$.  Since $E\in\mathfrak I_d$,
+Weyl's inequality puts both endpoints in $[I/8,7I/8]$.
+Lemma~\ref{lem:interiormetric78} gives
+$d_N(E,F)\le4\sqrt N\,\epsilon=\delta/2$.
+The call count is the required upper bound.  The procedure is in
+the fresh one-call class, whereas the lower bound imposed no
+restriction on coherent training.  This also proves the assertion
+for every fresh-block cap.
+\end{proof}
+
+For $d=1$, \eqref{eq:interiorconfidence80} reduces to
+$\Theta(N\delta^{-2}\log(1/\eta))$, the scalar order, because
+$\log(1/\eta)\ge\log8$.  For growing $d$, the confidence term
+becomes comparable to the dimension term when
+$\log(1/\eta)$ is of order $d$.
+
+\begin{corollary}[Binary operator-norm learning at every confidence]
+\label{cor:operatorconfidence80}
+For $d\ge1$, $0<\epsilon\le2^{-14}$, and $0<\eta\le1/8$,
+the minimax every-record call budget for operator-norm error
+$\epsilon$ on the complete ordered binary effect body is
+\begin{equation}\label{eq:operatorconfidence80}
+ \Theta\!\left(\epsilon^{-2}
+                   \left(d^2+d\log\frac1\eta\right)\right),
+\end{equation}
+with absolute constants.  The lower bound permits arbitrary
+coherent adaptive training; the upper bound uses independent Choi
+preparations and collective completed-output processing.
+\end{corollary}
+\begin{proof}
+The upper bound is Lemma~\ref{lem:binaryconfidenceupper80}.
+For the lower bound restrict to $\mathfrak I_d$ and use
+Theorem~\ref{thm:interiorconfidence80} with $N=1$ and
+$\delta=2\epsilon$, since $d_1(E,F)=2\|E-F\|_{\rm op}$.
+\end{proof}
+
+On the complete effect body, the confidence obstruction also
+combines with the independent-block obstruction.  For $d\ge2$,
+$1\le b\le N$, $0<\delta\le\min\{2^{-13},\delta_*\}$, and
+$0<\eta\le1/8$, Theorem~\ref{thm:blocklearning78} and the
+interior subfamily give
+\begin{equation}\label{eq:fullbodyconfidencelower80}
+ M_b^\star(d,N,\delta,\eta)
+ \ge c\delta^{-2}
+       \left[d^2N+\left(dN+\frac{N^2}{b}\right)\log\frac1\eta\right].
+\end{equation}
+A second upper construction follows from
+Lemma~\ref{lem:binaryconfidenceupper80} at operator accuracy
+$\epsilon=\delta/(2N)$.  The hybrid inequality
+$d_N(E,F)\le2N\|E-F\|_{\rm op}$ converts its good event to the
+required future loss.  It uses only fresh one-call preparations,
+so it is admissible for every block cap $b$.  Combining its public
+call budget with the construction in
+Theorem~\ref{thm:blocklearning78} gives, in the same parameter range,
+\begin{equation}\label{eq:fullbodyconfidenceupper80}
+ M_b^\star(d,N,\delta,\eta)
+ \le C\frac{N^2}{\delta^2}
+       \min\left\{d^2+d\log\frac1\eta,\,
+                    \frac{d^4}{b}\log\frac d\eta\right\}.
+\end{equation}
+The learner may choose the construction with the smaller public
+every-record budget before making any calls.  Both constructions
+are common to all unknown effects.  The two-sided bounds
+\eqref{eq:fullbodyconfidencelower80}--\eqref{eq:fullbodyconfidenceupper80}
+do not in general match when dimension and horizon grow together.
+
+\begin{corollary}[Jointly optimal learned descriptions at every confidence]
+\label{cor:interiorconfidencecode80}
+For $d,N\ge1$, rational $0<\delta\le2^{-13}$, and
+$0<\eta\le1/8$, one common learner on $\mathfrak I_d$ returns
+a fixed-length binary word whose public deterministic decoder is
+legal and satisfies \eqref{eq:interiorconfidencerisk80}, with
+\begin{equation}\label{eq:interiorconfidencecode80}
+ M=O\!\left(\frac{N}{\delta^2}
+                  \left(d^2+d\log\frac1\eta\right)\right),
+ \qquad
+ B=d^2\log_2(\sqrt N/\delta)+O(d^2).
+\end{equation}
+All constants are absolute.  Acquisition uses independent one-call
+Choi preparations, and encoding uses no additional device calls.
+Every learner with these risk and decoder conventions requires
+the lower call order in \eqref{eq:interiorconfidence80} and
+$B\ge d^2\log_2(\sqrt N/\delta)-11d^2$.
+\end{corollary}
+\begin{proof}
+Put $k_N=\lceil\sqrt N\rceil$.  Apply
+Lemma~\ref{lem:binaryconfidenceupper80} at
+$\epsilon=\delta/(64k_N)$ and failure $\eta$, and clip its legal
+output $F$ spectrally to $[I/4,3I/4]$, obtaining $T$.
+On the good event, Weyl's inequality gives
+$\|T-F\|_{\rm op}\le\epsilon$ and hence
+$\|T-E\|_{\rm op}\le2\epsilon$.
+This uses only the eigenvalue displacements of $F$ and does not
+assume operator-Lipschitz spectral clipping.  The interior
+comparison yields $d_N(E,T)\le\delta/8$.
+
+Use the exact dictionary of Theorem~\ref{thm:interiorcodec79}
+at the same $(d,N,\delta)$.  As in the proof of
+Theorem~\ref{thm:interiorlearnedcode79}, spectral clipping and
+the specified coordinate rounding give a Borel finite-valued
+index map, which can be incorporated into the final collective
+measurement.  The decoded centre satisfies
+$d_N(T,C)\le5\delta/16$, so its total error is at most
+$7\delta/16<\delta$ on the original good event.
+Thus the finite output does not increase the failure probability
+or supply an exact-real side channel to the decoder.
+
+The bound $k_N^2\le4N$ and Lemma~\ref{lem:binaryconfidenceupper80}
+give the call count.  Theorem~\ref{thm:interiorcodec79} gives the
+payload.  Conversely, a decoded word is an estimator, so
+Theorem~\ref{thm:interiorconfidence80} applies to its calls.
+For each target, positive success probability forces some decoded
+effect into its radius-$\delta$ ball.  The fixed decoder's range
+is therefore a cover, and Theorem~\ref{thm:interiorentropy79}
+gives the stated bit lower bound.
+\end{proof}
+
+These upper bounds use the ideal trusted tomography operations of
+\cite{MB67}.  The Borel finite readout is a statistical construction;
+it alone supplies no gate synthesis or reconstruction-time bound.
+The confidence parameter increases the required observations while
+the same public interior dictionary supplies the transmitted word.

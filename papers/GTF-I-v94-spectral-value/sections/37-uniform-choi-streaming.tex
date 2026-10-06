@@ -1,0 +1,238 @@
+\section{Uniform streaming from rational Choi descriptions}\label{sec:uniformchoi66}
+The preceding instrument description is not supplied with a Kraus
+factorization over the Gaussian rationals. Computing such a
+factorization is unnecessary for classical numerical trajectories. We now allow the
+matrix dimension and the entire rational instrument to be input to one
+program, rather than fixed constants of that program.
+
+\subsection{Description and exact update}
+Fix an encoding of finite lists of signed binary integers. A valid
+description consists of $d\ge2$, a positive semidefinite initial matrix with Gaussian-integer entries $P_0$ with trace $z_0>0$, and a finite command list. For each
+command $a$ it gives a positive integer $D_a$ and positive semidefinite matrices with Gaussian-integer entries $C_{a,y}$ of order $d^2$ such that
+\begin{equation}\label{eq:rationalchoi66}
+           \sum_y\operatorname{Tr}_d C_{a,y}=D_a I_d.
+\end{equation}
+A zero outcome is simply a zero Choi matrix. The associated instrument
+has input-first, unnormalized Choi blocks $C_{a,y}/D_a$ and initial state $P_0/z_0$.
+Let $S$ be the total encoded length, including dimensions, delimiters,
+command identifiers and all matrix entries. The entire description is
+retained and charged. In particular the longest identifier is at most
+$S$ bits and bounds the parser's temporary token store; a free external
+read-only description would define a different space model. For a stored numerator $P$ define
+\begin{equation}\label{eq:choiaction66}
+ (S_{a,y})_{\alpha\beta}
+       =\sum_{i,j=1}^d(C_{a,y})_{i\alpha,j\beta}P_{ij}.
+\end{equation}
+The indices in this formula are important: no conjugation or
+transposition of $P_{ij}$ is inserted.
+
+\begin{lemma}[Integral Choi trajectory update]\label{lem:choitrajectory66}
+In the input-first, unnormalized convention
+$J(\Phi)=\sum_{i,j}|i\rangle\langle j|\otimes\Phi(|i\rangle\langle j|)$,
+for positive semidefinite $P$ with Gaussian-integer entries the matrices in
+\eqref{eq:choiaction66} are positive semidefinite matrices with Gaussian-integer entries and
+\[
+                 \sum_y\tr S_{a,y}=D_a\tr P.
+\]
+The conditional outcome probabilities are
+$\tr S_{a,y}/(D_a\tr P)$, and the next normalized state is
+$S_{a,y}/\tr S_{a,y}$ on a positive-mass outcome.
+\end{lemma}
+\begin{proof}
+The Choi convention gives $S_{a,y}=D_a\Phi_{a,y}(P)$, so positivity
+follows from complete positivity, and integrality follows from the
+entry formula. Taking traces and using \eqref{eq:rationalchoi66}
+gives the identity. The scalar factors $D_a$ and any accumulated
+previous factors cancel from both probabilities and normalized states.
+A positive matrix of trace zero is zero and is never sampled.
+\end{proof}
+
+Put $D_* =\max_a D_a$ and, using logarithms to base two in this section,
+\begin{align}
+ H&=\lceil\log_2(D_*+1)\rceil,&
+ \ell_0&=\lceil\log_2(z_0+1)\rceil,\nonumber\\
+ Q&=\ell_0+NH,&
+ b&=L+\lceil\log_2(6d^2(N+1))\rceil,\qquad
+ u=\min\{Q,b\}.\label{eq:uniformparameters66}
+\end{align}
+The description, once validated, may be kept read-only; charging its
+entire length $S$ is included in the bound below.
+
+\begin{lemma}[Reduced Schur entries and bit length]\label{lem:schurminors67}
+Let $A$ be a Hermitian matrix of order $q$ with Gaussian-integer entries,
+whose real and imaginary parts have absolute value at most $2^h$.
+In exact Schur elimination, let $I$ be the ordered indices of the
+positive pivots already eliminated. Every remaining entry is
+\begin{equation}\label{eq:borderminor67}
+ S_{ij}=\frac{\det A[I\mathbin{\|}i,I\mathbin{\|}j]}{\det A[I,I]},
+\end{equation}
+where $I\mathbin{\|}i$ appends $i$ in that order, and the empty
+principal determinant is one. Reduced numerators and denominators
+have $O(q(h+\log(q+1)))$ bits. Hermitian positive semidefiniteness is
+therefore decidable by this elimination in polynomial bit time and
+space in the explicit input length. No optimized polynomial exponent
+is asserted.
+\end{lemma}
+\begin{proof}
+When the leading pivot $t$ is positive, block congruence reduces
+\[
+ \begin{pmatrix}t&b^*\\ b&C\end{pmatrix}\ge0
+ \quad\Longleftrightarrow\quad C-bb^*/t\ge0.
+\]
+A negative pivot rejects. At a zero diagonal, each $2\times2$ principal
+minor forces the corresponding row and column to vanish; otherwise
+reject, and if they vanish delete that row and column. Positive pivots
+make $A[I,I]$ positive definite. The bordered determinant identity
+\[
+ \det\begin{pmatrix}A[I,I]&A[I,j]\\A[i,I]&A_{ij}\end{pmatrix}
+ =\det A[I,I]\,(A_{ij}-A[i,I]A[I,I]^{-1}A[I,j])
+\]
+proves \eqref{eq:borderminor67}, including after zero rows are skipped.
+The specified ordering prevents a spurious permutation sign.
+
+A minor of order $k\le q$ has determinant modulus at most
+$k^{k/2}(\sqrt2\,2^h)^k$, by the product of its row norms.
+Its real and imaginary parts are integers with
+$O(k(h+\log(k+1)))$ bits. The principal denominator is a positive
+integer. Cancelling common factors cannot enlarge these lengths.
+Each arithmetic operation on reduced Gaussian-rational entries thus
+has polynomial operand size. There are polynomially many operations
+and at most $q^2$ stored entries; ordinary multiplication, division and
+the Euclidean algorithm give the stated bit bounds. For rational
+rather than integral input, first clear a common positive denominator.
+Its bit length is at most the sum of the encoded denominator lengths,
+so this preliminary step also has polynomial cost.
+\end{proof}
+
+\begin{theorem}[Variable-description numerical simulation]\label{thm:uniformchoi66}
+There is a single classical randomized program with the following
+property. Given any valid description above and $N,L\ge2$, it consumes
+an adaptive command stream once, emits each outcome immediately, and
+retains a legal numerical density matrix. Against every common
+classical adaptive controller, its subnormalized history error at
+every prefix, and at every common public stopping time bounded by
+$N$, is at most $2^{-L}$.
+
+Description validation has polynomial bit time and polynomial working
+space in $S$. After validation, the maximum writable space, including
+temporary arithmetic and the stored description, is
+\begin{equation}\label{eq:uniformspace66}
+ O\bigl(S+d^2[H+\log(d+1)+u]+\log(N+1)\bigr),
+\end{equation}
+with an absolute implicit constant for the fixed machine encoding.
+The total peak space is the maximum of this bound and the stated
+polynomial preprocessing bound. Expected bit time per command is
+$\operatorname{poly}(S)(1+u)^2$ and expected fresh fair-bit consumption
+is $O(H+u+\log(d+1))$. The space bound holds on every rejection trial;
+running time is not bounded on every such execution. The theorem
+requires neither a spectral gap nor a Kraus factorization.
+\end{theorem}
+\begin{proof}
+In grid mode use $B=2^b$ and retain the integer numerator of
+$R_B(\rho)$ from Lemma~\ref{lem:positiveround65}; its trace is always
+$B+2d^2$. At a command compute the branch integers in
+\eqref{eq:choiaction66}, sample an outcome from their exact integer
+traces, and repair the chosen normalized branch back to the same
+state denominator. The sampler uses fresh binary words of length
+$\lceil\log_2(D_a\tr P)\rceil$, rejecting words outside the required
+integer interval. Its acceptance probability is greater than one half,
+except for the power-of-two case where it is one. Rejected words are
+discarded, not recorded. Branch weights can be computed sequentially;
+a second scan finds and recomputes the selected branch. Thus the
+number of retained matrices does not grow with the number of outcomes.
+
+The proof of Theorem~\ref{thm:instrumentstream65} uses positivity and
+\eqref{eq:rationalchoi66}, not rational Kraus entries. It therefore
+applies verbatim at the level of its stated block recursion: the
+initial error is at most $6d^2/B$, and each subsequent use adds at
+most $6d^2/B$, weighted by total simulated branch mass. It gives
+\[
+       \sum_h\|A_h-\widehat A_h\|_1
+                \le(t+1)6d^2/B\le2^{-L}\quad(t\le N).
+\]
+The outcome probabilities used here are computed from the approximate
+stored state, not from the unknown exact state. The block recursion
+accounts for that difference. Freezing halted branches proves the same
+stopped bound as in Proposition~\ref{prop:posterior66}.
+
+In exact mode retain the selected unnormalized matrix without repair.
+This numerator represents a path block up to omitted common scalar
+denominators. Those factors cancel in every conditional branch
+probability and normalized output; they are not reconstructed or
+stored merely to restore a redundant normalization.
+Positivity and the trace identity imply
+\[
+           1\le\tr P_t\le z_0D_*^t<2^{\ell_0+tH}.
+\]
+Every entry modulus is bounded by the trace. This mode has zero
+approximation error. Choose it when $Q\le b$, and choose grid mode
+otherwise. The switch is an order bound, not an exact minimization of
+small-instance memory.
+
+For space accounting, each Choi numerator entry has modulus at most
+$D_a$, by positivity and \eqref{eq:rationalchoi66}. Each summand in
+\eqref{eq:choiaction66} is a product of integers of lengths at most
+$H$ and $u+O(\log(d+1))$. An accumulator over $d^2$ summands needs
+at most $H+u+O(\log(d+1))$ bits. A constant number of $d\times d$
+matrices, traces, indices, division buffers and one rejection word
+suffice. Initial grid rounding reads the initial entries sequentially;
+its extra operand length $\ell_0$ is at most the charged input length
+$S$. Counters and address arithmetic give \eqref{eq:uniformspace66}.
+Classical multiplication and long division on $w$-bit integers take
+$O(w^2)$ bit operations and $O(w)$ scratch. Scanning the explicit
+outcome list a fixed number of times gives the claimed polynomial
+factor in $S$; powers of $H$ are absorbed there. The sampling bound
+follows from the rejection interval length and the expected number of
+trials, which is below two. A single nonzero branch requires no random
+bits.
+
+Validation uses the reduced-rational Schur procedure of
+Lemma~\ref{lem:schurminors67}, not the unreduced fixed-dimensional
+scaled recursion. Its ratios-of-minors formula proves polynomial
+operand lengths. Hermitian symmetry, the exact partial trace
+identities and positive initial trace are checked separately. No
+pivot permutation is needed: a zero leading diagonal of a positive
+semidefinite matrix forces its entire row and column to vanish.
+This establishes a separate polynomial preprocessing bound, not a
+validator matching the subsequent streaming-space bound.
+
+Parameters are parsed before commands. The precision $L$ may be read
+with saturation at $Q$: once that threshold is reached, exact mode is
+selected and its exact value is unnecessary. The time to read all
+parameter digits is charged as preprocessing in their actual length;
+no equally long precision integer is retained. A binary counter checks
+the command count. The numerical output consists of signed binary
+integer entries and their common denominator; writing it requires no
+additional matrix-sized precision store.
+\end{proof}
+
+\begin{corollary}[Known joint systems and two error budgets]\label{cor:jointsimulation66}
+Suppose the entire joint system to be simulated, including a specified
+reference and all specified controller operations, has a rational Choi
+description on dimension $d_{\rm joint}$. Theorem~\ref{thm:uniformchoi66}
+applies with that dimension and the full description length charged.
+If its instruments were first compiled by
+Theorem~\ref{thm:choiround66}, the reference-stable description error
+and the numerical history error add. In particular, allocating
+$\varepsilon/2$ to each gives total history error at most $\varepsilon$.
+\end{corollary}
+\begin{proof}
+Use the joint Choi maps and joint initial state as input to the uniform
+program. Theorem~\ref{thm:adaptivediamond66} bounds the first
+replacement, and Theorem~\ref{thm:uniformchoi66} bounds the numerical
+simulation of the replaced experiment. The triangle inequality gives
+the sum. An unspecified quantum tester remains covered by the
+\emph{instrument-description} comparison only; a classical numerical
+simulation of it is not thereby supplied at no cost.
+\end{proof}
+
+Theorem~\ref{thm:uniformchoi66} is an upper bound with variable data.
+The lower bounds of Theorem~\ref{thm:matrixspace65} retain their own
+fixed-program quantifiers, numerical matrix interface, and full-action
+spectral and cap hypotheses. No dimension-uniform spectral constant,
+no sharp lower bound for arbitrary noisy transcript-only interfaces,
+and no classification of disturbing instruments follows from the
+upper construction. Conversely, a rational Choi input is enough to
+execute the construction even when a Gaussian-rational Kraus list is
+not supplied. This is a representation-level enlargement of the
+constructive theorem, not an alteration of the inherited lower model.

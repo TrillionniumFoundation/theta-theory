@@ -1,0 +1,11 @@
+# Release provenance — Revision 93
+
+The controlling external assessment is v90/R60 at `cf13712c54e9ef0c9c54a240b1f26efc78cc3568`, with proof/pipeline audit `e4e72a512bf747e7bd190196cd8dc3db35689e3c`. The immediate published base is v92 at `a7081ca8cfb1df8f6369a5820e4f3b5027b66ca2`, native source `33811525dd80dbc3c0c70059114fb779e9ac9c84`. No later referee report is being assumed. The original reports remain frozen verbatim.
+
+The source baseline is the existing v92 publication with its successful run `37421566175`. That execution is predecessor evidence only. The v93 source is staged at `papers/GTF-I-v93-spectral-rigidity`, preserving every previous mathematical section byte-for-byte and backing up modified editorial/build files. The new script and proof are plain native files, not a PDF-only change.
+
+The production workflow creates an actual native-source commit, rebuilds four linked manuscripts and all 35 normal/optimized suites, reconstructs the complete native source and standalone journal package, then makes an artifact-only child commit. Only the existing v93 response branch is updated by the workflow; native/publication/review aliases are separately created at observed object SHAs. This deliberately avoids interpreting sequential API operations as an atomic transaction.
+
+The final review entry and request are metadata-only descendants. A separate read-only job checks out its triggering SHA without persisted write credentials and runs `--verify-published`. Its external receipt must actually identify that same `verified_head` with status success. The receipt is not committed back to the head it verifies. Root review metadata records the actual source, publication, run and artifact identities after they are observed. None is pre-filled here as a successful future result.
+
+Historical failures, including v90's PDF staging failure and workflow-permission timeout, remain historical records, not current successful badges. Actions check runs, legacy commit-status contexts and Git signatures are distinct. The current Git objects may be unsigned; no reconstructed hash is represented as a human-authorship signature or independent proof/priority opinion. Main, old review branches and unrelated paper paths are not changed.

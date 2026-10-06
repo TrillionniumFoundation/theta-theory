@@ -1,0 +1,9 @@
+# Release identities and the R58 correction
+
+R58's provenance criticism is correct at its frozen object. Remote v88 publication `d1add4a7ba45230b3cba71b47ef46da5e4a88d72` was verified read-only *inside* the write-capable publisher. Its response prose overstated a separate directly triggered final-head run. The archived v88 text is preserved rather than silently rewritten; this current statement supersedes that claim.
+
+During v89 preparation, separate workflow `37322744298` checked out and rebuilt exact v88 publication read-only. Its triggering anchor is `4f48db1c2c4c2deac76d3d99378386dbebc1cbca`; its receipt's `verified_head` is `d1add4a7ba45230b3cba71b47ef46da5e4a88d72`. These are different identities. Artifact `11351182308`, `gtf89-r58-inputs-37322744298`, contains the receipt, all-page/finite-regression matches and linked-journal reconstruction. `V88_INDEPENDENT_READONLY.json` is an exact copy of that receipt, not v89 evidence. This is an independent reconstruction of pinned v88, not a claim that its old publication SHA triggered that workflow.
+
+The v89 source must be a real Git child in the new response branch, and the publication must be its direct artifact-only child. The final metadata request triggers a separate read-only workflow whose head must equal the submitted final head. Only that actual successful receipt establishes final-head reconstruction; the existence of YAML or this specification establishes nothing. The review-ready alias is to be created at that verified head without another source mutation.
+
+The source inventory, publication manifest, four PDF hashes, fresh ordinary/optimized tests and isolated/linked reconstructions are separate from proof correctness and independent priority. All authored commits are unsigned unless GitHub independently reports otherwise; no human authorship signature or external referee approval is claimed.

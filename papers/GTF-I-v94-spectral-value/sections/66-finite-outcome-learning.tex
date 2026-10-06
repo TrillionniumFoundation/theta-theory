@@ -1,0 +1,259 @@
+\section{Joint learning and finite certificates for a finite alphabet}
+\label{sec:multilearning82}
+
+We next construct one learner common to all unknown elements of
+$\mathfrak P_{d,k}$.  Its training experiments do not use the
+pair-dependent eigenvectors in the geometric lower bound.
+The outcome count $k$ is public, as are $d,N,\delta,\eta$.
+The upper procedure uses independent one-call probe--reference pairs;
+coherent collective processing is confined to completed outputs.
+The converse permits arbitrary coherent adaptive training, with an
+every-record budget and bounded public stopping.
+
+\begin{theorem}[Joint finite-outcome learning and coding]
+\label{thm:multioutcomelearning82}
+Let $d,N\ge1$, $k\ge2$, $0<\delta\le2^{-24}$, and
+$0<\eta\le1/8$.  Write $M^*_{d,k}(N,\delta,\eta)$ for the
+minimum every-record call budget with worst-case failure at most
+$\eta$ under $D_N$-error $\delta$ on $\mathfrak P_{d,k}$.
+There are absolute constants $c,C>0$ such that
+\begin{equation}\label{eq:multilearning82}
+ c\frac{N}{\delta^2}\left(d^2+d\log\frac1\eta\right)
+ \le M^*_{d,k}(N,\delta,\eta)
+ \le C\frac{k^3N}{\delta^2}
+                  \left(d^2+d\log\frac{k}{\eta}\right).
+\end{equation}
+For each fixed $k$, this is a matching order jointly in
+$d,N,\delta,\eta$, including $d=1$:
+\[
+ M^*_{d,k}(N,\delta,\eta)
+ =\Theta_k\!\left(N\delta^{-2}
+                   [d^2+d\log(1/\eta)]\right).
+\]
+The displayed dependence on growing $k$ is not claimed optimal.
+
+For rational accuracy and confidence, the upper procedure has a
+finite deterministic specification, returns an index with a fixed
+public decoder into $\mathfrak P_{d,k}$, and simultaneously uses
+\begin{equation}\label{eq:multilearnedbits82}
+ B=\frac{(k-1)d^2}{2}\log_2N
+       +(k-1)d^2\log_2(1/\delta)+O((k-1)d^2\log(k+1))
+\end{equation}
+bits.  On its good event the decoded error is at most $5\delta/8$.
+The same call order is available with finite trusted controls.
+Classical search, readout storage, known-state preparation, and
+known-control realization are separate resources.
+\end{theorem}
+\begin{proof}
+We first give the constructive upper bound for rational parameters.
+Set $n=\lceil\sqrt N\rceil$ and
+\begin{equation}\label{eq:multitrainingaccuracy82}
+ \epsilon=\frac{\delta}{16kn}.
+\end{equation}
+For each $j$ consider the binary effect
+$F_j=I_d/4+E_j/2$.  It belongs to $[I_d/4,3I_d/4]$.
+One call to $\mathcal M_{\boldsymbol E}$ simulates a call to
+$\mathcal M_{F_j}$: conditional on the original label $x$, return
+bit one with probability $3/4$ when $x=j$ and with probability
+$1/4$ otherwise.  This is an equality of channels, including their
+action on a retained reference, because the bit-one effect is
+\[
+ \tfrac34E_j+\tfrac14\sum_{x\ne j}E_x=\tfrac14I_d+\tfrac12E_j.
+\]
+Only public classical randomness is added.  Each simulated call
+uses exactly one call to the unknown device.
+
+Apply Theorem~\ref{thm:rationallearner81} to each $F_j$ at future
+horizon one, accuracy $\epsilon$, and failure $\eta/k$, using
+fresh records for different $j$.  Its output $\widehat F_j$ is
+Gaussian rational and legal.  The binary identity
+$d_1(F_j,\widehat F_j)=2\|F_j-\widehat F_j\|_{\rm op}$ implies
+that, with probability at least $1-\eta$, all the Hermitian
+matrices $B_j=2\widehat F_j-I_d/2$ obey
+\begin{equation}\label{eq:multiassembly82}
+ \max_j\|B_j-E_j\|_{\rm op}\le\epsilon.
+\end{equation}
+Only a union bound is needed; no independence assertion concerning
+selected quantum readout outcomes is used.
+
+The matrices $B_j$ need not sum to $I_d$.  Reconstruct the finite
+legal grid $\mathcal G(\epsilon/2)$ and choose its first tuple
+$\boldsymbol G$ satisfying
+\[
+ \|G_j-B_j\|_{\rm op}\le2\epsilon\quad\text{for every }j.
+\]
+Each comparison is an exact rational positive-semidefinite test.
+On \eqref{eq:multiassembly82}, such a tuple exists by
+Lemma~\ref{lem:multigrid82}; it has
+$r(\boldsymbol G,\boldsymbol E)\le3\epsilon$.
+On every other record, if the finite search finds no tuple, return
+$\boldsymbol U$.  Thus every record has a legal output and the
+same predetermined training budget.  The geometric upper bound gives
+\[
+ D_N(\boldsymbol E,\boldsymbol G)
+       \le6k\sqrt N\epsilon\le3\delta/8.
+\]
+Encode $\boldsymbol G$ with the dictionary of
+Theorem~\ref{thm:multioutcomecode82} at parameter $\delta/2$.
+Its additional error is at most $\delta/4$, so the decoded error
+is at most $5\delta/8$.  It uses no further device calls and has
+length \eqref{eq:multilearnedbits82}.
+
+There are $k$ binary learners, each using at most
+$C_0\epsilon^{-2}[d^2+d\log(k/\eta)]$ calls.  Since $n^2\le4N$,
+this proves the upper bound.  The inherited rational synthesis
+and finite-control theorem applies to the simulated binary channels
+as to any channels of the same form.  The public $1/4,3/4$ relabeling
+is exact classical control.  The error guarantee used in
+\eqref{eq:multiassembly82} is the inherited actual finite-control
+guarantee, not an idealized readout subsequently assumed exact.
+The construction terminates in finite classical time, with no
+assertion that this time is polynomial.  For nonrational error
+parameters, choose rational $\delta'\in[\delta/2,\delta]$ and
+$\eta'\in[\eta/2,\eta]$ to obtain the stated existence bound;
+these choices change only absolute constants.
+
+For the lower bound let $m=\lfloor k/2\rfloor$ and $q=2m/k\ge2/3$.
+Embed any binary interior effect $F\in[I_d/4,3I_d/4]$ by the tuple
+\begin{equation}\label{eq:multiembedding82}
+ E_j(F)=\begin{cases}
+             2F/k,&1\le j\le m,\\
+             2(I_d-F)/k,&m<j\le2m,\\
+             I_d/k,&j=k=2m+1.
+             \end{cases}
+\end{equation}
+This belongs to $\mathfrak P_{d,k}$.  A query to this tuple is
+simulated using one binary $F$ query: with probability $q$, retain
+the binary outcome and select a uniform label from its corresponding
+group of $m$ labels; otherwise erase the bit and return the extra
+label.  In the odd case the erased reference state is the sum of
+its two subnormalized binary states, as required by the effect
+$I_d/k$.  Thus the simulation is valid for entangled inputs and
+adaptive controls, not merely for outcome probabilities on pure
+states.  For even $k$ there is no erasure.
+
+Suppose a $k$-outcome learner returns any legal tuple
+$\widehat{\boldsymbol E}$ within $D_N$-error $\delta$.
+Coarse-graining the first $m$ labels gives a binary effect
+$H=\sum_{j\le m}\widehat E_j$ satisfying
+$d_N(qF,H)\le\delta$.  This follows by executing the same
+coarse-graining inside any binary tester of the two induced channels.
+The Bernoulli lower bound in
+Theorem~\ref{thm:multioutcomemetric82}, applied to these two binary
+effects, implies
+\[
+ \|H-qF\|_{\rm op}\le128\delta/\sqrt N,
+\]
+since $\delta<1/128$.
+Spectrally clip $H/q$ to $[I_d/4,3I_d/4]$, obtaining $\widehat F$.
+Weyl's inequality bounds the clipping displacement by
+$\|H/q-F\|_{\rm op}$; the triangle inequality therefore gives
+\[
+ \|\widehat F-F\|_{\rm op}
+      \le\frac{256}{q}\frac\delta{\sqrt N}
+      \le\frac{384\delta}{\sqrt N}.
+\]
+No operator-Lipschitz claim about spectral clipping is used.
+The last accuracy is at most $2^{-14}$ under the stated cap.
+The proof of Corollary~\ref{cor:operatorconfidence80} gives the
+binary operator-loss lower bound already on this interior, with
+arbitrary coherent adaptive training.  Applying it to the simulation
+proves the left inequality of \eqref{eq:multilearning82}, including
+the contribution $d\log(1/\eta)$ and the scalar case.  The same
+simulation preserves every-record budgets and public stopping.
+\end{proof}
+
+The length in \eqref{eq:multilearnedbits82} has the optimal leading
+order also among learners with a fixed-length, fixed public decoder.
+Indeed, if failure is less than one at every target, at least one
+word must decode inside that target's loss ball.  The decoder's
+image is therefore a covering of the entire target family.
+The lower bound in Theorem~\ref{thm:multioutcomeentropy82} applies
+regardless of the number of training calls.  This is separate from
+the statistical query lower bound.  Shared-randomness expected-prefix
+conventions are different and are not part of this assertion.
+
+\subsection{Finite uniform-risk certificates}
+The certification mechanism also survives a finite outcome alphabet.
+For an ideal one-call maximally entangled acquisition, its normalized
+classical--quantum record is
+\begin{equation}\label{eq:multichoi82}
+ \Omega(\boldsymbol E)=\frac1d\bigoplus_{j=1}^k E_j^{\mathsf T}.
+\end{equation}
+The classical labels remain ordered.  A collective readout after $M$
+independent acquisitions can be described by one POVM
+$(A_{c,x})_c$ on dimension $d^M$ for each classical string
+$x\in\{1,\ldots,k\}^M$.  Here $A_{c,x}\succeq0$ and
+$\sum_c A_{c,x}=I_{d^M}$.  Its output label $c$ is decoded by a
+fixed finite family $\boldsymbol C_c$ of legal $k$-outcome tuples.
+
+\begin{theorem}[Finite-alphabet certificate transfer]
+\label{thm:multicertificate82}
+Let $\mathcal G\subset\mathfrak P_{d,k}$ be a complete finite
+$r_0$-net in the tuple norm $r$.  Suppose a fixed readout satisfies
+\begin{equation}\label{eq:multicertificate82}
+ \sum_{c:\,r(\boldsymbol G,\boldsymbol C_c)\le a}
+ \sum_{x\in\{1,\ldots,k\}^M}
+ \operatorname{tr}\left[A_{c,x}
+        d^{-M}\bigotimes_{i=1}^M G_{x_i}^{\mathsf T}\right]
+ \ge1-\alpha\qquad(\boldsymbol G\in\mathcal G).
+\end{equation}
+Then every real $\boldsymbol E\in\mathfrak P_{d,k}$ satisfies
+\begin{equation}\label{eq:multitransfer82}
+ \mathbb P_{\boldsymbol E}
+   \{r(\boldsymbol E,\boldsymbol C_J)>a+r_0\}
+ \le\alpha+\frac{Mk r_0}{2}.
+\end{equation}
+If all decoding centres are in $\mathfrak P_{d,k}$, the same failure
+bound holds for $D_N$-error greater than $2k\sqrt N(a+r_0)$.
+For Gaussian-rational data, rational $a,r_0,\alpha$, and the net
+of Lemma~\ref{lem:multigrid82}, the hypotheses admit a finite exact
+verification.  A proper prefix of the net or of the classical
+string list is not a certificate.
+\end{theorem}
+\begin{proof}
+The block-diagonal formula \eqref{eq:multichoi82} gives
+\[
+ \|\Omega(\boldsymbol E)-\Omega(\boldsymbol G)\|_1
+    =d^{-1}\sum_j\|E_j-G_j\|_1
+    \le k\,r(\boldsymbol E,\boldsymbol G).
+\]
+Tensor telescoping between normalized states gives
+\begin{equation}\label{eq:multirecordcontinuity82}
+ \|\Omega(\boldsymbol E)^{\otimes M}
+           -\Omega(\boldsymbol G)^{\otimes M}\|_1
+       \le Mk\,r(\boldsymbol E,\boldsymbol G).
+\end{equation}
+Apply the same readout to both states.  Its index laws differ in
+total variation by at most $Mk r_0/2$ when
+$r(\boldsymbol E,\boldsymbol G)\le r_0$.
+Choose such a $\boldsymbol G$.  The fixed set of labels
+$\{c:r(\boldsymbol G,\boldsymbol C_c)\le a\}$ has probability
+at least $1-\alpha$ at $\boldsymbol G$, by
+\eqref{eq:multicertificate82}; every label in this set has
+$r(\boldsymbol E,\boldsymbol C_c)\le a+r_0$.
+Transferring this one event proves \eqref{eq:multitransfer82}.
+There is no assumption that the success-label sets vary continuously
+with the unknown target.
+
+The geometric upper comparison proves the assertion about $D_N$.
+For exact verification, reconstruct the whole legal net and every
+classical string.  All traces in \eqref{eq:multicertificate82} are
+Gaussian-rational expressions with rational real values.  Check
+complete POVM positivity and normalization at every string, use
+$sI_d\pm(G_j-C_{c,j})\succeq0$ to determine the good labels
+including equality, and check each rational inequality.  These are
+finite computations.  Their soundness on the real parameter body
+is supplied by \eqref{eq:multirecordcontinuity82}, not by a numerical
+sampling argument.
+\end{proof}
+
+The certificate describes the ideal specified rational readout.
+When implemented controls have a separately certified output-law
+error $\zeta$, the right side of \eqref{eq:multitransfer82} increases
+by at most $\zeta$.  Such an error must be budgeted, not silently
+identified with zero.  The finite-control guarantee in
+Theorem~\ref{thm:multioutcomelearning82} instead uses the already
+budgeted binary procedures.  The exact certificate transfer and
+the actual-control learning guarantee thus have explicitly distinct
+hypotheses.
