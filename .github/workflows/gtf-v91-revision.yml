@@ -1,0 +1,108 @@
+name: GTF-I v91 R60 revision and exact-head reconstruction
+on:
+  push:
+    branches: [revision/general-theta-foundations-i-v91-r60-response-2026-10-06]
+    paths:
+      - '.github/workflows/gtf-v91-revision.yml'
+      - 'tools/gtf91/**'
+      - 'GENERAL_THETA_FOUNDATIONS_I_V91_FINAL_HEAD_REQUEST.json'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: gtf91-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: ${{ !contains(github.event.head_commit.message, 'verify-final-head') }}
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Freeze both controlling R60 reports
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/gtf91-reports
+          cp GENERAL_THETA_FOUNDATIONS_I_V90_REFEREE_REPORT_R60.md /tmp/gtf91-reports/FROZEN_R60_REPORT.md
+          git fetch --no-tags --depth=1 origin e4e72a512bf747e7bd190196cd8dc3db35689e3c
+          git show e4e72a512bf747e7bd190196cd8dc3db35689e3c:GENERAL_THETA_FOUNDATIONS_I_V90_PROOF_PIPELINE_AUDIT_R60.md > /tmp/gtf91-reports/FROZEN_R60_PIPELINE_AUDIT.md
+      - name: Install pinned build tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq texlive-latex-extra texlive-fonts-recommended lmodern
+          python -m pip install --disable-pip-version-check pymupdf==1.26.7 sympy==1.14.0 numpy==2.3.5
+      - name: Stage and check the new proof algebra
+        run: |
+          set -euo pipefail
+          python tools/gtf91/stage.py
+          PAPER=papers/GTF-I-v91-reset-variational
+          python "$PAPER/build_revision.py" --check-source > /tmp/gtf91-source-check.json
+          python "$PAPER/reset_variational_check.py" > /tmp/gtf91-variational-check.json
+          python "$PAPER/equal_prior_check.py" > /tmp/gtf91-equal-prior-check.json
+      - name: Commit native source, reconstruct, and publish
+        env:
+          REVISION_BRANCH: revision/general-theta-foundations-i-v91-r60-response-2026-10-06
+        run: |
+          set -euo pipefail
+          git config user.name 'GTF revision automation'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          PAPER=papers/GTF-I-v91-reset-variational
+          git add "$PAPER"
+          git commit -m 'revision(GTF-I v91): general reset variational principle, duality and equal-prior hierarchy'
+          SOURCE=$(git rev-parse HEAD)
+          echo "$SOURCE" > /tmp/gtf91-native-sha.txt
+          python "$PAPER/build_revision.py" --isolated > /tmp/gtf91-build.json
+          git add -f "$PAPER/evidence" "$PAPER/paper.pdf" "$PAPER/BINARY_SUPPLEMENT.pdf" "$PAPER/STRUCTURAL_PAPER.pdf" "$PAPER/COMPLETE_REVISION.pdf"
+          git commit -m 'publication(GTF-I v91): rebuilt manuscripts and source-bound R60 evidence'
+          PUBLISHED=$(git rev-parse HEAD)
+          echo "$PUBLISHED" > /tmp/gtf91-publication-sha.txt
+          test "$(git ls-remote origin refs/heads/$REVISION_BRANCH | cut -f1)" = "$GITHUB_SHA"
+          git push origin HEAD:"refs/heads/$REVISION_BRANCH"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gtf91-publication-${{ github.run_id }}
+          path: |
+            papers/GTF-I-v91-reset-variational
+            tools/gtf91
+            /tmp/gtf91-*.json
+            /tmp/gtf91-*-sha.txt
+          if-no-files-found: warn
+  final-head:
+    if: ${{ contains(github.event.head_commit.message, 'verify-final-head') }}
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 4
+          persist-credentials: false
+          ref: ${{ github.sha }}
+      - name: Install pinned read-only reconstruction tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq texlive-latex-extra texlive-fonts-recommended lmodern
+          python -m pip install --disable-pip-version-check pymupdf==1.26.7 sympy==1.14.0 numpy==2.3.5
+      - name: Reconstruct the exact triggering head
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python papers/GTF-I-v91-reset-variational/build_revision.py --verify-published > /tmp/gtf91-FINAL_HEAD.json
+          python - <<'PY'
+          import json, os
+          x=json.load(open('/tmp/gtf91-FINAL_HEAD.json'))
+          if not (x['verified_head']==os.environ['GITHUB_SHA'] and x['read_only'] and x['status']=='success'):
+              raise RuntimeError('Exact-head reconstruction identity failed')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gtf91-exact-final-head-${{ github.sha }}
+          path: /tmp/gtf91-FINAL_HEAD.json
+          if-no-files-found: error
