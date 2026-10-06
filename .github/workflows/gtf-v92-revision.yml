@@ -1,0 +1,113 @@
+name: GTF-I v92 rank hierarchy and exact-head reconstruction
+on:
+  push:
+    branches: [revision/general-theta-foundations-i-v92-r60-rank-hierarchy-2026-10-06]
+    paths:
+      - '.github/workflows/gtf-v92-revision.yml'
+      - 'tools/gtf92/**'
+      - 'GENERAL_THETA_FOUNDATIONS_I_V92_FINAL_HEAD_REQUEST.json'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: gtf92-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  publication:
+    if: ${{ !contains(github.event.head_commit.message, 'verify-final-head') }}
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    timeout-minutes: 65
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Install pinned manuscript reconstruction tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq texlive-latex-extra texlive-fonts-recommended lmodern
+          python -m pip install --disable-pip-version-check pymupdf==1.26.7 sympy==1.14.0 numpy==2.3.5
+      - name: Preserve v91 and publish actual v92 native source
+        env:
+          REVISION_BRANCH: revision/general-theta-foundations-i-v92-r60-rank-hierarchy-2026-10-06
+        run: |
+          set -euo pipefail
+          git config user.name 'GTF revision automation'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python tools/gtf92/stage.py
+          PAPER=papers/GTF-I-v92-rank-memory
+          python "$PAPER/build_revision.py" --check-source > /tmp/gtf92-source-check.json
+          git add "$PAPER" tools/gtf92/payload-3.b64
+          git commit -m 'revision(GTF-I v92): attained rank envelopes, exact two-cut memory spectra and R60 response'
+          git rev-parse HEAD > /tmp/gtf92-native-sha.txt
+          test "$(git ls-remote origin refs/heads/$REVISION_BRANCH | cut -f1)" = "$GITHUB_SHA"
+          git push origin HEAD:"refs/heads/$REVISION_BRANCH"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gtf92-native-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            papers/GTF-I-v92-rank-memory
+            /tmp/gtf92-native-sha.txt
+            /tmp/gtf92-source-check.json
+          if-no-files-found: error
+      - name: Rebuild all manuscripts, 34 suites and both isolated packages
+        run: |
+          set -euo pipefail
+          python papers/GTF-I-v92-rank-memory/build_revision.py --isolated > /tmp/gtf92-build.json
+      - name: Publish artifact-only child without changing theorem source
+        env:
+          REVISION_BRANCH: revision/general-theta-foundations-i-v92-r60-rank-hierarchy-2026-10-06
+        run: |
+          set -euo pipefail
+          PAPER=papers/GTF-I-v92-rank-memory
+          SOURCE=$(cat /tmp/gtf92-native-sha.txt)
+          test "$(git rev-parse HEAD)" = "$SOURCE"
+          git add -f "$PAPER/evidence" "$PAPER/paper.pdf" "$PAPER/BINARY_SUPPLEMENT.pdf" "$PAPER/STRUCTURAL_PAPER.pdf" "$PAPER/COMPLETE_REVISION.pdf"
+          git commit -m 'publication(GTF-I v92): four reconstructed manuscripts and source-bound rank-hierarchy evidence'
+          git rev-parse HEAD > /tmp/gtf92-publication-sha.txt
+          test "$(git ls-remote origin refs/heads/$REVISION_BRANCH | cut -f1)" = "$SOURCE"
+          git push origin HEAD:"refs/heads/$REVISION_BRANCH"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gtf92-publication-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            papers/GTF-I-v92-rank-memory
+            /tmp/gtf92-*.json
+            /tmp/gtf92-*-sha.txt
+          if-no-files-found: warn
+  final-head:
+    if: ${{ contains(github.event.head_commit.message, 'verify-final-head') }}
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 4
+          persist-credentials: false
+          ref: ${{ github.sha }}
+      - name: Install pinned read-only reconstruction tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq texlive-latex-extra texlive-fonts-recommended lmodern
+          python -m pip install --disable-pip-version-check pymupdf==1.26.7 sympy==1.14.0 numpy==2.3.5
+      - name: Verify the exact triggering head without write credentials
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python papers/GTF-I-v92-rank-memory/build_revision.py --verify-published > /tmp/gtf92-FINAL_HEAD.json
+          python - <<'PY'
+          import json,os
+          x=json.load(open('/tmp/gtf92-FINAL_HEAD.json'))
+          if not (x['status']=='success' and x['read_only'] and x['verified_head']==os.environ['GITHUB_SHA']):
+              raise RuntimeError('Exact-head identity or read-only reconstruction failed')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gtf92-exact-final-head-${{ github.sha }}
+          path: /tmp/gtf92-FINAL_HEAD.json
+          if-no-files-found: error
