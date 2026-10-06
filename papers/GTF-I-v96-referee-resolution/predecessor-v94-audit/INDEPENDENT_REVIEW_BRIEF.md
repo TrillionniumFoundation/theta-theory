@@ -1,0 +1,5 @@
+# Independent review brief — Revision 94
+
+The controlling external report is v90/R60 at `cf13712c54e9ef0c9c54a240b1f26efc78cc3568`, with companion proof/pipeline audit `e4e72a512bf747e7bd190196cd8dc3db35689e3c`. The immediate published base is v93 at `3b660839818d6ef676da72fb6e9969501be4e59a`, native source `2595ee56f70138c58b1924591d32e09cbad31381`. Both controlling reports remain byte-identical. No newer report is assumed.
+
+Please review the exact prescribed-spectrum value theorem and its full-class upper, including the rank-preserving fresh optimizer, spectral concave-envelope identification, fixed-initial instrument realization and necessary/sufficient strict receiver-message advantage. Check possible equivalences in constrained-memory testers, state comparison, pure-state transformations, entanglement assistance and majorization-based rank roofs. The inherited equal-prior hierarchy and local geometry have independent quantifiers. Inspect both biased and equal-prior conventions before comparing constants. No independent human priority clearance has yet been supplied; source dates and finite checks are not substitutes.

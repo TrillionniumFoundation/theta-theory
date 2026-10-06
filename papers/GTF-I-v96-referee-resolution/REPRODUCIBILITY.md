@@ -1,0 +1,7 @@
+# Reproducibility — Revision 96
+
+The journal submission has two linked manuscripts and their active source graphs. Use Python 3.12, the versions in `requirements.txt`, and TeX Live with amsart, lmodern, microtype, hyperref, xr-hyper, geometry and TikZ. The production environment is recorded in `evidence/BUILD_RECEIPT.json`. In the standalone package, `python journal_verify.py` checks the manifest and rebuilds both manuscripts read-only in temporary storage. No repository or historical PDF is required.
+
+In the full native package, run `python build_revision.py --check-source`, then `python build_revision.py --isolated` at the exact native-source Git commit. This compiles the four editions, runs 38 finite suites normally and under `python -O` in isolated native copies, reconstructs the complete source archive, and rebuilds the journal package. `--preflight` is a local check only; it is not publication qualification. After artifact publication, `--verify-published` verifies the native ancestor and reconstructs both packages without changing the selected head.
+
+Source, publication and final-head identities are different. A source-bound build receipt establishes its own execution; the separate read-only check qualifies only its exact `verified_head`. These checks do not establish universal mathematical truth, physical calibration, independent priority or human signatures. Exact arithmetic, numerical sanity and negative controls are reported separately. The rational spectral executable assumes a supplied spectrum and is not tomography.

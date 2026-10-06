@@ -1,0 +1,146 @@
+\section{A uniform rational qubit compiler}\label{sec:rationalcompiler58}
+The preceding example also admits a constructive upper realization. The
+compiler below constructs its rows rather than assuming that an optimal
+realization has already been supplied. Its persistent labels and finite
+table resources are accounted for separately.
+
+\begin{lemma}[A rational spherical inner hull]\label{lem:rationalnet58}
+For $m\ge2$ an integer, let $\mathcal V_m$ consist of the distinct points
+\begin{equation}\label{eq:rationalnet58}
+ v_{j,\ell,\eta}
+ =\eta\frac{(2jm,\,2\ell m,\,m^2-j^2-\ell^2)}{m^2+j^2+\ell^2},
+ \quad -m\le j,\ell\le m,\quad \eta\in\{-1,1\}.
+\end{equation}
+Put $r=1-m^{-2}$ and add the vertex $0$ as a distinguished label. Then
+\[
+ rB_3\subseteq\operatorname{conv}(\mathcal V_m)\subseteq B_3,
+ \qquad K:=1+|\mathcal V_m|\le1+2(2m+1)^2\le13m^2.
+\]
+The points have $O(\log(m+1))$-bit rational coordinates. For any supplied
+rational rotation $A\in SO(3)$ and any label $v$, the point $rAv$ has a
+rational barycentric expression using $0$ and at most three members of
+$\mathcal V_m$. Such an expression can be found by finitely enumerating
+triples and solving rational $3\times3$ systems.
+\end{lemma}
+\begin{proof}
+The stereographic parametrization
+$\psi(s,t)=(2s,2t,1-s^2-t^2)/(1+s^2+t^2)$ has differential norm at
+most two. Every point in the closed northern hemisphere has a preimage
+in the unit disk, hence in $[-1,1]^2$. Rounding its coordinates to the
+nearest multiples of $1/m$ gives a point of \eqref{eq:rationalnet58}
+within distance $\sqrt2/m$. Negation treats the southern hemisphere.
+For every unit $n$ there is thus $v\in\mathcal V_m$ with
+$\langle n,v\rangle=1-\norm{n-v}^2/2\ge1-m^{-2}$.
+The support-function criterion proves the inner inclusion. The stated
+cardinality bound follows since $m\ge2$; duplicates are discarded.
+
+The polytope contains a neighborhood of zero. The ray through a nonzero
+$rAv$ reaches its boundary in a face. Triangulate a facet containing
+that face using its vertices. A triangle containing the ray endpoint,
+together with zero, gives the desired expression, allowing zero
+coefficients on lower-dimensional faces. Its three nonzero vertices
+are linearly independent: their affine plane is a supporting plane not
+through zero. Enumerate all such triples, solve for their three
+coefficients, and retain any solution with nonnegative coefficients and
+sum at most one. The remaining mass is assigned to zero. Cramer's rule
+gives rational coefficients; for $v=0$ use the point mass at zero.
+All arithmetic is finite, and no selection theorem is needed.
+\end{proof}
+
+\begin{theorem}[Constructed finite-input upper realizations]
+\label{thm:rationalcompiler58}
+Let the alphabet consist of a fixed finite list of rational Bloch
+rotations, and let the seed be the first coordinate unit vector. These
+include the explicit experiment \eqref{eq:rationaldata58}. For a rational
+$0<\beta<1$ and horizon $N\ge0$, choose
+\begin{equation}\label{eq:compilerparameters58}
+ m=\max\left(2,\left\lceil\sqrt{\frac{N}{1-\beta}}\right\rceil\right),
+                 \qquad r=1-m^{-2}.
+\end{equation}
+There is an exactly correct rational stochastic realization of the
+matrix target
+$F_\beta(g)=I/2+\beta(gP_0g^*-I/2)$ on at most $13m^2$ command labels.
+Each command row has at most four nonzero entries and is independent
+of the command epoch within the chosen horizon.
+
+For any rational $0<\varepsilon<1/\sqrt2$, the pure target $F_1$ admits
+an error-$\varepsilon$ realization on $O(1+N/\varepsilon)$ labels with
+rational legal matrix decoders and dyadic rows. It can be sampled with
+at most $Nb$ fair bits, where it suffices to take
+\begin{equation}\label{eq:compilerbits58}
+ b=\left\lceil\log_2\frac{24(N+1)}{\varepsilon}\right\rceil.
+\end{equation}
+Both constructions are uniform algorithms polynomial in $N$,
+$(1-\beta)^{-1}$ or $\varepsilon^{-1}$, and the input bit lengths. This
+is not a polynomial bound in the binary length of $N$ or in the logarithm of the inverse accuracy.
+\end{theorem}
+\begin{proof}
+The net includes the first coordinate unit vector, so initialization is
+deterministic. For each letter $A$ and each net label $v_i$, select the
+rational row in Lemma~\ref{lem:rationalnet58} whose barycentric mean is
+$rAv_i$. The zero label stays at zero. Induction shows that the mean
+Bloch vector of the label at time $t$ is $r^t A_{a_t}\cdots A_{a_1}e_1$.
+At label $v_i$ use the matrix decoder
+\begin{equation}\label{eq:rationaldecoder58}
+                   D_i=\frac12\left(I+\frac{\beta}{r^N}
+                                                   v_i\cdot\sigma\right).
+\end{equation}
+Bernoulli's inequality and \eqref{eq:compilerparameters58} give
+$r^N\ge1-N/m^2\ge\beta$. Thus every decoder is positive semidefinite
+of trace one. Its expectation is exactly $F_\beta$, for every length-$N$
+word; the same rows work for all those words. Formula
+\eqref{eq:rationaldecoder58} also gives $I/2$ at the zero label.
+
+For the pure target choose $\eta=\min(\varepsilon,1/2)$ and
+$\beta=1-\eta$. The amplitude loss contributes Frobenius error
+$\eta/\sqrt2\le\varepsilon/\sqrt2$. Keep the rational decoders and
+round each sparse probability row to denominator $2^b$ without enlarging
+its support: round down the first at most three masses and give the last
+mass the remainder. Its total-variation error is at most $3\cdot2^{-b}$.
+Stochastic contraction bounds the terminal distribution discrepancy by
+$3N2^{-b}$. The Frobenius diameter of $\mathcal D_2$ is $\sqrt2$;
+therefore the additional error is at most
+$3\sqrt2 N2^{-b}\le\varepsilon/4$ under
+\eqref{eq:compilerbits58}. Since $1/\sqrt2+1/4<1$, the total is strictly
+less than $\varepsilon$. One uniform $b$-bit integer samples each row.
+There is no initialization draw and no sampled quantum output in this
+count.
+
+For completeness we give finite construction costs. Enumerating the net
+uses $O(m^2)$ rational points. For each of $|\mathcal A|K$ rows,
+enumerating at most $\binom{K-1}{3}$ triples and solving fixed-size
+systems uses polynomially many rational operations. Cramer's rule shows
+that the exact row coefficients have bit length
+$O(\log(m+1)+B_{\mathcal A})$, where $B_{\mathcal A}$ bounds the supplied
+rotation-entry bit lengths. The denominator $r^N$ has bit length
+$O(N\log(m+1))$. Expanded decoders therefore have
+$O(B_\beta+(N+1)\log(m+1))$ bits each. A naive full enumeration needs
+$O(|\mathcal A|K^4)$ fixed-size rational solves, each of polynomial bit
+cost. This proves the algorithmic assertion as well as the bit bounds.
+\end{proof}
+Sparse row tables require
+$O(|\mathcal A|K(B_{\mathcal A}+\log(K+1)+\log(m+1)))$ bits before
+rounding, and $O(|\mathcal A|K(b+\log(K+1)))$ bits after rounding.
+Expanded matrix decoders require
+$O(K(B_\beta+(N+1)\log(m+1)))$ bits. The persistent label uses
+$\lceil\log_2 K\rceil$ bits; the horizon counter, temporary sampler, and
+arithmetic working storage are separately charged. Unlike a statement
+only about output bit length, the preceding proof gives a terminating
+polynomial table-construction algorithm for this specific family. It
+does not solve general minimum-width realization or certify a spectral
+gap. The full legal density-matrix constraint is maintained at every
+rounding step.
+
+\begin{proposition}[Supplied rational unit seeds]\label{prop:seedextension59}
+Theorem~\ref{thm:rationalcompiler58} remains valid for any supplied
+rational unit Bloch seed, with the label bound replaced by $13m^2+1$.
+\end{proposition}
+\begin{proof}
+Add the seed to the rational unit net if it is absent. The inner-ball
+inclusion is unchanged, every contracted rotated vertex still has an
+exact rational sparse row, and initialization is now deterministic at
+the added seed. The same induction and terminal rescaling apply.
+\end{proof}
+The implementation accepts the supplied finite rotation list and unit
+seed as exact rational data. Orthogonality, determinant one and unit
+seed norm are checked by rational identities before table allocation.

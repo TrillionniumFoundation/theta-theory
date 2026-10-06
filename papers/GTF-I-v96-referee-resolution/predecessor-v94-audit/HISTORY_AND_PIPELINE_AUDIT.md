@@ -1,0 +1,11 @@
+# History and pipeline audit — Revision 94
+
+The controlling external report is v90/R60 at `cf13712c54e9ef0c9c54a240b1f26efc78cc3568`, with companion proof/pipeline audit `e4e72a512bf747e7bd190196cd8dc3db35689e3c`. The immediate published base is v93 at `3b660839818d6ef676da72fb6e9969501be4e59a`, native source `2595ee56f70138c58b1924591d32e09cbad31381`. Both controlling reports remain byte-identical. No newer report is assumed.
+
+The complete classification/realization/orbit/streaming/coding/learning record is inherited unchanged. The local chain remains covariance -> support kernel -> finite corrected orbit -> one-sided nonempty tubes -> complete blocks -> conditional fidelity -> profile V -> hard pathwise Q. Its n*r*s^2 upper remainder and m*kappa*s^2 lower remainder are not removed or repurposed.
+
+The distinct finite-experiment chain is v90 exact three-class comparison -> v91 normal form and arbitrary-experiment attained primal/dual -> v92 rank-preserving two-cut hierarchy -> v93 initial cap, three cuts and quantitative rank rigidity -> v94 exact prescribed-spectrum biased values and necessary/sufficient receiver-message advantage. The new section is an evaluation of an existing variational problem, not a change of topic. Its proof uses the negative-swap payoff, secular eigenvalue, least rank-constrained majorant and a finite commuting instrument converse. No local asymptotic theorem is invoked as a premise of that exact computation.
+
+All inherited section bytes, complete-edition labels and structural dependencies are checked from V93_BASELINE.json. Current proof, history, reply, literature and release documents are archived before updating. No earlier report, failed build or local artifact is reclassified as current qualification.
+
+The wider A2/B4/C2/eleven-paper/whole-Theta analytic program remains logically separate. Raw local limits, stopped-path recovery, process CLT/Mosco, Nisio generator cores, filtering/QMD/LAN, changing-filtration response and labelled posterior contraction retain their independent upstream obligations. None is supplied by a finite-dimensional spectral calculation. All five aggregate closure fields remain false without altering their objectives.

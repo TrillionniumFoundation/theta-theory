@@ -1,0 +1,245 @@
+\section{Effective synthesis of an optimal interior learner}
+\label{sec:effectivelearning80}
+
+The finite readout in Theorem~\ref{thm:interiorlearnedcode79} does not
+by itself give computable entries for its measurement operators.
+We now construct a finite algebraic readout, and then a finite
+trusted-control realization, at the joint query and description
+orders.  The construction uses exact quantifier elimination.  The
+tomography estimator of \cite{MB67} supplies an existence bound;
+we do not compile its continuous outcome measurement or assume
+that its coarse-grained operators have computable entries.
+
+\subsection{A decidable collective-readout problem}
+Fix integers $d,m\ge1$.  Prepare $m$ independent maximally
+entangled probe--reference pairs and apply the unknown measurement
+to each probe.  Put $E_1=E$ and $E_0=I_d-E$.  The complete
+classical--quantum record is
+\begin{equation}\label{eq:choirecord80}
+ \Gamma_m(E)=\bigoplus_{y\in\{0,1\}^m}R_y(E),\qquad
+ R_y(E)=d^{-m}\bigotimes_{\ell=1}^m E_{y_\ell}^{\mathsf T}.
+\end{equation}
+The transpose is in the public input basis.  The blocks are
+\emph{subnormalized}: their traces are the probabilities of the
+classical strings $y$.  The real and imaginary parts of every entry
+of $R_y(E)$ are polynomials with rational coefficients in the
+$d^2$ real coordinates of $E$.  No division by an unknown outcome
+probability occurs.
+
+A final $L$-outcome readout consists of a POVM
+$(A_{j,y})_{j=1}^L$ on the $d^m$ retained reference dimensions,
+selected by the observed classical string $y$.  Its outcome
+probabilities are
+\begin{equation}\label{eq:readoutpolynomial80}
+ p_j(E;A)=\sum_y\operatorname{tr}(A_{j,y}R_y(E)),\qquad
+ A_{j,y}\succeq0,\quad\sum_{j=1}^L A_{j,y}=I_{d^m}.
+\end{equation}
+This description uses the outcome bits classically.  It entails no
+coherent access to those bits or to a measurement environment.
+Conversely, any collective POVM on \eqref{eq:choirecord80} can be
+dephased in $y$ without changing its probabilities, giving precisely
+such a family.
+
+\begin{lemma}[Effective algebraic readout selection]
+\label{lem:algebraicreadout80}
+Given $d,m$, finitely many Gaussian-rational Hermitian centres
+$C_1,\ldots,C_L$, and rational $a>0$, $0<\alpha<1$, it is
+decidable whether a readout \eqref{eq:readoutpolynomial80} satisfies
+\begin{equation}\label{eq:readoutfeasibility80}
+ \sum_{j:\,\|E-C_j\|_{\rm op}\le a}p_j(E;A)\ge1-\alpha
+ \qquad\hbox{for every }E\in\mathfrak I_d.
+\end{equation}
+When it is feasible, one finite deterministic computation returns
+such a family with algebraic entries, valid for every real
+$E\in\mathfrak I_d$.
+\end{lemma}
+\begin{proof}
+Parameterize each Hermitian matrix by its real coordinates.
+Positivity is a finite system of polynomial inequalities: use all
+principal minors, or the equivalent real symmetric representation
+for a complex Hermitian matrix.  Trace and tensor products in
+\eqref{eq:readoutpolynomial80} yield real polynomials with rational
+coefficients.  The same is true of the input constraint
+$I_d/4\preceq E\preceq3I_d/4$ and of
+\[
+ \mathsf{Good}_j(E):\quad
+ aI_d-(E-C_j)\succeq0,\qquad
+ aI_d+(E-C_j)\succeq0.
+\]
+For each subset $S\subseteq\{1,\ldots,L\}$ impose the implication
+\[
+ \left(\bigwedge_{j\in S}\mathsf{Good}_j(E)\right)
+ \wedge\left(\bigwedge_{j\notin S}\neg\mathsf{Good}_j(E)\right)
+ \quad\Longrightarrow\quad
+ \sum_{j\in S}p_j(E;A)\ge1-\alpha.
+\]
+The conjunction of these finitely many implications, universally
+quantified over $E\in\mathfrak I_d$, is exactly
+\eqref{eq:readoutfeasibility80}.  Equality belongs to
+$\mathsf{Good}_j$; its complement uses the corresponding strict
+inequalities.  Hence boundary cases require no numerical tolerance.
+
+Eliminate the $E$ variables while retaining the readout entries as
+free variables, and include the positivity and normalization
+conditions in \eqref{eq:readoutpolynomial80}.  Effective real
+quantifier elimination decides whether this rational semialgebraic
+feasible set is empty.  If it is nonempty, the real-closed-field
+transfer principle gives a point with real algebraic coordinates.
+One explicit selection rule uses a fixed effective enumeration of
+algebraic tuples and tests the resulting quantifier-free formula
+by exact algebraic sign determination.  It terminates on this
+nonempty set.
+These are standard effective real-algebraic operations; see
+\cite[Theorems~2.77, 2.80 and Chapter~14]{BPR80}.
+The eliminated formula is equivalent over the reals, so the selected
+point satisfies the condition for all real effects, not merely
+algebraic ones.  The unknown effect is a quantified variable, never
+supplied data or an oracle queried by this computation.
+\end{proof}
+
+\subsection{Finite controls at the joint optimal rates}
+\begin{theorem}[Effective optimal interior learning and description]
+\label{thm:effectiveinterior80}
+Let $d,N\ge1$ be integers, and let
+$0<\delta\le2^{-13}$ and $0<\eta\le1/8$ be rational.
+There is a common learner on $\mathfrak I_d$ whose entire classical
+specification is computed from $(d,N,\delta,\eta)$ in finitely
+many steps.  In the finite trusted-control model of
+Section~\ref{sec:finitecontrol78}, it returns a fixed-length word
+decoded by a public deterministic decoder into a legal rational
+effect $C$, with
+\begin{align}
+ \sup_{E\in\mathfrak I_d}
+  \mathbb P_E\{d_N(E,C)>\delta\}&\le\eta,
+                                         \label{eq:effectiverisk80}\\
+ M&\le C_0\frac{N}{\delta^2}
+                \left(d^2+d\log\frac1\eta\right),
+                                         \label{eq:effectivecalls80}\\
+ B&=\frac{d^2}{2}\log_2N+d^2\log_2(1/\delta)+O(d^2).
+                                         \label{eq:effectivepayload80}
+\end{align}
+All constants are absolute.  The number $M$ and the finite readout
+are fixed before any unknown-device call.  Acquisition uses fresh
+one-call probe--reference pairs; only completed outputs undergo
+collective processing.  Thus the construction belongs to every
+fresh-block class $1\le b\le N$.
+
+The call order matches the coherent adaptive lower bound of
+Theorem~\ref{thm:interiorconfidence80}, and the description order
+matches Theorem~\ref{thm:interiorentropy79}.  No bound on classical
+search time, algebraic-description length, quantum workspace, or
+elementary known-gate count is asserted.
+\end{theorem}
+\begin{proof}
+Construct the finite rational dictionary $\mathcal D=(C_1,\ldots,C_L)$
+of Theorem~\ref{thm:interiorcodec79} at parameters $(d,N,\delta)$.
+Set
+\[
+ k=\lceil\sqrt N\rceil,
+ \qquad a=\frac{\delta}{8k},\qquad\alpha=\eta/2.
+\]
+For $m=1,2,\ldots$, apply Lemma~\ref{lem:algebraicreadout80} to
+these centres, $a$, and $\alpha$.  At the first feasible $m$,
+extract its algebraic readout and set $M=m$.  Each infeasible
+candidate is rejected by a terminating decision procedure; there
+is no unbounded search for a witness at such a candidate.
+
+We prove termination and the call bound without computing any
+operator of the imported tomography procedure.  Apply
+Lemma~\ref{lem:binaryconfidenceupper80} at operator accuracy
+$\epsilon=\delta/(64k)$ and failure $\eta/2$.  Its independent
+Choi acquisition uses
+\[
+ m_0\le C_1 k^2\delta^{-2}
+                 \left(d^2+d\log\frac2\eta\right)
+\]
+calls and returns a legal effect $F$.  Clip $F$ spectrally to
+$[I_d/4,3I_d/4]$, obtaining $T$.  On the estimation success event,
+Weyl's inequality gives $\|T-F\|_{\rm op}\le\epsilon$ and hence
+$\|T-E\|_{\rm op}\le2\epsilon$.  The rounding and predecessor
+selection in Theorem~\ref{thm:interiorcodec79} produce an index $j$
+with $\|T-C_j\|_{\rm op}\le5\delta/(64k)$.  Therefore
+\begin{equation}\label{eq:effectiveexistence80}
+ \|E-C_j\|_{\rm op}
+ \le\frac{7\delta}{64k}<\frac{\delta}{8k}=a
+\end{equation}
+on that event.
+
+Clipping, coordinate rounding with its prescribed ties, and
+selection from a finite list are Borel operations.  Composing them
+with the final tomography measurement defines a finite-outcome
+POVM on the $m_0$ Choi records.  Its dephased form is a readout
+\eqref{eq:readoutpolynomial80} satisfying
+\eqref{eq:readoutfeasibility80}.  Only its existence is used here;
+its entries and any defining integrals are not inputs to the
+algebraic search.  Thus the search stops with $M\le m_0$.
+Since $k^2\le4N$ and
+$\log(2/\eta)\le C_2\log(1/\eta)$, this proves
+\eqref{eq:effectivecalls80}.
+
+The selected ideal readout has probability at least $1-\eta/2$ of
+returning a centre at operator distance at most $a$ from $E$.
+The target lies in $\mathfrak I_d$ and every centre lies in
+$[I_d/8,7I_d/8]$.  Lemma~\ref{lem:interiormetric78} therefore gives
+\[
+ d_N(E,C_j)\le4\sqrt N\,a\le\delta/2
+\]
+on this event.
+
+It remains to realize the computed readout with finite trusted
+controls.  For each classical string $y$, its algebraic POVM has
+the algebraic isometry
+\[
+ V_y\psi=\sum_{j=1}^L|j\rangle_C|j\rangle_Z
+                         \sqrt{A_{j,y}}\,\psi.
+\]
+Tracing out $Z$ and the factor space gives the required classical
+readout.  This is a finite table, including strings of probability
+zero under some targets.  Algebraic positive square roots and the
+finite descriptions of Section~\ref{sec:finitecontrol78} make each
+entry effectively approximable.  In particular, the normalization
+of a rational approximation to an isometry preserves the exact
+channel constraints; a fixed final dephasing preserves the
+classical output type.
+
+There are $M$ fresh-pair preparation events and one final readout
+event.  Require total unhalved error at each event at most
+\begin{equation}\label{eq:effectivecontrolbudget80}
+ e_{\rm event}=\frac{\eta}{M+1}.
+\end{equation}
+For a preparation this is trace-norm error in the fresh joint pair;
+for the readout it is complete diamond-norm error, uniformly over
+all $y$ and all retained reference states.  Split each allowance
+equally between approximation by a finite rational specification
+and its actual trusted realization.  Any additional elementary
+instructions are charged by the same total pathwise budget $\eta$.
+Lemma~\ref{lem:controlhybrid78} then bounds the total variation
+between ideal and actual output indices by $\eta/2$.
+Applying it to the original bad-output event $d_N(E,C_j)>\delta$
+proves \eqref{eq:effectiverisk80}.  No continuity of a decision
+boundary or perturbation of the returned effect is assumed.
+
+Finally transmit the dictionary index using
+$B=\lceil\log_2L\rceil$ bits.  The exact public decoder, including
+its legal values on unused words, is unchanged.
+Theorem~\ref{thm:interiorcodec79} gives the upper order in
+\eqref{eq:effectivepayload80}.  Since the dictionary covers
+$\mathfrak I_d$, Theorem~\ref{thm:interiorentropy79} gives its
+matching lower order.  More generally, positive success probability
+at every target forces any fixed finite decoder's range to cover
+the target family.  This proves the stated optimality claims.
+\end{proof}
+
+The synthesis is an effective construction of a new collective
+learner at the existing tomography query order.  It is not a claim
+of efficient compilation of the original tomography measurement.
+At the selected $M$, there are $2^M$ possible classical strings,
+each selecting an $L$-outcome measurement on dimension $d^M$.
+The algebraic search, its coefficients, the corresponding isometry
+descriptions, and their preparation work are separate resources
+from the transmitted index.  The per-event norm tolerance in
+\eqref{eq:effectivecontrolbudget80} introduces no additional
+$\delta/N$ requirement; dimensions and coordinate precision still
+depend on $\delta$ through $M$ and $L$.  Fresh preparation remains
+tensor-separated from the stored references, so finite-control
+approximation preserves the one-call acquisition restriction.
