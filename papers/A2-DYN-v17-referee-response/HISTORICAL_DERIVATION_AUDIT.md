@@ -1,0 +1,9 @@
+# Historical derivation audit: revision 17
+
+The frozen author source is v16 at `2054310e587e576ce593112c30cdfabac6742105`, obtained from its exact-source artifact. Its archive SHA-256 is `48a705a03c4c49a4855762cd59e676efe2e205ab592a63b5023fe378d7af8ea1`. The newly landed v16 report was read in full at commit `b0b7ddfcd90f493e02254742b33174e9108fc5a7`, report blob `805f04cd60d144bc6321ce3f4304ebe1cda34999`. Unlike the previous response, the present revision is based on an actual review of v16.
+
+The new proof audit is centered on the existing covariance and finite-product chain, the quantitative phase/modulus estimates, the diffusive near-origin spectral word, and the genuine return tower with its finite-record approximation. The report's arbitrary return-spectral-phase objection is addressed by the exact affine frequency shift, not by interpreting a return phase as a collision phase. The earlier phase-zero theorem and its local scope remain in their original module.
+
+The new centered endpoint calculation changes the admissible budget without changing the middle-block observable or physical record. The operator step is an explicit orthogonal compression of the original return operator; its normalized function reconstruction and leakage identity are proved before invoking the new phase estimate. Finite-time consistency is separately proved with the actual return-count tail. No historical operator-interface requirement is treated as an already proved anisotropic construction.
+
+All 37 old core files and every old Python file are copied byte-for-byte from the frozen v16 source, and the bibliography is unchanged. The only inherited text edits are six exact replacements in the introduction and input list. The verifier replays those edits against frozen baseline hashes and checks retention of every mathematical label. The raw critical/singular and weighted-conditioning requirements remain in the same historical proof chain.

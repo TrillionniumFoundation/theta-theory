@@ -1,0 +1,9 @@
+# Validation: A2-DYN revision 17
+
+The controlling source and report are frozen in `SOURCE_MANIFEST.json`. The verifier checks all 39 core inclusions, every source file hash, all 37 byte-identical inherited core files, every unchanged inherited Python script, the unchanged bibliography, exact replay of the six introduction edits, and retention of all old mathematical labels. It also checks references, citations and proof environments.
+
+The new finite diagnostics include 48 peripheral variable-height tower cases, 32 occurrences of one-level tops, 36 affine spectral-shift identities, six cancellation-line cases, 30 dephasing-time checks, 128 exact orthogonal compression identities, 50 residual inequalities, 64 exact projection power telescopes and 12 finite grid boundary-variation cases. Negative controls detect the wrong per-collision constant phase and omitted projection leakage. Exact rational exponent checks include the strict `79/100 < 4/5` subexponential budget. These diagnostic models do not establish mixing, continuum coarea estimates or spectral convergence.
+
+All inherited finite-check chains run again, and the six inherited geometry/return/inversion diagnostic programs run separately. Normal and optimized verifier outputs must agree byte-for-byte. The native TeX build uses no shell escape, stabilizes cross-references, and rejects undefined references, warnings and overfull boxes.
+
+The dynamic `evidence/build-receipt.json` is generated only after the checks and build. It records the exact checked-out SHA, event SHA, run ID and attempt, scoped-source cleanliness, PDF and log hashes, and the verified source hashes. The GitHub artifact contains the exact source archive and logs. This static record does not predeclare a future run successful. Rendering checks concern typesetting, not proof certification; no independent human review is claimed.
