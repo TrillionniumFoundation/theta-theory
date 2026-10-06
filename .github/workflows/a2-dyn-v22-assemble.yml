@@ -1,0 +1,31 @@
+name: A2-DYN v22 one-time exact source transport
+on:
+  push:
+    branches:
+      - revision/a2-dyn-v22-referee-response-2026-10-06
+    paths:
+      - .github/a2-dyn-v22-transport/**
+      - .github/workflows/a2-dyn-v22-assemble.yml
+permissions:
+  contents: write
+jobs:
+  assemble:
+    if: contains(github.event.head_commit.message, '[assemble-v22]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Verify and create immutable paper objects
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 .github/a2-dyn-v22-transport/assemble.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: a2-dyn-v22-assembly-${{ github.sha }}
+          path: v22-assembly-receipt.json
+          if-no-files-found: error
+          retention-days: 90
