@@ -1,0 +1,9 @@
+# Release provenance — General Theta Foundations I, Revision 92
+
+Immediate base: v91 publication `ce2616a9f5d870d5cf4c8ee254a728544a0bea6a` with native `e7ea7aa87c77d79119fe9f4cad273ac97997089e`. The controlling R60 external/audit objects remain `cf13712c54e9ef0c9c54a240b1f26efc78cc3568` / `e4e72a512bf747e7bd190196cd8dc3db35689e3c`.
+
+The new branch is `revision/general-theta-foundations-i-v92-r60-rank-hierarchy-2026-10-06`. Its staging script copies only the pinned predecessor native inventory into the new paper directory and preserves each changed predecessor file. No previous paper or review branch is modified. A native-source commit is made and pushed before source-bound qualification. Its successful build runs all 34 suites in ordinary/optimized modes, the full native reconstruction and the standalone primary/supplement reconstruction. The artifact-only child adds only four PDFs and generated evidence, explicitly staging ignored PDF paths.
+
+The native and publication refs are aliases of their exact objects, created with non-force GitHub operations; no atomic multi-ref claim is made. A subsequent metadata-only final-head request triggers a separate read-only check with exact SHA checkout and no persisted write credentials. The resulting external artifact, not the request text, is the final-head receipt. That receipt must not be committed into the very head it verifies.
+
+Each actual workflow conclusion is reported separately. Inherited v90 transport failures/API handoffs and the successful v91 publication are historical records, not v92 validation. An Actions check is not a legacy commit status. A Git object identity and reproducible reconstruction are not a human signature or an independent mathematical/priority review. Failure artifacts are retained for diagnosis and never relabelled as successful qualification.

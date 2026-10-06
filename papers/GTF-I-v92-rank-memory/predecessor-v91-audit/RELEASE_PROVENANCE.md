@@ -1,0 +1,14 @@
+# Release provenance — General Theta Foundations I, Revision 91
+
+The controlling R60 reports and reviewed v90 head are pinned in `CONTROLLING_REPORTS.json`. The new response branch is `revision/general-theta-foundations-i-v91-r60-response-2026-10-06`. The staging script copies only the predecessor native inventory, verifies it against the published v90 hashes, preserves every changed predecessor file, and adds the new proof sections and current audits. It does not edit another paper or a review branch.
+
+A native source commit must precede the production build. The build checks the exact Git source tree, compiles four manuscripts, runs 33 regression suites normally and under optimization, and reconstructs both the native and the two-document standalone journal archive. A publication child adds only the four PDFs and source-bound evidence. New branch aliases refer to those actual commits. The final request is metadata-only; the exact triggering head is reconstructed with read-only permissions and without persisted write credentials. Its receipt is uploaded outside the commit it verifies. An in-progress job or request file is not a success receipt.
+
+The v90 predecessor had a successful native build but a failed atomic transport run, followed by a sequential connected-API ref handoff. Its separate exact-head Actions check succeeded. Those historical facts remain preserved and are not attributed to v91. Any transport recovery for v91 must be recorded in the final root review entry with the actual run conclusion and unchanged object identities. Actions check runs, the legacy commit-status API and cryptographic human signatures are distinct. No unsigned commit is represented as a human signature.
+
+
+## Completion branch and actual prior-run status
+
+The preceding v91 workflow run `37402552173` was cancelled after its native source had reached the remote as `d28546aad99cd1ce3846ca74ccedb90c24ebd37b`; it did not establish a qualified publication. The new branch `revision/general-theta-foundations-i-v91-r60-completion-2026-10-06` starts from that exact source. It preserves it, adds quantitative contact and near-optimality proofs, and creates a new native commit before reconstructing the manuscripts. No old artifact or cancelled run supplies current qualification.
+
+The completion workflow pushes a single existing revision ref, without force and with its expected remote head checked, before the slow build. An artifact-only publication child is pushed after the isolated and standalone reconstructions. Native/publication aliases are separate API operations after their objects have been confirmed. A metadata-only final request then verifies its exact triggering head in a read-only job. Its receipt is external to the commit it verifies. The eventual root review entry must report actual job conclusions, SHA identities and any transport recovery; no prospective text here represents success.
