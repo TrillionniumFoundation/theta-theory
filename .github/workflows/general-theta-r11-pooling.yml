@@ -1,0 +1,141 @@
+name: General Theta R11 posterior pooling publication
+on:
+  push:
+    branches:
+      - foundation/general-theta-restart-r11-posterior-pooling-research-2026-10-08
+    paths:
+      - .github/theta-publication/r11/**
+      - .github/workflows/general-theta-r11-pooling.yml
+permissions:
+  contents: write
+concurrency:
+  group: general-theta-r11-pooling-publication
+  cancel-in-progress: false
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 1
+          sparse-checkout: |
+            .github/theta-publication/r11
+            .github/workflows
+            foundations/general-theta
+            papers/General-Theta-Foundations-I-restart
+      - name: Install deterministic build dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y texlive-latex-extra texlive-fonts-recommended latexmk poppler-utils python3-venv
+          python3 -m venv /tmp/theta-r11-venv
+          /tmp/theta-r11-venv/bin/pip install pypdf==5.9.0
+      - name: Publish ordinary immutable mathematical source
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python3 - <<'PY'
+          import hashlib,json,lzma,pathlib,subprocess
+          parts=pathlib.Path('.github/theta-publication/r11')
+          raw=b''.join((parts/f'source.part{i}').read_bytes() for i in range(4))
+          if hashlib.sha256(raw).hexdigest()!='db030d01a8f23329292b93ebe3a3d91124336bfec30177656db6c22586a5485a':
+              raise RuntimeError('publication capsule hash mismatch')
+          data=json.loads(lzma.decompress(raw))
+          target='papers/General-Theta-Foundations-I-restart/r11-posterior-pooling'
+          if data['format']!=1 or data['native_directory']!=target or len(data['files'])!=32:
+              raise RuntimeError('unexpected source inventory')
+          base=pathlib.Path(target)
+          if base.exists(): raise RuntimeError('refuse to overwrite an existing revision')
+          for name,text in data['files'].items():
+              path=pathlib.PurePosixPath(name)
+              if path.is_absolute() or '..' in path.parts or not isinstance(text,str):
+                  raise RuntimeError('unsafe source member')
+              dest=base/path;dest.parent.mkdir(parents=True,exist_ok=True);dest.write_text(text)
+          result=json.loads(subprocess.check_output(['python3',str(base/'verify.py')]))
+          if result['native_source_tree_sha']!='f37f42455e99419d118156ecb122d9826e651c2d':
+              raise RuntimeError('ordinary source tree mismatch')
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- papers/General-Theta-Foundations-I-restart/r11-posterior-pooling
+          git commit -m 'feat(theta): R11 causal posterior pooling and overlapping-noise adaptive completion'
+          SOURCE_SHA=$(git rev-parse HEAD)
+          echo "source_sha=$SOURCE_SHA" >> "$GITHUB_OUTPUT"
+          test "$(git rev-parse HEAD:papers/General-Theta-Foundations-I-restart/r11-posterior-pooling)" = f37f42455e99419d118156ecb122d9826e651c2d
+      - name: Complete source-bound builds and regressions
+        env:
+          SOURCE_SHA: ${{ steps.source.outputs.source_sha }}
+        run: |
+          set -euo pipefail
+          B=papers/General-Theta-Foundations-I-restart/r11-posterior-pooling
+          /tmp/theta-r11-venv/bin/python "$B/build.py" --source-sha "$SOURCE_SHA" --expected-tree f37f42455e99419d118156ecb122d9826e651c2d
+          git diff --exit-code -- "$B" ':!**/artifacts/**' ':!**/evidence/**'
+      - name: Bind artifacts and non-force push research branch
+        id: artifact
+        env:
+          SOURCE_SHA: ${{ steps.source.outputs.source_sha }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json,os,pathlib,subprocess
+          b=pathlib.Path('papers/General-Theta-Foundations-I-restart/r11-posterior-pooling')
+          receipt=json.loads((b/'evidence/BUILD_RECEIPT.json').read_text())
+          if receipt['source_commit']!=os.environ['SOURCE_SHA'] or receipt['status']!='PASS':
+              raise RuntimeError('source binding missing')
+          canonical='18000b21e4bfd89180ccb069e46ac0f21621f34d'
+          review='6f3ca64beec4b054dba8cb5def1a6c69fbc46d52'
+          for name,sha in [('foundation/general-theta-foundations-i-restart-2026-10-06',canonical),('review/general-theta-restart-r10-adaptive-completion-external-top4-referee-r10-2026-10-08',review)]:
+              live=subprocess.check_output(['git','ls-remote','origin','refs/heads/'+name],text=True).split()[0]
+              if live!=sha:raise RuntimeError('pinned anchor changed: '+name)
+          root='papers/General-Theta-Foundations-I-restart'
+          siblings={}
+          for p in pathlib.Path(root).iterdir():
+              if p.is_dir() and p.name!='r11-posterior-pooling':
+                  key=str(p)
+                  old=subprocess.check_output(['git','rev-parse',os.environ['GITHUB_SHA']+':'+key],text=True).strip()
+                  new=subprocess.check_output(['git','rev-parse','HEAD:'+key],text=True).strip()
+                  if old!=new:raise RuntimeError('historical subtree changed')
+                  siblings[key]=old
+          item={'source_commit':os.environ['SOURCE_SHA'],'native_source_tree':'f37f42455e99419d118156ecb122d9826e651c2d','integration_commit':os.environ['GITHUB_SHA'],'canonical_commit':canonical,'review_commit':review,'hosted_run_id':os.environ['GITHUB_RUN_ID'],'retained_subtrees':siblings,'non_force_push':True,'limitations':'Publication checks, not continuum proof or priority certification.'}
+          (b/'evidence/HOSTED_PUBLICATION.json').write_text(json.dumps(item,sort_keys=True,indent=2)+'\n')
+          PY
+          git add -- papers/General-Theta-Foundations-I-restart/r11-posterior-pooling/artifacts papers/General-Theta-Foundations-I-restart/r11-posterior-pooling/evidence
+          git commit -m 'build(theta): bind R11 article and integral supplements to immutable source'
+          ARTIFACT_SHA=$(git rev-parse HEAD)
+          echo "artifact_sha=$ARTIFACT_SHA" >> "$GITHUB_OUTPUT"
+          git push origin "HEAD:refs/heads/$GITHUB_REF_NAME"
+      - name: Export source and delivery packet
+        env:
+          SOURCE_SHA: ${{ steps.source.outputs.source_sha }}
+          ARTIFACT_SHA: ${{ steps.artifact.outputs.artifact_sha }}
+        run: |
+          python3 - <<'PY'
+          import json,os,pathlib,subprocess,zipfile,hashlib
+          native='papers/General-Theta-Foundations-I-restart/r11-posterior-pooling/'
+          prefix='papers/General-Theta-Foundations-I-restart/'
+          keep={'r4-causal-resolvent','r5-intrinsic-recursion','r6-operational-transfer','r7-acquisition-compatible','r8-continuation-geometry','r9-continuation-completion','r10-adaptive-completion','review-inputs'}
+          tracked=subprocess.check_output(['git','ls-files','-z']).decode().split('\0')
+          selected=[]
+          for name in tracked:
+              if not name:continue
+              path=pathlib.Path(name)
+              if not path.is_file():continue
+              choose=name.startswith(native) or name.startswith('foundations/general-theta/') or name.startswith('.github/theta-publication/r11/') or name=='.github/workflows/general-theta-r11-pooling.yml'
+              if name.startswith(prefix):
+                  rem=name[len(prefix):].split('/')
+                  if (rem[0] in keep or rem[0].startswith(('r4-','r5-','r6-','r7-','r8-','r9-','r10-'))) and not {'artifacts','evidence','__pycache__'}.intersection(rem):choose=True
+              if choose:selected.append(name)
+          binding={'source_commit':os.environ['SOURCE_SHA'],'artifact_commit':os.environ['ARTIFACT_SHA'],'native_source_tree':'f37f42455e99419d118156ecb122d9826e651c2d','run_id':os.environ['GITHUB_RUN_ID'],'file_sha256':{name:hashlib.sha256(pathlib.Path(name).read_bytes()).hexdigest() for name in selected}}
+          with zipfile.ZipFile('/tmp/General_Theta_Foundations_I_R11_hosted_packet.zip','w',zipfile.ZIP_DEFLATED) as out:
+              for name in selected:out.write(name,name)
+              out.writestr('DELIVERY_BINDING.json',json.dumps(binding,sort_keys=True,indent=2)+'\n')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: general-theta-r11-source-and-build-packet
+          path: /tmp/General_Theta_Foundations_I_R11_hosted_packet.zip
+          if-no-files-found: error
+          retention-days: 30
