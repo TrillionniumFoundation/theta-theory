@@ -1,0 +1,9 @@
+# Validation protocol: revision 37
+
+The authoritative remote evidence is the completed exact-SHA qualification run and its dynamic `evidence/build-receipt.json`. No run is predeclared successful here. The frozen v35 baseline had response run `37640998381` and copy run `37641024948`; those runs are baseline evidence only.
+
+The new verifier checks the exact v35 paper tree, 79 core inclusions, three principal theorems, the retained A--X appendix, all inherited mathematical labels, 73 unchanged inherited cores, six exact replacements in cores 72/74, all 83 unchanged inherited Python scripts, unchanged bibliography, the complete ordinary-source Merkle tree, the qualification workflow hash and the controlling review blob. Remote qualification requires the controlling report to be present; a local source copy without it reports that fact explicitly rather than inventing a successful check.
+
+New finite regressions include 26,104 exact invertible-orbit endpoint/count cases, 14,844 wrong-endpoint negative controls, 189 chronological weighted-matrix cases, exact rational Schur/covariance Jacobians and conditional-mean sign checks, and support-function curvature/area arithmetic. These are algebraic models, not simulations or proofs of continuum mixing or local limits. The inherited v35 and v34 finite chains are rerun, together with the six inherited geometry/inversion diagnostics. Normal and optimized Python outputs must agree.
+
+Native TeX runs with shell escape disabled until references stabilize. The build rejects LaTeX/package warnings, missing characters, undefined references and overfull boxes. Dynamic receipts record the event and checked-out SHA, workflow run and attempt, clean scoped source, exact source hashes, PDF and log hashes. Rendering selects pages from actual theorem labels, not assumed page numbers. The output is inspected as typesetting evidence, not independent mathematical verification.

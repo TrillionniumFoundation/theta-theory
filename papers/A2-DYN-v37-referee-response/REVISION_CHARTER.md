@@ -1,0 +1,3 @@
+# Revision 37 charter
+
+Respond to the latest v36 submission-state and supplementary report from its actual commit. Land a complete new source, not another alias. Preserve the original title, triangular mechanical problem, actual-return record and raw mixed-density endpoint. Retain all old core modules and theorem labels, with explicit source-preserving edits and provenance. Add the exact occupation multiplier, mixed local--central theorem and actual-return window law. Repair the faithful-strong endpoint, pin finite-cover mixing, separate the general hypotheses and verify a nonelliptic application. Do not turn a window theorem into a single-index or pointwise density theorem, or a source build into independent specialist review.
