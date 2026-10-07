@@ -1,0 +1,128 @@
+name: General Theta R9 source-bound full build
+on:
+  push:
+    branches: [foundation/general-theta-restart-r9-continuation-completion-research-2026-10-07]
+    paths: [.github/workflows/general-theta-r9-source-build.yml]
+permissions:
+  contents: write
+concurrency:
+  group: theta-r9-source-publication
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      TARGET_BRANCH: foundation/general-theta-restart-r9-continuation-completion-research-2026-10-07
+      BASE_RESEARCH: 3c9b212f8673c95e3a28fd83811b8a4f3bacc431
+      NATIVE_DIR: papers/General-Theta-Foundations-I-restart/r9-continuation-completion
+      EXPECTED_NATIVE_TREE: bffa275cd54758ac318d4eafa8d8c83be80c7b85
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Check exact branch and retain remote provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = "$TARGET_BRANCH"
+          test "$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | cut -f1)" = "$GITHUB_SHA"
+          mkdir -p "$RUNNER_TEMP/theta-r9-receipts"
+          git ls-remote --heads origin > "$RUNNER_TEMP/theta-r9-receipts/REMOTE_HEADS_BEFORE.txt"
+          git fetch --no-tags --depth=1 origin "$BASE_RESEARCH"
+          git archive "$BASE_RESEARCH" papers/General-Theta-Foundations-I-restart/r4-causal-resolvent papers/General-Theta-Foundations-I-restart/r5-intrinsic-recursion papers/General-Theta-Foundations-I-restart/r6-operational-transfer papers/General-Theta-Foundations-I-restart/r7-acquisition-compatible papers/General-Theta-Foundations-I-restart/r8-continuation-geometry papers/General-Theta-Foundations-I-restart/review-inputs | tar -x
+      - name: Materialize the complete ordinary source once, before any build
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import shutil, tempfile
+          root=Path('papers/General-Theta-Foundations-I-restart')
+          old=root/'r8-continuation-geometry'; new=root/'r9-continuation-completion'
+          overlay={p.relative_to(new).as_posix():p.read_bytes() for p in new.rglob('*') if p.is_file()}
+          shutil.rmtree(new)
+          shutil.copytree(old,new)
+          for name in ('artifacts','evidence','__pycache__'):
+              if (new/name).exists(): shutil.rmtree(new/name)
+          for p in new.glob('*.py'):
+              p.write_text(p.read_text().replace('R8','R9').replace('r8','r9'))
+          cover=new/'supplement_cover.tex.in'
+          cover.write_text(cover.read_text().replace('R8','R9').replace('r8','r9'))
+          shutil.copyfile(new/'regression.py',new/'regression_r8.py')
+          for name,data in overlay.items():
+              dest=new/name; dest.parent.mkdir(parents=True,exist_ok=True); dest.write_bytes(data)
+          PY
+          python3 .research/general-theta-r9/edit_manuscript.py
+          python3 .research/general-theta-r9/write_audits.py
+          python3 "$NATIVE_DIR/refresh_manifest.py"
+          python3 "$NATIVE_DIR/verify.py" | tee "$RUNNER_TEMP/theta-r9-receipts/SOURCE_AUDIT.json"
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          report=json.loads((Path(os.environ['RUNNER_TEMP'])/'theta-r9-receipts/SOURCE_AUDIT.json').read_text())
+          if report['native_source_tree_sha']!=os.environ['EXPECTED_NATIVE_TREE']:
+              raise RuntimeError('ordinary source differs from the locally built and audited tree: '+report['native_source_tree_sha'])
+          PY
+          git rm -r .research/general-theta-r9
+          git add papers/General-Theta-Foundations-I-restart
+          git config user.name 'General Theta source publication'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'feat(theta restart R9): publish complete ordinary manuscript, proofs and audits; preserve R4-R8 trees'
+          SOURCE_SHA="$(git rev-parse HEAD)"
+          test "$(git rev-parse "HEAD:$NATIVE_DIR")" = "$EXPECTED_NATIVE_TREE"
+          test "$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | cut -f1)" = "$GITHUB_SHA"
+          git push origin "HEAD:refs/heads/$TARGET_BRANCH"
+          echo "SOURCE_SHA=$SOURCE_SHA" >> "$GITHUB_ENV"
+          printf '%s\n' "$SOURCE_SHA" > "$RUNNER_TEMP/theta-r9-receipts/SOURCE_SHA.txt"
+      - name: Install independent hosted PDF toolchain
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils python3-venv
+          python3 -m venv "$RUNNER_TEMP/theta-r9-venv"
+          "$RUNNER_TEMP/theta-r9-venv/bin/pip" install pypdf
+          echo "$RUNNER_TEMP/theta-r9-venv/bin" >> "$GITHUB_PATH"
+      - name: Build immutable source, both modes and six isolated PDF builds
+        run: |
+          set -euo pipefail
+          mkdir -p "$NATIVE_DIR/evidence"
+          python3 "$NATIVE_DIR/build.py" --source-sha "$SOURCE_SHA" --expected-tree "$EXPECTED_NATIVE_TREE" --output "$NATIVE_DIR/artifacts" --receipt "$NATIVE_DIR/evidence/BUILD_RECEIPT.json"
+          git diff --exit-code
+      - name: Publish artifacts in a separate child commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import json, os, subprocess
+          p=Path(os.environ['NATIVE_DIR'])
+          preserved={}
+          for n in ['r4-causal-resolvent','r5-intrinsic-recursion','r6-operational-transfer','r7-acquisition-compatible','r8-continuation-geometry']:
+              path='papers/General-Theta-Foundations-I-restart/'+n
+              current=subprocess.check_output(['git','rev-parse','HEAD:'+path],text=True).strip()
+              original=subprocess.check_output(['git','rev-parse',os.environ['BASE_RESEARCH']+':'+path],text=True).strip()
+              if current!=original: raise RuntimeError('preserved subtree changed: '+n)
+              preserved[n]=current
+          result={'source_commit':os.environ['SOURCE_SHA'],'native_source_tree':os.environ['EXPECTED_NATIVE_TREE'],'canonical':'18000b21e4bfd89180ccb069e46ac0f21621f34d','review':'f04b0c0c967a75dfa2f09cbfb3d38e54cef639d2','inherited_research':os.environ['BASE_RESEARCH'],'preserved_subtrees':preserved,'hosted_run_id':os.environ['GITHUB_RUN_ID'],'authoring_transport_removed':True,'source_is_ordinary_files':True,'scope':'R9 and complete retained supplement; tests are not proofs'}
+          (p/'evidence/SOURCE_PUBLICATION.json').write_text(json.dumps(result,indent=2,sort_keys=True)+'\n')
+          PY
+          test "$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | cut -f1)" = "$SOURCE_SHA"
+          git add "$NATIVE_DIR/artifacts" "$NATIVE_DIR/evidence"
+          git commit -m 'build(theta restart R9): publish exact-source PDFs and hosted receipts separately'
+          ARTIFACT_SHA="$(git rev-parse HEAD)"
+          git push origin "HEAD:refs/heads/$TARGET_BRANCH"
+          printf '%s\n' "$ARTIFACT_SHA" > "$RUNNER_TEMP/theta-r9-receipts/ARTIFACT_SHA.txt"
+          git ls-remote --heads origin > "$RUNNER_TEMP/theta-r9-receipts/REMOTE_HEADS_AFTER.txt"
+          mkdir -p "$RUNNER_TEMP/theta-r9-packet"
+          git archive HEAD foundations/general-theta papers/General-Theta-Foundations-I-restart .github/workflows/general-theta-r9-source-build.yml | tar -x -C "$RUNNER_TEMP/theta-r9-packet"
+          cp -a "$RUNNER_TEMP/theta-r9-receipts" "$RUNNER_TEMP/theta-r9-packet/hosted_publication"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: general-theta-r9-source-bound-packet
+          path: |
+            ${{ runner.temp }}/theta-r9-packet
+            ${{ runner.temp }}/theta-r9-receipts
+          if-no-files-found: error
+          retention-days: 14
