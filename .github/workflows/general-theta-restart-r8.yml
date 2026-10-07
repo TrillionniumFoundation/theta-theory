@@ -1,0 +1,100 @@
+name: General Theta restart R8 source-bound build
+on:
+  push:
+    branches:
+      - foundation/general-theta-restart-r8-continuation-geometry-research-2026-10-07
+    paths:
+      - '.github/theta-r8/**'
+      - '.github/workflows/general-theta-restart-r8.yml'
+permissions:
+  contents: write
+concurrency:
+  group: general-theta-restart-r8-build
+  cancel-in-progress: false
+jobs:
+  native-and-supplement:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      BRANCH: foundation/general-theta-restart-r8-continuation-geometry-research-2026-10-07
+      NATIVE: papers/General-Theta-Foundations-I-restart/r8-continuation-geometry
+      PYTHONDONTWRITEBYTECODE: '1'
+      TZ: UTC
+      LC_ALL: C.UTF-8
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 1
+          sparse-checkout: |
+            .github/theta-r8
+            .github/workflows
+            papers/General-Theta-Foundations-I-restart
+            foundations/general-theta
+      - name: Install build-only dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended texlive-science lmodern poppler-utils python3-venv
+          python3 -m venv "$RUNNER_TEMP/theta-r8-venv"
+          "$RUNNER_TEMP/theta-r8-venv/bin/pip" install --disable-pip-version-check pypdf==5.9.0
+          echo "$RUNNER_TEMP/theta-r8-venv/bin" >> "$GITHUB_PATH"
+      - name: Materialize and commit immutable ordinary source
+        shell: bash
+        run: |
+          set -euo pipefail
+          BOOTSTRAP_COMMIT=$(git rev-parse HEAD)
+          echo "BOOTSTRAP_COMMIT=$BOOTSTRAP_COMMIT" >> "$GITHUB_ENV"
+          git fetch --no-tags origin "$BRANCH"
+          test "$(git rev-parse FETCH_HEAD)" = "$BOOTSTRAP_COMMIT"
+          python .github/theta-r8/materialize.py > "$RUNNER_TEMP/source-materialization.json"
+          python - <<'PY'
+          import json, os, subprocess
+          from pathlib import Path
+          base=Path(os.environ['NATIVE'])
+          names=list(json.loads((base/'SOURCE_MANIFEST.json').read_text())['files'])+['SOURCE_MANIFEST.json']
+          subprocess.run(['git','add','-f','--',*(str(base/p) for p in names)],check=True)
+          PY
+          git config user.name 'General Theta source/build'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'feat(theta restart R8): integrate continuation-chart equivalence, noisy separation and complete referee response as ordinary sources'
+          SOURCE_COMMIT=$(git rev-parse HEAD)
+          echo "SOURCE_COMMIT=$SOURCE_COMMIT" >> "$GITHUB_ENV"
+          git push origin "HEAD:refs/heads/$BRANCH"
+      - name: Complete source-bound normal and optimized builds
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$NATIVE/build.py" --source-sha "$SOURCE_COMMIT" --expected-tree 057f318118224e615ea812214608eb3c79ab98ae \
+            --output "$NATIVE/artifacts" --receipt "$NATIVE/evidence/BUILD_RECEIPT.json" | tee "$RUNNER_TEMP/theta-r8-build.log"
+          python "$NATIVE/verify.py"
+      - name: Commit artifacts without source changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --exit-code "$SOURCE_COMMIT" -- "$NATIVE" ':!**/artifacts/**' ':!**/evidence/**'
+          git add -f -- "$NATIVE/artifacts" "$NATIVE/evidence/BUILD_RECEIPT.json"
+          git commit -m "build(theta restart R8): source-bound main and full Supplement S from $SOURCE_COMMIT"
+          git fetch --no-tags origin "$BRANCH"
+          test "$(git rev-parse FETCH_HEAD)" = "$SOURCE_COMMIT"
+          git push origin "HEAD:refs/heads/$BRANCH"
+          python .github/theta-r8/export.py "$RUNNER_TEMP/theta-r8-export" | tee "$RUNNER_TEMP/theta-r8-binding.json"
+      - name: Upload immutable source and build packet
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: theta-restart-r8-source-build-packet
+          path: ${{ runner.temp }}/theta-r8-export/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30
+      - name: Upload diagnostic build logs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: theta-restart-r8-diagnostic-logs
+          path: |
+            ${{ runner.temp }}/theta-r8-build.log
+            ${{ runner.temp }}/source-materialization.json
+            ${{ runner.temp }}/theta-r8-binding.json
+          if-no-files-found: ignore
+          retention-days: 30
