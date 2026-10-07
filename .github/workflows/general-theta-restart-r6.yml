@@ -1,0 +1,55 @@
+name: General Theta restart r6 native rebuild
+on:
+  push:
+    branches:
+      - foundation/general-theta-restart-r6-operational-transfer-research-2026-10-07
+    paths:
+      - papers/General-Theta-Foundations-I-restart/r6-operational-transfer/**
+      - '!papers/General-Theta-Foundations-I-restart/r6-operational-transfer/artifacts/**'
+      - '!papers/General-Theta-Foundations-I-restart/r6-operational-transfer/evidence/**'
+      - .github/workflows/general-theta-restart-r6.yml
+permissions:
+  contents: write
+concurrency:
+  group: general-theta-restart-r6-native
+  cancel-in-progress: false
+jobs:
+  rebuild:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      NATIVE: papers/General-Theta-Foundations-I-restart/r6-operational-transfer
+    steps:
+      - name: Checkout pinned source head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 1
+          sparse-checkout: papers/General-Theta-Foundations-I-restart/r6-operational-transfer
+      - name: Install TeX and PDF inspection tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended poppler-utils
+      - name: Build twice and audit native sources in both Python modes
+        run: |
+          set -euo pipefail
+          tree=$(git rev-parse "$GITHUB_SHA:$NATIVE")
+          python3 "$NATIVE/build.py" --source-sha "$GITHUB_SHA" --expected-tree "$tree" --receipt "$NATIVE/evidence/BUILD_RECEIPT_GITHUB.json"
+      - name: Publish only generated r6 artifacts without force
+        run: |
+          set -euo pipefail
+          git fetch origin "refs/heads/$GITHUB_REF_NAME"
+          test "$(git rev-parse FETCH_HEAD)" = "$GITHUB_SHA"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f -- "$NATIVE/artifacts" "$NATIVE/evidence/BUILD_RECEIPT_GITHUB.json"
+          git commit -m "build(theta): r6 native artifacts from $GITHUB_SHA"
+          git push origin "HEAD:refs/heads/$GITHUB_REF_NAME"
+      - name: Retain independently rebuilt artifact bundle
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: general-theta-restart-r6-${{ github.sha }}
+          if-no-files-found: error
+          retention-days: 30
+          path: |
+            papers/General-Theta-Foundations-I-restart/r6-operational-transfer/artifacts
+            papers/General-Theta-Foundations-I-restart/r6-operational-transfer/evidence/BUILD_RECEIPT_GITHUB.json
