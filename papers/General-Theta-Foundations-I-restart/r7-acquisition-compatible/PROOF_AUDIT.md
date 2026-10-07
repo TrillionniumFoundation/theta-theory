@@ -2,7 +2,7 @@
 
 The full written arguments were checked for these specific failure modes before the build. The audit is not a claim of an independent external proof certificate.
 
-**Quotient jointness.** Actionwise continuity is not substituted for joint measurability. The proposition explicitly assumes common action--report Borel versions and constructs a compact-fiber Borel section by nested finite closed covers to descend them jointly.
+**Quotient exactness and jointness.** The evaluation space is the closed linear span of the determining future tests and interface coordinates, not an arbitrary larger space; both directions of the equivalence are proved. Actionwise continuity is not substituted for joint measurability. The proposition explicitly assumes common action--report Borel versions and constructs a compact-fiber Borel section by nested finite closed covers to descend them jointly.
 
 **Cut lower.** Domination is an inequality of the actual joint prefix/suffix measure, not a product assumption about the physical experiment. The conditional mean is the same terminal task; null-version changes vanish under the dominated product. Shared randomization is conditioned only when independent of the fixed exploration. The decoder receives at most its full counted cut tuple and the suffix.
 
