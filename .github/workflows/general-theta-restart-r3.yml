@@ -1,0 +1,52 @@
+name: General Theta restart r3 source and build
+on:
+  push:
+    branches:
+      - foundation/general-theta-restart-r3-terminal-bridge-research-2026-10-07
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Export immutable predecessor and control sources
+        run: |
+          set -euo pipefail
+          mkdir -p bundle
+          git archive HEAD papers/General-Theta-Foundations-I-restart/r2 foundations/general-theta | tar -x -C bundle
+          git fetch --depth=1 origin 4454ad669ebdbccb93d10d828484600dce58845d 32350573ac91d4fbf2f79343622e43e4555dce2e
+          git show 4454ad669ebdbccb93d10d828484600dce58845d:GENERAL_THETA_FOUNDATIONS_I_RESTART_R1_EXTERNAL_REFEREE_REPORT_R1.md > bundle/REFEREE_R1.md
+          git show 32350573ac91d4fbf2f79343622e43e4555dce2e:GENERAL_THETA_FOUNDATIONS_I_RESTART_R2_EXTERNAL_REFEREE_REPORT_R2.md > bundle/REFEREE_R2.md
+          git ls-tree -r HEAD > bundle/CANONICAL_INHERITED_TREE.txt
+          printf '%s\n' "$GITHUB_SHA" > bundle/EXPORT_HEAD.txt
+      - name: Install TeX for a present revision
+        if: hashFiles('papers/General-Theta-Foundations-I-restart/r3/build.py') != ''
+        run: sudo apt-get update -qq && sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended poppler-utils
+      - name: Build exact source and publish artifact-only child
+        if: hashFiles('papers/General-Theta-Foundations-I-restart/r3/build.py') != ''
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          cd papers/General-Theta-Foundations-I-restart/r3
+          python3 build.py --source-sha "$SOURCE_SHA"
+          cd ../../..
+          git config user.name 'General Theta build'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add papers/General-Theta-Foundations-I-restart/r3/paper.pdf papers/General-Theta-Foundations-I-restart/r3/evidence
+          git diff --cached --quiet || git commit -m "build(GTF restart r3): artifacts bound to source $SOURCE_SHA"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
+          git rev-parse HEAD > bundle/ARTIFACT_HEAD.txt
+          cp -r papers/General-Theta-Foundations-I-restart/r3 bundle/
+          python3 papers/General-Theta-Foundations-I-restart/r3/verify.py --read-only --source-sha "$SOURCE_SHA" --artifact-sha "$(git rev-parse HEAD)" > bundle/FINAL_READ_ONLY.json
+          test -z "$(git status --porcelain --untracked-files=no)"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: general-theta-r3-${{ github.sha }}
+          path: bundle/
+          retention-days: 30

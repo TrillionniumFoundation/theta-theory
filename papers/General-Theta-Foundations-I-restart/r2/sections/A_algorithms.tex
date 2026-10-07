@@ -1,0 +1,66 @@
+\section{Initialization, exact encoders and executable approximations}\label{sec:algorithms}
+This appendix specifies which operations the finite programs perform. A finite set of mathematical labels does not, by itself, certify finite-bit computation. Conversely, a physical program need not solve an exact-real nearest-neighbor tie in order to attain a covering bound.
+
+\begin{lemma}[Paid initialization and continuation]\label{lem:initialization}
+Suppose a raw initialization protocol uses $n_0$ calls, has a legal online encoder within the declared state capacity, and produces an observed record $H_0$, an exact predictive state in the valid continuation domain and an initial representative. Suppose the geometric, local update and transport hypotheses are verified under the \emph{joint actual initialization and continuation law}, including the initial error in \textup{(I)}. Then the proof of Theorem~\ref{thm:main} applies to $T$ subsequent calls, with $n_0+T$ preforecast calls and total raw budget $n_0+T+1$ when one terminal physical probe is executed and the initializer's workspace, program, clock and physical-time costs included. No conditioning on a successful initialization is permitted unless its probability and failure branches are retained.
+\end{lemma}
+\begin{proof}
+The projection identity conditions on the complete record $(H_0,H_T)$ and does not require $H_0$ to be deterministic. The geometric lower integrates its actual terminal law. The online proof begins with the stated initial representative error and unrolls exactly the same recurrence for the $T$ subsequent updates. Concatenating the two finite machines is legal by the initializer hypothesis and the common state interface. Its raw calls and physical time add. This proves the assertion without postselection or an unpaid initial observation.
+\end{proof}
+
+\subsection{A width-uniform computable grid}
+For a box with rational physical widths and a label allocation $k\ge1$, remove zero coordinates. If none remain, use its one point. Otherwise let $a_{\max}$ be its largest width and try scales $R_s=a_{\max}2^{-s}$, beginning with $s=0$. Set $n_i(s)=\max(1,\lceil a_i/R_s\rceil)$ and stop before the first scale with $\prod_i n_i(s)>k$. Multiplication may be capped at $k+1$. Output the midpoint grid of the last feasible scale. These are comparisons of specified rational data. There are at most $2+\lfloor\log_2 k\rfloor$ trials (including the rejected scale) because the first coordinate has $n_1(s)=2^s$.
+
+If $h=\sqrt{\psi(k)}$, the proof of Lemma~\ref{lem:geometry} shows feasibility at scale $2h$. Some tried scale between $2h$ and $4h$ is therefore feasible, unless the initial one already has smaller width. The chosen grid has radius at most $2\sqrt{d_*}h$ and at most $k$ points. No inverse disappearing physical width enters this error constant. Exact comparisons may require more input bits when a nonzero width is extremely small; those bits belong to the rational description length, not to an allegedly uniform free oracle. A finite mixture may use exact algebraic allocation search, or any certified constant-factor allocation; these are separate clauses in the main theorem.
+
+An approximate nearest point is selected as follows. Read the current physical report to norm accuracy $\eta$. Generate candidate centers on demand to accuracy $O(\eta^2)$ and compute their squared distances to absolute accuracy $O(\eta^2)$. Retain a least computed distance, breaking ties by index. If $r$ is the best true distance from the quantized report, the chosen distance is at most $\sqrt{r^2+C\eta^2}\le r+\sqrt C\eta$. Adding the input error gives covering radius plus $C'\eta$. This algorithm compares rational approximations and never has to certify inequality of arbitrary real oracles.
+
+\subsection{Exact Borel transitions}
+The following is pseudocode for mathematical label machines. The current real report is a transient Borel input, not a real number retained between calls.
+\begin{verbatim}
+FILTER(label, command a, current report y):
+    p := valid_grid_point(label)
+    r := q0 + (1 - 2*q0)*p
+    p_new := r*(1 + a*y)/(1 + a*y*(2*r - 1))
+    return first_nearest_grid_label(p_new)
+
+ABSORBING_SENSOR(label, current report):
+    if report is the hold/failure symbol: return label
+    return first_nearest_valid_union_label(report)
+
+FOLD_REFRESH(label, current report):
+    if report is H: return label
+    x := valid_grid_point(label)
+    if report is E: x_new := l + 2*min(x-l, u-x)
+    if report is (C,U): x_new := x/4 + 3*(l+a*U)/4
+    return first_nearest_grid_label(x_new)
+\end{verbatim}
+The sensor starts with its unresolved label; its latent chart mark is never read. The recurrent encoder begins by encoding the paid initial reveal into the same grid. Before that reveal its protocol phase is fixed and requires only one known state. Lemma~\ref{lem:initialization} then applies with $n_0=1$; $N$ in Theorem~\ref{thm:recurrent} is the total $1+T$, not an uncharged continuation horizon.
+
+\subsection{Finite-precision versions and local errors}
+For a finite-bit machine replace the exact report by its certified numerical input, evaluate the update with interval or rounded rational arithmetic, project to the declared valid domain, and use the approximate nearest-point rule. A copied hold is an exact integer label copy. No arithmetic is done on a hold, so its innovation and local numerical error are zero. The following local error statements quantify the change from the exact Borel machine.
+
+For the filter, work in a fixed safe calibrated parameter rectangle
+\[
+ q_0\in[\underline q,\overline q]\subset(0,1/2),\qquad
+ a\in[a_-,a_+]\subset(0,1).
+\]
+On it the denominator in \eqref{eq:hmm-update} is at least $1-a_+$, and the invariant probabilities stay a positive distance from zero and one. The update is a rational function with all first derivatives in $(p,q_0,a,y)$ bounded on this compact domain. The derivative of logit is bounded on its image. By the mean-value theorem, parameter error at most $\delta$, report error at most $\eta$, and arithmetic absolute error at most $\eta$ give
+\begin{equation}\label{eq:filter-bit-error}
+ u_t\le C_{\underline q,\overline q,a_-,a_+}(\delta+\eta),
+ \qquad v_N^{\rm num}\le C\eta.
+\end{equation}
+Round/clip approximate calibration into the safe rectangle. A common valid representative interval may be enlarged using the rectangle bounds; all derivative and density constants remain controlled by these displayed parameters. Consequently the propagated state error is at most $C(\delta+\eta)/(2\underline q)$. Choosing $\delta+\eta=O(m^{-1})$ recovers the $m^{-2}$ risk order with finite bits. Exact calibration and exact-real comparisons are not described as a finite-precision program.
+
+For the singular sensor use physical target coordinates. A successful numerical report within $\eta$, an approximate nearest valid center and a readout within $\eta$ contribute at most $C\eta$ once. Let $\eta_0$ bound a precomputed unresolved mean. The root-mean-square readout allowance is
+\begin{equation}\label{eq:sensor-bit-error}
+ \sqrt{h_N}\eta_0+C\sqrt{1-h_N}\eta.
+\end{equation}
+A finite table or a supplied certified chart-evaluation and mean-computation routine must be included in $P$. Computability of a chart map without a complexity bound on its mean integral does not give a universal complexity bound. For affine rational boxes the mean is explicit. No approximation in \eqref{eq:sensor-bit-error} divides by a collapsing width or identifies the latent chart mark.
+
+For the recurrent sensor the maps $\min$ and affine interpolation are Lipschitz in physical coordinates. Endpoint, report and arithmetic errors bounded by $\eta$ therefore give $u_t\le C\eta$ on the initial or active steps and $u_t=0$ on holds. The same forcing profile used for the grid error propagates this numerical error, yielding the last assertion of Theorem~\ref{thm:recurrent}. Calibration is either exact rational data or an input with the stated uniform absolute-error guarantee; no unknown endpoint can be read without it.
+
+\subsection{Separate storage and time accounts}
+With a procedurally generated grid and rational data, a one-dimensional filter or recurrent sensor needs a persistent index of $\lceil\log_2m\rceil$ bits and $O(B+\log m)$ transient bits for current reports and arithmetic, where $B$ includes calibration input length, numerical accuracy and guard bits. A scan costs at most $O(mB^2)$ bit operations per active step; a uniform one-dimensional grid also permits a direct rounded-index calculation. The description stores the rational constants and budget integers, not a table of $m$ arbitrary exact reals. For a generic supplied union chart table of $m$ centers in $d$ coordinates at $B$ bits, readonly data instead cost $O(mdB)$ and the distance scan has its own time cost. These are alternative implementations, not interchangeable accounts.
+
+The audited-tag minimax program additionally retains the tag and one three-valued bit state. Its geometric unresolved state and $m$ grid states produce exactly the state-product upper used in Theorem~\ref{thm:robust}. The fixed protocol phase and horizon are supplied by the exogenous public clock; an observation-dependent clock would require additional persistent capacity. A terminal tag challenge emits the stored tag, without consulting a past report. Its $O(\log L)$ output cost is included in the conservative time bound there. Program bits, transient guard bits and the compulsory coarse numerical input are separate resources throughout.
