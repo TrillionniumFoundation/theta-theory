@@ -1,0 +1,9 @@
+# Historical derivation audit for revision 35
+
+The remote branch audit found v34 as the latest substantive report and author revision; v13 in the earlier conversation is not the current baseline. The frozen report is `b4ea180550cd805fba88019e52d0b1a54ca8eef1`, blob `776a78aaecf82ea2dc92cd661e49c8bddf58e522`. The author baseline is `882035928dbf3a0c7fe079ec2a7813ab9b921d65` with ordinary paper tree `b6457e9d07e3efaf4418e1f48143fc0e07333158`.
+
+The complete qualified v34 artifact was downloaded and its archive digest checked. The history relevant to this revision includes the collision compensation and covariance chain (22--24, 30--31), measurable phase rigidity and complete arithmetic (32--34), raw inversion and coherent return corrections (05, 19, 40--41, 56--57), positive microscopic source conditioning and exact age inversion (64--68), and the new compact collision spectrum, endpoint local measures and physical singleton theorem (69--71). Their complete source corpus remains in the new branch.
+
+The audit distinguishes progress already made after v13: full joint covariance nondegeneracy and a genuine physical microscopic local theorem are inherited results, not new claims of this revision. The full raw-return common pointwise correction and return complement remain distinct requirements. The new finite-cover argument includes the constant collision step in the character group; it does not replace that step by section occupation.
+
+New modules 72--75 expand the delicate continuum proof, remove the use of circular rotations from joint phase exclusion, verify a noncircular compact family, and give a theorem-level comparison with established local-limit frameworks. Only module 70 has an inherited mathematical statement correction, explicitly matching its Portmanteau hypothesis to its proof. The old module, old main, and old bibliography are archived verbatim. All 967 inherited mathematical labels and all compiled A--X statements are retained.

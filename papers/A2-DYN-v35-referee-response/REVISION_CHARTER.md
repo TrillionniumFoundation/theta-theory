@@ -1,0 +1,3 @@
+# A2-DYN v35 revision charter
+
+Continue the original title, triangular Lorentz mechanical setting, physical observation and actual four-coordinate return target from the exact v34 source and its latest report. Preserve all inherited theorem-level content and historical branches. Expand the action-weighted continuum proof, remove circular symmetry from phase exclusion, verify a genuine noncircular compact family, and place the direct proof route before the retained return pipeline. Record all inherited edits exactly. Never use a physical singleton theorem, a finite diagnostic or a successful source build as a certificate for the remaining raw-return theorem.
