@@ -1,0 +1,3 @@
+# Revision 36 charter
+
+Continue the original A2-DYN paper on the triangular Lorentz family from the frozen v35 review. Preserve the topic, original four-coordinate return record, raw local target, all inherited theorem labels and history. Answer the strong-faithfulness, finite-cover mixing, source-location and hypothesis-separation objections directly. Add a complete exact stationary microscopic conditional path-bridge proof and a verified noncentrally symmetric obstacle family. Keep three principal introductory theorems and the direct Part I route; retain the full Part II and compiled A--X appendix. Do not claim independent human verification, a polynomial Gaussian convergence rate or closure of the raw-return correction/complement from a physical path theorem.
