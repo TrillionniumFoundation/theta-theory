@@ -1,0 +1,90 @@
+\section{Causal morphisms and the full resource account}\label{sec:transfer}
+We now make explicit the implementation structure through which a geometric risk theorem is transferred. In particular, an internal register is not made free by omitting it from a risk argument, and a register appearing in one construction is not automatically mandatory in every construction.
+
+\subsection{Algorithms, resources and admissible interfaces}
+Fix a parameter set $\Lambda$, raw experiments $\mathfrak E_\lambda$, a common task with loss in $[0,1]$, and a class of legal controllers. A controller has no access to $\lambda$. A resource-bounded algorithm consists of Borel state-transition kernels, a terminal readout, and, in the finite-bit model, a fixed finite program and a specified numerical input interface. There is no readable discarded-report tape. A random tape is independent of the experiment and immutable; an observation-dependent pointer into it is retained state.
+
+We use the implementation ledger
+\begin{equation}\label{eq:full-budget}
+ b=(N_{\rm raw},m,R,D_c,Q,W,P,b_{\rm cal},b_{\rm num},\tau).
+\end{equation}
+Here $N_{\rm raw}$ counts all raw calls, including pilots, failures and every actually executed terminal probe; $m,R,D_c,Q$ are, respectively, representative, simulator, controller and internal-clock state capacities; $W$ is transient workspace in bits; $P$ is program and readonly-data length in bits; the two precision capacities specify the calibration and numerical input interfaces; arithmetic guard bits are charged in workspace; and $\tau$ is physical elapsed time. Actual numerical error is a separate property of those interfaces and routines, not automatically $2^{-b_{\rm num}}$. Workspace is reset between calls. Any observation-dependent information surviving a reset belongs to the persistent account. A table and a generator program have different $P$ and time accounts.
+
+The total persistent capacity of a direct product implementation is $M=mRD_cQ$. To discuss arbitrary fused implementations, we also use
+\begin{equation}\label{eq:total-budget}
+ \mathbf b=(N_{\rm raw},M,W,P,b_{\rm cal},b_{\rm num},\tau).
+\end{equation}
+A fused machine is constrained by its total number of observation-dependent states, not by a preferred factorization. Both vectors remain explicit in the relevant risk notation. In Sections~\ref{sec:experiment}--\ref{sec:kernel}, $N$ denotes calls before the forecast; embedding a protocol with one further physical terminal probe requires $N_{\rm raw}\ge N+1$. A menu of counterfactual probes is never charged as though they had all been executed. The resource preorder is coordinatewise comparison of capacities; known interface precision requirements are compared in the same direction. Different input interfaces are different algorithm models, even at the same integer capacity.
+
+The superscript $\chi$ in $\mathcal A^\chi_{\mathfrak E}(b)$ and $\mathcal R^\chi_{\mathfrak E}(b)$ specifies the cost semantics. Unless indicated otherwise, $\chi={\rm pw}$ means pathwise call and time bounds. For $\chi={\rm mean}$ these two bounds hold in expectation uniformly over the declared parameter/controller class. A tail specification includes its failure probabilities explicitly. Persistent capacities, workspace and readonly-description bounds are pathwise in all three semantics. For example, the parameter-uniform risk is
+\[
+ \mathcal R^\chi_{\mathfrak E}(b)
+   =\inf_{A\in\mathcal A^\chi_{\mathfrak E}(b)}
+       \sup_{\lambda\in\Lambda}\E^{A}_{\mathfrak E_\lambda}\ell.
+\]
+The fixed-preparation version replaces the supremum by the specified prepared law. The empty-class value is $+\infty$. For the fixed-exploration prediction theorem the algorithm chooses the encoder, not the exploration.
+
+A public clock is free only when it is the fixed exogenous protocol clock, independent of observed values. An adaptively delayed emission, a data-dependent stopping phase that will be read later, or a remembered failure count is not such a clock. Its observation-dependent states enter $Q$, or enter the total capacity $M$ directly.
+
+\subsection{Complete causal-morphism data}
+A morphism $\Gamma:\mathfrak E\to\mathfrak F$ has the following data. Source and target have specified visible filtrations and legal action correspondences. The simulator has an initial state kernel, independent of the unknown parameter, and a microstep kernel. Given its current state, the current target command and the source prefix, this kernel either chooses a legal source action or emits a target report and a new simulator state. Successive target emissions occur at nondecreasing source stopping indices $\sigma_k$; the declared finite call bound prevents infinite internal execution. A terminal command is mapped to a legal source continuation producing the common loss-relevant terminal readout. A target stopping decision is mapped to source stopping, and the published target clocks and costs have specified report transformations. The emitted reports include failures when the target interface includes them. Prefix dependence is a mathematical description, not permission to reread a discarded tape: the resource certificate must implement it through the declared retained state and current inputs.
+
+The resulting target-to-source lift $\mathsf L_\Gamma$ is part of the data. It maps every admitted target controller into an admitted source controller, preserving action availability, task semantics and the stopping convention. This is a statement to be checked on the declared classes, not merely a type name. The state update and report transformation are measurable on standard Borel domains. All auxiliary randomness is parameter independent. In finite-bit assertions the same data have the executable routines and numerical interfaces charged in \eqref{eq:full-budget}.
+
+The complete interactive defect is
+\begin{equation}\label{eq:defect}
+ \epsilon_\Gamma(b)=\sup_{\lambda,\,\alpha\in\mathcal A_{\mathfrak F}(b)}
+ \left\|\law^{\mathfrak E_\lambda}(\Gamma;\mathsf L_\Gamma\alpha)
+             -\law^{\mathfrak F_\lambda}(\alpha)\right\|_{\TV}.
+\end{equation}
+The compared laws include the target-visible transcript, costs and clocks, the common terminal readout and the controller's terminal decision. They also include any independent controller seed shared with a later readout. Equivalently, it suffices to have a uniform comparison conditional on each such seed. This prevents the unjustified extension of a marginal-transcript bound to a correlated controller decision. Our convention is $\|P-Q\|_{\TV}=\sup_A|P(A)-Q(A)|$, one half of the density $L^1$ distance. Taking the infimum over a declared class of these simulators defines causal deficiency. A particular simulator supplies only an upper certificate.
+
+A resource map $\rho_\Gamma$ is a monotone map of the full ledgers with a proof that the lifted implementation lies within its image budget. One useful explicit pathwise map is
+\begin{align}\label{eq:resource-map}
+ \rho_\Gamma(b)=\big(&n_0+n_\Gamma N_{\rm raw},\ m,\ r_\Gamma R,\ d_\Gamma D_c,
+ q_\Gamma Q,\ W+w_\Gamma(b),\ P+p_\Gamma(b),\notag\\
+ &\beta_{{\rm cal},\Gamma}(b),\ \beta_{{\rm num},\Gamma}(b),\
+ \tau_0+t_\Gamma N_{\rm raw}+t'_{\Gamma}\tau\big).
+\end{align}
+The nonnegative coefficients and monotone functions are known protocol bounds. Pilots are included in $n_0,\tau_0$. Precision maps specify enough source precision for the target accuracy, not a change of the unknown physical parameter. The workspace sum is a safe simultaneous-storage bound; a proof of reuse may improve it. A direct product machine at the image budget has at most $m(r_\Gamma R)(d_\Gamma D_c)(q_\Gamma Q)$ persistent states. A different verified monotone cost map is permitted; merely writing $\rho$ does not certify one.
+
+\begin{theorem}[Typed resource and common-risk composition]\label{thm:morphism}
+Let $\Gamma_1:\mathfrak E\to\mathfrak F$ and $\Gamma_2:\mathfrak F\to\mathfrak G$ have the preceding data, compatible action/readout/clock interfaces, and resource maps $\rho_1,\rho_2$. For each admitted outer budget $b$, assume
+\[
+ \mathsf L_{\Gamma_2}\mathcal A_{\mathfrak G}(b)
+       \subseteq\mathcal A_{\mathfrak F}(\rho_2(b)),
+ \quad
+ \mathsf L_{\Gamma_1}\mathcal A_{\mathfrak F}(\rho_2(b))
+       \subseteq\mathcal A_{\mathfrak E}(\rho_1(\rho_2(b))).
+\]
+Their serial composition is a causal, parameter-independent morphism with resource map $\rho_1\circ\rho_2$ and defect at most
+\[
+ \min\{1,\epsilon_1(\rho_2(b))+\epsilon_2(b)\}.
+\]
+For a common bounded loss and the same preparation or parameter supremum,
+\begin{equation}\label{eq:risktransfer}
+ \mathcal R^{\rm pw}_{\mathfrak E}(\rho_\Gamma(b))
+       \le\mathcal R^{\rm pw}_{\mathfrak F}(b)+\epsilon_\Gamma(b).
+\end{equation}
+For the prediction implementation of Theorem~\ref{thm:main}, with $N_{\rm raw}\ge N+1$, keeping every coordinate of $b$ and its image,
+\begin{equation}\label{eq:joint}
+ \mathcal R^{\rm pw}_{\mathfrak E}(\rho_\Gamma(b))
+ \le B_N+\left(C\sqrt{\Gamma_N\Psi_N(m)}
+       +L\|U_N\|_2+v_N^{\rm num}\right)^2
+       +\epsilon_\Gamma(b)+\Delta_{\rm rep}+p_{\rm bad}.
+\end{equation}
+Here the fixed-preparation risk is used. With parameter-uniform certificates the parameter-uniform version takes the supremum of the entire right side over the parameter; in particular the Bayes baseline is not assumed parameter independent. The term $\Delta_{\rm rep}$ is the bounded-horizon allowance \eqref{eq:pathallowance} only for a separate report-simulation stage not already counted in $\epsilon_\Gamma$. Deterministic approximation certificates may fail on an event of probability at most $p_{\rm bad}$.
+
+Expected-cost versions hold when the inner per-call and pilot bounds hold conditionally at every calling history, uniformly over the lifted class. Tail versions hold with the corresponding joint good-resource event and with the union bound on its declared failure probabilities. Unconditional expected-cost bounds alone do not establish the asserted affine composition.
+\end{theorem}
+\begin{proof}
+Execute the two microstep kernels in their causal order, carrying their joint internal state. Their stopping indices compose because every decision uses only the currently available prefix; the finite resource maps exclude infinite internal execution. The two inclusions in the statement establish legality of the composed lift. State updates, report readouts, clocks and terminal commands compose as measurable kernels. This constructs the morphism and its full resource map, including precision, workspace and readonly data. In particular independent implementation registers multiply their state capacities, while their ideal logarithmic bit capacities add.
+
+Fix a parameter and an outer controller, including its shared independent seed. Insert between the two path laws the law with an exact intermediate experiment. The first discrepancy is at most $\epsilon_1(\rho_2(b))$ by the lifted-class inclusion and the complete interactive defect. The second nonanticipating transformation is a Markov kernel and cannot increase total variation. The remaining discrepancy is at most $\epsilon_2(b)$. The triangle inequality proves the stated defect. The inclusion of the common terminal readout ensures that this is a comparison of the actual task, not of two surrogate outputs.
+
+For $0\le\ell\le1$, the layer-cake formula bounds the difference of its expectations by total variation. Apply this to each target algorithm, then take the same parameter supremum and the algorithm infimum. This gives \eqref{eq:risktransfer}, using arbitrarily near-optimal target algorithms when an infimum is not attained. Substitute Theorem~\ref{thm:main} to obtain \eqref{eq:joint}. On a bad-certificate event the loss is at most one; on its complement the pointwise approximation estimate is integrated against the original law. This argument does not condition the geometric law on the good event.
+
+For mean budgets, write the total inner cost as the pilot cost plus the sum of per-call costs times the indicator that the call is reached. Conditional bounds and the tower property give the affine expectation bound, including random numbers of calls. For tail budgets, intersect the certified good events, compose the pathwise bounds there, and use the union bound for their complement. These arguments also explain the stated restrictions on expected and tail semantics.
+\end{proof}
+
+Calibration and arithmetic errors add in the one-step $u_t$ before multiplication by the same transport factors. Minkowski's inequality then adds their propagated root-mean-square contributions before squaring. A simulation defect acts on the common bounded loss and is added linearly. An allowed calibration error or defect need not occur on any particular instance; a converse requires an indistinguishability experiment. Nor does a forward simulator transfer a lower bound in the reverse direction. The next section supplies lower experiments and a mandatory-state theorem rather than making either inference.

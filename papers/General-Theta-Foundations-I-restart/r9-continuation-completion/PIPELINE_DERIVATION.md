@@ -1,0 +1,14 @@
+# Pipeline derivation — acquired continuation completion
+
+1. Preserve the original A0--A5 object and G1/G3 task. Start from the canonical preparation and normalized causal kernels; define actual exploration, complete interfaces, executable future tests and one scored terminal outcome.
+2. Retain the full predictive quotient theorem. When a smaller serial statistic is used, prove only its actual task sufficiency and explicitly withhold full report-law simulation unless separately established.
+3. At each information cut derive the complete prefix/suffix law. Produce positive product sublaws by conditional density or joint regeneration; push their unnormalized mass through future-response functions. Conditional localization handles genuine shared interfaces.
+4. Verify global candidate spaces, legal update maps and a selectable finite cover. Prove a candidate Lyapunov bound for all inputs before selecting the actual code. This extends the original T08 propagation to unbounded domains without granting a free exact state.
+5. Construct the single finite-state machine. Induct on its candidate moments and on its mean-square distance from the true task state. The only retained object is a finite index after every actual report.
+6. Apply the same-task cut lower at every active stage. Observable small-ball exponents produce explicit constants retaining mass. Compare the largest cut exponent with the terminal one; this proves the compatibility criterion within the declared certificate class.
+7. Derive all-cut ranks from Gaussian raw likelihoods and the executable query frame. Quantize successive partial-rank coordinates, not an inaccessible exact transformed prefix. Verify compact common channels and projected acquired densities at every cut.
+8. Derive singular exponents from actual Cantor masses and product coverings. The noisy suffix gives an actual common channel. The continuous query produces a terminal scalar density, explaining the max(D,1) law rather than silently using ambient dimension.
+9. Compose calibration and numerical root error in the same task state norm, then complete-law TV in common absolute risk. Multiply actual retained predictor/controller/simulator/phase counts. Keep code description, temporary workspace, output precision and time distinct.
+10. Preserve uniform-block filtering and the full nonreset singular supplement; preserve the exact progressive acquisition/minimax theorem and finite-bit feasible implementation. Their special hypotheses do not redefine the general foundations theorem.
+
+The finite-horizon serial lower/upper pairing is new in this revision relative to the pinned R8 source. Basic projection, quantization packing and telescoping are inherited or standard tools. Provenance and successful build operations are not mathematical novelty.
