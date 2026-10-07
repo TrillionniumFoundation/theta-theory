@@ -1,0 +1,27 @@
+name: A2-DYN v28 baseline source snapshot
+on:
+  push:
+    branches: [revision/a2-dyn-v28-referee-response-2026-10-07]
+    paths: [.github/workflows/a2-dyn-v28-source-snapshot.yml]
+permissions:
+  contents: read
+jobs:
+  snapshot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Archive frozen ordinary source and controlling report
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git archive --format=tar HEAD papers/A2-DYN-v27-referee-response reviews/a2-dyn-v26-external-top4-review-2026-10-07 > a2-dyn-v28-baseline.tar
+          sha256sum a2-dyn-v28-baseline.tar > snapshot.sha256
+      - uses: actions/upload-artifact@v4
+        with:
+          name: a2-dyn-v28-baseline-${{ github.sha }}
+          path: |
+            a2-dyn-v28-baseline.tar
+            snapshot.sha256
