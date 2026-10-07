@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
-      - name: Verify immutable ordinary source and unchanged predecessor trees
+      - name: Verify exact native and predecessor Git trees before building
         shell: bash
         run: |
           set -euo pipefail
@@ -35,51 +35,53 @@ jobs:
           git ls-remote --heads origin > "$RUNNER_TEMP/theta-r9-receipts/REMOTE_HEADS_BEFORE.txt"
           git fetch --no-tags --depth=1 origin "$BASE_RESEARCH" "$MATHEMATICAL_PUBLICATION"
           test "$(git rev-parse "$MATHEMATICAL_PUBLICATION:$NATIVE_DIR")" = "$EXPECTED_NATIVE_TREE"
+          for name in r4-causal-resolvent r5-intrinsic-recursion r6-operational-transfer r7-acquisition-compatible r8-continuation-geometry review-inputs; do
+            p="papers/General-Theta-Foundations-I-restart/$name"
+            test "$(git rev-parse "HEAD:$p")" = "$(git rev-parse "$BASE_RESEARCH:$p")"
+          done
           python3 "$NATIVE_DIR/verify.py" | tee "$RUNNER_TEMP/theta-r9-receipts/SOURCE_AUDIT.json"
           echo "SOURCE_SHA=$GITHUB_SHA" >> "$GITHUB_ENV"
           printf '%s\n' "$GITHUB_SHA" > "$RUNNER_TEMP/theta-r9-receipts/SOURCE_SHA.txt"
-      - name: Install complete hosted PDF toolchain including scalable CM fonts
+      - name: Install complete hosted PDF toolchain
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended cm-super lmodern poppler-utils python3-venv
           python3 -m venv "$RUNNER_TEMP/theta-r9-venv"
           "$RUNNER_TEMP/theta-r9-venv/bin/pip" install pypdf
           echo "$RUNNER_TEMP/theta-r9-venv/bin" >> "$GITHUB_PATH"
-      - name: Build immutable source, both modes and six isolated PDF builds
-        shell: bash
+      - name: Rebuild exact source in both modes and six isolated PDF builds
         run: |
           set -euo pipefail
           mkdir -p "$NATIVE_DIR/evidence"
           python3 "$NATIVE_DIR/build.py" --source-sha "$SOURCE_SHA" --expected-tree "$EXPECTED_NATIVE_TREE" --output "$NATIVE_DIR/artifacts" --receipt "$NATIVE_DIR/evidence/BUILD_RECEIPT.json"
           git diff --exit-code
-      - name: Publish artifacts in a separate child commit
+      - name: Publish source-bound artifacts in a separate child commit
         shell: bash
         run: |
           set -euo pipefail
           python3 - <<'PY'
           from pathlib import Path
           import json, os, subprocess
-          p=Path(os.environ['NATIVE_DIR'])
-          preserved={}
-          for n in ['r4-causal-resolvent','r5-intrinsic-recursion','r6-operational-transfer','r7-acquisition-compatible','r8-continuation-geometry']:
+          p=Path(os.environ['NATIVE_DIR']); preserved={}
+          for n in ['r4-causal-resolvent','r5-intrinsic-recursion','r6-operational-transfer','r7-acquisition-compatible','r8-continuation-geometry','review-inputs']:
               path='papers/General-Theta-Foundations-I-restart/'+n
               current=subprocess.check_output(['git','rev-parse','HEAD:'+path],text=True).strip()
               original=subprocess.check_output(['git','rev-parse',os.environ['BASE_RESEARCH']+':'+path],text=True).strip()
               if current!=original: raise RuntimeError('preserved subtree changed: '+n)
               preserved[n]=current
-          result={'source_commit':os.environ['SOURCE_SHA'],'mathematical_publication_commit':os.environ['MATHEMATICAL_PUBLICATION'],'native_source_tree':os.environ['EXPECTED_NATIVE_TREE'],'canonical':'18000b21e4bfd89180ccb069e46ac0f21621f34d','review':'f04b0c0c967a75dfa2f09cbfb3d38e54cef639d2','inherited_research':os.environ['BASE_RESEARCH'],'preserved_subtrees':preserved,'hosted_run_id':os.environ['GITHUB_RUN_ID'],'authoring_transport_removed':True,'source_regeneration_during_build':False,'source_is_ordinary_files':True,'prior_failed_run':37650586074,'prior_failure_reason':'Retained R6 microtype requires scalable CM fonts; cm-super added to environment, no manuscript change.','scope':'R9 and complete retained supplement; tests are not proofs'}
+          result={'source_commit':os.environ['SOURCE_SHA'],'mathematical_publication_commit':os.environ['MATHEMATICAL_PUBLICATION'],'native_source_tree':os.environ['EXPECTED_NATIVE_TREE'],'canonical':'18000b21e4bfd89180ccb069e46ac0f21621f34d','review':'f04b0c0c967a75dfa2f09cbfb3d38e54cef639d2','inherited_research':os.environ['BASE_RESEARCH'],'preserved_subtrees':preserved,'hosted_run_id':os.environ['GITHUB_RUN_ID'],'authoring_transport_removed':True,'source_regeneration_during_build':False,'source_is_ordinary_files':True,'prior_runs':[{'id':37650586074,'result':'failed','reason':'Missing scalable CM fonts for retained R6; added cm-super, mathematics unchanged.'},{'id':37651179698,'result':'all six PDF builds and regressions passed; publication gate failed','reason':'Ordinary git add had omitted ignored predecessor artifacts. Restored exact predecessor Git tree objects; no old refs changed.'}],'scope':'R9 and complete retained supplement; tests are not proofs'}
           (p/'evidence/SOURCE_PUBLICATION.json').write_text(json.dumps(result,indent=2,sort_keys=True)+'\n')
           PY
           test "$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | cut -f1)" = "$SOURCE_SHA"
           git config user.name 'General Theta source publication'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add "$NATIVE_DIR/artifacts" "$NATIVE_DIR/evidence"
+          git add -f "$NATIVE_DIR/artifacts" "$NATIVE_DIR/evidence"
           git commit -m 'build(theta restart R9): publish exact-source PDFs and hosted receipts separately'
           ARTIFACT_SHA="$(git rev-parse HEAD)"
           git push origin "HEAD:refs/heads/$TARGET_BRANCH"
           printf '%s\n' "$ARTIFACT_SHA" > "$RUNNER_TEMP/theta-r9-receipts/ARTIFACT_SHA.txt"
           git ls-remote --heads origin > "$RUNNER_TEMP/theta-r9-receipts/REMOTE_HEADS_AFTER.txt"
-      - name: Export the exact checked source and available build evidence
+      - name: Export exact source and available evidence
         if: always()
         run: |
           mkdir -p "$RUNNER_TEMP/theta-r9-packet"
@@ -88,6 +90,10 @@ jobs:
           if test -d "$NATIVE_DIR/artifacts"; then
             mkdir -p "$RUNNER_TEMP/theta-r9-diagnostics"
             cp -a "$NATIVE_DIR/artifacts" "$RUNNER_TEMP/theta-r9-diagnostics/"
+          fi
+          if test -d "$NATIVE_DIR/evidence"; then
+            mkdir -p "$RUNNER_TEMP/theta-r9-diagnostics"
+            cp -a "$NATIVE_DIR/evidence" "$RUNNER_TEMP/theta-r9-diagnostics/"
           fi
       - uses: actions/upload-artifact@v4
         if: always()
