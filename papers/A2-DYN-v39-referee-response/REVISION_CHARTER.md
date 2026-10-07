@@ -1,0 +1,3 @@
+# Revision charter: v39
+
+Preserve the original title, circular Lorentz section, actual four-coordinate return record, raw mixed-density target and inherited proof corpus. Respond to the v38 report by identifying the occupation arithmetic and deriving actual endpoint-source estimates. Keep every normalization, endpoint convention and limit order explicit. Do not replace a fixed-count coefficient by an Abel average, a raw density by a fixed interval, or an absent full-torus estimate by a one-step multiplier bound. Publish only on the new v39 revision branches; preserve all previous reports and unrelated papers.
