@@ -19,18 +19,26 @@ jobs:
           sparse-checkout: |
             papers/General-Theta-Foundations-I-restart
             foundations/general-theta
-      - name: Build the native revision when present
+      - name: Finalize source manifest, then build immutable source
         env:
           SOURCE_COMMIT: ${{ github.sha }}
           HOSTED_RUN_ID: ${{ github.run_id }}
         run: |
+          set -euo pipefail
           P=papers/General-Theta-Foundations-I-restart/r7-acquisition-compatible
           if test -f "$P/build.py"; then
+            git config user.name 'General Theta artifact builder'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            python3 "$P/refresh_manifest.py"
+            git add "$P/SOURCE_MANIFEST.json"
+            if ! git diff --cached --quiet; then
+              git commit -m "source(theta restart r7): bind authored source inventory [skip ci]"
+              git push origin "HEAD:${GITHUB_REF_NAME}"
+            fi
+            export SOURCE_COMMIT="$(git rev-parse HEAD)"
             sudo apt-get update -qq
             sudo apt-get install -y -qq texlive-latex-extra texlive-fonts-recommended texlive-science lmodern poppler-utils
             python3 "$P/build.py"
-            git config user.name 'General Theta artifact builder'
-            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
             git add "$P/artifacts" "$P/evidence/BUILD_RECEIPT.json"
             if ! git diff --cached --quiet; then
               git commit -m "build(theta restart r7): verified artifacts from $SOURCE_COMMIT [skip ci]"
@@ -38,6 +46,7 @@ jobs:
             fi
           fi
       - name: Package pinned native source and evidence
+        if: always()
         run: |
           mkdir -p /tmp/theta-r7-export
           P=papers/General-Theta-Foundations-I-restart
@@ -45,8 +54,10 @@ jobs:
           if test -d "$P/r7-acquisition-compatible"; then cp -a "$P/r7-acquisition-compatible" /tmp/theta-r7-export/; fi
           cp -a "$P/review-inputs" /tmp/theta-r7-export/
           cp -a foundations/general-theta /tmp/theta-r7-export/control
-          printf '%s\n' "${GITHUB_SHA}" > /tmp/theta-r7-export/WORKFLOW_SOURCE_SHA.txt
+          printf '%s\n' "${GITHUB_SHA}" > /tmp/theta-r7-export/WORKFLOW_TRIGGER_SHA.txt
+          git rev-parse HEAD > /tmp/theta-r7-export/EXPORTED_HEAD_SHA.txt
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: theta-restart-r7-${{ github.sha }}
           path: /tmp/theta-r7-export
