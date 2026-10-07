@@ -1,0 +1,73 @@
+name: General Theta restart cross-stratum revision
+on:
+  push:
+    branches:
+      - foundation/general-theta-restart-r4-cross-stratum-research-2026-10-07
+permissions:
+  contents: write
+jobs:
+  revision:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Collect immutable review and original-foundations inputs
+        if: ${{ hashFiles('papers/General-Theta-Foundations-I-restart/r4/main.tex') == '' }}
+        run: |
+          set -eu
+          d="$RUNNER_TEMP/theta-input"
+          mkdir -p "$d/r1" "$d/r2" "$d/v1"
+          git fetch --no-tags --depth=1 origin 4454ad669ebdbccb93d10d828484600dce58845d 32350573ac91d4fbf2f79343622e43e4555dce2e 4438d4b76f8d4ec323d12022326b82f3c2188294
+          git archive 4454ad669ebdbccb93d10d828484600dce58845d papers/General-Theta-Foundations-I-restart | tar -x -C "$d/r1"
+          git archive 32350573ac91d4fbf2f79343622e43e4555dce2e papers/General-Theta-Foundations-I-restart | tar -x -C "$d/r2"
+          for pair in '4454ad669ebdbccb93d10d828484600dce58845d r1' '32350573ac91d4fbf2f79343622e43e4555dce2e r2'; do
+            set -- $pair
+            git ls-tree --name-only "$1" | grep '^GENERAL_THETA_FOUNDATIONS_I_RESTART_.*REFEREE.*\.md$' | while IFS= read -r p; do git show "$1:$p" > "$d/$2/$p"; done
+          done
+          git archive 4438d4b76f8d4ec323d12022326b82f3c2188294 papers/GTF-I-v1 foundations/general-theta | tar -x -C "$d/v1"
+          printf '%s\n' 'canonical=18000b21e4bfd89180ccb069e46ac0f21621f34d' 'r1_review=4454ad669ebdbccb93d10d828484600dce58845d' 'r2_review=32350573ac91d4fbf2f79343622e43e4555dce2e' 'v1=4438d4b76f8d4ec323d12022326b82f3c2188294' > "$d/PROVENANCE.txt"
+      - uses: actions/upload-artifact@v4
+        if: ${{ hashFiles('papers/General-Theta-Foundations-I-restart/r4/main.tex') == '' }}
+        with:
+          name: theta-restart-original-and-reviews
+          path: ${{ runner.temp }}/theta-input
+          retention-days: 30
+      - name: Install native mathematical build dependencies
+        if: ${{ hashFiles('papers/General-Theta-Foundations-I-restart/r4/main.tex') != '' }}
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+      - name: Build exact source twice and execute ordinary and optimized audits
+        if: ${{ hashFiles('papers/General-Theta-Foundations-I-restart/r4/main.tex') != '' }}
+        run: python3 papers/General-Theta-Foundations-I-restart/r4/build.py --source-sha "$GITHUB_SHA" --output "$RUNNER_TEMP/theta-output"
+      - name: Publish artifact child on a new immutable branch and verify read-only
+        if: ${{ hashFiles('papers/General-Theta-Foundations-I-restart/r4/main.tex') != '' }}
+        run: |
+          set -eu
+          p=papers/General-Theta-Foundations-I-restart/r4
+          git config user.name 'Theta revision build'
+          git config user.email 'theta-build@users.noreply.github.com'
+          cp "$RUNNER_TEMP/theta-output/paper.pdf" "$p/paper.pdf"
+          cp "$RUNNER_TEMP/theta-output/supplement.pdf" "$p/supplement.pdf"
+          mkdir -p "$p/evidence"
+          cp "$RUNNER_TEMP/theta-output/BUILD_RECEIPT.json" "$p/evidence/BUILD_RECEIPT.json"
+          cp "$RUNNER_TEMP/theta-output/REGRESSION.json" "$p/evidence/REGRESSION.json"
+          git add -- "$p/paper.pdf" "$p/supplement.pdf" "$p/evidence/BUILD_RECEIPT.json" "$p/evidence/REGRESSION.json"
+          git commit -m 'build(gtf restart r4): exact-source PDFs and receipts [skip ci]'
+          a=$(git rev-parse HEAD)
+          ab="artifact/general-theta-restart-r4-cross-stratum-${GITHUB_SHA:0:12}"
+          git push origin "HEAD:refs/heads/$ab"
+          python3 "$p/verify.py" --read-only --source-sha "$GITHUB_SHA" --artifact-sha "$a" > "$RUNNER_TEMP/theta-output/FINAL_READ_ONLY.json"
+          printf '%s\n' "$GITHUB_SHA" > "$RUNNER_TEMP/theta-output/SOURCE_SHA.txt"
+          printf '%s\n' "$a" > "$RUNNER_TEMP/theta-output/ARTIFACT_SHA.txt"
+          cp "$RUNNER_TEMP/theta-output/FINAL_READ_ONLY.json" "$p/evidence/FINAL_READ_ONLY.json"
+          git add -- "$p/evidence/FINAL_READ_ONLY.json"
+          git commit -m 'verify(gtf restart r4): read-only artifact-head receipt [skip ci]'
+          vb="verification/general-theta-restart-r4-cross-stratum-${GITHUB_SHA:0:12}"
+          git push origin "HEAD:refs/heads/$vb"
+          git rev-parse HEAD > "$RUNNER_TEMP/theta-output/VERIFICATION_SHA.txt"
+      - uses: actions/upload-artifact@v4
+        if: ${{ always() && hashFiles('papers/General-Theta-Foundations-I-restart/r4/main.tex') != '' }}
+        with:
+          name: theta-restart-r4-${{ github.sha }}
+          path: ${{ runner.temp }}/theta-output
+          retention-days: 90
