@@ -1,0 +1,42 @@
+name: General Theta restart r4
+on:
+  push:
+    branches:
+      - foundation/general-theta-restart-r4-operational-geometry-research-2026-10-07
+      - revision/general-theta-restart-r4-operational-geometry-2026-10-07
+      - verification/general-theta-restart-r4-operational-geometry-2026-10-07
+permissions:
+  contents: read
+jobs:
+  revision:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Collect immutable restart sources for revision
+        run: |
+          set -eu
+          mkdir -p /tmp/theta-r4-input
+          git fetch --no-tags origin c2537e20cb9bc197956063334aa8a1240e6a5b41 f458dbd31fcbe894dadf3f4610c3d7d623298f0c
+          git archive c2537e20cb9bc197956063334aa8a1240e6a5b41 foundations papers/General-Theta-Foundations-I-restart | tar -x -C /tmp/theta-r4-input
+          git show f458dbd31fcbe894dadf3f4610c3d7d623298f0c:GENERAL_THETA_FOUNDATIONS_I_RESTART_R3_EXTERNAL_REFEREE_REPORT_R3.md > /tmp/theta-r4-input/REFEREE_R3.md
+          git ls-tree -r --name-only c2537e20cb9bc197956063334aa8a1240e6a5b41 > /tmp/theta-r4-input/REPOSITORY_PATHS.txt
+          printf '%s\n' 'r3_artifact=c2537e20cb9bc197956063334aa8a1240e6a5b41' 'r3_review=f458dbd31fcbe894dadf3f4610c3d7d623298f0c' > /tmp/theta-r4-input/PROVENANCE.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gtf-r4-immutable-input
+          path: /tmp/theta-r4-input
+          retention-days: 30
+      - name: Install mathematical build dependencies
+        if: ${{ hashFiles('papers/General-Theta-Foundations-I-restart/r4/build.py') != '' }}
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended poppler-utils
+      - name: Verify and rebuild revision
+        if: ${{ hashFiles('papers/General-Theta-Foundations-I-restart/r4/build.py') != '' }}
+        run: python3 papers/General-Theta-Foundations-I-restart/r4/build.py --output /tmp/theta-r4-output --source-sha "$GITHUB_SHA"
+      - uses: actions/upload-artifact@v4
+        if: ${{ hashFiles('papers/General-Theta-Foundations-I-restart/r4/build.py') != '' }}
+        with:
+          name: gtf-r4-verified-${{ github.sha }}
+          path: /tmp/theta-r4-output
+          retention-days: 90
