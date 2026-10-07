@@ -1,0 +1,11 @@
+# Historical derivation audit: A2-DYN revision 30
+
+The current author baseline was located from the remote branch set, not inferred from the older v16 conversation. It is revision 29 at `18c3f14ff7e7275cd7a2955bcbe58bd89ada940f`, ordinary paper tree `512509ff9d5a3141e3f53183bafe7fba61b4eebb`. Its response-branch qualification run `37573116694` succeeded; downloaded artifact `11461153105` has archive SHA-256 `8d9a00ac84a4640d7b48204881ff6f71eea0f2ec0197ca262f1a9e213823c7b9`, independently checked against its bytes.
+
+The latest inspected substantive review is the v26 report at `20337e845157a833fe770687ea98f337788fa586`, blob `f75e48fa7276be7be654c61afe3cc276ba44d514`. Its full report, including required work and twenty presentation comments, was read. The v29 response and the preserved v27/v28 chronology were checked. No later substantive review is attributed to the referee.
+
+The dependency review covered the existing collision spectral splitting and smoothing, fixed-order moments and damping, high-order unsmoothing (`52`), shape and coherent raw interfaces (`55`--`56`), endpoint-safe envelopes and signed windows (`57`), section-start coupling (`58`), the wider collision band and four-dimensional projection (`59`), and the stationary law and event comparison (`60`). The source-level dependency guide was also read. The v29 exact-source verifier and inherited finite diagnostic chain were rerun locally on the downloaded source before modification.
+
+The new argument uses the prior stationary denominator but does not infer a bridge from unconditional weak convergence. The missing steps are explicitly supplied: a joint block-frequency estimate uniform at coalescing boundaries; an oscillatory endpoint-envelope argument; conditional dyadic tightness with a high-moment fine-grid estimate; and a whole-physical-clock coupling after division by the actual endpoint probability.
+
+Every inherited core and Python file, and the bibliography, remains byte-identical. The new theorem is added in two ordinary source modules. Only five main-article replacements are made, with exact before/after text in `INHERITED_EDITS.json`. All 787 baseline mathematical labels are retained. This audit is not a claim to have independently reconstructed every inherited continuum theorem.

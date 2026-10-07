@@ -1,0 +1,11 @@
+# Validation: A2-DYN revision 30
+
+The frozen baseline is v29 commit `18c3f14ff7e7275cd7a2955bcbe58bd89ada940f`, ordinary tree `512509ff9d5a3141e3f53183bafe7fba61b4eebb`. Its exact archive was downloaded and its digest checked, and its source verifier was independently rerun. These facts qualify the baseline, not a future v30 execution.
+
+The v30 verifier checks the entire baseline tree, all baseline hashes, all actual new source hashes, the exact main-only edit replay, byte identity of every inherited core and Python file and the bibliography, inclusion of all 62 modules, preservation of all 787 old labels, absence of unresolved references or citations, balanced environments, the controlling report blob and the exact read-only workflow hash.
+
+Finite new diagnostics check the rational central/projection/dyadic/rare-denominator exponents, all 40 residual block powers, the exact trigonometric probe coefficients and their first eight derivatives, finite Rademacher bridge moment and characteristic calculations, 48 noncommuting short-block spectral words including zero lengths, a Gaussian bridge covariance determinant, and a common-selector conditional total-variation identity. Negative controls exclude treating distinct short-block projections as identical and using only fourth moments to pay the fine-grid denominator. They do not test continuum mixing or prove a bridge for billiards.
+
+Normal and `-O` outputs must agree byte-for-byte. The inherited finite-check chain and six separate geometry/return/inversion diagnostics run. The build compiles the complete ordinary article with shell escape disabled, requires stable auxiliary references, and rejects undefined references, missing characters, LaTeX/package warnings and overfull boxes. The rendering script records the actual new theorem pages.
+
+`evidence/build-receipt.json` is emitted after successful checks and typesetting. It records the exact event SHA, run and attempt, clean-source status, ordinary source tree, PDF/log/check hashes, and verification scope. `evidence/qualification-summary.json` records pages and rendered labels. Neither file is fabricated in advance. The workflow artifact contains the exact-source archive, logs, finite outputs, PDF and rendered proof pages. Independent human review, journal acceptance and full raw LLT certification are not claimed.
