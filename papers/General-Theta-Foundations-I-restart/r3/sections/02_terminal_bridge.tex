@@ -1,0 +1,145 @@
+\section{Terminal acquired mass and causal resolution}\label{sec:bridge}
+A stationary moment bound need not be commensurate with a rare terminal component. We therefore propagate an error \emph{measure}, rather than a single unconditional moment. The reference measure in the propagation is the actual acquired law at the same time. The resulting theorem applies to nonstationary kernels and to countably many accumulating components. No stationary law or inverse terminal mass occurs.
+
+\subsection{A multiscale geometric profile}
+Fix the experiment, exploration, prediction task and horizon of Section~\ref{sec:experiment}. Let $(D,d)$ be a bounded valid predictive domain with a valid anchor $o$. There are disjoint Borel acquired components $D_j$, $j\in\mathcal J$, where $\mathcal J$ is finite or countable. Their union has full acquired mass at every time considered. The anchor may have zero acquired mass. The task map $p_N:D\to\R^q$ is $L$-Lipschitz. Write $\mu_t$ for the actual law of the predictive Markov factor specified below, $\mu_t^j$ for its restriction to component $j$, and $w_{t,j}=\mu_t^j(D_j)$. Extra factor coordinates are suppressed in this notation; the geometric maps act on their predictive coordinate. At positive terminal weights let $\nu_{N,j}$ be the conditional law of the terminal score. The following are uniform certificates, not definitions of an optimum.
+
+\smallskip\noindent\textbf{(MG) Mass, covering and scale separation.}
+For constants $C_g,c_g,c_s,D_r>0$ there are scales $0<a_j\le a_*$ and nonincreasing profiles $r_j:\N_0\to(0,\infty)$ such that
+\begin{equation}\label{eq:profile-regular}
+ r_j(0)=r_j(1)=a_j,\qquad r_j(k-1)^2\le D_r r_j(k)^2\quad(k\ge2).
+\end{equation}
+For every $k\ge1$ there are at most $k$ valid representatives covering $D_j$ in the predictive metric with radius $C_g r_j(k)$; also $d(s,o)\le C_g a_j$ on $D_j$. All such representatives are in the valid update domain. Put $S_{N,j}=p_N(D_j)$, assumed compact. The open sets
+\[
+ \{z:\operatorname{dist}(z,S_{N,j})<c_s a_j\}
+\]
+are pairwise disjoint, and, for every $k\ge1$ and every $z\in\R^q$,
+\begin{equation}\label{eq:profile-smallball}
+ \nu_{N,j}\big(B(z,c_g r_j(k))\big)\le(2k)^{-1}.
+\end{equation}
+The latter bound is required only at $w_{N,j}>0$. These laws are obtained from the preparation and raw kernels, not from a substitute geometric measure. The cover is an intermediate-time valid envelope; it is not asserted to be the support of every intermediate acquired law. Constants are uniform over the declared horizons and component indices. For countably many components, $a_j\to0$ along an enumeration is a convenient compactness certificate, but the estimates require only the displayed conditions. Atoms are handled by the separate finite-stratum theorem in Section~\ref{sec:main}; they do not satisfy \eqref{eq:profile-smallball} for all $k$.
+
+For an integer $m\ge0$ define the explicit acquired profile
+\begin{equation}\label{eq:bridge-profile}
+ \mathcal Q_N(m)=\inf_{\substack{k_j\in\N_0,\ \sum_jk_j\le m}}
+             \sum_j w_{N,j}r_j(k_j)^2.
+\end{equation}
+An allocation has finite support. Its zero entries mean that the corresponding entire components are discarded to the anchor. The infimum need not be attained. This profile is specified by actual masses and separately verified cover/small-ball scales; it is not defined in terms of an optimal encoder. Condition~\eqref{eq:profile-regular} implies
+\begin{equation}\label{eq:one-label}
+ \mathcal Q_N(m-1)\le D_r\mathcal Q_N(m),\qquad m\ge1,
+\end{equation}
+with $D_r$ enlarged to at least one: remove one label from any nonzero entry of an approximate allocation; removing the sole label of a component changes nothing because $r_j(0)=r_j(1)$. Then take infima. If the allocation has fewer than $m$ labels, no removal is necessary.
+
+\subsection{An experiment-level balance of error measures}
+Let $Z_t$ be a standard-Borel factor of the actual experiment, carrying its predictive state and any controller coordinates needed for the following property. Conditional on the entire preceding history and algorithm randomness, the law of the next factor and analysis mark is
+\[
+ P_t(dz',d\xi\mid Z_{t-1}).
+\]
+In particular, a new mark is conditionally independent of the retained approximation error given $Z_{t-1}$. This is a Markov-factor requirement on the chosen fixed exploration, not a claim that every predictive coordinate is Markov under every controller. The finite programs do not read analysis-only coordinates.
+
+A mark specifies either an exact hold, a non-hold continuation, or an overwrite. Holds preserve the exact state and its representative. On a non-overwrite edge the actual component is preserved. An overwrite may enter any component and removes dependence of the exact update on the previous state. Fix $\eta>0$. Nonnegative measurable $g_t(z,\xi,z')$ and $b_t(z,\xi,z')$ are checked from the raw update and the rounding procedure, independently of the allocation. On overwrites set $g_t=0$. For every finite allocation there is a stated Borel finite-label machine, using its label and current report only, for which
+\begin{equation}\label{eq:bridge-local}
+ e_t\le g_t e_{t-1}+b_t R_j\quad\hbox{on non-holds entering }D_j,
+ \qquad e_t=e_{t-1}\quad\hbox{on holds}.
+\end{equation}
+Here $e_t=d(s_t,\widehat s_t)$ and $R_j=C_g r_j(k_j)$ for the exact model. A finite-precision implementation instead may use $R_j=C_g r_j(k_j)+\xi_j$, with specified deterministic local error allowances $\xi_j\ge0$. In both models the retained machine must implement the declared rule even when different discarded components share the anchor. The analytic index $j$ is not an extra free state register. Section~\ref{sec:moran} gives this implementation explicitly.
+
+Define two positive edge kernels. The first, $A_{t,j}$, runs from component $j$ to itself, with mark weight one on holds, $(1+\eta)g_t^2$ on non-hold non-overwrites, and zero on overwrites. The second, $F_{t,j}$, runs from the entire factor space into component $j$, with weight $(1+\eta^{-1})b_t^2$ on non-holds and zero on holds. Both are obtained by integrating these weights against $P_t$. Write $\lambda A(C)=\int A(z,C)\lambda(dz)$.
+
+\smallskip\noindent\textbf{(TB) Terminal-mass recharge.}
+There are known measurable functions, independent of the allocation and local precision allowances, $1\le v_{t,j}\le V<\infty$ such that, as measures on the destination factor space,
+\begin{equation}\label{eq:recharge}
+ (v_{t-1,j}\mu_{t-1}^j)A_{t,j}+\mu_{t-1}F_{t,j}
+       \le v_{t,j}\mu_t^j,\qquad 1\le t\le N.
+\end{equation}
+The initialized error satisfies
+\begin{equation}\label{eq:bridge-seed}
+ \E[e_0^2;Z_0\in C\cap D_j]\le R_j^2\int_{C\cap D_j}v_{0,j}\,d\mu_0.
+\end{equation}
+The initialization, including any reveal, is paid for in the raw-call ledger. Inequality~\eqref{eq:recharge} is a one-step inequality between known forward measures and marked raw kernels. It contains neither an optimal risk nor an unrolled forced-error moment. Proposition~\ref{prop:recharge-flow} derives it from a scalar balance of raw incoming refresh mass and expansion mass, uniformly through arbitrarily rare components. Conversely, a mere unconditional mean contraction does not imply it.
+
+\begin{theorem}[Terminal-mass acquired-geometry transfer]\label{thm:bridge}
+Fix a prepared raw experiment, a legal exploration independent of the encoder, a deterministic horizon, and a common finite squared-prediction task. Suppose the predictive quotient is realized as in Proposition~\ref{prop:quotient}, or by a separately verified Borel realization with declared update versions. Assume \textup{(MG)}, the stated Markov factor and executable local rule, and \textup{(TB)}. Then, for every integer $M\ge2$,
+\begin{equation}\label{eq:bridge-main}
+ B_N+c\mathcal Q_N(M)\le R_\cp(N,M)\le R_\on(N,M)
+       \le B_N+C V\mathcal Q_N(M).
+\end{equation}
+The last inequality is an inequality of infima. For each $A>1$ it is realized with $C$ replaced by $AC$ by a machine using one anchor and an allocation of at most $M-1$ other representatives whose cost is within factor $A$ of $\mathcal Q_N(M-1)$. If that infimum is zero, use arbitrarily small additive allocation errors instead. The constants $c,C$ depend only on $c_g,c_s,C_g,D_r,L$ and not on the number of components, their masses, the horizon, or the positive scales. The factor $V$ is displayed separately.
+
+For an effective finite-precision rule satisfying \eqref{eq:bridge-local} with $R_j=C_g r_j(k_j)+\xi_j$, and terminal readout error at most $\zeta_N$ in score norm,
+\begin{equation}\label{eq:bridge-finite}
+ R_{\rm alg}\le B_N+
+ \left[C\sqrt{A V\mathcal Q_N(M)}
+       +L\sqrt{V\sum_jw_{N,j}\xi_j^2}+\zeta_N\right]^2.
+\end{equation}
+Here effective allocation, input access, workspace, program, and physical-time bounds are additional data, not consequences of a Borel cover. The precise full-ledger and common-loss composition is that of Theorem~\ref{thm:morphism}. In particular, root-mean-square state errors add before squaring, complete causal total-variation defects add in the common bounded-loss metric, and persistent cardinalities multiply only for the stated product implementation.
+\end{theorem}
+
+\begin{proof}
+We first prove the terminal-mass assertion without using geometry. Define a finite error measure
+\[
+ E_{t,j}(C)=\E[e_t^2;Z_t\in C\cap D_j].
+\]
+On non-holds, Young's inequality and \eqref{eq:bridge-local} give
+$e_t^2\le(1+\eta)g_t^2e_{t-1}^2+(1+\eta^{-1})b_t^2R_j^2$.
+On holds the old error is copied exactly. On overwrites the old-error term vanishes. Non-overwrite transitions do not import error from another component. Conditional independence in the Markov-factor hypothesis therefore gives the \emph{measure} inequality
+\begin{equation}\label{eq:error-measure-step}
+ E_{t,j}\le E_{t-1,j}A_{t,j}+R_j^2\mu_{t-1}F_{t,j}.
+\end{equation}
+All conditional expectations are applied to nonnegative functions, so no integrability interchange is tacit. Starting from \eqref{eq:bridge-seed}, positivity and \eqref{eq:recharge} prove by induction that
+\begin{equation}\label{eq:terminal-conditional}
+ E_{t,j}\le R_j^2 v_{t,j}\mu_t^j,\qquad
+ \E e_N^2\le V\sum_jw_{N,j}R_j^2.
+\end{equation}
+The sum is justified by monotone convergence for a countable partition. Components with zero terminal mass automatically have zero terminal error measure. There is no division by their masses. Conditional on a positive-mass component, the same bound is $\E[e_N^2\mid D_j]\le V R_j^2$.
+
+We next supply the geometric lower, including arbitrary off-support decoder centers. For any $M$ centers assign a center to $j$ when it is within $c_s a_j$ of $S_{N,j}$. The neighborhoods in \textup{(MG)} are disjoint, so the assigned counts satisfy $\sum k_j\le M$. A component with $k_j=0$ is everywhere at least $c_s a_j$ from every center. For $k_j>0$, set $r=r_j(k_j)$ and $c_0=\min(c_g,c_s/2)$. Unassigned centers are at distance at least $c_s a_j\ge 2c_0r$. The union of the $k_j$ score balls of radius $c_0r$ around assigned centers has conditional mass at most $1/2$ by \eqref{eq:profile-smallball}. Hence the conditional squared distortion is at least $c_0^2r^2/2$. Summing with the actual weights proves a lower $c\mathcal Q_N(M)$. Randomized encoders or decoders cannot improve it: condition on independent shared randomness, replace a randomized decoder by its mean, and select the closest center for each full-history conditional prediction. Conditional projection, proved in Lemma~\ref{lem:projection}, identifies this distortion with excess risk above $B_N$.
+
+For the online upper, take a finite allocation of at most $M-1$ labels and the anchor. The executable local rule and \eqref{eq:terminal-conditional} give excess at most $L^2VC_g^2\sum w_{N,j}r_j(k_j)^2$. Approximate the infimum and apply \eqref{eq:one-label}. Every online encoder is a checkpoint encoder, proving the middle inequality. For finite precision apply Minkowski to the weighted $\ell^2$ norm of $C_g r_j(k_j)+\xi_j$, then to the terminal score and its readout approximation. This gives \eqref{eq:bridge-finite}. The lower concerns the more informative exact-input checkpoint class and therefore remains a lower for the restricted finite-input class. Resource and deficiency composition uses the same task and the explicitly lifted strategy, as proved independently in Section~\ref{sec:transfer}.
+\end{proof}
+
+\subsection{A raw-flow condition that supplies the balance}
+The preceding theorem is not restricted to the following class, but this class makes its recurrent rare-component assertion directly verifiable. Let $\sigma_j$ be probability laws on component $j$. A paid initial preparation gives $\mu_0=\sum_jw_{0,j}\sigma_j$. At time $t$ the state-independent command/report type probabilities are $h_t,u_t,v_t\ge0$, summing to one. A hold copies the state; a continuation has kernel $T_{t,j}$ preserving $\sigma_j$; a refresh draws a new component with known probabilities $\pi_{t,j}$ and draws its state from $\sigma_j$, independently of the previous state. The report reveals the refresh state. The actual component masses obey
+\begin{equation}\label{eq:raw-flow}
+ w_{t,j}=(h_t+u_t)w_{t-1,j}+v_t\pi_{t,j}.
+\end{equation}
+Assume the gain-weighted continuation satisfies
+\[
+ \int g_t(z,\xi,z')^2\,P_t^{\rm cont}(dz',d\xi\mid z)\,\sigma_j(dz)
+       \le G^2\sigma_j(dz'),
+\]
+where $P_t^{\rm cont}$ is conditional on continuation; and $b_t\le b_*$ on non-holds. This weighted invariance is stronger than an unconditioned bound on $\E g_t^2$; it controls where transported errors arrive. Deterministic measure-preserving maps with Lipschitz bound $G$ satisfy it.
+
+\begin{proposition}[Recurrent refresh balance without inverse rare masses]\label{prop:recharge-flow}
+Let $A_G=\max\{(1+\eta)G^2-1,0\}$ and $C_b=(1+\eta^{-1})b_*^2$. Suppose there is $K>A_G$ such that
+\begin{equation}\label{eq:flow-balance}
+ v_t\pi_{t,j}\ge K u_t w_{t-1,j}\quad\hbox{for all }t,j.
+\end{equation}
+Then \textup{(TB)} holds with constant functions $v_{t,j}=D$, where
+\begin{equation}\label{eq:flow-constant}
+ D\ge\max\left\{1,D_{\rm seed},\frac{C_b(K+1)}{K-A_G}\right\}.
+\end{equation}
+Here $D_{\rm seed}$ bounds the normalized initial error measure. The conclusion is uniform as any $w_{t,j}$ or total activity $u_t+v_t$ tends to zero. The probabilities and refresh distributions can vary with time. No stationarity of $\mu_t$ is required.
+\end{proposition}
+\begin{proof}
+Direct integration of the raw kernels proves inductively that $\mu_t^j=w_{t,j}\sigma_j$ and gives \eqref{eq:raw-flow}. The left side of \eqref{eq:recharge} is bounded by
+\[
+ \left[D\{h_tw_{t-1,j}+(1+\eta)G^2u_tw_{t-1,j}\}
+       +C_b\{u_tw_{t-1,j}+v_t\pi_{t,j}\}\right]\sigma_j.
+\]
+Set $x=u_tw_{t-1,j}$ and $y=v_t\pi_{t,j}$. Subtracting this expression from $D w_{t,j}\sigma_j$ leaves at least
+$[(D-C_b)y-(D A_G+C_b)x]\sigma_j$.
+For $y\ge Kx$ this is nonnegative by \eqref{eq:flow-constant}; when $x=y=0$ it is zero. Holds cancel on the two sides and never enter the denominator. The seed is covered by $D_{\rm seed}$.
+\end{proof}
+
+For example, choose any sequence of probability vectors $\omega_t$, set
+$\pi_t=(1-\alpha_t)w_{t-1}+\alpha_t\omega_t$ with $0\le\alpha_t\le1/2$, and require $v_t\ge2K u_t$. This gives a nonstationary family allowing creation of new strata and arbitrarily rare old strata. Its control data are known; no algorithm reads an unknown parameter to implement this refresh law. An arbitrary report-dependent stopping rule does not follow from the deterministic-time bound: stopping can select large error. Only an independently verified stopped analogue of \eqref{eq:recharge}, or the bounded common-law comparison of Section~\ref{sec:transfer}, authorizes that extension.
+
+\subsection{Finite-resource and task consequences}
+Suppose a certified implementation has the full resource vector of Section~\ref{sec:transfer}; an auxiliary causal simulator has at most $R$ states, a controller has $D_c$ and a retained phase register has $Q$. A constructive total-state budget $M_{\rm tot}$ permits the preceding theorem with $M=\lfloor M_{\rm tot}/(RD_cQ)\rfloor$, provided $M\ge2$ and the declared workspace, program, precision and time bounds are feasible. This is an upper construction, not a product lower. The converse in Section~\ref{sec:soft-state} deals with information that really survives a cut.
+
+For a common ideal baseline $b_*\le B_N$, the exact theorem gives
+\[
+ R_\on(N,M)-b_*\asymp (B_N-b_*)+\mathcal Q_N(M)
+\]
+when $V$ is uniformly bounded. The acquisition term $B_N-b_*$ is evaluated from the same raw kernel, not assigned a universal exponent. If the report continuity bound of \eqref{eq:report} holds for the compared controller, a prefix-wise version of \eqref{eq:terminal-conditional} gives the complete report-law allowance \eqref{eq:pathallowance}. Additional causal deficiencies enter the common bounded-loss risk additively. A sharper interaction between actual acquisition and finite input occurs in Theorem~\ref{thm:single-probe}, rather than being inferred from this additive upper bound.

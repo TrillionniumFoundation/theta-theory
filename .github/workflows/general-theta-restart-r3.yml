@@ -1,0 +1,72 @@
+name: General Theta restart r3 source and build
+on:
+  push:
+    branches:
+      - foundation/general-theta-restart-r3-terminal-bridge-research-2026-10-07
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Export immutable predecessor and control sources
+        run: |
+          set -euo pipefail
+          mkdir -p bundle
+          git archive HEAD papers/General-Theta-Foundations-I-restart/r2 foundations/general-theta | tar -x -C bundle
+          git fetch --depth=1 origin 4454ad669ebdbccb93d10d828484600dce58845d 32350573ac91d4fbf2f79343622e43e4555dce2e
+          git show 4454ad669ebdbccb93d10d828484600dce58845d:GENERAL_THETA_FOUNDATIONS_I_RESTART_R1_EXTERNAL_REFEREE_REPORT_R1.md > bundle/REFEREE_R1.md
+          git show 32350573ac91d4fbf2f79343622e43e4555dce2e:GENERAL_THETA_FOUNDATIONS_I_RESTART_R2_EXTERNAL_REFEREE_REPORT_R2.md > bundle/REFEREE_R2.md
+          git ls-tree -r HEAD > bundle/CANONICAL_INHERITED_TREE.txt
+          printf '%s\n' "$GITHUB_SHA" > bundle/DELIVERY_HEAD.txt
+          git config user.name 'General Theta build'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+      - name: Commit checksum-verified native mathematical sources
+        if: hashFiles('.delivery/general-theta-r3/materialize.py') != ''
+        run: |
+          set -euo pipefail
+          python3 .delivery/general-theta-r3/materialize.py | tee bundle/MATERIALIZATION.json
+          git add papers/General-Theta-Foundations-I-restart/r3
+          git rm -r .delivery/general-theta-r3
+          git commit -m 'source(GTF restart r3): terminal acquired-mass theorem, singular recurrence and coupled resource proofs'
+          git push origin "HEAD:${GITHUB_REF_NAME}"
+      - name: Pin native source head
+        run: |
+          set -euo pipefail
+          test -f papers/General-Theta-Foundations-I-restart/r3/SOURCE_MANIFEST.json
+          test ! -e .delivery/general-theta-r3
+          test -z "$(git status --porcelain --untracked-files=no)"
+          git rev-parse HEAD > bundle/SOURCE_HEAD.txt
+      - name: Install TeX
+        run: sudo apt-get update -qq && sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+      - name: Build exact native source twice and publish artifact-only child
+        run: |
+          set -euo pipefail
+          SOURCE_SHA="$(cat bundle/SOURCE_HEAD.txt)"
+          python3 papers/General-Theta-Foundations-I-restart/r3/build.py --source-sha "$SOURCE_SHA" | tee bundle/REMOTE_BUILD_STDOUT.json
+          git add -f papers/General-Theta-Foundations-I-restart/r3/paper.pdf
+          git add papers/General-Theta-Foundations-I-restart/r3/evidence
+          git commit -m "build(GTF restart r3): artifacts bound to source $SOURCE_SHA"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
+          git rev-parse HEAD > bundle/ARTIFACT_HEAD.txt
+          cp -r papers/General-Theta-Foundations-I-restart/r3 bundle/
+      - name: Final read-only artifact and source validation
+        run: |
+          set -euo pipefail
+          SOURCE_SHA="$(cat bundle/SOURCE_HEAD.txt)"
+          ARTIFACT_SHA="$(cat bundle/ARTIFACT_HEAD.txt)"
+          python3 papers/General-Theta-Foundations-I-restart/r3/verify.py --read-only --source-sha "$SOURCE_SHA" --artifact-sha "$ARTIFACT_SHA" | tee bundle/FINAL_READ_ONLY.json
+          test -z "$(git status --porcelain --untracked-files=no)"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: general-theta-r3-${{ github.sha }}
+          path: bundle/
+          retention-days: 30

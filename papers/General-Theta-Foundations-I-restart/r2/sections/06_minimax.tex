@@ -1,0 +1,126 @@
+\section{Mandatory states and a joint minimax experiment}\label{sec:minimax}
+The preceding resource map is constructive. Its converse depends on what future continuations must still be executable. We first establish a general state-separation principle, then exhibit a single experiment in which all the proposed risk terms occur simultaneously.
+
+\subsection{A continuation-separation cut}
+A \emph{latched continuation tag} is a variable $C\in\{1,\ldots,L\}$, reported before a memory cut and not reissued afterward. A fresh legal challenge after the cut asks for $C$ with zero error. Equivalently, finitely many challenges ask for its coordinates. This is an exact continuation requirement in the algorithm class, not an extra squared-loss penalty with an unstated weight. The prediction loss is unchanged. We call this the \emph{audited continuation interface}. An external clock cannot supply the tag.
+
+\begin{theorem}[Mandatory-state separation and total-memory resolution]\label{thm:tag}
+Let $C$ be uniform on $L$ tags and independent of an acquired score $X$ with law $\nu$. A checkpoint machine has at most $M$ total persistent states and must satisfy the audited continuation interface. Let $Q_\nu(k)$ be its ordinary $k$-center squared distortion, with arbitrary centers. For $M\ge L$, its exact checkpoint excess risk is
+\begin{equation}\label{eq:tag-exact}
+ \min_{\substack{k_c\in\N,\ k_c\ge1\\\sum_c k_c\le M}}
+       \frac1L\sum_{c=1}^L Q_\nu(k_c).
+\end{equation}
+If $M<L$, the admissible class is empty. These statements include randomized fused implementations with independent shared randomness.
+
+Suppose $\nu$ has one anisotropic acquired chart of dimension at most $d_*$ and the constants of \textup{(G)}. Write $\psi$ for its positive-budget scale in \eqref{eq:psi}. Then, for $M\ge2L$, every such machine has excess at least
+\begin{equation}\label{eq:tag-lower}
+ c\,\psi(\lfloor M/L\rfloor).
+\end{equation}
+If the geometric experiment also satisfies the bounded-transport online theorem and the tag remains unchanged, an online product construction with $L\lfloor M/L\rfloor$ states attains the corresponding upper bound, with its full workspace/program/precision/time costs charged. Constants are independent of $M,L$ and positive widths.
+
+In particular, if a simulator key, a controller continuation token and an internal phase token are independent uniform tags of sizes $R_0,D_0',Q_0$, and the future interface separately challenges them, then $L=R_0D_0'Q_0$. The growing product overhead is mandatory even for an implementation that fuses all registers. No assertion of necessity is made for registers lacking these continuation distinctions.
+\end{theorem}
+\begin{proof}
+Fix an independent shared seed. A persistent state reached with positive probability under two different tags cannot support a zero-error answer to the same fresh challenge under both tags. Hence the positive-probability state supports of different tags are disjoint. There are only finitely many tags and states, so one may choose a common full-measure set of seeds on which this holds. Let $k_c$ be the size of the support for tag $c$. Then $k_c\ge1$ and $\sum_c k_c\le M$.
+
+For each tag, the terminal prediction vectors have at most $k_c$ centers. Randomized decoding is replaced by its mean, and randomized encoding cannot improve nearest-center distortion. Independence of $C$ and $X$ therefore gives a conditional excess of at least $Q_\nu(k_c)$. Averaging proves the lower bound in \eqref{eq:tag-exact}. Conversely, use disjoint sets of $k_c$ labels for optimal codebooks under each tag and decode the tag from its set. Compactness gives optimal codebooks in our geometric setting; approximating codebooks suffice in the infimum formulation. This proves equality and infeasibility when $M<L$. Random shared seeds only average costs bounded below by the same minimum.
+
+To prove the uniform scale bound, put $x=M/L\ge2$. At least half the tags have $k_c\le2x$. Lemma~\ref{lem:geometry} and monotonicity give an average distortion at least a fixed multiple of $\psi(\lceil2x\rceil)$. If $k\ge n\ge1$, directly from \eqref{eq:psi},
+\[
+ \psi(k)\ge(n/k)^2\psi(n).
+\]
+Since $\lceil2x\rceil/\lfloor x\rfloor\le5$, this proves \eqref{eq:tag-lower}. For the online upper, retain the exact tag and run the certified geometric encoder with $\lfloor M/L\rfloor$ labels. The tag affects neither its acquired law nor its error recurrence. Its product state capacity is at most $M$. Independent separately challenged tags are distinguished exactly by their joint value, proving the last assertion.
+\end{proof}
+
+This is a converse for a semantic continuation requirement, not a proof that each factor in every chosen implementation must be present. With an allowed tag-error probability a different, quantitative state-separation argument would be needed. Likewise a fixed public phase known independently of observations is not one of these tags.
+
+\subsection{One common robust experiment}
+Fix an integer $d\ge1$, widths $0\le a_i\le1/4$, an acquisition probability $s\in[0,1]$, a tag size $L\ge1$, $0\le\delta\le1/4$, $0\le\varepsilon\le1/2$, and an integer $b\ge1$. Zero-width coordinates below are deterministic. Prepare independently a tag $C$ uniform on $L$ values and a vector
+\[
+ X_i\sim\operatorname{Unif}[1/2-a_i/2,1/2+a_i/2].
+\]
+The physical parameter is $\lambda=(\sigma,\eta,z)\in\{-1,1\}^2\times\{0,1\}$. It is not supplied to the algorithm. Put $h_b=2^{-b-2}$. The common calibration input for the terminal probability $1/2+\sigma\delta$ is $1/2$; the common $b$-precision input for the terminal probability $1/2+\eta h_b$ is also $1/2$. Both points in the latter pair lie in the same width-$2^{-b}$ rounding cell centered at $1/2$. There is no legal preterminal probe revealing either sign. These are specified information interfaces, not optional inaccurate arithmetic.
+
+The first paid call latches $C$ and supplies these identical calibration/numerical packets. The second reports the bit $z$ with probability $1-2\varepsilon$ and an erasure otherwise. The erasure coin is independent of everything else. The next $n$ raw calls are attempts: each unresolved attempt succeeds with independent probability $s$, reveals $X$ and absorbs; failures and post-success calls are exact holds. Including the one selected terminal probe below, all raw calls count, so $N_{\rm raw}=n+3$. The exploration makes these calls, independently of the encoder. At the memory cut the audited continuation interface may challenge $C$. This challenge is a readout of the retained machine, not an additional physical measurement of the hidden apparatus; its output operations are charged in time.
+
+The soft task independently selects one of four blocks with probability $1/4$. In the geometry block it selects a coordinate uniformly and executes a terminal Bernoulli probe of mean $X_i$. The other blocks execute a terminal Bernoulli probe of mean $1/2+\sigma\delta$, a terminal Bernoulli probe of mean $1/2+\eta h_b$, or the deterministic terminal bit $z$. Only the selected probe is executed. A forecast in $[0,1]$ is made before its outcome. Every block uses squared loss, so the common loss lies in $[0,1]$.
+
+Define the exact-bit target by changing only the second call to an exact report of $z$, with the same costs, all other kernels and the same terminal menu. Admitted bit simulators randomize the sole preterminal bit report and parameter-independent auxiliary reports. No terminal readout can be requested before the target forecast: the terminal command follows that forecast and ends the physical experiment. Thus a simulator cannot query the future answer to manufacture an earlier exact bit. The deficiency of this source--target pair is exactly $\varepsilon$, by Proposition~\ref{prop:floors}; independent auxiliary reports do not change the binary testing lower bound.
+
+The ideal oracle knows $X,\sigma,\eta,z$; its risk is the same for every $\lambda$:
+\begin{equation}\label{eq:robust-baseline}
+ b_* =\frac14\left\{\frac1d\sum_i\E[X_i(1-X_i)]
+           +(1/4-\delta^2)+(1/4-h_b^2)\right\}.
+\end{equation}
+This is the single baseline subtracted below. Write
+\[
+ H_n=(1-s)^n,\qquad V_a=\frac1{12d}\sum_i a_i^2,
+ \qquad \psi_a(k)=\max_{1\le l\le r}
+       \left(\frac{\prod_{i=1}^l a_{(i)}}{k}\right)^{2/l},
+\]
+where $r$ is the number of positive widths, listed in decreasing order; set $\psi_a=0$ if $r=0$. At $n=0$ use $H_0=1$, also when $s=1$. The calibration and precision packets belong to the source experiment's actual reports. They do not manufacture two distinguishable future states before the missing information has been acquired.
+
+Let $\mathcal C(a,s,L,\delta,b,\varepsilon)$ be exactly this eight-parameter-member family with its stated preparation, report interfaces and task. In the exact-report model, current successful geometric reports may be read as Borel inputs. In the finite-bit model they are accessed through a primitive returning a vector within $2^{-b}$ in each physical coordinate; the machine may not bypass this primitive. The primitive depends only on the current geometric report and independent randomization, not on $\sigma,\eta,z$; it is uniform over the family's parameters. Its error guarantee, and finite rational chart data where needed for execution, are part of this second model.
+
+Using the total budget \eqref{eq:total-budget}, define a single minimax functional
+\begin{equation}\label{eq:robust-risk}
+ \mathfrak R_{\mathcal C}^{\chi}(\mathbf b)
+   =\inf_{A\in\mathcal A_{\mathcal C}^{\chi}(\mathbf b)}
+       \sup_{\lambda\in\{-1,1\}^2\times\{0,1\}}
+          \bigl(\E_\lambda^A\ell-b_*\bigr).
+\end{equation}
+The infimum is over parameter-independent machines satisfying the same audited continuation interface and input model. The exact-label model places no finite-bit bound on current Borel comparisons; the finite-bit version below does. In both cases total retained state, and not just a geometric subregister, is constrained by $M$.
+
+\begin{theorem}[Joint acquisition--resolution--precision minimax law]\label{thm:robust}
+For the family just defined, let $N_{\rm raw}=n+3\ge3$, $M\ge12L$, and $b_{\rm num}=b$. There are positive constants $c_d,C_d$, depending only on $d$, such that
+\begin{equation}\label{eq:robust-phi}
+ \Phi=H_nV_a+(1-H_n)\psi_a(\lfloor M/L\rfloor)
+                  +\delta^2+2^{-2b}+\varepsilon
+\end{equation}
+and every nonempty finite-bit or exact-report resource class satisfies
+\begin{equation}\label{eq:robust-lower}
+ \mathfrak R_{\mathcal C}^{\rm pw}(\mathbf b)\ge c_d\Phi.
+\end{equation}
+An exact Borel finite-state encoder with at most $M$ states attains an upper bound $C_d\Phi$. The same upper holds for a finite-bit program on the following explicitly feasible resource region. Suppose the known box endpoints are rational data of description length $P_0$, with arithmetic bit length at most $B_0$, and the input primitive has the stated error bound. Put
+\[
+ m=\lfloor M/(3L)\rfloor-1,\qquad
+ B=B_0+b+\lceil\log_2(N_{\rm raw}+M+L+2)\rceil+4.
+\]
+A sequential grid scan and schoolbook fixed-precision arithmetic have bounds
+\begin{equation}\label{eq:robust-feasible}
+ W\ge C_dB,\quad P\ge P_0+C_d\log_2(N_{\rm raw}+M+L+2)+C_d\log_2(b+2),
+ \quad \tau\ge N_{\rm raw}+C_dN_{\rm raw}(m+1)B^2.
+\end{equation}
+The numerical input precision is $b$; arithmetic guard bits and exact rational data are charged in $W$ and $P$, not supplied as hidden retained state. The calibration input interface must admit the specified common packet. In \eqref{eq:robust-feasible} the time unit charges one raw call and one elementary bit operation; the selected terminal probe is included in $N_{\rm raw}$. The protocol clock is the fixed call index; arithmetic is padded to the stated uniform bound, and no data-dependent timing is available as a later observation. On this feasible region,
+\begin{equation}\label{eq:robust-match}
+ c_d\Phi\le\mathfrak R_{\mathcal C}^{\rm pw}(\mathbf b)\le C_d\Phi.
+\end{equation}
+The bounds are uniform in the positive widths, rank collapse, $n,s,L,M,\delta,b,\varepsilon$. Taking $L=R_0D_0'Q_0$ gives a matched law with growing mandatory simulator/controller/phase continuation memory. All five terms occur in the same family, with one common task and oracle, rather than in unformalized unrelated witnesses.
+\end{theorem}
+\begin{proof}
+For the lower bound, put the uniform prior on the eight values of $\lambda$. A supremum risk is at least this Bayes average. Condition on the complete preterminal information and independent algorithm randomness, and apply conditional-mean projection separately to each actually executable terminal probe.
+
+For the geometric block, unsuccessful acquisition leaves $X$ at its prepared law, so its excess over the oracle is at least $H_nV_a$. Conditioned on successful acquisition, its law is still the prepared box law. The tag is independent and must be recoverable exactly. Disjoint tag state supports give integers $k_c$ with sum at most $M$, even if the machine fuses bit, geometry, clock and controller information. The conditional distribution of $X$ given tag and success is uniform on the same box; all other reports can at most randomize its encoder. The argument of Theorem~\ref{thm:tag} and the anisotropic small-ball bound therefore give at least $c_d(1-H_n)\psi_a(\lfloor M/L\rfloor)$. Finite current-report precision only restricts this class further and cannot invalidate the lower bound.
+
+Neither preterminal packet nor any other report depends on $\sigma$ or $\eta$. Their posterior means are consequently $1/2$, and their excesses over the same oracle are $\delta^2$ and $h_b^2=2^{-2b}/16$. On an erasure the bit posterior under the uniform prior is fair; on a nonerasure it is known. Its conditional variance is therefore $2\varepsilon/4=\varepsilon/2$. Multiply these blockwise bounds by the common factor $1/4$. The losses add because the block is chosen independently after encoding; no simultaneous counterfactual probe outcomes are assumed. This proves \eqref{eq:robust-lower}.
+
+For the upper, retain the tag, one of the three bit states $0,1,\bot$, and either the unresolved geometric state or a grid label. Allocate $m$ geometric representatives as displayed. Then $3L(m+1)\le M$, and $m\ge M/(6L)$ for $M\ge12L$. For unresolved geometry predict the exact mean $1/2$; after acquisition round to a valid product grid. The box cover of Lemma~\ref{lem:geometry} gives squared error at most $C_d\psi_a(m)$. Holds do not round again. For the two ambiguous probabilities forecast $1/2$. For the bit use its observed value or $1/2$ on erasure. This rule has the same risk for every $\lambda$. Scaling \eqref{eq:psi} from $m$ to $\lfloor M/L\rfloor$ changes the constant by at most a dimension-independent numerical factor. The exact-label upper follows.
+
+For the finite-bit version, obtain the successful report to coordinate accuracy $2^{-b}$ and approximate the selected readout to that accuracy. Compute candidate squared distances to absolute accuracy $2^{-2b}$ using a constant multiple of $B$ guard bits, and minimize these approximations. If $r$ is the closest distance to the quantized input, the selected distance is at most $\sqrt{r^2+C_d2^{-2b}}\le r+C_d2^{-b}$. Including the input error gives its covering radius plus $C_d2^{-b}$. Its squared error is at most twice the covering error squared plus $C_d2^{-2b}$. The unresolved mean and the three bit forecasts are dyadic and exact. The added acquired-report error is absorbed by the already present $2^{-2b}$ term, without an inverse width.
+
+For completeness, choose grid cell counts by the finite dyadic-scale construction in Appendix~\ref{sec:algorithms}, rather than by comparing arbitrary real algebraic minima. This is a constant-factor cover with at most $m$ points. Iterate through its mixed-radix indices to generate each center on demand. Store a current index, the best index, the tag and bit state, and $O(d)$ current $B$-bit coordinates. Only the chosen index, tag and bit state survive the call. Rounded schoolbook multiplication, division and distance comparison take at most $C_dB^2$ bit operations per candidate, with guard bits ensuring the stated absolute error. Even scanning at every call costs no more than the time in \eqref{eq:robust-feasible}; in fact only the successful report needs a scan. The readonly program holds the rational data and binary descriptions of its budgets, not an observation-dependent table. This proves the resource bounds and the implementable upper. Zero widths are processed as exact point coordinates, never as divisors, so the constants survive their disappearance.
+\end{proof}
+
+\begin{proposition}[Exact erasure deficiency and the two elementary floors]\label{prop:floors}
+In the declared parameter-independent simulator class, the deficiency of the bit-erasure experiment with erasure probability $\theta$ relative to the exact-bit experiment is exactly $\theta/2$. With a uniform bit preparation its best squared-prediction risk is $\theta/4$. For two identical preterminal calibration reports and terminal probabilities $1/2\pm h$, the minimum excess over the sign-knowing oracle under the equal prior is $h^2$. These statements use the same squared loss as Theorem~\ref{thm:robust}.
+\end{proposition}
+\begin{proof}
+Write $P_0,P_1$ for the source report laws. Their total variation distance is $1-\theta$. Any parameter-independent simulator $K$ contracts total variation. If both simulated target laws are within $e$ of the exact target laws $\delta_0,\delta_1$, the triangle inequality gives
+\[
+ 1=\|\delta_0-\delta_1\|_{\TV}
+     \le2e+\|KP_0-KP_1\|_{\TV}\le2e+1-\theta.
+\]
+Thus $e\ge\theta/2$. Filling an erasure by an independent fair bit attains this bound for each parameter. Including the actual terminal bit in the comparison law changes neither conclusion: the marginal lower persists, and under either fixed parameter the fair-imputation error event has probability exactly $\theta/2$. The posterior variance under the uniform preparation is $1/4$ on an erasure and zero otherwise, proving the risk assertion. For the calibration pair the conditional mean is $1/2$ and conditional-mean projection gives the excess $\E(p-1/2)^2=h^2$, attained by that forecast.
+\end{proof}
+
+Theorem~\ref{thm:robust} is a full-ledger risk assertion on its stated feasible region, not a universal lower bound for the shortest program or fastest arithmetic in every kernel class. Its total-memory converse does not require constant overhead, but does require the audited continuation interface. The $b$-indexed information cell is compulsory in this experiment: optional inaccurate arithmetic would not imply its lower floor. These distinctions are part of the theorem's quantifiers, not qualifications inserted after changing the task.

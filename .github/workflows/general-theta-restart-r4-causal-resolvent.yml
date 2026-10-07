@@ -1,0 +1,76 @@
+name: General Theta r4 causal resolvent publication
+on:
+  push:
+    branches:
+      - foundation/general-theta-restart-r4-causal-resolvent-research-2026-10-07
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      PAPER: papers/General-Theta-Foundations-I-restart/r4-causal-resolvent
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Preserve immutable review and foundation inputs
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = 'foundation/general-theta-restart-r4-causal-resolvent-research-2026-10-07'
+          mkdir -p bundle
+          git archive HEAD papers/General-Theta-Foundations-I-restart/r2 papers/General-Theta-Foundations-I-restart/r3 foundations/general-theta | tar -x -C bundle
+          git fetch --depth=1 origin 18000b21e4bfd89180ccb069e46ac0f21621f34d 4454ad669ebdbccb93d10d828484600dce58845d 32350573ac91d4fbf2f79343622e43e4555dce2e f458dbd31fcbe894dadf3f4610c3d7d623298f0c
+          git show 4454ad669ebdbccb93d10d828484600dce58845d:GENERAL_THETA_FOUNDATIONS_I_RESTART_R1_EXTERNAL_REFEREE_REPORT_R1.md > bundle/REFEREE_R1.md
+          git show 32350573ac91d4fbf2f79343622e43e4555dce2e:GENERAL_THETA_FOUNDATIONS_I_RESTART_R2_EXTERNAL_REFEREE_REPORT_R2.md > bundle/REFEREE_R2.md
+          git show f458dbd31fcbe894dadf3f4610c3d7d623298f0c:GENERAL_THETA_FOUNDATIONS_I_RESTART_R3_EXTERNAL_REFEREE_REPORT_R3.md > bundle/REFEREE_R3.md
+          git ls-tree -r HEAD > bundle/DELIVERY_TREE.txt
+          printf '%s\n' "$GITHUB_SHA" > bundle/DELIVERY_HEAD.txt
+          git config user.name 'General Theta build'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+      - name: Commit verified native manuscript source
+        run: |
+          set -euo pipefail
+          python3 .delivery/general-theta-r4-causal-resolvent/materialize.py | tee bundle/MATERIALIZATION.json
+          git add "$PAPER"
+          git rm -r .delivery/general-theta-r4-causal-resolvent
+          git commit -m 'source(GTF restart r4): nonreset causal transfer, singular transport and recurrent finite-acquisition law'
+          git push origin "HEAD:${GITHUB_REF_NAME}"
+          git rev-parse HEAD > bundle/SOURCE_HEAD.txt
+          test -z "$(git status --porcelain --untracked-files=no)"
+      - name: Install deterministic manuscript toolchain
+        run: sudo apt-get update -qq && sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+      - name: Build twice and commit artifact-only child
+        run: |
+          set -euo pipefail
+          SOURCE_SHA="$(cat bundle/SOURCE_HEAD.txt)"
+          python3 "$PAPER/build.py" --source-sha "$SOURCE_SHA" | tee bundle/REMOTE_BUILD_STDOUT.json
+          git add -f "$PAPER/paper.pdf"
+          git add "$PAPER/evidence/BUILD_RECEIPT.json" "$PAPER/evidence/REGRESSION.json"
+          git commit -m "build(GTF restart r4): reproducible artifacts bound to source $SOURCE_SHA"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
+          git rev-parse HEAD > bundle/ARTIFACT_HEAD.txt
+      - name: Read-only artifact audit and separate verification receipt
+        run: |
+          set -euo pipefail
+          SOURCE_SHA="$(cat bundle/SOURCE_HEAD.txt)"
+          ARTIFACT_SHA="$(cat bundle/ARTIFACT_HEAD.txt)"
+          python3 "$PAPER/verify.py" --read-only --source-sha "$SOURCE_SHA" --artifact-sha "$ARTIFACT_SHA" | tee bundle/ARTIFACT_READ_ONLY.json
+          cp bundle/ARTIFACT_READ_ONLY.json "$PAPER/evidence/READ_ONLY_AT_ARTIFACT.json"
+          git add "$PAPER/evidence/READ_ONLY_AT_ARTIFACT.json"
+          git commit -m "verify(GTF restart r4): immutable read-only receipt for artifact $ARTIFACT_SHA"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
+          git rev-parse HEAD > bundle/VERIFICATION_HEAD.txt
+          VERIFY_SHA="$(cat bundle/VERIFICATION_HEAD.txt)"
+          python3 "$PAPER/verify.py" --read-only --source-sha "$SOURCE_SHA" --artifact-sha "$ARTIFACT_SHA" --verification-sha "$VERIFY_SHA" | tee bundle/FINAL_READ_ONLY.json
+          test -z "$(git status --porcelain --untracked-files=no)"
+          cp -r "$PAPER" bundle/r4-causal-resolvent
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: general-theta-r4-causal-resolvent-${{ github.sha }}
+          path: bundle/
+          retention-days: 30
