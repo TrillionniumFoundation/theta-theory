@@ -1,0 +1,30 @@
+name: A2-DYN v27 one-time exact source transport
+on:
+  push:
+    branches:
+      - revision/a2-dyn-v27-referee-response-2026-10-07
+    paths:
+      - .github/a2-dyn-v27-transport/**
+      - .github/workflows/a2-dyn-v27-assemble.yml
+permissions:
+  contents: write
+jobs:
+  assemble:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Create the checksum-bound immutable paper tree only
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 .github/a2-dyn-v27-transport/assemble.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: a2-dyn-v27-assembly-${{ github.sha }}
+          path: /tmp/a2-dyn-v27-assembly.json
+          if-no-files-found: error
+          retention-days: 90
