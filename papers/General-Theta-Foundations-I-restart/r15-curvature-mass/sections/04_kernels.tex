@@ -1,0 +1,119 @@
+\section{Two raw-kernel realizations}\label{sec:kernels}
+The same theorem applies to two different positive instrument structures. We first give a shared elementary stability estimate. This estimate is a sufficient coupling bound, not a sharp general contraction coefficient for filtering.
+
+\begin{lemma}[Instrument coupling]\label{lem:instrument}
+Let states be either probability vectors with the $\ell^1$ norm or finite-dimensional density matrices with the trace norm. Let $C$ be a positive trace-preserving affine preparation channel with
+\[
+ \norm{C(s)-C(s')}\le\kappa\norm{s-s'}.
+\]
+Let $A_y$ be a positive linear instrument density, with $\int A_y\,m(dy)$ trace preserving. In the matrix case positivity on Hermitian inputs suffices for the argument; the realizations below are completely positive. Write $q=C(s)$, $u_y=A_y(q)$, $r_y=\tr u_y$, and $F_y=u_y/r_y$. Then
+\begin{equation}\label{eq:instrument}
+ W_1(\law F_Y,\law F'_{Y'})\le3\kappa\norm{s-s'},\qquad
+ \TV(\law Y,\law Y')\le\frac{\kappa}{2}\norm{s-s'}.
+\end{equation}
+Here $\TV(P,Q)=\sup_E|P(E)-Q(E)|$.
+\end{lemma}
+\begin{proof}
+For a signed vector or Hermitian $v$, its positive and negative parts and positivity of the instrument give
+\[
+ \int\norm{A_y(v)}m(dy)\le\norm{v},\qquad
+ \int|\tr A_y(v)|m(dy)\le\norm{v}.
+\]
+The second inequality proves the report bound. Couple the reports by their common density $\min(r_y,r'_y)$ and couple the remaining masses arbitrarily. On the common part,
+\[
+ \min(r_y,r'_y)\norm{F_y-F'_y}
+ \le\norm{u_y-u'_y}+|r_y-r'_y|.
+\]
+The state space has diameter at most two. The cost of the remaining mass is thus at most $\int|r_y-r'_y|m(dy)$. The total cost is at most $3\norm{q-q'}$, which gives \eqref{eq:instrument}. Zero report masses may be assigned arbitrary normalized states on null sets. Strict positivity, when needed for the clock converse, is checked separately.
+\end{proof}
+
+\subsection{Controlled Gaussian hidden-state experiments}
+Fix hidden states $0,\ldots,d$, a report dimension $m_{\rm obs}\ge d$, and a nonempty finite family of sensor actions. A call first moves the hidden state through a known stochastic matrix $T_t^a$ and then reports
+\begin{equation}\label{eq:gaussianraw}
+ Y_t\mid X_{t+1}=j,a\sim N(\mu_j^a,\Sigma_a),\qquad Y_t\in\R^{m_{\rm obs}}.
+\end{equation}
+All reports, including large ones, are retained as physical acquisitions. There is no clipping, conditional acceptance or free resampling. The means for each action are affinely independent and $\Sigma_a$ is positive definite. The parameters can range over a fixed compact family for which the singular values in the conditions below stay positive. Assume every entry of $T_t^a$ is at least $\tau>0$. Let
+\[
+ \kappa_t=\max_a\frac12\max_{i,j}\sum_k|T_t^a(i,k)-T_t^a(j,k)|.
+\]
+For predictive minimality assume that, at each phase, at least one of these legal matrices is invertible. This does not prescribe the action selected by the optimal observer.
+
+\begin{theorem}[Gaussian acquired-geometry law]\label{thm:gaussian}
+Suppose the sequence $\beta_t=3\kappa_t$ obeys the block bounds of Definition~\ref{def:hypotheses}. The experiment \eqref{eq:gaussianraw}, with a terminal categorical audit and any loss in Corollary~\ref{cor:resolution}, verifies every hypothesis of Theorem~\ref{thm:main} on $K=\Delta_d$. Consequently its optimized checkpoint and autonomous excess risks satisfy \eqref{eq:maincp}--\eqref{eq:mainaut}, uniformly in $n,M$. The acquisition policies may depend on every previously acquired report; no fixed sensor schedule is assumed.
+\end{theorem}
+\begin{proof}
+For an incoming belief $p$, put $q=pT_t^a$. The positive emission densities $f_j^a(y)$ give
+\[
+ r(q,y)=\sum_{j=0}^d q_jf_j^a(y),\qquad
+ u_j=F_j(p,a,y)=\frac{q_jf_j^a(y)}{r(q,y)}.
+\]
+These formulas are obtained from the original transition and emission kernels. Unnormalized joint probabilities of any finite continuation are linear in $p$; hence the affine realization and mixture identities hold on the entire simplex. Every Gaussian density is strictly positive, so all report laws are equivalent to, for example, one fixed nonsingular Gaussian reference measure on $\R^{m_{\rm obs}}$ at all phases. A change from Lebesgue to that probability reference does not alter $F$ or its acquired law.
+
+Let $u_0=1-\sum_{j=1}^du_j$ and $z_j=\log(u_j/u_0)$. Define the full-row-rank $d\times m_{\rm obs}$ matrix $B_a$ with rows $(\mu_j^a-\mu_0^a)^T\Sigma_a^{-1}$. Then
+\begin{equation}\label{eq:logit}
+ z=B_ay+c_a+\bigl(\log(q_j/q_0)\bigr)_{j=1}^d,
+\end{equation}
+where $(c_a)_j=-\tfrac12[(\mu_j^a)^T\Sigma_a^{-1}\mu_j^a-(\mu_0^a)^T\Sigma_a^{-1}\mu_0^a]$. Thus $z$ has a mixture of $d+1$ nonsingular Gaussian densities, with covariance $B_a\Sigma_aB_a^T$. Their means stay in a fixed bounded set because $q_j\ge\tau$. This argument takes the Gaussian linear image in $d$ log-likelihood coordinates; it does not require the report dimension $m_{\rm obs}$ to equal the acquired dimension. If $h_q$ is this density, there are uniform positive constants such that
+\[
+ h_q(z)\le C\exp(-c|z|^2+C|z|).
+\]
+The softmax map is a diffeomorphism from $\R^d$ to $\operatorname{int}\Delta_d$, and its Jacobian is $\prod_{j=0}^du_j$. Therefore the actual posterior density is
+\begin{equation}\label{eq:gaussiandensity}
+ \frac{h_q\bigl((\log(u_j/u_0))_{j=1}^d\bigr)}{\prod_{j=0}^du_j}.
+\end{equation}
+Since $u_0=(1+\sum_je^{z_j})^{-1}$,
+\[
+ (\textstyle\prod_{j=0}^du_j)^{-1}
+ =(1+\sum_je^{z_j})^{d+1}e^{-\sum_jz_j}
+ \le C_d e^{C_d|z|}.
+\]
+The Gaussian tail dominates this factor. Equation~\eqref{eq:gaussiandensity} is consequently bounded uniformly over all $p$, actions and phases, although its support approaches every simplex boundary. This is the reason for the global extension in Lemma~\ref{lem:curvature}. It is a bound on the actual law, not on a truncated or conditioned experiment.
+
+The stochastic-matrix contraction in $\ell^1$ is $\norm{pT-p'T}_1\le\kappa_t\norm{p-p'}_1$. To see this, decompose $p-p'$ into equal positive and negative masses; their normalized images are convex combinations of rows, whose diameter is twice the displayed row coefficient. Lemma~\ref{lem:instrument} proves \eqref{eq:stability} and report continuity.
+
+Finally the one-step Gaussian mixture law identifies $q$. Indeed, after dividing a putative linear relation between its component densities by their common Gaussian quadratic factor, one obtains a relation between exponentials with distinct linear exponents. Restrict to a line for which their slopes are distinct; successive limits along that line show that every coefficient vanishes. An invertible legal $T_t^a$ then identifies $p$. Hence executable report tests separate the incoming beliefs. Equality of beliefs conversely fixes every continuation law. The terminal audit probability map is $p\mapsto p$, so the task hypotheses hold. These verifications are independent of the proof of Theorem~\ref{thm:main}.
+\end{proof}
+
+The class includes uniformly positive, slowly mixing individual phases, provided sufficiently mixing phases recur in bounded blocks. For example in two states one can choose invertible symmetric transition matrices with row coefficients periodically $0.8,0.8,0.02$. The largest one-step certified coefficient is $2.4>1$, but every complete three-step product is $0.3456<1$. This example illustrates block stability, not a claim that weak mixing alone implies the theorem. The strict analytic feedback advantage for the earlier affine sensor is retained in Supplement U; no strict Gaussian feedback advantage is inferred merely from the presence of multiple actions.
+
+\subsection{Noncommuting positive instruments}
+Let the physical Hilbert space have finite dimension $D\ge2$. Choose a real orthonormal basis $H_1,\ldots,H_d$ of traceless Hermitian matrices, $d=D^2-1$, and a number $s>0$ such that $s\sum_i\norm{H_i}_{\rm op}<1$. For $y\in[-1,1]^d$, set
+\begin{equation}\label{eq:quantumraw}
+ E_y=I+s\sum_i y_iH_i,\qquad
+ \mathcal I_{t,y}^a(\rho)=E_y^{1/2}\mathcal C_t^a(\rho)E_y^{1/2},
+ \quad m(dy)=2^{-d}dy,
+\end{equation}
+where
+\[
+ \mathcal C_t^a(\rho)=(1-\alpha_t^a)\tau_t^a+
+ \alpha_t^a U_a\rho U_a^*,\qquad
+ 0<\alpha_-\le\alpha_t^a\le\alpha_+<1,
+ \quad \tau_t^a\succeq\tau I.
+\]
+The additive formula on trace-one states extends linearly by multiplying the first term by $\tr\rho$. The channel is implemented by a classical mixture of preparation and a unitary action; each invocation, including a preparation outcome, is charged. The report instrument is positive and completely positive, and $\int E_y\,m(dy)=I$ makes it normalized. It defines positive classical causal report kernels $r(\rho,y)m(dy)$ and the deterministic state update $F(\rho,y)$; a density matrix is the verified predictive realization, not an extra observer register. Neither the matrices $H_i$ nor the effects $E_y$ commute in general.
+
+\begin{theorem}[Noncommuting-instrument realization]\label{thm:quantum}
+Suppose $\beta_t=3\max_a\alpha_t^a$ satisfies the block bounds. Equip \eqref{eq:quantumraw} with a finite informationally complete terminal audit and a loss from Corollary~\ref{cor:resolution}. Theorem~\ref{thm:main} holds on the full density-matrix carrier with its trace norm and dimension $d=D^2-1$. No common eigenbasis is required, and all comparisons optimize over the declared history-dependent action policies.
+\end{theorem}
+\begin{proof}
+For $q=\mathcal C_t^a(\rho)$, let $r_y=\tr(E_yq)$ and $\sigma_y=E_y^{1/2}qE_y^{1/2}/r_y$. The common strictly positive lower bounds on $q$ and $E_y$ give strictly positive report densities on the whole cube. The affine mixture and continuation-test identities follow directly from linearity of the unnormalized instruments. Known trace-preserving products represent every finite controlled continuation once its report-contingent policy is fixed.
+
+We verify the acquired density without assuming it. For positive definite $q,\sigma$ define
+\[
+ A(q,\sigma)=q^{-1/2}(q^{1/2}\sigma q^{1/2})^{1/2}q^{-1/2}.
+\]
+It is the unique positive definite solution of $AqA=\sigma$, by squaring after conjugation with $q^{1/2}$. The inverse of $E\mapsto E^{1/2}qE^{1/2}/\tr(Eq)$, on positive definite matrices with $\tr E=D$, is
+\begin{equation}\label{eq:quantuminverse}
+ E=\frac{D A(q,\sigma)^2}{\tr A(q,\sigma)^2}.
+\end{equation}
+Indeed $E^{1/2}=\sqrt{D/\tr A^2}\,A$, giving the prescribed normalized output; conversely uniqueness recovers any positive $E$. Both maps are smooth on their positive definite domains, and their derivatives on the trace hyperplanes are inverses. The affine map $y\mapsto E_y$ has full rank $d$. Since the permitted $q$ and the closed report cube form a compact subset of these domains, the absolute Jacobian of $y\mapsto\sigma_y$ has a uniform strictly positive minimum. The bounded report density $r_y2^{-d}$ and ordinary one-to-one change of variables yield a uniform acquired density bound in any fixed affine chart on density matrices. Cube boundaries have Lebesgue measure zero; no multiplicity or conditioning factor is suppressed.
+
+The channel difference is $\alpha_t^aU_a(\rho-\rho')U_a^*$ and hence contracts the trace norm by $\alpha_t^a$. Lemma~\ref{lem:instrument} gives the required Wasserstein and report-TV estimates. The next-report density $\tr(E_yq)=1+s\sum_i y_i\tr(H_iq)$ identifies every traceless coordinate of $q$. The known affine channel is injective because $\alpha_t^a>0$, so these executable tests separate $\rho$. Equality of density matrices fixes all future instrument probabilities, proving predictive minimality for this experiment.
+
+For completeness, a finite separating audit is obtained from the effects
+\[
+ G_{i,\pm}=\frac{I\pm eH_i}{2d},\qquad
+ 0<e<\bigl(\max_i\norm{H_i}_{\rm op}\bigr)^{-1}.
+\]
+Their sum is $I$, and the probability differences are $e\tr(H_i\rho)/d$, an injective affine coordinate map. Corollary~\ref{cor:resolution} gives bounded strongly concave task risks in all $d$ directions. The audit is irreversible and separately charged in Section~\ref{sec:resources}. The proof is finite dimensional throughout; it does not assert an unbounded-operator closure or a uniform-in-$D$ constant.
+\end{proof}
