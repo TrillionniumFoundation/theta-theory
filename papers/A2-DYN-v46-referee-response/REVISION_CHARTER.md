@@ -1,0 +1,3 @@
+# Revision 46 charter
+
+Continue the original triangular Lorentz actual-return raw-density problem from the frozen v45 external report. Preserve the title, exact record, section normalization, all inherited mathematics and arithmetic main term. Add a proved positive-window route to the protected noncritical inverse, combine it with the actual critical collars, and state the remaining boundary estimate exactly. Do not relabel mass exhaustion as pointwise closure or claim a count rate absent from the proof. Publish a new full source packet and exact-SHA evidence on new v46 branches without modifying historical branches or unrelated papers.
