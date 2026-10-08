@@ -1,0 +1,54 @@
+name: A2-DYN v47 exact-source qualification
+on:
+  push:
+    branches:
+      - revision/a2-dyn-v47-referee-response-2026-10-08
+      - revision/a2-dyn-v47-referee-copy-2026-10-08
+    paths:
+      - papers/A2-DYN-v47-referee-response/**
+      - .github/workflows/a2-dyn-v47-qualification.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: a2-dyn-v47-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  qualify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Archive exact article, baseline and controlling report
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          mkdir -p papers/A2-DYN-v47-referee-response/evidence
+          git archive HEAD papers/A2-DYN-v44-referee-response .github/workflows/a2-dyn-v44-qualification.yml papers/A2-DYN-v43-referee-response .github/workflows/a2-dyn-v43-qualification.yml reviews/a2-dyn-v43-external-top4-review-2026-10-08 papers/A2-DYN-v42-referee-response .github/workflows/a2-dyn-v42-qualification.yml reviews/a2-dyn-v42-external-top4-review-2026-10-08 papers/A2-DYN-v41-referee-response .github/workflows/a2-dyn-v41-qualification.yml reviews/a2-dyn-v41-external-top4-review-2026-10-08 papers/A2-DYN-v40-referee-response .github/workflows/a2-dyn-v40-qualification.yml papers/A2-DYN-v37-referee-response .github/workflows/a2-dyn-v37-qualification.yml reviews/a2-dyn-v36-external-top4-review-2026-10-08 papers/A2-DYN-v34-referee-response reviews/a2-dyn-v34-external-top4-review-2026-10-07 .github/workflows/a2-dyn-v34-qualification.yml papers/A2-DYN-v35-referee-response papers/A2-DYN-v33-referee-response reviews/a2-dyn-v33-external-top4-review-2026-10-07 .github/workflows/a2-dyn-v33-qualification.yml papers/A2-DYN-v32-referee-response papers/A2-DYN-v31-referee-response papers/A2-DYN-v30-referee-response papers/A2-DYN-v29-referee-response papers/A2-DYN-v27-referee-response papers/A2-DYN-v26-referee-response reviews/a2-dyn-v31-external-top4-review-2026-10-07 reviews/a2-dyn-v30-external-top4-review-2026-10-07 reviews/a2-dyn-v26-external-top4-review-2026-10-07 .github/workflows/a2-dyn-v32-qualification.yml .github/workflows/a2-dyn-v31-qualification.yml .github/workflows/a2-dyn-v30-qualification.yml .github/workflows/a2-dyn-v29-qualification.yml reviews/a2-dyn-v32-external-top4-review-2026-10-07 .github/workflows/a2-dyn-v35-qualification.yml papers/A2-DYN-v45-referee-response reviews/a2-dyn-v35-external-top4-review-2026-10-07 reviews/a2-dyn-v37-external-top4-review-2026-10-08 .github/workflows/a2-dyn-v45-qualification.yml papers/A2-DYN-v38-referee-response .github/workflows/a2-dyn-v38-qualification.yml reviews/a2-dyn-v38-external-top4-review-2026-10-08 papers/A2-DYN-v39-referee-response .github/workflows/a2-dyn-v39-qualification.yml reviews/a2-dyn-v39-external-top4-review-2026-10-08 papers/A2-DYN-v46-referee-response .github/workflows/a2-dyn-v46-qualification.yml reviews/a2-dyn-v45-external-top4-review-2026-10-08 papers/A2-DYN-v47-referee-response .github/workflows/a2-dyn-v47-qualification.yml reviews/a2-dyn-v46-external-top4-review-2026-10-08 > papers/A2-DYN-v47-referee-response/evidence/exact-source.tar
+      - name: Install native TeX and finite-check dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern python3-numpy python3-mpmath python3-sympy python3-scipy poppler-utils
+      - name: Verify exact source and compile the complete article
+        env:
+          TZ: UTC
+        run: bash papers/A2-DYN-v47-referee-response/build.sh
+      - name: Render the new proof pages and record PDF identity
+        run: python3 papers/A2-DYN-v47-referee-response/tools/render_v47.py
+      - name: Upload exact-source qualification artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a2-dyn-v47-${{ github.sha }}
+          if-no-files-found: error
+          retention-days: 90
+          path: |
+            papers/A2-DYN-v47-referee-response/build/main.pdf
+            papers/A2-DYN-v47-referee-response/build/main.log
+            papers/A2-DYN-v47-referee-response/build/main.fls
+            papers/A2-DYN-v47-referee-response/build/main.aux
+            papers/A2-DYN-v47-referee-response/build/pass*.txt
+            papers/A2-DYN-v47-referee-response/evidence/*
