@@ -1,0 +1,33 @@
+name: A2-DYN v50 exact-source qualification
+on:
+  push:
+    branches:
+      - revision/a2-dyn-v50-referee-response-2026-10-09
+      - revision/a2-dyn-v50-referee-copy-2026-10-09
+    paths:
+      - papers/A2-DYN-v50-referee-response/**
+      - .github/workflows/a2-dyn-v50-qualification.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  freeze-source:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Freeze the controlling review, without a manuscript qualification claim
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git hash-object reviews/a2-dyn-v49-external-top4-review-2026-10-09/REFEREE_REPORT.md)" = cad56babdd60f941c0e554dc88c99e90c20335b4
+          mkdir -p evidence
+          git archive --format=tar HEAD reviews/a2-dyn-v49-external-top4-review-2026-10-09 papers/A2-DYN-v50-referee-response .github/workflows/a2-dyn-v50-qualification.yml > evidence/frozen-review.tar
+          printf '%s\n' "$GITHUB_SHA" > evidence/event-sha.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: a2-dyn-v50-review-freeze-${{ github.sha }}
+          path: evidence/*
+          retention-days: 90
