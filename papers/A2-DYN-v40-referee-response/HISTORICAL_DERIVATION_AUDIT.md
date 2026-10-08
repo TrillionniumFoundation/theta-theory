@@ -1,0 +1,9 @@
+# Historical derivation audit: revision 40
+
+The controlling source is the full v39 report, not the v35 report visible earlier in the conversation. Its commit is `a76fcf9d6ef7288ea324fed327c4f2f0ce088461`; the reviewed author source is `75eda04842b69319ae81c97ce1502129d55ee5fc`. The downloaded exact-source artifact has verified SHA-256 `b954a00c3f77593b17a9af621d48415b780686639b37c66f21340c5c30f7373c`.
+
+The new argument uses the actual section and return convention in modules 02, 77--78; the common collision norms and unweighted growth/matching sums in 15, 69, 72 and 76; the joint covariance and exact section multiplier in 77; the concentration and exact fixed-torus inverse in 80--81; and the resonance-group and source-cancellation calculations in 82--83. The compensated covariance and original normalization in the earlier return chain are preserved. The raw coarea and pointwise correction sections are not replaced by collision-space variation estimates.
+
+The genuinely new analytical step is long-time occupation refinement on already regular inverse curves. The one-step multiplier alone did not prove the required power bound. The new argument counts all extra cuts, treats matched and unmatched pieces, and keeps the polynomial weak loss until the spectral argument improves it. The integer holonomy argument removes the nonzero roof alternative without asserting occupation triviality. The finite arithmetic factor is computed from the actual section source rather than discarded as an unwanted resonance.
+
+All 83 v39 core files and all 95 v39 Python files are unchanged. All old source material remains on its historical branches and in the new branch tree. The prior main source, response, ledger and manifest are copied exactly under `provenance/`; the verifier checks this preservation and the complete old label set.

@@ -1,0 +1,3 @@
+# Revision 40 charter
+
+Start from the latest v39 external review and its exact author source. Preserve the title, physical family, actual section, all inherited theorem-level material and original four-coordinate raw mixed-density target. Address the fixed-collision-count obstruction with full-torus powers, all endpoint residues and an exact inverse, not by converting an Abel average into a coefficient claim. State the fixed-radius arithmetic interval law separately from the radius-uniform finite spectral reduction and the original pointwise raw target. Do not overwrite old author or review branches. Qualify the exact new source before reporting build success.
