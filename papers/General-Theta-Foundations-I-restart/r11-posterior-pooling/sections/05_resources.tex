@@ -1,0 +1,69 @@
+\section{One-task composition and finite implementation}\label{sec:resources}
+\subsection{Typed causal comparison}
+A resource-certified morphism $\mathfrak E\rightsquigarrow\mathfrak F$ consists of a parameter-independent causal simulator, its internal state, a lift of each strategy in a \emph{specified} target strategy class, report transformations, clock and action-compatibility rules, and the scored-task readout. The simulated scored law, including public actions, reports, costs and the audit, must have total-variation distance at most $\varepsilon$ from the target law, uniformly over the declared parameters and target strategies. It is not enough to match single report marginals. A task posterior smaller than the full predictive quotient does not, by itself, define this simulator.
+
+\begin{proposition}[Common-task risk and product resources]\label{prop:morphism}
+Suppose $\mathfrak E\rightsquigarrow\mathfrak F$ has the preceding certificate for a loss in $[0,L_{\rm loss}]$. A target controller with $M$ total states, $N$ calls, scratch $W$ and programme description $P$ has a source implementation with at most $MSQ$ states, where $S$ is the simulator-state count and $Q$ counts any additional genuinely retained clock/interface states. Its risk increases by at most $L_{\rm loss}\varepsilon$. Calls and physical duration follow the certified functions $C_{\rm call}(N)$ and $C_{\rm time}(N)$; scratch is at most $W+W_{\rm sim}+W_{\rm buffer}$, and programme descriptions add with the composition instructions.
+
+Independent stagewise kernel errors bounded by $\zeta_t$ are not required: uniform conditional joint-kernel TV bounds alone add at most $\sum_t\zeta_t$ to the scored-law defect. Serial morphism defects add, with the respective strategy lifts composed. A reverse risk inequality requires a reverse certificate covering every source strategy being lower bounded, and uses its own resource map. All these are inequalities for the \emph{same absolute scored risk}, not differences of separate Bayes baselines.
+\end{proposition}
+\begin{proof}
+Store the target, simulator and additional interface states as one tuple; causality and action compatibility make its update legal. Couple each next simulated joint operation maximally until the first mismatch. A union bound gives the accumulated stagewise defect even for adaptive strategies, since the bound is conditional and uniform. Composition and data processing give the serial assertion. For a scored loss in $[0,L_{\rm loss}]$, the change in its expectation is at most $L_{\rm loss}$ times TV. Apply this to each certified target strategy before taking its infimum. For a lower bound reverse the construction and verify that the reversed lift covers the entire class whose infimum is used. No optimal-control comparison outside those classes follows.
+\end{proof}
+
+\subsection{Numerical evaluation without a hidden posterior register}
+\begin{proposition}[Certified digital posterior pooling]\label{prop:digitalpool}
+In Theorem~\ref{thm:pooling}, allow the programmed action at stage $t$ to be within $\gamma_t$ of its Bellman minimum at that label's exact conditional posterior. Recompute the pooling barycenters under this programmed controller's actual law. Its ideal risk upper gains only $\sum_t\gamma_t$.
+
+Let $h_t$ be the side length of its grid. Suppose a finite evaluation of its \emph{fixed} programme satisfies the following certificates: outside a failure event of probability at most $\xi_t$, its computed posterior coordinates differ from the ideal coordinates by at most $\beta_t<h_t/4$; its terminal readout lies in the simplex and differs from the ideal barycenter in task norm by at most $u$; and the physical calibrated joint kernel differs from the reference kernel by at most $\zeta_t$ in uniform conditional TV. Then
+\begin{equation}\label{eq:digitalrisk}
+\begin{split}
+ R_{\rm digital}\le B_n^*+C\sum_t L_t^{-2/d}+\sum_t\gamma_t+u^2
+ +2\sum_t\left(\zeta_t+\xi_t+C_d\rho\frac{\beta_t}{h_t}\right).
+\end{split}
+\end{equation}
+An additional certified causal simulation defect adds $2\varepsilon$ and multiplies the state count as in Proposition~\ref{prop:morphism}. The grid label count is unchanged; all finite evaluation workspace is erased at the next cut.
+\end{proposition}
+\begin{proof}
+A $\gamma_t$-optimal action changes the Bellman equality by a nonnegative term at most $\gamma_t$. The exact aggregation argument and the Jensen estimate are otherwise unchanged. Couple the ideal and digital controllers until their first label mismatch. While their labels agree they issue the same recorded action. A coordinate error of at most $\beta_t$ changes a grid label only when the ideal posterior is within $\beta_t$ of a grid hyperplane. In the unit coordinate cube there are at most $C_d/h_t$ such hyperplanes, so their slabs have actual mass at most $C_d\rho\beta_t/h_t$. Bound the first mismatch by the sum of these probabilities and the certified failure/kernel-error probabilities. This uses the ideal unconditioned acquired law; restricting to histories before the first mismatch can only decrease those event probabilities. No conditional density after that restriction is assumed.
+
+With ideal transitions and a rounded terminal output, projection at the terminal label adds exactly its squared readout error, at most $u^2$. Couple to this rounded-output reference controller. Both forecasts lie in the simplex, so their scored loss lies in $[0,2]$; the mismatch probability therefore costs at most twice its bound. This proves \eqref{eq:digitalrisk} and the final morphism assertion.
+\end{proof}
+The different precisions in this proposition are intentional. Bellman comparison error is in risk units; posterior evaluation error is amplified near cell boundaries by $h_t^{-1}$; terminal-output error is squared. A permitted numerical tolerance is not automatically an unavoidable risk floor.
+
+For the rational sensor kernels of Theorem~\ref{thm:sensors}, denominators in \eqref{eq:rawposterior} are bounded below by $1-\lambda$. A stored coefficient error $u_{\rm coef}$, report-coordinate error $u_{\rm report}$ and arithmetic error $u_{\rm arith}$ give $\beta_t\le C(u_{\rm coef}+u_{\rm report}+u_{\rm arith})$. Thus, for fixed $n,d$ and a common mesh $h$, these three errors may be chosen $O(h^3)$, Bellman comparison errors $O(h^2)$ and output error $O(h)$ to preserve the $h^2$ risk order. The comparison errors and barycenter approximations must be certified in preprocessing; no decidability claim is made for arbitrary Borel constants.
+
+For $S=1+\sum_tL_t$, a finite programme records one action and one posterior coefficient vector per state, stage/grid data, and terminal outputs. With $p_{\rm coef}$ coefficient bits and $p_{\rm out}$ output bits per coordinate, a coarse description bound is
+\[
+ O\!\left(S\{(d+1)p_{\rm coef}+\log(|\mathcal A|+1)+\log(n+1)+\log(\overline L+1)\}
+       +(d+1)L_np_{\rm out}+P_K\right),
+\]
+where $P_K$ is the known kernel-evaluation programme. Here $\overline L=\max_tL_t$ is the largest per-stage label allocation. Scratch and kernel-evaluation costs are charged separately; a sequential table scan avoids any assumption of unit-cost random access. For fixed $d$, ordinary fixed-precision arithmetic uses polynomial scratch and bit time in the coefficient, report and arithmetic precisions per scan, and at most $n$ such scans of $S$ records. The interpreter resets its position before each persistent cut. There is no stored real-valued filter beyond the label. Planning may be exponential or require large certified integrations, even though the deployed programme is finite.
+
+\subsection{An attained joint profile}
+\begin{corollary}[Calibration and early-channel deficiency in one task]\label{cor:jointpool}
+Adjoin to the controlled sensor experiment an unknown bit $b\in\{0,1\}$ and a calibration sign $\sigma\in\{-1,1\}$. Both are independent of its prepared hidden-state randomness. The known amplitude is $0\le\delta\le1$. Before sensing, an early channel reports $b$ with probability $1-2\varepsilon$ and an erasure symbol otherwise, where $0\le\varepsilon\le1/2$. The common terminal audit is
+\[
+ (e_{X_n},b,\delta\sigma),
+\]
+with direct-sum squared loss. The sign is never reported before this audit. The exact-bit target requires its first virtual report to be completed \textbf{before all sensing calls and before the terminal audit}. Under this order the causal deficiency of the early channel relative to the exact-bit target is exactly $\varepsilon$.
+
+Let $\mathcal R$ be minimax over $(b,\sigma)$, with the hidden preparation fixed. For all sufficiently large total-state budgets,
+\begin{equation}\label{eq:jointpool}
+\begin{split}
+ cM^{-2/d}+\delta^2+\varepsilon/2
+ &\le\mathcal R(n+3,M,\delta,\varepsilon)-B_n^*\\
+ &\le Cn\left\lfloor\frac{M-4}{3n}\right\rfloor^{-2/d}
+                  +\delta^2+\varepsilon/2.
+\end{split}
+\end{equation}
+There are $n$ sensing calls, one preparation, one early-channel call and one joint audit; their physical durations remain separately charged. In particular, for each fixed $n$ the matched excess profile is $M^{-2/d}+\delta^2+\varepsilon$. This is not a sharp joint large-$n$ theorem.
+\end{corollary}
+\begin{proof}
+Average the lower bound over independent fair $b$ and $\sigma$. Conditional on every channel status, all sensing strategies remain covered by Theorem~\ref{thm:pooling}; unrelated side information cannot improve $B_n^*$, and the terminal forecast still has at most $M$ centers. The hidden-coordinate risk is therefore at least $B_n^*+cM^{-2/d}$. The sign is independent of every pre-audit observation, so its best squared risk is $\delta^2$. On erasure the bit remains fair even after the sensing history, giving bit risk $(2\varepsilon)/4=\varepsilon/2$. The loss is a direct sum, so these lower bounds add under the same product prior; minimax risk dominates its Bayes risk.
+
+For the upper, retain one of three channel statuses and a pooling controller with $1+nL$ states, where $L=\lfloor(M-4)/(3n)\rfloor$. The initial channel state plus this product uses at most $1+3(1+nL)=4+3nL\le M$ states. Forecast the known bit on a nonerasure, $1/2$ on erasure and zero for the sign. Theorem~\ref{thm:pooling} gives the upper. Retaining the status throughout is a safe count, not a claim that no states can be merged.
+
+A simulator outputs the received bit or guesses a fair bit on erasure, completing that report in the required early phase. Coupling shows full scored-law defect at most $\varepsilon$ even when later target actions depend on the virtual bit. For the reverse bound, the two early source laws have TV $1-2\varepsilon$, whereas the two exact target-bit laws have TV one. Data processing and the triangle inequality force every parameter-independent simulator's worst-parameter defect to be at least $\varepsilon$. The early-completion rule is essential: the terminal audit is not available when producing this report.
+\end{proof}
+The calibration and erasure coordinates are inherited elementary constructions; the new assertion is their composition with the overlapping-noise adaptive completion and its complete state count. General calibration errors in a physical kernel obey Proposition~\ref{prop:digitalpool}, not automatically the particular $\delta^2$ law of this inaccessible-sign experiment.
