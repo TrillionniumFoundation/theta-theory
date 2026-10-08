@@ -1,0 +1,7 @@
+# Historical derivation audit: revision 49
+
+The frozen v48 author source is `418000c216e9efa7c259a9bee9dac4fcf288ee1d`; its full paper tree is `8918ca0a31f4966750326217f15b79ad71ba6df7`. The controlling v48 report is `3c8a41dd89f8491ac85c1ba40d85c68dc040e6dc`, blob `931f8f23563434275fb6d02b7077bfccda740954`. The actual v48 remote artifact was used, not the older local v48 package in the conversation.
+
+The new derivation checks in particular modules 72 (norms), 84--87 (occupation spectrum and arithmetic transitions), 93 (full-source fixed-band kernel), 94 (complete-source densities), 96--99 (graded margins and protected correction), and 100--104 (marked decision estimates and the physical remainder). Every one of the 104 inherited core files remains byte-identical. The new physical layer bound reuses the interpolation of module 102 only after proving new geometry for incidence and backward-clearance envelopes.
+
+The old local v48 draft had 103 cores. It is not silently treated as the reviewed baseline: the remote reviewed version has 104. All 131 inherited Python scripts, the bibliography and compiled A-X synopsis are retained. The 11 old leading statements and their proofs move to a compiled appendix, with one literal theorem number replaced by its label; the complete old main file remains under provenance. The new front matter presents one norm theorem without identifying it with the original pointwise target.

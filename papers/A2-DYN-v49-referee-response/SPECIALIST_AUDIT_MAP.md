@@ -1,0 +1,5 @@
+# Specialist audit map: revision 49
+
+The new continuum checks are concentrated in modules 105--107. Verify the backwards incoming velocity convention; the derivatives of the signed line distance in arclength and angle; the positive-foot lower bound; finite partition complexity and uniform stable transversality through grazing homogeneity strips; strong-completion multiplication with no inverse-width loss; the placement of clearance at collision j+1; unchanged occupation over 0,...,m-1; the ambient factor 1/c; uniform finite-count errors before the physical-depth sum; local variation contraction for a signed Schwartz kernel; and the ordered collision, auxiliary-band and reconstruction-band limits.
+
+The spectral interpolation, full occupation-torus spectrum, moving-peak Gaussian bounds, complete-source absolute continuity, protected correction and all-depth decision theorem are inherited load-bearing inputs. The proof uses no physical-word continuation across grazing or competing-hit seams. Independent expert verification has not been obtained. Finite algebra and rendered pages are not substitutes for it.
