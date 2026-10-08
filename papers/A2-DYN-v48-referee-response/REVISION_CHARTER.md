@@ -1,0 +1,3 @@
+# Revision 48 charter
+
+Continue the original A2-DYN raw four-coordinate density problem from the exact v47 review commit. Preserve all inherited mathematics and arithmetic modulation. Prove a uniform marked thin-strip bound and use it to sum all physically protected section-decision layers before taking the collision limit. Keep physical incidence/clearance defects distinct, do not infer pointwise smallness from mass, and do not claim an independent human audit or a full raw-density theorem. Land complete ordinary manuscript sources and exact-SHA qualification on the new v48 revision branches.
