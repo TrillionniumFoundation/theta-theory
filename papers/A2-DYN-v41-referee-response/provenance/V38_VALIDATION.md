@@ -1,0 +1,9 @@
+# Validation: revision 38
+
+The frozen v37 source is commit d039c92d9f957ee180b74c0f3cf4c8bf52b9547c, complete paper tree 606e3db1b2e8dce1fbf9f17d3ef7251ec99d519f. Its artifact 11499802436 from run 37658530003 has archive digest ed1e07626daeb71b6b089b2151d46b958183fb64e6767c377ec6d07560c873be. This is baseline evidence, not a v38 execution claim.
+
+The v38 verifier reconstructs the complete ordinary-source Merkle identity, checks the unchanged 79 inherited core and 87 inherited Python files, all inherited labels, all 81 core inclusions, four leading theorems, the 24 retained synopsis statements, unchanged bibliography, archived main source, exact controlling report blob and read-only workflow hash.
+
+Finite diagnostics test 1,024 rational product-envelope cases, the exact lower mass formula, covariance/determinant identities, 2,047 binary orbit endpoint models, 176 half-integer block models, and finite Fourier inversion with nonintegral centering. Negative controls reject multiplying negative minorants, counting the terminal visit, inferring singleton asymptotics from parity-compatible averages, setting H=1 in the diverging-width proof, and using an uncontrolled shrinking strip. They are finite algebra/model checks, not billiard proofs. The inherited v37/v35/v34 finite checks and six earlier diagnostics also run.
+
+Normal and optimized outputs must agree. The native no-shell-escape TeX build rejects unresolved references, warnings, missing characters and overfull boxes. Proof-page renders use actual aux labels. The generated receipt identifies the checked-out source SHA, event SHA, run ID/attempt, source cleanliness, PDF/log hashes and verified source hashes. No future workflow is declared successful in static prose. The exact completed run and dynamic receipt are authoritative for execution, not for independent continuum proof certification.
