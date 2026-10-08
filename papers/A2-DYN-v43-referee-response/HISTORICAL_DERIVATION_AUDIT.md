@@ -1,0 +1,9 @@
+# Historical derivation audit: revision 43
+
+The frozen v42 artifact was downloaded and its archive SHA-256 was checked against `030059a8ac388e2d942db5c9e7142c8f99eddbdc9ae7bb655fbc64a2c9b4fc82`. Its exact-source tar supplies the ordinary v42 article and the relevant preceding revisions. The ordinary v42 paper tree is `3f6d85ec0ba2bcf3846aa45f98b3bd735b7cda19`; its manifest-excluded payload tree is `55395ef054227b89bd792c7b4e409cc03e4d8a07`. These are different objects.
+
+The new proof follows the full finite-graph route in module 40 rather than pretending that the positive-margin Morse packet in module 90 includes boundary words. Module 40 already proves constructibility, convergent power--logarithm germs, removal through exponent one, and finite W21 remainders. Its extractions were made at each finite cutoff. Revision 43 fixes a component at its actual count m before making any choice, allocates epsilon times its reference mass to its localization, and thereby obtains a single absolutely summable correction across all counts. It does not claim the one-variable preparation theorem as new.
+
+Modules 20, 40--41, 56, 63, 65, 81--82, 85--87, 90--91 and the v42 proof/qualification records were checked for the dependencies of this addition. In particular the old coherent-cutoff theorem changes the low-frequency cutoff for one finite extraction; the new identity uses the complete count-compatible source and the evaluated arithmetic transition main term. The original coefficient stabilization for a positive-margin word and the new countwise cutoff compatibility are distinct.
+
+The Cluckers--Miller primary source arXiv:0911.4373v1, Theorems 1.3 and 3.11, was rechecked. No new derivative-growth bound is attributed to it. The complete body has not been independently re-certified as a continuum proof. All 91 inherited cores and scripts remain byte-identical and the old front matter and records are preserved under provenance/V42_.
