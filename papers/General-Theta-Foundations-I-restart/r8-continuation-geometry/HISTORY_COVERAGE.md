@@ -1,0 +1,11 @@
+# History coverage and preservation
+
+Directly used for this revision: the four canonical controls, including the original mother outline and its G1/G3 and T07/T08 distinctions; the latest R7 external report, including its eight major and thirty technical comments; all active R7 mathematical source files, proofs, bibliography and accompanying ledgers; the supplied full R6 technical source and its singular, block, stopping and typed-morphism derivation materials; the preceding R6 report and R7 history/pipeline attribution. R7 active-source Git blob hashes were checked against the remote R7 directory tree before editing.
+
+This is not a fresh exhaustive reading or independent certification of every v1--v96 proof, every earlier review branch, or every extracted realization. The original v0.1 mother outline is not being mislabeled as an independently re-audited complete v1 paper. Exact object preservation and a history ledger do not constitute such a rereading. The unresolved coverage requirement is disclosed rather than claiming unseen material was reviewed.
+
+The canonical root is the base tree. Exact existing R4, R5, R6 and R7 sibling trees are grafted without changes; the latest R7 report is retained as an exact blob in review-inputs. The new manuscript lives only in r8-continuation-geometry. No old branch or frozen archive is rewritten. All R7 substantive results remain in the native revision or the explicitly submitted full supplement; no v96 manuscript is used as a starting copy.
+
+Unified or rederived: actual-law checkpoint quantization, executable future equivalence, candidate-robust block recursion, primitive mass-preserving filtering, bounded stopped drift, common-task morphisms, exact progressive acquisition scales, attained erasure/calibration terms and finite-depth nonreset singular transport. R8 extends the continuation line with conditional/two-sided cuts and an explicitly recursively attainable noisy chart class.
+
+Still independent: ordered-measurement local geometry/discrimination, finite input/physical action theorems, streaming-memory/space and Hilbert-rank results, pressure/LDP and unbounded-operator lines, and any older reset/allocation/stratum theorem not re-proved under these hypotheses. They may furnish realizations or tools but are not used backward to prove the general theorem.
