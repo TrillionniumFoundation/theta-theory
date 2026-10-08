@@ -1,0 +1,7 @@
+# Specialist audit map: revision 44
+
+This is an author-side map, not a record of independent human verification.
+
+The new local proof route is modules 94--95. Verify in order: (1) the reflected polygonal length Hessian and its endpoint Schur lower bound at arbitrary positive interior incidence; (2) uniqueness of a regular path of a fixed center word with prescribed endpoints; (3) lower bound on the product-matrix entry B_m and correct absolute area Jacobian; (4) rational chart correction in the near-normal Hessian; (5) O(m) auxiliary variables and bounded-degree first-hit/line/Gauss conditions, without quantifier elimination; (6) the finite BPR equation (3.3), rather than its fixed-dimension asymptotic; (7) finite generic fibers and the length/turning area formulas on exhaustions of nonconvex branch images; (8) domination for the entire return-index partition at a fixed collision count; (9) exclusion of divergent combined physical germs; (10) joint definability and fixed normalization for finite-count uniform BV; (11) equality of residual value traces and zero derivative traces after jump and positive-jet subtraction; (12) count-compatible mass and supremum allocations; (13) that only the cusp part, not the full signed inverse, is paid at the local scale.
+
+The inherited operator, arithmetic, preparation and bridge inputs retain the v43 audit requirements. No new continuum estimate is proved by a finite quadratic model, a source hash or TeX compilation.
