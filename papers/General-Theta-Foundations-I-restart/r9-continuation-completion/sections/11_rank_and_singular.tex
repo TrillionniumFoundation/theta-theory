@@ -1,0 +1,153 @@
+\section{Observable rank and singular acquisition}\label{sec:rank-singu}
+The exponent in Theorem~\ref{thm:serial} is determined by acquired response directions at each cut. The following two verifications distinguish it both from the dimension of an ambient hidden variable and from the dimension of the final forecast. The first uses noisy correlated Gaussian reports; the second has a genuinely singular acquired distribution and a noisy suffix. Neither is used to prove the general theorem.
+
+\subsection{Noisy regression with a changing observable rank}
+Retain the raw regression experiment of Section~\ref{sec:noisy}, allowing the invertible matrix $G$ in the prefix $H=G\Theta+\tau Z$. Change only the preparation of the query: its probability $\lambda$ is supported on the unit sphere of a linear subspace $L\subset\R^d$ of dimension $1\le r\le d$. Assume
+\begin{equation}\label{eq:rankframe}
+ \int bb^\top\lambda(db)\succeq gP_L,\qquad g>0,
+\end{equation}
+where $P_L$ is orthogonal projection onto $L$. This is a condition on the distribution of executable future tests, not an assumed Fisher matrix. All prefix and suffix noises remain strictly positive. The acquisition order is fixed and every report, preparation and audit is charged as before.
+
+Use the conditional matrices derived by completing squares in the proof of Theorem~\ref{thm:noisy}:
+\[
+ \Sigma_0=(I_d+\tau^{-2}G^\top G)^{-1},\quad
+ C_H=\Sigma_0\tau^{-2}G^\top,\quad
+ k=\frac{\Sigma_0a}{\sigma^2+a^\top\Sigma_0a},\quad D=I_d-ka^\top.
+\]
+Put $A=DC_H$, which is invertible. Choose a fixed orthonormal matrix $J:\R^r\to L$ and define
+\[
+ c_j=J^\top A e_j,\qquad r_j=\operatorname{rank}[c_1\ \cdots\ c_j],
+ \qquad r_0=0.
+\]
+Then $r_d=r$. These finite matrices are known calibrated coefficients derived from the raw kernels. Computing or storing them is not included in the retained data count.
+
+\begin{theorem}[A rank-sensitive noisy resource law]\label{thm:ranknoisy}
+For this experiment and its original binary squared-loss task, with full-history Bayes risk $B_*$,
+\begin{align}
+ R_\on(M)-B_*&\asymp M^{-2/r},\label{eq:rankonline}\\
+ R_\cp(M)-B_*&\asymp M^{-2}.\label{eq:rankcheckpoint}
+\end{align}
+The constants depend on the fixed raw parameters and frame bound. At each prefix cut $j$ with $r_j>0$ there is an actual dominated continuation measure of exponent $r_j$, with a matching globally implementable cover. The final cut has exponent one. The upper uses only $M$ labels at every cut, not an exact stored prefix followed by dimensional reduction. Its resource count is $d+3$ physical calls, an additional stored phase factor when applicable, and separate program, scratch and numerical precision costs.
+
+Consequently online and checkpoint prediction match in order exactly when $r=1$; for $r>1$ their excess ratio has order $M^{2-2/r}$. An ambient dimension $d>r$ does not change the exponent.
+\end{theorem}
+\begin{proof}
+For $r_j>0$ fix an orthonormal basis matrix $E_j$ of the span of $c_1,\ldots,c_j$ in $\R^r$. The actual task state is
+\[
+ Z_j=E_j^\top\sum_{i\le j}c_iH_i\in\R^{r_j}.
+\]
+Zero-rank stages are singletons. Since these spans are nested, its update on the next raw scalar report is
+\begin{equation}\label{eq:rankrecursion}
+ Z_j=E_j^\top E_{j-1} Z_{j-1}+E_j^\top c_j H_j,
+\end{equation}
+where the first summand is zero at the initial nonzero rank. The operator multiplying the previous state has norm at most one. Every actual report has all finite moments, also when the coordinates of $H$ are correlated. Lemma~\ref{lem:serialcompander} gives global inward $M$-label quantizers and the candidate Lyapunov bounds for this entire sequence. Applying them after each report retains only the indicated finite index. No exact whitening of $H$ occurs.
+
+At the suffix packet $(V,B)$, put $b'=J^\top B$. The full-history forecast is
+\begin{equation}\label{eq:rankresponse}
+ P=g_{s_B}\bigl((b')^\top E_dZ_d+B^\top kV\bigr),\qquad
+ s_B^2=B^\top\Sigma B,
+\end{equation}
+where $\Sigma$ and $g_s$ are as in \eqref{eq:posteriornoisy}--\eqref{eq:regresponse}, with the stated $G$ replacement. Formula~\eqref{eq:smoothlower} gives a global Lipschitz constant $1/2$ for this last map in $Z_d$. Quantize its value on $[0,1]$ into $M$ midpoints, and erase the packet and previous state. Thus the final candidate space has exponent one and a bounded cover. The largest exponent among these covers is $r$.
+
+We verify the lower at every active prefix, not only at the last one. For a fixed $j$, restrict the actual vector $(H_1,\ldots,H_j)$ to a compact cube $E$ of positive acquired probability. Conditional on this vector, the remaining coordinates and $V$ have a nondegenerate multivariate Gaussian density: the joint covariance is positive definite because the independent prefix noises have variance $\tau^2>0$ and the suffix noise has variance $\sigma^2>0$. Its conditional covariance is constant, and its mean is linear in the prefix. Hence on any fixed compact cube for $(H_{j+1},\ldots,H_d,V)$ that conditional density has a positive uniform minimum over $E$. Multiplying a uniform probability on this suffix cube by $\lambda$ and including the deterministic complete interface records gives a probability $\eta_j$ and a constant $\alpha_j>0$ with
+\[
+ \alpha_j\mu_j|_E\otimes\eta_j\le\law(H_{1:j},U_j).
+\]
+The positive mass $\alpha_j\mu_j(E)$ is retained. Deterministic phases and costs have no additional randomness and are included in the displayed product kernel.
+
+The pushforward of $\mu_j|_E$ by $Z_j$ is dominated by the full Gaussian law of $Z_j$. This is a nondegenerate $r_j$-dimensional Gaussian, since its coefficient matrix has rank $r_j$ and the acquired prefix covariance is positive definite. Its Lebesgue density is bounded above. The pushforward of the restricted measure therefore has small-ball mass at most $C_j u^{r_j}$ at radius $u$, without renormalization.
+
+For fixed complete suffix values the response as a function of the partial state $z$ is
+\[
+ g_j(z,u)=g_{s_B}\left((b')^\top E_jz+
+                  (b')^\top\sum_{i>j}c_iH_i+B^\top kV\right).
+\]
+It is a bounded Borel extension to all candidate states. On the image of $E$, and on the compact suffix cube, every argument in this formula lies in a common bounded interval. Equation~\eqref{eq:smoothlower} has a strictly positive derivative lower $\gamma_j$ there, also on every segment between two such arguments. Thus
+\[
+ \|g_j(z,\cdot)-g_j(z',\cdot)\|_{L^2(\eta_j)}^2
+ \ge\gamma_j^2\int |B^\top J E_j(z-z')|^2\lambda(dB)
+ \ge\gamma_j^2g\|z-z'\|_2^2.
+\]
+This verifies actual mass and observability with exponent $r_j$. It also shows why a dimension calculation on the hidden state alone would be insufficient.
+
+At the terminal cut, the density argument of Theorem~\ref{thm:noisy} applies for every unit query in $L$: the conditional scalar normal variance is bounded away from zero because $I_d-\Sigma$ is positive definite. Restriction to a fixed bounded normal argument gives an actual forecast submeasure with positive mass and a bounded one-dimensional density. The terminal exponent is therefore one. All the hypotheses of Theorem~\ref{thm:serial} now hold, with $s_*=r$ and $s_T=1$, proving both assertions and the ratio.
+\end{proof}
+
+The partial state in \eqref{eq:rankrecursion} is sufficient for the specified response after the remaining reports. It need not determine their entire conditional law: nuisance directions can affect the suffix Gaussian mean while disappearing from the scored response. Accordingly this partial state is not declared to be the full predictive quotient or to supply a free experiment simulator. The full prepared Gaussian experiment still has the report-continuity bound obtained by integrating translated conditional normal densities. A morphism must use its complete transcript and charge whatever extra state its simulator actually retains.
+
+\subsection{A singular acquired law with a noisy continuation}
+Fix $d\ge2$, $0<r_j<1/2$ and independent fair digits $\epsilon_{j,n}\in\{0,1\}$. The raw preparation is
+\begin{equation}\label{eq:singularraw}
+ X_j=1+\sum_{n\ge1}(1-r_j)r_j^{n-1}\epsilon_{j,n},\qquad
+ X=(X_1,\ldots,X_d)\in[1,2]^d.
+\end{equation}
+The compact support of coordinate $j$ is denoted by $C_j$ and its actual preparation law by $\mu_j$. In $d$ paid calls report $X_1,\ldots,X_d$ successively. Then a paid call reports the single packet
+\[
+ U=(V,B),\qquad V=a^\top X+\sigma Z,\qquad
+ B\sim\mathrm{Unif}(\mathbb S^{d-1}),
+\]
+where $a\ne0$, $\sigma>0$, and $Z,B$ are independent of the preparation. After the forecast, the paid audit reports $Y\sim\mathrm{Bernoulli}(\psi(B^\top X))$. The action class is this fixed acquisition order and all admissible finite-state predictors. Preparation and audit included, the acquisition count is $d+3$.
+
+This is an analog observation kernel: one call reports one real-valued coordinate of the singular preparation. It is not a progressive-digit sensor with infinitely many unpaid reads. Exact Borel processing and finite-precision processing are distinct models. Only a finite label survives each report cut in the theorem below.
+
+Put
+\[
+ d_j=\frac{\log 2}{\log(1/r_j)},\qquad D_i=\sum_{j\le i}d_j,
+ \qquad D=D_d.
+\]
+These exponents will be proved from the actual cylinder masses and lengths, not postulated as an ambient dimension.
+
+\begin{theorem}[Singular acquisition and terminal geometric expansion]\label{thm:singularserial}
+For the raw experiment \eqref{eq:singularraw}, with its binary squared-loss task and full-history Bayes risk $B_*^{\rm sing}$,
+\begin{align}
+ R_\on(M)-B_*^{\rm sing}&\asymp M^{-2/\max\{D,1\}},\label{eq:singularonline}\\
+ R_\cp(M)-B_*^{\rm sing}&\asymp M^{-2}.\label{eq:singularcheckpoint}
+\end{align}
+Every prefix cut $i$ has a dominated acquired continuation measure with exponent $D_i$ and a recursively usable global cover of that order. The terminal forecast has exponent one. In particular the online and checkpoint laws match when $D\le1$, and strictly separate when $D>1$. The constants retain all fixed ratios, noise and dimension parameters; they are not uniform as a ratio tends to zero or $1/2$.
+\end{theorem}
+\begin{proof}
+We give the covering and mass estimates directly. A level-$n$ cylinder of coordinate $j$ is an interval of length $r_j^n$ carrying mass $2^{-n}$. Distinct level-$n$ intervals have disjoint interiors and gaps at least $(1-2r_j)r_j^{n-1}$. If $0<u<1$, choose $n\ge1$ with $r_j^n\le u<r_j^{n-1}$. An interval of length $2u$ meets at most a fixed number, depending only on $r_j$, of these cylinders. Consequently
+\begin{equation}\label{eq:singularball}
+ \mu_j([x-u,x+u])\le C(r_j)2^{-n}
+                      =C(r_j)(r_j^n)^{d_j}\le C(r_j)u^{d_j}.
+\end{equation}
+Enlarging the constant covers $u\ge1$ and arbitrary centers. Projecting a Euclidean ball into its coordinates and using the actual product preparation gives a mass bound $C u^{D_i}$ on $C_1\times\cdots\times C_i$.
+
+For a global $M$-point cover of that product, choose
+\[
+ n_j=\left\lfloor\frac{d_j}{D_i}\log_2 M\right\rfloor,
+       \qquad 1\le j\le i.
+\]
+Retain the endpoint with zero remaining digits in each such cylinder. The number of product representatives is $2^{\sum_j n_j}\le M$, and their coordinate radii obey
+\[
+ r_j^{n_j}\le r_j^{-1}M^{-1/D_i}.
+\]
+Thus their Euclidean covering radius is at most $C M^{-1/D_i}$. Strong separation makes the cylinder assignment Borel; nearest-center tie-breaking is another Borel choice. Every representative lies in the same compact product. The raw candidate update appends the next scalar report. It is one-Lipschitz in the preceding coordinates, and with $V_i=1$ its candidate moment bound is automatic. Quantizing after every append therefore yields a genuine recursion with at most $M$ labels at each cut, not a post hoc product code applied to a stored exact vector.
+
+Fix a prefix cut $i$. The remaining coordinates have their unchanged product preparation law. Conditional on the full $x\in[1,2]^d$, the scalar $V$ has a positive Gaussian density, whose minimum on a fixed compact interval $[-T_0,T_0]$ is positive uniformly in $x$. Hence the complete conditional suffix law is bounded below by $\alpha_i\eta_i$, where $\eta_i$ is the product of the remaining coordinate laws, $\mathrm{Unif}[-T_0,T_0]$, the sphere probability and the deterministic interface records. Here $\alpha_i>0$ is the density minimum multiplied by $2T_0$. In particular
+\[
+ \alpha_i(\mu_1\otimes\cdots\otimes\mu_i)\otimes\eta_i
+       \le\law(X_{1:i},U_i).
+\]
+The mass factor is not removed. On this product the actual conditional response is
+$g_i(x_{1:i},u)=\psi(B^\top(x_{1:i},X_{i+1:d}))$; $V$ is observed side information, but cannot improve a conditional forecast once all coordinates have been reported.
+
+All arguments of $\psi$ on the compact candidate product lie in $[-2\sqrt d,2\sqrt d]$. Its derivative there is at least
+$\gamma=\tfrac12\operatorname{sech}^2(2\sqrt d)>0$ and at most $1/2$. The mean value theorem and rotational symmetry of the query give
+\[
+ \|g_i(x,\cdot)-g_i(x',\cdot)\|_{L^2(\eta_i)}^2
+ \ge\frac{\gamma^2}{d}\|x-x'\|_2^2.
+\]
+Together with \eqref{eq:singularball}, this proves the prefix continuation hypotheses with exponent $D_i$. The final update, from the retained full candidate and current packet to its conditional forecast, is globally $1/2$-Lipschitz and takes values in $[0,1]$.
+
+For completeness we establish the terminal lower in the same scored task. Conditional on $X=x$, let $R=\|x\|_2\in[\sqrt d,2\sqrt d]$. A uniform sphere query has scalar projection $T=B^\top x$ with density
+\[
+ f_R(t)=\frac{c_d}{R}\left(1-\frac{t^2}{R^2}\right)^{(d-3)/2},
+ \qquad |t|<R,
+\]
+where $c_d$ is the positive normalizing constant. This formula follows by slicing spherical surface measure (for $d=2$, by the angular substitution $t=R\cos\theta$). On the fixed interval $|t|\le\sqrt d/2$, these densities are uniformly bounded above and below by positive constants for all admitted $R$. Restricting the actual law to this interval therefore retains positive mass. The change of variable $p=\psi(t)$, whose derivative is bounded below there, gives an actual forecast submeasure with bounded Lebesgue density. The scalar small-ball argument yields $q_M(\law(P))\ge cM^{-2}$; uniform midpoint quantization gives its matching upper. Thus the terminal exponent is one, although every acquired prefix is singular with respect to its ambient Lebesgue measure.
+
+All global and actual-mass hypotheses of Theorem~\ref{thm:serial} have now been verified. Its maximum exponent is $\max(D,1)$, proving \eqref{eq:singularonline}--\eqref{eq:singularcheckpoint}. The new continuous query can increase the last acquired task exponent beyond the preceding singular exponent. Omitting that terminal cut would give the false bound $M^{-2/D}$ when $D<1$.
+\end{proof}
+
+The complete suffix kernel is continuous in a changed prefix in total variation with modulus at most $\|a_{1:i}\|_2/(\sqrt{2\pi}\sigma)$: couple the remaining coordinates and query identically, and integrate the translated scalar normal density. This continuity is obtained from the physical noisy channel, not from a nonexistent density of the Cantor preparation. A finite-precision report interface requires its own perturbation certificate; Corollary~\ref{cor:serialerrors} then applies on a declared candidate domain. The finite-bit implementation theorem for progressive sensing remains a separate feasible-resource theorem, not an assertion of unit-cost exact analog arithmetic here.

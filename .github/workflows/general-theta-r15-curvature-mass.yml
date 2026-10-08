@@ -1,0 +1,146 @@
+name: General Theta R15 immutable source and complete PDF build
+on:
+  push:
+    branches:
+      - foundation/general-theta-restart-r15-curvature-mass-research-2026-10-08
+    paths:
+      - .github/theta-publication/r15/**
+      - .github/workflows/general-theta-r15-curvature-mass.yml
+permissions:
+  contents: write
+concurrency:
+  group: general-theta-r15-curvature-mass-publication
+  cancel-in-progress: false
+jobs:
+  source-and-artifact-publication:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      B: papers/General-Theta-Foundations-I-restart/r15-curvature-mass
+      TARGET_BRANCH: foundation/general-theta-restart-r15-curvature-mass-research-2026-10-08
+      EXPECTED_TREE: 1447a5858bbb75d35367299df5f9f24362e89904
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          sparse-checkout: |
+            .github
+            foundations/general-theta
+            papers/General-Theta-Foundations-I-restart
+      - name: Install complete isolated build dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended cm-super lmodern poppler-utils python3-venv
+          python3 -m venv "$RUNNER_TEMP/theta-r15-venv"
+          "$RUNNER_TEMP/theta-r15-venv/bin/pip" install pypdf==5.9.0 numpy==2.2.6
+          echo "$RUNNER_TEMP/theta-r15-venv/bin" >> "$GITHUB_PATH"
+      - name: Materialize verified transport into ordinary immutable source files
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = "$TARGET_BRANCH"
+          test "$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | cut -f1)" = "$GITHUB_SHA"
+          python3 - <<'PY'
+          import hashlib,json,lzma,os,pathlib
+          raw=b''.join(pathlib.Path('.github/theta-publication/r15/source.part'+str(i)).read_bytes() for i in range(7))
+          if len(raw)!=49856 or hashlib.sha256(raw).hexdigest()!='cb78c361c61f9488f056b5051530cbbc4d7b371fb026518bdc53bc10ed483ebd':raise RuntimeError('transport bytes differ')
+          obj=json.loads(lzma.decompress(raw))
+          b=pathlib.Path(os.environ['B'])
+          if obj['format']!=1 or obj['native_directory']!=str(b) or len(obj['files'])!=34:raise RuntimeError('transport schema differs')
+          for name,text in obj['files'].items():
+              p=pathlib.PurePosixPath(name)
+              if p.is_absolute() or '..' in p.parts or not isinstance(text,str):raise RuntimeError('invalid native path')
+              dest=b/p;data=text.encode('utf-8')
+              if dest.exists() and dest.read_bytes()!=data:raise RuntimeError('refuse to overwrite differing source: '+name)
+              dest.parent.mkdir(parents=True,exist_ok=True)
+              if not dest.exists():dest.write_bytes(data)
+          PY
+          python3 "$B/verify.py"
+          git config user.name 'General Theta source publication'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- "$B"
+          test "$(git write-tree | xargs -I{} git rev-parse "{}:$B")" = "$EXPECTED_TREE"
+          git commit -m 'source(theta restart R15): acquired mass-curvature transfer and fully charged clocks; complete proofs and audits'
+          SOURCE_SHA=$(git rev-parse HEAD)
+          test "$(git rev-parse "HEAD:$B")" = "$EXPECTED_TREE"
+          echo "SOURCE_SHA=$SOURCE_SHA" >> "$GITHUB_ENV"
+          echo "INTEGRATION_SHA=$GITHUB_SHA" >> "$GITHUB_ENV"
+          git push origin "HEAD:refs/heads/$TARGET_BRANCH"
+      - name: Build exact source, both regression modes, and all integral supplements
+        run: |
+          set -euo pipefail
+          python3 "$B/build.py" --source-sha "$SOURCE_SHA" --expected-tree "$EXPECTED_TREE"
+          git diff --exit-code
+      - name: Publish artifacts as a distinct child of the immutable source
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib,json,os,pathlib,subprocess
+          b=pathlib.Path(os.environ['B']);r=json.loads((b/'evidence/BUILD_RECEIPT.json').read_text())
+          if r['status']!='PASS' or r['source_commit']!=os.environ['SOURCE_SHA'] or r['native_source_tree_sha']!=os.environ['EXPECTED_TREE']:raise RuntimeError('source binding differs')
+          preserved={}
+          for n in ['r4-causal-resolvent','r5-intrinsic-recursion','r6-operational-transfer','r7-acquisition-compatible','r8-continuation-geometry','r9-continuation-completion','r10-adaptive-completion','r11-posterior-pooling','review-inputs','r13-intrinsic-horizon','r14-clock-aware-transfer']:
+              path='papers/General-Theta-Foundations-I-restart/'+n
+              a=subprocess.check_output(['git','rev-parse',os.environ['INTEGRATION_SHA']+':'+path],text=True).strip()
+              z=subprocess.check_output(['git','rev-parse','HEAD:'+path],text=True).strip()
+              if a!=z:raise RuntimeError('retained tree changed: '+path)
+              preserved[path]=z
+          controls=['foundations/general-theta/General_Theta_Foundations_v0.1.md','foundations/general-theta/RESTART_CHARTER.md','foundations/general-theta/REALIZATION_REGISTRY.md','papers/General-Theta-Foundations-I-restart/THEOREM_TARGETS.md']
+          for path in controls:
+              a=subprocess.check_output(['git','rev-parse',os.environ['INTEGRATION_SHA']+':'+path],text=True).strip()
+              z=subprocess.check_output(['git','rev-parse','HEAD:'+path],text=True).strip()
+              if a!=z:raise RuntimeError('control changed: '+path)
+              preserved[path]=z
+          for name,sha in [('foundation/general-theta-foundations-i-restart-2026-10-06','18000b21e4bfd89180ccb069e46ac0f21621f34d'),('review/general-theta-restart-r11-posterior-pooling-external-top4-referee-r11-2026-10-08','801faac37eaf1c66e9d9554fa704ad0e1e8c6bfc')]:
+              live=subprocess.check_output(['git','ls-remote','origin','refs/heads/'+name],text=True).split()[0]
+              if live!=sha:raise RuntimeError('pinned anchor changed: '+name)
+          pdfs={}
+          for name in ['General_Theta_Foundations_I_restart_r15.pdf','General_Theta_Foundations_I_Supplement_U.pdf','General_Theta_Foundations_I_Supplement_T.pdf','General_Theta_Foundations_I_Supplement_S.pdf']:
+              data=(b/'artifacts'/name).read_bytes()
+              if not data.startswith(b'%PDF-'):raise RuntimeError('missing PDF '+name)
+              pdfs[name]=hashlib.sha256(data).hexdigest()
+          item={'source_commit':os.environ['SOURCE_SHA'],'native_source_tree':os.environ['EXPECTED_TREE'],'integration_commit':os.environ['INTEGRATION_SHA'],'hosted_run_id':os.environ['GITHUB_RUN_ID'],'preserved_objects':preserved,'pdf_sha256':pdfs,'non_force_push':True,'source_regeneration_during_build':False,'limits':'Complete R15 and complete integral U/T/S; build checks do not certify continuum proofs or priority.'}
+          (b/'evidence/SOURCE_PUBLICATION.json').write_text(json.dumps(item,sort_keys=True,indent=2)+'\n')
+          PY
+          test "$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | cut -f1)" = "$SOURCE_SHA"
+          git add -f -- "$B/artifacts" "$B/evidence"
+          git commit -m 'build(theta restart R15): exact-source PDFs and complete hosted receipts in separate artifact commit'
+          ARTIFACT_SHA=$(git rev-parse HEAD)
+          echo "ARTIFACT_SHA=$ARTIFACT_SHA" >> "$GITHUB_ENV"
+          git push origin "HEAD:refs/heads/$TARGET_BRANCH"
+      - name: Export complete source, PDFs and source-artifact binding
+        run: |
+          python3 - <<'PY'
+          import hashlib,json,os,pathlib,subprocess,zipfile
+          b=os.environ['B']+'/'
+          prefix='papers/General-Theta-Foundations-I-restart/'
+          selected=[]
+          for name in subprocess.check_output(['git','ls-files','-z']).decode().split('\0'):
+              if not name or not pathlib.Path(name).is_file():continue
+              choose=name.startswith(b) or name.startswith('foundations/general-theta/') or name.startswith('.github/theta-publication/r15/') or name=='.github/workflows/general-theta-r15-curvature-mass.yml' or name==prefix+'THEOREM_TARGETS.md' or name.startswith('GENERAL_THETA_FOUNDATIONS_I_RESTART_R11_POSTERIOR_POOLING_EXTERNAL_REFEREE_REPORT_R11')
+              if name.startswith(prefix):
+                  rem=name[len(prefix):].split('/')
+                  if (rem[0]=='review-inputs' or rem[0].startswith(('r4-','r5-','r6-','r7-','r8-','r9-','r10-','r11-','r13-','r14-'))) and not {'artifacts','evidence','__pycache__'}.intersection(rem):choose=True
+              if choose:selected.append(name)
+          binding={'source_commit':os.environ['SOURCE_SHA'],'artifact_commit':os.environ['ARTIFACT_SHA'],'native_source_tree':os.environ['EXPECTED_TREE'],'hosted_run_id':os.environ['GITHUB_RUN_ID'],'files':{n:hashlib.sha256(pathlib.Path(n).read_bytes()).hexdigest() for n in selected}}
+          target=pathlib.Path(os.environ['RUNNER_TEMP'])/'General_Theta_R15_source_and_build_packet.zip'
+          with zipfile.ZipFile(target,'w',zipfile.ZIP_DEFLATED) as z:
+              for name in selected:z.write(name,name)
+              z.writestr('DELIVERY_BINDING.json',json.dumps(binding,sort_keys=True,indent=2)+'\n')
+          print(json.dumps({k:v for k,v in binding.items() if k!='files'},indent=2))
+          print('packet files',len(selected))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: general-theta-r15-source-and-build-packet
+          path: ${{ runner.temp }}/General_Theta_R15_source_and_build_packet.zip
+          if-no-files-found: error
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: general-theta-r15-build-diagnostics
+          path: |
+            papers/General-Theta-Foundations-I-restart/r15-curvature-mass/artifacts
+            papers/General-Theta-Foundations-I-restart/r15-curvature-mass/evidence
+          if-no-files-found: ignore

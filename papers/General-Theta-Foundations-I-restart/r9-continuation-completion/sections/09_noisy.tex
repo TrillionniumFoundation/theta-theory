@@ -1,0 +1,111 @@
+\section{Noisy continuation and a sharp causal separation}\label{sec:noisy}
+We now compute the earlier continuation width in a noisy regression experiment. The future report contains both a noisy linear observation and a continuously varying query. Responses overlap, and no bit or query index can be recovered exactly. The same bounded binary task is used for the checkpoint and the online predictor.
+
+Fix $d\ge2$, $\tau,\sigma>0$, and a nonzero known $a\in\R^d$. Prepare $\Theta\sim N(0,I_d)$. In $d$ successive paid calls report
+\begin{equation}\label{eq:noisyprefix}
+ H_j=\Theta_j+\tau Z_j,\qquad 1\le j\le d,
+\end{equation}
+where $Z_1,\ldots,Z_d$ are independent standard normals. The next paid call reports the single packet
+\begin{equation}\label{eq:noisypacket}
+ U=(V,B),\qquad V=a^\top\Theta+\sigma Z_0,
+ \qquad B\sim\mathrm{Unif}(\mathbb S^{d-1}),
+\end{equation}
+with $Z_0,B$ independent of the preceding preparation. After the decision a paid audit reports a binary $Y$ with conditional success probability
+\[
+ \psi(B^\top\Theta),\qquad \psi(t)=\tfrac12(1+\tanh t).
+\]
+This audit is not available for prediction. Preparation, reports and audit cost $N=d+3$ raw calls. The legal strategy class consists of this fixed acquisition order and all randomized Borel prediction recursions subject to the declared retained-state bound. In particular the packet cannot be split into free later calls, and the prediction rule cannot change the physical exploration. Squared loss is $|Y-\widehat p|^2$, with $\widehat p\in[0,1]$.
+
+\begin{theorem}[Noisy regression continuation]\label{thm:noisy}
+For the raw experiment \eqref{eq:noisyprefix}--\eqref{eq:noisypacket}, let
+\[
+ P=\E[Y\mid H,V,B],\quad B_*=\E[P(1-P)],\quad \nu=\law(P).
+\]
+There is an actual dominated continuation measure $\xi$ at the cut after $H_d$ and constants $0<c<C<\infty$, depending only on $d,\tau,\sigma,a$, such that for all $M\ge1$,
+\begin{align}
+ cM^{-2/d}&\le q_M(\xi)\le R_\on(M)-B_*\le CM^{-2/d},\label{eq:noisylaw}\\
+ cM^{-2}&\le R_\cp(M)-B_*=q_M(\nu)\le CM^{-2}.\label{eq:noisycp}
+\end{align}
+Thus earlier continuation geometry, rather than the scalar terminal acquired law, is essential to the online resource exponent. All intermediate data-dependent predictor state is included in $M$. A stored deterministic phase is separately charged. Every normal noise variance is strictly positive, the query is continuous, and the conditional suffix law is genuinely prefix dependent.
+
+The same conclusion holds for any query probability $\lambda$ on the unit sphere satisfying $\int bb^\top\lambda(db)\succeq gI_d$ with $g>0$, with constants also depending on $g$. One may also replace the prefix by $H=G\Theta+\tau Z$ for any fixed invertible matrix $G$, reporting its coordinates in the same paid order; constants may then depend on $G$. No whitening operation on an unretained exact prefix is allowed. The response-rank condition is therefore a condition on executable future tests, not on a formal parameter dimension.
+\end{theorem}
+\begin{proof}
+We verify the conditions of Theorem~\ref{thm:chart} from the normal densities. Multiplying the prior density by those of \eqref{eq:noisyprefix} and completing squares gives
+\[
+ \Theta\mid H=h\sim N(ch,v_0I_d),\qquad
+ c=(1+\tau^2)^{-1},\quad v_0=\tau^2/(1+\tau^2).
+\]
+Multiplication by the likelihood of $V=v$ and a second completion of squares give
+\begin{equation}\label{eq:posteriornoisy}
+ \Theta\mid H=h,V=v\sim N(Dch+kv,\Sigma),
+ \quad k=\frac{v_0a}{s_V^2},\quad D=I_d-ka^\top,
+ \quad \Sigma=v_0I_d-\frac{v_0^2aa^\top}{s_V^2},
+\end{equation}
+where $s_V^2=\sigma^2+v_0\norm a_2^2$. Both $D$ and $\Sigma$ are positive definite; $\lambda_{\min}(D)=\sigma^2/s_V^2$. Thus these matrices are derived conditional quantities, not geometric assumptions.
+
+For $s\ge0$ put $g_s(t)=\E\psi(t+sZ)$, $Z\sim N(0,1)$. The actual response function is
+\begin{equation}\label{eq:regresponse}
+ z(h,v,b)=g_{s_b}\bigl(b^\top(Dch+kv)\bigr),\qquad
+ s_b^2=b^\top\Sigma b.
+\end{equation}
+It is Borel and lies in $[0,1]$. Dominated differentiation gives
+\begin{equation}\label{eq:smoothlower}
+ 0<g_s'(t)=\tfrac12\E\operatorname{sech}^2(t+sZ)\le\tfrac12.
+\end{equation}
+Consequently the global prefix Lipschitz constant is $c\norm D_{\mathrm{op}}/2$, independent of the unbounded value of $v$. The acquired $H$ has density $N(0,(1+\tau^2)I_d)$, so every marginal moment needed in Theorem~\ref{thm:chart} is finite.
+
+Fix any $R,T>0$ and use the actual cube $E=[-R,R]^d$. Its acquired mass $p=\PP(H\in E)$ is positive and its unnormalized density is bounded above. From the same density calculation,
+\[
+ V\mid H=h\sim N(a^\top ch,s_V^2).
+\]
+For $h\in E$ and $|v|\le T$ this density has a strictly positive minimum $m_0$. With
+\[
+ \eta(dv,db)=\mathrm{Unif}[-T,T](dv)\lambda(db),\qquad
+ \alpha=2Tm_0>0,
+\]
+we obtain $K(du\mid h)\ge\alpha\eta(du)$ on $E$. This is the raw common-density construction of Lemma~\ref{lem:minorization}; neither $p$ nor $\alpha$ is normalized away. It also quantifies report continuity:
+\begin{equation}\label{eq:noisytv}
+ \norm{K(\cdot\mid h)-K(\cdot\mid h')}_{\TV}
+ \le \frac{c\norm a_2}{\sqrt{2\pi}\,s_V}\norm{h-h'}_2.
+\end{equation}
+Indeed equal-variance scalar normal total variation is at most the mean displacement divided by $\sqrt{2\pi}s_V$; this follows by integrating the absolute derivative of the translated normal density. The independent query kernel does not increase it.
+
+For $h\in E$, $|v|\le T$ and unit $b$, the argument of $g_{s_b}$ has absolute value at most
+\[
+ L_0=c\norm D_{\mathrm{op}}\sqrt d R+\norm k_2T,
+ \qquad 0<s_b\le\sqrt{v_0}.
+\]
+On this interval \eqref{eq:smoothlower} has the explicit uniform lower
+\[
+ \gamma=\tfrac12\PP(|Z|\le1)
+               \operatorname{sech}^2(L_0+\sqrt{v_0})>0.
+\]
+The mean value theorem, using the segment joining $h,h'\in E$, therefore gives
+\begin{align*}
+ \norm{z(h,\cdot)-z(h',\cdot)}_{L^2(\eta)}^2
+ &\ge\gamma^2 c^2\int |b^\top D(h-h')|^2\lambda(db)\\
+ &\ge\gamma^2c^2g\lambda_{\min}(D)^2\norm{h-h'}_2^2.
+\end{align*}
+For the uniform sphere, $g=1/d$. Thus the response functions form a co-Lipschitz acquired chart even though each fixed response is scalar and noisy. Put $\xi=(h\mapsto z(h,\cdot))_*(\alpha\mu|_E)$. Theorem~\ref{thm:chart} now proves \eqref{eq:noisylaw}, including a recursion that quantizes each actual report as it arrives. It does not store the exact posterior vector.
+
+It remains to identify the terminal checkpoint exponent in the same task. The posterior mean $m'=D c H+kV$ is centered normal with covariance $C'=I_d-\Sigma$. To see this without a matrix identity shortcut, use total covariance in \eqref{eq:posteriornoisy}: the conditional covariance is the constant $\Sigma$, while the prior covariance is $I_d$. Since $0\prec\Sigma\preceq v_0I_d\prec I_d$, the eigenvalues of $C'$ lie in a fixed compact subset of $(0,1)$. Conditional on $B=b$, the scalar $T_b=b^\top m'$ is normal with variance $b^\top C'b$ bounded uniformly away from zero and infinity. Fix $A_0>0$ and retain the actual subevent $|T_b|\le A_0$. Its mass is uniformly positive. On it the map $t\mapsto g_{s_b}(t)$ is strictly increasing with derivative bounded below by a positive constant independent of $b$, by the preceding derivative estimate. The change-of-variable formula thus bounds the density of this scalar posterior submeasure uniformly above. Mixing over $b$ preserves both a positive submeasure mass and this density bound. It follows by the one-dimensional small-ball argument that $q_M(\nu)\ge cM^{-2}$. Uniform midpoint quantization on $[0,1]$ gives the reverse bound $q_M(\nu)\le1/(4M^2)$. The projection identity uses exactly $B_*$ on both sides and proves \eqref{eq:noisycp}.
+
+For the stated correlated-prefix extension, direct square completion gives $m=C_Hh$ and $\Sigma_0=(I_d+\tau^{-2}G^\top G)^{-1}$, where $C_H=\Sigma_0\tau^{-2}G^\top$ is invertible. Put $s_V^2=\sigma^2+a^\top\Sigma_0a$, $k=\Sigma_0a/s_V^2$, $D=I_d-ka^\top$, and $\Sigma=\Sigma_0-\Sigma_0aa^\top\Sigma_0/s_V^2$. Now $D$ is invertible, with determinant $\sigma^2/s_V^2$, and $0\prec\Sigma\prec I_d$. Replace $cD$ by $DC_H$ in the global modulus and use its positive least singular value in the response lower. The acquired prefix is a nondegenerate, generally correlated Gaussian, so the same compact mass, density and marginal moment estimates apply. In the report-continuity estimate replace $c\norm a_2$ by $\norm{C_H^\top a}_2$. The checkpoint proof uses $I_d-\Sigma$ unchanged. Coordinate companding still acts on the actually reported $H_j$, not on inaccessible exact whitened values. This verifies every step for the extension.
+\end{proof}
+
+\begin{corollary}[Stable numerical and simulation composition]\label{cor:noisynumeric}
+In Theorem~\ref{thm:noisy}, suppose the final response computation, using the retained representative and the current packet, differs from its exact value by an $L^2$ amount at most $u$. Suppose each acquired prefix report is causally perturbed by at most $\delta$ before quantization. A label-preserving implementation then has
+\begin{equation}\label{eq:noisynumeric}
+ R_\on-B_*\le C\bigl(M^{-1/d}+\delta+u\bigr)^2.
+\end{equation}
+If this complete implemented experiment and bounded scored task are transferred through a causal simulator with complete-law defect at most $\varepsilon$, the absolute risk upper gains at most $\varepsilon$. The simulator, its phase and its controller states must be multiplied into the full retained alphabet as in Theorem~\ref{thm:morphism}. Neither an allowed error $u$ nor an allowed defect $\varepsilon$ is asserted to be an unavoidable risk floor.
+\end{corollary}
+\begin{proof}
+For a perturbed report $\widetilde H_j$ with $|\widetilde H_j-H_j|\le\delta\le1$, its $(2+\zeta)$ moment is bounded by a fixed multiple of that of $H_j$. Apply the explicit compander of \eqref{eq:compandpoint} to $\widetilde H_j$. Minkowski gives $\norm{H-\widehat H}_{L^2}\le C_1M^{-1/d}+\sqrt d\delta$. The global response Lipschitz estimate, final midpoint quantization and the evaluation error yield \eqref{eq:noisynumeric}. For $\delta>1$ the bounded loss gives the same conclusion after increasing $C$. Clipping computed probabilities into $[0,1]$ is nonexpansive. The total variation inequality for a loss in $[0,1]$ proves the final assertion for the absolute risk, without incorrectly transferring a Bayes baseline for free.
+\end{proof}
+
+\paragraph{Computation and scope.}
+The finite-state theorem uses exact Borel report comparisons and readout; it does not grant a free infinite-precision implementation. For example, taking $\zeta=2$ makes every finite compander threshold and representative rational. With a specified finite-precision report interface, normal integral evaluations with a declared error $u$, and a certified coefficient table, the corollary supplies a quantitative error target. The storage of that table, scratch, output precision and time are additional resources, not contained in $\log_2 M$. The complete finite-bit feasible accounting theorem below is proved for the progressive experiment. We do not claim a matching bit-operation lower for this regression model.
+
+The example is a fixed-acquisition Bayesian experiment, not an unknown-kernel learning theorem or an optimal-control theorem. Its purpose is different: a positive-noise continuation channel and a continuum of overlapping nonlinear future tests force a strict online/checkpoint exponent separation, and the general continuation-chart theorem is the common lower and construction mechanism. A final scalar posterior density alone cannot give the online exponent in \eqref{eq:noisylaw}.
