@@ -1,0 +1,62 @@
+name: Theta restart R24 renewal geometry
+on:
+  push:
+    branches:
+      - foundation/general-theta-restart-r24-renewal-geometry-research-2026-10-09
+    paths:
+      - .github/workflows/theta-r24-renewal.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: theta-r24-renewal-publication
+  cancel-in-progress: false
+jobs:
+  publication:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      SOURCE_DATE_EPOCH: '1791504000'
+      FORCE_SOURCE_DATE: '1'
+      TZ: UTC
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          sparse-checkout: |
+            .github
+            foundations/general-theta
+            papers/General-Theta-Foundations-I-restart
+      - name: Commit ordinary source manifest and export immutable source
+        run: python3 .github/scripts/theta-r24-publish.py source
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r24-ordinary-source
+          path: ${{ env.SOURCE_EXPORT_DIR }}
+          retention-days: 30
+      - name: Install declared build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended cm-super lmodern poppler-utils python3-venv
+          python3 -m venv "$RUNNER_TEMP/r24-venv"
+          "$RUNNER_TEMP/r24-venv/bin/pip" install pypdf==5.9.0 numpy==2.3.5
+          echo "$RUNNER_TEMP/r24-venv/bin" >> "$GITHUB_PATH"
+      - name: Full read-only native and retained-companion builds
+        run: |
+          python papers/General-Theta-Foundations-I-restart/r24-renewal-geometry/build.py --source-sha "$SOURCE_SHA" --expected-tree "$EXPECTED_TREE" > "$RUNNER_TEMP/r24-build.stdout"
+          git diff --exit-code
+      - name: Publish artifact-only child and delivery packet
+        run: python .github/scripts/theta-r24-publish.py artifacts
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r24-source-and-build-packet
+          path: ${{ env.DELIVERY_DIR }}
+          retention-days: 30
+      - name: Diagnostic build stdout
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: theta-r24-build-stdout
+          path: ${{ runner.temp }}/r24-build.stdout
+          if-no-files-found: ignore
