@@ -1,0 +1,18 @@
+# Assumption matrix
+
+| Result layer | Raw / measurable assumptions | Actual acquisition / geometry | Stability / task | Resource model |
+|---|---|---|---|---|
+| A.1 predictive quotient | Compact raw state, continuous determining future tests closed under legal pullbacks, standard-Borel reports | Image of preparation laws; reachable laws kept separate | No Fisher/covariance assumption; weak Feller of Lambda not automatic | Legal interfaces included in equivalence |
+| 3.1 exact allocation | Compact metrizable convex predictive carriers, affine unnormalized instrument, finite legal action sets, Borel report maps | Actual finite retained-law acquisition mixture; finite-support convex order or simultaneous moments | No density, dimension or contraction; arbitrary continuous affine task with compact decision set; weak Feller for continuous values | External widths or one stationary M-state tuple, erased fresh coins |
+| 4.4 global finite obstruction | Above plus compact/weak continuity | All finite-support candidate laws, including colliding atoms | Continuous convex tests and terminal Bayes risk | Fixed external profile; no universal stationary attainment claim |
+| 5.3 clock converse | Every report law equivalent to a common action-wise reference across phases | Null events, not a likelihood-ratio floor | No contraction | No external phase, same programme, initial and terminal states counted |
+| 6.1 regular matched rates | Uniform all-state/all-legal-action report continuity | Global finite cover; acquired density <=rho in fixed affine volume | Strong task curvature in all d directions; summable block sensitivity | External M or internal M-n; uniform constants in n,M |
+| 6.4 readable strata | Type visible in report; finite affine carriers | Unnormalized type density and actual high-dimensional mass | Typewise curvature/control and same sensitivity account | Atoms still cost labels; fixed J-dependent coarse threshold |
+| 7.2 Gaussian | Known positive finite transition, nondegenerate Gaussian contrasts, compact parameters | Untruncated posterior law including boundary approach | Certified 3*Dobrushin block products; categorical Brier forecast | All reports paid; same legal policy class |
+| 7.3 quantum | Finite D, positive known channel, spanning noncommuting cube instrument | Injective normalized-congruence Jacobian | Certified 3*channel coefficient; IC-POVM Brier forecast | Fixed finite-dimensional task; no generic quantum-control claim |
+| 8.1 blind transport | One paid exact capture then blind paid advances, compact prepared E | Arbitrary actual mu; no ambient density requirement | Identity/no informative update, noncontracting; squared response task | Free-clock min width; internal floor((M-1)/n) |
+| 8.2 singular rates | Specified Cantor or countably atomic preparation | Proved actual small-ball/cover or atom-tail profile | No smoothing/strict contraction | Same blind interface, not a new special foundation |
+| 9.3 finite compiler | Finite rational states/actions/reports/losses, fixed n,M | Exact finite path laws | No regular geometry needed | Compact semialgebraic programme; support-preserving rounding; runtime separate |
+| 9.1–9.4 resources | Parameter-independent typed simulator or explicit executed approximation | Complete stopped and scored law | Same task; attained alternatives required for error lowers | Label products, call maps, programme/workspace/precision/time distinct |
+
+None of the hypotheses in the regular row is silently applied to the exact allocation row. Likewise, a compact predictive realization is not claimed for every Borel quotient. All geometry used in a risk estimate belongs to the actual preparation/policy or to a proved policy-uniform mass bound.

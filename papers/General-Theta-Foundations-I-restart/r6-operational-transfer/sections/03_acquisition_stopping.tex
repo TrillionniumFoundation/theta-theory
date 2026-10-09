@@ -1,0 +1,109 @@
+\section{Acquisition, finite outputs, and adaptive termination}\label{sec:acquisition}
+\subsection{Actual mass and physical-oracle decomposition}
+\begin{proposition}[Acquired geometry and acquisition uncertainty]\label{prop:acquired}
+If $\underline\nu\le\nu$ has mass $\zeta>0$ and
+$\sup_c\underline\nu(B(c,r))\le C r^d$ for $0<r\le r_0$, then
+\begin{equation}\label{eq:masslower}
+ q_M(\nu)\ge\frac\zeta2\left(\frac\zeta{2CM}\right)^{2/d}
+\end{equation}
+whenever the displayed radius is at most $r_0$.
+
+More generally, let $\cH\subset\mathcal G$ be the actual acquisition and a declared physical-oracle sigma field. Put
+\[
+ X=\E[Y\mid\mathcal G],\quad P=\E[X\mid\cH],\quad
+ b_\circ=\E\norm{Y-X}^2,\quad A=\E\norm{X-P}^2.
+\]
+Then
+\begin{equation}\label{eq:oracle}
+ R_\cp(M)-b_\circ=A+q_M(\law(P))\ge q_M(\law(X)).
+\end{equation}
+If the online upper is $A+C_1r_M^2$ and $q_M(\law(X))\ge c_1r_M^2$, checkpoint and online excess over $b_\circ$ both have order $A+r_M^2$. The acquisition law $\law(P)$ may be finite atomic.
+\end{proposition}
+\begin{proof}
+The first conclusion is the union-of-balls argument with radius $(\zeta/(2CM))^{1/d}$. Conditional projection twice gives
+\[
+ \E\norm{Y-a}^2=b_\circ+A+\E\norm{P-a}^2
+              =b_\circ+\E\norm{X-a}^2.
+\]
+An $M$-label readout supplies at most $M$ centers also for $X$, proving \eqref{eq:oracle}. The left side is at least both $A$ and $c_1r_M^2$, hence at least a fixed multiple of their sum. The online upper supplies the reverse comparison. The ideal law is used only as a lower witness, never as the actual predictive law.
+\end{proof}
+
+\begin{proposition}[Output and calibration cuts]\label{prop:calibration}
+A fixed finite output set $G$, independent of the acquired history, changes the nominal checkpoint distortion to
+\[
+ q_{M,G}(\nu)=\min_{C\subset G,\ \#C\le M}\int\dist(p,C)^2\nu(dp)
+ \ge q_{\min(M,\#G)}(\nu).
+\]
+An $h$-net output set adds at most $h$ to root task error.
+
+For a scalar latent score $X$ with $\E X=1/2$ and $X\pm\delta\in[0,1]$, suppose acquisitions are independent of an unknown sign $s\in\{-1,1\}$ and the final report is Bernoulli with mean $X+s\delta$. Let $P=\E[X\mid\cH]$, $A=\E(X-P)^2$ and $b_\delta=\E[X(1-X)]-\delta^2$. For every sign-independent forecast,
+\begin{equation}\label{eq:sign}
+ \sup_s\E_s(Y-a)^2-b_\delta
+ =A+\E(P-a)^2+\delta^2+2\delta\abs{\E(P-a)}.
+\end{equation}
+Thus the excess lies between $A+\E(P-a)^2+\delta^2$ and $A+2\E(P-a)^2+2\delta^2$. The same bounds hold for a finite weighted probe task with a common sign.
+\end{proposition}
+\begin{proof}
+Expected loss is affine in each label's output distribution on $G$, so a deterministic output is optimal; nearest-center selection proves the first formula. Rounding gives the root-error bound by Minkowski. For the sign formula the physical-oracle variance is the same $b_\delta$ for either sign, because $\E X=1/2$. Projection and expansion give
+$b_\delta+A+\E(P-a)^2+\delta^2+2s\delta\E(P-a)$.
+Maximizing proves \eqref{eq:sign}. Cauchy--Schwarz and $2\delta e\le\delta^2+e^2$ prove the upper. For weighted probes, expand componentwise and apply Cauchy--Schwarz to the weighted mean. A nominal conditional-mean decoder has zero mean error and attains the lower sign expression. A biased grid decoder need not do so.
+\end{proof}
+
+A calibration \emph{allowance} alone does not force a $\delta^2$ lower bound. The inaccessible two-sign task is the specified witness which does. Likewise an output-grid cut is not a lower bound on every internal arithmetic operation.
+
+\subsection{A stopped drift theorem}
+Uniform bounds at deterministic times do not by themselves control a time selected from the observations. The next result retains the actual stopped acquisition and explicitly pays for that selection. The exploration, including its stop rule, is fixed independently of the prediction encoder. A stop action must leave the terminal forecast dependent only on the charged retained tuple and the executed probe index.
+
+\begin{theorem}[Bounded adaptive termination]\label{thm:stopping}
+Assume Theorem~\ref{thm:main} with a certificate valid up to $mK$ raw calls. Every allowed stopped exploration must be a prefix of a declared legal continuation to $mK$ for which that certificate holds; this continuation is used only in the proof. Define
+\begin{align*}
+ \rho&=r_M+u,& \bar\kappa&=(1+\kappa)/2,&
+ C&=\bar\kappa/(\bar\kappa-\kappa),\\
+ \gamma&=\max\{\bar\kappa,(1+a)/2\},&
+ c&=\max\{1,C\Lambda_m^2A/(\gamma-a)\},\\
+ c_0&=C\Lambda_m^2(B+1)+cb,&
+ V_k&=d(S_{km},\widehat S_{km})^2+c\rho^2w(\widehat S_{km})^2.
+\end{align*}
+Then $\E[V_{k+1}\mid\cF_{km}]\le\gamma V_k+c_0\rho^2$. For every block-boundary stopping time $\sigma\le K$,
+\begin{equation}\label{eq:stoppedblock}
+ \E V_\sigma\le\E V_0+c_0\rho^2\E\sigma,
+ \qquad
+ (1-\gamma)\E\sum_{k<\sigma}V_k
+ \le\E V_0+c_0\rho^2\E\sigma.
+\end{equation}
+For an arbitrary visible stopping time $\tau\le mK$, put $\sigma=\lceil\tau/m\rceil$. With
+\[
+ C_1=2m(L^{2m}+\Lambda_m^2A/c),\qquad
+ C_2=2m\Lambda_m^2(B+1),
+\]
+one has
+\begin{equation}\label{eq:rawstop}
+ \E d(S_\tau,\widehat S_\tau)^2
+ \le\left(1+\frac{C_1}{1-\gamma}\right)\E V_0
+ +\left(\frac{C_1c_0}{1-\gamma}+C_2\right)\rho^2\E\sigma.
+\end{equation}
+Consequently a uniformly $L_f$-Lipschitz stopped task has risk at most $B_\tau+(L_f\sqrt{\text{right side of \eqref{eq:rawstop}}}+v)^2$. All calls up to $\tau$, failures, preparation, terminal measurement and the stopping/clock state are counted.
+\end{theorem}
+\begin{proof}
+Conditionally on a block-start past, the proof of Lemma~\ref{lem:block} gives the root bound
+\[
+ \norm{d(S_{s+m},\widehat S_{s+m})}_{2\mid\cF_s}
+ \le\sqrt\kappa\,d(S_s,\widehat S_s)
+     +\Lambda_m\rho\sqrt{Aw(\widehat S_s)^2+B+1}.
+\]
+Indeed $r_M\sqrt{x}+u\le(r_M+u)\sqrt{x+1}$. The inequality
+$(\sqrt\kappa d+z)^2\le\bar\kappa d^2+Cz^2$, also valid at $\kappa=0$, and \eqref{eq:robustdrift} give the claimed drift by the choice of $c$. Multiply its rearranged form by $\one_{\{k<\sigma\}}$, which is known at time $km$, and sum. Bounded stopping and finite moments justify all sums. Dropping either the nonnegative terminal term or the negative drift gives \eqref{eq:stoppedblock}.
+
+For the raw stopping rule, $\{\sigma\le k\}=\{\tau\le km\}$, so $\sigma$ is a bounded stopping time for the block filtration. Within a block, telescoping and conditional Minkowski, followed by $(x+y)^2\le2x^2+2y^2$, show
+\[
+ \E\left[\max_{1\le j\le m}d(S_{km+j},\widehat S_{km+j})^2\mid\cF_{km}\right]
+ \le C_1 V_k+C_2\rho^2.
+\]
+Here the maximum is bounded by the sum of the $m$ nonnegative squared errors. The event $\{\tau>km\}$ is known at the block start. Bound the error at $\tau>0$ by the sum of these block maxima over $k<\sigma$, and the error at $\tau=0$ by $V_0$. Apply the second inequality in \eqref{eq:stoppedblock} to obtain \eqref{eq:rawstop}. Projection at the stopped sigma field and the terminal perturbation give the risk statement. One can extend the experiment after a stop by any certified legal policy for the proof; only the actual pre-stop calls are charged or used in the output.
+\end{proof}
+
+The exact checkpoint identity remains $B_\tau+q_J(\nu_\tau)$ when \emph{all} terminal information available to the decoder has at most $J$ retained states. In particular a prediction label of size $M$ and a separately retained stopping clock of size $Q$ give a $J=MQ$ cut, not an unqualified $M$-center formula. When a declared public terminal interface is free, the identity must instead condition on that interface. The stopped law is the actual law induced by the fixed exploration; it is not the deterministic-time law evaluated at a random integer after the calculation.
+
+\begin{example}[Why stopping requires its own estimate]\label{ex:stop}
+Let each report $Z_t$ be an independent Bernoulli variable with success probability $r^2$, and consider the fixed forecast zero. Its error for the reported state at any deterministic time is $r^2$. Stop at the first success or at $\lceil r^{-2}\rceil$. Its stopped error is $1-(1-r^2)^{\lceil r^{-2}\rceil}$, bounded away from zero. This is a statement about transfer of an existing deterministic-time error estimate, not a lower bound against every alternative stopped predictor. It explains the explicit acquisition/selection term in \eqref{eq:rawstop}.
+\end{example}

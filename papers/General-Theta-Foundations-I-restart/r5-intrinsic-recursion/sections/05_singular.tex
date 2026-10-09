@@ -1,0 +1,144 @@
+\section{Finite acquisition through nonreset singular dynamics}\label{sec:singular}
+We next verify the same raw-kernel theorem on a compact singular domain with expanding updates. The construction extends the non-erasing symbolic realization in the supplement, but does not require its invariant-reference preparation condition. The initial mode law and the transition probabilities below may be time dependent or have zero coordinates.
+
+Fix ratios $r_n\in[1/5,1/3]$, let $\ell_0=1$, $\ell_n=\prod_{j=1}^n r_j$, and encode a binary sequence $\omega$ by
+\begin{equation}\label{eq:cantor}
+ x(\omega)=\sum_{n\ge1}(1-r_n)\ell_{n-1}\omega_n.
+\end{equation}
+The image $K$ is a compact Cantor set. For a finite word $u$ of length $h$, write
+\begin{equation}\label{eq:cylinder}
+ c(u)=\sum_{n=1}^h(1-r_n)\ell_{n-1}u_n+\tfrac12\ell_h,
+ \qquad c(\varnothing)=\tfrac12.
+\end{equation}
+This is the mean of the fair-tail posterior in that cylinder. Let $K^*$ consist of $K$ and all the finite-word centers. This is a compact subset of $[0,1]$: a sequence of centers with unbounded lengths approaches $K$, and the centers of bounded length form a finite set. A terminating center is a predictive state, not a physical point of $K$.
+
+Prepare a mode $I_0\in\{0,1\}$ with any declared law, independently of a fair infinite tail. The preparation reports only the mode. Make $B$ paid calls, each reporting the next initial tail bit. Thus the full-history state after these calls is $(I_0,c(U_B))$, where $U_B$ is the acquired word. There is no infinite initialization report.
+
+There are then $T$ recurrent opportunities. At time $t$, an independent active indicator has arbitrary deterministic probability $\vartheta_t\in[0,1]$. On a hold the physical mode and tail, and the retained state, are copied exactly. On an active step choose the following operation, with $\alpha_t\in[0,1]$ arbitrary and deterministic, and $\gamma=1/4096$:
+\begin{center}
+\begin{tabular}{ccll}
+\toprule
+Source & Destination & Probability within the source & Tail operation \\
+\midrule
+$0$ & $0$ & $(1-\alpha_t)(1-\gamma)$ & prepend two fair bits \\
+$0$ & $0$ & $(1-\alpha_t)\gamma$ & delete first bit \\
+$0$ & $1$ & $\alpha_t$ & delete first bit \\
+$1$ & $0$ & $1/2$ & prepend six fair bits \\
+$1$ & $1$ & $1/2$ & copy \\
+\bottomrule
+\end{tabular}
+\end{center}
+Report the destination, operation, and newly prepended bits. Do not report the deleted bit or the surviving old tail. Both changes of mode retain a nonconstant old tail. These operations define nonnegative normalized Borel kernels, and every bit in a new report has its specified fair law. Mode and operation probabilities are independent of tail-bit values.
+
+Let $w_T=\Pp(I_T=1)$ under this \emph{actual} finite protocol. It is a known function of the declared mode law and schedule, not of the unknown terminal sign. The terminal probe has mean
+\begin{equation}\label{eq:symbol-score}
+ X+\theta,\qquad
+ X=\tfrac12+\tfrac14(I_T-w_T)+\tfrac18(x(\omega_T)-\tfrac12),
+ \quad \theta\in\{-\delta,\delta\},\quad0\le\delta\le1/16.
+\end{equation}
+These means lie in $[0,1]$. The fair-tail marginal is preserved by every edge, so $\E X=1/2$, even for nonstationary mode laws. The score intervals of the two modes are disjoint. Within a mode the nominal terminal score is strictly affine in the cylinder mean. Hence the mode and cylinder posterior realize the predictive quotient of the declared finite protocol. They determine all later reports, and the terminal probe separates them.
+
+\begin{lemma}[Completed-domain gains and inward covers]\label{lem:symbol-gains}
+On $K^*$, deletion (fixing $c(\varnothing)$) has Lipschitz constant at most $30$, prepending a fixed word of length $s$ has constant at most $6\,3^{-s}$, and copying has constant one. For each $m\ge0$, use all centers of words of lengths at most $m$ in both modes, a total of
+\begin{equation}\label{eq:symbol-count}
+ M_m=2^{m+2}-2
+\end{equation}
+labels. Leave a shorter center fixed, and send a longer center or an infinite sequence to the center of its length-$m$ prefix. On
+\[
+ S=\{0,1\}\times K^*,\qquad
+ d((i,x),(i,y))=\sqrt{v_i}|x-y|,
+ \quad v_0=1800,
+ \quad v_1=1,
+\]
+with cross-mode distance $2\sqrt{1800}$, this is a Borel inward cover for the constant envelope $w=1$ and radius $\sqrt{1800}\,\ell_m$.
+\end{lemma}
+\begin{proof}
+A finite center can be viewed as a terminated word, with the remainder replaced by its fair mean. If two completed coordinates first differ or one terminates at level $k$, their distance is between $\ell_{k-1}/6$ and $\ell_{k-1}$. Indeed, opposite binary branches have gap at least $(1-2r_k)\ell_{k-1}\ge\ell_{k-1}/3$; a center at the parent mean and either branch are separated by at least $(1/2-r_k)\ell_{k-1}\ge\ell_{k-1}/6$. This also proves unique decoding of every terminating center and infinite point.
+
+If two nonterminated first digits agree, deletion shifts the first distinguishing level down by one. The ratio between the new upper gap and old lower gap is at most $6/r_{k-1}\le30$. If the first digits differ, or one coordinate is the empty-word mean, the old gap is at least $1/6$ and the new gap at most one; this is smaller than the same bound. Prepending $s$ common digits shifts the distinguishing level up by $s$, giving a ratio at most $6\ell_{k+s-1}/\ell_{k-1}\le6\,3^{-s}$. Copying is immediate.
+
+The stated distances form a metric: each within-mode diameter is at most $\sqrt{1800}$, while every cross-mode distance is $2\sqrt{1800}$. Prefix cylinders and individual terminating centers are Borel. The representative error within a length-$m$ cylinder is at most $\ell_m$, and shorter centers are unchanged. The mode is part of the label. Summing $2^h$ over $0\le h\le m$ and multiplying by two gives \eqref{eq:symbol-count}. With $w=1$, the inward inequality is automatic.
+\end{proof}
+
+\begin{lemma}[Raw two-point drift without occupation comparison]\label{lem:symbol-drift}
+The active report kernel on $S$ satisfies \eqref{eq:pair} with $\kappa=17/20$, uniformly in all $\alpha_t\in[0,1]$. It satisfies \eqref{eq:envelope} with $w=1$, $a=0$, and $b=1$. These conclusions do not depend on the preparation or any terminal mode mass.
+\end{lemma}
+\begin{proof}
+For a candidate in a different mode from the true state, extend the update by applying the \emph{reported} tail operation to its coordinate and setting its mode to the reported destination. This is a Borel map declared on all candidate inputs. It uses no inaccessible information. For a same-mode pair, Lemma~\ref{lem:symbol-gains} bounds squared gains through the matrix
+\begin{equation}\label{eq:symbol-matrix}
+ C_t=\begin{pmatrix}
+ (1-\alpha_t)85/128 & 900\alpha_t\\
+ 2/59049 & 1/2
+ \end{pmatrix}.
+\end{equation}
+The first entry uses
+\[
+ (1-\gamma)\frac49+900\gamma=\frac{85}{128}.
+\]
+For $v=(1800,1)^{\mathsf T}$, the first component of $C_tv$ is at most $1800(85/128)<(17/20)1800$, and the second is $3600/59049+1/2<17/20$. Consequently the expected squared destination-weighted gap is at most $(17/20)$ times the source-weighted gap. For a cross-mode pair, the old squared distance is $4\cdot1800$ and after every report both modes agree, with new squared distance at most $1800$. Its gain is at most $1/4$. This proves \eqref{eq:pair} for every pair in $S$, not only pairs already reached by a particular code. The envelope equality is immediate. The entire calculation is under each true state's raw report law and retains both off-diagonal transitions.
+\end{proof}
+
+\begin{theorem}[Actual-depth resource law with changing mode masses]\label{thm:singular}
+In the finite-read experiment above, let $H_t$ denote the length of the prefix known to the full history after $t$ recurrent opportunities. Start with $H_0=B$ and update it by
+\[
+ h\mapsto h+2,\quad h\mapsto h+6,\quad
+ h\mapsto\max(h-1,0),\quad h\mapsto h
+\]
+under the respective reported operations. Let $\omega_{T,i,h}=\Pp(I_T=i,H_T=h)$ be the actual probabilities obtained by this finite recursion. For the nominal conditional score law,
+\begin{equation}\label{eq:atomic-law}
+ \nu_{B,T}=\sum_{i,h}\omega_{T,i,h}\,2^{-h}
+      \sum_{u\in\{0,1\}^h}
+       \delta_{\,1/2+(i-w_T)/4+(c(u)-1/2)/8}.
+\end{equation}
+Thus $\nu_{B,T}$ is finite atomic, supported on acquired cylinder means, not on an assumed continuous latent geometry.
+
+Put $b_\delta=\E[X(1-X)]-\delta^2$ for the common physical-oracle baseline in \eqref{eq:symbol-score}, and
+\[
+ A_{B,T}=\E\bigl(X-\E[X\mid\cH_{B,T}]\bigr)^2.
+\]
+For every $M\ge6$, writing $n=\lfloor\log_2M\rfloor$, the sign-minimax checkpoint and online risks satisfy
+\begin{align}
+ \mathcal R_\cp-b_\delta
+    &=\delta^2+A_{B,T}+q_M(\nu_{B,T}),\label{eq:symbol-exact}\\
+ \mathcal R_\cp-b_\delta
+    &\asymp\mathcal R_\on-b_\delta
+     \asymp\delta^2+\E\ell_{\min(H_T,n)}^2.\label{eq:symbol-law}
+\end{align}
+The comparison constants are universal over the ratios, $B,T$, the initial mode law, the schedules $(\alpha_t)$ and $(\vartheta_t)$, and the allowed signs. The total raw acquisition count is $B+T+2$. An implementing encoder stores only a mode and a word of bounded length, including its length in the label count \eqref{eq:symbol-count}.
+\end{theorem}
+\begin{proof}
+Initially the acquired word is uniform, and the unobserved remainder is fair and independent of it and the mode. Prepending reveals fresh independent fair bits, deleting removes the first bit without revealing an unobserved one, and copying changes nothing. Induction over the reports shows that the full history always knows exactly the stated prefix and that its unobserved remainder is fair. The depth and mode evolution depend on operations, not bit values; conditioning only on $(I_T,H_T)=(i,h)$ therefore leaves the known word uniform. This proves the actual atomic law \eqref{eq:atomic-law}. Its support is finite since $H_T\le B+6T$.
+
+Within a depth-$h$ cylinder, the physical coordinate variance is between $\ell_h^2/9$ and $\ell_h^2/4$. The first remaining independent fair bit has coefficient $(1-r_{h+1})\ell_h\ge(2/3)\ell_h$, which proves the lower; a variable in an interval of length $\ell_h$ has variance at most $\ell_h^2/4$. The score slope $1/8$ consequently gives
+\begin{equation}\label{eq:symbol-acquisition}
+ \frac1{576}\E\ell_{H_T}^2
+ \le A_{B,T}\le\frac1{256}\E\ell_{H_T}^2.
+\end{equation}
+
+For the online construction choose $m=\lfloor\log_2(M+2)\rfloor-2\ge1$ and the static cover in Lemma~\ref{lem:symbol-gains}. The $B$ initial readings are processed once: retain the first $\min(B,m)$ bits and discard any others. This is a legal seed with error at most $\sqrt{1800}\ell_m$ and envelope one. No full-history checkpoint routine is used for initialization. On each later report apply the raw completed-domain update and then the static cover. Lemma~\ref{lem:symbol-drift} and Theorem~\ref{thm:inward} give nominal acquired-score distortion at most $C\ell_m^2\le C'\ell_n^2$, since $0\le n-m\le2$ and every ratio is at least $1/5$. The score is Lipschitz for the stated metric, including its cross-mode distance.
+
+Equivalently, the resulting concrete machine prepends and truncates a retained word, deletes its first bit if present, or copies it. Its retained word is always an actual prefix of the physical tail. Conditional on the origin pattern of the retained bits and on the retained word, the unretained bits are independent fair bits. The origin pattern depends only on the operation history, not on bit values. Averaging over this pattern shows that the nominal center readout is the conditional mean of $X$ given the retained mode and word. It is therefore unbiased. Lemma~\ref{lem:calibration} adds exactly $\delta^2$ for this readout and yields the upper $\delta^2+A_{B,T}+C'\ell_n^2$.
+
+For the lower use the \emph{physical} nominal score only through the common-oracle inequality, Proposition~\ref{prop:oracle}. Every operation preserves a fair physical tail, so conditional on each terminal mode it has the Cantor law from \eqref{eq:cantor}, whatever the initial mode law and schedule. At least one terminal mode has mass at least $1/2$. At level $k$, cylinders have diameter $\ell_k$ and gaps at least $\ell_k$. A score ball of radius $\ell_k/32$ meets at most one cylinder of this chosen mode, because its score diameter is $\ell_k/16$ whereas the within-mode score gaps are at least $\ell_k/8$. The conditional cylinder mass is $2^{-k}$. Set $k=n+2$; then $2^{-k}\le1/(2M)$ and $\ell_k\ge\ell_n/25$. The acquired-submeasure union argument applied to the ideal score law therefore gives
+\begin{equation}\label{eq:ideal-cantor-lower}
+ q_M(\law(X))\ge c\ell_n^2
+\end{equation}
+with a universal $c>0$. This is not a small-ball assertion about the atomic law \eqref{eq:atomic-law}.
+
+By averaging the two sign risks, every checkpoint code has excess at least $\delta^2+A_{B,T}+q_M(\nu_{B,T})$. Conversely an optimal nominal checkpoint code exists for the finite atomic law. Replace each of its readouts by the conditional mean of $X$ given that label; this cannot increase nominal risk and keeps at most $M$ labels. Its mean error is zero, so Lemma~\ref{lem:calibration} attains that same lower bound. This proves \eqref{eq:symbol-exact}. Equations \eqref{eq:symbol-acquisition} and \eqref{eq:ideal-cantor-lower}, the common-oracle identity, and the online upper imply comparison with $\delta^2+\E\ell_{H_T}^2+\ell_n^2$. Finally monotonicity of $\ell_h$ gives
+\[
+ \max\{\E\ell_{H_T}^2,\ell_n^2\}
+ \le\E\ell_{\min(H_T,n)}^2
+ \le\E\ell_{H_T}^2+\ell_n^2,
+\]
+which proves \eqref{eq:symbol-law}. All waits and initial reads are charged in $B+T+2$.
+\end{proof}
+
+\begin{corollary}[A singular profile without a single exponent]\label{cor:no-exponent}
+There are ratios $r_n\in\{1/3,1/5\}$ for which the geometric factor $\ell_{\lfloor\log_2M\rfloor}^2$ has two distinct subsequential values of its negative logarithmic slope in $M$, namely $2\log3/\log2$ and $2\log5/\log2$. The same slopes occur for the risk in \eqref{eq:symbol-law} along the finite-acquisition protocols $T=0$, $\delta=0$, $B=\lfloor\log_2M\rfloor+2$.
+\end{corollary}
+\begin{proof}
+Choose alternating constant-ratio blocks whose lengths exceed the square of the sum of all preceding lengths. At the end of each block, the Ces\`aro average of $-\log r_j$ converges along the corresponding subsequence to $\log3$ or $\log5$. Since $\log M/\lfloor\log_2M\rfloor\to\log2$, the geometric slopes follow. For the stated finite protocols $H_T=B\ge n$, so \eqref{eq:symbol-law} reduces to $\ell_n^2$ up to universal constants. This is a family of finite acquisition experiments with increasing $B$; it is not a claim of a nonzero quantization exponent for a fixed finite atomic law below its acquisition floor.
+\end{proof}
+
+Only a finite packet is read at a recurrent call: a mode, an operation, and at most six fresh bits. The clock needed to follow a nonconstant schedule, the schedule's program description, and arithmetic for the finitely many ratios remain separate accounts. For rational ratios $1/3$ or $1/5$, a length-$m$ center is rational with numerator and denominator of $O(m)$ bits. Straightforward integer arithmetic gives a finite implementation with $O(m+b)$ temporary bits for a $b$-bit output approximation, in addition to the schedule interface. The statement is an implementation upper, not an optimal time or workspace lower. The exact loss identity \eqref{eq:symbol-exact} uses the unbiased nominal centers; arbitrary finite rounding must instead use the cross-term bound in Lemma~\ref{lem:calibration}.

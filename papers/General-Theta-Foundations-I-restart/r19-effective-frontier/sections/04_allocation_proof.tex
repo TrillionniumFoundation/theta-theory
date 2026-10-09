@@ -1,0 +1,93 @@
+\section{Barycentric allocation and the deployed law}\label{sec:allocation}
+We give the finite-target form of the classical convex-order argument explicitly, since it is also the building block for phase-compatible implementation.
+
+\begin{lemma}[Finite barycentric allocation]\label{lem:allocation}
+Let $K$ be compact metrizable and convex as above, $\lambda\in\mathcal P(K)$, and $\nu=\sum_{j=1}^m p_j\delta_{q_j}$. The following are equivalent:
+\begin{enumerate}
+\item there are Borel functions $r_j:K\to[0,1]$, $\sum_jr_j=1$ $\lambda$-almost everywhere, such that
+\begin{equation}\label{eq:moments}
+ \int r_j\,d\lambda=p_j,\qquad
+ \int r_j(w)f(w)\lambda(dw)=p_jf(q_j)\quad(f\in\aff(K));
+\end{equation}
+\item all inequalities \eqref{eq:localdual} hold;
+\item $\nu\cx\lambda$.
+\end{enumerate}
+When the inequalities fail, finitely many determining affine coordinates and $m$ affine expressions provide a strict witness. Atomic acquired laws are allowed, and randomization is not silently replaced by deterministic cells.
+\end{lemma}
+\begin{proof}
+Consider the simplex of allocations $r=(r_1,\ldots,r_m)$ in $(L^\infty(\lambda))^m$. It is weak-star compact: it is contained in the unit ball, and positivity and the identity $\sum_jr_j=1$ are weak-star closed. Map it to all its masses and affine-coordinate moments. Each coordinate is an integral against an $L^1(\lambda)$ function, so the image is compact and convex in a product of real lines. If the target moments $(p_j,p_jq_j)$ are outside that image, separation in this locally convex product gives a continuous linear functional involving only finitely many coordinates. Combining the coordinates for each $j$ yields an affine $\phi_j$. The supremum of the separated functional over allocations is exactly
+\[
+ \int\max_j\phi_j(w)\lambda(dw):
+\]
+a measurable least maximizing index attains it. This proves equivalence of the first two assertions, including strict separation. A weak-star allocation has Borel versions on the standard Borel space; modify on one null set to keep it in the simplex everywhere. Matching the separating coordinates matches the barycenter, hence every continuous affine function.
+
+Given \eqref{eq:moments}, generate $W\sim\lambda$ and choose label $j$ with probability $r_j(W)$. Then $\E[W\mid j]=q_j$, where conditional expectation is understood through affine coordinates. Jensen's inequality gives $\nu\cx\lambda$. Conversely, for any affine family, convex order gives
+\[
+ \sum_jp_j\phi_j(q_j)\le\int\max_i\phi_i\,d\nu
+ \le\int\max_i\phi_i\,d\lambda,
+\]
+which is assertion two. This also proves sufficiency without invoking a separate infinite-dimensional transport theorem. The argument is the finite-target martingale/convex-order mechanism of Strassen\cite{strassen}, not a new static comparison theorem.
+\end{proof}
+
+\begin{lemma}[Calibration under all incoming reports]\label{lem:calibration}
+Suppose label $i$ has probability $p_i$ and conditional predictive state $q_i$. Draw its action from $\alpha_i$, execute the raw report kernel, and let $W=F_t(q_i,a,Y)$. If a next-label rule satisfies $\E[W\mid Z'=j]=q'_j$, then $q'_j$ is the actual predictive state conditional on $Z'=j$. In particular this applies to the kernel $r_j(W)$ of Lemma~\ref{lem:allocation} under the full acquired mixture $\lambda=\sum_{i,a}p_i\alpha_i(a)\Lambda_t(q_i,a)$.
+\end{lemma}
+\begin{proof}
+The incoming label represents a conditional mixture of physical histories, not a physical preparation performed anew. Equation~\eqref{eq:affine_instrument} and predictive sufficiency imply that the conditional expectation of each determining future test, given $(i,a,Y)$, is its affine evaluation at $W$. Integrating this identity over \emph{all} incoming labels and reports sent to $j$ gives its evaluation at $q'_j$. The tests determine the predictive quotient. This is precisely the conditional state under the deployed observer. There is no comparison with the full-history posterior on a different controlled path.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:completion}(a), (c) for the external interface, and (d)]
+For necessity, at each persistent cut of any observer take its actual conditional predictive states. Their weighted law is $\nu_t$, with support size at most $|Z_t|$. If several labels have the same state, average their action distributions using their conditional label probabilities. This gives the same acquired mixture $\lambda_{t+1}$. The next retained state is a conditional barycenter of the pre-pooling state, so Jensen's inequality gives \eqref{eq:flow}. This step records only marginals needed for subsequent predictive evolution; it does not assert equality of the original labelled trajectories after duplicate states are merged.
+
+For sufficiency, assume a flow. Use its atoms as phase labels and its action probabilities as the programmed action kernel. Lemma~\ref{lem:allocation} provides $r_{t+1,j}$ for $\lambda_{t+1}\to\nu_{t+1}$. Programme
+\[
+ k_t(j\mid i,a,y)=r_{t+1,j}(F_t(q_{t,i},a,y)).
+\]
+The conditional-state parameters are constants in this phase's programme, not a persistently updated real vector. Lemma~\ref{lem:calibration} proves the prescribed occupancies and states by induction from $q_0$. Thus each feasible flow yields a legal observer of risk $\int g\,d\nu_n$. Conversely, replacing any observer's final readout by the best conditional readout gives this risk. Infimizing proves the first equality in \eqref{eq:exactrisk}.
+
+For the telescope, let $Q_t$ denote the actual retained conditional state. Before pooling at the next cut,
+\[
+ \E V_{t+1}(W_{t+1})-\E V_t(Q_t)=A_t\ge0
+\]
+by the Bellman minimum. Calibration and concavity give
+\[
+ \E V_{t+1}(Q_{t+1})-\E V_{t+1}(W_{t+1})=\mathscr J_t\ge0.
+\]
+Adding and telescoping yields \eqref{eq:slack}. The argument uses the machine's actual action distribution and remains valid at nonsmooth action switches. It neither compares independently optimized shadow controllers nor assumes Bellman-optimal actions for a stationary machine that reuses a label.
+\end{proof}
+
+\begin{remark}[Why the dual is operational]\label{rem:dual}
+An arbitrary terminal splitting of a preparation is not automatically obtainable from a fixed sensor. The right side of \eqref{eq:localdual} is evaluated under that sensor's actual $\lambda$, not under an unconstrained information-design experiment. Likewise, local contractions at different cuts do not authorize phase-dependent code. The simultaneous test below imposes precisely the shared-kernel restriction that ordinary one-step convex order omits.
+\end{remark}
+
+\subsection{Finite obstructions to a global risk target}
+For the externally clocked problem, compactness upgrades the witness for one proposed flow to a finite obstruction valid for every flow at an unattainable risk level. This is not an interchange of an infimum with a pointwise dual supremum.
+
+\begin{theorem}[Compact completion and finite obstructions]\label{thm:finite_obstruction}
+Under the compactness and weak-continuity hypotheses of Theorem~\ref{thm:completion}, every finite external width profile has an optimal allocation flow and an optimal measurable observer. For each phase fix a countable family $h_{t,1},h_{t,2},\ldots$ dense in the continuous convex functions on $K_t$, each a finite maximum of finite affine combinations of the determining coordinates. Let $c_k$ be the minimum terminal risk subject to the atomic-width, action-marginal and acquisition constraints of \eqref{eq:flow}, but retaining only the first $k$ convex-order inequalities at each cut. Then
+\begin{equation}\label{eq:finite_obstruction}
+ c_k\uparrow R_{\ext}(\mathbf m).
+\end{equation}
+Consequently, if a number $r<R_{\ext}(\mathbf m)$ is proposed as a feasible risk, finitely many of these acquired-law inequalities, together with the resource and risk constraints, already exclude every proposed flow with risk at most $r$. This is a finite family of tests, not necessarily a single test that defeats every candidate. No effective bound on its size or computability is asserted for general compact Borel data.
+\end{theorem}
+\begin{proof}
+Represent the action assignments by probabilities $\gamma_t$ on $K_t\times\mathcal A_t$ whose first marginal is $\nu_t$. The sets of probabilities with at most $m_t$ atoms are compact: a sequence of such probabilities has convergent subsequences of weights and atom locations after padding by zero weights. Marginal constraints are closed. The map
+$\gamma_t\mapsto\lambda_{t+1}=\int\Lambda_t(q,a)\gamma_t(dq,da)$
+is weakly continuous by weak continuity of each $\Lambda_t$ and finiteness of the action set. Thus the candidate space before imposing convex order is compact. Every convex-order inequality is closed, and terminal risk is continuous. Feasibility is nonempty: choose one legal action at every cut and replace each acquired law by its single barycenter. Hence a risk minimizer exists and is synthesized by Theorem~\ref{thm:completion}.
+
+For completeness, the required countable polyhedral family exists. The closed convex epigraph of a continuous convex function on compact $K_t$ can be separated from each point lying strictly below it by a continuous affine functional of the ambient countable product and the height coordinate. The height coefficient cannot vanish, because the epigraph contains a point with the same base coordinate. The resulting affine minorant uses only finitely many coordinates. A finite subcover of $K_t$ gives a finite maximum approximating the function uniformly from below. Approximating its finitely many coefficients by rationals gives a countable uniformly dense collection, with constants included. Inequalities for this collection imply all continuous convex inequalities by uniform approximation.
+
+The finite-constraint feasible sets are nonempty, compact and nested, so their minima $c_k$ are nondecreasing and at most the full optimum. Choose minimizers and a convergent subsequence in the compact candidate space. For every fixed test index, all sufficiently late members obey its inequality, and the limit does too. Thus the limit satisfies all convex-order constraints, while its terminal risk is $\lim_kc_k$. This proves \eqref{eq:finite_obstruction}. If $r$ is strictly below that limit, some finite $k$ has $c_k>r$, yielding the asserted obstruction. Its proof does not bound $k$ and does not establish a finite computational representation of the carrier or kernels.
+\end{proof}
+
+\begin{remark}[Why compactness supplies no enumeration rate]\label{rem:obstruction_rate}
+Consider a fair hidden bit, a constant report, one acquisition and two allowed terminal labels, under binary error loss. The acquired predictive law is $\delta_{1/2}$ and the true risk is $1/2$. The proposed retained law $(\delta_0+\delta_1)/2$ has the same barycenter and risk zero. It passes every affine inequality but fails the convex-order condition. A countable dense convex-test enumeration may start with any prescribed finite number of affine functions. The corresponding finite relaxation therefore remains at zero for an arbitrarily long initial segment. Density and compactness alone give no bound on that index. This example concerns the supplied enumeration, not a lower bound for every algorithm. The effective theorem obtains its quantitative certificate from additional instrument and computation data, not by reinterpreting topological compactness as an effective modulus.
+\end{remark}
+
+For clarity, the candidate space in the compactness argument may be written using $\gamma_t\in\cP(K_t\times\mathcal A_t)$ with first marginal $\nu_t$ supported on at most $m_t$ points, initial $\nu_0=\delta_{q_0}$, and $\lambda_{t+1}=\int\Lambda_t(q,a)\gamma_t(dq,da)$. If $h_i$ enumerates the convex test family, its $k$th closed candidate subset imposes
+\[
+ \int h_i\,d\nu_{t+1}\le\int h_i\,d\lambda_{t+1}
+ \quad (t<n,\ i\le k),\qquad
+ c_k=\min\left\{\int g\,d\nu_n:\gamma\text{ in that subset}\right\}.
+\]
+All finite atoms and action weights are chosen jointly for this fixed experiment. No measurable dependence of an optimizer on an external model parameter is asserted. The moment-image topology is the product of the real mass and affine-coordinate lines, so a continuous linear separator depends on finitely many coordinates. Completed-probability measurable allocation functions have Borel versions on the standard-Borel carrier, with values on null sets completed arbitrarily.
