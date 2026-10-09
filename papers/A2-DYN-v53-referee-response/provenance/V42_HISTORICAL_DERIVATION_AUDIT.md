@@ -1,0 +1,11 @@
+# Historical derivation audit: revision 42
+
+The latest substantive report is the v41 report at `c4b969cb054f3d86db468604b5bc17ba05cf8c44`; its reviewed source is `e8bb719f3100f16cb945ab57c2b3408d19f678dc`. The exact workflow artifact was downloaded and its archive SHA-256 checked before the revision. This supersedes the v35/v36 state discussed in older conversation records.
+
+The focused historical dependencies inspected for this revision are the physical flux and first-hit convention (02), all regular critical words and their individual edge bounds (04), the actual enlarged section (08), cumulative return tails (20), geometric regularization with the normal strip (63), the differential and source zero-extension details (65), the full-band occupation/residue/exact-index chain (84--86), and uniform transition, pinned bridge and residue filters (87--89). The existing source and proof ledgers were used to keep the three-coordinate stationary theorem separate from the four-coordinate return problem.
+
+The old regular-word Morse classification and finite-record absolute continuity are not new results. The old guard contains all candidate discriminants and extended coordinate-side factors, so some physically regular points can lie on auxiliary guard zeros. The new coefficient stabilization statement explicitly requires positive margins for all these factors. The new stopped product avoids post-terminal guard tests and omits the additional `theta(p/epsilon)` used by the older nonstationary extraction. All omitted source is retained in the exact nonnegative remainder.
+
+The selected arithmetic theorem formerly required multiplier-bounded endpoint functions. The new phase-class law does not assume that a merely measurable class indicator meets that condition; its initial strong density is constructed from the finite peripheral eigenbasis. The bridge extension repeats the pinned factorization with that initial vector and uses the old fourth-moment bound by positivity.
+
+All 89 old core files, all 103 old Python scripts, the bibliography and the compiled A--X synopsis remain byte-identical. Prior main and supporting files are preserved under `provenance/V41_*`. No old review, author branch or unrelated research topic is edited.
