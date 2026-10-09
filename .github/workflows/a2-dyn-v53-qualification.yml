@@ -1,0 +1,32 @@
+name: A2-DYN v53 source snapshot
+on:
+  push:
+    branches:
+      - revision/a2-dyn-v53-referee-response-2026-10-09
+      - revision/a2-dyn-v53-referee-copy-2026-10-09
+    paths:
+      - .github/workflows/a2-dyn-v53-qualification.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  snapshot:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Archive frozen report bytes
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          mkdir snapshot
+          cp reviews/a2-dyn-v52-external-top4-review-2026-10-09/REFEREE_REPORT.md snapshot/REFEREE_REPORT.md
+          git rev-parse HEAD > snapshot/source-commit.txt
+          sha256sum snapshot/REFEREE_REPORT.md > snapshot/report-sha256.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: a2-dyn-v53-review-source-${{ github.sha }}
+          path: snapshot/*
+          if-no-files-found: error
+          retention-days: 90
