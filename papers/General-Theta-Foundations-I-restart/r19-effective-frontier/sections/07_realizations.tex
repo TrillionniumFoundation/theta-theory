@@ -1,0 +1,115 @@
+\section{Two raw-kernel realizations and conventional tasks}\label{sec:realizations}
+These verifications are consequences of the general theorems, never their premises. Their kernel mechanisms were established in the preceding article\cite{prior}; we include complete proofs and specify ordinary prediction tasks.
+
+\begin{lemma}[Positive-instrument coupling]\label{lem:coupling}
+Let states be probability vectors in $\ell^1$ or finite-dimensional density matrices in trace norm. Let $C$ be a positive trace-preserving affine preparation channel with contraction coefficient $\gamma$. Let $A_y$ be a positive linear instrument density with $\int A_y\,\zeta(dy)$ trace preserving. For $q=C(s)$ put $u_y=A_y(q)$, $r_y=\tr u_y$, and $F_y=u_y/r_y$ on positive-mass reports. Then
+\begin{equation}\label{eq:coupling}
+ W_1(\law F_Y,\law F'_{Y'})\le3\gamma\|s-s'\|,
+ \qquad\TV(\law Y,\law Y')\le\frac{\gamma}{2}\|s-s'\|.
+\end{equation}
+\end{lemma}
+\begin{proof}
+The positive and negative parts of a signed vector or Hermitian matrix $v$ give
+\[
+ \int\|A_y(v)\|\,\zeta(dy)\le\|v\|,\qquad
+ \int|\tr A_y(v)|\,\zeta(dy)\le\|v\|.
+\]
+Couple common report mass $\min(r_y,r'_y)$ at the same $y$. There
+\[
+ \min(r_y,r'_y)\|F_y-F'_y\|\le\|u_y-u'_y\|+|r_y-r'_y|.
+\]
+The state space has diameter at most two, so the remaining report mass costs at most $\int|r_y-r'_y|\,d\zeta$. Summing proves the Wasserstein bound; the second integral directly gives the TV bound. These are sufficient coefficients, not claimed optimal ones.
+\end{proof}
+
+\subsection{Gaussian hidden-state sensing}
+There are $d+1$ hidden states, a fixed finite action family, and known stochastic matrices $T_t^a$ with every entry at least $\tau>0$. A call applies $T_t^a$ and then reports
+\[
+ Y\mid X'=j,a\sim N(\mu_j^a,\Sigma_a),\qquad Y\in\R^{m_{\rm obs}},\quad m_{\rm obs}\ge d.
+\]
+The parameter set is compact: the means are uniformly bounded, the eigenvalues of $\Sigma_a$ are uniformly bounded above and below, and the least eigenvalue of
+$B_a\Sigma_aB_a^T$ is uniformly positive, where $B_a$ has rows $(\mu_j^a-\mu_0^a)^T\Sigma_a^{-1}$. At each phase at least one legal $T_t^a$ is invertible. Put
+$\gamma_t=\max_a\frac12\max_{i,j}\sum_k|T_t^a(i,k)-T_t^a(j,k)|$.
+
+\begin{theorem}[Categorical filtering]\label{thm:gaussian}
+If $\beta_t=3\gamma_t$ obeys \eqref{eq:regular_stability}, all conclusions of Theorem~\ref{thm:regular} hold for the conventional loss
+\[
+ L(X_n,u)=\|e_{X_n}-u\|_2^2,\qquad u\in\Delta_d,
+\]
+with predictive carrier $\Delta_d$. The full-history baseline is the usual optimal categorical filtering Bayes risk in this controlled experiment. Constants are uniform in $n,M$ on the stated parameter class. Every Gaussian report, including its tails, is a paid acquisition.
+\end{theorem}
+\begin{proof}
+For incoming $p$ set $q=pT_t^a$; then $\tau\le q_j\le1-d\tau$. With the Gaussian emission densities $f_j$, the raw joint kernel gives
+\[
+ r(q,y)=\sum_jq_j f_j(y),\qquad u_j=F_j(p,a,y)=q_j f_j(y)/r(q,y).
+\]
+Unnormalized finite continuation probabilities are linear in $p$, proving the instrument mixture identities on the whole simplex. All report densities are positive on $\R^{m_{\rm obs}}$, and therefore equivalent to one fixed nonsingular Gaussian probability reference for each action, at every phase.
+
+The actual posterior law has uniformly bounded density even at the simplex boundary. Indeed its logits satisfy
+\[
+ z_j=\log(u_j/u_0)=(B_ay)_j+(c_a)_j+\log(q_j/q_0),\qquad
+ (c_a)_j=-\tfrac12(\mu_j^T\Sigma_a^{-1}\mu_j-\mu_0^T\Sigma_a^{-1}\mu_0).
+\]
+Their law is a finite mixture of nonsingular $d$-dimensional Gaussians, with uniform bounds on means and covariance eigenvalues. Hence its density obeys
+$h_q(z)\le C\exp(-c|z|^2+C|z|)$. The softmax map has Jacobian $\prod_{j=0}^du_j$, and
+\[
+ (\textstyle\prod_j u_j)^{-1}
+ =(1+\sum_{j=1}^d e^{z_j})^{d+1}e^{-\sum_j z_j}
+ \le C_d e^{C_d|z|}.
+\]
+Consequently $h_q(\operatorname{logit}u)/\prod_j u_j$ is bounded uniformly on the entire simplex interior. The boundary has zero acquired mass; no clipping or conditioning was used.
+
+The row coefficient gives $\|pT-p'T\|_1\le\gamma_t\|p-p'\|_1$: decompose the difference into equal positive and negative masses and bound the distance of two row mixtures. Lemma~\ref{lem:coupling} proves report continuity and the required Wasserstein estimate. This also gives weak continuity of the acquired kernel.
+
+For predictive separation, distinct Gaussian means give linearly independent emission densities: divide a purported relation by the common quadratic Gaussian factor and restrict the resulting exponentials to a line with distinct slopes. Successive limits force all coefficients to vanish. The next-report law thus identifies $q$, and an invertible legal $T_t^a$ identifies $p$. Conversely $p$ determines all future tests, so this is the predictive quotient rather than a redundant parameterization.
+
+Finally $\ell(p,u)=1-2p\cdot u+\|u\|_2^2$ is affine in $p$ and has Bayes risk $g(p)=1-\|p\|_2^2$. It is Lipschitz and strongly concave on the affine simplex. Apply Theorem~\ref{thm:regular}. The proof optimizes over the full declared adaptive policy class; it does not infer a strict feedback advantage merely from the existence of several sensors.
+\end{proof}
+For instance, two-state invertible transition matrices with row coefficients repeating $0.8,0.8,0.02$ have individual certified coefficients as large as $2.4$, but every three-step product is $0.3456<1$. Weak mixing by itself is not being substituted for this explicit block condition.
+
+\subsection{Noncommuting finite-dimensional instruments}
+Let $D\ge2$, $d=D^2-1$, and take an orthonormal real basis $H_1,\ldots,H_d$ of traceless Hermitian matrices. Choose $s>0$ with $s\sum_i\|H_i\|_{\rm op}<1$. With uniform probability measure on the report cube $[-1,1]^d$, put
+\[
+ E_y=I+s\sum_i y_iH_i,\qquad
+ \mathcal I_{t,y}^a(\rho)=E_y^{1/2}\mathcal C_t^a(\rho)E_y^{1/2},
+\]
+where
+\[
+ \mathcal C_t^a(\rho)=(1-\gamma_t^a)\tau_t^a+
+                    \gamma_t^a U_a\rho U_a^*,\qquad
+ 0<\gamma_-\le\gamma_t^a\le\gamma_+<1,\quad \tau_t^a\succeq\tau I.
+\]
+The affine channel extends linearly by multiplying its first term by $\tr\rho$. It is a paid mixture of preparation and a unitary channel. Since $\int E_y\,2^{-d}dy=I$, the instrument is positive and normalized. No common eigenbasis of the effects is assumed.
+
+\begin{theorem}[Prediction of an informationally complete measurement]\label{thm:quantum}
+If $\beta_t=3\max_a\gamma_t^a$ satisfies the block condition, Theorem~\ref{thm:regular} holds on the density-matrix carrier for Brier prediction of the outcome of a fixed finite informationally complete POVM. Affine volume means Lebesgue volume in the displayed orthonormal traceless chart, and the Wasserstein metric uses trace norm. The constants need not be uniform in $D$. The terminal measurement is paid when included in the physical acquisition count.
+\end{theorem}
+\begin{proof}
+Let $q=\mathcal C_t^a(\rho)$, $r_y=\tr(E_yq)$ and
+$\sigma_y=E_y^{1/2}qE_y^{1/2}/r_y$. Uniform positive lower bounds on $q,E_y$ give equivalent report supports on the whole cube. Linearity of the unnormalized quantum instruments proves mixture closure. The coupling lemma supplies the Wasserstein coefficient $3\gamma_t^a$ and TV continuity.
+
+For the density calculation, at positive definite $q,\sigma$ define
+\[
+ A=q^{-1/2}(q^{1/2}\sigma q^{1/2})^{1/2}q^{-1/2}.
+\]
+This is the unique positive definite solution of $AqA=\sigma$. The inverse of the normalized congruence map on the trace-$D$ positive hyperplane is
+\begin{equation}\label{eq:quantum_inverse}
+ E=\frac{DA^2}{\tr A^2}.
+\end{equation}
+Since $A$ is positive definite, $E^{1/2}=\sqrt{D/\tr A^2}\,A$, proving the substitution in both directions. The map and its inverse are smooth; their differentials on the trace hyperplanes are inverse. The affine map $y\mapsto E_y$ has full rank. The permitted $q$ and closed cube lie in a compact subset of the positive domains, so the absolute Jacobian of $y\mapsto\sigma_y$ has a positive uniform lower bound. The bounded report density and one-to-one change of variables prove a uniform acquired-density upper. Cube boundaries are null, and no multiplicity factor is hidden.
+
+The report density $1+s\sum_i y_i\tr(H_iq)$ identifies all traceless coordinates of $q$; the affine channel is injective since $\gamma_t^a>0$. Thus the density matrix is exactly the predictive quotient for the declared tests. It is derived from the raw instruments, not supplied to the finite observer as a register.
+
+For a concrete fixed POVM take
+$G_{i,\pm}=(I\pm eH_i)/(2d)$ with
+$0<e<1/\max_i\|H_i\|_{\rm op}$. These effects sum to $I$. Its outcome probabilities $P_{i,\pm}(\rho)=\tr(G_{i,\pm}\rho)$ form an injective affine map. Under ordinary Brier loss the Bayes risk is $1-\|P(\rho)\|_2^2$. Its strong-concavity constant is twice the squared least singular value of the linear part of $P$ on the traceless chart. This is a probability-forecast task for an actual fixed measurement, not an assertion that every discrimination loss has full-dimensional curvature. Theorem~\ref{thm:regular} now applies.
+\end{proof}
+As a finite-stratum extension, replace a fixed fraction $\vartheta<1$ of calls by a flagged preparation of one of finitely many pure states and use the displayed continuous instrument otherwise. A subsequent positive channel sends pure states back into the interior. The type is visible in the current report; the continuous terminal submeasure has its actual mass $1-\vartheta$. Provided the corresponding coupling block bound holds, Proposition~\ref{prop:strata} applies with its unnormalized mass factor. This verifies genuine rank changes without asserting that arbitrary or unobserved quantum strata satisfy that proposition.
+
+In the Gaussian realization the operative nondegeneracy is $\operatorname{rank}B_a=d$, including when the observation dimension is larger than $d$. The invertible legal transition used to separate predictive states may depend on phase; action availability belongs to the phase-specific predictive interface and is not a clock that an autonomous programme may read.
+
+For the quantum inverse, one can see the full differential directly. With $K=(q^{1/2}\sigma q^{1/2})^{1/2}$, a variation $H$ of $\sigma$ induces the unique solution $X$ of $KX+XK=q^{1/2}Hq^{1/2}$ and $\dot A=q^{-1/2}Xq^{-1/2}$. Differentiating $E=DA^2/\tr(A^2)$ gives
+\[
+ \dot E=D\left(\frac{A\dot A+\dot A A}{\tr(A^2)}
+       -\frac{2A^2\tr(A\dot A)}{\tr(A^2)^2}\right).
+\]
+Thus the smooth inverse and compact positive domain give the asserted nonsingular Jacobian bound. This calculation is finite-dimensional; it makes no claim about unbounded-operator closures.

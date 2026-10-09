@@ -1,0 +1,14 @@
+# Pipeline derivation — shared-parameter causal transfer
+
+1. Start from preparations and positive instruments and specify legal actions, observer timing and a fixed scored task. Form the executable-test effect quotient under the appendix hypotheses. Keep actual parameter inaccessible.
+2. At every parameter, record actual conditional occupancies and predictive barycenters of a proposed finite observer. Demand common action, update and terminal readout components. Do not give the certificate profile to the runtime.
+3. Joint domination places every report row in one weak-star compact simplex. The common row is mapped to all parameter/phase moments. Separation in the product topology has a finite-coordinate witness. Its support function puts the maximum outside both sums. This proves exact realization and risk identity.
+4. For a finite-dimensional physical presentation, integrate instrument matrix entries against the common row. These moments are continuous. Finite-horizon programme trajectories are finite products of moments; timing and legality are closed. Compactness gives a common optimum and the finite-model value identity. This step is not a false continuity assertion for pointwise products in L-infinity.
+5. Prove a programme-uniform physical modulus by positive direct-sum contraction. This compares one fixed model against another fixed model through the whole path; it does not normalize posterior updates or change the model every call.
+6. Apply a common support-resolved report partition and reconstruction. Average each row once for the entire family, then round once on its original support. The resulting same-M programme is legal throughout the family and uniformly close in risk.
+7. Enumerate all resulting finite programmes, evaluate all finite model-net members with certified intervals, and compare minima of maxima. Net inclusion supports the lower endpoint; the uniform modulus supports the upper endpoint. Complete enumeration plus the continuous comparison is essential.
+8. Verify Gaussian density derivatives / tails and quantum positive-instrument perturbations directly from raw kernels. Apply uniform cylinder/atomic-tail refinements without removing actual probability mass.
+9. Prove the noisy calibration threshold independently by a Bayes averaging lower and one explicit common programme, then attach an actually inaccessible offset. This witness checks the quantifier and resource model rather than defining the mother theorem.
+10. Attach only resource-certified causal simulators of complete stopped/scored laws. Multiply states and add bounded-loss errors with exact budget semantics. Preserve all inherited quantitative geometry and keep its stronger assumptions visible.
+
+No step invokes tests or builds as proofs. No realization is an input premise of steps 3–7.

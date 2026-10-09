@@ -1,0 +1,99 @@
+\section{One programme across all phases}\label{sec:stationary}
+\begin{lemma}[Simultaneous report allocation]\label{lem:simultaneous}
+For fixed $(p_{t,z},q_{t,z},\alpha_z)$ satisfying \eqref{eq:occupancy}, the inequalities \eqref{eq:simdual} are equivalent to the existence of Borel probabilities $k(j\mid z,a,y)$, independent of $t$, such that, for every $t<n$, label $j$ and $f\in\aff(K_{t+1})$,
+\begin{equation}\label{eq:sim_moments}
+ p_{t+1,j}f(q_{t+1,j})=
+ \sum_{z\notin D,a}p_{t,z}\alpha_z(a)
+ \int k(j\mid z,a,y)f(F_t(q_{t,z},a,y))J_t(q_{t,z},a)(dy).
+\end{equation}
+The case $f=1$ is included.
+\end{lemma}
+\begin{proof}
+For each $(z,a)$ use the finite dominating measure $\eta_{z,a}$ in \eqref{eq:domination}. In the finite product of spaces $(L^\infty(\eta_{z,a}))^{|Z|}$, take the weak-star compact convex set of simplex-valued functions. The map to the right sides of \eqref{eq:sim_moments} is continuous into the product of affine-coordinate moments: its test functions are
+$h_{t,z,a}(y)f(F_t(q_{t,z},a,y))$, which are in $L^1(\eta_{z,a})$. If the target moments are not in this compact convex image, finite-coordinate separation gives a family $\phi_{t,j}$. For each incoming pair $(z,a)$ the support function of its allocation simplex is
+\[
+ \int\max_j\sum_t h_{t,z,a}(y)\phi_{t,j}(F_t(q_{t,z},a,y))\,\eta_{z,a}(dy).
+\]
+Summing over $(z,a)$ is exactly the right side of \eqref{eq:simdual}. A Borel least maximizing index realizes this support function. Separation proves both directions and gives a strict finite witness of infeasibility. Borel versions and zero-measure pairs are treated as in Lemma~\ref{lem:allocation}.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:completion}(b) and the autonomous part of (c)]
+An actual autonomous tuple supplies its cut occupancies and conditional states. Its single transition kernel satisfies \eqref{eq:sim_moments} by conditioning on the incoming label, action and report. The stop rule gives \eqref{eq:occupancy}. Thus the simultaneous inequalities are necessary.
+
+Conversely, Lemma~\ref{lem:simultaneous} constructs one kernel $k(j\mid z,a,y)$ for all phases. Use it with the proposed, phase-independent $\alpha_z$. Starting from $z_0$, induction in \eqref{eq:sim_moments} gives exactly $p_{t,z}$ and $q_{t,z}$, by the all-incoming calibration argument. The induction does not require the machine to know $q_{t,z}$ or $t$: those objects appear only in its offline feasibility certificate, while the executed kernel is the single $k$. The zero occupancies in \eqref{eq:occupancy} ensure that it never reaches a stopping label before $n$ and reaches one at $n$ almost surely. Choose a best readout at each positive-mass terminal label. This gives the stated risk and uses only $Z$. Taking infima proves the second equality in \eqref{eq:exactrisk}.
+\end{proof}
+
+\begin{remark}[A strict distinction between the tests]\label{rem:gluing}
+Suppose incoming label $1$ and a fixed action see the same deterministic report in two phases, and both next predictive carriers consist of a singleton. A proposal sends that report to label $1$ with probability one in the first phase and to label $2$ with probability one in the second. Each separate barycentric allocation is feasible. Set $\phi_{0,1}=\phi_{1,2}=1$ and the other two constants to zero, with equal incoming phase masses. The left side of the simultaneous inequality is $2$, and its right side is $1$. Thus no single kernel implements the proposal. The obstruction is not a failed geometric covering; it is incompatible reuse of one programme location.
+\end{remark}
+
+
+\subsection{Finite matrices and a sharp programme-reuse threshold}
+For finite reports, write $\mathbf f_t(q)$ for the constant and a finite affine coordinate basis, when the carrier is finite-dimensional. Given the proposed occupancies, predictive states and action rows, put
+\[
+ A_{t,z,a,y}=p_{t,z}\alpha_z(a)J_t(q_{t,z},a)(y)
+              \mathbf f_{t+1}(F_t(q_{t,z},a,y)),\qquad
+ b_{t,j}=p_{t+1,j}\mathbf f_{t+1}(q_{t+1,j}).
+\]
+Then the simultaneous allocation is precisely the finite feasibility system
+\begin{equation}\label{eq:finite_matrix}
+ \sum_{z,a,y}A_{t,z,a,y}k_{z,a,y,j}=b_{t,j},\qquad
+ k_{z,a,y,j}\ge0,\qquad\sum_jk_{z,a,y,j}=1.
+\end{equation}
+It is a linear system for a \emph{fixed proposal}; optimizing the occupancies and action rows is not generally one linear programme. Finite-dimensional linear-programming duality gives the finite version of \eqref{eq:simdual}. Each report row occurs once, even if used at several phases. With finite raw states, retaining the unnormalized physical occupancy vectors instead yields polynomial recursions in the controller rows, directly connecting this formulation with finite-state-controller parameter synthesis\cite{junges}.
+
+A small complete experiment shows both nontrivial feasible reuse and a sharp risk threshold. There are four paid calls and action types \emph{sense} and \emph{respond}. At calls one and three only sense is legal; its binary reports have respective laws $(3/4,1/4)$ and $(1/4,3/4)$. At calls two and four only responses $0,1$ are legal. Call two returns a deterministic \emph{return} marker and call four a deterministic \emph{finish} marker. A hidden scoring register records whether the first response was $0$ and the second response was $1$. After the observer has halted, a fixed audit scores the average of the two errors; the scoring register and audit outcome are never readable before the decision. The audit adds one physical scoring call if included in acquisition totals, not one more controller transition. This is an ordinary positive finite kernel after adjoining the phase and score to the hidden state.
+
+\begin{theorem}[A finite sharp reuse frontier]\label{thm:finite_reuse}
+For this prepared four-call experiment, with one autonomous programme and the entire label set counted,
+\begin{equation}\label{eq:finite_reuse}
+ R_{\aut}(4,M)=
+ \begin{cases}
+ +\infty,&M<3,\\
+ 1/2,&M=3,\\
+ 1/4,&M=4,\\
+ 0,&M\ge5.
+ \end{cases}
+\end{equation}
+An external observer with one label at every phase has risk zero. The internally timed thresholds do not follow from a clock-neutral-report theorem: the return and finish markers have different phase supports.
+\end{theorem}
+\begin{proof}
+First suppose one sense location is reused. If $a,b$ are the probabilities that its report rule ultimately selects response zero on reports zero and one, the two phase probabilities are
+\[
+ u=(3a+b)/4,\qquad v=(a+3b)/4.
+\]
+Every $(u,v)\in[0,1]^2$ is separately phasewise feasible. One common row exists exactly on the nontrivial parallelogram
+\begin{equation}\label{eq:reuse_polytope}
+ 0\le3u-v\le2,\qquad0\le3v-u\le2,
+ \qquad a=(3u-v)/2,\quad b=(3v-u)/2.
+\end{equation}
+These are the finite simultaneous constraints. In particular $u-v\le1/2$, so the average error $(1-u+v)/2$ is at least $1/4$. The common deterministic row $a=1,b=0$ attains it. For an interior feasible example, $a=3/4,b=1/4$ gives $(u,v)=(5/8,3/8)$; the displayed inverse recovers the same randomized row at both phases.
+
+Labels reached at sense and response cuts cannot coincide: their stationary action distributions would have to be supported in two disjoint legal action sets. A stopping label is different from both. Thus at least three labels are necessary. With exactly three, there is one response label, whose fixed response distribution is the same at both scored calls; its average error is $1/2$. A chain using the markers to return to the sense label and then halt attains it.
+
+With four labels, if there is only one response label its average error is still $1/2$. Otherwise there is exactly one sense label and at most two response labels. Any randomization at the response labels can be composed with the sense row to give the common binary probabilities $a,b$ above, so the same $1/4$ lower applies to \emph{all} randomized programmes. Attain it with labels $s,r_0,r_1,d$: sense at $s$, send report $y$ to $r_y$, respond $j$ at $r_j$, send return to $s$ and finish to the stopping label $d$. These are phase-independent rules.
+
+With five labels, use two sense locations $s_0,s_1$, two response locations and one halt location. Initially sense at $s_0$ and send either report to $r_0$; return goes to $s_1$, whose reports both go to $r_1$; finish goes to halt. The risk is zero. The external observer knows the stage and can choose the correct response without retaining the reports, also at zero risk. No unscored internal memory has been used.
+\end{proof}
+
+\begin{proposition}[Exact conversion of timing conventions]\label{prop:clock}
+For every experiment in the main theorem,
+\begin{equation}\label{eq:conversion}
+ R_{\ext}(n,M)\le R_{\aut}(n,M),\qquad
+ R_{\aut}(n,1+\textstyle\sum_{t=1}^n m_t)\le R_{\ext}(\mathbf m).
+\end{equation}
+For the second inequality the source observer's phase label is included in the autonomous label. Suppose additionally that, for each action $a$, every $J_t(q,a)$ is mutually absolutely continuous with one common probability $\zeta_a$ on reports, uniformly in the sense of null sets over $t,q$. Then every internally exact-$n$ observer has disjoint positive-probability label supports at all $n+1$ cuts, and
+\begin{equation}\label{eq:clockidentity}
+ R_{\aut}(n,M)=
+ \inf_{\substack{m_t\ge1\\1+\sum_{t=1}^n m_t\le M}} R_{\ext}(\mathbf m).
+\end{equation}
+Its class is nonempty exactly when $M\ge n+1$. No uniform likelihood-ratio lower is required.
+\end{proposition}
+\begin{proof}
+An external observer may ignore its clock and run an autonomous one, proving the first inequality. Conversely, attach $t$ to each phase label of an external observer; its initial label is separate and its final labels stop. This gives a stationary tuple on the disjoint union and the second inequality.
+
+For disjointness, suppose a positive-mass label $z$ occurs at cuts $s<t$. Starting from that label, run the same stationary action and transition kernels against reference reports $\zeta_a$ and the same fresh randomization. For every finite continuation length, successive conditioning shows equivalence between actual and reference trace laws: the next-report density is positive and finite almost everywhere, and randomization is unchanged. Integrating over any incoming conditional physical state or history preserves the same null sets. From cut $t$, stopping after $n-t$ further calls has probability one, hence reference probability one. Starting from the reused label at cut $s$, the reference machine is identical, so the same event has actual probability one. It stops before $n$, a contradiction. The case $t=n$ follows directly from the stopping set. Thus the cut supports are disjoint. Their sizes obey $1+\sum_tm_t\le M$, giving the reverse inequality in \eqref{eq:clockidentity}. A chain with $n$ legal calls and one terminal label proves nonemptiness at $n+1$, irrespective of its quality of prediction.
+\end{proof}
+Report time stamps or a freely supplied stage index invalidate the disjointness argument, not the simultaneous allocation theorem. An autonomous machine with such reports is still governed by \eqref{eq:simdual}; it may be able to reuse labels. The conversion result therefore specifies which timing cost is a resource convention and which compatibility constraint survives that convention.
+
+In the reference-trace argument, every action with positive probability at a reused label is legal at both occurrences by the occupancy legality constraint. Equivalence of trace null sets is not a uniform likelihood-ratio estimate; no such stronger bound is used.
