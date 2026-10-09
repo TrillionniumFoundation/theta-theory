@@ -1,0 +1,108 @@
+name: General Theta R10 source-bound full build
+on:
+  push:
+    branches: [foundation/general-theta-restart-r10-adaptive-completion-research-2026-10-08]
+    paths: [.github/workflows/general-theta-r10-source-build.yml]
+permissions:
+  contents: write
+concurrency:
+  group: theta-r10-source-publication
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      TARGET_BRANCH: foundation/general-theta-restart-r10-adaptive-completion-research-2026-10-08
+      BASE_RESEARCH: 5c72822de21da564c2e2d99cdb1816c8a91feede
+      NATIVE_DIR: papers/General-Theta-Foundations-I-restart/r10-adaptive-completion
+      EXPECTED_NATIVE_TREE: 7378579e02b0f0e51876f560b2fc1cfc0a3a3579
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Verify source and preserved predecessor trees before building
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF_NAME" = "$TARGET_BRANCH"
+          test "$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | cut -f1)" = "$GITHUB_SHA"
+          test "$(git rev-parse "HEAD:$NATIVE_DIR")" = "$EXPECTED_NATIVE_TREE"
+          mkdir -p "$RUNNER_TEMP/theta-r10-receipts"
+          git ls-remote --heads origin > "$RUNNER_TEMP/theta-r10-receipts/REMOTE_HEADS_BEFORE.txt"
+          git fetch --no-tags --depth=1 origin "$BASE_RESEARCH"
+          for name in r4-causal-resolvent r5-intrinsic-recursion r6-operational-transfer r7-acquisition-compatible r8-continuation-geometry r9-continuation-completion review-inputs; do
+            p="papers/General-Theta-Foundations-I-restart/$name"
+            test "$(git rev-parse "HEAD:$p")" = "$(git rev-parse "$BASE_RESEARCH:$p")"
+          done
+          for p in foundations/general-theta/General_Theta_Foundations_v0.1.md foundations/general-theta/RESTART_CHARTER.md foundations/general-theta/REALIZATION_REGISTRY.md papers/General-Theta-Foundations-I-restart/THEOREM_TARGETS.md; do
+            test "$(git rev-parse "HEAD:$p")" = "$(git rev-parse "$BASE_RESEARCH:$p")"
+          done
+          python3 "$NATIVE_DIR/verify.py" | tee "$RUNNER_TEMP/theta-r10-receipts/SOURCE_AUDIT.json"
+          echo "SOURCE_SHA=$GITHUB_SHA" >> "$GITHUB_ENV"
+          printf '%s\n' "$GITHUB_SHA" > "$RUNNER_TEMP/theta-r10-receipts/SOURCE_SHA.txt"
+      - name: Install complete hosted PDF toolchain
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended cm-super lmodern poppler-utils python3-venv
+          python3 -m venv "$RUNNER_TEMP/theta-r10-venv"
+          "$RUNNER_TEMP/theta-r10-venv/bin/pip" install pypdf
+          echo "$RUNNER_TEMP/theta-r10-venv/bin" >> "$GITHUB_PATH"
+      - name: Rebuild exact source in both modes and six isolated PDF builds
+        run: |
+          set -euo pipefail
+          mkdir -p "$NATIVE_DIR/evidence"
+          python3 "$NATIVE_DIR/build.py" --source-sha "$SOURCE_SHA" --expected-tree "$EXPECTED_NATIVE_TREE" --output "$NATIVE_DIR/artifacts" --receipt "$NATIVE_DIR/evidence/BUILD_RECEIPT.json"
+          git diff --exit-code
+      - name: Publish source-bound artifacts in a separate child commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import json, os, subprocess
+          p=Path(os.environ['NATIVE_DIR']); preserved={}
+          for n in ['r4-causal-resolvent','r5-intrinsic-recursion','r6-operational-transfer','r7-acquisition-compatible','r8-continuation-geometry','r9-continuation-completion','review-inputs']:
+              path='papers/General-Theta-Foundations-I-restart/'+n
+              current=subprocess.check_output(['git','rev-parse','HEAD:'+path],text=True).strip()
+              original=subprocess.check_output(['git','rev-parse',os.environ['BASE_RESEARCH']+':'+path],text=True).strip()
+              if current!=original: raise RuntimeError('preserved subtree changed: '+n)
+              preserved[n]=current
+          result={'source_commit':os.environ['SOURCE_SHA'],'native_source_tree':os.environ['EXPECTED_NATIVE_TREE'],'canonical':'18000b21e4bfd89180ccb069e46ac0f21621f34d','review':'f04b0c0c967a75dfa2f09cbfb3d38e54cef639d2','inherited_research':os.environ['BASE_RESEARCH'],'preserved_subtrees':preserved,'hosted_run_id':os.environ['GITHUB_RUN_ID'],'source_regeneration_during_build':False,'source_is_ordinary_files':True,'scope':'R10 and complete retained supplement; finite checks are not mathematical proofs'}
+          (p/'evidence/SOURCE_PUBLICATION.json').write_text(json.dumps(result,indent=2,sort_keys=True)+'\n')
+          PY
+          test "$(git ls-remote origin "refs/heads/$TARGET_BRANCH" | cut -f1)" = "$SOURCE_SHA"
+          git config user.name 'General Theta source publication'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f "$NATIVE_DIR/artifacts" "$NATIVE_DIR/evidence"
+          git commit -m 'build(theta restart R10): publish exact-source PDFs and hosted receipts separately'
+          ARTIFACT_SHA="$(git rev-parse HEAD)"
+          git push origin "HEAD:refs/heads/$TARGET_BRANCH"
+          printf '%s\n' "$ARTIFACT_SHA" > "$RUNNER_TEMP/theta-r10-receipts/ARTIFACT_SHA.txt"
+          git ls-remote --heads origin > "$RUNNER_TEMP/theta-r10-receipts/REMOTE_HEADS_AFTER.txt"
+      - name: Export exact source and available evidence
+        if: always()
+        run: |
+          mkdir -p "$RUNNER_TEMP/theta-r10-packet"
+          git archive HEAD foundations/general-theta papers/General-Theta-Foundations-I-restart .github/workflows/general-theta-r10-source-build.yml | tar -x -C "$RUNNER_TEMP/theta-r10-packet"
+          cp -a "$RUNNER_TEMP/theta-r10-receipts" "$RUNNER_TEMP/theta-r10-packet/hosted_publication"
+          if test -d "$NATIVE_DIR/artifacts"; then
+            mkdir -p "$RUNNER_TEMP/theta-r10-diagnostics"
+            cp -a "$NATIVE_DIR/artifacts" "$RUNNER_TEMP/theta-r10-diagnostics/"
+          fi
+          if test -d "$NATIVE_DIR/evidence"; then
+            mkdir -p "$RUNNER_TEMP/theta-r10-diagnostics"
+            cp -a "$NATIVE_DIR/evidence" "$RUNNER_TEMP/theta-r10-diagnostics/"
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: general-theta-r10-source-bound-packet
+          path: |
+            ${{ runner.temp }}/theta-r10-packet
+            ${{ runner.temp }}/theta-r10-receipts
+            ${{ runner.temp }}/theta-r10-diagnostics
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 14
