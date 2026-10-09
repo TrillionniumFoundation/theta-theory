@@ -25,7 +25,7 @@ The ten major comments are answered individually in `REFEREE_RESPONSE.md`. The f
 | 19 target vs source time | `thm:defect` and resource table keep target-call, source-call and physical-time conversion separate. |
 | 20 erasure states | No new minimum-state assertion for the old three-state erasure example. New joint theorem asserts a 3J-state construction, not a sharp minimum threshold. |
 | 21 known family endpoint | Inherited p0 is the known endpoint, not realized p. New programs do not read inaccessible theta or u. |
-| 22 calibration scaling | `prop:joint` states H=diam(K)^2+2 for delta<=1, rescales to unit loss, then undoes scaling. |
+| 22 calibration scaling | `prop:joint` uses H=diam(K)^2+5 for delta<=1: arbitrary calibration decisions in [-delta,delta] have error at most 4delta^2. The attaining output zero has error delta^2. Unit-loss scaling is undone after the transfer. |
 | 23 readable 729 table | Existing table and exact certificate remain in companion B and its artifact; readable convention reproduced in `COMPANION_AUDIT_NOTES.md` after checking the source. It is not a new 729-table claim. |
 | 24 classical citations | Direct renewal, overshoot, disintegration, static reduction and strategic-measure references in native bibliography. |
 | 25 integrity vs proof | Every native verifier/build receipt states this boundary. |
