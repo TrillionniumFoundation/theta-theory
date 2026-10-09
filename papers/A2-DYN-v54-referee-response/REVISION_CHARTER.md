@@ -1,7 +1,7 @@
-# A2-DYN revision 54
+# Revision 54 charter
 
-Continue the original four-coordinate actual-return raw-density problem from the qualified v53 author commit `9d3891615c3e09d8e40b7ba8e24d410ee6e9c76d`. The controlling substantive report remains v52 at `b487df93e48dbf455b3ed04680c1f7ae3613f45e`; no newer report was found in the branch search for this revision.
+Continue the same A2-DYN actual-return raw-density problem from qualified v53 commit 9d3891615c3e09d8e40b7ba8e24d410ee6e9c76d. The controlling substantive review is v52 at b487df93e48dbf455b3ed04680c1f7ae3613f45e. Preserve every inherited proof and exact label, the arithmetic main term and the original pointwise target.
 
-Preserve the title, physical family, exact return/displacement/collision labels, arithmetic transition kernel, every inherited core proof and diagnostic. Work on scalar physical density concentration using finite-count protected height, thin-layer local mass and the complete density cap. Distinguish higher integrability and forward relative entropy from essential-supremum height.
+This complete revision adds scalar density-tail control, a nonempty higher-integrability range, stronger raw local norms and forward arithmetic likelihood/relative-entropy conclusions. The proof uses one fixed auxiliary band, finite-count positive comparisons and a truncated tail integral. It does not cross physical seams or claim the missing essential-height theorem.
 
-This initial lineage commit is not the complete manuscript or a successful build. The complete revision and its exact-SHA qualification will be recorded in later commits on these branches. No independent human proof audit or full pointwise raw theorem is certified by this charter.
+The initial remote lineage checkpoint was not a manuscript build. The complete source is subject to its own strict two-branch exact-SHA qualification. Independent specialist certification is not claimed.
