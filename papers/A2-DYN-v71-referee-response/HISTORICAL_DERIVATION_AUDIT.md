@@ -1,0 +1,9 @@
+# Historical derivation audit — revision 71
+
+Frozen v70 author SHA `9eb04448ca20772c99c500b406a62bca1d2172c7`, complete paper tree `6ac66c423de6b7705441cf346b927f04de9ad1a1`. The controlling v70 report is at `acf8568f8ce23f3067532f87d4264bdc41e3901b`, blob `17cc59fa6d9063db8dabf4b2dbaa6a81247198c6`.
+
+The exact-SHA v70 workflow artifact supplied the complete v70 source and its v69 baseline, native PDF and qualification evidence. The current derivation was checked against modules 104 and 108 (original physical source and positive raw error), 131 (finite-count inverse-incidence height), 137 (physical J normalization and critical weights), 141 and 149 (actual profile and count-uniform collar), 152--154 (old overlap, signed current, complete selected disks). The retained source, labels and statuses were audited programmatically across the entire baseline. This is the substantive dependency reading route, not a claim to have independently re-proved every inherited module.
+
+The review's proposed negative-current route was examined against its receiving interval. Module 153 is an inner-to-outer result; for the whole disk and inner receiver of 154 an isolated late birth requires positive current. The new two-sided identity makes that direction explicit. Pooling unused capacity at a common roof is performed within a single exact label and before a positive deficit, giving a genuinely smaller original loss source without modifying any old module.
+
+The complete historical module, Python, appendix and bibliography bytes remain unchanged; all previous compiled inputs and labels survive. Old main and manifest are copied verbatim to provenance. Old editorial files remain in the untouched v70 sibling. Version-named older checkpoint files inside the active directory are historical, not current status. The full endpoint flags remain false.

@@ -1,0 +1,9 @@
+# Revision 71 validation protocol
+
+The read-only workflow `.github/workflows/a2-dyn-v71-qualification.yml` checks the actual checkout SHA, frozen full v70 paper tree and controlling v70 report blob. `tools/verify_v71.py` checks every inherited source byte except declared editorial replacements, all compiled inputs and labels, the exact archived v70 opening, active revision metadata and the complete inherited boolean map.
+
+New finite diagnostics use exact rational arithmetic for scalar recovery, bounded physical source factors, all zero-capacity conventions, unused-capacity accounting, monotone K recovery, and signed atomic two-sided kernels. They include within-label cancellation and negative controls for isolated births, omitted jump atoms, premature positive parts, omitted J weights, omitted center translations, cross-label borrowing, and double-spending receiving capacity. Random fixtures use a fixed seed and are finite algebra checks, not Lorentz realizations.
+
+Normal and optimized Python runs must agree. The inherited finite-check chain and six original diagnostic entry points remain executed. Native `pdflatex` runs without shell escape, to stabilized auxiliary references, and rejects warnings, overfull boxes, missing characters and undefined references. `tools/render_v71.py` renders every page containing the new front matter and proofs and binds the record to the PDF hash. The artifact includes the exact source tar, PDF, logs, auxiliary file, source hash map, finite results and rendered proof pages.
+
+In an extracted archive the explicit `--local` mode verifies bytes and finite statements but does not claim a Git checkout, report object, remote workflow result or frozen-tree verification. Qualification success is attached only to an actual matching successful workflow run. No test here proves the weighted ordered net current, outside source, first incidence, full continuum endpoint, or independence of human review.

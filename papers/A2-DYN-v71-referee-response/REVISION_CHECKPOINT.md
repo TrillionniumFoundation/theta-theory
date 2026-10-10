@@ -1,16 +1,13 @@
-# A2-DYN revision 71: frozen review and revision scope
+# Revision 71 complete-source revision checkpoint
 
-Date: 11 October 2026.
+The initial remote checkpoint was commit `138ae7b3577020b799b5b2ecea8ab32d726ebd53`. This manuscript supersedes that initial preparation state, while preserving it in branch history.
 
-This is the initial remote revision checkpoint, not a completed manuscript or a proof certificate.
+Frozen author: `9eb04448ca20772c99c500b406a62bca1d2172c7`; complete v70 paper tree: `6ac66c423de6b7705441cf346b927f04de9ad1a1`.
 
-- Frozen author baseline: `9eb04448ca20772c99c500b406a62bca1d2172c7` (`papers/A2-DYN-v70-referee-response`).
-- Frozen controlling review: `acf8568f8ce23f3067532f87d4264bdc41e3901b`.
-- Controlling report: `reviews/a2-dyn-v70-external-top4-review-2026-10-10/REFEREE_REPORT.md`, blob `17cc59fa6d9063db8dabf4b2dbaa6a81247198c6`.
-- New author branch: `revision/a2-dyn-v71-referee-response-2026-10-11`.
+Frozen controlling v70 review: `acf8568f8ce23f3067532f87d4264bdc41e3901b`; report blob: `17cc59fa6d9063db8dabf4b2dbaa6a81247198c6`.
 
-The revision retains the original triangular Lorentz family, actual section, exact four-coordinate record, section normalization, finite arithmetic transition kernel and zero classes, and the unrestricted two-sided pointwise target. No historical mathematical module is to be deleted or silently relabelled as proved.
+New source: `papers/A2-DYN-v71-referee-response`. Author/referee-copy branches are named in `SOURCE_MANIFEST.json`. They are to identify the same complete revision commit, not a mixture of preparation and final files.
 
-The controlling mathematical requests are the ordered height of the complete angular-loss source, the original outside source, and complete first incidence. The revision will distinguish estimates proved for those exact sources from sufficient criteria or finite-word identities. Geometric parameters remain fixed before the collision-count limit. The full v70 mathematical source and its opening will be retained in the complete manuscript.
+Two new core modules prove maximal scalar source recovery, ordered pooled height, a complete receiving-reserve class theorem, an exact two-sided physical-current identity, and the resulting original raw budget. Unconditional net-current, outside and first-incidence height estimates are not established. The full endpoint is not marked proved.
 
-The final response, proof ledger, specialist audit map, source manifest, and exact-SHA build evidence must agree about what is and is not proved. Independent human review must not be claimed without such review.
+Qualification is determined by the actual exact-SHA workflow result. A manuscript checkpoint is not itself successful build evidence or mathematical certification.
