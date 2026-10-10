@@ -1,7 +1,12 @@
-# Short mathematical reading route
+# The shortest proof route in revision 67
 
-Read the new abstract, the two introductory theorems and their zero-width qualification. Then read modules 140, 141 and 142 in that order. The essential inherited inputs are the contact matrix/source identity in 96 and 131, the reversible coefficient in 137, and the two-endpoint local law in 97. The count-uniform argument does not use the enormous semialgebraic budgets of 135–136.
+The problem is unchanged: pointwise arithmetic raw inversion for the original actual-return record. The complete manuscript retains every inherited proof; the new argument has the following short spine.
 
-The original pointwise target is unchanged. The complete arithmetic return and coupled bridge theorems are retained in the compiled article. Appendix `v65_frontmatter.tex` preserves the old abstract and introduction, including every old leading theorem and label. All 139 inherited core modules and all older appendices remain compiled without changes to their files. The referee response and qualification ledgers are repository companions, not mathematical proof substitutes.
+1. **Primitive decisions.** Module 143 defines a verified Boolean-description radius, an inactive-sign radius, and the sum of active curvature-to-gradient ratios. The homogeneous circle estimate gives a relative error after dividing by the physical angular fraction. Neither the number of output labels nor an angle between gradients enters.
+2. **Positive absorption.** Module 144 combines this relative estimate with the inherited multiplicative physical profile and finite-width collar law. It proves a zero-width critical-value bound on every fixed finite-jet stratum, with a constant independent of the stratum cutoff. The collision limit is taken before the collar width tends to zero.
+3. **Essential height.** The same module bounds the original density in a roof collar by the physical atomic coefficients whose centers lie in that roof interval. This gives an ordered essential-height estimate, not a small-mass substitute.
+4. **Exhaustion and full source.** Module 145 bounds the remaining angular loss by a positive weighted condition-number tail and keeps every uncovered source component in an exact positive remainder. The tail and complete incidence/complementary clearance heights remain mathematical tasks.
 
-A specialist auditing the endpoint local law should follow its stated dependencies in 87 and the preceding occupation-spectrum modules. The new finite-width physical trace theorem depends on that law; the present revision does not independently recertify the anisotropic operator chain.
+Load-bearing inherited inputs: the exact physical margin description (139), tapered selected-contact coordinates (140), relative nonlinear physical profile and guard saturation (141), and positive two-strip collar comparison (142, using the local law in 97). The reversible coefficient is established in 137; the complete positive-error identity is in 108.
+
+The old abstract and introduction are retained verbatim in a clearly marked historical appendix, rather than interleaved with the new proof. Point-by-point editorial responses and validation metadata are outside the article. This route is a guide to the new results, not a claim that the complete pointwise theorem has been closed.

@@ -1,7 +1,7 @@
-# Referee status — v66
+# Status for the next referee
 
-Revision 66 responds to the v65 external report at `8f5b4dd2b2b12b7454b3ebdfa0e41546ba7f6908`. It is an author revision for renewed scrutiny, not an accepted article or an independently commissioned review.
+The controlling report is `reviews/a2-dyn-v66-external-top4-review-2026-10-10/REFEREE_REPORT.md`, commit `31eae1cab4ac138d0d9c892cb76c63286cb73307`, blob `e3e06c75e0b6a73b613c944223423c0dc03b3854`.
 
-New proofs: incidence-normalized contact inverse; count-uniform tapered selected-contact jets and Morse density; exact nonlinear physical angular profile; ordered finite-width physical collar trace; positive atomic-to-collar comparison.
+The next review should first examine modules 143--145: the inactive-sign radius, the homogeneous angular threshold, exact-label relative error, positive absorption before the collision limit, and the conversion from physical critical-value concentration to essential height. The new proof has no full reversible-trace premise.
 
-Not closed: full-source coverage, uniform angular loss, complete incidence and clearance heights, full reversible atomic concentration, unrestricted pointwise arithmetic local limit and its same-roof conditional consequences. No independent human specialist verification has been obtained. Source/finite/build qualification is recorded separately.
+The weighted condition-number tail and complete incidence/complementary clearance heights remain outstanding. There is no assertion of top-four acceptance, formal proof certification or independent human verification. Both new revision branches are intended to point to the same final source commit; their actual runs are separate source/build executions, not independent mathematical reviews.

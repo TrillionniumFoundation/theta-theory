@@ -1,16 +1,22 @@
-# A2-DYN v66 proof ledger
+# Revision-67 proof ledger
 
-The unchanged object is the original exact-return Lorentz record. The unchanged endpoint is the unrestricted two-sided pointwise arithmetic raw-density theorem.
+## New results established in the manuscript
 
-| Result | Location | Dependencies | Scope |
-|---|---|---|---|
-| Incidence-normalized weighted inverse | 140, `lem:v66-weighted-inverse` | Inherited tridiagonal contact identity; elementary Neumann series | Every positive selected incidence; no probability assigned |
-| Count-uniform selected-contact jets | 140, `thm:v66-contact-jets` | Weighted inverse; local three-contact stationary equations; quantitative contraction | Tapered incidence envelope; clearance and section seams permitted |
-| Common Morse disk and relative source density | 140, `thm:v66-uniform-morse` | Contact jets; endpoint Schur complement; unchanged determinant/source formula | Coordinate disk only; radius `r_0 chi^3`, relative budget `C chi^-2` |
-| Exact physical angular density | 141, `thm:v66-nonlinear-profile` | Common disk; exact physical/label masks; positive polar coarea | Nonlinear angular sets retained; no boundary-gradient lower bound |
-| Ordered finite-width physical trace | 142, `thm:v66-ordered-collar-trace` | Physical chart disjointness; endpoint strips; inherited `lem:v45-two-strip-local` | Fixed widths before collision count; no limit interchange |
-| Atomic-to-collar comparison | 142, `prop:v66-atomic-collar-comparison` | Positive angular loss; preceding profile | Inequality proved; atomic concentration conditional on unproved angular loss |
+| Statement | Source | Scope |
+|---|---|---|
+| Homogeneous angular disagreement bound | `lem:v67-homogeneous-threshold`, module 143 | Finite physical margin list; offsets protected by an explicit radius |
+| Relative exact-label angular stability | `thm:v67-relative-angular`, module 143 | Original nonlinear physical masks on the stated saturated disk |
+| Ordered zero-width physical trace concentration | `thm:v67-stratified-trace`, module 144 | Every fixed finite-jet stratum; constant independent of cutoff, not uniform convergence in cutoff |
+| Ordered original-source caustic essential height | `cor:v67-collar-height`, module 144 | Seam-centered collars on the same stratum; no averaging over labels |
+| Positive angular exhaustion inequality | `prop:v67-angular-exhaustion`, module 145 | Full seam-chart loss bounded by good-stratum loss and physical weighted tail |
+| Conditional moment criterion | `cor:v67-angular-moment`, module 145 | Implication only; no Lorentz moment estimate or unconditional rate asserted |
 
-The finite-width trace Q, the zero-width physical trace B and the full reversible trace T are different measures. The new theorem controls Q. Neither B nor T concentration is marked proved. The exact positive outside source is retained.
+## Distinct measures
 
-All inherited theorem-status flags remain unchanged. In particular complete incidence height, complete clearance height, unrestricted pointwise LLT, same-roof pointwise bridges and forward essential likelihood remain unproved. An inherited result used as a dependency is not independently recertified by the present source or finite checks.
+`Q` is a finite-width average of the actual source; `B` has physical coefficients `J_z theta`; `T` has full reversible coefficients `J_z`. Only `B^K`, not unrestricted `B` or `T`, receives the new unconditional zero-width concentration bound. The proof does not multiply individual coefficient bounds by a word count.
+
+## Unchanged outstanding estimates
+
+The weighted tail `E(K)` has not been shown to vanish uniformly after the collision limit. The complete first-incidence height and the positive complementary clearance height remain unproved. Zero-angular-fraction labels have no atomic loss but can carry nonlinear physical source and are explicitly retained in the complement. Non-seam centers, selected grazing, failed incidence taper, noncritical rank components and annuli are also retained.
+
+The unrestricted two-sided arithmetic density law, unrestricted same-roof bridges, forward essential likelihood, and unrestricted roof-conditioned path theorem are not promoted to established results. Every inherited proof-status flag is preserved. Native compilation and finite checks do not certify continuum claims.

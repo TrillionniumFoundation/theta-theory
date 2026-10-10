@@ -1,9 +1,11 @@
-# A2-DYN — revision 66
+# A2-DYN, revision 67
 
-Qian Qi, **Collision records, arithmetic, and raw local inversion in a triangular Lorentz gas**.
+Qian Qi, *Collision records, arithmetic, and raw local inversion in a triangular Lorentz gas*.
 
-Active manuscript: `main.tex`. Compile the complete article with `bash build.sh`. The two new leading theorems concern count-uniform selected-contact charts and the ordered physical collar trace. New proofs are in core modules 140–142. All 139 earlier modules remain byte-identical and compiled. The old abstract and introduction are compiled in `appendices/v65_frontmatter.tex` and the old main file is archived in provenance.
+Read `main.tex` for the complete revised manuscript and `JOURNAL_ROUTE.md` for its short proof spine. The controlling report is the revision-66 external report at `31eae1cab4ac138d0d9c892cb76c63286cb73307`; the reviewed author SHA is `e96761c0b12dbc46c187f4aeb4ee8d537863dec5`.
 
-Read `RESPONSE_TO_REFEREE.md` for the response to the v65 report, `JOURNAL_ROUTE.md` for the short proof route, `PROOF_LEDGER.md` for dependencies, and `SOURCE_MANIFEST.json` for theorem scopes. The original Lorentz pointwise target is unchanged. Complete incidence/clearance heights and full reversible atomic concentration are not proved by this revision.
+The new argument proves relative angular stability from primitive physical margins, zero-width physical trace concentration on every explicit finite-jet stratum, and an ordered essential-height bound for the corresponding original-source caustic collars. It uses positive absorption, not a concentration theorem for the larger reversible trace. The physical weighted tail needed to exhaust the strata is isolated explicitly. Its tightness, the complete incidence height and the positive complementary clearance height are not claimed as proved.
 
-Branches: `revision/a2-dyn-v66-referee-response-2026-10-10` and `revision/a2-dyn-v66-referee-copy-2026-10-10`. They are to carry the same final source SHA. The branch-specific workflow records actual build/fixture results; it is not independent mathematical review or a proof certificate.
+All 142 inherited core modules, 194 inherited Python files, six inherited appendix files and the bibliography are byte-identical. The old leading material is compiled in `appendices/v66_frontmatter.tex`; the complete old main and replaced metadata are also archived under `provenance/v66-*`. No historical manuscript or report is changed.
+
+Build with `bash papers/A2-DYN-v67-referee-response/build.sh` from the repository root. The branch-specific workflow records its exact source SHA and renders the new theorem pages. These checks qualify source preservation, finite diagnostics and typesetting; they are not a continuum proof certificate, an independent human review or journal acceptance.

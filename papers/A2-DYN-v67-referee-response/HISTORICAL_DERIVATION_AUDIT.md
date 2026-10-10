@@ -1,15 +1,21 @@
-# Historical derivation audit for revision 66
+# Historical derivation audit for revision 67
 
-Baseline author: `04f38424177533db60dfd13c3052381dc0adb481`; complete paper tree `897816d34b3d012fb93feaf532dcf64740723d83`. Controlling report: v65, commit `8f5b4dd2b2b12b7454b3ebdfa0e41546ba7f6908`.
+## Frozen inputs
 
-The reviewed full source was obtained from successful v65 response qualification run `38044059239`, artifact `11667496012`; its archived paper subtree was checked against the remote Git tree. The v65 report itself was read from the review commit, not inferred from this older artifact.
+Reviewed author: `e96761c0b12dbc46c187f4aeb4ee8d537863dec5`.
+Complete revision-66 paper tree: `fdf737e94888a540c05d86c458d77b500895e713`.
+Controlling review: `31eae1cab4ac138d0d9c892cb76c63286cb73307`, report blob `e3e06c75e0b6a73b613c944223423c0dc03b3854`.
 
-The substantive comparison used modules 94 (endpoint injectivity/curvature), 96 (fully protected physical collars), 97 (two-strip local law and protected-cluster concentration), 131 (inverse-incidence determinant), 137 (reversible weight), 138 (simple seam profile), and 139 (affine exact-label profiles). Modules 135–136 and the report's explanation of their fixed-width failure remain part of the route comparison.
+The exact-SHA revision-66 Actions artifact supplied the complete ordinary source, not an inferred reconstruction from snippets. The latest review was read through its recommendation, all technical sections, nine required mathematical changes, thirty detailed comments and final assessment.
 
-The old protected-collar theorem already gives uniform full physical neighborhoods when incidence, clearance and section margins are protected. Revision 66 does not present that result as new. It instead normalizes the contact inverse, proves count-uniform selected-contact continuation using incidence protection alone, and allows all clearance/section tests to vary as exact physical masks. The coordinates continue off the physical source; the source never does.
+## Mathematical materials used
 
-The old affine theorem already keeps offsets and exact labels with no label-count factor. Revision 66 does not claim a new uniformly evaluated affine geometry. It keeps the nonlinear angular sets and proves a relative density bound around them. Their concentration is a separate remaining quantity.
+The response checks the interface between the positive raw-error identity (108), the positive coarea criterion (128), finite-count incidence geometry (131), the reversible determinant coefficient (137), the exact-label affine margin description (139), tapered contact continuation (140), nonlinear physical angular source and saturated guard (141), and finite-width collar trace (142). These sources determine both the new argument and its unproved boundary. Older finite-count exponential localization budgets are retained, not substituted into a fixed-width long-count limit.
 
-The old protected-cluster theorem already compares positive collars to two endpoint strips. Revision 66 constructs a different, finite-width physical trace on chart pieces whose labels may vary, proves its ordered bound, and isolates the difference from the zero-width observable trace. It does not identify either with the full reversible atomic sum.
+The critical distinction is between the complete finite physical margin list and the selected contact equations alone. The new budget includes the radius on which the former list is valid, all near-inactive offsets, active curvature-to-gradient ratios and the physical angular fraction. No unverified uniform bound on that budget is extracted from the count-uniform contact jets.
 
-Preservation is checked mechanically: all inherited cores, Python files, appendices, bibliography and old mathematical labels; overwritten active metadata are archived in provenance. Historical author/report paths are not changed. No independent human audit was obtained.
+## Preservation
+
+All 142 inherited core modules, all 194 inherited Python files, all six inherited appendix files and the entire bibliography are byte-identical. Every previously compiled input and mathematical label remains compiled. The old abstract and introduction are reproduced verbatim in `appendices/v66_frontmatter.tex`; the full old main and each replaced metadata file are archived under `provenance/v66-*`.
+
+This is an audit of the cited proof dependencies and source preservation. It is not an independent re-proof of every inherited continuum claim or a specialist human audit.

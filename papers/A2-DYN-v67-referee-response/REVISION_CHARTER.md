@@ -1,7 +1,9 @@
-# Revision 66 charter
+# Revision charter
 
-Respond to the v65 report on the original A2-DYN Lorentz record. Preserve the title, exact source, arithmetic modulation, pointwise objective, all historical theorem statements and every positive source remainder. No replacement topic, no no-go claim, no unsupported closure.
+Date: 10 October 2026. Revision: 67.
 
-The revision may separate selected-contact coordinate continuation from the physical source, but may never assign probability to a point failing physical tests. The finite-width and zero-width traces must remain distinct. The reconstruction band and physical widths are fixed before the collision limit. New formal proof claims must be supported by displayed arguments, not by finite checks or successful CI.
+The repository, paper, author, original circular Lorentz family, actual-return record, exact section, arithmetic kernel and unrestricted pointwise objective are unchanged. The controlling review is the A2-DYN revision-66 report, not a General Theta Foundations report.
 
-Keep every inherited core, script and appendix unchanged; archive replaced active metadata and retain the old introduction in the compiled manuscript. Publish on two new revision branches at one final SHA, without modifying earlier author/review branches or unrelated paper paths.
+The revision starts from the frozen review commit `31eae1cab4ac138d0d9c892cb76c63286cb73307`. A source-preserving remote checkpoint was committed as `bc7ee926738df71c09abdf81f01a50d55c3fe451` before completing the new argument. Work is confined to the new paper directory, its new index and qualification workflow. Existing manuscripts, reports, branches and unrelated papers are not rewritten.
+
+The response develops the missing angular passage on explicit geometric strata and its original-source essential-height consequence. It does not replace the paper by a framework, another model, a negative result or a lower journal target. New statements must say exactly which hypotheses and limits have been proved. Unproved global estimates remain visible rather than being renamed as assumptions already verified.
