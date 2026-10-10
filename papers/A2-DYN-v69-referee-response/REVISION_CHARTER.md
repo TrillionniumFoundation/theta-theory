@@ -1,0 +1,3 @@
+# Revision-68 charter
+
+Respond to the frozen revision-67 external report, keeping the circular Lorentz source, original section, exact half-word labels, finite arithmetic kernel and unrestricted pointwise target. Add complete arguments on nonlinear angular births, their relative radial persistence and a positive order-free annular height comparison. Preserve every inherited core, script, appendix and bibliography byte. Compile the old front matter verbatim in a historical appendix. Keep complete positive-source complements and all unproved endpoint flags explicit. Do not substitute a new topic, a generic framework, a mass estimate, or fixed-count exhaustion for the original theorem.
