@@ -3,7 +3,7 @@
 **Manuscript:** Qian Qi, *Collision records, arithmetic, and raw local inversion in a triangular Lorentz gas*  
 **Reviewed author branches:** `revision/a2-dyn-v73-referee-response-2026-10-11`, `revision/a2-dyn-v73-referee-copy-2026-10-11`  
 **Reviewed commit:** `39575228f055862103edbebdd984bd6764fa0ad9`  
-**Reviewed repository tree:** `73fba91196dffb2714685a55706545124aea3ba0`  
+**Reviewed repository tree:** `73fba4f71220b8582b21bdabf06a80920adbadaa`  
 **Active manuscript directory:** `papers/A2-DYN-v73-referee-response`  
 **Active mathematical source:** one hundred sixty-three numbered core modules; revision 73 adds modules 160--163  
 **Frozen revision-72 author baseline:** `295800b658aa2ff3aada1707d5785ff757d60724`  
@@ -23,9 +23,9 @@ Revision 73 is a genuine theorem-bearing revision and a meaningful response to t
 1. prove that the literal, unremoved, exact-label physical source has a well-defined finite distributional current at each collision count; and
 2. prove a collision-uniform quantitative cancellation estimate strong enough to pass from finite-band or averaged control to the actual pointwise endpoint.
 
-Revision 73 closes the first obligation. Its new threshold-mixture argument establishes that, for every fixed collision count, the complete original roof density belongs to `BV(R)`, uniformly in the radius, guard scale and attainable exact labels at that fixed count. The corresponding canonical derivative is therefore a genuine finite signed measure, with legitimate Jordan parts. This is not a theorem about a geometrically removed source, a selected word, an inserted finite-band measure, or an auxiliary allocated source. It is a theorem about the complete original physical source.
+Revision 73 closes the first obligation. Its threshold-mixture argument establishes that, for every fixed collision count, the complete original roof density belongs to `BV(R)`, uniformly in the radius, guard scale and attainable exact labels at that fixed count. The canonical derivative is therefore a genuine finite signed measure with legitimate Jordan parts. This is a theorem about the complete original physical source, not a removed source, selected word, inserted finite-band measure, or auxiliary allocated source.
 
-The revision also gives a useful structural sharpening of the second obligation. It proves an elementary but consequential two-sided averaging inequality which bounds the pointwise excess above a reserve-two local average by the minimum of an incoming positive current and an outgoing negative current near the same roof. It then defines the resulting collision-normalized paired-flux quantity and shows that a power bound for that quantity would close the scalar endpoint. Finally it proves that, within the inherited positive path-remainder theorem, the ordered scalar endpoint error and the bounded-Lipschitz path-numerator error are exactly equal. Thus no second independent numerator estimate is needed once the scalar endpoint is closed.
+The revision also sharpens the second obligation. It proves a two-sided averaging inequality which bounds the pointwise excess above a reserve-two local average by the minimum of an incoming positive current and an outgoing negative current near the same roof. It then defines the corresponding collision-normalized paired-flux quantity and shows that a power estimate for that quantity would close the scalar endpoint. Finally, within the inherited positive path-remainder theorem, it proves equality of the ordered scalar endpoint error and the bounded-Lipschitz path-numerator error.
 
 I audited the new modules
 
@@ -34,29 +34,29 @@ I audited the new modules
 - `core/162_paired_flux_capacity_bound.tex`;
 - `core/163_scalar_path_error_equivalence.tex`;
 
-as well as the new front matter, response, proof ledger and source manifest. I found no decisive counterexample to the fixed-count `BV` theorem, no misuse of positivity in the signed threshold superposition, no sign error in the two-sided Jordan-mass inequality, and no hidden claim that finite variation alone gives the required endpoint decay.
+as well as the revised front matter, response, proof ledger and source manifest. I found no decisive counterexample to the fixed-count `BV` theorem, no misuse of positivity in the signed threshold superposition, no sign error in the two-sided Jordan-mass inequality, and no hidden claim that finite variation alone supplies endpoint decay.
 
-The manuscript is commendably explicit about the remaining gap. The fixed-count bound has uncontrolled growth in the collision count. In particular its height factor is exponential and the number of o-minimal monotonicity cells has no stated growth estimate. More importantly, the manuscript does **not** prove the collision-uniform paired-flux decay
+The manuscript is explicit about the remaining gap. The fixed-count bound has uncontrolled growth in the collision count. Its height factor is exponential and the o-minimal monotonicity number has no stated growth estimate. More importantly, the manuscript does not prove the collision-uniform paired-flux estimate
 
 ```text
 P_epsilon(delta) <= A epsilon^{-q} delta^beta
 ```
 
-or any alternative estimate implying that the normalized paired flux vanishes in the required order of limits. This is precisely the estimate which would convert the already proved averaged/inserted control into the actual pointwise density theorem.
+or any alternative estimate making the normalized paired flux vanish in the required order of limits.
 
-Consequently the principal endpoint remains conditional. Revision 73 does not prove the unrestricted raw actual-return local limit theorem, the pointwise roof-density local theorem, the original positive endpoint denominator, the same-roof point-conditioned path theorem, or the forward essential-likelihood conclusion. It proves that all of these reduce to a sharper scalar cancellation problem on a now legitimate finite current.
+That missing estimate is precisely what would convert the already proved averaged and inserted control into the actual pointwise density theorem. Consequently revision 73 does not prove the unrestricted raw actual-return local limit theorem, the pointwise roof-density theorem, the positive endpoint denominator, the same-roof point-conditioned path theorem, or the forward essential-likelihood conclusion.
 
-At the requested benchmark, proving that the last obstruction is well-defined and identifying its correct two-sided form is important progress, but it is not a substitute for proving its decay. The central theorem advertised by the long-running raw-inversion programme remains open.
+At the requested benchmark, proving that the final obstruction is a well-defined finite current and identifying its correct paired form is important progress. It is not a substitute for proving the obstruction small.
 
-## 2. Frozen source, chronology and qualification
+## 2. Frozen source and qualification
 
 Both reviewed author branches resolve to
 
 `39575228f055862103edbebdd984bd6764fa0ad9`.
 
-The repository tree at that commit is
+The Git tree at that commit is
 
-`73fba91196dffb2714685a55706545124aea3ba0`.
+`73fba4f71220b8582b21bdabf06a80920adbadaa`.
 
 The active source directory is
 
@@ -66,336 +66,245 @@ The source manifest identifies revision 72 at
 
 `295800b658aa2ff3aada1707d5785ff757d60724`
 
-as the exact author baseline and the revision-72 external report at
+as the frozen author baseline and the revision-72 report at
 
 `fad5823b36f2c68595c6b17bebf62c70032d30a9`
 
-as the controlling review. Every one of the 159 inherited core modules is retained byte-for-byte, as are the inherited Python sources, appendix and bibliography. Revision 73 adds exactly the four modules listed above.
+as the controlling review. All 159 inherited core modules are retained byte-for-byte, together with the inherited Python sources, appendices and bibliography. Revision 73 adds exactly the four modules listed above.
 
-The source manifest changes one inherited mathematical status in substance: existence of the complete full-source finite-measure current is now proved. It correctly leaves false the flags for collision-uniform current variation, paired-flux decay, the full raw return LLT, the pointwise roof-density LLT, unrestricted same-roof path conditioning, forward essential-likelihood convergence, independent human review and formal proof certification.
+The source manifest correctly changes one central inherited status: existence of the complete full-source finite-measure current is now proved. It leaves false the flags for collision-uniform current variation, paired-flux decay, the full raw return LLT, the pointwise roof-density LLT, unrestricted same-roof path conditioning, forward essential-likelihood convergence, independent human review and formal proof certification.
 
 The exact-source qualification runs completed successfully on both reviewed branches:
 
 - response branch run `38079689357`;
 - referee-copy branch run `38079695588`.
 
-These runs establish source identity, preservation of the frozen baseline, agreement of finite fixtures under ordinary and optimized execution, native TeX compilation, recorder coverage and rendered-page consistency. They do not certify the continuum threshold decomposition, constructible integration, uniform o-minimal cell count, coarea interfaces, Jordan-flux concentration, or the inherited spectral/path chain.
+These runs establish source identity, preservation of the frozen baseline, finite-fixture consistency, native TeX compilation and rendered-page checks. They do not certify constructible integration, o-minimal cell decomposition, coarea interfaces, Jordan-flux concentration or the inherited spectral/path chain.
 
-The present review branch starts directly from the reviewed author commit and adds only this report under
+The present review branch starts at the reviewed author commit and adds this report only under
 
 `reviews/a2-dyn-v73-external-top4-review-2026-10-11/`.
 
-No manuscript source, author branch, prior report, workflow or unrelated repository path is intentionally modified.
-
 ## 3. Scope of this review
 
-The article now contains 163 core modules and an extensive inherited proof pipeline. I have not attempted to re-certify every historical theorem. The substantive audit concerns:
+The manuscript now contains 163 core modules and an extensive inherited pipeline. I have not attempted to re-certify every historical theorem. The substantive audit concerns:
 
 1. the common disintegration kernel and interface ledger in module 160;
 2. the threshold-mixture representation and fixed-count `BV` proof in module 161;
-3. the paired directed-flux inequality and its use in the endpoint budget in module 162;
+3. the paired directed-flux inequality and endpoint budget in module 162;
 4. the scalar/path error comparison in module 163;
-5. the relation of these results to the precise blockers in the revision-72 report;
-6. the claims and nonclaims in the new abstract, leading theorem, response, proof ledger and source manifest; and
-7. exact-source qualification and version identity.
+5. the relationship between these results and the revision-72 blockers; and
+6. source identity and qualification evidence.
 
-The inherited density height bound, coarea current, finite-band insertion, positive remainder estimate, path-remainder theorem, cylinder inversion, tightness, arithmetic coefficients and collision-to-return clock transfer are treated as the source-pinned baseline claimed by the packet. This review does not convert that baseline into independent proof certification.
+The inherited density-height bound, coarea current, finite-band insertion, positive remainder estimate, path-remainder theorem, cylinder inversion, arithmetic coefficients and collision-to-return transfer are treated as the source-pinned baseline claimed by the packet. This report does not independently certify them.
 
-## 4. What revision 72 required
+## 4. Common roof versions
 
-The revision-72 report accepted substantial finite-band and positive-source infrastructure but identified a basic mismatch between the object controlled and the object appearing in the desired endpoint theorem.
+Module 160 fixes the exact event, roof and original source measure, then disintegrates that source over the roof variable to obtain one positive finite kernel `D_t`. Every specified physical weight is evaluated on this same kernel.
 
-The manuscript had meaningful bounds for selected regular pieces, inserted sources, averaged roofs and positive remainders. It had also written a canonical distributional current for the complete source. It had not, however, proved that this complete current was a finite signed measure, and hence it had not justified taking its Jordan parts or applying total-variation arguments to it.
+This is a useful correction. Pointwise source decompositions and path inequalities can otherwise be written using unrelated almost-everywhere versions. The manuscript restricts to a finite or countable family of identities before fixing the exceptional set and therefore avoids an uncountable union of null sets.
 
-Even if finite variation were supplied, a second issue remained. An upper bound on total variation, or on the sum of all directed boundary masses, can charge an isolated physical entrance or exit atom even when a neighboring positive average already pays for the density height. Such a bound can therefore be too crude to prove the actual endpoint. The report requested a mechanism which distinguished an isolated edge from a genuinely narrow positive excursion.
+For path-valued kernels it fixes a countable bounded-Lipschitz norming class. Across the radius parameter it takes `sup_R esssup_t`, rather than assuming one null roof set works for every radius.
 
-Revision 73 addresses these two points in the correct order:
+The allocation formula is also source-preserving. Its coefficient is a Borel function of the physical roof and original densities, and the replacement is performed by multiplying actual source weights on the unchanged trajectory space. No new conditioning event or transport map is introduced.
 
-1. it first proves finite variation for the literal full source at each fixed collision count;
-2. it then defines a paired incoming/outgoing flux on the Jordan parts of that full current; and
-3. it states, without claiming proof, the collision-uniform power estimate which would close the endpoint.
+I found this common-version construction coherent.
 
-This is a mathematically honest response. The remaining issue is no longer whether the relevant current exists. It is whether its oppositely directed masses can concentrate at the same microscopic roof with the required normalized rate.
+## 5. The interface ledger
 
-## 5. Common roof versions and source identities
+Module 160 also records how patchwise coarea currents are combined before Jordan decomposition.
 
-Module 160 begins by fixing the exact event, the physical roof and the original source measure. It disintegrates that source over the roof variable and obtains a single positive kernel
+Artificial chart interfaces cancel when the physical roof and source agree on both sides. True source jumps, itinerary boundaries, exact-label boundaries and physical endpoints remain. For a compactly supported window the derivative includes both endpoint atoms:
 
 ```text
-D_t
+D(f 1_(a,b)) = (Df)|_(a,b) + f(a+) delta_a - f(b-) delta_b.
 ```
 
-such that every specified physical weight is evaluated on the same conditional source. This is a useful technical clarification. Pointwise source decompositions, domination by bounded marks and path pushforwards can otherwise be written using unrelated almost-everywhere versions, after which pointwise inequalities need not hold on a common set.
+The text correctly refuses to infer total-variation convergence of arbitrary patch exhaustions from distributional convergence alone. The ledger identifies the canonical current later proved finite in module 161; it does not itself assume that finiteness.
 
-The construction is standard and appropriate. The collision source is standard Borel; its roof marginal already has a density; disintegration therefore gives a probability kernel on almost every fiber. Multiplying by the marginal density gives the finite kernel used in the text. Restricting to a finite or countable family of source identities avoids the invalid operation of taking an uncountable union of exceptional null sets.
+## 6. Exact threshold representation
 
-The same point is handled correctly for path-valued kernels. A countable bounded-Lipschitz norming class is fixed before the common exceptional set is chosen. Across the radius parameter the manuscript takes
+The principal new device in module 161 is an exact threshold superposition of the smooth product guard. With `sigma=d Theta`, each cutoff is represented by threshold indicators, giving
 
 ```text
-sup_R esssup_t
+1-H^epsilon = integral W_y d sigma^{tensor N}(y).
 ```
 
-rather than pretending that a single Lebesgue-null roof set works simultaneously for an uncountable parameter family.
+For each threshold vector, `W_y` is nonnegative and indicator-valued. Its roof density `b_y` is a positive restriction of the exact-label source. The original smooth-guard density is recovered by integration against the finite signed product measure.
 
-The allocation formula involving the original regular and residual weights is also source-preserving. The coefficient is a Borel function of the physical roof and the original densities. The resulting two densities are obtained by multiplying the actual source weights on the unchanged trajectory space. No new conditioning event, transport map or path coupling is introduced.
+This use of a signed threshold measure is legitimate. Positivity is invoked only for each threshold source before the signed superposition. The total variation of the product measure is paid explicitly at the final variation estimate.
 
-I found this common-version ledger coherent. It should remain in the final manuscript because several later scalar and path comparisons depend on literal pointwise order relations rather than merely equality of equivalence classes.
+The argument does not require the fixed cutoff to be monotone. If it is nonmonotone, the factor `V_Theta^(2m+1)` remains visible. Finite signed Fubini is available because every threshold weight is bounded by one and the physical source is finite.
 
-## 6. The interface ledger
+I found no normalization or sign error in this representation.
 
-The second part of module 160 records how patchwise coarea currents are to be combined before taking Jordan decompositions.
+## 7. Height of threshold sources
 
-This is the correct order. If two local charts describe the same physical source and the same roof on opposite sides of an artificial interface, their oriented normal fluxes cancel. A true jump of the source, an actual itinerary boundary, an exact-label boundary, or a physical endpoint is retained. A compactly supported window contributes both endpoint atoms in addition to its interior derivative.
-
-The one-dimensional identity
-
-```text
-D(f 1_(a,b)) = (Df)|_(a,b) + f(a+) delta_a - f(b-) delta_b
-```
-
-is correctly used to prevent the historical error of counting one endpoint but not the other. The text also correctly refuses to infer total-variation convergence of arbitrary patch exhaustions merely from distributional convergence of the full current.
-
-This interface ledger does not itself prove finite variation. Its role is to identify the canonical distributional derivative which module 161 later proves to be a finite measure. The separation of these tasks is sound.
-
-## 7. Exact threshold representation of the smooth guard
-
-The main new idea of module 161 is to avoid differentiating the full smooth guard word by word. Let the complete physical guard be a product of fixed smooth cutoff factors and let
-
-```text
-sigma = d Theta.
-```
-
-The manuscript writes each cutoff exactly as a threshold superposition and obtains
-
-```text
-1 - H^epsilon = integral W_y d sigma^{tensor N}(y).
-```
-
-For each threshold vector `y`, the source weight `W_y` is an indicator-valued union and is therefore nonnegative. Its pushforward roof density `b_y` is a positive restriction of the exact-label source. The original smooth-guard density is recovered by integration against the finite signed product measure.
-
-This use of a signed threshold measure is legitimate. The proof does not multiply a signed weight by an order inequality. Positivity is used only for each threshold source before the signed superposition is taken. At the final variation estimate the total variation of the product measure is paid explicitly.
-
-The manuscript does not require the fixed cutoff to be monotone. If it is monotone the threshold measure is positive and has total variation one; otherwise its total variation appears as
-
-```text
-V_Theta^(2m+1).
-```
-
-This factor is potentially large, but it is not hidden.
-
-Finite signed Fubini is available because every threshold weight is bounded by one and the physical source is finite. The common kernel from module 160 supplies compatible Radon--Nikodym versions. I found no normalization error in this representation.
-
-## 8. Uniform height of each threshold source
-
-Each `b_y` is dominated by the complete exact-label density. The inherited finite-count height theorem therefore gives
+Each `b_y` is dominated by the complete exact-label density. The inherited finite-count height theorem yields
 
 ```text
 0 <= b_y <= L_m,
 L_m = C A^m / c_*.
 ```
 
-This is the correct type of input for the later monotonicity argument. It is a height bound for every positive threshold restriction, not a variation estimate for a symbolic word.
+This is a height estimate for every positive threshold restriction, not a variation estimate for a symbolic word. Its exponential dependence on the collision count is explicit and later becomes one reason the fixed-count theorem is insufficient for the asymptotic endpoint.
 
-The exponential dependence on the collision count is fully visible. Revision 73 does not claim that `L_m` is harmless when the relevant collision count tends to infinity. This point is decisive when interpreting the final theorem.
+## 8. Constructible integration and monotonicity
 
-## 9. Constructible integration and o-minimal monotonicity
+The delicate step is the assertion that, for each fixed collision count, every threshold density has a representative with a uniformly finite number of monotonicity intervals over all continuous parameters and attainable exact labels.
 
-The most delicate part of the fixed-count `BV` proof is the assertion that every threshold density has a representative with a uniformly finite number of monotonicity intervals, for a fixed collision count and uniformly in the continuous parameters.
-
-The manuscript works on the finite collision graph of length `m`. Uniform finite horizon gives a finite candidate alphabet. In rational angular charts, collision, reflection, first-hit, positive-incidence, section, exact-label and threshold conditions are described by finite semialgebraic or globally subanalytic data. The cumulative distribution
+The manuscript works on the finite physical collision graph. Uniform finite horizon gives a finite candidate alphabet. In rational angular charts, collision, reflection, first-hit, positive-incidence, section, exact-label and threshold conditions are encoded by finite semialgebraic or globally subanalytic data. The cumulative distribution
 
 ```text
-M(R, epsilon, y, t)
- = integral W_y 1_{L <= t} d mu
+M(R,epsilon,y,t)
+ = integral W_y 1_{L<=t} d mu
 ```
 
-is then placed in the constructible class by a parameterized integration theorem. Constructible functions are definable in `R_an,exp`. The already proved height bound makes every roof section of `M` Lipschitz. Defining the finite derivative by a first-order formula therefore gives a definable representative `g`, equal almost everywhere to `b_y`.
+is placed in the constructible class by parameterized integration. Constructible functions are definable in `R_an,exp`. The height bound makes each roof section Lipschitz. Defining its finite derivative by quantified inequalities gives a definable representative equal almost everywhere to `b_y`.
 
-For one-variable definable functions, the o-minimal monotonicity theorem gives a finite partition into intervals on which the function is continuous and monotone or constant, together with point cells. Uniform cell decomposition makes the number of cells independent of the continuous parameters appearing in the fixed formula. Taking a maximum over the finitely many exact labels and chart unions gives `J_m`.
+O-minimal cell decomposition and one-variable monotonicity then give a finite number `J_m` of monotonicity intervals and point cells for the fixed formula at collision count `m`. The number is uniform in the continuous parameters and finite exact-label set at that count. No growth bound in `m` is claimed.
 
-At the level of the written argument, this is plausible and internally coherent. In particular, the text does not claim that the derivative of a constructible function is constructible; definability is enough. It also does not continue a collision branch through a singularity or replace the first-hit inequalities by a merely algebraic collision equation.
+At the level of the written proof this is plausible and internally coherent. It remains a major target for independent verification. A specialist should check:
 
-This step remains a major target for specialist verification. An independent audit should check:
+- the exact globally subanalytic description of the physical first-hit graph;
+- disjointness or multiplicity control of the projection to initial coordinates;
+- inclusion of the section normalization and chart Jacobian in the integration theorem;
+- uniformity of the definable family in all displayed parameters;
+- identification of the definable derivative with the physical density on common versions; and
+- the absence of hidden branch families outside the fixed formula.
 
-- that the chosen auxiliary graph is globally subanalytic on every bounded chart after all first-hit and exact-label conditions are imposed;
-- that the projection to the two initial collision coordinates is single-valued on the physical graph or is decomposed into genuinely disjoint physical pieces;
-- that the integration theorem is applied to the exact density, including the section normalization and rational angular Jacobian;
-- that every parameter entering the claimed uniform cell count occurs in one fixed definable family for the chosen collision count;
-- that the passage from the Lipschitz cumulative distribution to the definable derivative representative preserves the claimed common height bound; and
-- that no label or branch family whose complexity grows outside the fixed formula has been silently included.
+I found no concrete contradiction in these points.
 
-I did not find a concrete contradiction in these points. The concern is verification burden, not an identified counterexample.
+## 9. Fixed-count full-source BV
 
-## 10. The fixed-count full-source `BV` theorem
-
-Once the monotonicity lemma is accepted, the variation estimate follows cleanly. A monotone interval with values in `[0,L_m]` has variation at most `L_m`; the finitely many traces and point cells cost another fixed multiple. Thus
+Given the monotonicity lemma, every threshold density has variation bounded by a fixed multiple of `(J_m+1)L_m`. Signed Fubini against the total variation of the threshold product measure gives
 
 ```text
-||D b_y||_TV <= 4 (J_m+1) L_m.
-```
-
-Signed Fubini against the total variation of the threshold product measure gives
-
-```text
-||D b||_TV
+||Db||_TV
  <= 4 (J_m+1) L_m V_Theta^(2m+1)
- =: C_m.
+ = C_m.
 ```
 
-The distributional characterization of `BV` then identifies the canonical current with a finite signed measure. Compact support gives total mass zero.
+The distributional characterization of `BV` identifies the canonical current with a finite signed measure. Compact support gives total mass zero.
 
-This is the principal unconditional theorem of revision 73. It closes a real logical gap. The Jordan parts used in the next module now exist for the complete original source, not merely for finite patch currents or selected regular pieces.
+This is the main unconditional theorem of revision 73. It closes a real logical gap: the Jordan parts used later now exist for the complete original source.
 
-The scope must nevertheless be stated exactly:
+Its scope is exact and limited:
 
 - the collision count is fixed;
-- the constant `C_m` has no controlled growth as `m` tends to infinity;
+- `C_m` has uncontrolled growth;
 - `L_m` is exponential;
 - `J_m` has no quantitative bound;
-- arbitrary bounded marked sources are not asserted to be `BV`;
-- allocated subsources are not asserted to be `BV`; and
-- total-variation convergence of patchwise currents is not asserted.
+- arbitrary bounded marked or allocated sources are not asserted `BV`; and
+- patch currents are not asserted to converge in total variation.
 
-The manuscript states all of these limitations. They prevent the theorem from being used, by itself, in the asymptotic collision regime of the desired endpoint.
+The manuscript states these limitations correctly.
 
-## 11. Why ordinary total variation is too crude
+## 10. Why total variation is not enough
 
-The revision correctly explains why an estimate on
+A total-variation estimate can charge an isolated physical entrance or exit atom even when the neighboring positive average already accounts for the density height. It can therefore be too crude for the actual pointwise endpoint.
 
-```text
-|D b|((t-delta,t+delta))
-```
+The endpoint error only requires control of a value which exceeds a reserve of two times a symmetric local average. Such an excess requires both a rise on the left and a fall on the right within the same neighborhood. This motivates pairing incoming positive and outgoing negative current rather than summing all directed current masses.
 
-can be structurally wasteful. For an interval pulse, the incoming and outgoing boundary atoms are genuine physical jumps. A total-variation bound charges both even when the interval is wide enough that a one-sided local average already accounts for the height at every interior roof.
+This is a useful conceptual sharpening.
 
-The desired pointwise endpoint estimate only needs to control a density value which exceeds a reserve of two times a symmetric local average. Such an excess can occur only if the density rises on the left and falls on the right within the same microscopic neighborhood. This motivates pairing positive incoming and negative outgoing Jordan masses instead of summing all directed masses.
+## 11. The paired-flux inequality
 
-This is a useful conceptual correction to the previous budget.
-
-## 12. The two-sided averaging inequality
-
-For a nonnegative compactly supported `BV` function, module 162 defines left and right local averages and proves
+For a nonnegative compactly supported `BV` function, module 162 proves
 
 ```text
-[f(t) - 2 A_delta f(t)]_+
+[f(t)-2 A_delta f(t)]_+
  <= min{
       (Df)^+([t-delta,t]),
       (Df)^-([t,t+delta])
-    }.
+    }
 ```
 
-The proof is elementary and correct outside the countable jump set of the usual representative. The increment formula shows that `f(t)-L_delta f(t)` is bounded above by the incoming positive variation and that `f(t)-R_delta f(t)` is bounded above by the outgoing negative variation. Since the unused average is nonnegative, the excess above the sum of the two averages is bounded by either discrepancy. Taking the minimum gives the result.
+for almost every roof.
 
-The same bound for every reserve `K>=2` follows by monotonicity of the positive part. The essential-supremum formulation makes exclusion of the jump set harmless.
+The proof is correct. The increment formula bounds `f-L_delta f` by incoming positive variation and `f-R_delta f` by outgoing negative variation. Because the unused average is nonnegative, the excess above the sum of the two averages is bounded by either discrepancy. The same estimate for every reserve `K>=2` follows immediately.
 
-The estimate does not cancel a physical atom. It says that an isolated edge need not be paid twice by a height budget. A narrow positive excursion, whose rise and fall both lie in the same neighborhood, remains charged. This is the appropriate qualitative distinction.
+The inequality does not erase physical atoms. It avoids paying an isolated edge twice and still charges a narrow positive excursion whose rise and fall lie in the same microscopic neighborhood.
 
-## 13. The paired-flux quantity
+## 12. Collision-normalized paired flux
 
-Using the now legitimate Jordan parts of the full current, the manuscript defines
+The manuscript defines
 
 ```text
 P_epsilon(delta)
  = limsup_m sup_{R,n,k} esssup_t
    m^2 min{
-       (Db)^+([t-delta,t]),
-       (Db)^-([t,t+delta])
+      (Db)^+([t-delta,t]),
+      (Db)^-([t,t+delta])
    }.
 ```
 
-This is a nonnegative extended quantity. It may be infinite. The interval masses are measurable in the roof variable. The definition is taken after fixing the guard scale and averaging width, in the same order of limits used by the inherited endpoint budget.
+The quantity is nonnegative and may be infinite. Its definition becomes legitimate only after module 161 proves that the full current has finite Jordan parts for every fixed count.
 
-The theorem proves
+The theorem gives
 
 ```text
 U_{epsilon,delta}(K)
  <= P_epsilon(delta)
- <= (1/2) V_epsilon(delta).
+ <= (1/2) V_epsilon(delta)
 ```
 
-The left inequality is the two-sided averaging lemma. The right inequality is the elementary bound `min(x,y)<=(x+y)/2`.
-
-Combining this with the inherited fixed-width averaged-height estimate gives
+and, after combining it with the inherited averaged-height estimate,
 
 ```text
 E_M
  <= C_M B^(-1/192)
-    + P_{epsilon(B)}(delta(B)),
+    + P_{epsilon(B)}(delta(B)).
 ```
 
-with all choices made before the collision limit. No collision-dependent spectral band is inserted.
+All widths and bands are fixed before the collision limit. No count-dependent spectral band is used.
 
-This reduction is useful, but it does not estimate the paired flux.
+This is a clean reduction. It is not a decay theorem.
 
-## 14. The decisive missing estimate
+## 13. The decisive missing estimate
 
-The manuscript states the sufficient premise
+The sufficient premise is
 
 ```text
 P_epsilon(delta)
  <= A epsilon^(-q) delta^beta
 ```
 
-for some fixed `q>=0` and `beta>0`. Choosing `delta` as a power of `epsilon` would then force the scalar endpoint error to zero.
+for fixed `q>=0` and `beta>0`. Choosing `delta` as a power of `epsilon` would then close the scalar endpoint.
 
 No such estimate is proved.
 
-The fixed-count `BV` theorem cannot supply it. Its constant depends uncontrollably on the collision count, whereas `P_epsilon(delta)` contains a collision limsup after multiplication by `m^2`. Even a collision-uniform total-variation bound would not automatically give the desired positive power of `delta`; a finite measure can concentrate arbitrarily near one roof. The paired estimate requires geometric or dynamical information about how incoming and outgoing physical flux can coexist near the same exact roof and labels.
+The fixed-count `BV` theorem cannot imply it. Its constant has uncontrolled collision-count growth, while the paired quantity contains a collision limsup after multiplication by `m^2`. Moreover, even a collision-uniform total-variation bound would not automatically imply a positive power of `delta`; finite measures can concentrate on arbitrarily small intervals.
 
-The remaining problem is therefore genuinely quantitative. It is not a bookkeeping consequence of the existence of Jordan parts.
+The remaining problem is therefore genuinely quantitative: control of simultaneous incoming and outgoing physical flux near the same exact roof and labels.
 
-The author packet is transparent on this point. The source manifest leaves both collision-uniform variation and paired-flux decay false. The new leading theorem is conditional at precisely this premise. I agree with that boundary.
+This is the decisive reason for the negative recommendation.
 
-## 15. What kind of argument is still needed
+## 14. Scalar and path errors
 
-A future revision must prove a collision-uniform concentration estimate for the actual full-source current. Several routes might be possible, but each would require new mathematics beyond the present fixed-count finiteness theorem. For example, one could seek:
-
-1. a quantitative o-minimal complexity and transversality theorem giving explicit control of `J_m`, the roof derivative and the frequency of paired turns at scale `delta`;
-2. a cancellation or nonconcentration theorem for incoming/outgoing coarea fluxes on the same exact-label fiber;
-3. a transfer-operator estimate for a signed two-sided current observable which is stronger than the existing density height bound;
-4. a geometric exclusion of narrow positive excursions at the normalized central scale; or
-5. a direct pointwise inversion which bypasses paired flux while still retaining the literal full source.
-
-Merely improving the fixed-count constant from one unspecified finite number to another will not suffice. The estimate must survive `m->infinity` in the exact order used by the target theorem.
-
-## 16. Scalar and path-valued endpoint errors
-
-Module 163 uses the inherited positive path-remainder theorem on the common disintegration kernel. Let `P` be the normalized scalar roof density, let the path-valued numerator be `mathbf P`, and let `G W_R` be the Gaussian reference measure. For each fixed finite band, the difference is decomposed into a positive path remainder and a small signed error.
-
-The constant test one and positivity give the pointwise comparison
+Module 163 uses the inherited positive path-remainder theorem on the common kernel. Positivity and the constant test one give
 
 ```text
 |P-G|
- <= ||mathbf P - G W_R||_{BL*}
+ <= ||mathbf P-G W_R||_{BL*}
  <= |P-G| + 2 e_B.
 ```
 
-The inherited theorem makes the collision-limsup of `e_B` tend to zero after the fixed-band collision limit and the subsequent band enlargement. Hence the ordered scalar and path errors are equal.
+The inherited theorem makes the collision-limsup of `e_B` vanish after the fixed-band collision limit and subsequent band enlargement. Hence the ordered scalar and bounded-Lipschitz path-numerator errors are equal.
 
-This is a useful theorem. It shows that the path numerator does not require a separate vanishing-height argument after the scalar endpoint has been established. The conclusion is in the bounded-Lipschitz dual norm, not total variation on path space.
+This result is useful: a separate path-numerator height estimate is unnecessary once the scalar endpoint is proved. The result is in bounded-Lipschitz dual norm, not total variation on path space.
 
-It is equally important that the equality does not prove either error to be zero. Revision 73 states this correctly. The scalar endpoint remains the governing obstruction.
+It does not prove either error zero. The scalar endpoint remains the governing obstruction.
 
-## 17. Positive arithmetic classes and normalization
+## 15. Normalization and positive classes
 
-On central targets where the Gaussian reference has a positive uniform floor, vanishing of the scalar error would imply:
+On central targets with a positive Gaussian floor, scalar endpoint convergence would imply density-ratio convergence, bounded-Lipschitz convergence of the point-conditioned path law and forward essential-likelihood convergence on normalized roof windows.
 
-- convergence of the scalar density ratio;
-- bounded-Lipschitz convergence of the point-conditioned path law;
-- convergence of the inverse ratio; and
-- forward essential-likelihood convergence on normalized roof windows.
+The manuscript does not assign ratios or conditional laws to zero arithmetic classes. It keeps the unnormalized comparison there and normalizes only on positive reference classes. This distinction is correct.
 
-The manuscript does not assign conditional laws or ratios to zero arithmetic classes. It keeps the unnormalized comparison valid there and normalizes only on positive reference classes.
+## 16. Relation to the raw-return theorem
 
-This distinction is correct. It should remain explicit in any later statement of the endpoint theorem.
-
-## 18. Relation to the full raw-return theorem
-
-Revision 73 advances the collision-roof endpoint pipeline, but it does not complete the full raw actual-return theorem.
-
-The unproved scalar endpoint still sits before the final normalization and collision-to-return path transfer. Moreover, the article's historical raw-return programme contains its own exact-label, return-clock and pointwise roof requirements. The new fixed-count `BV` theorem and paired-flux reduction do not by themselves prove all of those downstream statements.
-
-The source manifest correctly leaves false:
+Revision 73 advances the endpoint pipeline but does not complete the raw actual-return theorem. The source manifest correctly leaves false:
 
 - `full_raw_return_LLT_proved`;
 - `pointwise_roof_density_LLT_proved`;
@@ -404,75 +313,67 @@ The source manifest correctly leaves false:
 - `lorentz_collision_uniform_current_variation_proved`; and
 - `lorentz_paired_flux_decay_proved`.
 
-A top-four assessment must be based on the actual theorem-bearing endpoint, not on the number of intermediate modules. That endpoint remains conditional.
+The number of intermediate modules cannot substitute for the theorem-bearing endpoint. That endpoint remains conditional.
 
-## 19. Significance at the requested benchmark
+## 17. Significance at the requested benchmark
 
-There is real mathematical value in the new threshold-mixture and paired-flux ideas.
+The threshold-mixture and paired-flux ideas have mathematical value. The first converts a smooth product guard into positive semialgebraic threshold sources without changing the physical orbit. The second identifies a sharper endpoint obstruction than total variation. The scalar/path equality removes duplicated downstream work.
 
-The threshold representation converts a smooth product guard into positive semialgebraic threshold sources without changing the physical orbit. The constructible-integration step then gives fixed-count finite variation for a source whose direct symbolic differentiation would be unmanageable. The paired flux identifies a sharper object than total variation for recovering pointwise height from positive local averages. The scalar/path equality removes a duplicated downstream obstruction.
+In the present manuscript, however, the fixed-count theorem is tied to a specific triangular Lorentz source and a large inherited graph, height and exact-label pipeline. The hard collision-uniform Lorentz estimate remains open.
 
-These ideas may be reusable beyond this exact manuscript. In their present form, however, they are not yet stated as a general theorem with independent applications. The fixed-count argument is embedded in a very specific triangular Lorentz source and depends on an extensive inherited graph, height and exact-label pipeline. The paired-flux theorem is an abstract `BV` inequality, while the hard Lorentz estimate for its normalized size remains open.
-
-At *Annals*, *Acta*, *Inventiones* or *JAMS* level, the manuscript would need one of the following:
+At *Annals*, *Acta*, *Inventiones* or *JAMS* level, the work would need at least one of the following:
 
 - completion of the actual pointwise raw-return theorem;
-- a general quantitative theorem controlling paired physical flux for a broad class of singular hyperbolic systems, with multiple nontrivial applications; or
+- a general quantitative paired-flux theorem for a broad class of singular hyperbolic systems with independent applications; or
 - another theorem of comparable scope which no longer depends on the unresolved endpoint.
 
-Revision 73 has not yet reached any of these thresholds.
+Revision 73 does not yet meet that standard.
 
-## 20. Architecture and exposition
+## 18. Architecture and metadata
 
-The author packet is unusually careful about provenance and nonclaims. The new abstract and lead theorem clearly distinguish fixed-count finite variation, the paired-flux criterion and the remaining conditional endpoint. The proof ledger lists the exact new statements and false claims.
+The packet is careful about provenance and nonclaims. The new lead theorems distinguish fixed-count finite variation, the paired-flux criterion and the conditional endpoint.
 
-The article is nevertheless approximately five hundred pages and carries a long sequence of historical intermediate constructions. For external mathematical evaluation, this creates a serious burden: the four new modules depend on height, coarea, positive-remainder, finite-band and path theorems spread across the archive.
+The article is nevertheless approximately five hundred pages and depends on a long historical chain. A future submission should insert a compact dependency theorem immediately before modules 160--163, listing only the inherited hypotheses needed by the new proof. Historical material can remain in provenance or a companion archive.
 
-A future submission should provide a compact dependency theorem immediately before the new proof, with exact hypotheses and outputs sufficient to read modules 160--163 without reconstructing the entire revision history. This is not a request to delete the historical mathematics. It is a request to separate the theorem-bearing proof from provenance and exploratory ledgers.
+Some active-path status and validation files still describe revision 72. The new `SOURCE_MANIFEST.json` declares itself authoritative, but files named `PUBLICATION_STATUS.json`, `VALIDATION.md` or `JOURNAL_ROUTE.md` should not carry stale revision identities in the active revision-73 directory. They should be updated or moved under `provenance/`.
 
-There is also a metadata issue. The active directory retains some status and validation documents whose headings or content still describe revision 72. The new `SOURCE_MANIFEST.json` correctly declares itself authoritative, but active-path files named `PUBLICATION_STATUS.json`, `VALIDATION.md` or `JOURNAL_ROUTE.md` should not present stale revision identities. They should be updated for revision 73 or moved under `provenance/`. A top-level reader should not have to infer which status file is current.
+## 19. Independent verification boundary
 
-## 21. Independent verification boundary
+No independent human specialist audit is claimed. The highest-priority checks are:
 
-No independent human specialist audit is claimed, and none has been obtained in this review.
+1. the physical first-hit graph and threshold family;
+2. applicability of parameterized constructible integration;
+3. the uniform o-minimal monotonicity partition;
+4. identification of the derivative representative with the roof density;
+5. the inherited complete-density height bound for every threshold source;
+6. source-interface cancellations and endpoint atoms;
+7. the averaged-height and positive-remainder estimates used in module 162;
+8. the collision-normalized order of limits in paired flux; and
+9. the inherited path-remainder theorem used in module 163.
 
-The highest-priority checks are:
+Source hashes, finite fixtures and native compilation do not certify these continuum statements.
 
-1. the exact physical graph and first-hit semialgebraic description used in the threshold family;
-2. applicability of the cited parameterized constructible-integration theorem to the full density and event;
-3. the uniform o-minimal cell decomposition with the roof coordinate last;
-4. the identification of the definable derivative with the physical roof density on common versions;
-5. the inherited complete-density height bound for every positive threshold restriction;
-6. the source-interface cancellations and endpoint atoms in the canonical current;
-7. the inherited averaged-height and positive-remainder estimates used in module 162;
-8. the collision-normalized order of limits in the definition of paired flux; and
-9. the inherited path-remainder theorem used to deduce scalar/path equality.
+## 20. Required changes before another top-four review
 
-The qualification scripts and finite fixtures can detect algebraic, sign, source-identity and typesetting regressions. They cannot establish these continuum statements.
+1. **Prove collision-uniform paired-flux decay.** Establish the stated power estimate or another bound sufficient to make `P_{epsilon(B)}(delta(B))` vanish in the required order of limits.
+2. **Close the actual scalar endpoint unconditionally.** Prove the pointwise density theorem for the literal full source and exact labels.
+3. **Propagate only after scalar closure.** Then normalize positive classes and invoke scalar/path equality and the inherited clock transfer.
+4. **Give quantitative collision-count dependence where used.** Fixed-count existence constants do not suffice for `m->infinity`.
+5. **Obtain independent specialist audits.** The threshold/o-minimal proof and the coarea/paired-flux chain require expert review.
+6. **Consolidate metadata.** Active status, validation, route, manifest and branch identities should all describe revision 73.
+7. **Provide a compact dependency layer.** Separate theorem-bearing inputs from the historical archive.
+8. **Preserve the present claim boundary.** Do not replace paired-flux decay by total mass, finite variation, patch variation or finite-band insertion.
 
-## 22. Required changes before another top-four review
+## 21. Final assessment
 
-A further top-four submission should address the following items.
+Revision 73 proves, for the first time in the current pipeline, that the complete original exact-label roof current is a finite signed measure at every fixed collision count. It does so through an exact threshold superposition and an o-minimal monotonicity argument, without deleting singular pieces or replacing the original source. It also identifies paired incoming/outgoing flux as the sharper obstruction and proves equality of scalar and path endpoint errors.
 
-1. **Prove collision-uniform paired-flux decay.** Establish the stated power estimate, or another bound sufficient to make `P_{epsilon(B)}(delta(B))` vanish in the required order of limits.
-2. **Close the actual scalar endpoint unconditionally.** State and prove the pointwise density theorem for the literal full source, including every exact label and arithmetic class in its proper unnormalized form.
-3. **Propagate only after the scalar theorem is proved.** Then normalize positive classes and invoke the scalar/path equality and the inherited clock transfer to state the actual conditional path theorem.
-4. **Give quantitative dependence on collision count where used.** Fixed-count existence constants are not enough for an asymptotic theorem with `m->infinity`.
-5. **Obtain independent specialist audits.** At minimum, experts in dispersing billiards/coarea geometry and o-minimal integration should verify modules 160--162, while an expert in the inherited spectral/path chain should verify the input to module 163.
-6. **Consolidate current metadata.** Active status, validation, route, source manifest, branch names and theorem claims should all identify revision 73 and the same commit.
-7. **Provide a compact dependency layer.** Isolate the precise inherited hypotheses needed by the new proof from the historical archive.
-8. **Preserve the present claim boundary.** Do not replace paired-flux decay by total mass, finite variation, patchwise variation, a finite-band insertion, or a fixed-count constant.
+I found no decisive error in the four new modules within the scope audited here. Subject to specialist verification, the fixed-count `BV` theorem is credible and closes one of the two principal revision-72 gaps.
 
-## 23. Final assessment
+The second and decisive gap remains. No collision-uniform decay estimate for the paired physical flux is proved. Therefore the actual pointwise scalar endpoint, its denominator, same-roof conditioned path theorem, forward likelihood and full raw actual-return LLT remain conditional.
 
-Revision 73 makes a genuine advance. It proves, for the first time in the current pipeline, that the complete original exact-label roof current is a finite signed measure at every fixed collision count. It does so by an exact threshold superposition of positive physical sources and an o-minimal monotonicity argument, rather than by deleting singular pieces or differentiating a proliferating symbolic partition. It also identifies paired incoming/outgoing flux as the correct sharper obstruction and proves that the scalar and path endpoint errors coincide.
-
-I found no decisive error in the four new modules on the scope audited here. Subject to specialist verification, the fixed-count `BV` theorem is credible and should be regarded as closing one of the two principal revision-72 gaps.
-
-The second and decisive gap remains. No collision-uniform decay estimate for the paired physical flux is proved. Therefore the actual pointwise scalar endpoint, its denominator, the same-roof conditioned path theorem, the forward likelihood and the full raw actual-return LLT remain conditional.
-
-This is not a minor technical remainder. It is the quantitative statement which distinguishes the actual full-source endpoint from the inserted, averaged and finite-count objects already controlled.
+This is not a minor remainder. It is the quantitative statement distinguishing the actual full-source endpoint from the inserted, averaged and fixed-count objects already controlled.
 
 **Final recommendation: reject in the present form at the requested four-journal benchmark.**
 
-The work may already contain publishable components after independent audit and substantial reorganization, notably the fixed-count full-source `BV` theorem and the abstract paired-flux reduction. A positive top-four recommendation, however, requires closure of the collision-uniform paired-flux problem or a comparably broad theorem which makes that endpoint no longer central.
+The fixed-count full-source `BV` theorem and abstract paired-flux reduction may already be publishable components after independent audit and substantial reorganization. A positive top-four recommendation requires closure of the collision-uniform paired-flux problem or a comparably broad theorem which makes that endpoint no longer central.
