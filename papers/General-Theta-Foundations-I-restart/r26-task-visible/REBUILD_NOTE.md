@@ -1,0 +1,7 @@
+# Build and reproduction contract
+
+`python verify.py` checks the ordinary source manifest, Git-blob hashes, TeX input closure, labels, bibliography use and control bytes. `python native_build.py` runs the finite suite normally and with `python -O`, requires identical JSON, then builds the native PDF twice in isolated directories, three passes each. It checks actual recorder inputs, unresolved citations and overfull boxes and requires within-environment byte-identical PDF output.
+
+`python build.py` adds the entire unchanged R25 build chain, exports R25 as Companion D, and preserves its nine older companions. Its ordinary-source projection is immutable. Historical nested regression counts are not summed as if independent. A hosted ordinary source commit precedes any built PDF; the artifact commit is its direct child and changes only new R26 artifact/evidence paths. The source transport, if used, is expanded to ordinary inspectable UTF-8 sources before that source commit and is not substituted for manuscript source.
+
+The independent rebuild uses the **downloaded remote artifact**, not the local authoring tree, verifies every input byte stays unchanged, and repeats the native/full build in the available second environment. Engine versions, raw PDF bytes, normalized text, page counts and rendered pages are reported separately. Cross-version raw PDF inequality is not hidden. The final read-only evidence commit must not change any ordinary source or built PDF.

@@ -1,0 +1,9 @@
+# History and preservation coverage
+
+The latest live referee-ready source found was R9, not the R7 artifact shown earlier in this conversation. The latest located external report still reviews R7. The present revision reads that complete report, the four controlling documents, relevant R4–R9 derivations, the retained quotient/continuation/serial/rank/singular/acquisition/filter/morphism proof chains, and the existing response, scope and provenance ledgers. The R9 hosted ordinary-source packet supplies the exact predecessor sources.
+
+The new ordinary article retains all active R9 mathematical inputs except for replacement of the introductory exposition and addition to the literature comparison; the substantive definitions and proofs in the introductory section are retained. Two new mathematical sections are added. No R4–R9 original subtree is altered. The full retained technical text is still built as integral Supplement S. Earlier realization and frozen archive refs are not changed.
+
+Fresh inspection is not claimed to cover every line of v1–v96, every old referee report, or every independent realization manuscript. Prior provenance records describe their own earlier coverage; they are not converted into fresh certification here. The original general-foundations outline and restart controls, rather than a realization theorem, govern the revision. Preservation is checked by Git object identities, not by a claim of rereading all archives.
+
+The independent lines for ordered measurement geometry/discrimination, finite input/physical actions, streaming memory/space, and causal resource-memory remain independent. Their existence and preservation do not turn their results into hypotheses of the new general theorem. Historical techniques are inherited only through the explicit proof dependency map.

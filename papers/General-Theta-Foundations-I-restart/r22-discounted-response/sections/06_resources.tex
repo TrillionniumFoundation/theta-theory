@@ -1,0 +1,42 @@
+\section{Causal simulation, numerical error and physical acquisitions}\label{sec:resources}
+Define $\TV(P,Q)=\sup_B|P(B)-Q(B)|$. A simulator is parameter independent, nonanticipative, and supplied with an action lift, report transformation, internal state, task readout and physical clock certificate. The comparison below includes the scored outcome, not just the marginal report law. At call $t$ a scored prefix means the actions and reports through $t$, the declared readout, and the one task audit executed there. It does not require a joint law of unperformed, possibly incompatible earlier audits. The run used to execute this audit then ends; the underlying continuing controller itself has no hidden audit clock.
+
+\begin{theorem}[Discount-weighted resource transfer]\label{thm:simulation}
+Suppose a source can simulate the first $t$ calls of a target for every common target controller, with total-variation error at most $\varepsilon_t$ in the corresponding scored prefix, at most $S$ persistent simulator states, and at most $C(t)$ source acquisitions. Assume the simulator can run continuously with these same state and action conventions. Then for the pulled-back target-call score,
+\begin{equation}\label{eq:sim}
+ V_{\mathrm{source},\beta}^{\Theta}(MS;C)
+ \le V_{\mathrm{target},\beta}^{\Theta}(M)
+       +(1-\beta)\sum_{t\ge1}\beta^{t-1}\min(1,\varepsilon_t).
+\end{equation}
+The notation on the left specifies source acquisitions indexed by virtual target calls. It is not a claim that source physical-time discount equals target-call discount. A reverse lower comparison requires a reverse typed simulator.
+
+If the $t$th conditional simulation error is at most $e_t$, an admissible prefix allowance is
+\[\min\{1,\sum_{r\le t}e_r\}.\]
+Uniform error $e$ therefore contributes at most $\min(1,e/(1-\beta))$. Composing simulators multiplies their persistent-state bounds, composes acquisition bounds, and adds their certified prefix deficiencies before discount weighting.
+\end{theorem}
+\begin{proof}
+The source executes the product of the target state and the simulator state; the action lift and report transformation use neither $\theta$ nor future reports. The target readout is issued at the certified completion of each virtual call. For a score in $[0,1]$, the difference of expected scores at call $t$ is at most the scored-prefix total variation. Discount summation gives \eqref{eq:sim} for each fixed target controller and model. Take the model supremum and then an infimum over target controllers; no minimax exchange is used. Coupling until the first conditional mismatch gives the prefix sum. The identity $(1-\beta)\sum_{t\ge1}t\beta^{t-1}=1/(1-\beta)$ gives the uniform bound. The serial simulator has the product state; the triangle inequality and contraction under postprocessing add deficiencies. Clock and acquisition claims follow only from the supplied completion certificates.
+\end{proof}
+
+Exactly the same proof treats numerical report classification. If, under the ideal deployed law, the probability of the first classification mismatch at call $r$ is at most $\chi_r$, its discounted risk allowance is at most
+$(1-\beta)\sum_t\beta^{t-1}\min(1,\sum_{r\le t}\chi_r)$.
+Uniform output loss error adds its loss modulus. A model misspecification of radius $\delta$ adds the appropriate controller-uniform modulus, such as \eqref{eq:holder}, not automatically $\delta^2$. In the exact-deadline setting a small error alone would not preserve legality; this is why the interface boundary is explicit here.
+
+\begin{proposition}[Sharp discounted amplification by actual erasure]\label{prop:erasure}
+At each call let a fresh fair bit be the scored target. The ideal experiment reports it. In a second experiment an irreversible hidden failure occurs independently with probability $e$ at each still-operating call, before the report. Before failure the bit is reported; from failure onward the report is an erasure symbol. Scores are not feedback. For squared prediction, a three-state continuing controller attains
+\begin{equation}\label{eq:eraseexact}
+ V_{\beta,\mathrm{erase}}(3)=\frac{e}{4(1-\beta+\beta e)},
+ \qquad V_{\beta,\mathrm{ideal}}(2)=0.
+\end{equation}
+The scored-prefix total variation under the identity report comparison is exactly $1-(1-e)^t$. The displayed risk is a lower bound even for an unrestricted-history observer, hence remains exact for any larger finite budget.
+\end{proposition}
+\begin{proof}
+The first erasure event is visible. Its probability by call $t$ is $1-(1-e)^t$. On its complement the full scored prefix is the ideal one, and on the event its report prefix is disjoint from the ideal support; this proves the exact total variation. Conditional on erasure the fresh bit remains fair and independent of all observations, giving unavoidable squared risk $1/4$. Otherwise prediction is exact. States with readouts $0,1,1/2$, overwritten by each report, attain these conditional optima. Summing $[1-(1-e)^t]/4$ with the discount weights gives \eqref{eq:eraseexact}. The one-step raw kernels can be defined to agree on the already-failed state and differ by $e$ on an operating state, so the conditional perturbation bound is genuine. This is an attained channel error, not an allowed tolerance promoted to a lower bound.
+\end{proof}
+
+There is an operational interpretation of the discount which also fixes acquisition accounting. An independent external selector $\tau$ with
+$\PP(\tau=t)=(1-\beta)\beta^{t-1}$ gives
+$J_{\theta,\beta}=\E\ell(d_{I_\tau},Z_\tau)$ and
+$\E\tau=1/(1-\beta)$ actual calls. The selector is external experimental machinery; its randomness and timing are not a free internal controller. Under a pathwise simulator certificate the expected source calls are at most
+$(1-\beta)\sum_t\beta^{t-1}C(t)$.
+A deterministic truncation at $N$ has omitted probability $\beta^N$, but it is a different stopping interface. The prefix bound in Theorem~\ref{thm:main} truncates the score in analysis and leaves the implementing table unchanged. An infinite continuing execution has infinitely many raw acquisitions and physical calls; it is not described as a hard-$N$ experiment. Finite physical-time conclusions require the stated per-call or $C(t)$ time bounds.
