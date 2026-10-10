@@ -1,5 +1,7 @@
-# Referee status — revision 68
+# Referee status: revision 69
 
-The new source responds to the revision-67 report at `d3321f707ba556bd25bb586178eed89038133cc8`. Three new mathematical modules prove analytic angular-germ classification, relative radial persistence, and an all-finite-order annular essential-height theorem on fixed strata. The new opening and full point-by-point response identify those results and retain the original unrestricted Lorentz endpoint.
+This is an author revision for further referee assessment against the requested Annals / Acta / Inventiones / JAMS standard. It is not an editorial decision or a representation of journal acceptance.
 
-The physical angular-condition tail and the complete incidence and complementary clearance heights remain unproved. No external acceptance, commissioned journal assessment, formal proof certificate or independent human specialist review is claimed. This packet is provided for another substantive referee examination of the new arguments and their inherited inputs. Qualification evidence concerns exact source, finite diagnostics and typesetting only; consult the actual run receipts for each ref.
+The controlling report is the v68 report at `7fd1ca003cebd920e3f5a1f7af136e4c86cadcf4`. The revision adds substantive original-source proofs for zero-center guards and finite-scale chart strata while preserving the original pointwise endpoint. The response explicitly distinguishes these new results from the remaining ordered tail, incidence and exterior-source obligations.
+
+No independent human specialist audit has been obtained. The inherited margin-completeness, selected-contact continuation, source-disjointness and anisotropic/arithmetic inputs remain explicit audit targets. Successful source/TeX checks do not certify those continuum assertions.

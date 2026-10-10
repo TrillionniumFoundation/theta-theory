@@ -1,15 +1,14 @@
-# Revision-68 proof ledger
+# Revision 69 proof ledger
 
-The original unrestricted pointwise arithmetic return-density problem is unchanged.
+| Result | Location | Exact scope |
+|---|---|---|
+| Unguarded physical comparison trace | 149, theorem `thm:v69-comparison-collar` | Original physical itineraries and exact labels; multiplier removed only for positive upper comparison; fixed positive collar width |
+| Absolute guard comparison | 149, lemma `lem:v69-positive-comparison` | All center values, including zero; original Lipschitz guard |
+| Zero-center/all-order height | 150, theorem `thm:v69-absolute-guard-height` | Angular-only persistence strata; all finite birth orders; zero-center bound proportional to epsilon^-1 H^(3/2) |
+| Whole fixed radial interval | 151, theorem `thm:v69-finite-scale-height` | Exact physical angular-ratio strata, including beyond the germ disk |
+| Weighted radial-tail transfer | 151, proposition `prop:v69-radial-tail-transfer` | Conditional on the displayed physical collar moment being finite |
+| Complete source identity | 151, equation `eq:v69-complete-positive-partition` | Four disjoint positive clearance restrictions, complete incidence separate |
 
-| Result | Location | Proved scope |
-| --- | --- | --- |
-| Analytic primitive margins | `lem:v68-analytic-margins` | Fixed original selected circular word; positive selected incidences; complete finite sign list |
-| Analytic ordering of angular roots | `lem:v68-root-order` | Coincident germs permitted; verified one-sided radius; no uniform root separation |
-| Zero or finite-order exact angular germ | `thm:v68-angular-germ-classification` | Every original exact label at a fixed word; zero tangent fraction included |
-| Relative radial source profile | `thm:v68-relative-radial-profile` | Nonzero angular germ, positive actual center guard, fixed persistence stratum |
-| Order-independent positive annular comparison | `prop:v68-annular-comparison` | Original source on `H<u<2H` controls `0<u<H`; all finite orders simultaneously |
-| Ordered original-source collar height | `thm:v68-all-order-height` | `6CH F_chi,K(H)`; fixed parameters before collision limsup |
-| Full positive-source budget | `eq:v68-canonical-endpoint-budget` | Exact reduction with complete incidence and positive complementary clearance heights retained |
+Not proved here: the ordered angular-persistence tail, the old angular-condition tail, finiteness of the new ordered radial moment, complete exterior clearance height, complete incidence height, or the unrestricted pointwise endpoint and same-roof consequences. Fixed-count geometric finiteness is not entered as a proof of any of these.
 
-The original angular-condition tail, persistence exhaustion, complete incidence and clearance heights, unrestricted pointwise LLT, unrestricted same-roof consequences, and independent human review are not proved by the new modules. `SOURCE_MANIFEST.json` preserves every inherited proof-status value. The source-preserving historical appendices describe their own stages, not a stronger present endpoint.
+All inherited theorem-status entries retain their baseline values through the explicit manifest snapshot. Qualification tests source identity and finite diagnostics; it does not adjudicate continuum correctness.

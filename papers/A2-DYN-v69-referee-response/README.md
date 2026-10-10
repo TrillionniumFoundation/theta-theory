@@ -1,13 +1,13 @@
-# A2-DYN — revision 68
+# A2-DYN revision 69
 
-Qian Qi, *Collision records, arithmetic, and raw local inversion in a triangular Lorentz gas*.
+Canonical complete manuscript: `main.tex`. This revision responds to the revision-68 external report at `7fd1ca003cebd920e3f5a1f7af136e4c86cadcf4`, not an earlier report. The source-pinned author baseline is `c8268a608a971c6832bcfed2a827af951e84c577`.
 
-The active complete manuscript is `main.tex`. This revision responds to the revision-67 external report at `d3321f707ba556bd25bb586178eed89038133cc8`, without changing the Lorentz table, exact return record, arithmetic factor, or unrestricted pointwise target.
+The mathematical topic and title remain **Collision records, arithmetic, and raw local inversion in a triangular Lorentz gas**. The unrestricted pointwise arithmetic target, exact actual-return labels, finite arithmetic kernel and zero classes remain unchanged.
 
-The new proof route is `core/146_analytic_angular_germs.tex`, `core/147_relative_radial_persistence.tex`, and `core/148_annular_height_and_full_source.tex`. Analytic angular germs include nonlinear sectors with zero tangent fraction. A positive outer-annulus comparison gives original-source ordered essential height on fixed persistence strata, uniformly over every finite birth order. Positive-center-guard non-seam centers are included. This is not a proof of the physical angular-condition tail or the complete incidence and complementary clearance heights.
+The new proof is in modules 149--151. It establishes an unguarded but physically exact comparison trace; absolute guard control including zero-center and infinitely flat guards on angular strata; and finite-scale radial comparison beyond a germ disk. Zero-center inner-collar height gains an additional square root of the roof width. The radial-tail moment implication is proved, not its missing Lorentz moment hypothesis.
 
-All 145 inherited core modules, 197 Python files, seven appendices, and the bibliography are byte-identical. All inherited compiled inputs and mathematical labels remain. The preceding abstract and introduction are compiled verbatim in `appendices/v67_frontmatter.tex`; the complete old main and replaced metadata are archived in `provenance/v67-*`.
+Read `RESPONSE_TO_REFEREE.md` for every requested change, `JOURNAL_ROUTE.md` for the shortest proof route, and `SOURCE_MANIFEST.json` together with its inherited snapshot for the complete status. All 148 old core modules, every old Python file, all eight old appendices and references remain. The preceding opening statements are compiled in `appendices/v68_frontmatter.tex`.
 
-Run `bash build.sh` from this directory, with the frozen revision-67 directory present beside it. The workflow `.github/workflows/a2-dyn-v68-qualification.yml` checks both author refs independently at their actual SHA and uploads the complete PDF, exact source archive, native build logs, finite diagnostics, and theorem-page renderings. A branch name or a copied artifact is not a successful workflow run.
+Run `bash build.sh` in this directory from a complete repository checkout. Qualification builds the complete 151-module manuscript with native TeX, runs retained and new finite diagnostics in normal and optimized Python, and renders the new proof pages. The workflow artifact contains the PDF, exact-source archive and evidence bound to the actual checkout SHA.
 
-See `RESPONSE_TO_REFEREE.md` for the item-by-item mathematical response and `SOURCE_MANIFEST.json` for preserved theorem status. No independent human specialist review or formal proof certificate is claimed.
+The complete first-incidence height, the relevant ordered physical tails and exterior clearance height still need proof before the unrestricted pointwise theorem follows. Neither a successful build nor a finite diagnostic is a continuum or independent-human proof certificate.

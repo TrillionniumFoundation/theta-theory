@@ -1,5 +1,7 @@
-# Remote provenance
+# Revision 69 source checkpoint
 
-The revision branch starts from controlling review commit `d3321f707ba556bd25bb586178eed89038133cc8`. The first remote checkpoint is `b436acfb0d62aa7ba06d47ea98546cbd3888e407`. The complete reviewed paper tree `266c432351a184e230b7e4df4f970c9d9f87208c` was copied unchanged to the new revision directory in commit `d54ee3deddccadf192192c8651c3d23cac1bc0c0`, before adding the new mathematics. Both revision-68 refs were created at this checkpoint.
+The first remote checkpoint copied the complete v68 tree, and the next checkpoint landed modules 149--151. The complete revision now adds the new opening statements, retained v68 opening appendix, response matrix and exact-SHA qualification pipeline.
 
-The final source is identified by the branch commit, the complete paper tree and the ordinary payload tree in the manifest. Qualification receipts bind their PDF and checks to the actual checkout SHA and ref. A source checkpoint alone is not a successful build or a theorem certificate.
+The baseline paper tree is `dce4295d9d660f64e4d25bb0463045dddc546249`; the controlling report blob is `6c2501c22189fb04ee565d844003a589c6272f07`. The source manifest intentionally does not contain its own future commit SHA. Actual qualification records `git rev-parse HEAD` and the complete active paper tree in its evidence.
+
+No successful workflow run is pre-claimed in this checkpoint. The original `REVISION_69_CHECKPOINT.md` is retained as the initial provenance record.
