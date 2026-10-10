@@ -1,0 +1,142 @@
+\section{Two raw realizations}\label{sec:realizations}
+\subsection{Controlled queue excursions}
+A physical preparation places one job in a queue. At every service call the workload $W\ge1$ moves to $W+1$ with probability $p_\theta(a)$ and to $W-1$ otherwise, ending the excursion on hitting zero. Actions and finite noisy workload reports may depend on the retained observer state and past visible reports. The preparation call is charged and does not overwrite the observer label. Scores are bounded in $[0,1]$. Assume compact parameter sets, continuous raw report probabilities and action probabilities, and
+\begin{equation}\label{eq:queue-drift}
+ 0\le p_\theta(a)\le\bar p<1/2
+\end{equation}
+for every legal action. Finite report kernels can be arbitrary functions of workload subject to this finite-response continuity; they do not alter the killed workload drift.
+
+Fix a directed graph on the $m$ observer labels. Updates are allowed only along its reflexive reachability relation. On a first-service-call end, every designated graph edge has conditional update probability at least $\zeta>0$. The required row floors must be feasible: $k_i\zeta\le1$ for every row with $k_i$ required edges. These are a compact support-stable program architecture, not all possible queue controllers.
+
+\begin{theorem}[Unbounded physical queue realization]\label{thm:queue}
+The queue architecture above satisfies the continuous-response and uniform-return hypotheses of Theorem~\ref{thm:transfer}. It has a primitive, program-uniform group-inverse bound and therefore satisfies the task criterion for every bounded continuous scored task. Robust attainment, finite-model determination and the same-memory physical-call and discount bounds hold on this entire architecture. A certified approximation can truncate the physical workload using the explicit exponential tail below. No finite-dimensional filter or geometry of the full workload posterior is assumed.
+\end{theorem}
+\begin{proof}
+Choose $c=\frac12\log((1-\bar p)/\bar p)$ when $\bar p>0$; the case $\bar p=0$ has deterministic immediate service termination. With $V(w)=e^{cw}$, the killed transition satisfies, uniformly over history-adaptive actions,
+\[
+ \E[V(W_{n+1})\one_{\{W_{n+1}>0\}}\mid W_n=w,a]
+ \le\rho V(w),\qquad \rho=2\sqrt{\bar p(1-\bar p)}<1.
+\]
+Induction gives $\Pp(T_0>n)\le e^c\rho^n$ for the service hitting time from one. Adding the single preparation call preserves a common exponential return envelope, independent of entering label and controller. Finite-call workloads are bounded by the call count plus one, so only finitely many raw probabilities enter each response. Their continuity and Lemma~\ref{lem:response} give finite-response continuity.
+
+The first service call ends with probability at least $1-\bar p$. Consequently each designated edge of the boundary matrix has probability at least $a_*= (1-\bar p)\zeta$. The boundary graph has exactly the same terminal strongly connected components as the designated graph: it contains every designated edge, and added edges can only follow an already existing directed path. Put $L=\max(1,m-1)$. From any state there is a path of at most $L$ edges to one selected root in a reachable terminal component. In each block of $L$ boundary transitions, the probability of hitting the set of roots is at least $a_*^L$. Thus the maximal expected boundary count to that set is at most $H_*=L/a_*^L$.
+
+For completeness, a root-hitting bound gives $\norm{G_P}_\infty\le4H_*$. For a bounded reward $f$, center it by $b=f-\Pi_Pf$ and stop its sum at the selected root. Its expected absolute sum is at most $2H_*\norm f_\infty$. In a recurrent component the stationary centering makes the mean sum over a root-to-root return zero, so this stopped sum solves $(I-P)v=b$ also at the roots; transient states satisfy the equation by first-step conditioning. Subtracting $\Pi_Pv$ identifies $G_Pf$ and gives the factor four. Corollaries~\ref{cor:group} and~\ref{cor:robust} now apply. The bound is conservative and can be replaced by direct low-dimensional evaluation when available. Truncation errors are controlled by the common exponential return tail, not by discarding rare busy periods at zero cost.
+\end{proof}
+This realization verifies a genuinely unbounded physical experiment. It does not prove a full predictive-dimension law for the queue workload. A separate finite geometric task can be attached and analyzed by Theorem~\ref{thm:geometry}, but that task must not be mislabeled as the entire workload quotient. Nor does this architecture theorem claim an unrestricted solution of average-cost queue control.
+
+\subsection{A noncommuting rank-changing quantum instrument}
+Let the physical Hilbert space be $\mathbb C v\oplus\mathbb C^2$, with $v$ orthogonal to the qubit sector. Choose unit qubit vectors $\psi_+,\psi_-$ with real overlap $c_0\in(0,1)$. The unknown fixed parameter is $\theta\in[-1,1]$ and the preparation is
+\begin{equation}\label{eq:quantum-prep}
+ \rho_\theta=(1-t^k)|v\rangle\langle v|
+               +t^k|\psi_s\rangle\langle\psi_s|,
+ \qquad t=|\theta|,
+\end{equation}
+with $\rho_0=|v\rangle\langle v|$. Each preparation is a real physical call. The next call performs the fixed three-outcome instrument with effects
+\begin{equation}\label{eq:USD}
+ E_+=\frac{|\psi_-^\perp\rangle\langle\psi_-^\perp|}{1+c_0},\qquad
+ E_-=\frac{|\psi_+^\perp\rangle\langle\psi_+^\perp|}{1+c_0},\qquad
+ E_\bot=I-E_+-E_-.
+\end{equation}
+The first two effects vanish on the vacuum sector. One may use the Kraus maps $\sqrt{E_z}\rho\sqrt{E_z}$; the next preparation is fresh. The diagnostic decision and score are as in Section~\ref{sec:sharpness}, with the decision due before the instrument report. The physical phase is a visible protocol type, not an internal counter supplied to the observer.
+
+\begin{theorem}[Noncommuting singular realization]\label{thm:quantum}
+This raw instrument realizes the diagnostic theorem with $\lambda(t)=(1-c_0)t^k$. Its physical excursions have duration two, retain the observer label and satisfy the task-visible criterion through $\theta=0$, where the preparation rank and recurrent rank change. It has no uniform boundary group-inverse bound. The exact all-history diagnostic value per physical call at $N=2n$ is $D_n(\lambda)/2$, and the same two-label program attains it. The physical-time rate is $N^{-1/k}$. The construction uses noncommuting physical states and a classical finite observer; it is not a theorem about arbitrary quantum memory or arbitrary additional measurements.
+\end{theorem}
+\begin{proof}
+Write $\psi_\pm=\cos a\,e_0\pm\sin a\,e_1$, with $0<a<\pi/4$ and $c_0=\cos(2a)$. In the qubit sector $E_++E_-=\diag(\tan^2 a,1)\le I$, proving positivity and normalization. There is no false conclusive outcome, and the correct conclusive probability on $\psi_s$ is
+\[
+ \frac{1-c_0^2}{1+c_0}=1-c_0.
+\]
+The vacuum always produces $\bot$. Hence the complete visible kernel has exactly the claimed revelation probability. For $t>0$ the two state preparations corresponding to opposite signs do not commute: their qubit rank-one projections have overlap strictly between zero and one. For $0<t<1$ the preparation has rank two, at $t=0$ rank one, and at $t=1$ it is again rank one. These are actual state and support changes, not formal coordinate singularities.
+
+All raw matrix entries and scored responses are continuous at zero. The report alphabet is finite, the physical duration is exactly two, and the two-label gain is identically zero from both entering labels. Thus Theorem~\ref{thm:transfer} applies without a recurrence sublevel. The calculation in Theorem~\ref{thm:diagnostic}, with the constant factor $1-c_0$, gives both the minimax formula and the corrector rate. Every preparation and diagnostic measurement is charged, so $N=2n$ and the score per physical call is half the per-diagnostic score. Odd horizons differ by at most one bounded call. The standard unambiguous-discrimination mechanism~\cite{ClarkeCheflesBarnettRiis} is not claimed as new; it provides an explicit noncommuting primitive realization of the task-visible theorem.
+\end{proof}
+With $\cos a=\sqrt3/2$ and $\sin a=1/2$, all primitive coefficients are algebraic and Theorem~\ref{thm:algebraic} also applies. In contrast, Theorem~\ref{thm:schedule}'s common-support hypothesis fails at zero. This difference is intentional: task compatibility is the mechanism that passes the singular endpoint.
+
+\begin{corollary}[Raw verification of the acquisition modulus]\label{cor:raw-modulus}
+The controlled queue architecture of Theorem~\ref{thm:queue} satisfies Theorem~\ref{thm:modulus} for every bounded task with its conditional marked excursion property. With the graph certificate stated there, both $K_N$ and $B_N$ are $O(N^{-1})$, uniformly over the declared models and programs.
+
+In Theorem~\ref{thm:quantum}, replace the excited-sector preparation weight $t^k$ by any continuous $\lambda(t)$ as in Theorem~\ref{thm:profile}, and the wrong-sign audit amplitude $t$ by $a(t)$. The same fixed noncommuting effects have conclusive probability $c_*\lambda(t)$, where $c_*=1-c_0>0$. The physical excursion has duration two, the retained observer still has two labels, and
+\[
+ k_N(t)=a(t)\min\{1,(Nc_*\lambda(t))^{-1}\},\qquad B_N=1/N.
+\]
+At $N=2n$ calls its minimax risk per physical call is $D_n(a,c_*\lambda)/2$, attained against all legal histories at the same retained-state budget. This family verifies the general theorem through the rank change, with no imposed uniform bound on the exact task corrector.
+\end{corollary}
+\begin{proof}
+The queue proof supplies an action-uniform exponential tail for physical return and a graph-floor bound for the finite retained boundary group inverse. Thus $\sup\E\tau^2<\infty$ and $B_N\le\sup\E\tau^2/N$ using the common dominating lifetime. Its exact marked solution has uniformly bounded oscillation by Corollary~\ref{cor:group}, so $K_N\le C/N$. This argument starts from the service and report kernels and says nothing about an unproved finite dimension of the full workload posterior.
+
+For the quantum family, the matrices and effect computation in Theorem~\ref{thm:quantum} depend on the excited-sector weight only through a scalar multiplier. Substituting $\lambda(t)$ preserves positivity, normalization, no false conclusive report, and finite-response continuity. The common vacuum at zero has zero task amplitude. Noncommutation of the two excited preparations at $t>0$ and their rank changes are unchanged. Preparation and measurement are distinct charged calls, giving $T=2P$, $r=(0,a(t))^T$ and $g=0$. The same primal and dual vectors used in Theorem~\ref{thm:profile} prove the displayed $k_N$. The deterministic-duration tail is exactly $1/N$. The inconclusive-history lower proof uses the actual measurement report probability $c_*\lambda(t)$ and still applies when its maximum is less than one; only the erasure-deficiency endpoint argument of Theorem~\ref{thm:profile-joint} would then require $e$ in the attainable intensity range. No new quantum memory or unlisted instrument is available to the observer.
+\end{proof}
+
+\subsection{Full geometric verification with endogenous physical returns}
+The following raw subclass verifies the geometric hypotheses as well as the temporal ones. Its target is a declared task factor, not a claim that a workload or a quantum-state quotient has the same dimension as that factor.
+
+At each physical preparation draw a fresh $V\sim\rho$ on compact $K\subset\R^q$, independently of past observer information. The preparation call is charged and the mark is hidden. A second, unscored load call reveals $V$. At least one subsequent service call is compulsory. At every service call a fixed state readout $c\in\conv K$ is scored against $V$ \emph{before} the next service report; $V$ is not supplied again. The score is an environment-owned audit, not feedback. Service ends at a visible flag and the next preparation starts a new mark. Let $L\ge1$ be the number of service calls. Physical state, reports and end hazards may depend on $V$, on the model, on actions and on the entire allowed causal history. Assume, conditionally on every entering history, every $V=v$ and every allowed adaptive strategy,
+\begin{equation}\label{eq:load-mean}
+ \E[L\mid\text{entering history},V=v]\le L_*,\qquad L_*<\infty.
+\end{equation}
+The complete physical excursion has $\tau=2+L$, so put $\mu_*=2+L_*$. The condition includes unused observer rows. The mark is a current report only on the load call; any use on later calls must pass through retained state.
+
+\begin{theorem}[Finite-acquisition geometry under controlled returns]\label{thm:controlled-load}
+For the stated raw class and every retained observer, its actual expected scored occupation through $N$ physical calls satisfies the measure inequalities
+\begin{equation}\label{eq:load-occupation}
+ \left(\frac1{\mu_*}-\frac1N\right)_+\rho
+       \ \le\ \nu_N\ \le\ L_*\rho.
+\end{equation}
+For stationary finite-label observers the same bounds, with the lower coefficient $1/\mu_*$, hold for $\nu_\infty$. This limit uses the actual classwise duration weights when there are multiple boundary classes.
+
+Suppose $\rho$ is known, the legal class includes one fixed service action, and every observer has at most $M$ fixed service readouts. For every $N\ge2\mu_*$ and $M\ge1$ the robust optimal scored risk per physical call obeys
+\begin{equation}\label{eq:load-risk}
+ \frac{q_M(\rho)}{2\mu_*}
+ \le\inf_{|\gamma|\le M}\sup_\theta\calR_N^\theta(\gamma)
+ \le L_*q_M(\rho).
+\end{equation}
+A nearest-center load followed by an unchanged held center attains the upper with $M$ labels and a parameter-independent fixed service action. The conditional full-history baseline is zero. Global $M$-covers of $K$ and any actual small-ball witness for $\rho$ therefore give matching checkpoint and online geometric rates, including singular supports. No boundary recurrence constraint is imposed on competing observers.
+\end{theorem}
+\begin{proof}
+Let $S_k$ be the physical start of excursion $k$ and let $K_N$ count excursions starting before call $N$ is completed, including the crossing excursion. With the same endpoint convention as Lemma~\ref{lem:physical}, $K_N\le N$, $S_{K_N}\ge N$, and $\{k<K_N\}$ is known before the next fresh mark is prepared. Conditional expectation and~\eqref{eq:load-mean} give
+\[
+ N\le\E S_{K_N}
+   =\sum_{k<N}\E[\one_{\{k<K_N\}}\tau_k]
+   \le\mu_*\E K_N.
+\]
+For a Borel set $A$, count the first service mark in each started excursion. All except possibly the crossing excursion have occurred by time $N$. Freshness gives expected count $\rho(A)\E K_N$ for the prospective marks. The expected subtraction for the possibly unfinished mark is at most one, but that coarse estimate is not enough to prove measure domination. Instead only start times at most $N-3$ guarantee the first scored call. The corresponding count is $K_{N-2}$; every such mark is fresh and its first service is compulsory. Hence
+\begin{equation}\label{eq:load-first-count}
+ \nu_N(A)\ge\frac{\rho(A)}{N}\E K_{N-2}
+            \ge\frac{(N-2)_+}{\mu_*N}\rho(A).
+\end{equation}
+Since $\mu_*\ge3$, this implies the lower coefficient in~\eqref{eq:load-occupation}: $(N-2)/(\mu_*N)\ge1/\mu_*-1/N$. For $N\le2$ the stated positive part is zero. This argument does not discard a mark-dependent crossing event as though it were independent of $V$.
+
+For the upper, include complete service contributions from every started excursion. Conditioning before each fresh mark, its expected contribution to $A$ is at most $L_*\rho(A)$ by~\eqref{eq:load-mean}. There are at most $N$ starts, proving the upper inequality. For a stationary finite-label program, finite conditional means give the classwise renewal occupation formula. In each row the expected service occupation is between $\rho$ and $L_*\rho$, and its mean duration is at most $\mu_*$. Dividing separately in each recurrent class and mixing proves the asserted limiting bounds. Existence also follows from the finite-class marked reward argument for bounded tests.
+
+For the finite-horizon risk lower it is safer to use the same guaranteed first-service calls directly, since a general observer may change its prediction during later service. Conditional on the pre-preparation history, the fresh $V$ has law $\rho$ and must be encoded into at most $M$ fixed readouts before its first service score. Its mean squared loss is at least $q_M(\rho)$, even with randomization and control information in those labels. The predictable guaranteed-start argument~\eqref{eq:load-first-count} therefore gives at least $(1/\mu_*-1/N)_+q_M(\rho)$ per physical call. All models obey this inequality. For the upper, load a nearest-center index and retain it until the next load. Conditional on $V=v$, the expected complete service loss is at most $L_*\dist(v,C_M)^2$. Summing at most $N$ started excursions gives $L_*q_M(\rho)$. Its fixed action is legal for every model. Known $\rho$ and compact support allow optimal centers; with an effective approximate codebook replace its distortion by its certified upper. The target is observed at load, so full-history service prediction is exact.
+\end{proof}
+
+The corrected predictable-start argument in~\eqref{eq:load-first-count} is essential. Subtracting an unweighted ``one last mark'' would give only an additive measure error and would not prove~\eqref{eq:load-occupation} for small sets.
+
+\begin{corollary}[Two different raw geometric realizations]\label{cor:raw-geometries}
+Theorem~\ref{thm:controlled-load} applies to each of the following families.
+
+In a queue, take $W=1$ at preparation and, at service, transition to $W+1$ with probability $p_\theta(v,a)\le\bar p<1/2$ and to $W-1$ otherwise, ending at zero. Allow arbitrary finite noisy workload reports and all adaptive service actions. Then $L_*=(1-2\bar p)^{-1}$ is valid. An action-uniform exponential return envelope also holds.
+
+In a finite quantum system, prepare any measurable state $\sigma_{\theta,v}$, including pure and rank-changing preparations. At each service use a legal normalized positive instrument whose alive part $\mathcal A_{\theta,v,a}$ satisfies
+\[
+ \mathcal A_{\theta,v,a}^*(I)\le(1-\zeta)I,
+ \qquad 0<\zeta\le1.
+\]
+Then $L_*=1/\zeta$ is valid, uniformly over adaptive actions and retained states. Noncommuting instrument actions and preparations are allowed. In both families $\rho$ may be a Cantor product or a finite mixture of atoms and components of different dimension; the same actual concentration and cover bounds enter~\eqref{eq:load-risk}.
+\end{corollary}
+\begin{proof}
+For the queue, stopped first-step drift of $W$ gives
+$\E W_{n\wedge L}\le1-(1-2\bar p)\E(n\wedge L)$.
+Nonnegativity and monotone convergence yield the displayed mean bound conditionally on every $v$ and prior history. The killed exponential test used in Theorem~\ref{thm:queue} is uniform in $v$ and gives the stronger tail. Since $p_\theta(v,a)$ can depend on the loaded mark and chosen action, occupation is genuinely length biased and policy dependent; it is not identified with $\rho$.
+
+For the quantum family apply the dual inequality to the unnormalized alive state after each history-selected action. Induction bounds $\Pp(L>j\mid v,\text{past})\le(1-\zeta)^j$, and summing gives $\E L\le1/\zeta$. For an explicit noncommuting example on a qubit, let
+\[
+ K_{v,a}=U_a\diag(\sqrt{s_1(v)},\sqrt{s_2(v)}),\qquad
+ B_v=\diag(\sqrt{1-s_1(v)},\sqrt{1-s_2(v)}),
+\]
+with $0<s_i(v)\le1-\zeta$, alive map $K_{v,a}\sigma K_{v,a}^*$ and end map $B_v\sigma B_v^*$. Their effects sum to $I$. Choose $U_0=I$ and $U_1$ the Hadamard unitary and take, for $v\in[0,1]$, $\sigma_v=(1-v)|0\rangle\langle0|+v|+\rangle\langle+|$. The preparations have rank two in the interior and rank one at the endpoints; the instrument actions do not share a state eigenbasis. State- and mark-dependent survival changes the acquired duration weights. No normalized nonlinear filter contraction is required for the held task factor, whose update after load is the identity. Its codebook is a global cover of $K$, and its error does not accumulate. These facts verify the delayed-load, initialization, covering and stability assumptions used for the causal upper. For the compact-family temporal results, impose continuous primitive coefficient functions on a compact parameter set; the finite report kernels and the single fresh load with common reference $\rho$ then give finite-response continuity by Lemma~\ref{lem:response}. Mere measurability is enough for Theorem~\ref{thm:controlled-load}, but is not claimed to give that extra continuity. They do not identify the full queue or quantum predictive quotient with the mark coordinate.
+\end{proof}
+The first-service lower covers all controls obeying the primitive tail bound, not merely the fixed action used by the upper. A simulator for either realization still requires the complete scored interface, including duration and the environment audit, and its internal state is multiplied into the retained budget as in Section~\ref{sec:composition}.
