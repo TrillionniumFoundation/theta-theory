@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 import re
 import subprocess
-import xml.etree.ElementTree as ET
+from html.parser import HTMLParser
 
 P = Path(__file__).resolve().parents[1]
 B = P/'build'
@@ -39,18 +39,41 @@ require(loaded == expected and len(loaded) == 163, 'not all retained proofs were
 
 bbox = E/'main-bbox.html'
 subprocess.run(['pdftotext','-bbox',str(pdf),str(bbox)],check=True)
-root = ET.parse(bbox).getroot()
-word_count = 0
-for page in root.iter():
-    if page.tag.rsplit('}',1)[-1] != 'page':
-        continue
-    width = float(page.attrib['width']); height = float(page.attrib['height'])
-    for word in page.iter():
-        if word.tag.rsplit('}',1)[-1] != 'word':
-            continue
-        x0, y0, x1, y1 = (float(word.attrib[a]) for a in ('xMin','yMin','xMax','yMax'))
-        require(-1 <= x0 <= x1 <= width+1 and -1 <= y0 <= y1 <= height+1, 'text outside physical page')
-        word_count += 1
+class BoxParser(HTMLParser):
+    # Poppler's mathematical glyph text can contain XML-1.0-forbidden
+    # control characters. Parse the HTML geometry, not the glyph payload;
+    # preserve the raw bbox output and validate every page and word box.
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.page = None
+        self.page_count = 0
+        self.word_count = 0
+
+    def handle_starttag(self, tag, attrs) -> None:
+        a = dict(attrs)
+        if tag == 'page':
+            require(self.page is None, 'nested geometry page')
+            self.page = (float(a['width']), float(a['height']))
+            self.page_count += 1
+        elif tag == 'word':
+            require(self.page is not None, 'word outside geometry page')
+            width, height = self.page
+            x0, y0, x1, y1 = (float(a[k.lower()]) for k in ('xMin','yMin','xMax','yMax'))
+            require(-1 <= x0 <= x1 <= width+1 and -1 <= y0 <= y1 <= height+1,
+                    'text outside physical page')
+            self.word_count += 1
+
+    def handle_endtag(self, tag) -> None:
+        if tag == 'page':
+            require(self.page is not None, 'unmatched geometry page end')
+            self.page = None
+
+parser = BoxParser()
+parser.feed(bbox.read_text())
+parser.close()
+require(parser.page is None and parser.page_count == total, 'incomplete PDF geometry')
+require(parser.word_count > 0, 'no PDF word boxes')
+word_count = parser.word_count
 pages = sorted(set(range(1,last_new+1)) | {total})
 for page in pages:
     subprocess.run(['pdftoppm','-f',str(page),'-l',str(page),'-scale-to','1400','-png','-singlefile',
