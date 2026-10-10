@@ -1,11 +1,21 @@
-# Principal proof route — revision 72
+# First-reading route for A2-DYN v73
 
-The first part of `main.tex` contains one contiguous new argument: moving-window traces (157), complete physical current and its compact primitive (158), and all-source recovery plus the quantitative budget (159). The opening states the original exact-return pointwise problem and the actual proved recovery theorem.
+Read the revised opening of `main.tex` first: the unchanged exact record and pointwise objective, then leading Theorems A–C. These distinguish the full finite-measure theorem, the paired-flux budget and scalar/path error equality. The first proof part consists only of modules 160–163. The build records the actual page on which this new argument ends.
 
-The shortest dependency route into that part is:
+## Minimal dependency route
 
-`104--106 (complete positive physical source and fixed-width local variation) -> 108 (positive raw-error identity)`, together with `141, 149, 153, 155--156 (physical charts and previously controlled selected source) -> 157--159`.
+For the finite-measure theorem, read module 161 together with the original physical graph and full finite-count height proof in 94, the physical guard formula in 103, and the common source kernel in 160. The key use of the external literature is CMInt Theorem 1.3 followed by fixed-formula o-minimal monotonicity. The proof integrates over the original two initial coordinates. It does not integrate the ambient volume of an auxiliary collision graph and does not assume a smooth cutoff is definable.
 
-All other inherited proofs remain active and address the unchanged arithmetic, collision-spectrum, exact-return and conditional-transfer architecture. The preceding opening is compiled verbatim in `appendices/v71_frontmatter.tex`; provenance, response tables and validation records stay outside the mathematical opening.
+For the paired-flux theorem, read 162, then the full-source local-variation estimate in 106, positive scalar error representation in 108, and the fixed-width estimate and source-preserving capacity allocation in 159. The complete distributional current and regular patch identity in 158 fix the signs. Taking Jordan parts before combining physical patches would destroy the relevant cancellation.
 
-This improves navigation but does not make the nearly five-hundred-page cumulative manuscript a finished journal-length article. A shortest complete endpoint route still requires the unresolved full-current estimate. No theorem has been deleted to create an appearance of completion.
+For the scalar/path equality, read 163 and the common positive path remainder in 110. Module 112 isolates its signed-measure compactness step. Module 116 fixes the original window-normalized forward likelihood. The collision-to-return clock transfer is inherited, not changed by the new result.
+
+## What the referee need not infer
+
+A finite constant for each count does not furnish a bound on normalized collision-uniform flux. A source mass bound does not furnish an essential height bound. A path numerator's BL dual norm is not path-space total variation. A fixed-band theorem is not a theorem evaluated at a growing collision-dependent band. Each of these distinctions is preserved in the leading statements, proof ledger and active manifest.
+
+## Complete archival route
+
+After the new proof part, `build/v72-body.tex` reproduces the entire preceding body and its old 159 core inputs in their exact order. It is deterministically sliced from the pinned old master by the build, not maintained as an editable alternative. The old opening follows the retained appendices as `build/v72-frontmatter.tex`, with a historical-scope preface and the first-clearance meaning of `e70` made explicit. Both generated TeX sources and the full PDF are in the qualification artifact.
+
+This gives a short new-argument route and a complete proof archive, not a claim that the full archival manuscript already has a conventional submission length. The remaining original endpoint estimate is the decay of the complete central excess, for which paired physical flux is a sharper sufficient bound.

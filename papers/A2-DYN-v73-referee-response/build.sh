@@ -1,15 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 cd "$(dirname "$0")"
+if [ "$#" -ne 0 ]; then echo 'Usage: bash build.sh (inside a checkout of this revision)'; exit 1; fi
 mkdir -p build evidence
-mode=()
-if [ "${1:-}" = "--local" ]; then
-  if [ "${GITHUB_ACTIONS:-false}" = true ]; then echo 'Local mode forbidden in Actions'; exit 1; fi
-  mode=(--local)
-elif [ "$#" -gt 0 ]; then echo 'Usage: build.sh [--local]'; exit 1; fi
-python3 tools/verify_v72.py "${mode[@]}" > evidence/v72-source-and-finite-checks.json
-python3 -O tools/verify_v72.py "${mode[@]}" > evidence/v72-source-and-finite-checks-optimized.json
-cmp evidence/v72-source-and-finite-checks.json evidence/v72-source-and-finite-checks-optimized.json
+python3 tools/verify_v73.py > evidence/v73-source-and-finite-checks.json
+python3 -O tools/verify_v73.py > evidence/v73-source-and-finite-checks-optimized.json
+cmp evidence/v73-source-and-finite-checks.json evidence/v73-source-and-finite-checks-optimized.json
+cat evidence/v73-source-and-finite-checks.json
 for script in certify_winding certify_excursion verify verify_v2 check_v5 check_v6; do
   python3 "tools/${script}.py" > "evidence/${script}.py.json"
 done
@@ -17,7 +14,7 @@ last=''
 stable=0
 for pass in 1 2 3 4 5 6; do
   if ! pdflatex -no-shell-escape -interaction=nonstopmode -halt-on-error -file-line-error -recorder -output-directory=build main.tex </dev/null > "build/pass${pass}.txt" 2>&1; then
-    tail -80 "build/pass${pass}.txt"
+    tail -100 "build/pass${pass}.txt"
     exit 1
   fi
   now=$(sha256sum build/main.aux | cut -d' ' -f1)
@@ -29,4 +26,5 @@ if grep -Eq 'LaTeX Warning|Package .* Warning|Overfull|undefined|Missing charact
   grep -En 'LaTeX Warning|Package .* Warning|Overfull|undefined|Missing character' build/main.log
   exit 1
 fi
-python3 tools/render_v72.py
+python3 tools/render_v73.py
+git diff --exit-code

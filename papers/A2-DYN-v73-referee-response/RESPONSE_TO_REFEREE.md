@@ -1,78 +1,79 @@
-# Response to the v71 referee report — A2-DYN revision 72
+# Response to the v72 external report — A2-DYN v73
 
-**Manuscript:** Qian Qi, *Collision records, arithmetic, and raw local inversion in a triangular Lorentz gas*.  
-**Controlling report:** `reviews/a2-dyn-v71-external-top4-review-2026-10-11/REFEREE_REPORT.md`, commit `3bf84b862a393456b0a57049d2966f9fbe34da08`, blob `129f78b849ebf2639130090189bb7b6e9bfebf8d`.  
-**Reviewed author baseline:** `85152b57d47493e8d0ec2125e8365560aeb75cf0`.  
-**New complete manuscript:** `papers/A2-DYN-v72-referee-response/main.tex`.
+Controlling report: `reviews/a2-dyn-v72-external-top4-review-2026-10-11/REFEREE_REPORT.md`, at `fad5823b36f2c68595c6b17bebf62c70032d30a9`; report blob `f10920ea44a658b3b0ab75eac1f1d910a0946417`. Reviewed author manuscript: `295800b658aa2ff3aada1707d5785ff757d60724`, paper tree `bd761b97e603b666ed97b27241f9ab83c7f2550b`.
 
-We thank the referee for separating the valid capacity and BV identities from the missing ordered estimates. We keep the original topic and unrestricted pointwise arithmetic target. The present response supplies a genuine derivative of the complete physical source, with all chart-boundary terms, and an unconditional recovered-height estimate which now acts on first incidence and the outside source as well as selected-chart loss. It does not represent these advances as a proof of the remaining full-source decay.
+We thank the referee for separating the valid full-source construction from the missing collision-uniform estimate. The revision keeps the original exact-return problem. It proves an additional property of the complete physical source, strengthens the local-flux comparison, and makes the scalar-to-path implication explicit. We have not replaced the desired pointwise law by an interval law, changed the billiard family, normalized a zero arithmetic class, or removed a physical remainder. The four new modules are 160–163; the preceding 159 modules remain unchanged and compiled.
 
-## 1. Principal changes
+## 22.1. Decay of the complete current excess
 
-Modules 157--159 are compiled first. Module 157 differentiates the moving chart window, retains entrance and exit traces and true jumps, and proves gluing and Fourier identities. A full-window limit is taken in distributions rather than silently assuming outer-edge finite variation.
+The new Lemma `lem:v73-paired-flux` proves, for the full nonnegative BV density,
 
-Module 158 defines `Db` directly on the unchanged complete physical source. It proves partition independence, the oriented regular-patch coarea formula, distributional exhaustion, and the exact compact-primitive identity `kappa_delta * Db = b - A_delta b`. The current includes first incidence, competing-hit clearance and every outside state. No boundary is lost by moving to the global roof line.
+\[
+[b-2A_\delta b]_+(t)\le\min\{(Db)^+([t-\delta,t]),(Db)^-([t,t+\delta])\}.
+\]
 
-Module 159 retains `s71,1` and recovers a bounded fraction of `d71,1 + b_inc + e70` using the same exact-label average. The controlled part has ordered height `O(chi^6 + K epsilon^(1/16))`. The complementary residual is displayed on the original source and is bounded by `[b-K A_delta b]_+`. The resulting all-source reserve pays `K B^(-1/192)`, not the selected-disk `K B^(-1/4)` rate. A directed local-flux estimate gives a quantitative sufficient bound on this complete excess.
+This improves the available sufficient quantity, rather than simply renaming the old sum of directed variations. An isolated entrance or exit atom can leave the old directed supremum positive while the paired quantity is zero. A narrow positive pulse still has positive excess and is retained. The proof compares the left and right averages separately and uses their nonnegativity. The Jordan parts belong to the complete physical current after all legitimate interface cancellations.
 
-## 2. Response to required mathematical changes (report section 20)
+The reserve is the constant two. Thus its cost is compatible with the required `K(B) B^(-1/192) -> 0`, with no collision-dependent band. Theorem `thm:v73-paired-budget` gives
 
-### 20.1. Quantitative pooled-current tail
+\[
+\mathcal E_M\le C_M B^{-1/192}+\mathcal P_{\varepsilon(B)}(\delta(B)).
+\]
 
-The v71 quantity `N_chi(K)` is not declared estimated. The new argument instead offers a second route on the complete source, without changing the physical record. Its exact excess `U_(epsilon,delta)(K)` is expressed by a genuine global current. Proposition `prop:v72-flux-height` proves `U(K) <= U(1) <= V_epsilon(delta)/2` under the explicitly stated finite-measure hypothesis. If `V_epsilon(delta) <= A epsilon^(-q) delta^beta` is established, the legal choice `delta(B)=epsilon(B)^((q+a)/beta)` supplies the rate `B^(-a/12)` with `K=1`.
+The desired uniform decay of the last term is not proved in this revision. Its power-bound hypothesis is labeled as a hypothesis, and its scale substitution is displayed explicitly. Corollary `cor:v73-central-excess` also proves a two-sided comparison between the central excess and the original scalar error; localization is only to the central set already present in the original theorem. No physical state or exact label is removed. This request has substantive new estimates but is not reported as a completed uniform decay theorem.
 
-This is a proved implication with a quantitatively specified input, not a proof of that input. The unrestricted tail request is therefore only partially addressed. The complete current estimate, rather than fixed-word perimeter or an unweighted interface count, is the remaining analytic task.
+## 22.2. The full current as a finite measure
 
-### 20.2. Complete first incidence
+Theorem `thm:v73-full-source-bv` now proves this for the complete original scalar source at every fixed collision count, uniformly in radius, guard width and exact labels at that count. It does not assume it from wordwise BV or from a distributional exhaustion.
 
-First incidence now participates in the allocation on the original exact-label source. Its recovered subsource is bounded by the new controlled source and hence has the same ordered `O(chi^6+K epsilon^(1/16))` height. The remaining incidence contribution is exactly `(1-alpha)b_inc`. It is not discarded. The complete incidence height is not declared small, and the old `C A^m epsilon` estimate is not inserted into the fixed-band limit. The recovered-height proof instead uses the complete physical local-variation estimate of module 106 at a fixed averaging width.
+The proof first writes the unchanged smooth cutoff as an exact Stieltjes threshold integral. A signed Stieltjes measure is allowed, so monotonicity or definability of the original smooth cutoff is not silently assumed. Each threshold source is positive and dominated by the old complete finite-count density. Its sublevel mass is constructible by parameterized integration on the original two-dimensional initial chart. Auxiliary collision variables are used to establish the physical graph, not integrated with ambient volume on that graph. The roof derivative is definable; the argument does not need closure of the constructible algebra under differentiation. Uniform o-minimal monotonicity at each fixed count gives a finite number `J_m` of monotonicity pieces. Distributional integration against the finite signed threshold measure yields
 
-### 20.3. Outside clearance
+\[
+\|Db\|_{TV}\le4(J_m+1)(CA^m/c_*)\|d\Theta\|_{TV}^{2m+1}.
+\]
 
-The identical statement applies to `e70`: its recovered part is now quantitatively controlled, and its remaining part is `(1-alpha)e70`. Failed taper, selected grazing, noncritical roof-rank pieces and uncovered states remain in that identity. The complete current is defined on them before any chart decomposition. No exceptional roof set of positive measure or small-mass deletion is used. The complete outside height remains unresolved.
+This includes first incidence and first clearance outside the selected disks. Exactly one inherited status flag changes: the full-source finite-measure flag. There is no bound on the growth of `J_m` or on `m^2 C_m`; the collision-uniform flux part of the request remains quantitative. The theorem does not assert BV for arbitrary bounded marks or for capacity-allocated weights.
 
-### 20.4. Unrestricted pointwise theorem
+## 22.3. The original unconditional pointwise theorem
 
-Theorem `thm:v72-complete-budget` proves the explicit full-source inequality
+Equation `eq:intro-v73-target` keeps the original normalized exact-label density, the same central target and the finite arithmetic transition kernel through zero classes. The leading theorems state finite BV, paired flux and equality of scalar/path errors; they do not relabel an averaged theorem as a pointwise one. Completing the original scalar theorem still requires uniform decay of the paired flux or directly of the equivalent central excess. The manuscript states this precisely after the leading theorems and in the proof ledger. The mathematical target has not been reduced or changed.
 
-`E_M <= C_M B^(-1/192) + C B^(-1/4) + C K(B) B^(-1/192) + U_(epsilon(B),delta(B))(K(B))`.
+## 22.4. Marked numerators, same-roof bridges and forward likelihood
 
-The original finite arithmetic transition kernel and zero classes remain unchanged. Vanishing of the final term, with the legal reserve cost, is a sufficient condition. It is not proved for the unrestricted Lorentz family here. The full endpoint status remains false; the theorem has not been replaced by a window or integrated law.
+Theorem `thm:v73-scalar-path-equality` proves a new exact equality of ordered errors on the inherited common positive path-remainder theorem. With `Pbold-G W = bbold_B+Ebold_B` and `bbold_B` positive, one has on the common versions
 
-### 20.5. Conditional consequences
+\[
+|P-G|\le\|\mathbf P-G\mathsf W_R\|_{BL^*}\le|P-G|+2\|\mathbf E_B\|_{BL^*}.
+\]
 
-Unrestricted same-roof collision/return bridges, forward essential likelihoods and pointwise roof-conditioned paths are not inferred from the new source algebra. Their inherited numerator and positive-reference hypotheses remain explicit. No conditional law is defined on a zero arithmetic reference class. This request awaits the necessary scalar and numerator estimates.
+First take the collision limit at fixed `B`, then let `B` grow. The ordered path-numerator error equals the scalar error. A separate vanishing-height theorem for each bounded-Lipschitz numerator is therefore unnecessary **on that inherited input chain**. The new result does not independently reprove the spectral input, cylinder inversion or variation tightness; their audit remains necessary.
 
-### 20.6. Actual global current, active windows and Fourier inversion
+On `G>=d>0`, the common scalar lower bound gives `P>=d/2` once the scalar error vanishes. The corollary proves the conditional bounded-Lipschitz bound and both scalar density ratios. For the original window-normalized forward arithmetic likelihood it gives `||dP/dQ-1||_infinity <= 2r/(1-r)`, where `r=||P-G||_infinity/d`. The inherited collision-to-return clock transfer is retained. Neither a path-space total-variation theorem nor normalization on a zero class is asserted. These endpoint consequences remain conditional on the scalar decay, not fulfilled by finite BV alone.
 
-This is directly addressed at the distributional level. Theorem `thm:v72-window-current` includes both active-window trace atoms. Proposition `prop:v72-window-fourier` proves the corresponding Fourier identity, with zero-frequency compatibility. The complete-source current in module 158 is `Db`, not the old scalar `C=X-Y`. Its coarea formula retains oriented boundary flux, and its primitive identity is valid without assuming `Db` is a measure.
+## 22.5. Common versions and physical interfaces
 
-The required operator/resolvent norm bound is not supplied. In particular the `1/|xi|` factor of the primitive is not an integrable high-frequency majorant. The revision therefore closes the construction and sign/bookkeeping portion of this objection, but not the requested collision-uniform analytic control.
+Module 160 constructs one finite source kernel `D_t=p(t)Q_t`, supported on the original roof fiber, before defining weighted densities and path numerators. Chosen Borel physical weights are integrated against this same kernel. It verifies the complementary capacity weights, including the `r=0` convention. It distinguishes simultaneous evaluation of actual weights from an invalid simultaneous choice of representatives for every measurable equivalence class. A countable bounded-Lipschitz norming class fixes the path exceptional set. The order is `sup_R ess_sup_t`; no uncountable union of radius-dependent null sets is taken.
 
-### 20.7. Independent expert review
+Proposition `prop:v73-interface-ledger` gives the two oriented patch fluxes. Matching artificial cuts cancel before Jordan decomposition; true source jumps, physical itinerary boundaries and exact-event boundaries are retained. The full window derivative includes both the entrance and negative exit atoms. The full current is now finite by module 161, but convergence of arbitrary patch exhaustions in total variation is not inferred. The notation `e70` is explicitly first clearance outside the selected disks, with incidence separate; the older opening is retained with this clarification.
 
-No independent human review has been obtained. The active specialist map identifies the new BV-trace, exhaustion, source-allocation and ordered-limit questions, as well as all inherited collision-spectrum and arithmetic obligations. Source/finite-check/TeX evidence is not offered in place of such review.
+## 22.6. Independent specialist audit
 
-### 20.8. Journal proof burden
+No independent human audit is represented as having occurred. `independent_human_review` and `formal_proof_certificate` remain false. `SPECIALIST_AUDIT.md` identifies the requested specialist checks, including the semialgebraic physical graph, parameterized integration, full-count density input, occupation spectral chain and common path remainder. Numerical fixtures and native TeX qualification are not evidence that these infinite-dimensional arguments have been independently certified.
 
-The first part now presents a contiguous three-section route and the opening states only the actual theorem and remaining quantitative condition. A dependency map separates the shortest new route from the retained historical development. Every inherited proof remains compiled, and the preceding opening is preserved verbatim in an appendix. The cumulative manuscript remains very large; no assertion is made that a final journal-length complete endpoint proof has been achieved.
+## 22.7. Mathematical breadth without changing the problem
 
-## 3. Technical comments (report section 21)
+The revision does not switch to a nonsingular model or present an abstract criterion as a realization of the original endpoint. The source-specific addition is a finite-measure theorem for the complete original Lorentz source with its actual smooth guard. The paired-flux lemma and positive-kernel error comparison have general statements, but their application here retains the original geometry, source and arithmetic. Previously retained Markov realizations remain in the archive; no new independent realization is claimed. The broader completion request is not substituted for the original unresolved quantitative estimate.
 
-Comments 1--8: every capacity, current, allocation and supremum fixes `m,R,n,k`; pooling different exact labels is forbidden. Scalar maximality is distinguished from transport. Complementary weights are not misnamed disjoint events. Zero residual uses a harmless explicit convention. Common coarea versions precede allocation. `K`, `delta`, `epsilon` and `chi` are fixed before the collision limsup.
+## 22.8. Reading route and preservation
 
-Comments 9--15: the unestimated quantities remain visibly unestimated; scalar fixtures are not Lorentz realizations. The old two-sided kernel and atoms are preserved byte-for-byte. New global derivatives contain the physical weights, translations and window traces before signed cancellation. The old scalar current is never identified with the derivative of the whole source.
+The revised opening has three leading theorems with proofs pointing to four consecutive new sections. `JOURNAL_ROUTE.md` gives a short first-reading route and separates the necessary inherited inputs from historical derivations. Every prior core proof is still compiled in the unchanged order; the old opening is compiled as a historical appendix. Exact snapshots and deterministic extraction avoid rewriting the archival chain by hand. The full manuscript remains a large proof archive; this organization is not represented as a completed submission-length reduction or journal acceptance.
 
-Comments 16--19: all contents of `e70`, the complete incidence source, the finite arithmetic kernel and zero classes remain present. No exponential finite-count incidence estimate is used in the ordered limit; no pointwise conditioning is inferred from integrated total variation.
+## 22.9. Theorem-level literature comparison
 
-Comments 20--24: variation mass and probability total variation are not conflated. The section normalization occurs once. Occupation/terminal indexing is unchanged. Exact-SHA qualification is labeled source, finite-algebra and typesetting evidence. Provenance and validation records remain separate from the new mathematical opening.
+The standard disintegration step in module 160 is not claimed as a new general theorem. The source-specific content is the common physical allocation and interface accounting. In module 161, Cluckers–Miller, Theorem 1.3, supplies parameterized integration; Coste supplies fixed-formula monotonicity; the distributional BV characterization is standard (Ambrosio–Fusco–Pallara). None supplies the Lorentz height bound, the collision-uniform growth of `J_m`, or the requested local limit theorem. The exact original-guard threshold representation and its full-source application are the additional argument here.
 
-## 4. Preservation and verification
+Module 162 proves its elementary two-sided inequality in full and explains why it is strictly less demanding than the prior directed-sum bound for isolated atoms. Module 163 derives the scalar/path error equality directly from the inherited positive remainder, not from an external conditional local-limit theorem. The earlier comparisons with Szász–Varjú, Dolgopyat–Nándori and the billiard spectral literature remain in modules 75 and the retained bibliography. Their hypotheses are not declared to imply the present unrestricted four-component exact-label pointwise endpoint without the missing physical estimate.
 
-All 156 inherited core modules, 209 Python sources, 11 appendices and `references.tex` remain byte-identical. Every previous compiled input and mathematical label remains active. The complete v71 `main.tex` and source manifest have additional exact provenance copies. No existing paper, review, root README or unrelated branch is modified.
+## Qualification and handoff
 
-The new qualification checks source preservation, status inheritance, normal and optimized finite fixtures, full native no-shell-escape TeX, stabilized references and new-proof page renders. Its records distinguish local extracted-source checking from actual remote-SHA checking. Passing these checks does not prove the unrestricted continuum statements.
-
-## 5. Mathematical status of this response
-
-The revision gives a global distributional construction and a source-preserving quantitative gain on all three original remainders. It also supplies the precise directed-flux estimate which would turn that gain into full closure. The unrestricted current-excess decay and complete incidence/outside heights have not been proved in this revision. We retain that distinction in every status record and request assessment of the supplied proofs without presenting an unresolved hypothesis as an established theorem.
+The workflow checks the exact reviewed tree and report blob, byte preservation of all inherited mathematical inputs, all 163 actual TeX core inputs, rational sign/capacity/path fixtures in ordinary and optimized Python, the six inherited finite checks, stabilized references and rendered page geometry. The exact checkout SHA is included in every evidence record. Passing this workflow means source and typesetting qualification only. The next referee is asked to examine the new finite-BV proof, the paired-flux strengthening and the scalar/path equivalence, while retaining the original uniform endpoint as the remaining mathematical objective.

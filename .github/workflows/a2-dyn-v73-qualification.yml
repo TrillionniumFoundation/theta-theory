@@ -1,0 +1,54 @@
+name: A2-DYN v73 complete-manuscript qualification
+on:
+  push:
+    branches:
+      - revision/a2-dyn-v73-referee-response-2026-10-11
+      - revision/a2-dyn-v73-referee-copy-2026-10-11
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: a2-dyn-v73-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  qualify-manuscript:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Freeze reviewed source and exact checkout
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD:papers/A2-DYN-v72-referee-response)" = "bd761b97e603b666ed97b27241f9ab83c7f2550b"
+          test "$(git rev-parse HEAD:reviews/a2-dyn-v72-external-top4-review-2026-10-11/REFEREE_REPORT.md)" = "f10920ea44a658b3b0ab75eac1f1d910a0946417"
+          mkdir -p papers/A2-DYN-v73-referee-response/evidence
+          git archive HEAD papers/A2-DYN-v72-referee-response papers/A2-DYN-v73-referee-response reviews/a2-dyn-v72-external-top4-review-2026-10-11 .github/workflows/a2-dyn-v72-qualification.yml .github/workflows/a2-dyn-v73-qualification.yml A2_DYN_V73_REVISION_INDEX.md > papers/A2-DYN-v73-referee-response/evidence/exact-source.tar
+          printf '%s\n%s\n' "$GITHUB_SHA" "$GITHUB_REF" > papers/A2-DYN-v73-referee-response/evidence/exact-checkout.txt
+      - name: Install native TeX and finite-check dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern python3-numpy python3-mpmath python3-sympy python3-scipy poppler-utils
+      - name: Preserve sources, run checks and compile all 163 proof modules
+        env:
+          TZ: UTC
+        run: bash papers/A2-DYN-v73-referee-response/build.sh
+      - name: Upload exact-SHA complete manuscript evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a2-dyn-v73-${{ github.sha }}-${{ github.run_id }}
+          if-no-files-found: error
+          retention-days: 90
+          path: |
+            papers/A2-DYN-v73-referee-response/build/main.pdf
+            papers/A2-DYN-v73-referee-response/build/main.log
+            papers/A2-DYN-v73-referee-response/build/main.fls
+            papers/A2-DYN-v73-referee-response/build/main.aux
+            papers/A2-DYN-v73-referee-response/build/pass*.txt
+            papers/A2-DYN-v73-referee-response/build/v72-body.tex
+            papers/A2-DYN-v73-referee-response/build/v72-frontmatter.tex
+            papers/A2-DYN-v73-referee-response/evidence/*
