@@ -4,11 +4,12 @@ from __future__ import annotations
 import argparse,hashlib,importlib.util,json,os,subprocess,zipfile
 from pathlib import Path
 ROOT=Path.cwd();P=Path('papers/General-Theta-Foundations-I-restart');B=P/'r25-retained-state'
-SOURCE_BRANCH='foundation/general-theta-restart-r25-retained-state-source-2026-10-10'
+SOURCE_BRANCH='foundation/general-theta-restart-r25-retained-state-source-rebuild-2026-10-10'
 ARTIFACT_BRANCH='artifacts/general-theta-restart-r25-retained-state-2026-10-10'
 EXPECTED_TREE='9b0100d1724d24c1ff8dc55c6e1250a7417720db'
 CANON='18000b21e4bfd89180ccb069e46ac0f21621f34d';REVIEW='36422feadc4ccb99aaf12efb33a18bfd44cb3646'
 IMPORT='16fbfe516d3a8bd993ae8f1b6784ee07d52c4957';DRAFT='0ffcb5c85ccf9b5d199f240506314d0cf507eecd'
+PREVIOUS_SOURCE='083f7cc9e4da5e41ec9c349be8dd91024b13a67d'
 REPORT='GENERAL_THETA_FOUNDATIONS_I_RESTART_R24_RENEWAL_GEOMETRY_EXTERNAL_REFEREE_REPORT_R24.md'
 ANCHORS={'foundation/general-theta-foundations-i-restart-2026-10-06':CANON,'review/general-theta-restart-r24-renewal-geometry-external-top4-referee-r24-2026-10-10':REVIEW,'foundation/general-theta-restart-r25-retained-state-research-2026-10-10':CANON,'foundation/general-theta-restart-r25-retained-state-manuscript-2026-10-10':DRAFT}
 def check(ok,msg):
@@ -54,9 +55,9 @@ def prepare():
     git('config','user.name','github-actions[bot]');git('config','user.email','41898282+github-actions[bot]@users.noreply.github.com')
     old=preserve();audit=verifier().verify();tree=git('rev-parse','HEAD:'+str(B))
     check(tree==EXPECTED_TREE==audit['native_source_tree_sha'],'ordinary source tree mismatch')
-    check(git('rev-parse','HEAD^')==DRAFT,'source must be a direct child of published manuscript')
+    check(git('rev-parse','HEAD^')==PREVIOUS_SOURCE,'pipeline repair must be a direct child of preceding source')
     check(not git('diff','--name-only'),'source verification mutated tracked files')
-    data={'source_commit':source,'native_source_tree_sha':tree,'draft_commit':DRAFT,'canonical_first_import_commit':IMPORT,'canonical_commit':CANON,'review_commit':REVIEW,'preserved_objects':old,'read_only_anchor_heads':ANCHORS,'source_branch':SOURCE_BRANCH,'artifact_branch':ARTIFACT_BRANCH,'stage':'SOURCE_ONLY; no build result asserted','publication_policy':'No existing branch is updated; source stays fixed and artifact branch must not exist before publication.'}
+    data={'source_commit':source,'native_source_tree_sha':tree,'draft_commit':DRAFT,'previous_source_commit':PREVIOUS_SOURCE,'previous_failed_run':38018812103,'pipeline_repair':'fetch-depth 2 for parent verification; ordinary native tree unchanged','canonical_first_import_commit':IMPORT,'canonical_commit':CANON,'review_commit':REVIEW,'preserved_objects':old,'read_only_anchor_heads':ANCHORS,'source_branch':SOURCE_BRANCH,'artifact_branch':ARTIFACT_BRANCH,'stage':'SOURCE_ONLY; no build result asserted','publication_policy':'No existing branch is updated; source stays fixed and artifact branch must not exist before publication.'}
     export=Path(os.environ['RUNNER_TEMP'])/'r25-source-export';export.mkdir(exist_ok=True)
     count=package(export/'R25_ordinary_source.zip',False,data)
     (export/'SOURCE_EXPORT.json').write_text(json.dumps(dict(data,packaged_files=count),sort_keys=True,indent=2)+'\n')
