@@ -1,0 +1,9 @@
+# Exact-source qualification
+
+`bash build.sh` runs the revision-69 source audit and all finite diagnostics exposed by the retained verification chain, in normal and optimized Python. The new diagnostics use explicit checks, not removable assertions. Their local run contains 2,335 finite checks, including monomial orders up to 1,000,000, zero-center flat guards, later radial births, zero denominators, exact finite-scale distortion and tail inequalities, one-hot fractions, and the disjoint full source partition. Negative controls reject guarded-annulus division, fixed-count exhaustion as ordered tightness, and mass-to-height substitution. These fixtures are not all-count Lorentz realizations.
+
+The source audit verifies the frozen complete v68 tree and v68 report blob, all inherited mathematical/Python/bibliography bytes, all 151 active core inputs, all old mathematical labels, exact retained opening text, declared edits and the complete inherited status map. It records every tracked active-source SHA256, the workflow SHA256, the actual commit SHA and active paper tree. No self-referential predicted commit is used.
+
+Native TeX runs without shell escape until references stabilize. Undefined references, duplicate labels, missing glyphs, package/LaTeX warnings and overfull boxes fail qualification. Proof-page rendering is selected by the new section/theorem labels in the final auxiliary file. PDF and image artifacts are tied to the same checkout SHA.
+
+The workflow uses read-only repository permissions and does not modify the source. Each author ref has its own run. Only completed actual run receipts establish workflow success. The complete physical angular tail, radial moment, incidence height, exterior height and independent human review are not certified by any of these checks.
