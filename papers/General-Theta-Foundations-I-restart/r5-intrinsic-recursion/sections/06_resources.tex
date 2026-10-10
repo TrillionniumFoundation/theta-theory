@@ -1,0 +1,64 @@
+\section{Causal morphisms and separated resource accounts}\label{sec:resources}
+A resource statement is meaningful only after the causal information cut is fixed. In particular, the predictive label count is not a surrogate for all writable bits or for an uncharged simulator. We give the common-loss composition explicitly, and then state the exact additional condition under which an interface factor really forces more retained states.
+
+\subsection{Report continuity}
+\begin{proposition}[A finite-horizon report comparison]\label{prop:report}
+In Theorem~\ref{thm:inward}, suppose the active report kernels obey
+\[
+ \TV(J_t(\cdot\mid x),J_t(\cdot\mid z))\le L_Jd(x,z).
+\]
+Suppose also that the terminal task-report kernel obeys the analogous bound with constant $L_Y$. The nominal exact experiment and the recursively quantized experiment that generates reports from the current representative, using the same legal controller and independent holds, have complete report-and-task laws at total variation distance at most
+\begin{equation}\label{eq:path-tv}
+ \min\{1,(TL_J+L_Y)E_M\}.
+\end{equation}
+The assertion is for the prescribed finite horizon, with controller randomness coupled identically. Constants must hold uniformly over that controller's declared actions. It is not a comparison of separately optimized unrestricted controllers.
+\end{proposition}
+\begin{proof}
+Construct successive maximal couplings of the two report kernels until their first disagreement. Standard Borel report spaces admit measurable such couplings, for example by taking the common part of the two kernels relative to their sum and splitting the remainders. Before the first disagreement, both controllers see the same reports and randomization and therefore choose the same action. The representative process equals the recursion driven by the true reports. Define that shadow recursion also after a disagreement, so that Lemma~\ref{lem:recursion} always applies to it under the physical law. The probability of a first disagreement at time $t$ is at most the expectation of $L_Jd(S_{t-1},\widehat S_{t-1})$ on the event of no previous disagreement, hence at most $L_JE_M$. Exact holds create no such error. Couple the terminal task similarly at cost at most $L_YE_M$. The union bound gives \eqref{eq:path-tv}. Total variation is here $\sup_A|P(A)-Q(A)|$, so no extra factor is used for bounded losses.
+\end{proof}
+
+For the filter, the report density given a predicted probability vector $r$ is $2^{-d}(1+a\sum_i r_i v_i)$. Its total variation difference is at most $(a/4)\sum_{i=1}^d|r_i-r'_i|$. Differentiating softmax along a log-odds segment bounds the full $\ell^1$ probability difference by its oscillation distance. The mixing prediction is nonexpansive in that metric, so $L_J=a/4$ is valid. The indexed nominal terminal probe has a valid constant $L_Y=1/4$. For the singular experiment the active report law is independent of the coordinate within a mode; across modes its total variation distance is at most one and the declared state distance is $2\sqrt{1800}$. Both realizations therefore verify report continuity directly from their raw kernels. The bound \eqref{eq:path-tv} may grow with the horizon even when prediction risk is uniformly bounded; uniform task accuracy is not infinite-horizon path-law equivalence or large-deviation equivalence.
+
+\subsection{A typed composition theorem}
+Let $\mathfrak E=(P_\lambda)_\lambda$ and $\mathfrak F=(Q_\lambda)_\lambda$ be parameter-indexed prepared causal experiments. A morphism from $\mathfrak E$ to $\mathfrak F$ specifies a parameter-independent causal simulator, a transformation of reports, a lift of each declared target strategy to legal source actions, an internal simulator state, a physical-to-virtual clock, and compatible terminal task and action readouts. Each strategy lift includes its stopping and action-availability conventions. The simulator is not allowed to read the unknown $\lambda$.
+
+Its complete interactive defect is a bound $\varepsilon$ on the total variation distance between the virtual target transcript together with the common scored outcome, and the true target law, uniformly in $\lambda$ and in the declared strategy class. This is stronger than a one-step marginal or fixed-controller terminal comparison. An implementation specifies bounds for raw calls $N$, physical time $\tau$, prediction labels $M$, simulator states $R$, controller states $D$, phase/clock states $Q$, temporary workspace $W$, and read-only program description $L_{\rm prog}$. Values may depend on the declared horizon and accuracy. Infinite or unspecified overhead does not yield a finite total-state theorem.
+
+\begin{theorem}[Common-risk and resource composition]\label{thm:morphism}
+Suppose a morphism as above simulates a target policy with risk $r_\lambda$ for a common loss in $[0,L_*]$. Suppose its target predictor has $M$ labels, its simulator has $R$ states, its lifted controller has $D$ states, and its phase/clock has $Q$ states, with all bounds on the complete legal execution. Then there is a serial source implementation with
+\begin{equation}\label{eq:resource-product}
+ K\le MRDQ
+\end{equation}
+retained states and risk at most $r_\lambda+L_*\varepsilon$ for every $\lambda$. Raw calls and time add over the executed subroutines; simultaneously needed workspace and stored program descriptions have their corresponding additive upper accounts.
+
+If a second such morphism is composable and the first lifted strategies remain in its certified strategy class, the complete defects add, capped at one. The retained-state overheads multiply for the serial product implementation. In particular, applying Theorem~\ref{thm:inward} and Corollary~\ref{cor:perturb} in the target gives the common-risk upper
+\begin{equation}\label{eq:full-composition}
+ B_T+(L E_{M,u}+v)^2+L_*\varepsilon,
+ \qquad K\le MRDQ,
+\end{equation}
+whenever the target and source scored tasks are the common compatible task just described. The $B_T$ in this expression is the stated target benchmark, not a separately recomputed source Bayes risk.
+\end{theorem}
+\begin{proof}
+At every step retain the tuple of predictor, simulator, controller, and clock states, run the prescribed source subroutine, transform its report, update the target label, and apply the compatible readout. The tuple set has cardinality at most $MRDQ$. Parameter independence, causal strategy lifting, and action compatibility give a legal source procedure. No virtual action is performed before the source reports needed to choose it exist. The definition of complete defect and the bounded-loss total variation inequality give the risk bound. Counting all physical subroutine calls includes failed attempts, calibration calls, and stopping markers. Sequential clocks and costs add, and storing all concurrently needed registers and program descriptions gives the asserted upper accounts.
+
+For composition, first insert the intermediate simulated law, apply the triangle inequality for total variation, and use its contraction under the parameter-independent second causal transformation. The strategy-class closure hypothesis allows the second defect bound to be applied to the actually lifted adaptive policy. Combining the two tuples multiplies their cardinality bounds. For \eqref{eq:full-composition}, the metric approximation terms have already been combined in the target task norm before squaring, and the complete common-loss defect is added afterward. A comparison of different full-history Bayes baselines is neither required nor inferred.
+\end{proof}
+
+\subsection{When an interface state is necessary}
+The product in \eqref{eq:resource-product} is generally an upper bound only. The following continuation-separation principle, also used in the supplement, states a condition yielding an actual converse.
+
+\begin{proposition}[An executable continuation cut]\label{prop:interface}
+Before a memory cut, an experiment reports a tag $J\in\{1,\ldots,D\}$ with probabilities $p_j>0$ and a task score $U$, whose conditional law given $J=j$ is $\nu_j$. After the cut no report reveals $J$ or $U$. A legal continuation can require exact recovery of $J$, and the procedure must pass this challenge with probability one. It also forecasts $U$ with squared loss. A checkpoint encoder retaining at most $K$ states has optimal distortion
+\begin{equation}\label{eq:interface-allocation}
+ \inf_{\substack{m_j\ge1\ \sum_jm_j\le K}}
+       \sum_{j=1}^D p_j q_{m_j}(\nu_j),
+\end{equation}
+with infeasibility if $K<D$. Randomization independent of $(J,U)$ cannot improve the value. When $J$ is uniform and each $\nu_j$ is uniform on $[0,1]^d$, this has order $(D/K)^{2/d}$ for $K\ge D$, with constants depending only on $d$.
+\end{proposition}
+\begin{proof}
+Fix an independent shared seed outside a null set on which the exact challenge could fail. A retained label cannot have positive conditional probability under two different tags: its tag-readout distribution would then have to equal two distinct point masses. Hence the labels split into disjoint supports, with sizes $m_j\ge1$ and sum at most $K$. Conditional projection and nearest-center quantization under each tag give the lower in \eqref{eq:interface-allocation}. Conversely assign disjoint label lists to the tags, quantize $U$ within each list, and read the tag and center from the list identity. Approximate quantizers approach the displayed infimum. Seed conditioning proves that randomization does not reduce it.
+
+For the uniform cube, a ball of radius $r$ has mass at most $v_dr^d$, giving $q_m\ge c_dm^{-2/d}$ by Proposition~\ref{prop:submass}. A regular grid with $\lfloor m^{1/d}\rfloor^d$ cells gives the upper $C_dm^{-2/d}$. Jensen's inequality supplies $D^{-1}\sum_j m_j^{-2/d}\ge(K/D)^{-2/d}$; assigning each tag at least $\lfloor K/D\rfloor$ labels gives the reverse inequality up to a dimension-dependent constant. Exact tag recovery is an executable requirement, not an assumption that an arbitrary simulator's private state is indispensable.
+\end{proof}
+
+If an actual continuation challenges an independent tuple of simulator, controller, and clock tags, Proposition~\ref{prop:interface} can make their joint tag cardinality necessary. In the absence of such a challenge or another lower witness, no necessity of $RDQ$ is concluded. Likewise, the output-alphabet lower in Proposition~\ref{prop:output} is not a lower on all internal floating-point arithmetic. Workspace, program length, computation time, and adaptive acquisition still require task- and machine-specific converse arguments.

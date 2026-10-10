@@ -1,0 +1,7 @@
+# Reproducible build protocol
+
+The source commit contains the ordinary manuscript, complete proofs, audit files and manifest. prepare_r19.py is a deterministic editorial reproduction from immutable R18 plus explicit new files; it is not needed for ordinary compilation and never edits the R18 directory. Its emitted ordinary files are committed before compilation. Bootstrap material is not substituted for an ordinary-source submission.
+
+Run python3 verify.py; python3 regression.py; python3 -O regression.py; then python3 build.py --source-sha ACTUAL_SOURCE_COMMIT --expected-tree ACTUAL_ORDINARY_TREE --output /external/output --receipt /external/receipt.json. Native compilation builds two isolated copies, three pdflatex passes each, checks active recorder inputs, requires within-environment byte identity, and rejects undefined references or overfull boxes. The complete build separately rebuilds unchanged R18 and its entire V/U/T/S chain. Run an independent rebuild from the actual remote artifact ZIP, outside a read-only source tree.
+
+Separate source, artifact and final evidence-only commits. Archive packet binding records the actual source/artifact identities. Final verification only adds evidence; it cannot change a PDF or mathematical source under an old receipt. Cross-engine PDF bytes may differ; report actual normalized-text/page/render comparisons, never claim byte identity when absent. The build scope is R19 and retained W/V/U/T/S, not all repository papers. Finite regressions and render checks do not prove continuous-parameter mathematics.
