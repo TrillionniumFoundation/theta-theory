@@ -1,13 +1,13 @@
-# A2-DYN revision 69
+# A2-DYN — revision 70
 
-Canonical complete manuscript: `main.tex`. This revision responds to the revision-68 external report at `7fd1ca003cebd920e3f5a1f7af136e4c86cadcf4`, not an earlier report. The source-pinned author baseline is `c8268a608a971c6832bcfed2a827af951e84c577`.
+Qian Qi, *Collision records, arithmetic, and raw local inversion in a triangular Lorentz gas*.
 
-The mathematical topic and title remain **Collision records, arithmetic, and raw local inversion in a triangular Lorentz gas**. The unrestricted pointwise arithmetic target, exact actual-return labels, finite arithmetic kernel and zero classes remain unchanged.
+Active manuscript: `main.tex`. Controlling review: v69, commit `f37e5d9431265cb16aebdc2211ed4706f73abb79`. Frozen author baseline: `b959bbca34c35db82176c8f35bf029fec347e739`.
 
-The new proof is in modules 149--151. It establishes an unguarded but physically exact comparison trace; absolute guard control including zero-center and infinitely flat guards on angular strata; and finite-scale radial comparison beyond a germ disk. Zero-center inner-collar height gains an additional square root of the roof width. The radial-tail moment implication is proved, not its missing Lorentz moment hypothesis.
+The new proof route is cores 152--154: finite-scale angular overlap, the signed physical radial current, and the whole-chart source identity. All 151 inherited cores remain unchanged and compiled. The exact physical record, triangular table, arithmetic zero classes and original two-sided pointwise target are retained.
 
-Read `RESPONSE_TO_REFEREE.md` for every requested change, `JOURNAL_ROUTE.md` for the shortest proof route, and `SOURCE_MANIFEST.json` together with its inherited snapshot for the complete status. All 148 old core modules, every old Python file, all eight old appendices and references remain. The preceding opening statements are compiled in `appendices/v68_frontmatter.tex`.
+`RESPONSE_TO_REFEREE.md` answers the controlling report point by point. `SPECIALIST_AUDIT_MAP.md` gives the active continuum audit, including both 149--151 and 152--154. `SOURCE_MANIFEST.json` distinguishes scoped theorems from complete endpoint claims. `JOURNAL_ROUTE.md` gives the short reading route.
 
-Run `bash build.sh` in this directory from a complete repository checkout. Qualification builds the complete 151-module manuscript with native TeX, runs retained and new finite diagnostics in normal and optimized Python, and renders the new proof pages. The workflow artifact contains the PDF, exact-source archive and evidence bound to the actual checkout SHA.
+The new complete-disk overlap component has ordered height O(chi^6), hence O(B^-1/4) at chi=sqrt(epsilon(B)). The complementary angular-loss height, the physical source outside selected disks and complete first-incidence height still require uniform estimates. No full pointwise or independent human certificate is claimed.
 
-The complete first-incidence height, the relevant ordered physical tails and exterior clearance height still need proof before the unrestricted pointwise theorem follows. Neither a successful build nor a finite diagnostic is a continuum or independent-human proof certificate.
+Build with `bash build.sh` from an exact repository checkout. Qualification receipts and PDF are in the artifact of the matching v70 workflow run. A local extracted-source build is not an exact remote-SHA receipt. Earlier version-named checkpoints and unchanged input maps are historical, not active status files.

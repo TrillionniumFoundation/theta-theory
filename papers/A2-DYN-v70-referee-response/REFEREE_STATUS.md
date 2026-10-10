@@ -1,7 +1,7 @@
-# Referee status: revision 69
+# Revision 70 referee status
 
-This is an author revision for further referee assessment against the requested Annals / Acta / Inventiones / JAMS standard. It is not an editorial decision or a representation of journal acceptance.
+Author revision responding to the v69 external referee-style report, not an acceptance or independent journal decision.
 
-The controlling report is the v68 report at `7fd1ca003cebd920e3f5a1f7af136e4c86cadcf4`. The revision adds substantive original-source proofs for zero-center guards and finite-scale chart strata while preserving the original pointwise endpoint. The response explicitly distinguishes these new results from the remaining ordered tail, incidence and exterior-source obligations.
+The new scoped results are in cores 152--154. The original pointwise endpoint is retained. The complete angular-loss, outside and first-incidence heights remain explicit. Independent human specialist review and formal proof certification have not been obtained.
 
-No independent human specialist audit has been obtained. The inherited margin-completeness, selected-contact continuation, source-disjointness and anisotropic/arithmetic inputs remain explicit audit targets. Successful source/TeX checks do not certify those continuum assertions.
+The next reviewer should use RESPONSE_TO_REFEREE.md, PROOF_LEDGER.md and SPECIALIST_AUDIT_MAP.md, and match the manuscript tree to its actual qualification receipt. The response and referee-copy branches are intended to expose the same completed source commit.
