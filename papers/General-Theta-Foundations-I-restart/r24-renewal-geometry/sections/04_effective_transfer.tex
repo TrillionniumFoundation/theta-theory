@@ -1,0 +1,96 @@
+\section{Causal defects and finite executable certificates}\label{sec:effective}
+We use $\TV(P,Q)=\sup_B|P(B)-Q(B)|$, one half of the $L^1$ distance for probability densities. A cycle comparison includes its preparation, visible flags, length, declared actions, reports, performed audit marks and readouts. It is not merely a comparison of terminal hidden states.
+
+\begin{theorem}[Recurrence-to-defect transfer]\label{thm:defect}
+Suppose two completed scored-cycle laws have total-variation distance at most $\varepsilon$, scores in $[0,1]$, mean lengths at least one, and each satisfies the tail bound $a(T)$ in \eqref{eq:UI}. Their average risks differ by at most
+\begin{equation}\label{eq:chi}
+ \chi_a(\varepsilon)=\min\left\{1,\inf_{T\in\N}
+             \bigl(2T\varepsilon+4a(T)\bigr)\right\}.
+\end{equation}
+If both satisfy the $1+p$ moment bound $K$, the bound
+\begin{equation}\label{eq:holder-defect}
+ \chi_{p,K}(\varepsilon)=
+ \min\{1,4K^{1/(1+p)}\varepsilon^{p/(1+p)}\}
+\end{equation}
+may be used instead. A uniform per-call discrepancy $\omega$ in the scored loss adds at most $\omega$.
+
+Let a parameter-independent causal simulator lift each legal target program to the source, preserving the task, actions, preparation and reset protocol, and suppose its completed scored-cycle defect is uniformly at most $\varepsilon$. If it stores at most $S$ states in addition to the target's $M$, then
+\begin{equation}\label{eq:sim}
+ V_{\av,\mathrm{source}}^\Theta(MS)
+ \le V_{\av,\mathrm{target}}^\Theta(M)+\chi_a(\varepsilon)+\omega.
+\end{equation}
+The statement is measured per target raw call. A source implementation with a different physical clock must additionally report its acquisition and time conversion; no equality of the two time averages is inferred. Serial simulator state bounds multiply. Defects on a common scored-cycle interface add under composition, before applying \eqref{eq:chi}. A reverse value bound requires a reverse morphism or an independent decision-theoretic lower bound.
+\end{theorem}
+\begin{proof}
+Put $r_T=\E\sum_{t\le\tau\wedge T}\ell_t$ and $\mu_T=\E(\tau\wedge T)$. Each truncated functional has range $[0,T]$, so its expectation changes by at most $T\varepsilon$. The omitted reward and length each have expectation at most $a(T)$. Hence $|r-r'|$ and $|\mu-\mu'|$ are bounded by $T\varepsilon+2a(T)$. As $0\le r'\le\mu'$ and $\mu\ge1$,
+\[
+ |r/\mu-r'/\mu'|\le |r-r'|+|\mu-\mu'|.
+\]
+This proves \eqref{eq:chi}. Alternatively, maximally couple the two completed cycles. On a mismatch event of probability at most $\varepsilon$, the discrepancy of either reward or length is bounded by $\tau+\tau'$. H\"older's inequality bounds its expectation by $2K^{1/(1+p)}\varepsilon^{p/(1+p)}$, proving \eqref{eq:holder-defect}. A pointwise score discrepancy sums to at most $\omega\tau$ and is divided by $\mu$.
+
+For the simulator, the combined state is the pair of target and simulator states. Its report transformation, action lift, readout and reset are parameter-independent parts of one source program. Apply the cycle estimate for each fixed $\theta$ and target program, then take the model supremum and program infimum. Total variation contracts under a common kernel, so serial defects add by the triangle inequality. Neither this argument nor its resource count supplies a missing reverse simulator.
+\end{proof}
+
+\begin{lemma}[Primitive kernel certificates]\label{lem:primitive}
+Consider two classical marked experiments on one common hidden space, with the same action and reset interfaces. Suppose the total variation of their one-call joint kernels for next hidden state, report, flag and performed audit is at most $\eta$, uniformly in hidden state and action. Include preparation in this bound. If the first experiment has $\E\tau\le\overline\mu$, then the completed-cycle laws of every common controller differ by at most $\min\{1,\overline\mu\eta\}$.
+
+The same conclusion holds for finite-dimensional quantum instruments when the per-call operational instrument norm error is at most $\eta$: explicitly, one half the integrated trace-norm difference of the complete classical--quantum output is at most $\eta$ for every positive input of trace one. Preparation is included. No lower bound on a report probability is needed.
+
+If both endpoints have a common tail or moment certificate, substituting $\overline\mu\eta$ in Theorem~\ref{thm:defect} gives an all-controller average-risk modulus. A uniform stochastic-row perturbation at most $\eta$ has the same conclusion. A decision approximation is charged separately by the uniform loss modulus.
+\end{lemma}
+\begin{proof}
+For classical kernels, couple the next marked state maximally until the first discrepancy. While the paths agree, use the same controller uniforms. The probability of a first discrepancy at a call is at most $\eta$ times the probability that this call is reached without a previous discrepancy. Summing over calls in the first cycle gives $\eta\E\tau$. Stopping flags are among the coupled reports. This is valid for discontinuous Borel controller rows, since the rows are evaluated at identical reports until failure.
+
+For quantum instruments use unnormalized positive states, not a classical coupling of quantum states. Expand the difference of the two composed, stopped instruments by a hybrid telescoping identity. At step $t$, the trace mass of the first experiment still alive is $\PP(\tau\ge t)$. The replacement error is bounded by $2\eta$ times this mass; the remaining complete instrument is trace-norm contractive on Hermitian inputs. Sum to a cutoff, include a cemetery outcome for the unfinished path, and let the cutoff tend to infinity. The first experiment's sum of alive masses is $\E\tau$; almost-sure finite completion at both endpoints identifies the limiting completed-cycle laws. The half-norm convention gives the stated total variation. Report-row perturbations are classical channels acting on these outputs and obey the same telescoping bound.
+\end{proof}
+
+The primitive comparison concerns the full marked transition, not just its marginal report density. For example, a deterministic nonlinear transition can change singularly in total variation when its parameter changes, despite continuous trajectories. In such a model this lemma does not furnish a parameter modulus. One must supply a different consistent response coupling or a certified completed-response modulus. Positivity alone does not make the effective hypotheses automatic.
+
+\begin{lemma}[One report-cell average]\label{lem:cells}
+For each $a$, let $\mathcal C_a$ be a finite Borel partition with executable membership, and discard reference-null cells. Define a reconstructed instrument by retaining the exact joint law of the report cell, next physical state, flags and audit mark, and replacing the report within its cell by an independent draw from $\sigma_a(\cdot\mid C)$. Required visible tags are never merged. Suppose its one-call operational error from the original instrument is uniformly at most $\kappa_h$.
+
+For every Borel $\gam$, running $\gam$ on the reconstructed experiment has exactly the same state, action, physical-state, audit and cycle-length law as running on the original experiment the single cell table
+\begin{equation}\label{eq:cell-row}
+ k^h_{ia}(j\mid y)=\frac1{\sigma_a(C)}\int_Ck_{ia}(j\mid u)\,d\sigma_a(u),\qquad y\in C.
+\end{equation}
+In particular, this replacement retains $M$ and changes average risk by at most $E_h=\chi(\overline\mu\kappa_h)$ whenever both endpoint laws have the declared tail certificate. Here and below $\chi$ denotes either certified modulus in Theorem~\ref{thm:defect}.
+\end{lemma}
+\begin{proof}
+Conditional on the cell and the physical marked output, the reconstructed within-cell report is independent with the displayed law. Integration of one controller row therefore gives \eqref{eq:cell-row}. Induction over calls, including the prescribed reset, proves the identity for every finite stopped prefix and hence for the completed cycle. This argument also proves that the reconstructed law inherits the original all-program return certificate: it equals the original law under $\gam^h$. Lemma~\ref{lem:primitive} and Theorem~\ref{thm:defect} give the error bound. The cell averages are used to prove coverage of all Borel programs; the eventual runtime algorithm classifies its actual report into a cell and uses a stored table. It does not compute conditional expectations online.
+\end{proof}
+
+\begin{theorem}[Same-memory finite certification]\label{thm:compile}
+In addition to Theorem~\ref{thm:renewal}, assume the following effective data are given with proofs or certified primitive computations. The model set is computably compact with finite $s$-nets $F_s\subset\Theta$. There are the executable common report partitions of Lemma~\ref{lem:cells}, with $\kappa_h\to0$, and finite decision $\rho$-nets $D_\rho$ with uniform loss error $\omega(\rho)\to0$. The model comparison has a controller-uniform average-risk modulus $\Omega(s)\to0$, obtained, for instance, from Lemma~\ref{lem:primitive}. The return envelope is computable. Finite-table truncated cycle expectations are computable with rigorous intervals, uniformly over each finite list and each finite model net.
+
+Enumerate all denominator-$Q$ action and transition rows on the common cells, and all $D_\rho$ readouts. Write $J_a=|\mathcal C_a|$ and
+\begin{equation}\label{eq:count}
+ \mathcal T\le
+ (Q+1)^{M|A|+M^2\sum_aJ_a}|D_\rho|^M
+\end{equation}
+for a bound on the number of tables. Suppose rigorous integration gives intervals $[l_{\gam,\theta},u_{\gam,\theta}]$ for their average risks on $F_s$, each of width at most $\zeta$. Define
+\[
+ L=\min_{\gam\in\mathcal T}\max_{\theta\in F_s}l_{\gam,\theta},\qquad
+ U=\min_{\gam\in\mathcal T}\max_{\theta\in F_s}u_{\gam,\theta}.
+\]
+Then $U-L\le\zeta$, and
+\begin{equation}\label{eq:certificate}
+ L-E_h-E_Q\le V_\av^\Theta(M)\le U+\Omega(s),\qquad
+ E_Q=\chi\!\left(\overline\mu\frac{|A|+M}{Q}\right)+\omega(\rho).
+\end{equation}
+The upper endpoint is realized by the selected finite table on the original experiment. The lower endpoint constrains \emph{every} legal $M$-state Borel program. The interval can be made arbitrarily tight at fixed $M$ under the stated effective data. Adding $\pm b_N$ or $\pm c_\beta$ gives corresponding finite-acquisition and discounted intervals and a same-table implementing upper bound.
+\end{theorem}
+\begin{proof}
+Round a probability row by rounding down all but its last entry to multiples of $1/Q$ and putting the remainder in the last entry. A row of length $m$ changes in total variation by at most $m/Q$. Coupling the action draw and the report-to-state draw gives per-call error at most $(|A|+M)/Q$. This may create zero entries or small new paths; all actions are legal in the continuing protocol, and no exact internal deadline is being preserved. Lemma~\ref{lem:primitive} and the decision modulus bound the average error by $E_Q$. Every Borel program is thus covered by a finite table with error $E_h+E_Q$, uniformly in the model.
+
+Let $V_F$ be the all-Borel value on $F_s$ and $W_F$ the finite-table value there. Coverage and inclusion give $V_F\le W_F\le V_F+E_h+E_Q$. Certified intervals give $L\le W_F\le U$ and $U-L\le\zeta$. Since $F_s\subset\Theta$, $L-E_h-E_Q\le V_F\le V_\av^\Theta(M)$. A table attaining the finite minimum of upper endpoints has risk at most $U+\Omega(s)$ on the full family. This proves the directions in \eqref{eq:certificate} without minimax exchange or a local-optimizer lower bound.
+
+For completeness, a computable tail envelope suffices to pass from finite integration to average risk. If $r_T,\mu_T$ are the truncated expectations, then $0\le r-r_T\le\mu-\mu_T\le a(T)$ and $r_T\le\mu_T$. Direct subtraction yields
+\[
+ |r/\mu-r_T/\mu_T|\le a(T),\qquad \mu_T\ge1.
+\]
+Interval arithmetic for $r_T,\mu_T$, followed by this tail allowance, gives the required intervals. Table count \eqref{eq:count} bounds each simplex by all its integer entries, so is intentionally crude. No polynomial planning bound is inferred. Finally use \eqref{eq:uniform} for the same stationary table, not a clock-augmented implementation.
+\end{proof}
+
+A finite table requires at most
+$[M|A|+M^2\sum_aJ_a]\lceil\log_2(Q+1)\rceil$
+bits for its probability entries, in addition to code and decision descriptions. Runtime scratch for random sampling, report classification and output precision is a separate resource. Offline integration and enumeration may be enormous. Finite-response domination supplies neither computable partitions nor an integration algorithm. These are explicit stronger hypotheses, verified in specific raw classes below.

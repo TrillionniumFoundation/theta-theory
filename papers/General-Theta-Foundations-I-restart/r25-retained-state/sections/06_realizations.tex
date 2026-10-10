@@ -1,0 +1,146 @@
+\section{Two raw realizations and primitive return certificates}\label{sec:raw}
+\subsection{Action-uniform drift instead of an independent clock}
+\begin{proposition}[A killed-kernel return certificate]\label{prop:drift}
+Let $Q_{\theta,a}$ be the subprobability kernel of surviving one ordinary call, on the alive physical state. If a measurable $V\ge1$ satisfies
+\begin{equation}\label{eq:drift}
+ Q_{\theta,a}V\le\lambda V,\qquad0<\lambda<1,
+ \qquad\sup_\theta\E_{\rm prep}V\le B_0,
+\end{equation}
+for every legal action and physical state, then every history-adaptive action rule, hence every retained Borel program, satisfies
+\begin{equation}\label{eq:drifttail}
+ \PP(\tau>T)\le B_0\lambda^{T-1}\quad(T\ge1),\qquad
+ a(T)={B_0\lambda^{T-1}\over1-\lambda}\quad(T\ge1),
+\end{equation}
+with $a(0)=1+B_0/(1-\lambda)$. If a better mean bound $\bar\mu$ is known, replace each displayed tail bound by its minimum with $\bar\mu$ and take $a(0)=\bar\mu$. All physical return moments have computable bounds. A finite-dimensional quantum analogue holds when a positive matrix $W\ge I$ satisfies
+$\sum_z\mathcal I^{\rm alive*}_{\theta,a,z}(W)\le\lambda W$
+and $\tr(\rho_\theta W)\le B_0$.
+\end{proposition}
+\begin{proof}
+Conditional on the entire visible and physical past, every chosen action obeys \eqref{eq:drift}. Integrating its randomized choice preserves the inequality. Induction on the alive physical subprobability gives
+$\E[V(X_t)1_{\{t\ {\rm alive}\}}]\le B_0\lambda^t$,
+and $V\ge1$ bounds survival probability. Summing the integer tail from $T$ onward, with preparation counted as one call, gives \eqref{eq:drifttail}; its bound is deliberately conservative at the first indices. Polynomially weighted geometric tail sums bound each moment. Quantum mechanically apply the dual inequality to the unnormalized alive state and use $W\ge I$ to dominate its trace. The chosen controller's past can affect its next action but cannot invalidate an inequality holding for every action. Termination can depend on state and action and is not assumed independent of the observations.
+\end{proof}
+
+\subsection{Controlled queue busy periods with retained statistical evidence}
+\begin{theorem}[A partially observed unbounded-workload realization]\label{thm:queue}
+Each preparation starts a workload at $W=1$. On an ordinary call an action $a\in A$ gives
+\[
+ W'=W+1\text{ with probability }p_{\theta,a},\qquad
+ W'=W-1\text{ otherwise},\qquad
+ 0<p_{\theta,a}\le\bar p<1/2.
+\]
+Hitting zero produces a visible end flag and the next charged preparation. The observer is not overwritten. It receives a finite-alphabet noisy workload report; for example, on a nonending call,
+$\PP(Y=1\mid W')=(W'+1)/(W'+2)$.
+A performed bounded audit, such as an independent next-arrival indicator with its specified action/model law, may be scored with a continuous compact readout loss but is not feedback.
+
+This raw experiment satisfies finite-response domination and the return hypothesis for \emph{every} feedback program. Theorem~\ref{thm:main} therefore applies on every nonempty $\Gamma_{M,H}^\Theta$. The graph architecture of Proposition~\ref{prop:graph} is a primitive nonreset sufficient class, with $c_0=1-\bar p$. For a computably compact parameter family, computable finite report and audit probabilities, and a uniform parameter modulus bounded away from singular transition endpoints, it also verifies Theorem~\ref{thm:compile} on that architecture.
+
+In particular let $\bar p=1/4$, $M=2$, and require both ending-row label probabilities to be at least $1/4$, while leaving actions and nonending rows arbitrary. For \emph{all} such programs and models,
+\begin{equation}\label{eq:queue17}
+ |J_N^\theta-g_\theta|\le\min\{1,17/N\},\qquad
+ |J_\beta^\theta-g_\theta|\le\min\{1,17(1-\beta)\}.
+\end{equation}
+These constants count preparation and require no workload truncation in the running controller.
+\end{theorem}
+\begin{proof}
+Reports and flags are finite, so a full-support finite reference on each visible alphabet dominates every finite intervention word. Hidden workloads need not be observed, finite or replaced by a finite belief. Finite histories are countable, so the evaluation quotient of any countable determining family is countable and has a measurable section obtained by selecting the first history in a fixed enumeration. Robust control itself uses the raw kernels and does not require that known-law quotient to be a common posterior for unknown $\theta$.
+
+Take $1<z<(1-\bar p)/\bar p$ and $V(w)=z^w$. At $w>1$, the conditional alive expectation divided by $V(w)$ is
+$p_{\theta,a}z+(1-p_{\theta,a})/z\le\bar p z+(1-\bar p)/z=\lambda<1$.
+At $w=1$ killing removes the downward term, so the same inequality holds. The prepared value is $B_0=z$. Proposition~\ref{prop:drift} is therefore uniform over actions chosen using arbitrarily complicated past histories. The probability of ending on the first ordinary call is at least $1-\bar p$, verifying the graph hypothesis independently of the observer.
+
+For effective verification, a truncation to $T$ ordinary calls visits workloads at most $T+1$. Its action/report/audit words have finite, computable sums of products of the primitive probabilities. The omitted duration and reward are bounded by the displayed drift tail. For two parameter values, coupling each up/down transition by one uniform variable bounds the one-call complete hidden-transition error by $\max_a|p_{\theta,a}-p_{\theta',a}|$, plus the separately specified report/audit error. A preparation error, if any, is counted separately. The same coupling and Theorem~\ref{thm:defect} give the model modulus required by Theorem~\ref{thm:compile}. Finite report cells are already exact; no belief discretization or report-only approximation is being substituted for the hidden transition.
+
+We give the numerical constants in \eqref{eq:queue17}. The constant-$1/4$ biased random walk dominates every controlled busy period pathwise, by coupling the up/down uniforms until the controlled walk is killed. Its busy duration $T_b$ from one has
+\[
+ \E T_b=2,\qquad \operatorname{Var}(T_b)=6,\qquad
+ \E(1+T_b)^2=15,\quad \E(1+T_b)=3.
+\]
+These follow from the first- and second-moment difference equations for the stopped biased walk; their derivation is given in Appendix~\ref{sec:details}. Thus $\bar\mu\le3$ and the all-program overshoot sum is bounded by
+$\E[(1+T_b)(2+T_b)]/2\le9$.
+If $P=\left(\begin{smallmatrix}1-a&a\\ b&1-b\end{smallmatrix}\right)$, then $a,b\ge(3/4)(1/4)=3/16$. The forcing $f=r-gd$ has oscillation at most $3$, since all its coordinates lie in $[-3g,3(1-g)]$. Solving the two-state Poisson equation gives bias oscillation at most $3/(a+b)\le8$. There is no transient class. The stopped-cycle argument in \eqref{eq:overshoot} therefore gives $(8+9)/N$. Its Abel mixture gives $17(1-\beta)$. This is an explicit bound for the entire declared feedback architecture, not evidence from simulated trajectories.
+\end{proof}
+
+\subsection{Noncommuting heralded quantum excursions}
+\begin{theorem}[A positive-instrument retained-state realization]\label{thm:quantum}
+Let a finite-dimensional physical system be freshly prepared by $\rho_\theta$ at each heralded boundary, while its classical $M$-state controller is retained. For each action, let a normalized completely positive instrument produce a visible report and an alive/end flag, and any performed but unreported audit. Suppose report instrument densities are measurable with respect to common probability references and an action-uniform positive-matrix drift as in Proposition~\ref{prop:drift} holds. Then the raw experiment verifies Theorem~\ref{thm:main} on each nonempty recurrence sublevel, including pure preparations, zero report probabilities, rank changes and noncommuting actions.
+
+For a concrete family on a qubit, fix $0<s_1\ne s_2<1$ and unitaries $U_a$ which need not commute. Let $|1\rangle,|2\rangle$ be an orthonormal basis and let $|0\rangle$ denote a fixed unit vector in the same two-dimensional space, not a third state. Put
+\begin{equation}\label{eq:kraus}
+ K_a=\diag(\sqrt{s_1},\sqrt{s_2})U_a,
+ \qquad J_{a,j}=\sqrt{1-s_j}\,|0\rangle\langle j|U_a,
+ \quad j=1,2.
+\end{equation}
+The $K_a$ report is alive; the $J_{a,j}$ reports are heralded ends. This family has a state-dependent termination mechanism, $W=I$, $\lambda=\max_j s_j<1$, and first-call ending probability at least $c_0=1-\lambda$. Any feasible graph architecture from Proposition~\ref{prop:graph} therefore gives a primitive recurrence certificate without observer overwrite.
+
+Computably compact parameter families with a strict common $\lambda<1$, computable matrix entries, certified integrations on report cells and a complete-instrument modulus verify Theorem~\ref{thm:compile}. A bound on a chosen Kraus representation is sufficient input, but the resulting operational instrument norm does not depend on the representation.
+\end{theorem}
+\begin{proof}
+Compose unnormalized instrument densities along a finite action/report word and take its trace. This is its nonnegative finite-word density, whose integral is at most one before completed flags are summed. Weighting the same word by an actually performed bounded audit gives an $L^1$ payoff density. The construction is valid at zero-probability reports without a Bayes denominator. The raw instrument and physical preparation make the complete conditional cycle depend only on the entering retained label and the fixed parameter. The drift proposition gives the required all-program tail. This proves the hypotheses of Theorem~\ref{thm:main} directly, without invoking a quantum risk formula.
+
+For \eqref{eq:kraus},
+$K_a^*K_a+\sum_jJ_{a,j}^*J_{a,j}=I$.
+The alive dual maps $I$ to $U_a^*\diag(s_1,s_2)U_a\le\lambda I$. Unequal $s_j$ make the ending probability depend on the input state; a jump output is rank one. Distinct noncommuting unitaries change the subsequent instruments, not just a common classical basis. Any extra audit channel used by the task is included in the complete instrument, with its average back-action, and its drift must be checked after that composition. A trace-preserving audit following the alive branch preserves the $W=I$ alive trace inequality.
+
+If $A,B$ are corresponding Kraus factors and $X\ge0$, then
+\[
+ \norm{AXA^*-BXB^*}_1
+ \le(\norm A+\norm B)\norm{A-B}\,\tr X.
+\]
+Sum this estimate over all marked factors and integrate the report reference. It supplies an operational one-call error for Proposition~\ref{prop:primitive}. Cell averaging must average the \emph{whole completely positive instrument}, not average Kraus matrices and resquare them. Finite-word integrals are certified matrix products, and the drift tail controls the remainder. These statements verify precisely the effective inputs specified in Theorem~\ref{thm:compile}. The observer remains classical with $M$ counted labels; the physical quantum system is not supplied to it as an additional writable memory. Nothing here concerns infinite-dimensional unbounded operators.
+\end{proof}
+
+\begin{corollary}[Raw acquired geometry and genuine singular components]\label{cor:rawgeometry}
+The hypotheses of Theorem~\ref{thm:geometry} have the following independent hidden and quantum verifications for a known preparation and a counted, fixed-size exploration controller whose retained boundary chain has a recurrence certificate.
+
+For a hidden state with $d+1$ values and positive preparation $\pi$, take first-report likelihoods on the uniform cube $[-1,1]^d$,
+\begin{equation}\label{eq:loadhidden}
+ g_i(y)=1+\eta y_i\ (i\ge1),\qquad
+ g_0(y)=1-\eta\sum_{i=1}^d y_i,
+ \quad0<\eta<1/(2d).
+\end{equation}
+After that load, publicly identified stochastic transitions, including permutations, propagate the indicator-audit predictive mean. For a quantum system of dimension $q$, put $d=q^2-1$, choose a traceless Hermitian basis $H_j$, and use a sufficiently small symmetric cube on which
+$E(y)=I+\sum_jy_jH_j>0$.
+Prepare $I/q$. With actual probability $1-\omega>0$, load by the instrument density $\sqrt{E(y)}$; with probability $\omega$, use a tagged rank-one projective instrument. Perform an informationally complete audit and include its average back-action. Later publicly identified trace-preserving positive maps may be noncommuting unitaries composed with that audit.
+
+If physical data lifetimes have a uniform third moment, independent of these load innovations conditional on the entering control label, these experiments have global covers and finite occupation stability, without strict filter contraction. Their actual average memory rates for fixed control size are $J^{-2/d}$. Lower constants retain the actual load, recurrent-class and continuous-stratum masses. The same exact/effective boundary results allow common Cantor or countable report references with certified tails; arbitrary mutually singular adaptive path families are not thereby covered.
+\end{corollary}
+\begin{proof}
+For \eqref{eq:loadhidden}, Bayes' rule gives $p_i=\pi_i g_i/\sum_j\pi_jg_j$ and the explicit inverse
+\[
+ g_i={(d+1)p_i/\pi_i\over\sum_jp_j/\pi_j},\qquad y_i=(g_i-1)/\eta\quad(i\ge1).
+\]
+The compact cube is mapped smoothly with nonsingular derivative and bounded inverse derivative to its posterior image. Its report density is bounded above and below. Thus the actual first-posterior law has a bounded $d$-dimensional density, while indicator-audit tests separate the predictive means. Later stochastic maps are nonexpansive in $\ell^1$. Their entire simplex has global $J$-covers of radius $O(J^{-1/d})$. Report probabilities at the load are affine in the prior, hence continuous in total variation; later public innovations are independent of it. These are verifications from likelihoods, not an assumed Fisher geometry.
+
+In the quantum case, $\int E(y)d\sigma=I$ and $\tr E(y)=q$, so under $I/q$ the continuous report is exactly uniform and its pre-audit state is $E(y)/q$. Its mass is $1-\omega$, not one. The projective branch has its genuine pure-state atoms. With
+$F_{j,\pm}=(I\pm cH_j)/(2d)$ positive, these audit effects sum to $I$, and their linear expectation map is injective on the traceless difference space. Its least singular value is positive, as quantified in Appendix~\ref{sec:details}. Hence actual executable audit means, not a postulated state parametrization, give dimension $d$. Positive trace-preserving maps are trace-norm nonexpansive on Hermitian differences by applying them to positive and negative parts. The compact density-matrix body has the required global trace-norm covers; load report laws are affine and continuous in the prior.
+
+The known preparation allows the predictor coordinate to initialize exactly without erasing the exploration label. On subsequent nonexpansive calls $G_t$ grows at most linearly in the data age; $\sum_{t\ {\rm data}}G_t^2\le C\tau^3$. The uniform conditional third moment thus proves \eqref{eq:stabmass} in every closed class. One first load per cycle gives an actual positive submeasure in \eqref{eq:occupation}. Apply \eqref{eq:smallball} and Theorem~\ref{thm:geometry}. If control labels split that submeasure among finitely many fibers, at least one carries positive mass; no mass is renormalized. All coordinates needed for the stationary update are either in the retained control state or are presently visible load/propagation/end types. This is a fixed-exploration verification, unless the extra conditions of Corollary~\ref{cor:matching} have also been established.
+
+The tensor and kernel arguments use probability references and $L^1$ approximation, not Lebesgue density. Common Cantor or countable references work identically. Certified omitted report mass is an actual tail cell, not a conditionally normalized experiment. Rank tags may be added to these references. A measurable kernel-density construction and its precise scope are given in Appendix~\ref{sec:details}.
+\end{proof}
+
+
+\begin{proposition}[Endogenous return and acquired geometry]\label{prop:endogenous}
+The matching geometric conclusion can be realized without an independent lifetime clock, in both raw classes.
+
+For the finite hidden state, first perform the positive load \eqref{eq:loadhidden}. Subsequently let action $a$ have an alive substochastic matrix $Q_a$ whose row sums lie in $[s_{\min},s_{\max}]$. Its complementary end kernel sends the state to a fixed known terminal state. The visible report is alive or end; the actual indicator audit is not feedback. Assume \eqref{eq:gainhazard}. Under any fixed, counted exploration with a certified boundary matrix, its conditional checkpoint and online excess risks have matching order $J^{-2/d}$ at fixed control size. Lifetimes are state-dependent and may depend on the observed load through later feedback.
+
+For a quantum version, first perform the continuous/rank-one load of Corollary~\ref{cor:rawgeometry}, then use the noncommuting alive/jump instruments \eqref{eq:kraus}. Assume
+\begin{equation}\label{eq:gainhazard}
+ 0<s_{\min}\le s_j\le s_{\max}<1,\qquad
+ s_{\max}\left({2s_{\max}\over s_{\min}}\right)^2<1.
+\end{equation}
+An informationally complete audit is scored at the load and after each propagation, with its average back-action included. The same fixed-control matching rate holds with $d=q^2-1$ when the corresponding $q$-level diagonal instrument and independent noncommuting unitaries obey \eqref{eq:gainhazard}. No one-step contraction of the normalized alive update is required. For example $s_{\min}=9/100$, $s_{\max}=1/10$ satisfy the condition with normalized-update bound $20/9>1$.
+\end{proposition}
+\begin{proof}
+The hidden load is fresh with the same bounded-density posterior law conditional on every incoming label. The alive update is $p\mapsto pQ_a/(pQ_a1)$ and the end update is constant. Since row sums are between $s_{\min}$ and $s_{\max}$, the alive denominator is bounded below and splitting the quotient difference gives the $\ell^1$ Lipschitz bound $L=2s_{\max}/s_{\min}$. Survival probability is at most $s_{\max}$ at every call for every chosen action. The flag law is affine in the belief and hence continuous in total variation, uniformly over actions. The indicator audit separates all belief coordinates, so here the compact simplex, together with the visible phase, realizes the full task-predictive quotient rather than an unverified covariance chart. The gain calculation below gives \eqref{eq:stabmass}. There is one fresh full-dimensional load per cycle and mean length at most $\bar\mu$, so its actual occupation mass from \eqref{eq:occupation} is at least $1/\bar\mu$. Feedback may alter later length bias but cannot erase this first-load submeasure. The global simplex cover and small-ball lower complete the hidden verification.
+
+For the quantum construction, the fresh load and its actual continuous mass are unchanged; the later lifetime is state-dependent. Instrument report probabilities are affine in the input state and continuous in total variation. On the whole density-matrix body, the normalized alive map $X\mapsto KXK^*/\tr(KXK^*)$ has trace-norm Lipschitz constant at most $L=2s_{\max}/s_{\min}$. Indeed its numerator difference is bounded by $s_{\max}\norm{X-X'}_1$, its denominator is at least $s_{\min}$, and splitting the quotient difference gives the factor two. An end jump has the constant normalized output $|0\rangle\langle0|$ and hence Lipschitz constant zero. The audit's unreported average channel is nonexpansive. The probability of surviving $t$ propagations, conditional on every previous history and action, is at most $s_{\max}^t$.
+
+For the unit-error gain, $G_t\le1+L+\cdots+L^t\le L^{t+1}/(L-1)$ because $L\ge2$. Thus its actual squared occupation is bounded by a geometric series with ratio $s_{\max}L^2<1$. This verifies all-candidate stability on the full state domain although the normalized update need not contract. The global cover and first-load small-ball witness are unchanged. The mean length is bounded by the same alive hazard, so the first-load mass remains positive in every recurrent class.
+
+For both constructions a primitive retained control architecture can keep its control label unchanged on the initial load and use the ending-row graph floors at propagation. The first propagation ends with probability at least $1-s_{\max}$; the proof of Proposition~\ref{prop:graph} applies at this designated call because no earlier control-label change occurs. Predictor labels still update at load and are fully counted by the $QJ$ lift. With finite visible phase types, all update and action rules remain stationary. This is a simultaneous raw verification of retained causal transfer and acquired geometry, not a physical reset imposed independently of state for the sake of a desired exponent.
+\end{proof}
+
+The unbounded queue also supports a useful task-factor version: attach a fresh independent finite hidden load to each busy period and propagate it by the publicly selected stochastic actions. The queue drift supplies a conditional third moment, the hidden factor is nonexpansive, and its first-load law has mass at least $1/\bar\mu$. This gives the same fixed-control task-compression rate even when later queue actions depend on the load. It does not identify that finite hidden factor with the full predictive quotient of the unbounded workload; the workload report law remains in the original uncompressed experiment.
