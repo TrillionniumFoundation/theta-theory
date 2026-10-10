@@ -1,0 +1,52 @@
+name: General Theta R18 immutable source and complete PDF build
+on:
+  push:
+    branches:
+      - foundation/general-theta-restart-r18-causal-allocation-research-2026-10-09
+    paths:
+      - .github/workflows/general-theta-r18-causal-allocation.yml
+permissions:
+  contents: write
+concurrency:
+  group: general-theta-r18-causal-allocation-publication
+  cancel-in-progress: false
+jobs:
+  source-and-artifact-publication:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      B: papers/General-Theta-Foundations-I-restart/r18-causal-allocation
+      EXPECTED_TREE: 2ae0b903d0a621eeec3525e8e143b12ec609cd83
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          sparse-checkout: |
+            .github
+            foundations/general-theta
+            papers/General-Theta-Foundations-I-restart
+      - name: Publish hash-verified ordinary source before any build
+        run: python3 .github/scripts/theta-r18-publish.py source
+      - name: Install isolated complete build dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended cm-super lmodern poppler-utils python3-venv
+          python3 -m venv "$RUNNER_TEMP/theta-r18-venv"
+          "$RUNNER_TEMP/theta-r18-venv/bin/pip" install pypdf==5.9.0 numpy==2.3.5
+          echo "$RUNNER_TEMP/theta-r18-venv/bin" >> "$GITHUB_PATH"
+      - name: Build immutable native source and complete retained companions
+        run: |
+          set -euo pipefail
+          python3 "$B/build.py" --source-sha "$SOURCE_SHA" --expected-tree "$EXPECTED_TREE"
+          git diff --exit-code
+      - name: Publish artifacts as a distinct child of the source commit
+        run: python3 .github/scripts/theta-r18-publish.py artifacts
+      - name: Export complete source-bound remote artifact packet
+        run: python3 .github/scripts/theta-r18-publish.py packet
+      - uses: actions/upload-artifact@v4
+        with:
+          name: general-theta-r18-causal-allocation-complete-packet
+          path: ${{ runner.temp }}/theta-r18-delivery/*
+          if-no-files-found: error
+          retention-days: 90

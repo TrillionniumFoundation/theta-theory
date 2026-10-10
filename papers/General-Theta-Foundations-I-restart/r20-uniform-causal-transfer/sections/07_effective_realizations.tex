@@ -1,0 +1,89 @@
+\section{Effective raw realizations without filter contraction}\label{sec:effective_realizations}
+The next results verify the same effective theorem from two different raw instruments. They do not assume an already available filter register, a Fisher matrix, or a smooth acquired density. The stronger geometric rate hypotheses used later are not required here.
+
+\begin{theorem}[Untruncated Gaussian experiments]\label{thm:effective_gaussian}
+Let the hidden state be finite, the action set finite, and let a call apply a known stochastic matrix $T_t^a$ before reporting $Y\mid X'=j\sim N(\mu_{t,j}^a,\Sigma_{t,a})$ in $\R^r$. Suppose all entries are computable with certified enclosures, $\|\mu_{t,j}^a\|_\infty\le U$, and covariance eigenvalues lie in $[\sigma_-^2,\sigma_+^2]$, $\sigma_->0$. The matrices $T_t^a$ may have zeros, be reducible, or be permutations; no mixing, rank or normalized-update contraction condition is imposed. Use categorical Brier prediction, or any effectively presented bounded terminal task.
+
+For $R>U$, partition $[-R,R]^r$ into cubes of side at most $h$, and use one additional cell for its entire complement. This is a support-resolved effective presentation with
+\begin{equation}\label{eq:gaussian_effective}
+ \begin{gathered}
+ B_a\le\lceil2R/h\rceil^r+1,\qquad
+ G=(2\pi)^{-r/2}\sigma_-^{-(r+1)}e^{-1/2},\\
+ d_{t,h}\le G\sqrt r(2R)^r h+
+                  4r\exp\{- (R-U)^2/(2\sigma_+^2)\}.
+ \end{gathered}
+\end{equation}
+Consequently Theorem~\ref{thm:effective} computes the optimal fixed-label external or internally timed risk with certified finite upper and lower bounds, for every fixed horizon and feasible budget.
+\end{theorem}
+\begin{proof}
+On positive column vectors, write
+$\mathsf I_t^a(dy)x=\operatorname{diag}(\varphi_{t,j}^a(y))T_t^a x\,dy$.
+This is positive and mass preserving after integration. Every mixture report density is positive everywhere, even when a transition is deterministic. All cells are therefore active at every legal phase. Use normalized Lebesgue measure on each bounded cell, and one fixed nonsingular Gaussian conditioned on the complement as the reconstruction there. Neither measure depends on $t$ or on the hidden state.
+
+For a Gaussian density, writing $z=\Sigma^{-1/2}(y-\mu)$ gives
+\[
+ \|\nabla\varphi(y)\|_2
+ \le (2\pi)^{-r/2}\sigma_-^{-(r+1)}|z|e^{-|z|^2/2}
+ \le G.
+\]
+The difference between a density and its cell average is at most $G\sqrt r h$ on a bounded cell. Integrating over the box gives the first term of \eqref{eq:gaussian_effective}. A positive normalized input gives a convex mixture of these scalar bounds, so no hidden-state cardinality factor is needed. On the complement, the total variation norm between the original vector measure and its reconstructed version is at most twice its mass. A coordinate union bound and the Gaussian Chernoff bound give complement mass at most $2r\exp(-(R-U)^2/(2\sigma_+^2))$. This proves the second term. The tail is retained as a paid report cell; it is not discarded by conditioning.
+
+For example, to make $H\sum_t d_{t,h}\le\xi$, take $R>U$ sufficiently large that the tail term is at most $\xi/(2nH)$, and then $h\le\xi/(2nHG\sqrt r(2R)^r)$. Gaussian box integrals have effective certified approximations by bounded-domain quadrature with derivative bounds and tail control. Composition with the computable stochastic matrices preserves computability. The Brier decision simplex has explicit rational nets: a denominator-$D$ simplex rounding changes the expected Brier loss by at most $8s/D$ for $s$ categories, since its $\ell^1$ change is at most $2s/D$ and the loss modulus is at most four times that change. Thus all computational clauses of Definition~\ref{def:effective} hold for ideal cell access.
+
+There is no need to identify the full hidden simplex with the predictive quotient. Restriction to the invariant span of future-test effects gives the exact compact quotient, including experiments with indistinguishable hidden states. Its actually acquired laws determine the invariant in Theorem~\ref{thm:completion}. The matrices are an offline representation, not a free state available to the deployed observer.
+\end{proof}
+For numerical reports $\widetilde Y$ with $\|Y-\widetilde Y\|_\infty\le b$ outside a separately charged exceptional event, any cell change lies within $b$ of a grid boundary. If there are at most $q+1$ boundaries per coordinate, the Gaussian marginal density bound gives per-call probability at most
+\[
+ \min\{1,2r(q+1)b/(\sqrt{2\pi}\sigma_-)\},
+ \qquad q=\lceil2R/h\rceil.
+\]
+This includes the box boundary and applies to all conditional mixtures under every deployed policy. Every cell has the same support signature, so such errors cannot create an illegal stopping path. The reporter's precision and physical comparison costs remain separate from the controller table.
+
+\begin{theorem}[Noncommuting instruments with no reset requirement]\label{thm:effective_quantum}
+Let $\mathcal H=\mathbb C^D$, with fixed finite $D$, and let $\mathcal C_t^a$ be any computably given completely positive trace-preserving maps. On the report cube $[-1,1]^r$ with uniform probability measure, take
+\[
+ E_y=I+s\sum_{i=1}^r y_iH_i,\qquad
+ \mathsf I_t^a(dy)\rho=E_y^{1/2}\mathcal C_t^a(\rho)E_y^{1/2}\,2^{-r}dy,
+\]
+where the Hermitian matrices are computable, $s\ge0$ is computable, and
+$\kappa I\preceq E_y\preceq K I$ with a known $\kappa>0$. The effects need not commute and the channels may be unitary. For a fixed finite POVM and its Brier task, Theorem~\ref{thm:effective} applies with
+\begin{equation}\label{eq:quantum_effective}
+ B_a\le\lceil2/h\rceil^r,\qquad
+ d_{t,h}\le \sqrt{K/\kappa}\,s
+       \Big(\sum_i\|H_i\|_{\rm op}^2\Big)^{1/2}\sqrt r\,h.
+\end{equation}
+No positive lower bound on the evolving state's eigenvalues is needed for this conclusion. Constants depend on the fixed dimension and displayed instrument bounds.
+\end{theorem}
+\begin{proof}
+Because the cube is centered, $\int E_y\,2^{-r}dy=I$, proving normalization. The report density is at least $\kappa$ on every normalized positive input, so all cells are active; uniform conditional cube measure is a common reconstruction. For positive definite $A,B\succeq\kappa I$, the equation
+\[
+ \sqrt A(\sqrt A-\sqrt B)+(\sqrt A-\sqrt B)\sqrt B=A-B
+\]
+has the integral solution obtained by integrating
+$e^{-t\sqrt A}(A-B)e^{-t\sqrt B}$ over $t\ge0$. It yields
+$\|\sqrt A-\sqrt B\|_{\rm op}\le\|A-B\|_{\rm op}/(2\sqrt\kappa)$.
+For a density matrix $\sigma$, the two-factor difference estimate therefore gives
+\[
+ \|E_y^{1/2}\sigma E_y^{1/2}-E_v^{1/2}\sigma E_v^{1/2}\|_1
+ \le \sqrt{K/\kappa}\,\|E_y-E_v\|_{\rm op}.
+\]
+Cauchy--Schwarz bounds the last norm by
+$s(\sum_i\|H_i\|_{\rm op}^2)^{1/2}|y-v|$.
+Average over a cell and then over the probability measure on the cube to obtain \eqref{eq:quantum_effective}. The channel output is always a density matrix, so its purity causes no denominator problem in this unnormalized estimate.
+
+The square root is uniformly computable on the positive spectral interval with a gap $\kappa$; integration of the continuous matrix entries over rational boxes is consequently effective with supplied moduli. The fixed-POVM probabilities are affine in $\rho$, and the Brier loss has computable finite decision nets as above. Closure of finite-dimensional future-test effects produces the predictive quotient. No infinite-dimensional operator statement and no optimal quantum-memory claim are implicit: the persistent resource here is the classical controller alphabet, while the physical quantum system belongs to the experiment.
+\end{proof}
+
+\begin{proposition}[Singular reports, atomic tails and changing rank]\label{prop:effective_singular}
+The effective theorem also holds in the following two classes, under its support and computability clauses.
+
+\textup{(i)} Reports have a prescribed Cantor probability reference and positive instrument density $A_t^a(y)$. If, on normalized positive inputs,
+$\|(A_t^a(y)-A_t^a(v))x\|_{\mathcal B}\le L_t|y-v|^\alpha$, then the $2^k$ ternary-cylinder partition gives $d_{t,k}\le L_t3^{-\alpha k}$. Any fixed finite family of separately flagged positive instruments can be retained exactly; their outputs may have different ranks.
+
+\textup{(ii)} Reports are countable, with the same positive support at every phase and input. If the actual probability of reports outside the first $J$ is uniformly at most a supplied computable $T_J\downarrow0$, preserve the first $J$ reports and pool the tail. Then $B=J+1$ and $d_{t,J}\le2T_J$, with no regularity of the tail updates.
+\end{proposition}
+\begin{proof}
+In (i), reconstruct from the reference conditioned on each cylinder. Its diameter is $3^{-k}$, so the density oscillation, averaged over the reference probability, is at most $L_t3^{-\alpha k}$. A flagged discrete outcome is a singleton cell and incurs no error. In (ii), the vector measures agree on the retained atoms. On the tail, positivity bounds the norm of each of the original and reconstructed measures by its actual mass. The triangle inequality gives $2T_J$. Choose a computable full-support conditional reference on that tail. Common support ensures that pooling does not invent a phase-specific possible path.
+
+For a concrete singular acquired law, take a qubit initially in $I/2$, the identity channel, the Cantor reference on $[0,1]$, and $E_y=I+s(y-1/2)\operatorname{diag}(1,-1)$ with $0<s<1$. Its mean effect is $I$, report density is one at that preparation, and the acquired posterior is exactly $E_y/2$. This injective affine image of the Cantor law is singular in the trace-one affine space. The instrument is not a re-preparation of its input. Separately flag a fixed positive fraction of calls which prepare a pure state, and another fixed fraction which prepare $I/2$; the remaining fraction uses this continuous instrument. The flags have input-independent positive mass. At the first call the actual acquired law has a singular continuous component with its original mixture weight and atoms of different rank. Later laws use their actual history-dependent mixture weights, and repeated flags allow rank changes in both directions. Refinement never normalizes away the continuous or atomic masses. The preceding estimates prove an effective frontier for this experiment; no dimension-only power law or normalized-filter contraction is asserted.
+\end{proof}
