@@ -1,0 +1,11 @@
+# Historical coverage and preservation
+
+Directly inspected in this revision: the four canonical controls; the latest R6 external report; all seven R6 mathematical sections, main source, references, pipeline, pinned inputs, history and build evidence; and the R4 mandatory-state/joint-minimax derivation in `sections/06_minimax.tex`. In particular the R4 exact-tag, shared-task calibration and erasure mechanisms were recognized before classifying the corresponding tools as inherited. R6's history and reference comparisons were consulted for the earlier restart objections and independent lines. The canonical original outline remains the controlling mother problem.
+
+This is not an independent audit of every v1--v96 proof, every old referee report or every realization paper. Exact tree preservation and a later history ledger are not equivalent to rereading them. No exhaustive historical certification is claimed.
+
+The exact R4, R5 and R6 subtrees are preserved at their original sibling paths; the exact latest R6 report is also retained as a review input. All substantive R6 mathematics is rebuilt in the accompanying technical article. The native R7 article is new source, not a copy of v96. Its condensed references to inherited results do not delete their proofs.
+
+Unified or rederived: executable predictive sufficiency, conditional projection, actual acquired-law quantization, physical-law block recursion, primitive-support mass-preserving companding, ordinary filtering risk, bounded stopped drift, common-task morphisms and finite-depth singular transport. Native additions: dominated continuation function-space cuts and compatibility inequality; optimized adaptive multiscale acquisition/state matching; finite-bit implementation for that class; extension of the shared erasure/calibration mechanism to its nonhomogeneous adaptive risk law.
+
+Still independent: ordered-measurement geometry/discrimination, finite-input/finite-physical-action theorems, streaming-space and Hilbert-rank results; the older general allocation/countable-stratum and reset-specific results not proved under the current block relation. Their realization branches and frozen archive are neither rewritten nor promoted into the foundation theorem.

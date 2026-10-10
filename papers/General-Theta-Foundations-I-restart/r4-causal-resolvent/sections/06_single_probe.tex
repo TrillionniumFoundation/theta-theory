@@ -1,0 +1,69 @@
+\section{A coupled acquisition--resolution law for one probe}\label{sec:single-probe}
+The robust family in Section~\ref{sec:minimax} separates several lower-bound mechanisms by a common terminal menu. We now give a different experiment: one scalar hidden quantity and one Bernoulli probe. Acquisition, packet precision, retained memory, calibration ambiguity and report thinning act on that same quantity. The interaction through acquired mass is exact, not a sum of independent terminal blocks.
+
+Fix $N\in\N_0$, $0\le s,\rho\le1$, $0<a\le1/4$, $0\le\delta\le1/8$, and an integer $b\ge0$. Put $L=2^b$. Prepare $U$ uniformly on $[-a/2,a/2]$. The unknown apparatus parameter is $\vartheta\in\{-\delta,\delta\}$; its calibration packet is identical at both parameter values. The terminal probe, available only after the forecast, is
+\[
+ T\mid U,\vartheta\sim\operatorname{Bernoulli}(1/2+U+\vartheta).
+\]
+Every algorithm is independent of the unknown sign. Calibration ambiguity here is compulsory information loss, not an optional numerical inaccuracy that an optimizer could remove.
+
+Until acquisition, each raw call independently succeeds with probability $s(1-\rho)$. On success it reveals only the index of the equal-width cell of $U$ among $L$ cells, and the apparatus enters an absorbed state. On failure it emits $\perp$. After absorption every call emits $\perp$ and preserves the physical state. Thus $\perp$ never changes a retained label, and success overwrites it. The thinning parameter $\rho$ can be implemented by independently dropping a would-be successful report before absorption. One raw call and one time unit are charged at each attempt or hold. The forecast follows exactly $N$ such calls, with the horizon supplied by an exogenous clock. The terminal probe is a further paid call.
+
+Set
+\begin{equation}\label{eq:single-h}
+ h=(1-s(1-\rho))^N,\quad
+ b_*={1\over4}-{a^2\over12}-\delta^2,
+ \quad \bar U=\hbox{the midpoint of the revealed cell}.
+\end{equation}
+The common ideal oracle knows $U$ and $\vartheta$, so its risk is $b_*$ for both parameter values. The full report history gives posterior mean $0$ on no acquisition and $\bar U$ on acquisition. Conditional on a success, cell indices are uniform and the unresolved within-cell variance is $a^2/(12L^2)$. Let $\mathcal A_M$ denote all algorithms retaining at most $M\ge1$ states, with no surviving report tape; initially no restriction is imposed on temporary computation.
+
+\begin{theorem}[One-probe coupled minimax law]\label{thm:single-probe}
+For the preceding two-member experiment family, checkpoint and online minimax excesses over the common oracle are equal. Uniformly over all the displayed parameters,
+\begin{equation}\label{eq:single-law}
+ \inf_{A\in\mathcal A_M}\sup_{\vartheta=\pm\delta}
+       \{R_\vartheta(A)-b_*\}
+ \asymp \delta^2+a^2\left[h+(1-h)(M^{-2}+2^{-2b})\right].
+\end{equation}
+The constants are numerical, independent of acquisition rarity and all resource parameters. An exact equality before comparison is
+\begin{equation}\label{eq:single-exact}
+ \delta^2+{ha^2\over12}+{(1-h)a^2\over12L^2}
+       +q_M\left(h\delta_0+\frac{1-h}{L}\sum_{l=1}^L\delta_{u_l}\right),
+\end{equation}
+where $u_l=-a/2+(l-1/2)a/L$ and $q_M$ is ordinary squared distortion with $M$ centers. Equation~\eqref{eq:single-law}, not an assumed value of $q_M$, supplies the explicit resource scale.
+\end{theorem}
+\begin{proof}
+Write $\widehat U$ for a forecast minus $1/2$. Conditional variance gives excess over $b_*$ equal to $\E(\widehat U-U-\vartheta)^2$. The preforecast law is independent of $\vartheta$. Averaging its two signs removes the linear cross term and yields
+$\delta^2+\E(\widehat U-U)^2$, a lower for the worst sign. Conditional projection onto the full history separates the unresolved variances in \eqref{eq:single-exact} from quantization of the conditional mean. Encoder randomness, decoder randomness and independent shared randomness cannot lower the resulting distortion infimum. This proves the lower in \eqref{eq:single-exact}.
+
+Conversely choose an optimal finite codebook for the finite measure in \eqref{eq:single-exact}. Such a codebook exists by compactness after projecting centers into $[-a/2,a/2]$. Choose the center of each nonempty encoding cell to be its conditional mean. The resulting prediction has $\E(\widehat U-U)=0$, so the two signs have the same excess. Implement it online by starting in the label for $0$, overwriting with the label for $u_l$ on a success of cell $l$, and copying the label on every $\perp$. The hardware absorbs after its first success, so no retained acquisition flag is needed. Even if the labels for $0$ and some $u_l$ coincide, the next $\perp$ has the same valid action, and any success overwrites. This proves equality of the checkpoint and online values and \eqref{eq:single-exact}.
+
+For the scale lower, the unavoidable calibration and no-acquisition terms are explicit. On the acquired event, allowing the encoder to see $U$ exactly can only help. A uniform interval has $M$-point squared distortion $a^2/(12M^2)$: its Voronoi cells are intervals of lengths $d_i$ with total $a$, and their contributions are at least $d_i^3/(12a)$; convexity minimizes their sum at equal lengths. Empty cells do not help. The packet residual also gives $a^2/(12L^2)$. The maximum of these two acquired lower bounds is at least half their sum. This proves a constant multiple of the right side of \eqref{eq:single-law}.
+
+For an upper bound when $M\ge2$, reserve the center $0$ and use $M-1$ equally spaced centers on the interval. A cell midpoint is approximated with squared error at most $a^2/[4(M-1)^2]$. Together with the exact variances in \eqref{eq:single-exact}, and $M-1\ge M/2$, this is the asserted upper. At $M=1$, the constant forecast $1/2$ has excess $\delta^2+a^2/12$ and the displayed scale is comparable to it. This includes $L=1$, $N=0$, and $s(1-\rho)=0$.
+\end{proof}
+
+\subsection{What the thinning parameter does and does not mean}
+Here $\rho$ is a raw report-erasure probability, not a complete causal deficiency. Regard the thinned protocol as the source and the unthinned protocol with the same cell interface as the target. The identity report transformation uses one source call per target call, copies the declared clock and terminal probe, and retains no additional observation-dependent state. The action class consists only of the prescribed attempts followed by the terminal probe. Couple the two raw protocols with the same hidden $U$, the same unknown $\vartheta$, the same attempt coins until a disagreement, and the same terminal Bernoulli randomness. They agree until a would-be success is dropped. Therefore this particular resource-certified causal simulator has the uniform complete-law allowance
+\begin{equation}\label{eq:thinning-path}
+ \varepsilon_N\le1-(1-s\rho)^N\le Ns\rho.
+\end{equation}
+The inequality is an upper certificate, not an assertion of optimality. It remains valid when some calls already follow absorption, because they cannot create a new disagreement before the first dropped success. A simulator in the reverse direction may retain an already obtained packet to manufacture delayed successes, but that is a different resource account. We never replace the complete defect by the single-call coin parameter $\rho$.
+
+For clarity one can compute an exact deficiency for the \emph{fixed-time packet reduction}, where success times are discarded. This is a different, explicitly less informative experiment. Let the parameter be a fixed cell $c\in\{1,\ldots,L\}$; an erasure channel returns $c$ with probability $w$ and $\perp$ otherwise. Compare $w_1=1-h$ to $w_0=1-(1-s)^N$, with $w_1\le w_0$.
+
+\begin{proposition}[Exact terminal packet deficiency]\label{prop:terminal-deficiency}
+For $L\ge2$, the deficiency of the $w_1$ packet experiment relative to the $w_0$ packet experiment, with total variation $\sup_A$, is
+\begin{equation}\label{eq:packet-def}
+ (w_0-w_1)(1-1/L).
+\end{equation}
+It is a terminal-experiment statement, not an equality for complete path laws, stopping times, or an infinite-horizon simulator.
+\end{proposition}
+\begin{proof}
+Retain a revealed cell. On an erasure, output a uniformly random cell with probability $(w_0-w_1)/(1-w_1)$, and otherwise erase; the case $w_1=1$ has zero defect. The output erasure mass equals the target's, its mass at the true cell is short by $(w_0-w_1)(1-1/L)$, and precisely that mass lies at false cells. This proves the upper.
+
+For the lower use the common decision problem of guessing the cell, with loss zero for a correct guess and one otherwise, under the uniform prior. The best success probability from a $w$ channel is $w+(1-w)/L$. Any parameter-independent randomization of the $w_1$ channel cannot improve this optimum. If every randomized output law were within $\varepsilon$ of its corresponding $w_0$ law, the target optimal decision rule would have averaged success at least $w_0+(1-w_0)/L-\varepsilon$ after that randomization. Comparing these two success bounds gives \eqref{eq:packet-def}. This argument covers all simulators, not only a particular imputation rule.
+\end{proof}
+
+Equation~\eqref{eq:single-law} exhibits a nonseparable effect: thinning changes the acquired mass $1-h$, which weights both resolution and packet-information errors, while increasing the unresolved acquisition variance. Calibration ambiguity affects the same Bernoulli mean. This is stronger than assembling these effects by an independently chosen terminal menu. It does not prove that every recurrent calibration problem has this law, nor that \eqref{eq:packet-def} can replace the complete causal defects in Theorem~\ref{thm:morphism}.
+
+For rational $a$, the displayed grid upper has a direct finite-bit realization. The persistent register stores one of $M$ labels; a current $b$-bit cell index is scanned in temporary storage, mapped to a grid center, and erased before the next call. A conservative implementation uses $O(b+\log M+\operatorname{bits}(a)+b_{\rm out})$ temporary bits and a finite program for integer arithmetic, with polynomial bit-operation cost in these quantities per success and constant label-copy cost per hold. Rounded output contributes at most $2^{-b_{\rm out}}$ in the root-mean-square error. These are feasible upper accounts, not optimal lower bounds on workspace or runtime. The physical raw-call count is $N+1$ including the selected probe, regardless of acquisition success.
