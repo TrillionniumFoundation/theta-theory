@@ -1,0 +1,9 @@
+# Actual historical coverage and preservation
+
+Directly inspected this round: canonical charter and theorem targets; General Theta v0.1 foundational definitions and G1/G3 requirements; realization registry; the newly deposited R10 report including central-proof audit, F1–F4 assessment, eight major issues and thirty-two technical comments; R10 native source and its build/audit architecture; the prior separated-tree/continuation/filter proof interfaces needed to retain and compare the mathematics. The complete mounted R10 source/build packet was checked against its original manifest and source-tree hash before reuse.
+
+The native R11 proof is newly written; it does not copy v96. The entire R10 native mathematical source remains unchanged, is rebuilt, and is supplied as Supplement T. The entire earlier technical companion remains unchanged and is rebuilt as Supplement S. R4–R10 sibling directories and existing review-inputs remain inherited by Git identity. Reference entries inherited from earlier papers are not automatically new independent priority checks.
+
+Not performed: a fresh line-by-line proof audit of every theorem in v1–v96, every old review, or every separate realization paper. Their preservation and earlier provenance are not represented as that audit. The archive and realization branches remain independent and unmodified.
+
+Unified in the new proof: experiment-level Bayes construction, future-task realization, actual-law quantization, optimal-action comparison, conditional barycentric information loss, full-state accounting and typed risk transport. Independently retained: separated-refinement horizon-uniform completion; continuation-side-information coding; positive-noise rank separation; sparse filter block stability; stopped-task coupling; ordered measurement, finite actions and streaming-space lines.

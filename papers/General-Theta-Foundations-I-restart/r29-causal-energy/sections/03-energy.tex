@@ -1,0 +1,65 @@
+\section{A causal energy and compatibility theorem}\label{sec:energy}
+For a finite measure $\nu$ with finite second moment on $\R^k$ define
+\[
+ q_m(\nu)=\inf_{c_1,\ldots,c_m}\int\min_j\norm{x-c_j}^2\,\nu(dx).
+\]
+The measure is not normalized if it is a subprobability. For probability measures, conditional projection gives
+\begin{equation}\label{eq:q-energy}
+ \sup_{J:\,|J|\le m}\E\norm{\E[X\mid J]}^2
+ =\E\norm X^2-q_m(\operatorname{Law}X),
+\end{equation}
+where randomized Borel encoders are included. Indeed, for any output means the randomized assignment is no better than nearest-center assignment, and optimizing the means gives the reverse inequality. For compact support, centers lie in its closed convex hull and compactness gives attainment. The identity with infima needs only a finite second moment, by truncation or the same nearest-center inequalities. This is the standard squared quantization identity~\cite{GrafLuschgy}.
+
+Let $v_{t,s}=\E[p_t\mid S_t=s]$, define values arbitrarily on zero-mass labels, and put $e_t=\E\norm{v_{t,S_t}}^2$. A label is not a free copy of $p_t$: its prediction is its conditional mean under its own actual law. Given $S_{t-1}=s$, let
+\[
+ W_s=A_t(Y_t)v_{t-1,s},\qquad
+ c_{s,j}=\E[W_s\mid S_{t-1}=s,S_t=j].
+\]
+The update randomness is included in this conditional law. Let $\pi_s=\Pp(S_{t-1}=s)$ and $\pi_{s,j}=\Pp(S_{t-1}=s,S_t=j)$.
+
+\begin{theorem}[Causal conditional-mean energy transfer]\label{thm:energy}
+Under the raw test and report hypotheses of Section~\ref{sec:experiments}, every finite-state Borel randomized observer satisfies the exact identity
+\begin{equation}\label{eq:energy-identity}
+ e_t=\kappa_t e_{t-1}-D_t^{\rm row}-D_t^{\rm pool},
+\end{equation}
+where
+\begin{align}
+ D_t^{\rm row}&=\sum_s\pi_s\E[\norm{W_s-c_{s,S_t}}^2\mid S_{t-1}=s],\label{eq:row-defect}\\
+ D_t^{\rm pool}&=\sum_{s,j}\pi_{s,j}\norm{c_{s,j}-v_{t,j}}^2.\label{eq:pool-defect}
+\end{align}
+In particular, with
+\begin{equation}\label{eq:eta-definition}
+ \eta_t(m)=\inf_{\norm v=1}\frac{q_m(\operatorname{Law}(A_t(Y_t)v))}{\kappa_t},
+\end{equation}
+one has
+\begin{equation}\label{eq:energy-product}
+ e_n\le e_0\prod_{t=1}^n\kappa_t(1-\eta_t(m_t)).
+\end{equation}
+The bound holds for each legal observer, not just a chosen quantizer. Equality in a nonzero one-step bound holds if and only if every positive-mass incoming row with nonzero entering mean attains the coefficient in~\eqref{eq:eta-definition}, its encoding attains its corresponding $q_{m_t}$, and all incoming centroids with the same outgoing label agree. Thus compatible conditional centroids are necessary and sufficient to attain the local product bound. Successive compatible rows attain the full product whenever its factors and entering energies are nonzero.
+
+For isotropic relative transport on $\mathbb S^d$, set $\beta_d(m)=1-q_m(\sigma_d)$. Then
+\begin{equation}\label{eq:orbit-product-lower}
+ \calR_{\rm seq}(n;m_1,\ldots,m_n)-B
+ \ge1-\prod_{t=1}^n\beta_d(m_t),
+ \qquad \calR_{\rm cp}(n,m)-B=q_m(\sigma_d).
+\end{equation}
+A compatible centroid construction attaining the product is therefore an exact causal realization, not merely a checkpoint codebook.
+\end{theorem}
+\begin{proof}
+The report is independent of the past and the update sees the old label and current report, with fresh randomness only. Hence
+\[
+ \E[p_t\mid S_{t-1},Y_t,S_t]=A_t(Y_t)v_{t-1,S_{t-1}}.
+\]
+Taking its conditional expectation given $(S_{t-1},S_t)$ gives $c_{s,j}$, and conditioning again on $S_t=j$ gives $v_{t,j}$. Applying the elementary conditional-square decomposition first inside each row and then when pooling rows gives
+\[
+ \sum_s\pi_s\E\norm{W_s}^2
+ =D_t^{\rm row}+\sum_{s,j}\pi_{s,j}\norm{c_{s,j}}^2
+ =D_t^{\rm row}+D_t^{\rm pool}+e_t.
+\]
+The left side is $\kappa_t e_{t-1}$ by~\eqref{eq:second-isotropy}. For each nonzero $v_{t-1,s}$, identity~\eqref{eq:q-energy} and homogeneity bound the row loss below by
+$\kappa_t\eta_t(m_t)\norm{v_{t-1,s}}^2$.
+A zero vector contributes zero. Since both losses are nonnegative, this proves the one-step inequality and its iteration. Equality requires equality in every positive-weight nonnegative term. The pooling term vanishes exactly when $c_{s,j}=v_{t,j}$ for every positive $\pi_{s,j}$; these observations prove the stated criterion, including its converse. If a factor or energy is zero, the product bound is zero and there is no inference about earlier equality; we make no such inference.
+
+For Haar rotations, $R_tv$ is uniform on the sphere of radius $\norm v$, including every direction of every incoming conditional mean. Thus $\kappa_t=1$ and $\eta_t(m)=q_m(\sigma_d)$, not a coefficient involving the ambient physical dimension. Also $e_0=1$. The optimal terminal response is $v_{n,S_n}$, and its risk is $V-e_n$. Subtract $B=V-1$ to obtain the first assertion in~\eqref{eq:orbit-product-lower}. A checkpoint sees the whole legal history, hence $p_n$, and can realize any Borel $m$-point quantizer of its actual law $\sigma_d$. This proves its identity.
+\end{proof}
+The theorem is an exact finite-history statement; neither a regenerative boundary nor a contraction of the full-history update is assumed. It uses a finite test closure and state-independent report transport. General nonlinear filtering with state-dependent likelihoods is not silently included. An analytical conditional mean is used to prove the converse; the construction below stores only a label and never computes the exact hidden conditional distribution at runtime.
