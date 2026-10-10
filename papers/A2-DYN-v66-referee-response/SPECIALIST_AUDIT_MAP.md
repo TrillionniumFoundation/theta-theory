@@ -1,23 +1,11 @@
-# Specialist audit map for revision 65
+# Specialist audit map
 
-## Reversible contact algebra
+No independent human audit or formal proof certification is claimed.
 
-Check the canonical endpoint signs `p_0=-F_u`, `p_m=F_v`; symplectic determinant one; reversal matrix `diag(1,-1)` at both normal endpoints; and `det(I-P)=-4bc`. Verify the original source factor `1/(4 pi R c_*)`, the Morse factor `2 pi`, and the square root in `J_z`. The closed word is not required primitive and is not divided by its length. Displacement, occupation and arithmetic residue remain those of the original half-word.
+The new analytical checks are: the row-normalized Hessian identity `N=A D_c` with frozen base incidences; the retained incidence in the Neumann bound; mixed endpoint/internal estimates in the weighted norm; the quantitative contraction on spaces whose dimensions grow with the word length; positive selected reflection signs on the continuation; the relative logarithmic density estimate; the quantitative Morse inverse and its Jacobian; exact physical masking; the Lipschitz clearance guard at a changing closest point; chart disjointness; and the precise use of the inherited fixed-width two-strip local theorem.
 
-## Physical-side interpretation
+At a selected clearance seam, distinguish a smooth selected branch expression from the derivative of the globally singular billiard map. Check the nonzero scalar gradients only where the fixed-count tangent trace is used; they are not hypotheses of the nonlinear physical profile.
 
-At a competing-hit seam verify simple selected contact roots and positive selected incidences. The contact graph provides the limiting branch derivative; the singular physical map's derivative is not assumed to exist. Additional points of an extension or an affine sign model carry no source measure.
+The inherited load-bearing checks remain collision graph/first-hit encoding, anisotropic transfer-operator and arithmetic projection inputs, the physical coarea normalization, the effective semialgebraic descriptions and quantifier bounds, the reversible determinant square root, and the original positive raw-error identity. Finite diagnostics and TeX builds do not certify these continuum assertions.
 
-## Local caustic coarea
-
-Check `F(Phi(y))=t_z+|y|^2/2`, `D Phi(0)=H^{-1/2}`, the transformed source density, and the cancellation of the polar factor. Verify the angular threshold estimate uniformly at the arcsine transition. The simple one-sided coefficient is `J_z/2`; at several seams it is the original label's angular fraction times `J_z`.
-
-## Exact-label affine profile
-
-Check the finite list of image-clearance margins, exclusion of incident disks, and each scalar gradient's nonvanishing. Check commutation of the monotone guard with each flight's minimum clearance and the original product of flight guards. Verify initial and terminal section membership, occupation only at collisions `0,...,m-1`, and unique exact-label assignment for both actual and affine input signs. The summed label-vector error is at most two on the input-disagreement set, not the number of labels.
-
-## Long-count step not supplied by local formulas
-
-Uniform neighborhoods and critical-weight concentration must still be proved for the required families before an ordered height conclusion is asserted. Selected grazing and noncritical-roof rank degeneracy remain in the positive complement. Small-strip and long-count limits are not interchanged. Generic finite fixtures do not establish any missing uniform dynamical estimate.
-
-No independent human audit has been obtained by this execution.
+The unresolved endpoint inputs are complete incidence height, complete clearance height (including the positive outside source), physical angular concentration/loss, and full reversible atomic concentration. Their status flags remain false.

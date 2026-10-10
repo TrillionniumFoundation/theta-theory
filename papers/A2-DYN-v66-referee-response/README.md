@@ -1,14 +1,9 @@
-# A2-DYN — revision 65
+# A2-DYN — revision 66
 
-**Collision records, arithmetic, and raw local inversion in a triangular Lorentz gas**  
-Author: Qian Qi. Date: 10 October 2026.
+Qian Qi, **Collision records, arithmetic, and raw local inversion in a triangular Lorentz gas**.
 
-This revision responds to the frozen v62 external report and preserves the complete v63 manuscript at `ae14ecbfa39d0d9005574155de86acecd2e8a166`. The v64-named branch resolved to that same v63 source; this directory is an independently identified revision 65.
+Active manuscript: `main.tex`. Compile the complete article with `bash build.sh`. The two new leading theorems concern count-uniform selected-contact charts and the ordered physical collar trace. New proofs are in core modules 140–142. All 139 earlier modules remain byte-identical and compiled. The old abstract and introduction are compiled in `appendices/v65_frontmatter.tex` and the old main file is archived in provenance.
 
-`main.tex` is the complete manuscript. It retains all 136 old core modules and adds `137_reversible_critical_weights.tex`, `138_simple_caustic_density_profile.tex` and `139_affine_caustic_label_profiles.tex`. The new leading theorem states their actual local scope. The original pointwise arithmetic target, source normalization, exact labels and positive complements are unchanged.
+Read `RESPONSE_TO_REFEREE.md` for the response to the v65 report, `JOURNAL_ROUTE.md` for the short proof route, `PROOF_LEDGER.md` for dependencies, and `SOURCE_MANIFEST.json` for theorem scopes. The original Lorentz pointwise target is unchanged. Complete incidence/clearance heights and full reversible atomic concentration are not proved by this revision.
 
-Read `RESPONSE_TO_REFEREE.md` for the itemized replies, `PROOF_LEDGER.md` for theorem scopes, and `SPECIALIST_AUDIT_MAP.md` for the next mathematical audit. Prior metadata is archived under `provenance/v63-*`. The bibliography is append-only.
-
-Run `bash build.sh` from a clean repository checkout with native TeX and the documented Python dependencies. The read-only workflow `.github/workflows/a2-dyn-v65-qualification.yml` checks the exact event source, reruns inherited and new finite diagnostics in normal and optimized Python, builds the complete article without unresolved references or overfull boxes, renders the new proof pages by their actual labels, and publishes a PDF/source/evidence artifact.
-
-The branches are `revision/a2-dyn-v65-referee-response-2026-10-10` and `revision/a2-dyn-v65-referee-copy-2026-10-10`. A successful build is not a proof of the missing ordered long-count height estimates or independent human review.
+Branches: `revision/a2-dyn-v66-referee-response-2026-10-10` and `revision/a2-dyn-v66-referee-copy-2026-10-10`. They are to carry the same final source SHA. The branch-specific workflow records actual build/fixture results; it is not independent mathematical review or a proof certificate.

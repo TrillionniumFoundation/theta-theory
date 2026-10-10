@@ -1,7 +1,7 @@
-# A2-DYN revision 66 checkpoint
+# Revision 66 completed-source checkpoint
 
-Date: 2026-10-10. This checkpoint inherits the complete v65 paper tree `897816d34b3d012fb93feaf532dcf64740723d83`, reviewed at author commit `04f38424177533db60dfd13c3052381dc0adb481`. The controlling report is the v65 external report at `8f5b4dd2b2b12b7454b3ebdfa0e41546ba7f6908`, blob `2b2f7798f7c6eefa23c9c0a27368fd53df907442`.
+The initial remote checkpoint was `19dd9372be3abf58b36ed52db23b50f3539b86d0`, based on the v65 review commit. The final source adds modules 140–142, a shorter leading proof route, the compiled preserved v65 introduction, the point-by-point response and exact-source qualification.
 
-The revision remains on the original Lorentz record and pointwise target. No inherited core, tool, appendix, report, or other paper is removed. Source continuation is kept distinct from a physical measure. The final manuscript, response, and qualification will supersede this explicitly provisional checkpoint on this same new branch.
+The complete reviewed baseline is the v65 paper tree `897816d34b3d012fb93feaf532dcf64740723d83`. No historical author manuscript or review is changed. The new author and referee-copy branches are intended to identify the same final mathematical source; each workflow execution records its actual SHA and result separately.
 
-The first new proof addresses report 31.1: the incidence-normalized tridiagonal inverse admits a weighted norm bound independent of the collision count. It yields a selected-contact continuation across clearance and section seams under the original tapered incidence envelope. Physical first-hit and section decisions remain exact source indicators. This does not yet establish complete grazing-source height or atomic trace concentration.
+This source contains proofs of the scoped uniform chart and finite-width trace results, not a completed proof of the full pointwise Lorentz endpoint. The remaining quantities are recorded in the response, proof ledger and manifest.

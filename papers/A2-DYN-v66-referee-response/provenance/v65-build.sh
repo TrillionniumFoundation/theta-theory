@@ -2,9 +2,10 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 mkdir -p build evidence
-python3 tools/verify_v66.py > evidence/v66-source-and-finite-checks.json
-python3 -O tools/verify_v66.py > evidence/v66-source-and-finite-checks-optimized.json
-cmp evidence/v66-source-and-finite-checks.json evidence/v66-source-and-finite-checks-optimized.json
+python3 ../A2-DYN-v63-referee-response/tools/verify_v63.py > evidence/v63-baseline-recheck.json
+python3 tools/verify_v65.py > evidence/v65-source-and-finite-checks.json
+python3 -O tools/verify_v65.py > evidence/v65-source-and-finite-checks-optimized.json
+cmp evidence/v65-source-and-finite-checks.json evidence/v65-source-and-finite-checks-optimized.json
 for script in certify_winding certify_excursion verify verify_v2 check_v5 check_v6; do
   python3 "tools/${script}.py" > "evidence/${script}.py.json"
 done
@@ -22,4 +23,4 @@ if grep -Eq 'LaTeX Warning|Package .* Warning|Overfull|undefined|Missing charact
   grep -En 'LaTeX Warning|Package .* Warning|Overfull|undefined|Missing character' build/main.log
   exit 1
 fi
-python3 tools/render_v66.py
+python3 tools/receipt_v65.py > evidence/build-receipt.json

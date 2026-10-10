@@ -1,7 +1,7 @@
-# Revision 65 referee status
+# Referee status — v66
 
-This is an author revision for further external review, continuing the same A2-DYN manuscript. The controlling report is the v62 external top-four report, not a newly invented report on v63 or v64.
+Revision 66 responds to the v65 external report at `8f5b4dd2b2b12b7454b3ebdfa0e41546ba7f6908`. It is an author revision for renewed scrutiny, not an accepted article or an independently commissioned review.
 
-The packet contains new complete proofs of reversible critical coefficients, direct local roof-critical clearance profiles, and a width-uniform affine profile for the exact-label vector at multiple seams and section junctions. The complete incidence and clearance ordered essential-height limits have not been declared proved. Independent human review and formal continuum proof certification remain false.
+New proofs: incidence-normalized contact inverse; count-uniform tapered selected-contact jets and Morse density; exact nonlinear physical angular profile; ordered finite-width physical collar trace; positive atomic-to-collar comparison.
 
-Consult `RESPONSE_TO_REFEREE.md`, `PROOF_LEDGER.md`, `SPECIALIST_AUDIT_MAP.md` and the compiled leading theorem for the precise changes and next review targets. The source manifest and exact-SHA build receipt distinguish mathematical scope from reproducibility checks.
+Not closed: full-source coverage, uniform angular loss, complete incidence and clearance heights, full reversible atomic concentration, unrestricted pointwise arithmetic local limit and its same-roof conditional consequences. No independent human specialist verification has been obtained. Source/finite/build qualification is recorded separately.

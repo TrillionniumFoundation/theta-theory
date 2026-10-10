@@ -1,79 +1,121 @@
-# Response to the external referee: A2-DYN revision 65
+# Response to the revision-65 external referee report
 
-## Manuscript and frozen documents
+**Manuscript:** Qian Qi, *Collision records, arithmetic, and raw local inversion in a triangular Lorentz gas*  
+**Revision:** 66, 10 October 2026  
+**Reviewed author source:** `04f38424177533db60dfd13c3052381dc0adb481`  
+**Complete reviewed paper tree:** `897816d34b3d012fb93feaf532dcf64740723d83`  
+**Controlling report:** `reviews/a2-dyn-v65-external-top4-review-2026-10-10/REFEREE_REPORT.md`, commit `8f5b4dd2b2b12b7454b3ebdfa0e41546ba7f6908`, blob `2b2f7798f7c6eefa23c9c0a27368fd53df907442`.
 
-We thank the referee for separating finite-count geometric estimates from the ordered essential-height requirement. The subject and the unrestricted arithmetic pointwise target are unchanged. This response addresses the latest located external report, `reviews/a2-dyn-v62-external-top4-review-2026-10-10/REFEREE_REPORT.md`, blob `4d0a4e354df2b7f7b14667332b0a40c2c959160f`. Its reviewed manuscript is author commit `45425f65832e3f1e69336c791de5fc32f8ed22bb`.
+We thank the referee for distinguishing the valid local geometry from the unproved ordered pointwise conclusion. We retain the original Lorentz record, arithmetic modulation, positive source decomposition and pointwise target. We do not replace the problem by a model system, an averaged return index, a growing Fourier band, or a smaller journal claim.
 
-Revision 63 at `ae14ecbfa39d0d9005574155de86acecd2e8a166` is incorporated without deleting its mathematical content. The later v64-named branch pointed to this same v63 manuscript when inspected. We therefore issue a separately identified revision 65, with three new complete modules, a new leading theorem, and an itemized response. The author revision is available for further referee review; it is not a claim of acceptance or an external referee report.
+The principal change is a count-uniform coordinate and source theorem, not another finite-word affine expansion. The selected contact equations can be continued across clearance and section boundaries without claiming that the continued points are physical. The actual nonlinear physical and section decisions then remain in the density integral. This separates the deterioration of physical angular sets from the regularity of the contact coordinates.
 
-## Substantive mathematical changes
+## 1. New mathematical results
 
-**Module 137: reversible critical weights.** The generating equations in canonical endpoint arclength and momentum give `bc = det(H)/(F_uv)^2`. Reversal closes a regular normal-to-normal half-word and gives `P = S M^{-1} S M`, with `det(I-P) = -4bc`. With the original section normalization the quadratic coefficient is
+### 1.1 An incidence-normalized contact inverse
 
-`J_z = 1/(R c_* sqrt(|det(I-P_z)|)) = (R c_*)^{-1} lambda_z^{-1/2}/(1-lambda_z^{-1})`.
+Module 140, `lem:v66-weighted-inverse`, strengthens the inherited contact estimate to
 
-The determinant is a square root, not the ordinary inverse determinant of a periodic-orbit trace. We also prove the uniform comparison with a normal-section crossing weight and the individual exponential bound without imposing an interior incidence margin. The half-word labels are not read from the doubled orbit, the period need not be primitive, and no cyclic quotient or period divisor is inserted. At a competing-hit seam, `P_z` is explicitly the physical-side branch expression, not an asserted derivative of the singular billiard map.
+\[
+ |(A^{-1})_{ij}|\le C\min(c_i,c_j)q^{|i-j|},\qquad q=47/53.
+\]
 
-**Module 138: density inside a simple roof-critical clearance seam.** For the actual one-sided strip `0<g<s` at a nondegenerate roof minimum, the density is
+The final diagonal factor in the Neumann series retains one incidence, and symmetry supplies the other choice. The normalized Hessian `N=A D_c` therefore has a uniformly bounded inverse in the norm with weights `sigma^{min(j,m-j)}`, `sigma=sqrt(q)`. No product of inverse incidences remains in this inverse bound.
 
-`(J_z/pi) asin(min(1, s/(kappa_z sqrt(2h)))) + O_z(J_z h^(1/4))`.
+We then divide the stationary equation at contact `j` by its **frozen base incidence**, not by a variable whose derivatives would have to be estimated. The stationary equations depend only on three neighboring contacts. On the tapered class `c_j >= chi q^{min(j,m-j)/4}`, their weighted nonlinear derivatives have bounds independent of the collision count. A quantitative contraction argument gives contact derivatives of orders one, two and three, bounded respectively by `C sigma^{d_j}`, `C chi^{-1} sigma^{d_j}`, and `C chi^{-2} sigma^{d_j}`.
 
-The estimate is uniform across the width-to-roof transition, including its threshold. It is obtained directly from the original source by Morse coordinates and polar coarea. Its one-sided coefficient is `J_z/2`, not an estimate inferred from tube mass. The existing smooth first-clearance source is sandwiched between the strips at its own widths `epsilon e'_j` and `2 epsilon e'_j`. A positive weighted-cluster bound retains coincident critical values and the complete source outside the selected neighborhoods.
+The theorem no longer assumes positive clearance or section margins. It is a theorem about the selected-contact continuation. Every point failing an original physical decision has zero source weight later.
 
-**Module 139: affine profiles for multiple seams and every exact section decision.** A width-uniform Stieltjes comparison for the inherited monotone guard permits all clearance first jets to be retained with their nonzero constant offsets. A Boolean evaluation of the original section visits preserves occupation at times `0,...,m-1`, with terminal membership at `m` separate. The summed error over all exact labels is at most `C_z J_z h^(1/4)`, and the explicit affine angular profiles have total angular mass at most `2 pi`. There is no target-count factor. Multiple active seams, coincident boundary gradients and section junctions are permitted as long as each retained scalar margin gradient is nonzero and all selected incidences stay positive in the local disk. The error constant is expressed through first and second margin jets and the relative density derivative in equation `eq:v65-jet-budget`.
+### 1.2 Uniform Morse coordinates and an exact physical angular profile
 
-These are calculations on the original circular Lorentz collision graph. The numerical fixtures test their algebra and generic local profiles; they do not certify the existence of a particular new Lorentz caustic or the uniform long-count coverage needed below.
+Theorem `thm:v66-uniform-morse` gives a common Morse radius `r_chi=r_0 chi^3`, roof radius `h_chi=r_chi^2/2` and relative density budget `K_chi=C chi^{-2}`. These are uniform in the collision count within the stated tapered incidence class. The determinant formula gives a relative source estimate without a lower bound for the individual coefficient `J_z`.
 
-## Replies to the major requests
+Module 141 keeps the **nonlinear** physical first-hit and exact-label indicators. Its angular integral `A_{z,n,k}^epsilon(h)` is not the v65 affine integral and is not asserted to have a uniformly computed angular shape. Positive polar coarea gives
 
-### 30.1 — Ordered incidence essential-height limit
+\[
+ e^{-K_\chi\sqrt{2h}}\frac{J_z}{2\pi}A_{z,n,k}^{\varepsilon}(h)
+ \le b_{z,n,k}^{\varepsilon,\mathrm{clr}}(t_z+h)
+ \le e^{K_\chi\sqrt{2h}}\frac{J_z}{2\pi}A_{z,n,k}^{\varepsilon}(h).
+\]
 
-The first-incidence source and its original depth weights remain unchanged. Module 131's finite-count estimate is preserved with its exponential count factor. The new reversible identity controls actual individual critical coefficients without a lower interior incidence margin, but it does not estimate the complete first-incidence density at the central `m^{-2}` scale. The requested order remains `B` fixed, then `m -> infinity`, then `B -> infinity`. We have not substituted a rapidly growing `B(m)` or marked this ordered limit proved.
+Thus a small boundary gradient does not appear in the error constant. The error is relative to the actual retained physical angular weight, rather than to the sum of unrestricted full-word weights. The entire exact-label vector is controlled with no label-count multiplier.
 
-### 30.2 — Full clearance source, including the retained caustic
+For `epsilon <= chi/4`, all selected incidence guards equal one on the common chart. Endpoint influence also gives a count-uniform Lipschitz bound for the original clearance multiplier. At a zero-clearance seam the multiplier equals one on a disk of radius `min(r_chi,epsilon/C_g)`, including simultaneous seams and section coincidences. This statement preserves the first-defect telescoping order and the image mark `j+1`.
 
-Modules 138 and 139 enter the retained caustic rather than discarding it. They calculate a local roof-critical source which is not in a nonzero roof-pivot carrier. The general affine formula includes multiple competing seams and section junctions and retains every exact label. The original smooth guard and its first-defect partition are used before pushforward. Inside an incidence-capped local disk all incidence factors are one, so the sum of the original first-clearance pieces equals the full physical defect there; no pieces are reclassified by an artificial trajectory.
+### 1.3 A physical trace with a proved ordered bound
 
-The simple angular coefficient and the general angular trace are multiplied by the reversible weights from module 137. The positive source outside the selected neighborhoods remains in the exact decomposition. Selected grazing contacts and noncritical-roof rank degeneracy are not assigned the roof-minimum profile. Accordingly the complete ordered clearance-height limit is still a separate required estimate, not a consequence claimed from the local formula.
+Module 142 constructs a trace from the actual physical collar mass:
 
-### 30.3 — Quantitative dependence and useful geometric data
+\[
+ \mathcal Q_{m,s;n,k,R}
+ =\sum_z\left(s^{-1}\int_0^s b_{z,n,k}^{\varepsilon,\mathrm{clr}}(t_z+u)\,du\right)\delta_{t_z}.
+\]
 
-The buffered finite-format budgets in modules 135 and 136 are retained unchanged. The new profile comparison instead gives a finite-jet budget `C (1+W_z+sum_f sqrt(L_f/A_f))`, with every derivative, norm and positive denominator specified. Its constant is independent of the individual guard widths, including exponentially depth-weighted ones. Affine offsets avoid the unjustified assumption that a fixed band makes epsilon smaller than every nonzero clearance margin.
+It is not a spectral trace previously constructed in the article, nor the full reversible trace of v65. The physical chart pieces are disjoint. Their endpoints lie in two normal strips of width `C sqrt(s)` and their actual roofs lie in an interval of length `2h+s`. The inherited exact-label two-strip local theorem therefore gives
 
-This does not assert a count-uniform lower bound for all margin gradients, a common Morse radius for every long word, or a long-count critical-cluster estimate. Uniformity on a compact family of neighborhoods with the stated common bounds follows directly from the proofs. The missing passage from local geometric data to all long words is visible in the compiled text.
+\[
+ \limsup_{m\to\infty}\sup_{R,n,k,t}m^2\mathcal Q_{m,s;n,k,R}([t-h,t+h])
+ \le C(2h+s).
+\]
 
-### 30.4 — Full pointwise law and arithmetic transitions
+Both widths are fixed before the collision limit. In particular the expression with `h=s` vanishes as `s` decreases to zero **after** that limit. This proves an exact geometric-to-dynamical bridge for a specified positive physical trace; it uses no mean-square annular estimate, word-count bound, cancellation, or assumed separation of critical values.
 
-The original pointwise target, the signed canonical finite arithmetic kernel, transition residues and zero classes are retained. Every one of the inherited A–X statements and all 1809 baseline mathematical labels remain in the compiled manuscript. The new leading theorem states only the reversible identity and the proved local source profiles. The full pointwise roof-density local law has not been toggled to proved in the manifest.
+At fixed finite count the zero-width coefficient is `beta_{z,n,k}=J_z theta_{z,n,k}`, with the physical exact-label angular fraction. The full coefficient `J_z` is not generally this observable coefficient. The positive comparison
 
-### 30.5 — Exact-roof consequences
+\[
+ \mathcal B_m(I)\le e^{K_\chi\sqrt{2s}}\mathcal Q_{m,s}(I)+\mathcal D_{m,s}(I)
+\]
 
-No exact-roof bridge, singleton conditional law, or essential likelihood convergence is inferred from the finite-jet profiles alone. The inherited integrated results remain in their stated norms. The scalar positive-source height condition is still required for the corresponding unrestricted pointwise consequences, with a genuine nonzero arithmetic denominator wherever conditioning is asserted.
+isolates the angular loss `D` between the exact nonlinear set and its tangent fraction. Its uniform normalized smallness is stated as an additional, unproved input. This is not an interchange of the two limits.
 
-### 30.6 — Specialist audit
+## 2. Responses to the requested changes
 
-The revised specialist map isolates reversal signs, the factor four in the determinant, the square-root weight, boundary branch interpretation, the polar Jacobian, affine threshold uniformity, and the exact occupation Boolean formula. All have proofs in the manuscript and separate finite diagnostic checks where appropriate. Neither this author response nor the build log is represented as independent human specialist review.
+### Report 31.1: uniform source coverage
 
-### 30.7 — Principal mathematical contribution and presentation
+**Substantially advanced for a precisely specified class, not closed for the entire source.** Modules 140–141 give common coordinates, contact jets, guard admissibility and relative density for every normal critical physical-side word satisfying the tapered incidence envelope. Unlike the old protected-collar theorem, they permit zero clearance and section margins. They avoid individual boundary-gradient lower bounds by retaining the exact nonlinear angular sets. They do not establish such lower bounds, selected-grazing coverage, or coverage of every noncritical roof-rank component.
 
-The manuscript does not change its principal problem, discard content, or replace the physical source by a realization. Three new sections, a leading theorem and a compiled dependency route expose the actual additional mathematics. The full historical derivation remains available and compiled. We have not represented a local calculation as the unrestricted endpoint.
+### Report 31.2: reversible-weight concentration
 
-### 30.8 — Theorem-by-theorem comparison with existing methods
+**The full v65 atomic concentration estimate remains unproved.** The new proved estimate concerns the finite-width physical trace `Q`, not the full reversible measure `T`. The zero-width physical trace `B` also retains an unproved angular-loss input. The three measures are defined separately in the manuscript and in the status manifest. Individual exponential decay is not used to bound their sum.
 
-The action–monodromy principle and reversible Hill theory are classical; Bolotin–Treschev is added as a primary reference, and the exact two-dimensional identity is proved rather than attributed as a new general theorem. The Morse-coordinate arcsine profile is an elementary coarea calculation. The paper-specific content is its original Lorentz normalization, the physical-side interpretation, the unaltered first-clearance guard, the positive half-word weight sum, and the affine profile for the original exact-label vector. The inherited fixed-window local law is not silently upgraded to a transverse trace theorem. The conditional ordered trace transfer identifies that extra input explicitly.
+### Report 31.3: the positive complement
 
-## Technical comments 31.1–31.21
+**The complement is preserved, not declared negligible.** Equation `eq:v66-complete-positive-partition` retains all source outside the verified chart pieces, including selected-grazing neighborhoods, violations of the tapered envelope, noncritical rank components and annuli removed when a chart is shortened. No mass or support estimate is promoted to a pointwise height estimate. No probability is assigned to a nonphysical continuation.
 
-The revision keeps separate names for the band, strip width, roof distance, incidence cap, collision count and monodromy entries. Physical derivatives are taken along the full original two-sided roof. The clearance witness is always read at collision `j+1`; incident disks remain excluded. All later incidences are checked in the local cap, and no first-defect transition region is dropped. Simple-root extensions and affine sign patterns carry no new source probability.
+### Report 31.4: complete incidence height
 
-The new local profile does not assert a globally bounded finite type or fill a physical seam. Each scalar margin derivative is justified separately, and no determinant of two boundary gradients is assumed nonzero at a multiple seam. All positive complements remain explicit. Exact-label variation is bounded through a partition of the source and a pointwise label-vector distance of at most two, not by multiplying an estimate by the number of labels.
+**Not closed in this revision.** The inherited inverse-incidence density theorem remains unchanged, with its exponential finite-count factor. The new normalized inverse is used for contact continuation and relative distortion; it is not asserted to bound the full exact-label incidence density. The corresponding status remains false.
 
-Mass, tube length, pointwise height and critical atomic trace remain different quantities. The finite-count normal-strip trace takes its small-strip limit at fixed `m`; the fixed-width local theorem takes its long-count limit at fixed strip width. The two limits are not exchanged. Variation uses the full-mass convention; no hidden factor one half is introduced. Arithmetic signs and zero classes are unchanged. Density identities are stated almost everywhere with coarea representatives for one-sided traces. Source checks and finite fixtures remain distinguished from continuum proofs and specialist review. The compiled modules include the dependency route and the exact remaining dynamical inputs.
+### Report 31.5: complete clearance height
 
-## Status after this revision
+**The uniform chart contribution is resolved into an exact angular integral; the complete ordered height is not closed.** Both the nonlinear angular height and the positive outside source still require control. The physical width is fixed before the collision limit. The v63 threshold is explicitly noted to fail eventually at every fixed positive width, and is not used in the new proof.
 
-Proved locally in the manuscript: reversible critical-weight identity; crossing-weight comparison; individual count decay; simple width-uniform seam profile; original guard sandwich; positive cluster bound; affine exact-label profile at multiple capped roof-critical seams; finite-jet error budget; angular boundary traces.
+### Report 31.6: unrestricted pointwise theorem and consequences
 
-Conditional only: transfer from an independently established uniform reversible-weight concentration estimate and verified neighborhood coverage to ordered local height removal.
+**The target is unchanged, and no unsupported endpoint conclusion is added.** The complete integrated arithmetic record theorem and coupled path results remain compiled. The unrestricted two-sided pointwise arithmetic local limit, unrestricted same-roof bridges, forward essential likelihood and pointwise roof-conditioned paths remain separate from those integrated conclusions. The corresponding status flags are not changed to true.
 
-Not claimed closed: the complete ordered incidence and clearance height limits, the unrestricted two-sided pointwise roof-density local law, or its unrestricted exact-roof conditional consequences. These remain the same target of the paper rather than being replaced by a weaker subject.
+### Report 31.7: connect geometry and dynamics
+
+**Closed for the newly specified finite-width physical trace.** The exact positive comparison `eq:v66-positive-trace-comparison` links the original physical collar to the inherited two-normal-endpoint local law at the same exact return index, displacement and collision count. The construction allows label changes inside a chart rather than assigning every chart the label of its singular center. The additional atomic-to-collar comparison states the remaining angular loss explicitly. This is not presented as the still-missing theorem for the full reversible trace.
+
+### Report 31.8: qualification metadata
+
+Both new author branches are created before the final source update, so that the same final source can receive two distinct push-triggered qualification runs. The new workflow records the exact checkout SHA, preserves the reviewed paper tree, checks every inherited source file and label, runs finite diagnostics in normal and optimized Python, compiles the full TeX manuscript and renders the new theorem pages. Each run's identity and actual conclusion must be read from GitHub Actions; this response does not predeclare success. Finite diagnostics and a successful build are not continuum proof certificates.
+
+### Report 31.9: independent expert review
+
+**Not obtained.** No independent human specialist audit is claimed. The source and report are frozen for such an audit. Particular new points are the frozen-incidence row normalization, the weighted implicit-function estimates, the interpretation of the continued contact graph, the exact guard on that graph, the physical chart disjointness and the use of the inherited endpoint local theorem. The earlier operator, collision-graph and semialgebraic dependencies remain in the audit map.
+
+### Report 31.10: reduce the journal proof burden
+
+The front of the article now states two principal theorems and the short dependency route through modules 140–142. The old abstract and introduction are compiled in `appendices/v65_frontmatter.tex`; the full old main file is additionally preserved verbatim in provenance. All 139 inherited core modules, all 191 inherited Python files, all prior appendices and the bibliography are byte-identical. The history is not deleted, and a local coordinate theorem is not represented as completion of the original pointwise target.
+
+## 3. Technical conventions retained
+
+The manuscript distinguishes reconstruction band, physical guard width, tapered incidence parameter, Morse radius and collar roof width. It retains the square root in the reversible determinant, the original half-word labels, the absence of primitive-period division, and the physical-side meaning of a derivative at a seam. It uses common coarea representatives almost everywhere in the roof. Coincident critical values add positively. Initial membership, occupation and terminal membership remain separate. The new relative vector estimate has no output-label factor.
+
+The original finite arithmetic kernel and its zero classes remain. No conditional law or likelihood is assigned to a zero reference class. Probability total variation, variation mass and path bounded-Lipschitz norms remain distinct. All first-defect pieces, including later incidences after a first clearance outside the incidence-controlled charts, remain on the original source.
+
+## 4. Scope of the present revision
+
+The new results remove collision-count dependence from the selected-contact chart and its relative density under the stated tapered incidence envelope, and prove an ordered estimate for an actual positive physical collar trace. They do not complete the full source height theorem. The next unresolved mathematical quantities are now explicitly the physical angular loss, pointwise angular concentration, and the incidence/outside-source heights. This revision makes no claim of journal acceptance, formal proof certification, or independent specialist verification.
