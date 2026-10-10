@@ -1,0 +1,52 @@
+name: General Theta R19 immutable source and complete PDF build
+on:
+  push:
+    branches:
+      - foundation/general-theta-restart-r19-effective-frontier-research-2026-10-09
+    paths:
+      - .github/workflows/general-theta-r19-effective-frontier.yml
+permissions:
+  contents: write
+concurrency:
+  group: general-theta-r19-effective-frontier-publication
+  cancel-in-progress: false
+jobs:
+  source-and-artifact-publication:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      B: papers/General-Theta-Foundations-I-restart/r19-effective-frontier
+      EXPECTED_TREE: ce14e0d57fef7aa415a4065cd3dac75172dd1efa
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          sparse-checkout: |
+            .github
+            foundations/general-theta
+            papers/General-Theta-Foundations-I-restart
+      - name: Publish hash-verified ordinary source before any build
+        run: python3 .github/scripts/theta-r19-publish.py source
+      - name: Install isolated complete build dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended cm-super lmodern poppler-utils python3-venv
+          python3 -m venv "$RUNNER_TEMP/theta-r19-venv"
+          "$RUNNER_TEMP/theta-r19-venv/bin/pip" install pypdf==5.9.0 numpy==2.3.5
+          echo "$RUNNER_TEMP/theta-r19-venv/bin" >> "$GITHUB_PATH"
+      - name: Build immutable native source and complete retained companions
+        run: |
+          set -euo pipefail
+          python3 "$B/build.py" --source-sha "$SOURCE_SHA" --expected-tree "$EXPECTED_TREE"
+          git diff --exit-code
+      - name: Publish artifacts as a distinct child of the source commit
+        run: python3 .github/scripts/theta-r19-publish.py artifacts
+      - name: Export complete source-bound remote artifact packet
+        run: python3 .github/scripts/theta-r19-publish.py packet
+      - uses: actions/upload-artifact@v4
+        with:
+          name: general-theta-r19-effective-frontier-complete-packet
+          path: ${{ runner.temp }}/theta-r19-delivery/*
+          if-no-files-found: error
+          retention-days: 90

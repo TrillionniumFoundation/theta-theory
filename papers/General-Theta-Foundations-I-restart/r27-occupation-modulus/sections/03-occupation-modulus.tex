@@ -1,0 +1,112 @@
+\section{The physical-acquisition modulus}\label{sec:modulus}
+For each model--program pair $x$, let the conditional marked excursion have $m$ entering labels, integer duration $\tau\ge1$ and score $0\le R\le\tau$. In this section $X$ need not be compact. We assume only $\bar\mu=\sup_{x,i}\E_{x,i}\tau<\infty$, and use the actual-return quantity $B_N$ of~\eqref{eq:tail-def}. Define the excursion arrays
+\begin{equation}\label{eq:arrays}
+ P_{ij}=\Pp_i(I_1=j),\quad T_{ij}=\E_i[\tau\one_{\{I_1=j\}}],\quad
+ d=T\one,\quad D=\diag(d),\quad r_i=\E_iR.
+\end{equation}
+Matrices act on column rewards. Put
+\begin{equation}\label{eq:time-change}
+ S=I-D^{-1}(I-P),\quad c=D^{-1}r,\quad
+ \Pi_A=\lim_{n\to\infty}\frac1n\sum_{j=0}^{n-1}A^j,
+ \qquad g=\Pi_Sc.
+\end{equation}
+The stochasticity of $S$ follows from $d_i\ge1$: its diagonal is $1-(1-P_{ii})/d_i\ge0$. Every finite stochastic matrix has a semisimple eigenvalue at one and a Ces\`aro projection, regardless of periodicity. Let $J_N(x,i)$ be the expected sum of the first $N$ physical-call scores divided by $N$, from boundary label $i$, and let
+\[
+ J_\beta(x,i)=(1-\beta)\E_{x,i}\sum_{t\ge1}\beta^{t-1}\ell_t,
+ \qquad 0<\beta<1.
+\]
+Write $b=r-Tg$ and $A=I-P$. Lemma~\ref{lem:marked} proves that $Pg=g$, $0\le g\le1$, and $b$ belongs to the range of $A$. In particular these definitions do not require irreducibility or aperiodicity. For $N\ge1$ set
+\begin{align}
+ k_N(x)&=\inf_{u\in\R^m}\left\{\norm{b_x-A_xu}_\infty+\frac{\osc(u)}N\right\},
+ & K_N(X)&=\sup_{x\in X}k_N(x),\label{eq:modulus-primal}\\
+ H_t(x)&=t(J_t(x)-g_x),\quad H_0=0,
+ &\Delta_N(X)&=\sup_x\frac1N\max_{1\le t\le N}\norm{H_t(x)}_\infty.\label{eq:prefix-modulus}
+\end{align}
+The normalization in $\Delta_N$ is by $N$, not by the prefix length $t$. The vector $u$ is an analytical certificate, not a program register. The family supremum allows $u$ to depend on $x$; it does not allow the observer's program to depend on the unknown model.
+
+\begin{theorem}[Two-sided physical-acquisition transfer]\label{thm:modulus}
+For every family of the stated marked experiments with $\bar\mu<\infty$ and every integer $N\ge1$,
+\begin{equation}\label{eq:modulus-comparison}
+ \Delta_N(X)\le K_N(X)+B_N,
+ \qquad K_N(X)\le(\bar\mu+2)\Delta_N(X)+B_N.
+\end{equation}
+For each $x$, the infimum in~\eqref{eq:modulus-primal} is attained. It has the exact dual
+\begin{equation}\label{eq:modulus-dual}
+ k_N(x)=\max\left\{z^Tb_x:
+       \norm z_1\le1,\quad \frac12\norm{A_x^Tz}_1\le\frac1N\right\}.
+\end{equation}
+Thus every feasible signed vector $z$ supplies the physical-call lower certificate
+\begin{equation}\label{eq:dual-lower}
+ \Delta_N(X)\ge
+ \frac{(z^Tb_x-B_N)_+}{\bar\mu+2}.
+\end{equation}
+If the uniform return envelope~\eqref{eq:UI} holds, then $K_N(X)\to0$ if and only if $J_N\to g$ uniformly on $X$. Neither assertion requires a uniform bound on the group inverses of $I-P_x$.
+\end{theorem}
+The lower certificate concerns the maximum over the displayed entering-label laws. It is not, without an accessibility argument, a lower bound from one prescribed initial distribution. The actual-occupation lower in Theorem~\ref{thm:resolution} uses its specified initial law directly, and the all-history decision lower of Theorem~\ref{thm:profile} is proved separately.
+
+The dual vector is signed. It is not a probability, an occupation measure, or an alternative to the actual acquired law. The constraint measures its failure of invariance under the boundary kernel. For rational $P,b$ and $N$, both sides of~\eqref{eq:modulus-dual} are finite linear programs with rational data. This is a fixed-response evaluation result, not an efficient optimization theorem over Borel programs or unknown kernels.
+
+\begin{lemma}[A physical renewal converse]\label{lem:renewal-converse}
+For a fixed pair $x$, let $R^{[t]}$ be the score accumulated during the first $\min(t,\tau)$ calls of its first excursion, and define
+\[
+ a_t(i)=\E_i\left[R-R^{[t]}-(\tau-t)_+g(I_1)\right].
+\]
+For $u_N=N^{-1}\sum_{t=1}^NH_t$, one has the exact rowwise identity
+\begin{equation}\label{eq:renewal-converse}
+ b-(I-P)u_N
+ =\frac1N\sum_{t=1}^Na_t
+  +\left(\E_i\frac1N
+       \sum_{s=\max(1,N-\tau+1)}^NH_s(I_1)\right)_{i=1}^m.
+\end{equation}
+Consequently $\norm{b-(I-P)u_N}_\infty\le B_N+\bar\mu\Delta_N(X)$ and $\osc(u_N)/N\le2\Delta_N(X)$.
+\end{lemma}
+\begin{proof}
+Both $R-R^{[t]}$ and $(\tau-t)_+g(I_1)$ lie between zero and $(\tau-t)_+$. Hence $|a_t(i)|\le\E_i(\tau-t)_+$. Conditional on the full first-excursion marks, the future starts from label $I_1$. The defining Markov-renewal property, not independence of duration and exit, gives
+\[
+ tJ_t(i)=\E_iR^{[t]}+
+     \E_i\bigl[(t-\tau)_+g(I_1)+H_{(t-\tau)_+}(I_1)\bigr].
+\]
+Use $\E_i g(I_1)=g(i)$ and subtract $tg(i)$. The result is
+\[
+ H_t(i)=b_i-a_t(i)+\E_iH_{(t-\tau)_+}(I_1).
+\]
+For each realized integer $\tau\ge1$, shifting the finite sum over $t=1,\ldots,N$ leaves precisely the final $\min(\tau,N)$ terms of $\sum_{s=1}^NH_s$. Averaging and subtracting $Pu_N$ proves~\eqref{eq:renewal-converse}. The second term there is bounded by
+$\E_i\min(\tau,N)\max_{s\le N}\norm{H_s}_\infty/N\le\bar\mu\Delta_N(X)$.
+The first is bounded by $B_N$. Each coordinate of $u_N$ is at most $N\Delta_N(X)$ in absolute value, proving its oscillation bound. All sums are finite and the only unbounded random variable used has finite mean.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:modulus}]
+Apply Lemma~\ref{lem:physical} at every $t\le N$ with one fixed $u$, multiply by $t/N$, and use nonnegativity of the tail summands. This bounds the prefix maximum by
+$\norm{b-Au}_\infty+\osc(u)/N+B_N$.
+Infimize separately for each pair and then take the supremum. The converse is Lemma~\ref{lem:renewal-converse} with its particular $u_N$.
+
+Since $A\one=0$, fix $u_1=0$. A bounded objective sublevel bounds $\osc(u)$ and hence every coordinate of $u$. Continuity and finite-dimensional compactness prove attainment. To obtain the dual, write the primal as minimizing $a+(v-w)/N$ subject to
+\[
+ -a\one\le b-Au\le a\one,\qquad
+ w\one\le u\le v\one,\qquad a\ge0.
+\]
+It is feasible and bounded below. The dual of the residual norm imposes $\norm z_1\le1$. For a zero-sum vector $y$,
+\[
+ \sup_{\osc(u)\le1}y^Tu=\tfrac12\norm y_1;
+\]
+indeed translate $u$ into $[0,1]^m$ and put it equal to one on the positive coordinates of $y$ and zero on the negative coordinates. Here $y=A^Tz$ has sum zero. The conjugate of $\osc(u)/N$ therefore imposes $\norm{A^Tz}_1/2\le1/N$. Finite linear-programming duality yields~\eqref{eq:modulus-dual}; its compact feasible set gives a maximum. This also proves~\eqref{eq:dual-lower}.
+
+Finally, uniform integrability makes $B_N\to0$. Uniform $J_t-g\to0$ implies $\Delta_N\to0$: split at a fixed $L$, bound the finitely many initial terms by $L/N$ using $0\le J_t,g\le1$, and bound the remaining ones by $\sup_{x,t>L}\norm{J_t-g}_\infty$. Conversely $\norm{J_N-g}\le\Delta_N$. Now use~\eqref{eq:modulus-comparison}.
+\end{proof}
+
+\begin{corollary}[Optimal balancing of approximate correctors]\label{cor:balanced-price}
+With the price $\calC_X(a)$ of~\eqref{eq:corrector-price},
+\begin{equation}\label{eq:balanced-price}
+ K_N(X)\le\inf_{a>0}\left(a+\frac{\calC_X(a)}N\right)\le2K_N(X).
+\end{equation}
+Thus balancing residual tolerance and corrector oscillation loses at most a factor two relative to the pointwise penalized problem. Together with~\eqref{eq:modulus-comparison}, it is a converse as well as an upper bound for physical prefix discrepancy, up to the actual return remainder.
+\end{corollary}
+\begin{proof}
+A corrector with residual at most $a$ gives the first inequality. Write $K=K_N(X)$. It is finite since $u=0$ gives $K\le\bar\mu$. Each pointwise minimizer has residual at most $K$ and oscillation at most $NK$. Hence $\calC_X(K+\eta)\le NK$ for every $\eta>0$; let $\eta\downarrow0$. This argument does not interchange a family supremum with an infimum over a common corrector.
+\end{proof}
+
+\begin{remark}[Why both qualifiers are needed]\label{rem:prefix-tail}
+Let $P$ interchange two labels, let $\tau=1$, and let the scores at the labels be zero and one. Then $g=(1/2,1/2)^T$, $b=(-1/2,1/2)^T$, and $J_N=g$ for every even $N$, whereas $k_N=\Delta_N=1/(2N)$. The primal vector $(-1/4,1/4)^T$ and dual vector $(-1/(2N),1/(2N))^T$ verify this value. A converse from the terminal discrepancy alone is false. Separately, a one-label deterministic excursion of length four with scores $(1,1,0,0)$ has $b=0$ and $k_N=0$, but $J_1-g=1/2$. A remainder accounting for within-excursion physical time cannot be omitted. Neither example has a hidden clock supplied to the observer; the stated score patterns belong to the physical protocol.
+\end{remark}
+
+The residual--solution expression in~\eqref{eq:modulus-primal} is a finite-dimensional approximation functional. Connections between ergodic convergence rates and such functionals are classical~\cite{Shaw}; Poisson martingales and their integrability requirements are likewise established~\cite{GlynnInfanger}. The assertion here is the marked physical-time converse~\eqref{eq:renewal-converse}, its all-row tail accounting, and its use for finite-resolution acquired geometry. It does not claim the invention of approximation functionals, linear-programming duality or Poisson equations.
