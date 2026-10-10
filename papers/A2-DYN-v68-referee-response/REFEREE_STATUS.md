@@ -1,7 +1,5 @@
-# Status for the next referee
+# Referee status — revision 68
 
-The controlling report is `reviews/a2-dyn-v66-external-top4-review-2026-10-10/REFEREE_REPORT.md`, commit `31eae1cab4ac138d0d9c892cb76c63286cb73307`, blob `e3e06c75e0b6a73b613c944223423c0dc03b3854`.
+The new source responds to the revision-67 report at `d3321f707ba556bd25bb586178eed89038133cc8`. Three new mathematical modules prove analytic angular-germ classification, relative radial persistence, and an all-finite-order annular essential-height theorem on fixed strata. The new opening and full point-by-point response identify those results and retain the original unrestricted Lorentz endpoint.
 
-The next review should first examine modules 143--145: the inactive-sign radius, the homogeneous angular threshold, exact-label relative error, positive absorption before the collision limit, and the conversion from physical critical-value concentration to essential height. The new proof has no full reversible-trace premise.
-
-The weighted condition-number tail and complete incidence/complementary clearance heights remain outstanding. There is no assertion of top-four acceptance, formal proof certification or independent human verification. Both new revision branches are intended to point to the same final source commit; their actual runs are separate source/build executions, not independent mathematical reviews.
+The physical angular-condition tail and the complete incidence and complementary clearance heights remain unproved. No external acceptance, commissioned journal assessment, formal proof certificate or independent human specialist review is claimed. This packet is provided for another substantive referee examination of the new arguments and their inherited inputs. Qualification evidence concerns exact source, finite diagnostics and typesetting only; consult the actual run receipts for each ref.

@@ -1,11 +1,13 @@
-# A2-DYN, revision 67
+# A2-DYN — revision 68
 
 Qian Qi, *Collision records, arithmetic, and raw local inversion in a triangular Lorentz gas*.
 
-Read `main.tex` for the complete revised manuscript and `JOURNAL_ROUTE.md` for its short proof spine. The controlling report is the revision-66 external report at `31eae1cab4ac138d0d9c892cb76c63286cb73307`; the reviewed author SHA is `e96761c0b12dbc46c187f4aeb4ee8d537863dec5`.
+The active complete manuscript is `main.tex`. This revision responds to the revision-67 external report at `d3321f707ba556bd25bb586178eed89038133cc8`, without changing the Lorentz table, exact return record, arithmetic factor, or unrestricted pointwise target.
 
-The new argument proves relative angular stability from primitive physical margins, zero-width physical trace concentration on every explicit finite-jet stratum, and an ordered essential-height bound for the corresponding original-source caustic collars. It uses positive absorption, not a concentration theorem for the larger reversible trace. The physical weighted tail needed to exhaust the strata is isolated explicitly. Its tightness, the complete incidence height and the positive complementary clearance height are not claimed as proved.
+The new proof route is `core/146_analytic_angular_germs.tex`, `core/147_relative_radial_persistence.tex`, and `core/148_annular_height_and_full_source.tex`. Analytic angular germs include nonlinear sectors with zero tangent fraction. A positive outer-annulus comparison gives original-source ordered essential height on fixed persistence strata, uniformly over every finite birth order. Positive-center-guard non-seam centers are included. This is not a proof of the physical angular-condition tail or the complete incidence and complementary clearance heights.
 
-All 142 inherited core modules, 194 inherited Python files, six inherited appendix files and the bibliography are byte-identical. The old leading material is compiled in `appendices/v66_frontmatter.tex`; the complete old main and replaced metadata are also archived under `provenance/v66-*`. No historical manuscript or report is changed.
+All 145 inherited core modules, 197 Python files, seven appendices, and the bibliography are byte-identical. All inherited compiled inputs and mathematical labels remain. The preceding abstract and introduction are compiled verbatim in `appendices/v67_frontmatter.tex`; the complete old main and replaced metadata are archived in `provenance/v67-*`.
 
-Build with `bash papers/A2-DYN-v67-referee-response/build.sh` from the repository root. The branch-specific workflow records its exact source SHA and renders the new theorem pages. These checks qualify source preservation, finite diagnostics and typesetting; they are not a continuum proof certificate, an independent human review or journal acceptance.
+Run `bash build.sh` from this directory, with the frozen revision-67 directory present beside it. The workflow `.github/workflows/a2-dyn-v68-qualification.yml` checks both author refs independently at their actual SHA and uploads the complete PDF, exact source archive, native build logs, finite diagnostics, and theorem-page renderings. A branch name or a copied artifact is not a successful workflow run.
+
+See `RESPONSE_TO_REFEREE.md` for the item-by-item mathematical response and `SOURCE_MANIFEST.json` for preserved theorem status. No independent human specialist review or formal proof certificate is claimed.
