@@ -3,7 +3,7 @@
 **Manuscript:** Qian Qi, *Collision records, arithmetic, and raw local inversion in a triangular Lorentz gas*  
 **Reviewed author branches:** `revision/a2-dyn-v78-referee-response-2026-10-11`, `revision/a2-dyn-v78-referee-copy-2026-10-11`  
 **Reviewed commit:** `5af5cbc845bfe1f73d835fee2f65fffddc7c0e55`  
-**Reviewed repository tree:** `015dc3bb82f61ead2f8227ad9bf7fadc435a7283`  
+**Reviewed repository tree:** `e7c7d9757a3ef3e3ebd7b7c2bcdf477c9d23d1c4`  
 **Active manuscript directory:** `papers/A2-DYN-v78-referee-response`  
 **Active mathematical source:** one hundred seventy-nine numbered core modules; revision 78 adds modules 177--179  
 **Frozen revision-77 author baseline:** `2d88b8e6cc5dd1ebc72aaec5c77fffb08bf20e2f`  
@@ -30,8 +30,7 @@ The new argument materially sharpens the endpoint problem. Its principal estimat
  \qquad \varepsilon(B)=A_0B^{-1/12},
 \]
 
-where every auxiliary choice is made before the collision limit. The term
-\(\mathcal G^\varepsilon(r)\) is no longer an unspecified collection of all guard errors: it consists of true forward exits from the same physical word and the positive part of the optical/coarea volume loss on the surviving subcoupling.
+where every auxiliary choice is made before the collision limit. The term \(\mathcal G^\varepsilon(r)\) is no longer an unspecified collection of all guard errors: it consists of true forward exits from the same physical word and the positive part of the optical/coarea volume loss on the surviving subcoupling.
 
 I audited the new modules
 
@@ -92,7 +91,7 @@ Both reviewed author branches resolve to
 
 The Git tree at that commit is
 
-`015dc3bb82f61ead2f8227ad9bf7fadc435a7283`.
+`e7c7d9757a3ef3e3ebd7b7c2bcdf477c9d23d1c4`.
 
 The active article is
 
