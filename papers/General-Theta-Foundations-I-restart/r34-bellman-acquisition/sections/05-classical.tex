@@ -1,0 +1,104 @@
+\section{Active Gaussian observation, including expansive steps}\label{sec:classical}
+Let the hidden state take values in $\{1,\ldots,q\}$, $q\ge2$. Fix an invertible column-stochastic matrix $P$ with $P_{ij}\ge\alpha>0$; necessarily $\alpha\le1/q$. At each step the controller chooses a sensor $a$ from a finite set. Conditional on the \emph{current} hidden state $i$, it receives
+\[
+ Y\sim N(m_i^a,\Sigma_a)\quad\text{in }\R^{q-1},
+\]
+then the hidden state makes the transition $P$. Each $\Sigma_a$ is positive definite and the vectors $m_i^a-m_q^a$, $i<q$, are linearly independent. No report is truncated. The protected terminal audit is the categorical vector of the post-transition hidden state; the loss is ordinary Brier squared error.
+
+\begin{theorem}[Optimal finite-state active Gaussian sensing]\label{thm:gaussian}
+Every such finite sensor family satisfies Theorem~\ref{thm:main} with $d=q-1$, $K=P\Delta_q$, and $D=\{u\in\Delta_q:u_i\ge\alpha/2\}$. In particular the matched laws hold against the full-history optimum over all adaptive sensor choices, for every positive invertible $P$, not only transitions satisfying a strong one-step contraction coefficient. Constants are uniform on compact parameter classes with fixed positive lower bounds on $\alpha$, singular values of $P$ and the likelihood-rank matrices, and covariance eigenvalues, and fixed upper bounds on means and covariances.
+\end{theorem}
+\begin{proof}
+Equations in this section use Lebesgue report densities. Dividing all $f_i^a$ by one fixed everywhere-positive Gaussian reference density gives the probability-reference convention of Section~\ref{sec:experiments}, with the same normalized update and acquired law. Writing $f_i^a$ for the Gaussian densities, the raw instrument is
+\begin{equation}\label{eq:gauss-raw}
+ L_{a,y}u=P\diag(f_1^a(y),\ldots,f_q^a(y))u,\quad
+ \ell_a(y,u)=\sum_i u_if_i^a(y),\quad
+ F_a(y,u)=P\frac{(u_if_i^a(y))_i}{\ell_a(y,u)}.
+\end{equation}
+The terminal category tests separate beliefs; every finite executable test has an affine expectation in the initial belief, by conditioning on the hidden category and integrating its legal continuation. This proves the finite test closure directly. Mixture preparations realize $D$. Log odds give a continuous inverse report section on the interior of $K$ at each fixed phase; boundary mixtures are prepared directly. The predictive quotient therefore has the required Borel realization. Since $P\Delta_q\subset\{u_i\ge\alpha\}$, there is a positive relative Euclidean buffer between $K$ and the boundary of $D$.
+
+Before applying $P$, put $w_i=u_if_i^a(y)/\ell_a(y,u)$ and $z_i=\log(w_i/w_q)$ for $i<q$. Then
+\begin{equation}\label{eq:logodds}
+ z_i=\log(u_i/u_q)+(m_i^a-m_q^a)^T\Sigma_a^{-1}y
+ -\tfrac12\left((m_i^a)^T\Sigma_a^{-1}m_i^a
+                      -(m_q^a)^T\Sigma_a^{-1}m_q^a\right).
+\end{equation}
+Under the actual report mixture, $z$ has a finite mixture of nonsingular Gaussian densities. The covariance determinant has a positive lower bound from the stated likelihood-rank determinant and covariance bounds. The means are uniformly bounded for $u\in D$. Consequently its density is at most $C\exp(-c\norm z^2)$, uniformly over $u,a$. The inverse logistic Jacobian in simplex coordinates is $(\prod_iw_i)^{-1}$; it grows at most $C\exp(C\norm z)$. Hence the acquired density of $w$ is bounded throughout the open simplex, including the tails approaching its boundary. The invertible affine map $P$ gives the required density bound on $K$.
+
+On the fixed compact simplex section $W_*:=\{w_i\ge1/(2q)\}$, the same Gaussian formula has a strictly positive uniform lower bound, because its inverse log odds are bounded and all mixture parameters range in compact sets. Thus every acquired row at every $u\in D,a$ dominates a common positive multiple of uniform volume on $PW_*$. This is~\eqref{eq:overlap} with $b=1$. This lower is on \emph{actual report-induced density}; its probability is not normalized to one after selection.
+
+The likelihoods are positive on all $\R^{q-1}$, with common null sets. Moreover
+$\TV(\ell_a(\cdot,u),\ell_a(\cdot,v))\le\tfrac12\sum_i|u_i-v_i|$.
+Pointwise continuity of~\eqref{eq:gauss-raw} and domination by $\sum_i f_i^a$ give weak continuity of the acquired kernels. Global grids and legal centroids follow from convexity of $K$. The categorical audit has $c=1$ and $g(u)=1-\norm u^2$. All assumptions of the same general theorem are verified.
+\end{proof}
+
+The acquired-overlap proof is different from the Hilbert-metric proof of passive posterior stability. For each fixed report, likelihood multiplication is a Hilbert isometry and a positive transition contracts. But feedback changes future report choices, and the relevant controlled Bellman comparison is not obtained by declaring the passive comparison optimal. The next proposition gives both an explicit failure of a sufficient one-step Wasserstein route and an actual action-switching effect.
+
+\begin{proposition}[Expansive acquired transport and strict adaptive sensing]\label{prop:expansive}
+Let $q=3$, $P=.9I+.1\one\one^T/3$, $\Sigma_a=I_2$. Sensor 1 has means $(10,0),(0,h),(0,-h)$ with $h=10^{-6}$, and sensor 2 interchanges hidden categories 1 and 2 in this list. This positive, full likelihood-rank model has the following properties.
+
+For sensor 1 there are $u,v\in K$ such that
+$W_1(\mu_{1,u},\mu_{1,v})>\norm{u-v}$, with Euclidean ground metric. Nevertheless Theorem~\ref{thm:gaussian} applies. At the last acquisition, the strictly optimal sensor is different on neighborhoods of $(1/2,1/4,1/4)$ and $(1/4,1/2,1/4)$. Both neighborhoods have positive acquired probability after any first sensor at an interior preparation.
+\end{proposition}
+\begin{proof}
+We first record a perturbation estimate. For two joint laws of a finite hidden category and a common report, with joint total variation $\tau$, the laws of their posterior category vectors have $W_1$ distance at most $6\tau$. To see this, couple the common part of their report marginals. If their joint densities are $p_i(y),q_i(y)$, the common-density integral of the posterior $\ell^1$ difference is at most
+$\int\sum_i|p_i-q_i|+\int|\sum_i(p_i-q_i)|\le4\tau$.
+Unmatched report mass is at most $\tau$ and simplex diameter is $\sqrt2$. This proves the bound. Application of $P$ on the tangent space multiplies distances by $.9$.
+
+At $h=0$, the report depends only on the partition $\{1\},\{2,3\}$. Its Bayes classification error is at most
+$e=\Pp(N(0,1)>5)\le e^{-25/2}/(5\sqrt{2\pi})<3\cdot10^{-7}$.
+Couple its posterior with the perfect-partition posterior. The expected difference is at most $2\sqrt2e$: if $p_y$ is the posterior probability of the first part, use $\E|p_y-\one_{\{i=1\}}|=2\E p_y(1-p_y)\le2e$.
+Changing $h$ from zero changes the joint law by at most $h/\sqrt{2\pi}$. Thus, uniformly in the prior, the actual acquired row after $P$ is within
+\begin{equation}\label{eq:gauss-perturb}
+ 2\sqrt2 e+6h/\sqrt{2\pi}<4\cdot10^{-6}
+\end{equation}
+of the ideal partition row in $W_1$.
+
+Take $u=(1/3,1/3,1/3)$ and $v=u+.01(e_1-e_2)$. For the ideal row write
+$w=(0,1/2,1/2)$ and
+$z=(0,(1/3-.01)/(2/3-.01),(1/3)/(2/3-.01))$.
+The common mass at $e_1$ is coupled identically. Optimal transport of the two remaining atoms costs
+\[
+ .9\left[.01\norm{e_1-w}+(2/3-.01)\norm{w-z}\right]
+ =.009(\sqrt3+1)/\sqrt2>.01738,
+\]
+whereas $\norm{u-v}=.01\sqrt2<.01415$. Optimality follows from the two-by-two transport problem, or the triangle inequality after uncrossing any flow out of the common $e_1$ mass. The perturbation bound~\eqref{eq:gauss-perturb} leaves a strictly positive gap. Every actual likelihood-rank determinant is nonzero because $h>0$.
+
+For the ideal sensors, the difference between expected squared posterior norms before $P$ is
+\[
+ \frac{2(p_1-p_2)p_3^2}{(1-p_1)(1-p_2)}.
+\]
+At $(1/2,1/4,1/4)$ it is $1/12$; interchanging the first two coordinates changes the sign. Applying $P$ multiplies this difference by $.9^2$, giving $.0675$. The function $\norm x^2$ is 2-Lipschitz on the simplex, so~\eqref{eq:gauss-perturb} preserves the strict comparison for the finite Gaussian model. Continuity gives neighborhoods. Formula~\eqref{eq:logodds} gives positive density on the entire interior of $K$, so both neighborhoods are actually encountered with positive probability. At horizons at least two a last-step feedback choice is therefore strictly better, conditionally on the preceding acquired state, than using either fixed sensor on both regions. This is a decision effect, not merely a parametrization of the same passive reports.
+\end{proof}
+
+\subsection{A fully specified binary benchmark}
+The following passive subfamily is included to expose constants and a finite program without hiding a numerical optimization behind the theorem. Take two hidden categories, means $+1,-1$, variance one, and
+$P=\left(\begin{smallmatrix}3/4&1/4\\1/4&3/4\end{smallmatrix}\right)$.
+Write $q$ for the first-category probability. Then $D=[1/8,7/8]$, $K=[1/4,3/4]$, and
+\begin{equation}\label{eq:benchmark-update}
+ F(y,q)=\tfrac14+\frac{1/2}{1+((1-q)/q)e^{-2y}}.
+\end{equation}
+The exact categorical risk is $2\E(q_n-\widehat q_n)^2+B_n$. The logistic log odds have variance four and means bounded in absolute value by $2+\log7$. A direct maximization of the Gaussian density divided by the logistic Jacobian gives the conservative coordinate density bound
+\begin{equation}\label{eq:benchmark-constants}
+ \Lambda_0=\frac{28e^4}{\sqrt{2\pi}}<610,
+ \qquad
+ \epsilon_0=\frac1{\sqrt{2\pi}}
+       \exp\left(-\frac{(2+\log21)^2}{8}\right)>0.
+\end{equation}
+Indeed $(1+e^z)^2/e^z\le4e^{|z|}$ and
+$\sup_z\{|z|-(z-\mu)^2/8\}\le|\mu|+2$ prove the upper, including the $1/2$ transition scale. On $q'\in[3/8,5/8]$ the log odds have absolute value at most $\log3$; the inverse Jacobian is at least eight. Its length $1/4$ gives the displayed common acquired mass lower.
+
+A scheduled three-report machine uses widths $10,20,30$, with one initial label, hence $M=61$ total states. At phase $t$ store only a midpoint from
+$\{1/4+(j-1/2)/(2m_t):1\le j\le m_t\}$ and update by~\eqref{eq:benchmark-update} followed by nearest midpoint. Start with the known preparation $q_0$. For every report and every $q\in K$,
+$|\partial_qF|\le2/3$; the grid error is at most $1/(4m_t)$. Consequently
+\[
+ |q_3-\widehat q_3|
+ \le(2/3)^2/40+(2/3)/80+1/120=1/36,
+ \qquad R-B_3\le1/648.
+\]
+The unrestricted 61-label checkpoint has upper excess $1/(8\cdot61^2)$; the acquired-density converse gives respectively
+$1/(16\Lambda_0^2\cdot30^2)$ and $1/(16\Lambda_0^2\cdot61^2)$ as valid lower bounds. They are conservative constants, not equalities.
+
+Every transition threshold is explicit: for a boundary $b\in(1/4,3/4)$, compare $y$ to
+$\frac12\log\{[(b-1/4)/(3/4-b)](1-q)/q\}$.
+There are $9+10\cdot19+20\cdot29=779$ such threshold constants and 30 rational terminal readouts. The experiment does not report a truncated cell. A finite-precision implementation must pay for representing these logarithms and handle a tail or boundary failure with Proposition~\ref{prop:numeric}. This benchmark is a legal construction with proved error bounds, not a numerical claim of attaining the exact finite-$M$ optimum.
