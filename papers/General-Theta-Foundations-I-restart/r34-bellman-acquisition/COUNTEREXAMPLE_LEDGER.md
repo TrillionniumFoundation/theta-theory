@@ -1,0 +1,14 @@
+# Counterexamples and sharpness witnesses
+
+1. **Local row attainment is not global compatibility.** Two equally likely rows are Dirac at 0 and 1; each has `q_1=0`, but merging into one output gives pooling distortion `1/4`. The native appendix includes it.
+2. **Terminal geometry is not a recursive certificate.** Two independent bits followed by a random coordinate query have a two-point terminal answer. A two-label interim memory has minimum random-coordinate MSE `1/2`. The finite enumeration checks all deterministic partitions; randomized encoders cannot improve a fixed-code pointwise minimum.
+3. **Full-history small balls do not quantify all retained rows.** Neutral circle rotation can have a full-circle exact law and a one-label barycenter zero whose row is a point mass. This is why density is over every declared retained barycenter.
+4. **One-step W1 need not contract in the new theorem.** Proposition 5.2: three-state positive Gaussian controlled experiment, ideal limiting row W1 `.009(sqrt(3)+1)/sqrt(2)` against prior distance `.01 sqrt(2)`; explicit finite Gaussian errors preserve strict expansion. The same raw class has acquired overlap and the new matching law.
+5. **Curvature and pathwise posterior stability differ.** At `eta=lambda=u=.99`, the binary noisy-sign example has perspective coefficient greater than 24 but same-report Hilbert contraction `lambda<1`. Conversely, a positive quantum mixture of identity report and complete rank-one report has integrated coefficient `omega<1` but identity-report Lipschitz coefficient at least one. These contrast routes, not the density theorem class.
+6. **Actions can carry an earlier hidden bit.** In a controlled experiment an early bit can select actions that change later physical reports. Therefore the old passive two-lane retained-bit lower cannot simply be copied. The new joint construction prepares the bit after the controlled core; the proof explicitly prohibits a later physical read/write of the core.
+7. **No uncharged deadline.** Phase-dependent disjoint supports or an external final request supplies clock information. The autonomous subtraction is stated only with common supports and internal exact halt.
+8. **No lossless TV rounding of continuous reports.** A discrete numeric report can be singular to the continuous report. The implementation proof uses coupling and unconditional cell-boundary mass, not that false TV assertion.
+9. **No free conditioning of singular mass.** The changing-rank theorem retains `w_j`. Rare rows or strata cannot be renormalized into a full-mass lower.
+10. **No reverse risk law from a one-way morphism.** The simulator upper compares the complete scored task and charges state products; reverse transfer requires a separately certified reverse morphism.
+
+All old counterexample ledgers are preserved unchanged. The new article does not replace actual risks by reachable dimensions or same-controller errors.
