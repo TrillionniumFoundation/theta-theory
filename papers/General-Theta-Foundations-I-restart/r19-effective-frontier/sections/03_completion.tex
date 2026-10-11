@@ -1,0 +1,104 @@
+\section{A causal allocation theorem}\label{sec:completion}
+For probabilities $\nu,\lambda$ on a compact convex carrier, write $\nu\cx\lambda$ when
+$\int f\,d\nu\le\int f\,d\lambda$ for every continuous convex $f$. Let $\mathcal P_m(K)$ be the probabilities with at most $m$ atoms, not the measures on a chosen grid.
+
+An externally clocked \emph{allocation flow} consists of $\nu_0=\delta_{q_0}$,
+$\nu_t\in\mathcal P_{m_t}(K_t)$, and a probability $\alpha_t(\cdot\mid q)$ supported on $\mathcal A_t$ at each atom of $\nu_t$, such that
+\begin{equation}\label{eq:flow}
+ \lambda_{t+1}=\int\sum_a\alpha_t(a\mid q)\Lambda_t(q,a)\nu_t(dq),
+ \qquad \nu_{t+1}\cx\lambda_{t+1}\quad(0\le t<n).
+\end{equation}
+The measure $\lambda_{t+1}$ is the actual acquisition mixture proposed by the retained states and actions. It is not the law of a separately run exact filter. Define
+\begin{equation}\label{eq:phi}
+ \Phi_{\ext}(\mathbf m)=\inf_{\text{flows }\eqref{eq:flow}}
+ \left\{\int g\,d\nu_n-B_n^*\right\}.
+\end{equation}
+All infima below allow arbitrarily close competitors; no unproved attainment assertion is implicit.
+
+For a proposed autonomous label set $Z$, initial label $z_0$, and stopping subset $D$, put
+$p_{t,z}\ge0$, $\sum_zp_{t,z}=1$, $q_{t,z}\in K_t$, and fix one action probability $\alpha_z(a)$ for every $z\notin D$. Require
+\begin{equation}\label{eq:occupancy}
+ p_{0,z}=\mathbf1_{z=z_0},\quad q_{0,z_0}=q_0,\quad
+ p_{t,z}=0\ (t<n,z\in D),\quad p_{n,z}=0\ (z\notin D).
+\end{equation}
+In addition require $p_{t,z}\alpha_z(a)=0$ whenever $a\notin\mathcal A_t$. All references to feasible occupancies below include this legality constraint. The same label may have different \emph{conditional predictive states} $q_{t,z}$ at different cuts; these are proposed law parameters, not time-varying registers readable by the machine. For each $z\notin D,a$, set
+\begin{equation}\label{eq:domination}
+ \eta_{z,a}=\sum_{t=0}^{n-1}p_{t,z}\alpha_z(a)J_t(q_{t,z},a),\qquad
+ h_{t,z,a}=\frac{d[p_{t,z}\alpha_z(a)J_t(q_{t,z},a)]}{d\eta_{z,a}}.
+\end{equation}
+If $\eta_{z,a}=0$, its contribution is zero. Otherwise $\sum_t h_{t,z,a}=1$ almost everywhere. For arbitrary $\phi_{t,j}\in\aff(K_{t+1})$, define
+\begin{equation}\label{eq:simdual}
+\begin{split}
+ \sum_{t=0}^{n-1}\sum_{j\in Z}p_{t+1,j}\phi_{t,j}(q_{t+1,j})
+ \ \le\sum_{z\notin D}\sum_a\int
+ \max_{j\in Z}\left\{
+  \sum_{t=0}^{n-1}h_{t,z,a}(y)\phi_{t,j}(F_t(q_{t,z},a,y))
+ \right\}\eta_{z,a}(dy).
+\end{split}
+\end{equation}
+Call the proposed occupancies \emph{simultaneously allocatable} if \eqref{eq:simdual} holds for every such family. Constants among the $\phi_{t,j}$ enforce the masses as well as the barycenters. Finite linear combinations of the determining test coordinates suffice. Define
+\begin{equation}\label{eq:phiaut}
+ \Phi_{\aut}(n,M)=\inf_{\substack{|Z|\le M,\ \eqref{eq:occupancy}\\
+                    \text{all inequalities }\eqref{eq:simdual}}}
+       \left\{\sum_zp_{n,z}g(q_{n,z})-B_n^*\right\}.
+\end{equation}
+No observer transition kernel occurs among these variables.
+
+\begin{theorem}[Causal acquired geometry and exact/effective resource transfer]\label{thm:completion}
+For the prepared instruments and terminal task of Section~\ref{sec:experiment}, the following assertions hold.
+
+\textup{(a)} A finite-support externally clocked flow is realizable by a causal observer with the indicated phase alphabets if and only if it satisfies \eqref{eq:flow}. Equivalently, for every step and every collection $\phi_1,\ldots,\phi_m\in\aff(K_{t+1})$, its proposed atoms $(p_j,q_j)$ satisfy
+\begin{equation}\label{eq:localdual}
+ \sum_{j=1}^m p_j\phi_j(q_j)
+ \le\int\max_{1\le j\le m}\phi_j(w)\,\lambda_{t+1}(dw).
+\end{equation}
+Every failed contraction has a strict witness of this finite polyhedral form.
+
+\textup{(b)} Proposed labelled occupancies and action probabilities are realizable by one autonomous tuple of Definition~\ref{def:machines}, stopping exactly at $n$, if and only if \eqref{eq:occupancy} and all simultaneous inequalities \eqref{eq:simdual} hold. Whenever they fail, one finite family of affine tests strictly separates the proposed moments from all phase-independent report allocations.
+
+\textup{(c)} With the same preparation, task and legal actions on both sides,
+\begin{equation}\label{eq:exactrisk}
+ R_{\ext}(\mathbf m)=B_n^*+\Phi_{\ext}(\mathbf m),\qquad
+ R_{\aut}(n,M)=B_n^*+\Phi_{\aut}(n,M).
+\end{equation}
+Every feasible flow is synthesized with exactly its declared labels. The auxiliary predictive states used to specify the flow are programme data, not additional persistent state. The synthesized transition functions need only be measurable; finite-bit or efficient synthesis is not asserted.
+
+\textup{(d)} Let $\nu_t$ be the retained-state laws of any calibrated observer, and $\lambda_{t+1}$ its actual pre-pooling law. If the terminal decision is optimal conditional on the retained label, then
+\begin{equation}\label{eq:slack}
+ R-B_n^*=\sum_{t=0}^{n-1}(A_t+\mathscr J_t),
+\end{equation}
+where
+\begin{align*}
+ A_t&=\E\left[\sum_a\alpha_t(a\mid Z_t)
+       \int V_{t+1}(w)\Lambda_t(Q_t,a)(dw)-V_t(Q_t)\right],\\
+ \mathscr J_t&=\int V_{t+1}\,d\nu_{t+1}-\int V_{t+1}\,d\lambda_{t+1}.
+\end{align*}
+Both terms are nonnegative. For an autonomous machine $\alpha_t(\cdot\mid z)=\alpha_z$ is the same kernel at every cut. A suboptimal terminal decision adds its nonnegative conditional decision slack.
+
+\medskip\noindent\textup{(e) Effective completion.} For the additional support-resolved effective presentation of Definition~\ref{def:effective}, the exact optimal value in \textup{(c)} admits the certified finite intervals \eqref{eq:effective_interval}, with the candidate bound \eqref{eq:programme_count}. They are uniform over every legal Borel programme of the fixed cardinality. The minimizing listed programme is executable at that same cardinality, with separately charged cell access, readout, probability precision, scratch and programme costs. This effective assertion does not apply to arbitrary compact Borel presentations merely by compactness. Its proof is Theorem~\ref{thm:effective}.
+\end{theorem}
+
+Parts (a)--(d) do not assume a density, a stable update, finite-dimensional closure, or full task curvature. Part (e) has the additional effective positive-instrument presentation stated there. It is an exact geometric feasibility and optimization theorem on the declared compact predictive class, not a universal numerical formula for arbitrary Borel experiments. Its two dual tests differ: in \eqref{eq:simdual} the maximum is taken \emph{after summing over phases}. Moving that maximum inside the phase sum would allow a different programme at every unobserved phase and would be a strictly weaker test.
+
+\begin{corollary}[Exact and approximate completion]\label{cor:zero}
+A zero-excess observer exists with a specified interface and budget if and only if its corresponding feasible allocation flow has $A_t=\mathscr J_t=0$ at every cut and zero terminal decision slack. For every $\epsilon>0$, an observer with excess at most $\epsilon$ exists if and only if a feasible flow has $\sum_t(A_t+\mathscr J_t)\le\epsilon$. The infimal excess is zero if and only if such flows exist for every positive $\epsilon$.
+\end{corollary}
+\begin{proof}
+Apply the realization parts of Theorem~\ref{thm:completion} and the sum of nonnegative terms in \eqref{eq:slack}. The last statement separates an infimum of zero from attained exact sufficiency.
+\end{proof}
+For example, a piecewise-affine Bayes risk can have zero Jensen loss on a nontrivial cell. Its acquired dimension alone cannot force a positive lower. At the other extreme, Section~\ref{sec:geometry} estimates the same Jensen defects by actual cell mass and distributional curvature.
+
+\begin{proposition}[Checkpoint identity]\label{prop:checkpoint}
+For a full-history policy $\pi$, let $\nu_n^\pi$ be its actual terminal predictive law and $B_n^\pi=\int g\,d\nu_n^\pi$. Then
+\begin{equation}\label{eq:checkpoint}
+ R_{\cp}(n,M)=\inf_\pi\left\{B_n^\pi+D_M^g(\nu_n^\pi)\right\},\qquad
+ D_M^g(\lambda)=\inf_{\substack{\nu\in\mathcal P_M(K_n)\\\nu\cx\lambda}}
+                      \left\{\int g\,d\nu-\int g\,d\lambda\right\}.
+\end{equation}
+In particular, the two policy-dependent terms are not minimized separately.
+\end{proposition}
+\begin{proof}
+Conditional on a final label, affinity gives the conditional predictive barycenter and the best risk $g$ at that barycenter. Necessity and sufficiency of the terminal contraction follow from the one-step allocation lemma below. Full-history independent randomization may be conditioned out for this checkpoint relaxation; alternatively include its kernels in $\pi$ and the displayed infimum is unchanged. For fixed finitely many readouts, assigning each predictive state to a least conditional loss readout is Borel and no worse than a randomized assignment. Optimizing the readouts therefore also gives the equivalent partition definition of $D_M^g$. This purification concerns a terminal encoder, not a stationary finite controller.
+\end{proof}
+
+The affine components in the displayed duals are continuous functions on the predictive carrier. Lemma~\ref{lem:operational_tests} identifies their precise relation to executable tests and uniform test-span limits. The finite family of maxima in a global obstruction is not generally one scored continuation. The dominating measure $\eta_{z,a}$ is a finite measure of aggregate occupancy-action mass $\sum_t p_{t,z}\alpha_z(a)$; it need not be a probability or even have mass at most one. The same action-indexed report space makes its shared row well-typed across phases.

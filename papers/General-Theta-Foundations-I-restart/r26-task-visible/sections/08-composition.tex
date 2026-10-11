@@ -1,0 +1,72 @@
+\section{Common-task composition and a matched resource law}\label{sec:composition}
+\subsection{General defect transfer}
+We use $\TV(\mu,\nu)=\sup_A|\mu(A)-\nu(A)|$. A bounded $[0,1]$ score changes in expectation by at most this distance; a stochastic row changes in $\ell^1$ by at most twice it. Both conventions must not be used interchangeably.
+
+\begin{proposition}[Task-sensitive causal comparison]\label{prop:defect}
+Consider two experiments and a paired class of parameter-independent programs, including any simulator's private state. Assume both complete scored processes have task-compatible finite-call bridges with errors $\omega_N$ and $\omega'_N$. Suppose the simulator supplies all virtual reports before their target decisions, preserves the common action and audit interface, and compares the complete first $N$ scored physical calls with total-variation error at most $e_N$. Then
+\begin{equation}\label{eq:task-defect}
+ |g-g'|\le\inf_{N\ge1}\{\omega_N+e_N+\omega'_N\}.
+\end{equation}
+A task readout discrepancy $\zeta_N$ adds $\zeta_N$ to the braces. A per-call complete-kernel discrepancy $\eta$ gives $e_N\le\min(1,N\eta)$ by telescoping. These assertions require the stated bridge at both endpoints, on the joint predictor--simulator state. A one-way causal simulator gives only the corresponding one-way optimal-risk comparison unless a reverse simulator is also supplied.
+\end{proposition}
+\begin{proof}
+Insert the two finite-call expected risks between the gains. Their difference is at most $e_N$ for a common $[0,1]$ score, with any declared readout discrepancy added. Each gain-to-finite-call difference is bounded at its own endpoint. Infimizing gives~\eqref{eq:task-defect}. Coupling until first discrepancy, or telescoping signed kernels for a complete marked process, gives the per-call bound. A simulator using $s$ labels and a target predictor using $m$ labels is implemented by their joint $sm$-label state, with its actual clock and physical-call schedule. Evaluating recurrence or task compatibility only on the predictor coordinate would omit a required hypothesis.
+\end{proof}
+This is a clock-aligned comparison. Different physical clock maps require their own duration normalization; equality of a virtual call count does not make physical-time gains equal.
+
+For quantum primitive comparisons the telescoping is performed on unnormalized marked completely positive maps in trace norm, not by coupling noncommuting states or dividing by a zero-probability report. A supplied Kraus-coordinate approximation can imply an instrument-norm certificate, but the resulting operational bound is independent of the Kraus representation. Report marginals without the duration, action and audit interface do not establish~\eqref{eq:task-defect}.
+
+Equation~\eqref{eq:task-defect} allows amplification weaker than a uniform group-inverse estimate. For instance if both bridges are $O(N^{-a})$ and $e_N\le N\eta$, it gives $O(\eta^{a/(a+1)})$ by balancing. This is an upper modulus, not an automatically attained lower bound. The next construction supplies actual alternatives and a matching law rather than treating an allowed error tolerance as an irreducible loss.
+
+\subsection{A single fully charged scored protocol}
+Let $V$ have a fixed preparation law $\rho$ on a compact $K\subset\R^q$, independently in every round and independently of $\theta$. Let $\sigma\in\{-1,1\}$ be a fixed inaccessible calibration sign, not redrawn along the path. Let $0\le\delta\le1$ and $0\le e\le1/2$ be known magnitudes. Each round has four physical calls with visible types:
+\begin{enumerate}
+\item prepare fresh physical diagnostic data and a fresh mark $V$, retaining the observer label;
+\item choose the diagnostic decision, score it, and then reveal the diagnostic report with intensity $\lambda_e(t)=(t^k-e)_+$;
+\item report $V$ and update the retained label;
+\item produce the fixed label readout $(c,b)\in\conv K\times[-1,1]$ before the audit and score $\norm{V-c}^2+(b-\sigma\delta)^2$.
+\end{enumerate}
+The diagnostic score is $t\one_{\{u\ne s\}}$ as before. The environment-owned audits in calls 2 and 4 are never feedback. Their alphabets and the early diagnostic-report deadline are part of the common measurable task interface. A simulator cannot replace the ground-truth audit by a fabricated one. All preparation, load and audit calls are charged; the physical acquisition budget is $N=4n$. Define $\calR$ to be expected total score divided by $n$ rounds. The usual physical-call average is $\calR/4$; dividing further by $D_K^2+5$ gives a $[0,1]$ normalization for each round's total score. Neither rescaling changes the resource exponents.
+
+\begin{theorem}[Matched acquisition--memory--calibration--defect law]\label{thm:joint}
+For every $n\ge1$, $M\ge2$, $0\le\delta\le1$ and $0\le e\le1/2$, the minimax value over all legal retained $M$-label programs in this protocol satisfies
+\begin{equation}\label{eq:joint-sandwich}
+ q_M(\rho)+\delta^2+D_n(\lambda_e)
+ \le\calR(4n,M,\delta,e)
+ \le q_{\lfloor M/2\rfloor}(\rho)+\delta^2+D_n(\lambda_e).
+\end{equation}
+The upper is realized by one stationary program using $2\lfloor M/2\rfloor$ labels. The lower diagnostic term holds even against full-history strategies. Uniformly over the displayed range,
+\begin{equation}\label{eq:diagnostic-erasure-rate}
+ D_n(\lambda_e)\asymp_k n^{-1/k}+e^{1/k}.
+\end{equation}
+Let $\varepsilon_*(e)$ denote source-to-target deficiency, uniformly in $\theta$, for one diagnostic interface with source intensity $\lambda_e$, target intensity $t^k$, the unchanged environment-owned audit, and the same early-report deadline. Then
+\begin{equation}\label{eq:actual-deficiency}
+ e/2\le\varepsilon_*(e)\le e.
+\end{equation}
+If the actual mark law has matching global covering and positive-mass small-ball dimension $d$, then
+\begin{equation}\label{eq:joint-law}
+ \calR(N,M,\delta,e)
+ \asymp M^{-2/d}+N^{-1/k}+\delta^2+\varepsilon_*(e)^{1/k},\qquad N=4n.
+\end{equation}
+Constants depend on the displayed raw geometric data and $k$, not on $N,M,\delta,e$. No ambient dimension is substituted for that acquired dimension.
+\end{theorem}
+\begin{proof}
+A program has at most $M$ geometric readouts. For every fresh $V$, irrespective of its earlier retained information, its geometric loss is at least the squared distance to that codebook; averaging gives $q_M(\rho)$. Average the two fixed calibration models $\sigma=\pm1$. Since their audit is never feedback and their visible experiments agree, the expected calibration loss is $\E b^2+\delta^2\ge\delta^2$. Independently average the two diagnostic models $\theta=\pm t$. Fresh geometric reports do not reveal their sign. The indistinguishable-before-revelation argument in Theorem~\ref{thm:diagnostic} therefore gives $D_n(\lambda_e)$. These lower terms hold simultaneously under the product of the two binary minimax priors, with $t$ chosen arbitrarily close to its supremum. They may therefore be added before taking the worst model.
+
+For the upper, store a sign label and one of $J=\lfloor M/2\rfloor$ nearest geometric centers. Initialize the sign fairly. Retain it on $\bot$, update it on conclusive reports, and update only the center coordinate on a fresh load. Set $b=0$. The known physical protocol types select the appropriate row; no internal round count is provided. This uses $2J\le M$ labels and gives exactly the upper expression, or arbitrarily closely if a codebook infimum were not attained. Here compact finite-dimensional support does give attainment. Unused labels are assigned the same legal updates as a used label; no extra inaccessible information is stored there.
+
+For~\eqref{eq:diagnostic-erasure-rate}, choosing $t=n^{-1/k}$ gives the $n^{-1/k}$ lower because $\lambda_e(t)\le1/n$; choosing $t=e^{1/k}$ gives the $e^{1/k}/2$ lower because no report is ever conclusive. The maximum of the two is at least half their sum. For the upper, if $t^k\le2e$ the value is at most $t/2\le(2e)^{1/k}/2$. Otherwise $\lambda_e(t)\ge t^k/2$ and the geometric sum is bounded by $\min(n,2/t^k)$, giving a constant times $n^{-1/k}$. This proves the uniform comparison, including $e=0$.
+
+The identity simulator has complete report discrepancy $t^k-(t^k-e)_+\le e$, proving the upper in~\eqref{eq:actual-deficiency}. At $t=e^{1/k}$ the source produces only $\bot$ under both signs. Before the required target report the simulator has the same information in these two models. The two target report laws are $\mu_+=(1-e)\delta_\bot+e\delta_+$ and $\mu_-=(1-e)\delta_\bot+e\delta_-$; their total-variation distance is $e$. Any common simulated law has distance at least $e/2$ from one by the triangle inequality. Additional independent mark data and unchanged audits unavailable before the deadline do not alter this argument. Finally Lemma~\ref{lem:quantization}, the global cover, and $\lfloor M/2\rfloor\ge M/3$ for $M\ge2$ compare the two quantization terms and prove~\eqref{eq:joint-law}.
+\end{proof}
+For $e>0$ the blind threshold can make the individual diagnostic gain discontinuous. The sharp law above is obtained by a direct minimax argument; it does \emph{not} apply Proposition~\ref{prop:defect} while silently dropping an endpoint regularity condition. The quantity $\varepsilon_*$ is the deficiency of a real pair of raw interfaces and is bounded, not falsely asserted to equal the allowed symbol $e$.
+
+\begin{corollary}[Singular acquired marks]\label{cor:singular-marks}
+Theorem~\ref{thm:joint} applies to the standard middle-third Cantor preparation, with $d=\log2/\log3$, and to products of such measures and interval measures, with their summed acquired dimensions. More generally a finite mixture with positive weight on a highest-dimensional Ahlfors-regular component and global covering of that order has the same exponent, retaining that component's actual weight in the lower constant.
+\end{corollary}
+\begin{proof}
+A depth-$j$ Cantor cylinder has mass $2^{-j}$ and diameter $3^{-j}$. Choosing $j$ so that $3^{-j}$ is comparable to $r$ shows that an interval of radius $r$ intersects at most a fixed number of depth-$j$ cylinders, and hence has mass at most $Cr^{\log2/\log3}$. The $2^j$ cylinders supply a global cover at that scale. Products preserve these estimates by enclosing Euclidean balls in product intervals and using product covers. For a finite mixture, keep the highest-dimensional component as the submeasure in~\eqref{eq:smallball}; cover the union, using that lower-dimensional components require no larger order. These are actual preparation and scored occupation measures of the four-call protocol, not conditional laws obtained by discarding low-probability outcomes.
+\end{proof}
+
+\subsection{Separate computational resources}
+If geometric centers and readouts are represented to error $\xi$, the corresponding upper root distortion is at most $\sqrt{q_J(\rho)}+\xi$, so its squared term is at most $(\sqrt{q_J(\rho)}+\xi)^2$. In the general recursion the numerical term appears in~\eqref{eq:geometric-upper}. A particular finite implementation must supply terminating arithmetic or integration certificates for its row probabilities and decisions. A $p$-bit description of $J$ centers in $\R^q$ uses $O(Jqp)$ read-only bits, a nearest-center scan can use $O(qp+\log J)$ temporary bits, and it performs $O(Jq)$ fixed-precision distance operations per load. The retained sign--center coordinate uses $\lceil\log_2(2J)\rceil$ bits. These are explicit upper counts for the stated scan, not simultaneous optimal lower bounds on all resources. Continuous raw report reading and random-bit sampling remain part of the declared acquisition interface; their finite-precision implementation must be charged rather than assumed free.
