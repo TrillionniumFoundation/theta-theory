@@ -1,0 +1,63 @@
+name: Theta restart R32 Bayesian causal acquired geometry
+on:
+  create:
+permissions:
+  contents: write
+concurrency:
+  group: theta-r32-bayesian-curvature-publication
+  cancel-in-progress: false
+jobs:
+  publication:
+    if: github.event.ref_type == 'branch' && github.event.ref == 'foundation/general-theta-restart-r32-bayesian-curvature-source-2026-10-11'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      SOURCE_DATE_EPOCH: '1791676800'
+      FORCE_SOURCE_DATE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      TZ: UTC
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.ref }}
+          fetch-depth: 2
+          sparse-checkout: |
+            .github
+            foundations/general-theta
+            papers/General-Theta-Foundations-I-restart
+      - name: Publish and export immutable ordinary source
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 .github/scripts/theta-r32-publish.py source
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r32-ordinary-source
+          path: ${{ env.SOURCE_EXPORT_DIR }}
+          retention-days: 30
+      - name: Install declared build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended cm-super lmodern poppler-utils python3-venv
+          python3 -m venv "$RUNNER_TEMP/r32-venv"
+          "$RUNNER_TEMP/r32-venv/bin/pip" install pypdf==5.9.0 numpy==2.3.5
+          echo "$RUNNER_TEMP/r32-venv/bin" >> "$GITHUB_PATH"
+      - name: Full read-only native and complete corrected/unchanged companion builds
+        run: |
+          python papers/General-Theta-Foundations-I-restart/r32-bayesian-curvature/build.py --source-sha "$SOURCE_SHA" --expected-tree "$EXPECTED_TREE" > "$RUNNER_TEMP/r32-build.stdout"
+          git diff --exit-code
+      - name: Publish artifact-only child on a new artifact branch
+        run: python .github/scripts/theta-r32-publish.py artifacts
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r32-source-and-build-packet
+          path: ${{ env.DELIVERY_DIR }}
+          retention-days: 30
+      - name: Diagnostic build stdout
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: theta-r32-build-stdout
+          path: ${{ runner.temp }}/r32-build.stdout
+          if-no-files-found: ignore
