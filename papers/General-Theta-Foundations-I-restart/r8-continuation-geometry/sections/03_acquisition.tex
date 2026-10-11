@@ -1,0 +1,165 @@
+\section{Adaptive acquisition on nonhomogeneous cylinders}\label{sec:adaptive}
+The cut argument concerns a fixed exploration. We now optimize acquisition itself. The raw interface in this section is progressive sensing: a call selects a coordinate and reveals its next unread binary digit. Neither a coordinate value nor an infinite tail is supplied as a pre-decision report. This interface is appropriate to a multiresolution measurement, and its restrictions are part of the theorem. Independent fair unread tails make their future variances depend on depth, not on observed bit values. Thus the policy optimization below is not arbitrary observation-dependent experimental design.
+
+Fix $d\ge1$, positive weights $\omega_j$ with $\sum_j\omega_j=1$, and $0<a\le1/2$. Let
+\begin{equation}\label{eq:scales}
+ a\le r_{j,l}\le1/2,\qquad
+ \ell_{j,0}=1,\quad \ell_{j,k}=\prod_{l=1}^k r_{j,l},\quad
+ b_{j,l}=(1-r_{j,l})\ell_{j,l-1}.
+\end{equation}
+Prepare independent fair bits $\zeta_{j,l}$ and physical coordinates
+\begin{equation}\label{eq:cylinders}
+ X_j=\sum_{l\ge1}b_{j,l}\zeta_{j,l},\qquad
+ \norm{x}_\omega^2=\sum_{j=1}^d\omega_jx_j^2.
+\end{equation}
+The series converges absolutely and $\sum_l b_{j,l}=1$. After preparation a legal action is either $\mathrm{read}(j)$, which returns the next unread bit of coordinate $j$, or $\mathrm{idle}$, which returns a fixed symbol. Each costs one raw call and one unit of physical acquisition time. The apparatus advances the chosen coordinate's internal read position. That position is part of the physical state, not a tape of past outcomes available to the observer. A policy may choose its actions from its permitted retained history and randomness. It cannot query a digit twice, request the hidden tail in one call, or obtain the terminal audit before predicting.
+
+There are $n$ pre-decision opportunities; shorter acquisition rules are padded with paid idles to this deterministic horizon. A terminal audit returns $X+s\delta\mathbf 1$, with unknown $s\in\{-1,1\}$ and $0\le\delta\le1/8$, only \emph{after} the vector forecast. This is the standard weighted squared reconstruction task. The terminal audit costs one call and does not furnish an input to the prediction algorithm. Preparation also costs one call, so $N=n+2$. Actions and stopping cannot reveal $s$. Decisions may be restricted to the compact box $[-1/8,9/8]^d$, without increasing risk. The oracle risk is zero and the loss is bounded by $25/16$.
+
+A complete history knows a finite prefix in each coordinate. Write $k_j(h)$ for its number of reads and $u_j(h)$ for that prefix. Its conditional mean is
+\begin{equation}\label{eq:actualcenter}
+ P_j(h)=\tfrac12+\sum_{l\le k_j(h)}b_{j,l}(u_{j,l}(h)-\tfrac12).
+\end{equation}
+The prefixes and read positions determine every legal future test by direct kernel integration. Conversely, the continuation which reads and scores a chosen coordinate determines its physical conditional law and read position; including the interface gives a predictive realization. For an adaptive policy the nominal acquired score law is exactly
+\begin{equation}\label{eq:adaptiveactual}
+ \nu_\alpha=\sum_{h}\PP_\alpha(H=h)\delta_{P(h)}.
+\end{equation}
+The sum is over the finitely many action/report histories of the fixed horizon. Its weights are the products of the policy probabilities and the factors $1/2$ for the actually read digits. Randomizing the policy averages these weights. Prefixes are \emph{not} asserted to be uniform conditional only on the random depths: data-dependent choices may bias that conditioning.
+
+\subsection{A common scale for acquisition and quantization}
+Put $s_j(k)=\sqrt{\omega_j}\ell_{j,k}$. Starting from $k^0=0$, increment, at each step, a coordinate with largest $s_j(k_j)$, breaking ties by the smallest index. Set
+\begin{equation}\label{eq:greedy}
+ R_b=\max_j s_j(k_j^b),\qquad b=0,1,\ldots.
+\end{equation}
+The total order on merged entries is decreasing numerical scale, then increasing coordinate index, then increasing level; it is compatible with each strictly decreasing coordinate list. The sequence is known from the experiment, not estimated from the observed bits.
+
+\begin{lemma}[Greedy scale and product small balls]\label{lem:greedy}
+For every integer $b\ge0$,
+\begin{equation}\label{eq:minmaxscale}
+ R_b=\min_{\substack{k_j\ge0\ \sum_jk_j\le b}}\max_j s_j(k_j),
+ \qquad aR_b\le R_{b+1}\le R_b.
+\end{equation}
+If $\mu=\law(X)$ and $b_M=\lfloor\log_2M\rfloor$, then
+\begin{equation}\label{eq:physicalquant}
+ c_{a,d}R_{b_M}^2\le q_M(\mu)\le(d/4)R_{b_M}^2.
+\end{equation}
+The constants are independent of the weights, the scale sequence and $M$. In particular no limiting dimension is assumed.
+\end{lemma}
+\begin{proof}
+Each list $s_j(0),s_j(1),\ldots$ decreases by a factor in $[a,1/2]$. An increment removes its currently largest remaining entry. The greedy rule therefore removes the $b$ largest entries in the union of the $d$ lists, with a fixed order for ties. Every allocation of $b$ increments removes a prefix of each list. Its maximum remaining entry is at least the $(b+1)$st entry of the merged order; greedy attains it. This proves the first equality, including unused increments by monotonicity. The largest entry removed at the next step is $R_b$, and its successor is at least $aR_b$; this gives the second assertion.
+
+At the greedy allocation $k^b$, every coordinate with $k_j^b>0$ has final weighted cylinder length at least $aR_b$. Indeed its last parent was a maximum at an earlier greedy step, hence was at least the eventual maximum $R_b$. In a fixed coordinate all level-$k_j^b$ cylinders have that same length. They have disjoint interiors because each ratio is at most $1/2$; their endpoints have zero fair-product mass. A ball for $\norm{\cdot}_\omega$ of radius $aR_b/4$ has projection length at most $aR_b/2$ in each weighted coordinate. Here physical length is $\ell_{j,k}$, weighted length is $\sqrt{\omega_j}\ell_{j,k}$, and the ball projection diameter is measured in the latter coordinate. It meets at most three of these intervals in each active coordinate. Each product cylinder has mass $2^{-b}$. Consequently
+\begin{equation}\label{eq:productsmallball}
+ \sup_x\mu(B(x,aR_b/4))\le3^d2^{-b}.
+\end{equation}
+Coordinates never split contribute just one interval and do not weaken the bound. The product mass is still $2^{-b}$ because $b$ counts the total number of active binary splits.
+
+Choose $L_d=\lceil\log_2(4\cdot3^d)\rceil$ and $b=b_M+L_d$. Since $M<2^{b_M+1}$, the union of $M$ such balls has mass at most $1/2$. Its complement contributes at least $a^2R_b^2/32$. Iterating \eqref{eq:minmaxscale} gives $R_b\ge a^{L_d}R_{b_M}$, proving the lower with $c_{a,d}=a^{2L_d+2}/32$.
+
+For the upper use the conditional means of the $2^{b_M}$ product cylinders at allocation $k^{b_M}$. Within coordinate $j$ the conditional distribution lies in an interval of length $\ell_{j,k_j^{b_M}}$, so its variance is at most one quarter of that squared length. Summing the weighted variances gives at most $(d/4)R_{b_M}^2$. The centers are physical conditional means; no smooth reference density or Fisher matrix has been introduced.
+\end{proof}
+
+\begin{lemma}[Adaptive acquisition variance]\label{lem:acquisition}
+For every causal adaptive sensing policy with at most $n$ reads, conditional on a complete realized history the unread digits remain independent and fair. In particular
+\begin{equation}\label{eq:tailvariance}
+ \frac{\ell_{j,k}^2}{16}\le
+ V_j(k):=\frac14\sum_{l>k}b_{j,l}^2
+ \le\frac{\ell_{j,k}^2}{4},
+\end{equation}
+and the full-history acquisition uncertainty satisfies
+\begin{equation}\label{eq:adaptivelower}
+ \E\norm{X-P(H)}_\omega^2
+   =\E\sum_j\omega_j V_j(k_j(H))\ge R_n^2/16.
+\end{equation}
+This remains true if the sensing controller has unrestricted access to its past reports.
+\end{lemma}
+\begin{proof}
+Let $\mathcal F_t$ be the sigma field generated by the complete action/report history through call $t$ and an independent seed containing all policy coins. Initially, conditional on the seed, the claim is the product preparation. A selected coordinate is a function of revealed data. Its next unread bit is fair and independent of all other unread bits. Revealing it, or performing an idle, preserves the induction. Conditional means and variances are therefore given by \eqref{eq:actualcenter} and the displayed tail series. Its first term has coefficient $b_{j,k+1}\ge\ell_{j,k}/2$, giving the lower in \eqref{eq:tailvariance}. The whole tail has range of length $\ell_{j,k}$, giving the upper. Each realized allocation has sum at most $n$, so \eqref{eq:minmaxscale} bounds its largest weighted length below by $R_n$. Sum the nonnegative variances and then average. Removing the conditioning on coins proves the claim for randomized policies as well.
+\end{proof}
+
+\begin{theorem}[Optimized acquisition--memory law]\label{thm:adaptive}
+Let $N=n+2\ge2$, $M\ge1$, and $K=\min\{n,\lfloor\log_2M\rfloor\}$. Optimize over all parameter-independent adaptive policies for the raw interface above and all online predictors whose entire data-dependent retained tuple, including any data-dependent acquisition-controller state, has at most $M$ values at every pre-decision cut. Define the analogous checkpoint optimum by allowing the prediction encoder one final access to the complete acquisition history. Then
+\begin{equation}\label{eq:adaptivelaw}
+ c_{a,d}\{R_K^2+\delta^2\}
+ \le\mathcal R_\cp(N,M,\delta)
+ \le\mathcal R_\on(N,M,\delta)
+ \le C_{a,d}\{R_K^2+\delta^2\}.
+\end{equation}
+The risk is minimax in the inaccessible sign $s$. A nonadaptive greedy allocation, followed by paid idles, attains the upper while storing only its $K$ observed bits. All constants are uniform in horizon, weights and ratios at fixed $a,d$. The deterministic phase/program is separately charged; it cannot contain observed data.
+\end{theorem}
+\begin{proof}
+Fix any admissible procedure and condition on its independent seed. Averaging the risks at the two signs gives
+\[
+ \tfrac12\sum_{s=\pm1}\E\norm{X+s\delta\mathbf1-A}_\omega^2
+ =\E\norm{X-A}_\omega^2+\delta^2.
+\]
+Full-history projection and Lemma~\ref{lem:acquisition} make the first term at least $R_n^2/16$. Independently, at the terminal decision it has only $M$ possible vector centers. The law of the physical $X$ is unchanged by any sensing policy or independent seed. Its distortion is therefore at least $q_M(\mu)\ge c_{a,d}R_{b_M}^2$ by Lemma~\ref{lem:greedy}. This is an oracle lower witness, not a substitution of $\mu$ for the actual atomic acquired law \eqref{eq:adaptiveactual}. Since $R_b$ decreases, the larger of $R_n^2$ and $R_{b_M}^2$ is $R_K^2$. These lower bounds hold even for a full-history sensing controller and hence for both classes in the theorem.
+
+For the upper read the $K$ coordinates of the greedy schedule in order. Retain the resulting binary word. At the $t$th read there are $2^t\le2^K\le M$ possible words; all remaining opportunities are paid idles and copy that word exactly. The deterministic phase determines which coordinate each bit belongs to. Output its conditional mean \eqref{eq:actualcenter}. Its nominal squared error is at most $(d/4)R_K^2$. Its unconditional mean error is zero, so each sign adds exactly $\delta^2$. Preparation, all reads and idles, and the terminal audit give exactly $N$ calls. This construction also proves that the upper does not assume a supplied recursively accurate real-valued state.
+\end{proof}
+
+For any fixed policy the exact checkpoint identity still separates acquisition and memory:
+\begin{equation}\label{eq:policyspecific}
+ R_{\cp,\alpha}(M,0)
+ =\E\norm{X-P(H)}_\omega^2+q_M(\nu_\alpha).
+\end{equation}
+In proving \eqref{eq:adaptivelaw} we did not commute an infimum over policies with either summand. Instead, the variance lower holds at every realized allocation and the physical-law converse holds for every encoder.
+
+If all ratios equal $r$ and the weights are $1/d$, greedy depths differ by at most one and $R_K^2$ is comparable, at fixed $d,r$, to $r^{2K/d}/d$. With $r=1/2$ this includes Lebesgue product laws; with $r<1/2$ it includes singular products. Mixed and oscillating sequences are covered by the exact scale sequence even when no single power-law dimension exists. This is a nonuniform geometry statement, not a claim of uniformity as $a\downarrow0$ or $d\to\infty$.
+
+For equal weights $\omega_j=1/d$ and constant ratio $r$, write $K=du+v$ with $0\le v<d$. The greedy allocation has $v$ coordinates at depth $u+1$ and the others at depth $u$, so $R_K^2=r^{2u}/d$. Thus the shorthand $R_K^2\asymp r^{2K/d}/d$ includes a factor between $1$ and $r^{-2}$ caused by the remainder.
+
+\subsection{A common task attaining the deficiency term}
+An upper allowance for deficiency cannot force a positive error floor. We give a source--target pair which attains it, while preserving the optimized geometric part of the task.
+
+Add an unknown fixed bit $z\in\{0,1\}$ to the preparation. Exactly one designated paid call, immediately after preparation, reports $z$ with probability $1-2\varepsilon$ and an erasure otherwise, where $0\le\varepsilon\le1/2$. No other pre-decision call depends on $z$. Then allow the same $n$ progressive opportunities. The terminal audit, only after the prediction, scores
+\begin{equation}\label{eq:jointtask}
+ \ell((X+s\delta\mathbf1,z),(A,c))
+ =\tfrac12\norm{X+s\delta\mathbf1-A}_\omega^2+\tfrac12(z-c)^2.
+\end{equation}
+There are exactly $N=n+3$ raw calls. The exact-bit target changes only the designated report to an exact bit and has the same costs and scored outcome. An admitted simulator must complete this virtual bit report before processing the progressive commands and may not query the terminal audit early.
+
+\begin{theorem}[A matched common acquisition--memory--defect profile]\label{thm:joint}
+\textbf{The virtual exact-bit report must be completed before any progressive command or terminal audit.} All comparisons in this theorem impose that order.
+For $N\ge3$, $M\ge3$ and $K=\min\{N-3,\lfloor\log_2M\rfloor\}$, the source experiment just defined satisfies
+\begin{equation}\label{eq:jointlaw}
+ \mathcal R_\cp\asymp_{a,d}\mathcal R_\on
+ \asymp_{a,d}R_K^2+\delta^2+\varepsilon,
+\end{equation}
+where the infima optimize the permitted adaptive sensing and finite-label prediction, and the supremum is over $(s,z)$. Its parameter-uniform causal deficiency to the exact-bit target, with the stated completion interface and common task, is exactly $\varepsilon$. The target-to-source direction is exact by independent erasure. These claims concern this specified family, not every experiment admitting a defect upper bound $\varepsilon$.
+\end{theorem}
+\begin{proof}
+Put the uniform prior on $(s,z)$ for a lower bound on the supremum. Conditional on an erased bit report, all later pre-decision information is independent of $z$, so its Bayes squared error is $1/4$. This contributes $\varepsilon/4$ to the weighted task. The geometric component has the acquisition and physical-law memory lower bounds used in Theorem~\ref{thm:adaptive}; knowing an independent bit or erasure indicator cannot invalidate them. The sign average adds $\delta^2/2$. Taking the larger of the acquisition and memory terms proves the lower.
+
+For the upper retain one of $0,1,\bot$ and $K'=\min\{n,\lfloor\log_2(M/3)\rfloor\}$ greedily acquired digits. The tuple has at most $3\cdot2^{K'}\le M$ values. Predict the observed bit, or $1/2$ on erasure, and use the conditional mean for $X$. The bit contribution is $\varepsilon/4$ for either $z$. Since $0\le K-K'\le2$ and each scale step changes by a factor at least $a$, $R_{K'}^2\le a^{-4}R_K^2$. This proves the upper uniformly in the nuisance parameters and in $N,M$.
+
+To simulate the exact-bit target, keep the observed bit and replace an erasure by an independent fair bit. Its chance of a wrong virtual report is $\varepsilon$ for each $z$. Couple the physical coordinates, all later policy coins and reports until that discrepancy; on its complement the complete common-task experiments coincide. This proves complete-law defect at most $\varepsilon$, uniformly over the admitted target policies. Conversely the two source distributions at the designated completion cut have total variation $1-2\varepsilon$. Their minimax bit-testing error is $\varepsilon$, since the only common report is the erasure. Any simulated exact-bit report would be such a test. Thus its worst-parameter total-variation defect from the exact report is at least $\varepsilon$. The compulsory completion order prevents use of the later audit. Independent erasure of an exact bit implements the reverse direction with zero defect.
+\end{proof}
+
+\subsection{A closed finite-bit realization}
+The preceding theorems are exact-label statements. Their physical coefficient sequences may be arbitrary real data; such data do not automatically have finite programs. The following result states a finite implementation on a precisely specified region instead of hiding real constants in the machine.
+
+\begin{theorem}[Finite data, scratch, program and time]\label{thm:digital}
+The common precision $p$ below is charged for each coefficient and each output coordinate. Bit operations use sequential finite tapes, not unit-cost large integers or an uncharged random-access memory.
+For the upper construction in Theorem~\ref{thm:adaptive}, fix its finite greedy schedule of length $K$ and suppose the read-only calibration description supplies dyadic approximations $\widehat b_{j,l}$ for the selected coefficients, with error at most $2^{-p}$, $p\ge1$. The schedule is supplied as certified finite data; no decidability of exact comparison of arbitrary computable reals is assumed. There is a deterministic finite-bit implementation with pre-decision report alphabet $\{0,1,\mathrm{idle}\}$, $K$ retained data bits, and
+\begin{align}
+ \Gamma&=(K+1)2^{-p},\label{eq:digitalerror}\\
+ W&\le C\{p+\log_2(K+d+2)\},\label{eq:workspace}\\
+ L_{\rm prog}&\le C(K+d)\{p+\log_2(K+d+N+2)\},\label{eq:program}\\
+ T_{\rm bit}&\le C\{N+d(K+d)(p+\log_2(K+d+N+2))\},\label{eq:runtime}
+\end{align}
+such that its sign-minimax risk is at most
+\begin{equation}\label{eq:digitalrisk}
+ (d/4)R_K^2+(\delta+\Gamma)^2.
+\end{equation}
+Here $W$ is additional temporary writable space, $L_{\rm prog}$ includes the schedule and coefficient table, and $T_{\rm bit}$ counts elementary operations on a deterministic sequential-tape implementation. Reads and arithmetic are padded to fixed phase lengths. A supplied clock with $Q\le C(N+T_{\rm bit}+1)$ phases is separately accounted for, giving total persistent cardinality at most $2^KQ$. Physical time is at most $N+T_{\rm bit}$ in the declared units. The terminal scored audit is after the output and is not a pre-decision digital input.
+
+The same construction for Theorem~\ref{thm:joint} uses three additional bit/erasure labels, replaces $K$ by $K'$, and adds the attained bit risk $\varepsilon/4$ with the task weights. Choosing $p\ge\lceil\log_2((K+1)/R_K)\rceil$ puts numerical error at the matched geometric order. These are feasible upper accounts for workspace, program and time, not optimal lower bounds for those resources.
+\end{theorem}
+\begin{proof}
+Append each received bit to a packed retained word and copy that word at idles. The scheduled coordinate and current position are determined by the padded phase, never by unretained observations. At the terminal decision, process coordinates successively. Start the accumulator at $1/2$, scan the retained word and the read-only schedule, and add $\widehat b_{j,l}(\zeta_{j,l}-1/2)$ for the selected coordinate. Dyadic arithmetic with a signed accumulator of $p+\lceil\log_2(K+2)\rceil+O(1)$ bits is exact for these approximate coefficients. Round the output to a $p$-bit dyadic and project to $[0,1]$.
+
+Each coordinate's error from its exact conditional mean is at most $K2^{-p}/2+2^{-p}\le\Gamma$, and so is its weighted norm error. Conditional projection eliminates the cross term with $X-P(H)$. The perturbation and the inaccessible sign together have norm at most $\Gamma+\delta$, proving \eqref{eq:digitalrisk}. The output tape is write-only; later coordinates are computed from the retained word and calibration table, not by rereading previously emitted numbers.
+
+The word uses exactly $K$ data bits. A coefficient and the signed accumulator, with loop indices, fit in \eqref{eq:workspace}. The table of at most $K$ coefficients, coordinate labels and finite loop parameters fits in \eqref{eq:program}. For each of $d$ coordinates perform at most $K+d$ fixed scans/additions, each with the displayed bit length; this deliberately loose sequential bound gives \eqref{eq:runtime}. Heads and loops follow predetermined padded phases, so their positions do not encode extra data. Counting those phases gives the bound on $Q$. A total-state constraint which includes the clock must use $2^KQ$, not just $2^K$. If the model instead supplies a deterministic external clock, its resource coordinate is still recorded. The three-state erasure extension is independent and gives the stated product account.
+\end{proof}

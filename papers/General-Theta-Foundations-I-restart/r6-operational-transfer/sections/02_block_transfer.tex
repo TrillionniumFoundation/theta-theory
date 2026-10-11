@@ -1,0 +1,128 @@
+\section{A causal acquired-geometry transfer theorem}\label{sec:main}
+Let $(S,d)$ be a separable metric predictive domain with its standard Borel structure. Conditional on the complete observed past and used algorithm randomization, the physical report at step $t$ has law $J_t(dy\mid S_{t-1},a_t)$ and the predictive update is $F_t(S_{t-1},a_t,y)$. Both objects are jointly Borel on the entire declared true and candidate domain. All comparisons below use the \emph{physical} report law and the same realized actions. They are uniform over the declared strategy class, including its legal history-dependent choices. The action sequence in a shadow flow is the one selected from the physical reports, not a newly optimized shadow policy.
+
+Fix a block length $m\ge1$, a Borel envelope $w:S\to[1,\infty)$, and a Borel relation $\mathcal D\subset S\times S$, writing $z\in\mathcal D(v)$ for $(v,z)\in\mathcal D$. Require $v\in\mathcal D(v)$ and $w(z)\le w(v)$ for $z\in\mathcal D(v)$. For each budget, static data comprise at most $M$ representatives $c_i$ and Borel cells $A_i$ covering $S$, with
+\begin{equation}\label{eq:static}
+ v\in A_i\quad\Longrightarrow\quad
+ c_i\in\mathcal D(v),\qquad d(v,c_i)\le r_M w(v).
+\end{equation}
+This is not a recursive machine assumption. The relation is fixed independently of $M$ and of the desired error radius.
+
+Write $\mathscr F_{s,j}(z)$ for the exact composition of $j$ updates starting at $z$ at time $s$, along the next physical actions and reports. The hypotheses are the following explicit kernel inequalities. They hold conditionally on every declared past at block starts $s=km$, for every true state $x$ and candidate $z$ compatible with that past.
+
+First, for some $L\ge1$ each one-step map is pathwise $L$-Lipschitz on the common report domain, and
+\begin{equation}\label{eq:blockpair}
+ \E_x[d(\mathscr F_{s,m}(x),\mathscr F_{s,m}(z))^2\mid\cF_s]
+ \le\kappa d(x,z)^2,\qquad 0\le\kappa<1.
+\end{equation}
+The expectation includes the actual report-driven action choices. Second, consider \emph{any} adapted selections, starting at $z_0=z$,
+\[
+ v_j=F_{s+j}(z_{j-1},a_{s+j},Y_{s+j}),\qquad
+ z_j\in\mathcal D(v_j),\quad 1\le j\le m.
+\]
+For constants $0\le a<1$, $b\ge0$, $A,B\ge0$, require
+\begin{align}
+ \E_x[w(z_m)^2\mid\cF_s]&\le a w(z)^2+b,\label{eq:robustdrift}\\
+ \E_x[w(v_j)^2\mid\cF_s]&\le A w(z)^2+B,
+                 \qquad 1\le j\le m.\label{eq:within}
+\end{align}
+These inequalities quantify over arbitrary relation-preserving perturbations, not over the error of a supplied encoder. They are verifiable from raw positivity or envelope estimates. Their strength and their verification cannot be suppressed: ordinary inwardness by itself need not preserve the mixing accumulated across several sparse transitions.
+
+A finite-input implementation may replace exact selection by a declared Borel routine with values in the same codebook, still in $\mathcal D(v_j)$, and satisfying
+\begin{equation}\label{eq:localerror}
+ d(v_j,z_j)\le r_M w(v_j)+u.
+\end{equation}
+Here $u$ is a certified joint bound for numerical, input and calibration errors in the stable metric. Borel exact selection has $u=0$. Finite workspace and computable membership are additional implementation certificates, not consequences of measurability.
+
+\begin{theorem}[Block construction and acquired-risk transfer]\label{thm:main}
+Fix the experiment, a deterministic horizon $T$, and exploration independent of the encoder. Suppose \eqref{eq:static}--\eqref{eq:within} hold and a legal seed in the codebook has
+\[
+ \E w(\widehat S_0)^2\le H_0,\qquad
+ \norm{d(S_0,\widehat S_0)}_{L^2}\le e_0.
+\]
+All seed acquisitions and retained states are charged. Let $P_T=f_T(S_T)$, with $f_T$ $L_f$-Lipschitz in the task norm. Put
+\begin{align}
+ H&=\max\{H_0,b/(1-a)\},&H_*&=AH+B,\nonumber\\
+ \Lambda_j&=\sum_{i=0}^{j-1}L^i\quad(\Lambda_0=0),&
+ \Delta&=r_M\sqrt{H_*}+u,\nonumber\\
+ E_*&=\max\{e_0,\Lambda_m\Delta/(1-\sqrt\kappa)\},&
+ \mathcal E_M&=L^{m-1}E_*+\Lambda_{m-1}\Delta.\label{eq:constants}
+\end{align}
+The static cover constructs an $M$-label causal encoder, quantized after every raw call, for which
+\begin{equation}\label{eq:mainrisk}
+ B_T+q_M(\nu_T)=R_\cp(T,M)
+ \le R_\on(T,M)
+ \le B_T+(L_f\mathcal E_M+v)^2,
+\end{equation}
+where $v$ is an additional root-mean-square terminal readout error. The constants are uniform in $T$ and in the certified strategies, not uniform as $\kappa$ or $a$ tend to one.
+
+If an actual submeasure $\underline\nu_T\le\nu_T$ has mass $\zeta_T>0$ and
+\begin{equation}\label{eq:smallball}
+ \sup_c\underline\nu_T(B(c,s_M))\le\zeta_T/(2M),
+\end{equation}
+then $R_\cp(T,M)-B_T\ge\zeta_Ts_M^2/2$. Thus $e_0=O(r_M)$, $u,v=O(r_M)$, $s_M\gtrsim r_M$, and $\inf_T\zeta_T>0$ give matching checkpoint and online excess risk of order $r_M^2$. Every constant is determined by the declared experiment, cover and actual acquired witness.
+\end{theorem}
+
+\begin{lemma}[Checkpoint projection]\label{lem:projection}
+For every forecast based on the history and randomization independent of the experiment and exploration,
+\begin{equation}\label{eq:projection}
+ \E\norm{Y-a}^2=B_T+\E\norm{P_T-a}^2.
+\end{equation}
+The optimal checkpoint distortion is $q_M(\nu_T)$, including independent shared randomization.
+\end{lemma}
+\begin{proof}
+Condition on the history and the algorithm randomization; the conditional mean remains $P_T$, so the cross term vanishes. For each value of an independent shared seed, replace a randomized decoder by its label-conditional mean. There are at most $M$ centers, and random label selection cannot outperform the closest center. A first-nearest-center selector is Borel. Every center list therefore gives distortion at least $q_M(\nu_T)$, and approximating lists give the reverse inequality. Independence keeps $\nu_T$ fixed when conditioning on this seed. Randomness used to choose the exploration is not a free such seed; any disclosed exploration side-information must be conditioned on or charged as an interface.
+\end{proof}
+
+\begin{lemma}[Block shadow and accumulated rounding]\label{lem:block}
+Let $Q_M$ choose the first cell in \eqref{eq:static}, and set
+\begin{equation}\label{eq:encoder}
+ \widehat S_t=Q_M(F_t(\widehat S_{t-1},a_t,Y_t)).
+\end{equation}
+The same assertions hold for the certified routine \eqref{eq:localerror}. At block endpoints $\E w(\widehat S_{km})^2\le H$. All pre-rounding candidates have second envelope moment at most $H_*$. If $e_t=\norm{d(S_t,\widehat S_t)}_2$, then
+\begin{align}
+ e_{s+m}&\le\sqrt\kappa\,e_s+\Lambda_m\Delta,\label{eq:recurrence}\\
+ e_{s+j}&\le L^j e_s+\Lambda_j\Delta,\qquad 0\le j<m.\label{eq:interior}
+\end{align}
+\end{lemma}
+\begin{proof}
+First-index selection from a finite Borel cover is Borel. It obeys the fixed relation, so \eqref{eq:robustdrift} applies to its trajectory and gives the endpoint envelope induction. Equation~\eqref{eq:within} gives the pre-rounding bound at every microstep.
+
+Start an exact shadow at $\widehat S_s$ and feed it the \emph{same} physical actions and reports for $m$ steps, without storing that shadow in the implementation. Successively replace the perturbed transitions by exact ones, from the last insertion of error backwards. Pathwise Lipschitz continuity gives
+\[
+ d(\mathscr F_{s,m}(\widehat S_s),\widehat S_{s+m})
+ \le\sum_{j=1}^m L^{m-j}
+   d(F_{s+j}(\widehat S_{s+j-1},a_{s+j},Y_{s+j}),\widehat S_{s+j}).
+\]
+This is a telescoping comparison of functions of the observed word, not a claim that reports are independent of the error. Each summand has $L^2$ norm at most $\Delta$ by \eqref{eq:localerror} and the envelope bound. Minkowski and \eqref{eq:blockpair} give \eqref{eq:recurrence}. Applying the same telescoping argument for $j<m$, with the pathwise gain $L^j$ for the initial discrepancy, gives \eqref{eq:interior}. The exact shadow is only a proof device; no shadow state or block of reports is retained by \eqref{eq:encoder}.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:main}]
+The recurrence preserves $e_{km}\le E_*$ by the definition of $E_*$. Equation~\eqref{eq:interior} gives $e_T\le\mathcal E_M$. The readout $f_T(\widehat S_T)$ has root task error at most $L_f\mathcal E_M$, and its certified terminal perturbation adds $v$ in that same norm. Lemma~\ref{lem:projection} proves the upper and exact checkpoint identity. Every online output is an allowed checkpoint output, which gives the middle inequality.
+
+For any $M$ centers, their open $s_M$-balls cover at most half the submeasure in \eqref{eq:smallball}. Outside their union the squared distance to the list is at least $s_M^2$. Its contribution is at least $\zeta_Ts_M^2/2$. Seed conditioning as in Lemma~\ref{lem:projection} proves the randomized converse. This argument uses no volume measure or manifold beyond the actual submeasure specified in the hypothesis.
+\end{proof}
+
+\begin{corollary}[Exact independent suspensions]\label{cor:holds}
+For a one-step certificate suppose active reports satisfy a pair bound $\kappa<1$ and a pre-rounding envelope bound $aw(z)^2+b$. At physical step $t$ an active indicator, independent of the complete past, has deterministic probability $\vartheta_t\in[0,1]$; on inactivity the predictive and retained states are copied exactly. Then
+\[
+ H=\max(H_0,b/(1-a)),\qquad
+ e_t\le\max\{e_0,(r_M\sqrt H+u)/(1-\sqrt\kappa)\}
+\]
+for every deterministic $t$, with all inactive calls and time charged.
+\end{corollary}
+\begin{proof}
+Use indicator-form expectations. The candidate-envelope inequality gives
+\[
+\E[\one_{\{D_t=1\}}w(v_t)^2]
+\le\vartheta_t(a\E w(\widehat S_{t-1})^2+b).
+\]
+On inactivity the old envelope is unchanged. This proves the invariant bound, including $\vartheta_t=0$ without conditioning on a null event. The squared error obeys
+\[
+ e_t^2\le(1-\vartheta_t)e_{t-1}^2+
+ \vartheta_t(\sqrt\kappa e_{t-1}+r_M\sqrt H+u)^2.
+\]
+Both terms preserve the displayed radius. Independence from the past is used here and is not inferred from a state-dependent missing-report mechanism.
+\end{proof}
+
+For $m=1$ and $\mathcal D(v)=\{z:w(z)\le w(v)\}$, the raw one-step envelope bound verifies the relation-robust condition automatically. Thus the one-step inward theorem and its suspension mechanism are retained. The block theorem adds a new route when accumulated positivity, rather than one-step strict contraction, is the available experimental mechanism.
