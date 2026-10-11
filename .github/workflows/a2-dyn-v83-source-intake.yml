@@ -1,0 +1,35 @@
+name: A2-DYN v83 exact-source intake
+on:
+  push:
+    branches:
+      - revision/a2-dyn-v83-referee-response-2026-10-11
+    paths:
+      - .github/workflows/a2-dyn-v83-source-intake.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-intake:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Freeze author source and controlling review
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD:papers/A2-DYN-v81-referee-response)" = "1d68fef5bbd1abc573d8e517e845cf889fe6431c"
+          test "$(git rev-parse HEAD:reviews/a2-dyn-v81-external-top4-review-2026-10-11/REFEREE_REPORT.md)" = "818e5932c895aea686da68fe37cec6018d2de759"
+          mkdir -p /tmp/a2-dyn-v83-intake
+          git archive HEAD papers/A2-DYN-v72-referee-response papers/A2-DYN-v73-referee-response papers/A2-DYN-v74-referee-response papers/A2-DYN-v75-referee-response papers/A2-DYN-v76-referee-response papers/A2-DYN-v77-referee-response papers/A2-DYN-v78-referee-response papers/A2-DYN-v79-referee-response papers/A2-DYN-v80-referee-response papers/A2-DYN-v81-referee-response papers/A2-DYN-v82-referee-response reviews/a2-dyn-v79-external-top4-review-2026-10-11 reviews/a2-dyn-v81-external-top4-review-2026-10-11 A2_DYN_V81_REVISION_INDEX.md A2_DYN_V82_REVISION_INDEX.md > /tmp/a2-dyn-v83-intake/exact-source.tar
+          git rev-parse HEAD HEAD^{tree} HEAD:papers/A2-DYN-v82-referee-response > /tmp/a2-dyn-v83-intake/source-identity.txt
+          git ls-tree -r HEAD papers/A2-DYN-v82-referee-response > /tmp/a2-dyn-v83-intake/v82-ls-tree.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: a2-dyn-v83-source-intake-${{ github.sha }}
+          path: /tmp/a2-dyn-v83-intake/*
+          retention-days: 90
+          if-no-files-found: error
