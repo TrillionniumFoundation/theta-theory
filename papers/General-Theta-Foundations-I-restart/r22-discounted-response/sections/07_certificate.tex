@@ -1,0 +1,54 @@
+\section{A complete continuous-report certificate}\label{sec:certificate}
+This example makes the global lower, model uncertainty and implementing upper fully explicit. It is a calibration and quantization witness, not a substitute for the general theorem or a claim to solve a difficult nonlinear filter.
+
+At every call a fresh fair hidden bit $X_t$ is prepared. For a fixed inaccessible $p\in[p_0,p_1]\subset(0,1)$ the report density on $[0,1]$ is
+\begin{equation}\label{eq:signal}
+ g_p(y\mid x)=1+(2x-1)p(2y-1).
+\end{equation}
+There is one action. Scores $(X_t-d)^2$ are not additional reports. The report sequence is iid uniform for every $p$, so its past cannot reveal the current bit or the parameter. With the known endpoint $p_0$, not the realized $p$, an equally spaced $M$-cell partition has conditional posterior means
+\[
+ d_j=\frac12+\frac{p_0}{2}\left(-1+\frac{2j-1}{M}\right),\quad 1\le j\le M.
+\]
+Every controller row simply stores the current cell. All $M$ states are reused; no count is retained.
+
+\begin{proposition}[Exact continuous acquired-memory law]\label{prop:continuous}
+For decision space $[0,1]$, every $M\ge1$ and $0<\beta<1$,
+\begin{equation}\label{eq:continuous}
+ V_\beta^{[p_0,p_1]}(M)
+ =\frac14-\frac{p_0^2}{12}(1-M^{-2}).
+\end{equation}
+The common unrestricted-history value is $B^*=1/4-p_0^2/12$, so the memory excess is exactly $p_0^2/(12M^2)$. An inaccessible fixed calibration offset $u\in[-\delta,\delta]$ in the scored target $X_t+u$, not in its reports, adds exactly $\delta^2$ to the robust value when decisions are allowed in $[-\delta,1+\delta]$.
+\end{proposition}
+\begin{proof}
+At $p=p_0$, the posterior mean is $1/2+p_0(2Y_t-1)/2$, uniform on an interval of length $p_0$, and all earlier reports and controller randomization are independent of the current target/report pair. Its irreducible Bayes risk is $1/4-p_0^2/12$. An $M$-valued output has an additional quantization error at least $p_0^2/(12M^2)$: cells of lengths $l_j$ have minimal uniform second moments $l_j^3/12$, and $\sum l_j^3\ge p_0^3/M^2$. Randomized cells cannot improve nearest-center assignment. This is a lower bound for every state-reusing controller at every call.
+
+For the displayed equal cells, write $m(Y)$ for the midpoint of the cell in the variable $2Y-1$. Then $\E m^2=\E[m(2Y-1)]=(1-M^{-2})/3$. The risk of the common readout is
+\[
+ \frac14+\frac{p_0^2}{4}\E m^2-\frac{pp_0}{2}\E m^2,
+\]
+which is largest at the known endpoint $p_0$ and attains \eqref{eq:continuous}. Allowing full real-valued reports corresponds to $m=2Y-1$ and proves the stated common baseline, rather than assuming a modelwise oracle baseline is attainable.
+
+For the offset lower, average the risks at $u=\delta$ and $u=-\delta$ with $p=p_0$. Their mean is the unshifted risk plus $\delta^2$, for any common controller. The unshifted optimum remains the same even with the larger readout interval, since projection onto $[0,1]$ decreases its loss. The displayed common forecast has zero mean error at every $p$, so its risk at fixed $u$ is its unshifted risk plus $u^2$. This gives the matching upper. The shifted squared loss is bounded by $(1+2\delta)^2$; scale it to use the unit-loss normalization of the general theorem.
+\end{proof}
+
+\subsection{Finite certificate with rational arithmetic}
+Take $\beta=1/2$, $M=2$, $p\in[1/4,1/2]$, and the declared finite decision space
+$D=\{7/16,1/2,9/16\}$. This finite space has the same optimum as \eqref{eq:continuous} for $M=2$. Use the two report cells $[0,1/2)$ and $[1/2,1]$, denominator $Q=2$, and the two endpoint models. There are exactly
+\[
+       |D|^2 {2+2-1\choose2-1}^{2\cdot2}=9\cdot81=729
+\]
+listed tables, with initial label $1$. Every probability and discounted risk in this list is rational. For a table with next-label probabilities $k_{icj}$, its label transition matrix is $T_{ij}=(k_{i0j}+k_{i1j})/2$; its one-call score vector $r_p(i)$ is obtained by integrating \eqref{eq:signal} over each half interval with readout $d_j$. The exact discounted score is
+\begin{equation}\label{eq:rational}
+ J_{p,1/2}(g)=\tfrac12 e_1^{\mathsf T}(I-T/2)^{-1}r_p.
+\end{equation}
+The inverse exists because $T$ is stochastic. Since $T$ is independent of $p$ and $r_p$ is affine in $p$, the maximum over the whole interval is exactly at an endpoint. This is an exact model reduction, so its parameter allowance is $\Omega=0$, not a sampled approximation assumption.
+
+Exhaustive rational evaluation of all 729 tables gives $L=U=63/256$, with evaluation error $\zeta=0$. One selected table has readouts $(7/16,9/16)$, and for both previous labels sets $k_{i0}=(1,0)$ and $k_{i1}=(0,1)$. The table is parameter independent and uses no random bits at execution.
+
+For clarity, the generic uniform report error and an instance-specific value reduction are different. Here the payoff density is affine in its last report, with slope $(p/2)(1-2d)$ in the variable $2y-1$. For $d\in D$, its two-cell $L^1$ projection error is at most $1/128$. The bound \eqref{eq:EN} therefore gives $E_\infty\le1/64$. The generic rounding estimate at $Q=2$ is too coarse to be useful. Instead, an exact value-preserving rounding certificate is available: for any fixed pair of readouts, iid reports make old labels irrelevant to the current conditional loss, and each cell's expected loss is linear in its next-label probabilities. At $p_0$ a minimizing cell rule is deterministic; the symmetric pair and sign rule minimize there and have their worst risk there. Thus the robust cell optimum is attained among the listed deterministic rows, so the \emph{value} rounding allowance is zero. This does not say that every Borel row is uniformly close to a deterministic row.
+
+Using this proved refinement in the same lower-comparison argument yields the certified continuous-family interval
+\[
+ [L-E_\infty,U]=[59/256,63/256].
+\]
+The independent analytic all-Borel lower in Proposition~\ref{prop:continuous} tightens it to $[63/256,63/256]$. No temporal truncation error is used in this example because \eqref{eq:rational} evaluates the infinite series exactly. Its expected acquisitions under geometric scoring are $2$; this is not a deterministic two-call budget. The stored forecasts $7/16$ and $9/16$ use the known family endpoint $p_0$. Both the finite enumeration and its exact rational output are deposited separately from the continuum proof.
