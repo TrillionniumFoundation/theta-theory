@@ -82,6 +82,7 @@ def source_check(local: bool) -> dict:
     assemble()
     master=(PAPER/'build/supplement-source.tex').read_text()
     require(master.count('Superseded dyadic notation.')==1,'unqualified historical dyadic formula')
+    require(master.count('hypertexnames=false')==1,'nonunique archive PDF targets')
     require(r'\input{appendices/v85_dependency_guide}' in master,'missing inherited proof-page guide')
     require(r'\input{appendices/v86_dependency_guide}' in master,'missing v86 proof-page guide')
     hashes={str(f.relative_to(PAPER)):hashlib.sha256(f.read_bytes()).hexdigest()

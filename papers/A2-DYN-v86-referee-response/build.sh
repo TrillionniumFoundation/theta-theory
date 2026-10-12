@@ -35,8 +35,8 @@ compile() {
     last=$now
   done
   [[ $stable == 1 ]] || { echo "Unstable references: $name"; return 1; }
-  if grep -Eq 'LaTeX Warning|Package .* Warning|Overfull|undefined|Missing character' "build/${name}.log"; then
-    grep -En 'LaTeX Warning|Package .* Warning|Overfull|undefined|Missing character' "build/${name}.log"; return 1
+  if grep -Eq 'LaTeX Warning|Package .* Warning|pdfTeX warning|Overfull|undefined|Missing character' "build/${name}.log"; then
+    grep -En 'LaTeX Warning|Package .* Warning|pdfTeX warning|Overfull|undefined|Missing character' "build/${name}.log"; return 1
   fi
 }
 compile supplement

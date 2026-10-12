@@ -30,6 +30,13 @@ def assemble() -> None:
     master=master.replace(marker,r'\input{appendices/v86_dependency_guide}'+'\n'+insert+marker)
     master=master.replace('A2-DYN, revision 85; complete retained source through revision 84',
                           'A2-DYN, revision 86; complete retained source through revision 85')
+    # Historical archives reset visible counters. Generate unique PDF targets
+    # without changing any displayed number or byte-preserved source file.
+    hyper = r'\usepackage[hidelinks]{hyperref}'
+    require(master.count(hyper)==1,'supplement hyperref declaration')
+    master=master.replace(hyper,r'\usepackage[hidelinks,hypertexnames=false]{hyperref}')
+    master=master.replace(r'\date{October 11, 2026. A2-DYN, revision 86',
+                          r'\date{October 12, 2026. A2-DYN, revision 86')
     target.write_text(master)
 
 if __name__=='__main__':assemble()
