@@ -1,0 +1,40 @@
+\section{Finite descriptions and numerical resource certificates}\label{app:computation}
+The exact optimization in Theorem~\ref{thm:main}(i) is over Borel kernels. It is a causal realization theorem in the stochastic-kernel model, not a theorem that every such kernel has a finite Turing description. We now give an independent finite-description upper for the sharp regular-support class. Its extra input is a certified numerical report and a computable geometric net, not a stored exact posterior.
+
+\begin{proposition}[Finite-bit regular-support implementation]\label{prop:finite-bit}
+Assume Definition~\ref{def:recoverable} and \eqref{eq:regularity}. Suppose the following data are supplied by the raw implementation: at accuracy $2^{-p}$, the current task response in $\R^k$ can be read with deterministic Euclidean error at most $C_y2^{-p}$ using workspace $W_y(p)$ and time $T_y(p)$; finite rational global covers and separated center lists at their asserted scales can be constructed; and the fixed action $a_0$ has a finite description of length $D_0$.
+
+Then a finite program attains the upper order in \eqref{eq:regular-aut}, using one live label and $m=M-1$ terminal labels, with
+\begin{equation}\label{eq:precision-cost}
+ p\le C+\left\lceil\frac1s\log_2(Nm)\right\rceil,
+ \qquad D_{\rm prog}\le D_0+Ckm(p+\log(m+1)).
+\end{equation}
+One valid temporary workspace bound is
+\begin{equation}\label{eq:workspace-cost}
+ W_{\rm temp}\le W_y(p)+Ck(p+\log(k+1))+C\log(m+1),
+\end{equation}
+and each live transition uses at most $T_y(p)+Cm\,T_{\rm dist}(k,p)$ arithmetic time. The constants include the fixed geometry and certified arithmetic implementation. The mean number of transitions is at most $N$; there is no deterministic upper bound on the number of transitions. The program and report computation do not access the unknown model.
+\end{proposition}
+\begin{proof}
+For sufficiently large $N$ take $m$ separated centers as in Lemma~\ref{lem:regular}. Set $r=C_2(Nm)^{-1/s}$, where $C_2$ is a fixed large constant. Choose the large-$N$ threshold so that $3r$ is less than their separation. Round the centers and read the current response accurately enough that their combined distance error, including certified arithmetic, is at most $r/4$. Accept when the computed distance to some rounded center is at most $r$. The true union of radius-$r/2$ balls is then contained in the accepting set, and every accepted point is within $2r$ of its selected rounded decoder. The lower acquired mass bound implies, at every surviving history,
+\[
+ \Pp(\text{accept}\mid h)\ge a_*mc_0(r/2)^s\ge 1/N
+\]
+by the choice of $C_2$. Thus the \emph{implemented} stopping time has mean at most $N$, independently of any total variation approximation. Its squared distortion is at most $4r^2$.
+
+For $N$ below the fixed threshold, use a certified global cover with $m$ centers, stop after the first report, and select a center of approximately smallest distance. The cover and numerical errors give $Cm^{-2/s}\le C'(Nm)^{-2/s}$ in this range. Both cases use $p=O(1+s^{-1}\log(Nm))$. Storing $m$ rounded $k$-vectors, a fixed threshold and their indices gives \eqref{eq:precision-cost}, allowing harmless additional index-address bits. Computing distances by scanning the read-only list requires one current response, one running best distance, one index, and arithmetic scratch space, which gives \eqref{eq:workspace-cost}. This workspace is erased before a rejected call returns to the single live label. The terminal center index is the only retained outcome. Time is counted for every attempted call, including failures.
+\end{proof}
+
+\subsection*{Certified nets in the two realizations}
+For the box, rational lattice covers and separated sublattices provide the required lists. For the product Cantor set, depth-$h$ cylinders have rational endpoints, known mass $2^{-dh}$ and known separation at their natural scale. Taking enough endpoints supplies separated lists, and complete cylinder families supply covers. The relation $3^{-h}\asymp m^{-1/s}$, with $2^{dh}$ within a fixed factor of $m$, gives the asserted cardinality bounds. No membership oracle for an arbitrary null set is assumed.
+
+For the quantum support, cover projective space by the $q$ charts in which $|\psi_j|$ is largest. After fixing that coordinate's phase, write the ray as $(1,z)/\norm{(1,z)}$, with all real and imaginary components of $z$ in $[-1,1]$. The corresponding projection
+\[
+ P(z)=\frac{(1,z)(1,z)^*}{1+\norm z^2}
+\]
+is Lipschitz on each compact chart with a constant depending only on $q$. Rational grids of mesh $h$ therefore give computable covers of cardinality $O_q(h^{-2(q-1)})$ and rational matrix coordinates. A greedy separated subset of a sufficiently fine such net supplies the packing lists: maximality gives a cover at a fixed multiple of the separation scale, and the exact mass formula \eqref{eq:projective-mass} bounds its cardinality above and below. Choosing the scale with a fixed safety factor produces at least $m$ separated points, or at most $m$ covering points, as needed. These are finite, verifiable constructions, not a claim of a fast optimal projective quantizer.
+
+The literal description length in \eqref{eq:precision-cost} grows with precision even though the observer has only $M$ persistent labels. For the quantum instrument, its fixed physical dimension, channel invocation, outcome digitization and audit measurement are additional native costs. For the classical instrument, the vector-report acquisition and the scalar operations implementing it are likewise distinct. A bounded-state theorem alone cannot identify either of these total bit or physical cost frontiers.
+
+\subsection*{What is not supplied by a finite check}
+The support criterion \eqref{eq:joint-support} quantifies over real dual vectors and, for an arbitrary model family, all finite model subsets. The proof establishes the continuum statement by compactness and separation. Exact finite examples check special instances, signs and constants; they do not replace that proof. Nor does the geometric program calculate the optimal centers in \eqref{eq:profile}: it implements the proven matching order under explicit numerical certificates. Optimal program bits, workspace, planning time and simulator-state lower bounds remain separate mathematical questions.
