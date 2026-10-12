@@ -1,0 +1,95 @@
+\section{Raw responses and a common infinite-horizon controller}\label{sec:raw}
+\subsection{Prepared experiments, tests and acquired laws}
+Let $\Theta\ne\varnothing$ be a set. Its realized element is fixed for an entire execution. At time $t$, a standard Borel hidden state, a finite action $a\in A$, and a positive normalized causal kernel produce the next hidden state and a report in a standard Borel space $Y_a$. Preparation is prescribed at every $\theta$. Hidden state may include the necessary physical history and may be infinite-dimensional. All actions in $A$ are legal at every call. Positive here means nonnegative, not strictly positive. Every call is one raw acquisition; heterogeneous physical times may be included in the report with a separate cost certificate.
+
+At time $t\ge1$ a scored outcome $Z_t$ is available to the declared task but is not additional feedback to the controller. A decision $d\in D$ incurs $0\le\ell(d,Z_t)\le1$. The space $D$ is compact metrizable and $d\mapsto\ell(d,z)$ is continuous for every $z$. A score depending on earlier physical history or on the action word is allowed. Its law, like the report law, is fixed by the raw experiment. No score may depend on a private controller seed except through the declared decision. Terminal lotteries can be included in $D$ only with their sampling cost counted.
+
+An executable future test consists of a legal finite continuation and a bounded outcome. A countable determining test class gives a Borel evaluation map
+\[
+ h\longmapsto q(h)=\bigl(\E[f_r\mid h]\bigr)_{r\ge1}\in[0,1]^{\mathbb N},
+\]
+after fixing a preparation or a Bayes preparation of the parameter. The countable class must determine the desired tests and include the legal interface. Its evaluation fibers are precisely predictive equivalence for that class. If another statistic is sufficient in the sense that these conditional expectations are measurable functions of it, coordinatewise factorization gives the evaluation map as a measurable function of that statistic. This is the minimality assertion used here. It is not a claim that every quotient image is Borel or admits a compact autonomous update. When those additional realization properties are needed, the compact executable-test closure hypotheses in \cite{FiniteHorizon} apply.
+
+Under an actually deployed controller $\gamma$, write $\nu_{\theta,t}^{\gamma}=\law_\theta^\gamma(q(H_t))$ whenever this evaluation is fixed, and
+\begin{equation}\label{eq:acquired}
+ \overline\nu_{\theta,\beta}^{\gamma}
+ =(1-\beta)\sum_{t\ge1}\beta^{t-1}\nu_{\theta,t}^{\gamma}.
+\end{equation}
+These are probability laws of real preparations and reports. Conditional predictive states under a model are analyst variables, not parameter registers. Pooling by a retained label is conditional expectation under this very execution. Different controllers can acquire different laws. For the robust theorem below we compare total task risks, not a sum of separately optimized modelwise Bayes excesses.
+
+\subsection{Finite-intervention responses}
+For $\mathbf a=(a_1,\ldots,a_t)$ let $P_{\theta,t}^{\mathbf a}$ be the law of the reports when this action word is imposed without feedback. Define the positive payoff measure
+\begin{equation}\label{eq:response}
+ \Lambda_{\theta,t}^{\mathbf a,d}(B)
+ =\E_\theta^{\operatorname{do}(\mathbf a)}
+       [1_{\{Y_{1:t}\in B\}}\ell(d,Z_t)]\le P_{\theta,t}^{\mathbf a}(B).
+\end{equation}
+Assume that for each $a$ one probability measure $\sigma_a$ satisfies
+\begin{equation}\label{eq:domination}
+ P_{\theta,t}^{\mathbf a}\ll \sigma_{\mathbf a}
+ :=\sigma_{a_1}\otimes\cdots\otimes\sigma_{a_t}
+ \quad\hbox{for every }\theta,t,\mathbf a.
+\end{equation}
+The densities $f_{\theta,t}^{\mathbf a,d}=d\Lambda_{\theta,t}^{\mathbf a,d}/d\sigma_{\mathbf a}$ are in $L^1$. Moreover
+\begin{equation}\label{eq:readoutcont}
+ d_j\to d\quad\Longrightarrow\quad
+ \norm{f_{\theta,t}^{\mathbf a,d_j}-f_{\theta,t}^{\mathbf a,d}}_1\to0.
+\end{equation}
+Indeed the left side is bounded by the expectation of
+$|\ell(d_j,Z_t)-\ell(d,Z_t)|$, which tends to zero by dominated convergence. If the scored laws are specified directly rather than by a common $Z_t$, they are required to be positive submeasures of the same report law and \eqref{eq:readoutcont} is an assumption. This permits an executable decision-dependent audit at call $t$. Only that audit is performed in a scored run, which then ends; incompatible earlier audits are not assumed to have been jointly performed. The continuing unscored kernels determine the report history before this audit. The parameter set need not be compact or itself a measurable space for the exact assertion; joint domination is common to all its elements.
+
+\begin{definition}[Reused Borel controller]\label{def:controller}
+An $M$-state controller, $M\ge1$, has initial state $I_0=1$, action rows $\alpha_i\in\Delta(A)$, Borel rows $k_{ia}:Y_a\to\Delta(\{1,\ldots,M\})$, and readouts $d_i\in D$. At a call it samples $a_t$ from $\alpha_{I_{t-1}}$, observes $Y_t$, samples $I_t$ from $k_{I_{t-1},a_t}(Y_t)$, and issues $d_{I_t}$. Fresh sampling is conditionally independent given the specified rows. All these rows and readouts are identical across time and parameters. A remembered seed, counter, or other register must be part of $I_t$. No external phase index is an argument of a row. The exact layer permits noncomputable Borel rows; a finite program is asserted only in the effective layer.
+\end{definition}
+Let $\Gamma_M$ be this class and fix $0<\beta<1$. Put
+\begin{align}\label{eq:values}
+ J_{\theta,\beta}(\gamma)&=(1-\beta)\sum_{t\ge1}\beta^{t-1}
+                            \E_\theta^\gamma\ell(d_{I_t},Z_t),\\
+ V_\beta^\Theta(M)&=\inf_{\gamma\in\Gamma_M}\sup_{\theta\in\Theta}J_{\theta,\beta}(\gamma),\\
+ V_{\beta,N}^\Theta(M)&=\inf_{\gamma\in\Gamma_M}\sup_{\theta\in\Theta}
+          (1-\beta)\sum_{t=1}^N\beta^{t-1}\E_\theta^\gamma\ell(d_{I_t},Z_t).\notag
+\end{align}
+The finite-prefix infimum is over the same continuing rows, not over a larger class of phase-dependent finite-horizon policies.
+
+\begin{theorem}[Discounted raw-response transfer]\label{thm:main}
+Under \eqref{eq:response}--\eqref{eq:readoutcont}, for every finite $M$ and every $0<\beta<1$, the infimum $V_\beta^\Theta(M)$ is attained by one Borel controller. It is unchanged by any replacement of the physical realization preserving all raw report and payoff responses. Furthermore
+\begin{align}\label{eq:finitewitness}
+ V_\beta^\Theta(M)&=\sup_{\varnothing\ne F\subset\Theta,\,|F|<\infty}V_\beta^F(M),\\
+ V_{\beta,N}^\Theta(M)&\le V_\beta^\Theta(M)
+                  \le V_{\beta,N}^\Theta(M)+\beta^N.\label{eq:tail}
+\end{align}
+Thus every strict risk target below the robust optimum is excluded by finitely many fixed models. No witness-cardinality bound follows from this assertion alone. No finite-dimensional physical or predictive space, report-support equivalence, or filter stability is assumed. All $M$ states can be reused indefinitely; there is no uncounted controller clock.
+\end{theorem}
+
+\begin{proposition}[Tensor continuity of raw responses]\label{prop:tensor}
+Equip the simplex-valued rows with the weak-star topology of $L^\infty(\sigma_a)$, action rows with their Euclidean topology, and $D^M$ with its compact topology. This makes $\Gamma_M$ compact, and $\gamma\mapsto\E_\theta^\gamma\ell(d_{I_t},Z_t)$ continuous for each fixed $\theta,t$.
+\end{proposition}
+\begin{proof}
+The sets $k_j\ge0$, $\sum_jk_j=1$ are weak-star closed in the product of unit balls, hence compact. Every equivalence class has a Borel version on a standard Borel probability space. Complete the finitely many rows on the union of their reference-null exceptional sets by the fixed point mass at label $1$. Product domination makes this one completion harmless for all parameters and finite histories.
+
+We use the following elementary tensor fact, for sequences or nets. If $u_{s,\lambda}\to u_s$ weak-star in $L^\infty(\sigma_s)$ and all have absolute value at most one, then for each $g\in L^1(\bigotimes_{s=1}^t\sigma_s)$,
+\[
+ \int g(y)\prod_{s=1}^t u_{s,\lambda}(y_s)d\sigma(y)
+ \longrightarrow\int g(y)\prod_{s=1}^t u_s(y_s)d\sigma(y).
+\]
+For a product of indicator functions this is a product of converging one-coordinate integrals. Finite sums of rectangle indicators are dense in $L^1$ of the finite product. The error in replacing $g$ by such a sum is at most its $L^1$ error, uniformly in the net. This proves the fact, also when several factors are copies of the same changing row.
+
+Write $i_0=1$ and expand the raw experiment along its finite action and state words. Causal iteration gives exactly
+\begin{equation}\label{eq:expansion}
+ \E_\theta^\gamma\ell(d_{I_t},Z_t)
+ =\sum_{\mathbf a,i_1,\ldots,i_t}
+ \left(\prod_{s=1}^t\alpha_{i_{s-1}}(a_s)\right)
+ \int f_{\theta,t}^{\mathbf a,d_{i_t}}(y)
+       \prod_{s=1}^t k_{i_{s-1},a_s}(i_s\mid y_s)\,d\sigma_{\mathbf a}(y).
+\end{equation}
+This is a raw interventional expansion of the actual adaptive law; it does not run the adaptive controller on an unrelated full-history law. Tensor continuity treats each fixed readout. When readouts also vary, \eqref{eq:readoutcont} bounds the extra integral by an $L^1$ difference. There are finitely many terms at fixed $t$. Continuity follows. Repeated rows are tested at distinct product coordinates, not multiplied on a single reference coordinate.
+\end{proof}
+\begin{proof}[Proof of Theorem~\ref{thm:main}]
+The tails of the discounted series are at most $\beta^N$, uniformly in every parameter and controller. Each fixed-model discounted risk is therefore continuous on the compact controller space by Proposition~\ref{prop:tensor}. Its supremum over an arbitrary parameter set is lower semicontinuous and attains its minimum. The expansion proves invariance under equal responses.
+
+For $r\in\R$, let $C_\theta(r)=\{\gamma:J_{\theta,\beta}(\gamma)\le r\}$. These are closed subsets of one compact space. If all finite model subfamilies have value at most $r$, their finite intersections are nonempty. The finite-intersection property gives a controller in the full intersection. Apply this to any $r$ strictly greater than the supremum on the right of \eqref{eq:finitewitness}; the reverse inequality is inclusion of model sets. A strict target below the full value must fail on some finite subfamily. This argument concerns one shared variable; it is not a minimax interchange. Finally the pointwise bound between the full and truncated sums proves \eqref{eq:tail} by taking suprema and infima in their original order.
+\end{proof}
+
+\begin{remark}[Why the domination hypothesis is genuinely temporal]\label{rem:diagonal}
+Uniform one-time marginals do not imply \eqref{eq:domination}. If $Y_1=Y_2$ is uniform on $[0,1]$, both marginals have densities, but the pair is supported on the diagonal. For the alternating dyadic indicators $u_m$ one has $u_m\rightharpoonup^*1/2$, whereas $\int u_m^2=1/2\ne1/4$. Our proof would be invalid for this pair. Conversely, finite-product domination need not imply domination of the whole infinite path law. The theorem uses only finite products followed by a uniform discounted tail.
+\end{remark}

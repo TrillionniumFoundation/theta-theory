@@ -1,0 +1,120 @@
+\section{Actual stopped mass and matching geometry}\label{sec:profile-proof}
+The independent-report specialization below is the constrained-frontier mechanism already proved in~\cite{GTFStopped}; the comparison with correlated, controlled, model-indexed conditional rows is the extension. We give the argument in full because the history quantifiers and stopping-cost accounting are essential.
+The reference measure in this section is a one-call acquired law, obtained from the reference preparation in Definition~\ref{def:recoverable}. It is not an assumption that any stopped policy has this law.
+
+\begin{lemma}[Compact mass-constrained quantization]\label{lem:profile}
+For every compact $K\subset\R^k$, probability $\nu$ supported on $K$, $m\ge1$ and real $t\ge1$, the minimum in \eqref{eq:profile} exists. For fixed centers put $d_C(x)=\min_j\norm{x-c_j}$. A minimizing density may be chosen in the form
+\begin{equation}\label{eq:threshold-density}
+ h(x)=t\one_{\{d_C(x)^2<\lambda\}}
+       +t\xi\one_{\{d_C(x)^2=\lambda\}},\qquad 0\le\xi\le1,
+\end{equation}
+with $\int h\,d\nu=1$. The case $t=1$ permits $h=1$.
+\end{lemma}
+\begin{proof}
+Centers may be projected onto the compact convex set $\conv K$, which cannot increase any distance to $K$. The set of densities $0\le h\le t$, $\int h=1$, is weak-star compact in $L^\infty(\nu)$. If centers converge, their squared nearest-center distance functions converge uniformly on $K$. The objective is therefore jointly continuous for this convergence and weak-star convergence of $h$. Compactness gives a minimum.
+
+For fixed centers choose $\lambda$ such that
+\[
+ t\nu(d_C^2<\lambda)\le1\le t\nu(d_C^2\le\lambda)
+\]
+and choose $\xi$ to fill the possible boundary mass. Against any other admissible density $\widetilde h$, one has
+\[
+ \int(d_C^2-\lambda)(\widetilde h-h)\,d\nu\ge0,
+\]
+because on the sublevel set $h=t$ and on the strict superlevel set $h=0$. The equal total masses remove the $\lambda$ term. This proves optimality, including atoms and positive boundary mass. At a joint minimum the centers can also be replaced by the conditional means of their selected Voronoi cells, with any fixed Borel rule for ties; the squared-error projection identity proves that this does not increase the objective.
+\end{proof}
+
+\begin{lemma}[Acquisition mass bound]\label{lem:stopped-mass}
+For any model-independent adaptive history policy and randomized stopping rule with $\E_\theta\tau\le N$, under the upper comparison in Definition~\ref{def:recoverable},
+\begin{equation}\label{eq:actual-terminal-density}
+ \law_\theta(X_\tau)\le b_*N\nu.
+\end{equation}
+More precisely, the unnormalized law of all acquired responses before and at stopping satisfies
+\begin{equation}\label{eq:all-acquired}
+ \E_\theta\sum_{t=1}^{\tau}\one_{\{X_t\in A\}}
+       \le b_*\nu(A)\E_\theta\tau
+       \quad(A\text{ Borel}).
+\end{equation}
+\end{lemma}
+\begin{proof}
+The event $\{\tau\ge t\}$ is determined before acquisition $t$, including all preceding private coins. Conditional on this information and the chosen action, the law of $X_t$ is at most $b_*\nu$. Summing
+\[
+ \E_\theta[\one_{\{\tau\ge t\}}\one_{\{X_t\in A\}}]
+       \le b_*\nu(A)\Pp_\theta(\tau\ge t)
+\]
+over $t\ge1$ proves \eqref{eq:all-acquired} by Tonelli. The terminal indicator is no larger than the acquired-count sum. Its total mass is one, because finite mean implies almost-sure stopping, which proves \eqref{eq:actual-terminal-density}.
+\end{proof}
+
+\begin{lemma}[One-live-state realization]\label{lem:rejection}
+Let $a_*N\ge1$. Given centers $C=\{c_1,\ldots,c_m\}$ and $0\le h\le a_*N$ with $\int h\,d\nu=1$, execute the fixed action $a_0$ and, after reading $x=f_{a_0}(y)$, accept with probability
+\begin{equation}\label{eq:accept}
+ A(x)=\frac{h(x)}{a_*N}.
+\end{equation}
+On acceptance, enter the nearest-center terminal label; otherwise return to the single live label. For every model this program satisfies
+\begin{equation}\label{eq:rejection-bounds}
+ \E_\theta\tau\le N,\qquad
+ \E_\theta d_C(X_\tau)^2
+       \le\frac{b_*}{a_*}\int d_C^2h\,d\nu.
+\end{equation}
+If all conditional response laws equal $\nu$, the choice $A=h/N$ with $0\le h\le N$ gives $\E\tau=N$ and $\law(X_\tau)=h\nu$ exactly.
+\end{lemma}
+\begin{proof}
+At each surviving history the acceptance probability is at least
+\[
+ a_*\int\frac{h}{a_*N}\,d\nu=\frac1N.
+\]
+Consequently $\Pp_\theta(\tau>n)\le(1-1/N)^n$ and $\E_\theta\tau\le N$. The conditional expected squared distortion contributed by acceptance at that call is at most
+\[
+ \frac{b_*}{a_*N}\int d_C^2h\,d\nu.
+\]
+Summing it over surviving histories gives the second inequality of \eqref{eq:rejection-bounds}. This proof does not assume that repeated reports are independent or that the conditional law after rejection equals the original law.
+
+For independent reference rows, the probability of acceptance at each surviving call is exactly $1/N$, and its accepted sublaw is $h\nu/N$. The sum of the geometric series is $N$, proving both exact assertions. Equivalently, the conditional response kernel being $\nu$ at every history suffices; no additional hidden-state independence is used.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:main}(ii)]
+The protected audit identity gives, for every legal stopped policy and decoder,
+\begin{equation}\label{eq:protected-pythagoras}
+ \E_\theta\norm{Z-r_J}^2=B+\E_\theta\norm{X_\tau-r_J}^2.
+\end{equation}
+For a checkpoint there are at most $m$ decoder values. For an autonomous observer there are at most $M-1$, since at least one state is live. Conditional randomization of the decoder cannot improve squared loss; its mean belongs to $H$. Projecting centers onto $\conv K$ can only help. Lemma~\ref{lem:stopped-mass} bounds the actual terminal density by $b_*N$, so pointwise nearest-center comparison proves \eqref{eq:profile-check-lower}--\eqref{eq:profile-aut-lower} for every model and every randomized observer. It therefore proves the robust lower as well.
+
+Apply Lemma~\ref{lem:rejection} to a minimizer in Lemma~\ref{lem:profile}, with $m=M-1$. This is a common program, determined by $\nu$, the comparison constants and its centers, not by $\theta$. It proves \eqref{eq:profile-aut-upper}. The same construction is available in the more permissive checkpoint architecture. If the conditional laws all equal $\nu$, the terminal law is exactly the minimizing $h\nu$, and the upper equals the lower. This proves \eqref{eq:exact-profile}. The stop is executed before the audit; no future audit information enters the accepting set.
+\end{proof}
+
+\begin{lemma}[Regular-support profile]\label{lem:regular}
+Under \eqref{eq:regularity},
+\begin{equation}\label{eq:profile-rate}
+ c\,(tm)^{-2/s}\le\calQ_m^\nu(t)\le C\,(tm)^{-2/s}
+ \quad(t\ge1,\ m\ge1),
+\end{equation}
+with constants depending only on the data specified in Theorem~\ref{thm:main}(iii).
+\end{lemma}
+\begin{proof}
+For any center $c\in\conv K$, if $B(c,r)$ meets $K$, choose $x\in K\cap B(c,r)$. Then $K\cap B(c,r)\subset B(x,2r)$. Hence, when $2r\le r_0$, any union of $m$ such balls has $\nu$-mass at most $mC_0(2r)^s$. An admissible density is at most $t$. Choose a fixed sufficiently small $c_1>0$ and set $r=c_1(tm)^{-1/s}$, so that this acquired mass is at most $1/2$ and $2r\le r_0$. At least half the selected probability lies at distance at least $r$, proving the lower bound.
+
+For the upper we record the covering and packing steps. A maximal $r$-separated subset of $K$ covers $K$ by $r$-balls, and its disjoint $r/3$-balls have mass at least $c_0(r/3)^s$. Thus its cardinality is at most $3^s/(c_0r^s)$. Enlarging constants to include the finitely small-cardinality regime gives a global cover by at most $m$ balls of radius $C_1m^{-1/s}$.
+
+Conversely, choosing $\delta=c_2m^{-1/s}$ with $c_2$ sufficiently small, fewer than $m$ balls of radius $\delta$ cannot cover $K$, by the upper mass bound. A greedy construction therefore produces $m$ centers separated by at least $\delta$. For $t\ge t_0$, where $t_0$ depends only on the regularity constants, set
+\[
+ r=(c_0mt)^{-1/s}\le\delta/3.
+\]
+The $m$ disjoint $r$-balls have union $U$ of mass at least $mc_0r^s=1/t$. The density $h=\one_U/\nu(U)$ is admissible and its distance to these centers is at most $r$. This gives the required upper for $t\ge t_0$. For $1\le t<t_0$, use $h=1$ and the global $m$-center cover: $C_1^2m^{-2/s}\le C_1^2t_0^{2/s}(tm)^{-2/s}$. All changes for radii exceeding $r_0$ are absorbed by the fixed diameter constant, not by $t$ or $m$.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:main}(iii)]
+For $a_*N\ge1$, insert Lemma~\ref{lem:regular} into the two profile bounds. For $1\le N<1/a_*$, stop after one report of $a_0$ and use the global $m$-center cover. This has mean acquisition one and excess at most $Cm^{-2/s}$, which is at most $Ca_*^{-2/s}(Nm)^{-2/s}$ in this range. The lower profile estimate holds for all $N\ge1$. The state deduction $m=M-1$ is exact throughout.
+\end{proof}
+
+\begin{proposition}[Atoms retain their physical mass]\label{prop:atoms}
+For any compact acquired reference law and $m\ge1,t\ge1$,
+\begin{equation}\label{eq:atom-threshold}
+ \calQ_m^\nu(t)=0
+ \quad\Longleftrightarrow\quad
+ \text{some set of at most $m$ atoms has total $\nu$-mass at least $1/t$.}
+\end{equation}
+In particular, an atom of mass $w>0$ gives zero excess in the independent-reference experiment once $N\ge1/w$, with one live and one terminal state.
+\end{proposition}
+\begin{proof}
+At a minimum with zero distortion, the probability measure $h\nu$ is supported on the at most $m$ centers. It can carry unit mass only if their $\nu$-mass is at least $1/t$. Conversely, restrict and normalize $\nu$ to such a finite set; the resulting density is at most $t$ and its distortion at those centers is zero. The causal assertion follows from the exact rejection implementation. All rejected observations are included in the mean $1/w$.
+\end{proof}

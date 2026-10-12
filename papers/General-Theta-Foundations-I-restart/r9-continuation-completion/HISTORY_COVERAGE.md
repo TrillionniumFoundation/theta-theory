@@ -1,0 +1,9 @@
+# History and actual review coverage
+
+The four canonical control files were read, with particular attention to A0--A5, T02/T03/T07/T08 and G1/G3 in the original v0.1 outline. The canonical archived v1 index was fetched; it identifies the original source and receipt objects. The latest R7 report was fetched in full and used as the current referee input. R4--R8 pipeline derivations and the directly used R8 general-cut/chart/noisy/regression/resource dependencies were inspected. All R8 substantive native sections remain active in this new article. The full R6 technical text is supplied and rebuilt as Supplement S.
+
+The branch first starts at the canonical commit. Exact R4, R5, R6, R7 and R8 sibling trees are preserved when connecting these dependencies. The old review branches, all listed realization branches and frozen archive are not written. Their original content remains available independently. The ordered-measurement, finite-action, streaming-space and quantum-discrimination programs are not premises for the serial theorem and remain separate research lines.
+
+Preservation is not fresh mathematical certification. This revision does not assert that every theorem in all v1--v96 manuscripts, every old referee report, or every independent realization has been re-proved or exhaustively re-reviewed during this run. No conclusion requires that assertion. The dependence on the original elementary propagation and projection tools is explicit; they are not renamed as new discoveries.
+
+R8 was already present on the remote when this task started. Its conditional/two-sided-cut theorem, raw common-channel lemma, chart construction, noisy regression result and expanded coding comparisons are inherited research, not newly attributed to R9. The new native addition is the all-stage exponent/compatibility theorem, its candidate-moment composition, and its all-cut changing-rank/singular verifications.

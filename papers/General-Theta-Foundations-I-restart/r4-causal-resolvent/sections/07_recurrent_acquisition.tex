@@ -1,0 +1,111 @@
+\section{Joint acquisition, calibration and memory in one recurrent experiment}\label{sec:recurrent-acquisition}
+We now replace the infinite initialization report by genuinely finite paid observations. This produces an atomic predictive law whose acquisition depth evolves through nonreset transitions. Its risk law depends on acquisition and memory through the same random depth, rather than through an independently selected terminal menu.
+
+Use the physical coding \eqref{eq:nr-code}, modes \eqref{eq:nr-mode}, and stationary physical preparation $\lambda$. A preparation call reports the mode but no tail bits. The next $B\ge0$ calls reveal, one at a time and without altering the state, the first $B$ bits of that prepared tail. The observer may not revisit any discarded bit. There follow $T$ opportunities with the same independent suspension schedule as before. The active operations are now: on $0\to0$, delete one old bit with probability $\gamma=1/4096$ and otherwise prepend two fair reported bits; delete one old bit on $0\to1$; prepend \emph{six} fair reported bits on $1\to0$; and copy on $1\to1$. This six-bit choice supplies a uniform gain bound on the larger domain of partially known tails. No transition reveals the old unknown tail. Each call, including a hold, costs one acquisition. The terminal call ends the experiment, so
+\begin{equation}\label{eq:ra-budget}
+ N_{\rm raw}=B+T+2.
+\end{equation}
+Current-report packet bits and their reading time are also charged; a six-bit report is not a free infinite input.
+
+Let $W_t$ be the prefix known to the \emph{full-history} observer after the $t$th opportunity, and $H_t=|W_t|$. Given that history, all remaining bits are independent and fair. The actual known depth has $H_0=B$ and evolves by
+\begin{equation}\label{eq:ra-height}
+ H_t=\begin{cases}
+ H_{t-1}+2,&0\to0\text{ active prepend},\\
+ \max\{H_{t-1}-1,0\},&\text{active deletion on }0\to0\text{ or }0\to1,\\
+ H_{t-1}+6,&1\to0\text{ active},\\
+ H_{t-1},&1\to1\text{ active or a suspension}.
+ \end{cases}
+\end{equation}
+All weights below are obtained from this finite-time raw mode--height chain, including failed activity opportunities. Write $\omega_{T,i,h}=\Pp(I_T=i,H_T=h)$, and $\omega_{T,h}=\sum_i\omega_{T,i,h}$.
+
+For a finite word $w$ of length $h$, let
+\[
+ m(w)=x(w000\cdots)+\tfrac12\ell_h.
+\]
+It is the mean of the unknown fair tail in its cylinder, not a revealed point of the original Cantor set. Put $\pi_1=\alpha/(\alpha+1/2)$ and define a nominal terminal Bernoulli mean
+\begin{equation}\label{eq:ra-score}
+ p(i,x)=\tfrac12+\tfrac14(i-\pi_1)+\tfrac18(x-\tfrac12).
+\end{equation}
+Its physical expectation under $\lambda$ is $1/2$. An unknown calibration parameter $\theta\in\{-\delta,\delta\}$, $0\le\delta\le1/16$, changes the terminal mean to $p(i,x)+\theta$ and has no effect on any preparation or acquisition report. The displayed ranges lie strictly inside $[0,1]$. Programs know the nominal kernel and the bound $\delta$, not the sign of $\theta$.
+
+The nominal acquired predictive law is explicitly
+\begin{equation}\label{eq:ra-law}
+ \nu_{B,T}=\sum_{i=0}^1\sum_{h=0}^{B+6T}\omega_{T,i,h}\,2^{-h}
+        \sum_{w\in\{0,1\}^h}\delta_{p(i,m(w))}.
+\end{equation}
+Thus this law is actually acquired and is finite at every finite raw budget. No non-atomic reference law is inserted into its definition. Put
+\begin{equation}\label{eq:ra-profile}
+ \Phi_{B,T}(M)=\sum_{h=0}^{B+6T}\omega_{T,h}
+                \ell_{\min\{h,\lfloor\log_2M\rfloor\}}^2.
+\end{equation}
+The same acquired depth weights govern the unresolved variance and the memory resolution. Define the common ideal baseline
+\begin{equation}\label{eq:ra-baseline}
+ b_\circ=\E_\lambda[p(I,x)(1-p(I,x))]-\delta^2.
+\end{equation}
+It equals the oracle Bernoulli risk for both calibration signs, since $\E_\lambda p=1/2$. Let $\mathcal R_\cp$ and $\mathcal R_\on$ be the infimum over parameter-independent checkpoint and online $M$-label encoders of the worst risk over these two signs, minus this same $b_\circ$.
+
+\begin{theorem}[A recurrent acquired-depth resource law]\label{thm:recurrent-acquisition}
+For every $B,T\ge0$, $M\ge6$, $\alpha\in(0,1]$, every deterministic suspension schedule, every $\rho_n\in[1/5,1/3]$, and $0\le\delta\le1/16$,
+\begin{equation}\label{eq:ra-main}
+ \mathcal R_\cp(B,T,M,\delta)\asymp
+ \mathcal R_\on(B,T,M,\delta)\asymp
+                     \delta^2+\Phi_{B,T}(M),
+\end{equation}
+with universal positive constants. More precisely,
+\begin{equation}\label{eq:ra-exact-cp}
+ \mathcal R_\cp=\delta^2+\mathcal A_{B,T}+q_M(\nu_{B,T}),\qquad
+ \frac1{576}\E\ell_{H_T}^2\le\mathcal A_{B,T}
+                              \le\frac1{256}\E\ell_{H_T}^2,
+\end{equation}
+where $\mathcal A_{B,T}=\E\Var(p(I_T,x_T)\mid\text{actual history})$.
+
+An online implementation retains a mode and a prefix of variable length at most $m$, encoded together in $2^{m+2}-2\le M$ labels. The length and mode are included in this count. It reads every paid input at most once. Its report and task continuity are explicit below; rational schedules in $\{1/3,1/5\}$ and rational or certified computable $\alpha$ admit finite-input arithmetic. Unbiased dyadic terminal rounding of mesh $2^{-b}$ adds at most $2^{-2b}/4$ to the risk. A further certified complete causal defect $\varepsilon$ adds at most $\varepsilon$ for this bounded loss. These last two are upper allowances, not universal error floors.
+\end{theorem}
+\begin{proof}
+We first derive the predictive state from the raw observations. At the end of the $B$ read calls the observed word is uniform among words of length $B$ and its remaining physical tail is independent fair. A reported prepend concatenates independent known bits. A deletion removes the first known bit if the known word is nonempty; otherwise it removes a fair unobserved bit and leaves an independent fair tail. Copying preserves the description. Induction proves \eqref{eq:ra-height} and the claimed conditional-tail law. Since mode choices are independent of bit values, conditionally on $(I_T,H_T)=(i,h)$ the known word is uniform, giving \eqref{eq:ra-law}.
+
+Let $K^*$ be $K$ together with the centers $m(w)$ of all finite cylinders. This is a compact set. Different centers are different: a cylinder center lies in the open gap between its two children, whereas a proper descendant center lies in a child. No center belongs to $K$. The nominal prediction coordinate $(i,m(w))$ therefore identifies both mode and finite known word; the nominal terminal mean in \eqref{eq:ra-score} identifies this coordinate because the two mode intervals have a gap $1/8$. All future reports and terminal laws are functions of it, so it is the predictive quotient for the nominal experiment. With the symmetric preparation on the unobserved calibration sign the same quotient applies; for the two-point minimax problem the whole terminal family is determined by the same coordinate. Neither construction allows the encoder to read the sign.
+
+Conditional on a word of length $h$, independence of remaining fair bits gives
+\[
+ \Var(x_T\mid W_T)=\frac14\sum_{n>h}(1-\rho_n)^2\ell_{n-1}^2.
+\]
+Its first term is at least $\ell_h^2/9$, and its upper bound is $\ell_h^2/4$, since the tail has range $\ell_h$. The factor $1/8$ in the score yields the acquisition bounds in \eqref{eq:ra-exact-cp}.
+
+Next consider any parameter-independent encoder and forecast $a$. Its excess over \eqref{eq:ra-baseline} at sign $\theta$ is $\E(p+\theta-a)^2$. The average of the two signs is $\E(p-a)^2+\delta^2$, giving a lower bound on their maximum. For any fixed encoder the nominal conditional-mean decoder $a=\E[p\mid S]$ is unbiased, and attains that average for both signs. Conditional projection of $p$ onto the actual full history and then checkpoint quantization proves the exact infimum \eqref{eq:ra-exact-cp}, including randomized encoders with independent seeds.
+
+We construct the online upper rather than transferring a checkpoint map. Choose the largest nonnegative $m$ with $2^{m+2}-2\le M$. Store the current mode and a word of length at most $m$. During the $B$ initial reads retain the first $\min\{B,m\}$ bits and discard later bits immediately. A prepend adds the reported bits and truncates at depth $m$; a deletion pops one bit if present; a copy preserves the word. All these operations are functions of the finite label and current report. A missing old tail is never reread or replaced by new information. The label count is
+\[
+ 2\sum_{h=0}^m2^h=2^{m+2}-2.
+\]
+Decode the stored word by its center, not by an alleged exact old state.
+
+For completeness we verify the dynamic comparison on $K^*$. If two coordinates share an initial prefix and first differ at the next level, their distance is at least one sixth of the parent-cylinder scale and at most that scale. The factor $1/6$ covers the case where one coordinate is the parent center; two opposite children have the stronger gap $1/3$. Consequently deletion, extended to fix the empty-word center, is $30$-Lipschitz on $K^*$; prepending $l$ common bits is at most $6\cdot3^{-l}$-Lipschitz. The proof is the same first-difference comparison as \eqref{eq:nr-gap}, now with the center-to-child gap. Center coordinates with at least one common bit use the ratio of adjacent scales, at most five; the case of no common bit is bounded directly by the diameter. Thus the prepend-two, deletion, prepend-six and copy gains are $2/3,30,2/243,1$. The $0\to0$ edge has uniform conditional squared-gain bound $(1-\gamma)4/9+900\gamma=85/128$; arbitrarily long deletion runs are not excluded.
+
+Take $v=(1800,1)$. The forward gain matrix satisfies
+\[
+ C_2v=\left(\frac{19125}{16}(1-\alpha)+900\alpha,\ \frac{3600}{59049}+\frac12\right)
+                  \le\frac{17}{20}(1800,1).
+\]
+Truncation of any longer word to its depth-$m$ center changes its coordinate by at most $\ell_m$, and it leaves a shorter word exact. Initial compression has the same bound. Apply the energy proof of Lemma~\ref{lem:nr-energy} to the error between the full-history predictive coordinate and the stored center, with one forcing radius $\ell_m$, $A=1$, $V=1800$ and $\kappa=17/20$. Its argument uses no small-ball condition; the full-history factor here includes the actual known word, and the next marked report is independent of old approximation error given its mode. It follows that the nominal online excess above the actual Bayes risk is at most a universal constant times $\ell_m^2$. The copied suspension branch creates no new error.
+
+The stored word is the actual physical prefix at its retained depth. Its length and its bit origins depend only on the initial read count and mode/operation history, not on the bit values. Conditional on that history and the retained prefix, all bit origins beyond the prefix remain independent fair. Averaging over histories therefore shows that the stated center decoder is exactly $\E[p\mid S]$. It is unbiased and hence adds precisely $\delta^2$ for the calibration ambiguity, with no unproved cancellation in a biased arithmetic rule. The mode-aware gain vector is an analytic proof weight, not another retained register.
+
+For the lower, the physical tail law remains fair on every edge even though only a prefix is observed. The physical mode--tail law is therefore $\lambda$ at time $T$. The arbitrary-center cylinder lower in the proof of Theorem~\ref{thm:nr-moran}, with the separated affine score intervals of \eqref{eq:ra-score}, gives
+\[
+ q_M(\law_\lambda(p))\ge c_0\ell_{\lfloor\log_2M\rfloor}^2
+\]
+uniformly in the rare mode probability. This is a lower witness from the joint raw physical law, not the acquired law in \eqref{eq:ra-law}. Proposition~\ref{prop:nr-acquisition} combines it with the proved online upper and the actual acquisition variance; it shows why the witness cannot remove the latter. For $M\ge6$ the difference between $m$ and $\lfloor\log_2M\rfloor$ is at most two, so $\ell_m^2\le25^2\ell_{\lfloor\log_2M\rfloor}^2$. Finally, for $n=\lfloor\log_2M\rfloor$, monotonicity gives
+\[
+ \max\{\E\ell_{H_T}^2,\ell_n^2\}
+ \le\E\ell_{\min(H_T,n)}^2
+ \le\E\ell_{H_T}^2+\ell_n^2.
+\]
+These comparisons prove \eqref{eq:ra-main} from \eqref{eq:ra-exact-cp}. They also show that $\Phi_{B,T}$ is equivalent to the actual-law quantity $\mathcal A_{B,T}+q_M(\nu_{B,T})$, not merely to a formal latent geometric dimension.
+
+Current operation reports depend on the mode and not on the unknown tail. With the metric of within-mode coordinate distance and unit cross-mode distance, their TV modulus is at most one times the distance. The terminal Bernoulli modulus within a mode is $|x-y|/8$, and is at most the cross-mode distance otherwise. The coordinate updates just proved provide the finite-input stability. To round a computed exact nominal center to adjacent dyadic numbers, choose the upper endpoint with probability equal to its relative fractional position. Conditional rounding mean is the center and variance is at most $2^{-2b}/4$. It uses fresh independent randomness, erased after the readout; cross terms with both calibration and nominal prediction error vanish by conditional expectation. A computable implementation of these probabilities with additional arithmetic error uses the explicit allowance in \eqref{eq:nr-finite}. The bounded complete-law TV allowance follows from Theorem~\ref{thm:morphism}. Neither upper bound claims a matching numerical or deficiency lower for every parameter choice.
+\end{proof}
+
+For rational ratio schedules and rational or certified computable mode probabilities, the center arithmetic and finite-word routines have the temporary-space and conservative bit-time costs stated in Section~\ref{sec:nr-moran}, with six current input bits rather than four. The encoder's persistent alphabet already includes its word length and mode. An external controller that counts the $B$ reading calls and $T$ opportunities must be charged a phase/clock implementation if such scheduling is not supplied by the declared apparatus. The displayed law is for that fixed paid protocol; it does not assert that this division of $N_{\rm raw}$ between reading and recurrence is an optimal adaptive exploration policy, or that an unknown transition kernel can be learned without pilots.
+
+An exact rational Bernoulli randomization for the unbiased readout can be generated by rejection from independent fair bits; its expected random-bit cost is finite, but its worst-case running time is not bounded by that fact. A truncated sampler must charge its tail event as an additional task defect. The deterministic arithmetic bounds above apply to evaluating the center and rounding probabilities, not to an uncharged worst-case exact random sampler.
