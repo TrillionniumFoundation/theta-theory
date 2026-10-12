@@ -1,0 +1,55 @@
+\section{Two raw realizations}\label{sec:realizations}
+\subsection{Controlled queue excursions}
+A physical preparation places one job in a queue. At every service call the workload $W\ge1$ moves to $W+1$ with probability $p_\theta(a)$ and to $W-1$ otherwise, ending the excursion on hitting zero. Actions and finite noisy workload reports may depend on the retained observer state and past visible reports. The preparation call is charged and does not overwrite the observer label. Scores are bounded in $[0,1]$. Assume compact parameter sets, continuous raw report probabilities and action probabilities, and
+\begin{equation}\label{eq:queue-drift}
+ 0\le p_\theta(a)\le\bar p<1/2
+\end{equation}
+for every legal action. Finite report kernels can be arbitrary functions of workload subject to this finite-response continuity; they do not alter the killed workload drift.
+
+Fix a directed graph on the $m$ observer labels. Updates are allowed only along its reflexive reachability relation. On a first-service-call end, every designated graph edge has conditional update probability at least $\zeta>0$. The required row floors must be feasible: $k_i\zeta\le1$ for every row with $k_i$ required edges. These are a compact support-stable program architecture, not all possible queue controllers.
+
+\begin{theorem}[Unbounded physical queue realization]\label{thm:queue}
+The queue architecture above satisfies the continuous-response and uniform-return hypotheses of Theorem~\ref{thm:transfer}. It has a primitive, program-uniform group-inverse bound and therefore satisfies the task criterion for every bounded continuous scored task. Robust attainment, finite-model determination and the same-memory physical-call and discount bounds hold on this entire architecture. A certified approximation can truncate the physical workload using the explicit exponential tail below. No finite-dimensional filter or geometry of the full workload posterior is assumed.
+\end{theorem}
+\begin{proof}
+Choose $c=\frac12\log((1-\bar p)/\bar p)$ when $\bar p>0$; the case $\bar p=0$ has deterministic immediate service termination. With $V(w)=e^{cw}$, the killed transition satisfies, uniformly over history-adaptive actions,
+\[
+ \E[V(W_{n+1})\one_{\{W_{n+1}>0\}}\mid W_n=w,a]
+ \le\rho V(w),\qquad \rho=2\sqrt{\bar p(1-\bar p)}<1.
+\]
+Induction gives $\Pp(T_0>n)\le e^c\rho^n$ for the service hitting time from one. Adding the single preparation call preserves a common exponential return envelope, independent of entering label and controller. Finite-call workloads are bounded by the call count plus one, so only finitely many raw probabilities enter each response. Their continuity and Lemma~\ref{lem:response} give finite-response continuity.
+
+The first service call ends with probability at least $1-\bar p$. Consequently each designated edge of the boundary matrix has probability at least $a_*= (1-\bar p)\zeta$. The boundary graph has exactly the same terminal strongly connected components as the designated graph: it contains every designated edge, and added edges can only follow an already existing directed path. Put $L=\max(1,m-1)$. From any state there is a path of at most $L$ edges to one selected root in a reachable terminal component. In each block of $L$ boundary transitions, the probability of hitting the set of roots is at least $a_*^L$. Thus the maximal expected boundary count to that set is at most $H_*=L/a_*^L$.
+
+For completeness, a root-hitting bound gives $\norm{G_P}_\infty\le4H_*$. For a bounded reward $f$, center it by $b=f-\Pi_Pf$ and stop its sum at the selected root. Its expected absolute sum is at most $2H_*\norm f_\infty$. In a recurrent component the stationary centering makes the mean sum over a root-to-root return zero, so this stopped sum solves $(I-P)v=b$ also at the roots; transient states satisfy the equation by first-step conditioning. Subtracting $\Pi_Pv$ identifies $G_Pf$ and gives the factor four. Corollaries~\ref{cor:group} and~\ref{cor:robust} now apply. The bound is conservative and can be replaced by direct low-dimensional evaluation when available. Truncation errors are controlled by the common exponential return tail, not by discarding rare busy periods at zero cost.
+\end{proof}
+This realization verifies a genuinely unbounded physical experiment. It does not prove a full predictive-dimension law for the queue workload. A separate finite geometric task can be attached and analyzed by Theorem~\ref{thm:geometry}, but that task must not be mislabeled as the entire workload quotient. Nor does this architecture theorem claim an unrestricted solution of average-cost queue control.
+
+\subsection{A noncommuting rank-changing quantum instrument}
+Let the physical Hilbert space be $\mathbb C v\oplus\mathbb C^2$, with $v$ orthogonal to the qubit sector. Choose unit qubit vectors $\psi_+,\psi_-$ with real overlap $c_0\in(0,1)$. The unknown fixed parameter is $\theta\in[-1,1]$ and the preparation is
+\begin{equation}\label{eq:quantum-prep}
+ \rho_\theta=(1-t^k)|v\rangle\langle v|
+               +t^k|\psi_s\rangle\langle\psi_s|,
+ \qquad t=|\theta|,
+\end{equation}
+with $\rho_0=|v\rangle\langle v|$. Each preparation is a real physical call. The next call performs the fixed three-outcome instrument with effects
+\begin{equation}\label{eq:USD}
+ E_+=\frac{|\psi_-^\perp\rangle\langle\psi_-^\perp|}{1+c_0},\qquad
+ E_-=\frac{|\psi_+^\perp\rangle\langle\psi_+^\perp|}{1+c_0},\qquad
+ E_\bot=I-E_+-E_-.
+\end{equation}
+The first two effects vanish on the vacuum sector. One may use the Kraus maps $\sqrt{E_z}\rho\sqrt{E_z}$; the next preparation is fresh. The diagnostic decision and score are as in Section~\ref{sec:sharpness}, with the decision due before the instrument report. The physical phase is a visible protocol type, not an internal counter supplied to the observer.
+
+\begin{theorem}[Noncommuting singular realization]\label{thm:quantum}
+This raw instrument realizes the diagnostic theorem with $\lambda(t)=(1-c_0)t^k$. Its physical excursions have duration two, retain the observer label and satisfy the task-visible criterion through $\theta=0$, where the preparation rank and recurrent rank change. It has no uniform boundary group-inverse bound. The exact all-history diagnostic value per physical call at $N=2n$ is $D_n(\lambda)/2$, and the same two-label program attains it. The physical-time rate is $N^{-1/k}$. The construction uses noncommuting physical states and a classical finite observer; it is not a theorem about arbitrary quantum memory or arbitrary additional measurements.
+\end{theorem}
+\begin{proof}
+Write $\psi_\pm=\cos a\,e_0\pm\sin a\,e_1$, with $0<a<\pi/4$ and $c_0=\cos(2a)$. In the qubit sector $E_++E_-=\diag(\tan^2 a,1)\le I$, proving positivity and normalization. There is no false conclusive outcome, and the correct conclusive probability on $\psi_s$ is
+\[
+ \frac{1-c_0^2}{1+c_0}=1-c_0.
+\]
+The vacuum always produces $\bot$. Hence the complete visible kernel has exactly the claimed revelation probability. For $t>0$ the two state preparations corresponding to opposite signs do not commute: their qubit rank-one projections have overlap strictly between zero and one. For $0<t<1$ the preparation has rank two, at $t=0$ rank one, and at $t=1$ it is again rank one. These are actual state and support changes, not formal coordinate singularities.
+
+All raw matrix entries and scored responses are continuous at zero. The report alphabet is finite, the physical duration is exactly two, and the two-label gain is identically zero from both entering labels. Thus Theorem~\ref{thm:transfer} applies without a recurrence sublevel. The calculation in Theorem~\ref{thm:diagnostic}, with the constant factor $1-c_0$, gives both the minimax formula and the corrector rate. Every preparation and diagnostic measurement is charged, so $N=2n$ and the score per physical call is half the per-diagnostic score. Odd horizons differ by at most one bounded call. The standard unambiguous-discrimination mechanism~\cite{ClarkeCheflesBarnettRiis} is not claimed as new; it provides an explicit noncommuting primitive realization of the task-visible theorem.
+\end{proof}
+With $\cos a=\sqrt3/2$ and $\sin a=1/2$, all primitive coefficients are algebraic and Theorem~\ref{thm:algebraic} also applies. In contrast, Theorem~\ref{thm:schedule}'s common-support hypothesis fails at zero. This difference is intentional: task compatibility is the mechanism that passes the singular endpoint.

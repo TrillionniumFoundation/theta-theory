@@ -1,0 +1,117 @@
+\section{Controlled singular acquisition and an attained joint law}\label{sec:controlledrefinement}
+We verify Theorem~\ref{thm:autonomous} from a correlated preparation and a genuinely observation-dependent optimal acquisition decision. The verification also gives an effective finite-table implementation. Neither a preassigned covariance nor a dimension formula is an input.
+
+\subsection{A correlated graph-directed preparation}
+Fix $r=1/100$. A two-state Markov preparation starts at $I_0=0$. Conditional on $I_{k-1}=i$, draw $D_k=(D_{k,1},D_{k,2})\in\{0,1\}^2$ with independent coordinates of parameters
+\[
+ (q_{0,1},q_{0,2})=(1/2,1/10),\qquad
+ (q_{1,1},q_{1,2})=(1/10,1/2),
+ \qquad I_k=D_{k,1}\mathbin{\mathrm{xor}}D_{k,2}.
+\]
+Write $p_i(z)$ for this four-point conditional probability and $j(z)=z_1\mathbin{\mathrm{xor}}z_2$. The preparation is the resulting infinite path with response
+\begin{equation}\label{eq:markovresponse}
+ U=(1-r)\sum_{k\ge1}r^{k-1}D_k\in[0,1]^2,\qquad
+ Z=(1/4,1/4)+U/2.
+\end{equation}
+After prediction the audit draws two conditionally independent Bernoulli variables with means $Z_1,Z_2$. Thus all four audit outcomes have strictly positive probabilities, and the squared Euclidean task has the fixed irreducible baseline $B_\infty=\E\sum_{j=1}^2 Z_j(1-Z_j)$.
+
+At the start of a pair, the controller chooses which component to observe first. A paid call reports that component. The next observation, if made, must report the other component of that same pair. Only then may a component of the next pair be requested. A stop command is legal after every call, including before the first observation. No past component may be reread. These are binary-report kernels from the prepared path; conditional on an acquired history all newly legal reports have probabilities in $[1/10,9/10]$. A full pair is not a single acquisition.
+
+This preparation is not a product across levels. For example, the probability of the next first coordinate depends on the parity of the preceding pair. Its response support is nevertheless the product $C_r^2$ after translation and rescaling, where $C_r$ is the usual two-interval Cantor set. To justify the support assertion without confusing support with distribution, note that every finite path cylinder has positive actual probability, since $p_i(z)\ge1/20$. These cylinders form a basis for the compact product support; the nonproduct probabilities remain part of its acquired geometry.
+
+\begin{theorem}[A feedback-dependent singular resource law]\label{thm:markovadaptive}
+The kernels just specified satisfy every hypothesis of Theorem~\ref{thm:autonomous}, with constants independent of the acquisition horizon. Let $\mu$ be the law of \eqref{eq:markovresponse}'s response $Z$, and let $G_M$ be the actual-mass frontier profile for any fixed legal infinite observation policy. Then, for every $n\ge0$ and $M\ge1$,
+\begin{equation}\label{eq:markovresourcelaw}
+ R_{\rm cp}^{\rm ref}(n,M)-B_\infty
+ \asymp R_{\rm aut}^{\rm ref}(n,M)-B_\infty
+ \asymp A_n+G_M.
+\end{equation}
+All controller nodes are included in $M$, and raw calls are at most $n+2$. The finite acquired law is the actual atomic law of the posterior means, not $\mu$.
+
+The acquisition term $A_n$ is explicitly determined by two linear moment systems. If $v_i$ is the total variance of the tail $U$ started at Markov state $i$, define
+\[
+ \Delta_{ij}=\operatorname{Var}_i\!\left(\E_i[U\mid D_{1,j}]\right),
+ \qquad w_i=v_i-\max_{j=1,2}\Delta_{ij},
+ \qquad P_{ii'}=\sum_{z:j(z)=i'}p_i(z).
+\]
+Then $P$ has both rows $(1/2,1/2)$ and
+\begin{align}
+ A_{2k}&=\tfrac14 r^{2k}(P^kv)_0,\label{eq:markoveven}\\
+ A_{2k+1}&=\tfrac14 r^{2k}(P^kw)_0.\label{eq:markovodd}
+\end{align}
+At a synchronized history, the optimal next single observation is coordinate $1$ in state $0$ and coordinate $2$ in state $1$. In particular a three-observation optimum depends strictly on the first acquired pair; no fixed third-coordinate choice attains it.
+\end{theorem}
+\begin{proof}
+After $k$ complete pairs the two response-coordinate intervals have length $r^k/2$. After one further component report their lengths are $r^{k+1}/2$ and $r^k/2$. Use the Euclidean diameters of these rectangles as the scales $\ell_h$. They equal $\sqrt2r^k/2$ and $\sqrt{1+r^2}r^k/2$, respectively. The ratios at the two types of observation are
+\[
+ \sqrt{(1+r^2)/2},\qquad r\sqrt{2/(1+r^2)}.
+\]
+Thus $a_*=1/100$ and $b_*=18/25$ are valid uniform bounds. The two child supports of a queried coordinate are separated by $(1-2r)$ times its current interval length. Their separation divided by the parent scale is at least $(1-2r)/\sqrt2>3/5$. Consequently \eqref{eq:refineseparation} holds with $D=1$ and $g=3/5$. The conditional probabilities of either a first or a remaining component lie in $[1/10,9/10]$: the components of the current pair are independent given the known preceding state. Dependence between successive pairs is unrestricted by the theorem and is present here.
+
+Every conditional support is the corresponding translated and scaled product Cantor rectangle. At a half pair, the unrevealed current component and the subsequent Markov path still assign positive probability to every permissible cylinder. This proves the required child-union assertion and compactness for the actual conditional measures. The bounded audit and its conditional independence are built into the raw kernels. All action sets are finite and Borel. Equations~\eqref{eq:markovresourcelaw} follow from Theorem~\ref{thm:autonomous} and Lemma~\ref{lem:frontiercomparison}.
+
+We derive the moments and the feedback assertion. Let $m_i=\E_iU$ and $s_i=\E_i\|U\|^2$. The conditional decomposition $U=(1-r)D_1+rU'$ gives
+\begin{align}
+ m_i&=(1-r)\sum_zp_i(z)z+r\sum_zp_i(z)m_{j(z)},\label{eq:markovmeans}\\
+ s_i&=\sum_zp_i(z)\left[(1-r)^2\|z\|^2+
+          2r(1-r)z\cdot m_{j(z)}+r^2s_{j(z)}\right].\label{eq:markovseconds}
+\end{align}
+The linear parts in these two systems have operator norms at most $r$ and $r^2$ in the maximum norm. Hence each has a unique solution; with rational $r$ and probabilities the solutions are rational. Then $v_i=s_i-\|m_i\|^2$. Conditional means given one component are finite weighted sums of the same $m_{j(z)}$, so $\Delta_{ij}$ and $w_i$ are rational and effectively computable as well.
+
+After $k$ full pairs, the unobserved response tail has scale $r^k/2$ and Markov state $I_k$. The order of observation within any fully completed pair does not change either the acquired pair or its posterior. Thus every full-history policy making $2k$ observations acquires precisely these pairs, and its expected response variance is \eqref{eq:markoveven}. With one further observation it can minimize the conditional remaining variance by maximizing $\Delta_{I_k,j}$. This gives \eqref{eq:markovodd}; an earlier stop cannot improve a full-history optimum because additional observations may be ignored.
+
+In state $i$, call the coordinate with Bernoulli parameter $1/2$ the high-variance coordinate and the other the low-variance coordinate. For the high-variance coordinate the difference of its two conditional response means in that coordinate has magnitude at least $1-2r$: its present-digit contribution is $1-r$ and its tail contribution has magnitude at most $r$. Therefore
+\[
+ \Delta_{i,\mathrm{high}}\ge\tfrac14(1-2r)^2.
+\]
+For the low-variance coordinate, conditioning on its value does not change the other present digit's mean. The difference of conditional means has magnitude at most $1$ in the queried coordinate and at most $r$ in the other. Thus
+\[
+ \Delta_{i,\mathrm{low}}\le\tfrac9{100}(1+r^2).
+\]
+The first lower bound is strictly larger than the second upper bound at $r=1/100$. After the first full pair each next state has probability $1/2$. A fixed third-coordinate choice is consequently worse than feedback by at least
+\begin{equation}\label{eq:strictadaptivegap}
+ \frac{r^2}{8}\left[\frac14(1-2r)^2-
+                 \frac9{100}(1+r^2)\right]>0
+\end{equation}
+in squared response risk. This comparison optimizes all declared legal acquisition policies; it is not a comparison of two encoders under a single fixed sampling schedule.
+\end{proof}
+
+\begin{remark}[Nonstationary and changing local mass]
+The first half of the proof works without a stationary Markov law. At each synchronized history one may choose a known joint law on the next digit pair whose four probabilities are at least $p_0>0$, and a common pair contraction in a fixed interval $[r_-,r_+]\subset(0,1/2)$. Subsequent choices may depend on the entire observed pair history. Strong separation still gives compact cylinder supports; the two scale ratios stay uniformly between zero and one; all first and remaining report probabilities have a uniform positive bound. Thus Theorem~\ref{thm:autonomous} and its exponent-free profile conclusion hold for this nonstationary singular class. No limit of local dimensions, stationary measure or spectral radius is required. The special closed formulas \eqref{eq:markoveven}--\eqref{eq:markovodd} use the specified two-state preparation and are not asserted for the larger class.
+\end{remark}
+
+The predictive quotient here is obtained from the actual finite history experiment of Section~\ref{sec:problem}. Its countable positive-probability histories carry the discrete sigma field; quotient classes under all declared executable tests are therefore measurable and admit a section by the first history in a fixed enumeration. The raw continuation kernels respect this equivalence by inclusion of action availability and all continuation tests in the determining family. This gives the minimal measurable predictive realization without presupposing a smooth space. The rectangle coordinates, tail state and half-pair information used to verify the hypotheses are mathematical representatives, not additional free machine registers. In the implementation they are replaced by the single retained tree-node index. On the abstract discrete history realization the report probabilities are continuous in the discrete metric; the stronger quantitative geometric hypothesis used in the theorem is the uniform response refinement and mass certificate, not a Gaussian density regularity assertion.
+
+The singular preparation and the positive-noise regression of Section~\ref{sec:rank-singu} are different verifications of the general transfer mechanisms. The latter satisfies the continuation-cut/global-cover theorem, not the separated-refinement theorem: its overlapping Gaussian response posteriors must not be treated as disjoint cylinder cells. Both start from raw kernels, and neither is used to prove either general theorem.
+
+\subsection{An attained calibration and simulation contribution}
+The next construction uses the calibration-sign and erasure mechanisms described in Section~\ref{sec:adaptive}, but combines them with observation-dependent acquisition and the complete autonomous controller count. The mechanisms themselves are not new.
+
+Independently of the geometric preparation, let an unknown fixed bit $b\in\{0,1\}$ and sign $s\in\{-1,1\}$ determine two additional audit coordinates $b$ and $s\delta$, where $0\le\delta\le1/4$. The preparation does not report the sign. Before any geometric observation, one paid channel call reports $b$ with probability $1-2\varepsilon$ and reports $\bot$ otherwise, where $0\le\varepsilon\le1/2$. Its erasure coin is independent of the geometry. The scored task is the direct sum of the preceding audit and these two coordinates, with one fixed squared Euclidean loss. Calibration here means this explicitly unobserved bounded offset; it is not an arbitrary numerical tolerance.
+
+Define the exact-bit target experiment by replacing that early erasure channel by a certain report of $b$, leaving the preparation, geometric acquisition actions, calibration coordinate and audit unchanged. A causal simulator must complete its virtual early bit report before any geometric acquisition or final audit. Both experiments permit at most $n$ geometric observations, so their raw budget is $N=n+3$.
+
+\begin{corollary}[Matched joint resources in one adaptive task]\label{cor:adaptivejoint}
+For the erasure experiment just defined, let $\mathcal R_{\rm cp}$ and $\mathcal R_{\rm aut}$ be the minimax risks over $(b,s)$ in the declared checkpoint and autonomous classes. For $N\ge3$ and $M\ge7$,
+\begin{equation}\label{eq:adaptivejointlaw}
+ \mathcal R_{\rm cp}(N,M,\delta,\varepsilon)-B_\infty
+ \asymp\mathcal R_{\rm aut}(N,M,\delta,\varepsilon)-B_\infty
+ \asymp A_{N-3}+q_M(\mu)+\delta^2+\varepsilon.
+\end{equation}
+The constants are independent of the four budgets. They may depend on the fixed refinement certificates. The causal deficiency from the erased early-bit experiment to its exact-bit target, with the compulsory completion interface, is exactly $\varepsilon$.
+
+The implementation includes the early channel status and the acquisition controller in $M$; no uncounted clock is used. A task-norm numerical approximation $u$ to the stored geometric leaf means adds at most $u^2$ to the displayed constructive risk. No matching lower floor is claimed for such an allowed approximation error.
+\end{corollary}
+\begin{proof}
+For a lower bound, give the algorithm both nuisance parameters for free when considering geometric error. Independent channel randomness can only randomize an admitted acquisition policy, so the geometric component still has the separate lower bounds $A_n$ and $q_M(\mu)$ of \eqref{eq:twolowers}. More explicitly, for each fixed $(b,s)$ its geometric forecasts, after fixing its coins, have at most $M$ values, while its history uses at most $n$ geometric observations. Averaging the squared error over a fair prior on $(b,s)$ preserves those lower bounds.
+
+Under that prior, the unobserved sign has conditional mean zero and variance $\delta^2$, even after all predecision reports. On an erasure, the bit remains fair, with conditional variance $1/4$; erasure probability is $2\varepsilon$. These coordinates therefore contribute at least $\delta^2+\varepsilon/2$. Conditional projection in the direct-sum task adds the coordinate lower bounds to the common baseline. In particular the lower is at least
+\[
+ B_\infty+\max\{A_n,q_M(\mu)\}+\delta^2+\varepsilon/2.
+\]
+A Bayes lower under this finite prior is a minimax lower.
+
+For the upper, put $L=\lfloor(M-1)/3\rfloor\ge2$ and construct the $L$-state geometric machine of Theorem~\ref{thm:autonomous}, independently of the early bit report. Retain one initial state and the Cartesian product of its $L$ nodes with the three channel statuses $0,1,\bot$. The total is $1+3L\le M$. At termination output the reported bit when present and $1/2$ on erasure, and output zero for the calibration coordinate. These give exactly $\varepsilon/2$ and $\delta^2$ risk uniformly in $(b,s)$. Since $M\le5L$, repeated use of \eqref{eq:frontierdoubling} and \eqref{eq:frontierquantization} gives $q_L(\mu)\le C' q_M(\mu)$ with a certificate-dependent constant. The geometric risk is at most $B_\infty+A_n+C_0C'q_M(\mu)$. This proves \eqref{eq:adaptivejointlaw}. The leaf conditional-mean identity in Corollary~\ref{cor:autonomousdigital} gives the numerical assertion.
+
+For deficiency, on an erasure output an independent fair bit and otherwise output the observed bit. For either parameter $b$ the virtual bit is wrong with probability $\varepsilon$. Couple all later physical reports, legal target strategies and audits identically when that bit is correct. The complete target-law distance is at most $\varepsilon$, uniformly over parameters and admitted strategies, with all simulator state and randomization charged. Conversely, before the compulsory bit-completion time the two parameter laws have total-variation distance $1-2\varepsilon$, whereas the target reports are the two disjoint point masses. If a simulator approximates both targets to distance at most $e$, data processing and the triangle inequality imply $1\le2e+(1-2\varepsilon)$, hence $e\ge\varepsilon$. The future geometric reports and the audit cannot be consulted before that completion. This proves the exact causal deficiency; it does not identify a merely allowed defect bound with an unavoidable risk.
+\end{proof}

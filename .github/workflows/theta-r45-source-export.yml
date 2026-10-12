@@ -1,0 +1,37 @@
+name: Theta R45 pinned source export
+on:
+  push:
+    branches: [foundation/general-theta-restart-r45-adapted-stopping-research-2026-10-12]
+    paths: [.github/workflows/theta-r45-source-export.yml]
+permissions:
+  contents: read
+jobs:
+  export:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          sparse-checkout: |
+            .github
+            foundations/general-theta
+            papers/General-Theta-Foundations-I-restart
+            GENERAL_THETA_FOUNDATIONS_I_RESTART_R32_BAYESIAN_CURVATURE_EXTERNAL_REFEREE_REPORT_R32.md
+      - name: Export pinned files without modifying any Git ref
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import json,zipfile,subprocess
+          paths=['.github','foundations/general-theta','papers/General-Theta-Foundations-I-restart','GENERAL_THETA_FOUNDATIONS_I_RESTART_R32_BAYESIAN_CURVATURE_EXTERNAL_REFEREE_REPORT_R32.md']
+          names=subprocess.check_output(['git','ls-files',*paths],text=True).splitlines()
+          with zipfile.ZipFile('/tmp/R45_pinned_inputs.zip','w',zipfile.ZIP_DEFLATED) as z:
+              for name in names:
+                  if Path(name).is_file(): z.write(name,name)
+              z.writestr('PINNED_EXPORT.json',json.dumps({'head':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),'purpose':'read-only R44/source export; not mathematical acceptance'},indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r45-pinned-inputs
+          path: /tmp/R45_pinned_inputs.zip
+          retention-days: 30

@@ -1,0 +1,93 @@
+\section{The geometry actually acquired}\label{sec:geometry}
+This section fixes a known preparation and a declared exploration rule that is not altered by the compressor. It does not optimize an unrestricted control problem by comparing two filters under one policy. Let a bounded Euclidean audit variable $Z_t$ have predictive mean $p_t=\E[Z_t\mid H_t]$ at a data call, where $H_t$ is the full visible physical history. Independent compressor randomization does not provide extra information about $Z_t$ conditional on $H_t$. Preparation calls have zero score. Set
+\begin{equation}\label{eq:geometry-law}
+ \nu(B)=\frac1\mu\E\sum_{t\le\tau,\ t\text{ data}}1_{\{p_t\in B\}},\qquad
+ B_\infty=\frac1\mu\E\sum_{t\le\tau,\ t\text{ data}}
+              \norm{Z_t-p_t}^2.
+\end{equation}
+The measure $\nu$ is a subprobability measure. Its mass is the actual fraction of calls spent acquiring or retaining the scored prediction. Define
+\begin{equation}\label{eq:quantization}
+ q_M(\nu)=\inf_{c_1,\ldots,c_M}\int\min_{j\le M}\norm{x-c_j}^2\,d\nu(x).
+\end{equation}
+Centers lie in the compact convex range allowed for decisions. A checkpoint encoder sees the full current history, but its $M$ readouts are fixed across all calls; it is not permitted a new uncharged codebook at each time.
+
+\begin{theorem}[Occupation geometry and online transfer]\label{thm:geometry}
+For the fixed exploration above, checkpoint risk satisfies
+\begin{equation}\label{eq:cp}
+ R_{\mathrm{cp},\av}(M)-B_\infty=q_M(\nu),\qquad
+ R_{\mathrm{on},\av}(M)-B_\infty\ge q_M(\nu).
+\end{equation}
+Suppose the predictive realization is a compact metric space $(S,d)$ with initial state $s_0$, Borel update $U_y$, and $p=f(s)$ for an $L_f$-Lipschitz map $f$. There are global $M$-center covers, containing $s_0$, of radius $r_M$, with Borel nearest-center maps. Along each actual within-cycle history assume
+\begin{equation}\label{eq:stability}
+ d(U_{Y_t}(x),U_{Y_t}(x'))\le L_t(H_t)d(x,x')
+ \quad\text{for every }x,x'\in S.
+\end{equation}
+All intermediate candidate states used by the algorithm must belong to $S$. For data ages $t$ within a cycle put
+\[
+ G_t=\sum_{j=1}^t\prod_{u=j+1}^tL_u,\qquad
+ \mathcal G^2=\frac1\mu\E\sum_{t\text{ data},\ t\le\tau}G_t^2.
+\]
+If $\mathcal G<\infty$, one $M$-state recursive observer attains
+\begin{equation}\label{eq:geom-upper}
+ R_{\mathrm{on},\av}(M)-B_\infty
+ \le L_f^2r_M^2\mathcal G^2.
+\end{equation}
+A candidate-preserving update approximation of metric error at most $\eta$ and a readout approximation of Euclidean error at most $\zeta$ replace the square root on the right by
+$L_f(r_M+\eta)\mathcal G+\zeta\sqrt{\nu(S_f)}$, where $S_f=f(S)$.
+
+If a submeasure $\xi\le\nu$ has mass $w>0$ and
+\begin{equation}\label{eq:smallball}
+ \xi(B_r(c))\le C r^d
+ \quad\text{for all centers }c\text{ and }0<r\le r_0,
+\end{equation}
+then, whenever $(w/(2CM))^{1/d}\le r_0$,
+\begin{equation}\label{eq:masslower}
+ q_M(\nu)\ge\frac w2\left(\frac{w}{2CM}\right)^{2/d}.
+\end{equation}
+Consequently $r_M\le C_0M^{-1/d}$ and a bounded $\mathcal G$ give matching checkpoint and online orders $M^{-2/d}$. The actual mass $w$ remains in the constant.
+
+All these statements also hold at a finite external acquisition budget $N$, using the actual measures
+\[
+ \nu_N=\frac1N\E\sum_{t\le N,\ t\text{ data}}\delta_{p_t}
+\]
+and the corresponding $B_N,\mathcal G_N$. They hold for a normalized discount with its actual occupation measure as well. Uniform rates in $N$ or in a range of discounts require uniform versions of the displayed mass and stability certificates; they are not inferred from a terminal support alone.
+\end{theorem}
+\begin{proof}
+Condition on the full visible history and the independent observer seed. Orthogonal projection gives
+\[
+ \E\norm{Z_t-c}^2=\E\norm{Z_t-p_t}^2+\E\norm{p_t-c}^2.
+\]
+For any fixed $M$ readouts, pointwise nearest-center distance is a lower bound for every randomized encoder. A nearest-center checkpoint achieves it. Integration against the actual occupation law proves \eqref{eq:cp}, including the online lower bound.
+
+Store one cover-center label, initialized at $s_0$. At a data report apply $U_y$ to the stored center and project back to the cover. If $e_t$ is its distance from the true predictive state, \eqref{eq:stability} gives $e_t\le L_te_{t-1}+r_M$, starting from zero after preparation. Hence $e_t\le r_MG_t$. This is an estimate using a mathematical comparison state, not a register carried by the observer. Summing squares under the actual law proves \eqref{eq:geom-upper}. With a candidate-preserving update error, replace $r_M$ by $r_M+\eta$. Minkowski's inequality in the occupation $L^2$ space gives the readout allowance. No stable exact state outside the declared cover domain is silently available.
+
+For any $M$ centers the union of their radius-$r$ balls has $\xi$-mass at most $MC r^d$. At $r=(w/(2CM))^{1/d}$ at least $w/2$ mass remains at distance at least $r$. This proves \eqref{eq:masslower}. The finite and discounted versions use exactly the same pointwise projection, recursion and mass proof with their own positive occupation weights.
+\end{proof}
+
+\begin{corollary}[Noncontractive cycles]\label{cor:noncontractive}
+Suppose after a first informative update every subsequent data update is nonexpansive, the exact and approximate states coincide before that first update, and $\E\tau^3<\infty$. Then the recursion in Theorem~\ref{thm:geometry} has
+\[
+ \mathcal G^2\le\E\tau^3/\mu,\qquad
+ \sup_{N\ge1}\mathcal G_N^2\le2\E\tau^3,
+\]
+and the same second bound for every normalized discount. Strict per-step contraction is unnecessary. The cycle may have a polynomial tail.
+\end{corollary}
+\begin{proof}
+At the first informative report the error is at most the cover radius, regardless of a larger Lipschitz constant for that first update, since the prior error is zero. Subsequent errors are at most their data age times the radius. The sum of squared ages in one cycle is at most $\tau^3$. For a finite horizon, sum over renewal epochs $s\le N$. Each integer is an epoch with probability at most one, and its subsequent cycle is fresh. Thus the expected sum divided by $N$ is at most $(N+1)\E\tau^3/N$. The discounted bound follows by the positive Abel mixture of finite-horizon bounds.
+\end{proof}
+
+The global covering, the acquired small-ball mass, and the stability condition play different roles. Report-kernel continuity is not a substitute for any of them: it is used for model and finite-precision transfer in Section~\ref{sec:effective}. Both raw geometric verifications below prove this continuity independently. Under their effective certificates, a finite table can approximate the best Borel risk to $o(M^{-2/d})$ at the same $M$; this yields a finite executable upper without identifying $\log_2M$ with its whole program description.
+
+\begin{theorem}[Renewal holding geometry]\label{thm:holding}
+Prepare a mark $V$ in a compact set $K\subset\R^m$ with law $\pi$, and an integer $L\ge1$ with any conditional law given $V$, $\E L<\infty$. Charge one zero-score preparation call. The first of $L$ data calls reports $V$ with a visible load tag; the remaining reports are blank holding tags. The audit target is $V$ at every data call, and the observer is overwritten at the next preparation. Then, at average risk,
+\begin{equation}\label{eq:holding}
+ R_{\mathrm{cp}}(M)=R_{\mathrm{on}}(M)=q_M(\nu),\qquad
+ \nu(dv)=\frac{\E[L\mid V=v]}{\E(L+1)}\,\pi(dv).
+\end{equation}
+At finite $N$ and at any normalized discount the identical equality holds with the corresponding actual holding-occupation measure. For an arbitrary family of such preparations, including nondominated families, the robust value is the infimum over one common $M$-center set of the supremum of these integrals.
+\end{theorem}
+\begin{proof}
+Every output of every $M$-state observer belongs to its one set of $M$ readouts. Pointwise nearest-center distance lower-bounds its loss at each data call, including observers that try to count how long the mark has survived. At the load tag choose a nearest-center label and then retain it on every holding tag. This uses $M$ labels, not $M$ plus a clock: the load and hold events are physically different visible reports. The same encoder works at every parameter for fixed centers. Integration proves each equality. Compactness of $K$ permits centers to be chosen in its compact convex hull. This proof is direct and does not infer compactness of general nondominated adaptive controllers from Lemma~\ref{lem:tensor}.
+\end{proof}
+
+For example, let $\pi$ be uniform on $[0,1]$ and $L=\lceil V^{-\alpha}\rceil$, $0<\alpha<1$, with an arbitrary value at the null point $V=0$. The occupation mass near zero has order $r^{1-\alpha}$, although preparation mass has order $r$. On an interval bounded away from zero the occupied density is bounded and positive. The small-ball lower there and the global interval cover give $q_M(\nu)\asymp M^{-2}$. Also $\E\tau^{1+p}<\infty$ whenever $\alpha(1+p)<1$. Thus this nonuniform, possibly infinite-third-moment class has an exact acquired-memory law without accumulating recursive error. A compact $d$-regular Cantor preparation with $1\le L\le L_0$ instead gives the noninteger order $M^{-2/d}$ by the same actual-mass proof. Unbounded length bias must be analyzed from \eqref{eq:holding}, not by reusing the unweighted preparation dimension.

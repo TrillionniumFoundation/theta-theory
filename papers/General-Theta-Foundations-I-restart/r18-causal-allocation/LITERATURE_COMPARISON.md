@@ -1,0 +1,28 @@
+# Selective theorem-level literature comparison
+
+This is a checked selective map, not an independent exhaustive priority certification. Primary publisher/author/arXiv records were consulted for the metadata and described objectives; the locally written proofs do not depend on unverified priority claims. Publication information and preprint versions below are the inspected records, not a claim that no subsequent version exists. The mathematical article credits classical tools separately from its proposed causal composition.
+
+| Primary source | Object and information pattern | Resource/time criterion and distinction from this article |
+|---|---|---|
+| Blackwell (1953), DOI 10.1214/aoms/1177729032 | Statistical experiment comparison by decision tasks | A channel comparison, not a persistent state budget for a causal programme; TV-risk transfer is classical |
+| Strassen (1965), DOI 10.1214/aoms/1177700153 | Existence of measures with prescribed marginals/martingale convex-order mechanism | Static existence is the one-step tool; it does not by itself enforce reuse of the same report kernel across phases |
+| Backhoff–Beiglböck–Lin–Zalashko (2017), DOI 10.1137/16M1080197; arXiv:1606.04062v2 | Causal transport feasibility and duality | Nonanticipativity is distinct from a hard finite label alphabet and simultaneous stationary programme constraints |
+| Kamenica–Gentzkow (2011), DOI 10.1257/aer.101.6.2590 | Bayes-plausible information design | Static posterior distributions, not sequential acquired laws under finite deployed control |
+| Lyu–Suen–Zhang, arXiv:2305.18020v5 | Coarse information design and mean/curvature structure | Static finite messages; no full causal phase reuse or internally paid timing comparison |
+| Grover–Dimitrakakis, arXiv:2104.07276v1 | Adaptive belief discretization | Approximation through belief representations, not the present exact simultaneous support-function frontier |
+| Li–Hammar–Bertsekas, arXiv:2507.04646v1 | Enhanced aggregation architecture for POMDPs | Aggregation/value architecture versus hard pointwise persistent-state cardinality and actual-law converse |
+| Kara–Yüksel, JMLR 23(11), 2022 | Near-optimal finite-window policies and filter stability | Window memory and discounted control; time/coding conventions differ from a total internally timed alphabet |
+| Demirci–Kara–Yüksel, arXiv:2409.04351v1 | Refined finite-window bounds using filter stability | Expected Wasserstein/pathwise-TV routes, not an actual acquired-law quantization lower or exact internal clock count |
+| Saldi–Yüksel–Linder, IEEE TAC 65 (2020); arXiv:1710.07009v1 | Finite-model approximation of discounted POMDPs | Weak-continuity/global belief quantization and policy approximation; not the fixed-task finite-support moment criterion |
+| Zhu–Lu, PMLR 300:1423–1431 (AISTATS 2026) | Offline POMDP learning with belief-space metric coverage and stability | Learned/offline sample coverage differs from known-kernel deployed acquisition law and hard finite causal alphabet |
+| Mintae Kim, arXiv:2601.03132v1 (2026) | Finite-memory belief approximation along a fixed closed-loop policy | Policy-conditional Wasserstein bound is not automatically a comparison between separately optimal controllers |
+| Wood–Linder–Yüksel, IEEE IT 63:5968–5980 (2017); arXiv:1606.09135v2 | Zero-delay finite-memory coding of finite sources | Coding information pattern and asymptotic distortion differ from a prescribed predictive task and counted internal deadline |
+| Ghomi–Linder–Yüksel, IEEE IT 68(5):3474–3488 (2022); DOI 10.1109/TIT.2021.3138769 | Stationary zero-delay coding for linear vector Markov sources | Near-optimal finite coding memory, not the same programme/clock alphabet and acquired posterior lower |
+| Stavrou et al., SIAM Control 56(5):3731–3765 (2018); DOI 10.1137/17M1116349 | Finite-time nonanticipative rate-distortion and causal Gaussian reconstruction | Information rate/directed information is not a pointwise bound on persistent labels; criteria cannot be interchanged |
+| Davies–Lewis (1970), DOI 10.1007/BF01647093 | Quantum instruments | Instrument formalism is standard; the finite positive normalized-congruence verification is an application, not generic quantum-control completion |
+| Basu–Pollack–Roy, second edition (2006), DOI 10.1007/3-540-33099-2 | Real-algebraic decision methods | Standard effective tool for the finite rational compiler; no efficient complexity claim follows |
+| Qian Qi, preceding General Theta restart article | Actual posterior pooling, mass/curvature, weighted allocation, clock support and kernel verifications | These are inherited and re-proved; the present exact allocation/gluing and compact finite-obstruction statements are proposed extensions |
+
+Primary locations checked include `https://proceedings.mlr.press/v300/zhu26a.html`, `https://arxiv.org/abs/2601.03132v1`, `https://arxiv.org/abs/2409.04351v1`, the listed DOI landing pages, JMLR's article page, and the authors' publication pages. ArXiv version tags in the bibliography preserve the comparison baseline. Some sources were inspected at metadata/abstract and theorem-objective level, not re-proved line by line. This limitation is material: the article does not claim to have independently settled all neighboring theorem implications or priority.
+
+Conventions for finite-horizon time-dependent controllers are not themselves new. Our mathematical comparison makes their cost explicit: external phase may be free, while an autonomous tuple must store any phase information it uses. Proposition 5.3 states the conversion; Theorem 3.1(b) covers stationary feasibility even when the null-set clock converse fails.
