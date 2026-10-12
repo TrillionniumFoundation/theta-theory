@@ -1,0 +1,105 @@
+\section{A singular recurrent experiment without state-revealing resets}\label{sec:nr-moran}
+The next realization transports an unknown tail between predictive strata. Expanding transitions recur, and neither cross-stratum edge overwrites the old state. Its invariant measure is singular, but its actual prepared acquisition is allowed to be nonstationary. The mechanism is thus different from both uniform filter contraction and refresh-dominated error erasure.
+
+\subsection{The raw experiment}
+Fix a sequence $\rho_n\in[1/5,1/3]$, put $\ell_0=1$, $\ell_n=\prod_{h=1}^n\rho_h$, and define
+\begin{equation}\label{eq:nr-code}
+ x(b)=\sum_{n\ge1}(1-\rho_n)\ell_{n-1}b_n,
+ \qquad b\in\{0,1\}^{\N}.
+\end{equation}
+Let $K$ be the image of this coding and let $\sigma$ be the image of the independent fair-bit law. If two sequences first differ at position $n$, summing the tails gives
+\begin{equation}\label{eq:nr-gap}
+ \frac{\ell_{n-1}}3\le |x(b)-x(c)|\le\ell_{n-1}.
+\end{equation}
+Consequently the coding is continuous and one-to-one, and has a continuous inverse on $K$. A cylinder of length $n$ has mass $2^{-n}$ and diameter at most $\ell_n$.
+
+The physical state is $(I,b)\in\{0,1\}\times\{0,1\}^{\N}$. Take $\alpha\in(0,1]$, $\beta=1/2$, and let an active command use the mode transition matrix
+\begin{equation}\label{eq:nr-mode}
+ P=\begin{pmatrix}1-\alpha&\alpha\\[1mm]1/2&1/2\end{pmatrix},
+ \qquad \pi=\left(\frac{1/2}{\alpha+1/2},\frac{\alpha}{\alpha+1/2}\right).
+\end{equation}
+On $0\to0$, independently choose deletion of the first old bit with probability $\gamma=1/4096$, and otherwise prepend two newly sampled fair bits. On $0\to1$ delete the first old bit. On $1\to0$ prepend four newly sampled fair bits. On $1\to1$ copy the sequence. The report gives the source and destination modes, the operation, and the newly sampled bits, if any. It never reveals the remaining old tail. All these rules are positive normalized Borel kernels. An independent suspension at time $t$ copies the state and reports a hold with probability $1-\vartheta_t$; otherwise the active kernel is used.
+
+Let $\lambda$ be the law with modes $\pi$ and independent fair tails. The actual preparation is any known law $\mu_0$ with
+\begin{equation}\label{eq:nr-preparation}
+ c\lambda\le\mu_0\le C\lambda,\qquad 0<c\le C<\infty.
+\end{equation}
+A paid initialization reports the prepared mode and sequence. This specifies the exact Borel experiment. A finite-access encoder reads only a stated finite prefix during initialization, at a separately charged input and time cost; it cannot subsequently reread the initialization report. This distinction is essential. Replacing the full initialization by a truncated physical report defines a different experiment and is not asserted to preserve a complete-transcript deficiency or its full-history baseline.
+
+There is one terminal command: a paid Bernoulli probe of mean
+\begin{equation}\label{eq:nr-score}
+ p(0,b)=\frac18+\frac{x(b)}8,\qquad
+ p(1,b)=\frac58+\frac{x(b)}8.
+\end{equation}
+The probe ends the experiment. Active calls, holds, initialization and this terminal call are all counted. For $T$ post-initialization opportunities the unit-call implementation uses $N_{\rm raw}=T+2$ raw calls. Input-prefix access and arithmetic time are additional ledger entries, not extra information retained for free. The legal strategy for the theorem is this fixed sequence of $T$ opportunities followed by the terminal command. All finite continuations using these commands are the executable tests defining the quotient.
+
+Define
+\begin{equation}\label{eq:nr-moran-profile}
+ r(k)=\ell_{\lfloor\log_2 k\rfloor}\quad(k\ge1),\qquad r(0)=1.
+\end{equation}
+Equip the predictive domain $\{0,1\}\times K$ with distance $|x-y|$ within a mode and distance one between modes. This is a bounded metric; take $(0,x(000\cdots))$ as anchor.
+
+\begin{theorem}[Non-erasing recurrent singular realization]\label{thm:nr-moran}
+For the raw experiment above the predictive quotient is $(I,x(b))$, with its declared terminal interface. For every $T\ge0$ and $M\ge4$,
+\begin{equation}\label{eq:nr-moran-law}
+ R_\cp(T,M)-B_T\asymp R_\on(T,M)-B_T
+          \asymp \ell_{\lfloor\log_2 M\rfloor}^{\,2},
+ \qquad B_T=\E[p(I_T,b_T)(1-p(I_T,b_T))].
+\end{equation}
+The constants depend only on $c,C$ and the displayed universal coding bounds. They are uniform in $T$, $\alpha\in(0,1]$, every deterministic suspension schedule, and every sequence $(\rho_n)$ in $[1/5,1/3]$. In particular they remain bounded when mode one becomes arbitrarily rare and when all activity probabilities tend to zero. The gain drift can be taken with
+\begin{equation}\label{eq:nr-explicit-drift}
+ v_0=450,\quad v_1=1,\quad V=450,\quad\kappa=17/20,
+ \qquad A=C/c.
+\end{equation}
+Both cross-mode transitions preserve a nonconstant dependence on the old infinite tail. For $0<\alpha<1$, arbitrarily long runs of the expanding within-mode deletion have positive probability. The theorem therefore does not reduce to a uniform deterministic block-contraction assumption and does not use recurrent state-revealing refreshes.
+
+An exact Borel implementation uses at most $M$ labels and no additional retained mode flag. With effective finite-prefix input, computable ratios and certified terminal arithmetic, it is a finite-input implementation with the same label count and with explicitly nonzero readout error as in \eqref{eq:nr-finite}. For ratios in $\{1/3,1/5\}$, initialization need read at most $\lceil\log_2M\rceil$ tail bits; the subsequent report has at most four new bits and finite mode data. The input-access, program, temporary-space and time costs are given below the proof.
+\end{theorem}
+\begin{proof}
+After initialization the full visible history determines the mode and tail by the reported transformations. Future kernel laws are consequently functions of $(I,b)$. Conversely the terminal mean in \eqref{eq:nr-score} identifies the mode, since its two intervals are disjoint, and then identifies $x$ and hence $b$ by \eqref{eq:nr-gap}. Thus two different such states are separated by an executable terminal test. This proves sufficiency and minimality of the stated Borel quotient. The update maps are defined on every valid state for its compatible reports. Incompatible source-mode reports have probability zero; a declared extension applies the reported sequence operation to the supplied predictive coordinate and sets the reported destination mode. It is never justified by null-event Bayes division.
+
+Each active edge sends the fair product law to itself: deletion of the first fair bit leaves a fair independent tail, and prepending independent fair bits has the same property. Thus the edge laws send $\sigma$ to $\sigma$, and \eqref{eq:nr-mode} gives $\lambda P=\lambda$. Proposition~\ref{prop:nr-reference} proves \textup{(O)} and $c\lambda\le\mu_t\le C\lambda$, including the active candidate laws. In particular the actual conditional tail law in each mode is bounded above by $(C/c)\sigma$ and below by $(c/C)\sigma$. Its actual weight is $w_{t,i}=\mu_t(\{i\}\times K)$, not an assigned replacement $\pi_i$.
+
+Deleting the first bit has Lipschitz constant at most $15$ on $K$. Indeed, for a first difference at $n\ge2$, use the upper bound $\ell_{n-2}$ for the shifted difference and the lower bound $\ell_{n-1}/3$ for the original difference. Their ratio is at most $3/\rho_{n-1}\le15$. For $n=1$, the original difference is at least $1/3$ and the shifted difference at most one. Prepending $m$ common bits has Lipschitz constant at most $3^{1-m}$: the ratio of the two bounds in \eqref{eq:nr-gap} is at most $3\ell_{n+m-1}/\ell_{n-1}\le3^{1-m}$. The prepend-two, deletion, prepend-four and copy gains may be chosen as $1/3,15,1/27,1$. On the $0\to0$ edge their conditional squared-gain bound is $(1-\gamma)/9+225\gamma=85/512$. This is an average over its raw reported marks, uniformly in the source state, not an average with respect to the old error. No such bound says deletion is a contraction.
+
+The forward gain matrix is
+\begin{equation}\label{eq:nr-C2}
+ C_2=\begin{pmatrix}(1-\alpha)85/512&225\alpha\\[1mm]1/1458&1/2\end{pmatrix}.
+\end{equation}
+With $v=(450,1)$ its first component is $(19125/256)(1-\alpha)+225\alpha\le225<(17/20)450$, while its second is $450/1458+1/2=131/162<17/20$. This proves \textup{(D)} uniformly even though an expanding nonreset edge has squared gain $225$. The argument uses no factor $1/\pi_1$. If $\alpha>0$, cross-mode passages recur almost surely along infinitely many active opportunities, since the two-state active chain is irreducible; an infinite run of physical holds is not counted as activity. The finite-horizon theorem does not require an infinite-activity assumption. For $0<\alpha<1$, a run of $n$ within-mode deletions has conditional probability $((1-\alpha)\gamma)^n>0$. The $n$-fold deletion separates the zero tail and a tail with its first one at position $n+1$ by a distance ratio at least $(5/6)3^n$. Hence arbitrary expanding stretches genuinely occur in the raw map family, even though its forced second moment is stable.
+
+For the cover, use one zero-tail representative for each cylinder of length $n=\lfloor\log_2 k\rfloor$. There are $2^n\le k$ such representatives and their covering radius is at most $\ell_n$. Also $r(k)^2/r(2k)^2=\rho_{n+1}^{-2}\le25$. To verify actual small balls uniformly in $k$, put $K_0=C/c$ and choose a fixed integer $h\ge1$ with $2^h\ge4K_0$. Distinct cylinders of length $n+h$ have mutual gap at least $\ell_{n+h-1}/3\ge\ell_n/(3\cdot5^{h-1})$. Hence a Euclidean ball of radius $\ell_n/(12\cdot5^{h-1})$ meets at most one such cylinder. Its actual conditional mass is at most $K_0 2^{-(n+h)}\le2^{-n-2}\le1/(2k)$, since $k<2^{n+1}$. The score shrinks within-mode distances by $1/8$, so reduce the ball constant by another factor eight. This establishes \eqref{eq:nr-smallball} for arbitrary centers, including centers outside the Cantor set. The two score sets have a fixed positive gap; neighborhoods of radius $1/16$ are disjoint. Condition \textup{(G)} holds with $\Lambda=1$, $a_0=a_1=1$ and constants depending only on $K_0$.
+
+We give the local machine, since a geometric cover alone is insufficient. For an allocation $(k_0,k_1)$, an allocated mode $i$ uses all binary words of length $n_i=\lfloor\log_2 k_i\rfloor$ as labels, each decoded as its zero-tail extension in that mode. Unallocated modes use the common anchor. On initialization select the corresponding prefix label or the anchor. On a hold copy the label. On an active report, apply the reported deletion, prepend or copy operation to the finite word with its implicit zero tail. If the destination is allocated, truncate or pad to its prefix depth and retain that label; otherwise retain the anchor. The report supplies the destination during the update, not as a surviving side channel. At the forecast cut the decoder sees only the retained label.
+
+When source and retained modes agree, the preceding Lipschitz estimates and final cylinder truncation give \eqref{eq:nr-local} with $b_*=1$, $C_g=1$. If an unallocated source has been encoded by the other-mode anchor, its metric error is one. The coordinate discrepancy after deletion is at most one, after prepending $m$ common bits at most $\ell_m\le3^{-m}\le3^{1-m}$, and after copying at most one. These are bounded by the declared gain times that metric error. Final rounding adds $r(k_i)$. If the destination is unallocated, its metric error is at most one, already bounded by $R_i=r(0)=1$. This checks the local rule even when the analytic component was discarded. Initialization error is at most the corresponding radius. The terminal score is globally one-Lipschitz in the declared metric. Active report laws depend only on the mode, so their total variation is zero within a mode and at most the cross-mode distance one; the terminal Bernoulli kernel has the same continuity bound. Every hypothesis of Theorem~\ref{thm:nonreset} is now derived from the raw experiment.
+
+Finally the mixture profile has the stated uniform scale. Since $k_i\le M$, every term $r(k_i)^2$ is at least $r(M)^2$, giving $\mathcal Q_T(M)\ge r(M)^2$. Conversely allocate $\lfloor M/2\rfloor$ to each mode for $M\ge4$. The depth loss is at most two, whence $\mathcal Q_T(M)\le25^2r(M)^2$, independently of the two actual weights. Apply \eqref{eq:nr-main}. This also covers $T=0$, when the initialized quantizer is the online machine and there are no updates.
+\end{proof}
+
+\paragraph{Finite-access and bit costs.}
+The initial encoder need inspect at most $n_{\max}=\max_i n_i\le\lceil\log_2M\rceil$ bits, during that one paid initialization, plus a mode bit. It may erase each inspected bit after accumulating the finite prefix label. Later updates operate only on the retained word and at most four fresh reported bits. Padding means appending zeros from the program, not consulting the discarded input. A straightforward implementation uses $O(n_{\max}+b_{\rm out})$ temporary bits, including the current report and arithmetic, and at most $\lceil\log_2M\rceil$ persistent bits for its label. Temporary bits are erased before the next cut. For rational ratios $1/3$ or $1/5$, a zero-tail representative is a rational whose numerator and denominator have $O(n_{\max})$ bits. Schoolbook integer arithmetic gives a conservative $O((n_{\max}+b_{\rm out})^3)$ bit-operation bound for its terminal evaluation to absolute error $2^{-b_{\rm out}}$; word updates cost $O(n_{\max})$. The program includes the effective ratio schedule, depths, transition rules and calibrated mode probabilities. The schedule's description length is not included in the label count. Sampling and transmitting bits, all suspended calls, and the terminal probe retain their physical-time charges. These are constructive costs, not optimal time--space converses. No full-transcript TV comparison between a continuous raw report and a finite packet is used.
+
+\begin{corollary}[A nonreset singular law with no limiting exponent]\label{cor:nr-oscillation}
+There is a computable choice $\rho_n\in\{1/3,1/5\}$ in Theorem~\ref{thm:nr-moran} for which the logarithmic resolution slope
+\[
+ \frac{-\log(R_\on(T,M)-B_T)}{\log M}
+\]
+has subsequences with limits $2\log 3/\log2$ and $2\log5/\log2$, uniformly along any choices of $T$, $\alpha$ and suspension schedule with fixed preparation constants. In particular no single power-law dimension describes this acquired resolution profile.
+\end{corollary}
+\begin{proof}
+Take integers $n_j=2^{2^j}$, and make $\rho_n$ alternate between $1/3$ and $1/5$ on the successive blocks $(n_{j-1},n_j]$, with any finite initial block. Then $n_{j-1}/n_j\to0$. At $M_j=2^{n_j}$,
+\[
+ \frac{-\log\ell_{n_j}^2}{\log M_j}
+  =\frac{2\sum_{h\le n_j}\log(1/\rho_h)}{n_j\log2}
+\]
+converges to the indicated two values on alternating block endpoints. Uniform multiplicative constants in \eqref{eq:nr-moran-law} contribute $O(1)/\log M_j$, which vanishes. These are positive decay exponents, not the signed slope of $\log$ risk. The argument proves a continuum statement through exact cylinder geometry, independently of any finite regression.
+\end{proof}
+
+\subsection{A second, structurally different realization of the same theorem}
+\begin{corollary}[The nonlinear filtering class under the general transfer]\label{cor:nr-filter}
+The controlled binary hidden-state experiments in Theorem~\ref{thm:hmm}, with flip probability $q_0\in(0,1/2)$ and actions in $[a_-,a_+]\subset(0,1)$, satisfy the dynamic hypotheses of Theorem~\ref{thm:nonreset} with a single geometric component, $v=1$, $A=1$ and $\kappa=(1-2q_0)^2$. Their actual acquired small-ball and covering profiles are comparable to $r(k)=k^{-1}$, with $r(0)=r(1)$ after fixed scaling. Consequently their checkpoint and online excess risks have the same $M^{-2}$ order uniformly over positive horizons and the specified encoder-independent control rules. This conclusion does not require stationary preparation.
+\end{corollary}
+\begin{proof}
+From the raw density \eqref{eq:hmm-kernel}, normalization gives \eqref{eq:hmm-update}; the terminal hidden-bit probe identifies the scalar posterior quotient. The log-odds derivative computation in the proof of Theorem~\ref{thm:hmm} gives a pointwise same-report gain at most $1-2q_0$, so \eqref{eq:nr-drift} holds for the factor enlarged by any needed controller coordinates. A one-component partition makes \eqref{eq:nr-occupation} an equality. The positive lower bound on the raw report-to-posterior derivative \eqref{eq:hmm-jacobian}, together with the report-density upper bound, gives a uniform upper bound on the \emph{actual} posterior density at every positive horizon. Since the invariant interval has a fixed finite length, an equally spaced valid grid supplies the covering radius, and the density upper gives the arbitrary-center small-ball inequality after choosing $c_g$ small enough. Log-odds and Euclidean distance are equivalent on that interval. For the single score set $\Lambda=1$, and the dyadic profile bound is $D_2=4$. The recursive posterior update followed by grid rounding verifies \textup{(L)}, including initialization. Report-kernel continuity and the effective arithmetic interface are the explicit computations in Theorem~\ref{thm:hmm} and Appendix~\ref{sec:algorithms}. These computations prove the hypotheses from the raw kernel; the filtering realization is not a premise of the general transfer proof.
+\end{proof}

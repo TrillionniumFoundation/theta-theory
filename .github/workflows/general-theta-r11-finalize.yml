@@ -1,0 +1,111 @@
+name: General Theta R11 verified PDF delivery
+on:
+  push:
+    branches:
+      - foundation/general-theta-restart-r11-posterior-pooling-research-2026-10-08
+    paths:
+      - .github/workflows/general-theta-r11-finalize.yml
+permissions:
+  contents: write
+concurrency:
+  group: general-theta-r11-pooling-publication
+  cancel-in-progress: false
+jobs:
+  immutable-source-artifact-delivery:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      SOURCE_SHA: 6ef290d21064b1e6514b343d3d451ad0a77e0c04
+      SOURCE_TREE: f37f42455e99419d118156ecb122d9826e651c2d
+      B: papers/General-Theta-Foundations-I-restart/r11-posterior-pooling
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 1
+          sparse-checkout: |
+            .github
+            foundations/general-theta
+            papers/General-Theta-Foundations-I-restart
+      - name: Install complete TeX dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y texlive-latex-extra texlive-fonts-recommended cm-super latexmk poppler-utils python3-venv
+          python3 -m venv /tmp/theta-r11-delivery-venv
+          /tmp/theta-r11-delivery-venv/bin/pip install pypdf==5.9.0
+      - name: Rebuild unchanged immutable source and all integral supplements
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          cp "$B/evidence/BUILD_RECEIPT.json" "$B/evidence/INITIAL_BUILD_RECEIPT.json"
+          /tmp/theta-r11-delivery-venv/bin/python "$B/build.py" --source-sha "$SOURCE_SHA" --expected-tree "$SOURCE_TREE"
+          git diff --exit-code -- "$B" ':!**/artifacts/**' ':!**/evidence/**'
+      - name: Bind and explicitly track PDF artifacts
+        id: artifact
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib,json,os,pathlib,subprocess
+          b=pathlib.Path(os.environ['B'])
+          r=json.loads((b/'evidence/BUILD_RECEIPT.json').read_text())
+          old=json.loads((b/'evidence/INITIAL_BUILD_RECEIPT.json').read_text())
+          if r['source_commit']!=os.environ['SOURCE_SHA'] or r['native_source_tree_sha']!=os.environ['SOURCE_TREE'] or r['status']!='PASS':
+              raise RuntimeError('source binding mismatch')
+          if r['source_audit']!=old['source_audit'] or r['regression']!=old['regression']:
+              raise RuntimeError('native evidence changed unexpectedly')
+          files=['General_Theta_Foundations_I_restart_r11.pdf','General_Theta_Foundations_I_Supplement_T.pdf','General_Theta_Foundations_I_Supplement_S.pdf']
+          hashes={}
+          for name in files:
+              data=(b/'artifacts'/name).read_bytes()
+              if not data.startswith(b'%PDF-'):raise RuntimeError('missing PDF '+name)
+              hashes[name]=hashlib.sha256(data).hexdigest()
+          if hashes[files[0]]!=r['pdf_sha256']:raise RuntimeError('native PDF differs from receipt')
+          item={'source_commit':os.environ['SOURCE_SHA'],'native_source_tree':os.environ['SOURCE_TREE'],'hosted_run_id':os.environ['GITHUB_RUN_ID'],'publication_parent':os.environ['GITHUB_SHA'],'prior_receipt_commit':'f12056e34660bf98e2ae1098943a0134550707ed','prior_successful_build_run':'37671715086','earlier_failed_build_run':'37670827053','recovery':'The first build lacked scalable T1 fonts. The subsequent full build passed, but repository ignore rules excluded generated PDF/log files from its commit and packet. This delivery reuses the unchanged mathematical source, rebuilds all components, explicitly stages generated artifacts, and asserts that every PDF is tracked before export. No ref is force-pushed.','pdf_sha256':hashes}
+          (b/'evidence/ARTIFACT_DELIVERY.json').write_text(json.dumps(item,sort_keys=True,indent=2)+'\n')
+          canonical='18000b21e4bfd89180ccb069e46ac0f21621f34d'
+          review='6f3ca64beec4b054dba8cb5def1a6c69fbc46d52'
+          for name,sha in [('foundation/general-theta-foundations-i-restart-2026-10-06',canonical),('review/general-theta-restart-r10-adaptive-completion-external-top4-referee-r10-2026-10-08',review)]:
+              live=subprocess.check_output(['git','ls-remote','origin','refs/heads/'+name],text=True).split()[0]
+              if live!=sha:raise RuntimeError('pinned anchor changed: '+name)
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f -- "$B/artifacts"
+          git add -- "$B/evidence"
+          git commit -m 'build(theta): publish all R11 PDFs and logs with unchanged source binding'
+          ARTIFACT_SHA=$(git rev-parse HEAD)
+          for f in General_Theta_Foundations_I_restart_r11.pdf General_Theta_Foundations_I_Supplement_T.pdf General_Theta_Foundations_I_Supplement_S.pdf; do
+            git cat-file -e "HEAD:$B/artifacts/$f"
+          done
+          echo "artifact_sha=$ARTIFACT_SHA" >> "$GITHUB_OUTPUT"
+          git push origin "HEAD:refs/heads/$GITHUB_REF_NAME"
+      - name: Export complete verified source and PDF packet
+        env:
+          ARTIFACT_SHA: ${{ steps.artifact.outputs.artifact_sha }}
+        run: |
+          python3 - <<'PY'
+          import hashlib,json,os,pathlib,subprocess,zipfile
+          native=os.environ['B']+'/'
+          prefix='papers/General-Theta-Foundations-I-restart/'
+          report='GENERAL_THETA_FOUNDATIONS_I_RESTART_R10_ADAPTIVE_COMPLETION_EXTERNAL_REFEREE_REPORT_R10.md'
+          selected=[]
+          for name in subprocess.check_output(['git','ls-files','-z']).decode().split('\0'):
+              if not name or not pathlib.Path(name).is_file():continue
+              choose=name.startswith(native) or name.startswith('foundations/general-theta/') or name.startswith('.github/theta-publication/r11/') or name in ['.github/workflows/general-theta-r11-pooling.yml','.github/workflows/general-theta-r11-finalize.yml',prefix+'THEOREM_TARGETS.md',report]
+              if name.startswith(prefix):
+                  rem=name[len(prefix):].split('/')
+                  if (rem[0]=='review-inputs' or rem[0].startswith(('r4-','r5-','r6-','r7-','r8-','r9-','r10-'))) and not {'artifacts','evidence','__pycache__'}.intersection(rem):choose=True
+              if choose:selected.append(name)
+          for pdf in ['General_Theta_Foundations_I_restart_r11.pdf','General_Theta_Foundations_I_Supplement_T.pdf','General_Theta_Foundations_I_Supplement_S.pdf']:
+              if native+'artifacts/'+pdf not in selected:raise RuntimeError('PDF omitted from export: '+pdf)
+          binding={'source_commit':os.environ['SOURCE_SHA'],'artifact_commit':os.environ['ARTIFACT_SHA'],'native_source_tree':os.environ['SOURCE_TREE'],'run_id':os.environ['GITHUB_RUN_ID'],'file_sha256':{name:hashlib.sha256(pathlib.Path(name).read_bytes()).hexdigest() for name in selected}}
+          with zipfile.ZipFile('/tmp/General_Theta_Foundations_I_R11_hosted_packet.zip','w',zipfile.ZIP_DEFLATED) as out:
+              for name in selected:out.write(name,name)
+              out.writestr('DELIVERY_BINDING.json',json.dumps(binding,sort_keys=True,indent=2)+'\n')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: general-theta-r11-complete-source-and-pdfs
+          path: /tmp/General_Theta_Foundations_I_R11_hosted_packet.zip
+          if-no-files-found: error
+          retention-days: 30
