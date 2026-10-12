@@ -1,0 +1,89 @@
+name: Theta R46 verified artifact publication
+on:
+  push:
+    branches: [build/general-theta-restart-r46-artifact-publication-2026-10-12]
+    paths: [.github/workflows/theta-r46-publish-artifacts.yml]
+permissions:
+  contents: write
+  actions: read
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 70
+    env:
+      SOURCE_SHA: b558a258a6f2d8681dff4db83e5462aa6ab32b57
+      BUILD_RUN: '38271742832'
+      OUTPUT_BRANCH: artifacts/general-theta-restart-r46-causal-stopping-2026-10-12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: b558a258a6f2d8681dff4db83e5462aa6ab32b57
+          fetch-depth: 1
+      - name: Require the fixed read-only build to succeed
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run watch 38271742832 --repo TrillionniumFoundation/theta-theory --exit-status --interval 30
+      - uses: actions/download-artifact@v4
+        with:
+          name: theta-r46-source-bound-build
+          run-id: 38271742832
+          github-token: ${{ github.token }}
+          path: ${{ runner.temp }}/r46-verified-output
+      - name: Validate and copy only published mathematical outputs
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import hashlib,json,os,pathlib,re,shutil,subprocess
+          root=pathlib.Path.cwd();src=pathlib.Path(os.environ['RUNNER_TEMP'])/'r46-verified-output'
+          base=root/'papers/General-Theta-Foundations-I-restart/r46-causal-stopping'
+          def need(ok,msg):
+              if not ok:raise RuntimeError(msg)
+          def git(*args):return subprocess.check_output(['git',*args],text=True).strip()
+          def digest(path):return hashlib.sha256(path.read_bytes()).hexdigest()
+          s=os.environ['SOURCE_SHA'];receipt=json.loads((src/'BUILD_RECEIPT.json').read_text())
+          need(git('rev-parse','HEAD')==s,'checkout is not fixed source')
+          need(not git('status','--porcelain'),'source checkout is not clean')
+          need(receipt['status']=='PASS' and receipt['source_commit']==s,'build/source binding mismatch')
+          need(receipt['ordinary_source_projection_tree_sha']=='5e2ac070cf44fb55aee5e9e73ccce0a02809737c','native projection differs')
+          need(receipt['total_delivery_pages']==522 and len(receipt['delivery_pdfs'])==21,'incomplete PDF delivery')
+          need(receipt['normal_and_optimized_equal'] and not receipt['source_mutation'] and not receipt['prepared_source_mutation'],'read-only regression certificate failed')
+          need(git('rev-parse','HEAD:papers/General-Theta-Foundations-I-restart/r46-causal-stopping')=='2a76a95807167821e6f38247acb2661052de4fe5','source directory changed')
+          out=base/'artifacts';ev=base/'evidence'
+          need(not out.exists() and not ev.exists(),'artifact destination already exists')
+          out.mkdir();ev.mkdir();files={}
+          for name,record in receipt['delivery_pdfs'].items():
+              need(pathlib.Path(name).name==name and re.fullmatch(r'General_Theta_Foundations_I_[A-Za-z0-9_]+\.pdf',name),'unexpected PDF name')
+              path=src/name;need(path.is_file() and not path.is_symlink(),'missing regular PDF')
+              need(digest(path)==record['sha256'],'PDF hash mismatch')
+              shutil.copyfile(path,out/name);files[name]=record
+          packet=src/'R46_prepared_sources.zip'
+          need(packet.is_file() and digest(packet)==receipt['prepared_sources_zip_sha256'],'source packet mismatch')
+          shutil.copyfile(packet,out/packet.name)
+          for name in ['BUILD_RECEIPT.json','R46_LATEX_BUILD.log','RETAINED_BUILD.stdout']:
+              path=src/name;need(path.is_file() and not path.is_symlink(),'missing build record');shutil.copyfile(path,ev/name)
+          publication={'source_commit':s,'source_directory_tree':'2a76a95807167821e6f38247acb2661052de4fe5','ordinary_projection':'5e2ac070cf44fb55aee5e9e73ccce0a02809737c','read_only_build_run':int(os.environ['BUILD_RUN']),'publication_workflow_commit':os.environ['GITHUB_SHA'],'publication_run':int(os.environ['GITHUB_RUN_ID']),'artifact_branch':os.environ['OUTPUT_BRANCH'],'pdfs':files,'source_packet_sha256':digest(packet),'policy':'Only new artifacts/evidence paths are added. Artifact commit has fixed ordinary source as sole parent. Only a previously absent artifact branch is created, without force. No canonical, review, archive, realization or research ref is changed by this job.'}
+          (ev/'ARTIFACT_PUBLICATION.json').write_text(json.dumps(publication,sort_keys=True,indent=2)+'\n')
+          PY
+      - name: Create an artifact-only child on a new branch without force
+        shell: bash
+        run: |
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git ls-remote --heads origin "refs/heads/$OUTPUT_BRANCH")"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -f papers/General-Theta-Foundations-I-restart/r46-causal-stopping/artifacts papers/General-Theta-Foundations-I-restart/r46-causal-stopping/evidence
+          python3 - <<'PY'
+          import subprocess
+          prefix='papers/General-Theta-Foundations-I-restart/r46-causal-stopping/'
+          rows=subprocess.check_output(['git','diff','--cached','--name-status'],text=True).splitlines()
+          if not rows:raise RuntimeError('empty artifact commit')
+          for row in rows:
+              status,name=row.split('\t',1)
+              if status!='A' or not name.startswith((prefix+'artifacts/',prefix+'evidence/')):raise RuntimeError('write scope violation')
+          PY
+          git commit -m 'artifacts(theta restart R46): twenty-one full PDFs, source archive and verified source-bound read-only build receipt'
+          test "$(git rev-parse HEAD^)" = "$SOURCE_SHA"
+          test -z "$(git ls-remote --heads origin "refs/heads/$OUTPUT_BRANCH")"
+          git push origin "HEAD:refs/heads/$OUTPUT_BRANCH"
+          test "$(git ls-remote --heads origin "refs/heads/$OUTPUT_BRANCH" | cut -f1)" = "$(git rev-parse HEAD)"
+          printf 'Artifact commit: %s\nSource parent: %s\n' "$(git rev-parse HEAD)" "$SOURCE_SHA"
