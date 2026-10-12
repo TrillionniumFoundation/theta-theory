@@ -1,0 +1,9 @@
+# Scope audit
+
+The mother problem and title are unchanged. The manuscript contains a general exact compact affine allocation theorem and a new effective completion on a explicitly presented positive-instrument class. The class contains continuous-report known Gaussian experiments without mixing and finite-dimensional noncommuting instruments without resets, as well as certified singular and atomic report classes. Realizations verify the theorem and do not define it.
+
+The effective statement does not assume an already available posterior register and keeps the whole M-label stationary programme. It is uniform over all Borel programmes in the fixed interface. It is not a universal closed-form scalar geometry formula; it computes the exact law-valued frontier's value using explicit finite certificates. Its lower bound concerns risk at fixed M, not optimal bits/workspace/time. It is not an affine-witness-length rate for arbitrary compact-data enumerations.
+
+The experiment and its integration/support moduli are known. Bayes preparation is not parameter-uniform frequentist sufficiency or minimax learning. Finite horizons are not unbounded stopping or infinite horizons. Positivity of quantum effects does not imply a claim about arbitrary quantum memory or unbounded operators. Reused phase conditional states are certificate variables, never visible runtime phase/state registers. Temporary report access is erased before the next call.
+
+Remaining substantive gaps: arbitrary noncompact or non-effective Borel quotients; finite certificates without support/integration data; a broadly matched all-computational-resource region; unknown-kernel adaptive learning; infinite-horizon optimality and a general online/checkpoint equivalence classification. No mathematical breakthrough is inferred from repository organization, compilation or number of tests. New proof correctness and priority require independent review.

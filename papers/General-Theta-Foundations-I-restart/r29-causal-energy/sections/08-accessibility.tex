@@ -1,0 +1,49 @@
+\section{Fixed-start accessibility and marked occupation}\label{sec:accessibility}
+The nonreset theorem and the marked physical-time theorem describe different interfaces. We record their point of contact without replacing either. For a fixed finite retained boundary, let an excursion from row $i$ have duration $\tau\ge1$, exit label $I_1$, and bounded per-call scores with complete reward $R$. Define
+\[
+ P_{ij}=\Pp_i(I_1=j),\qquad T_{ij}=\E_i[\tau\one_{I_1=j}],\qquad r_i=\E_iR.
+\]
+Let $g$ be the classwise physical-time gain, with absorption weights from the actual entering row, and put $b=r-Tg$. Duration and exit are not replaced by independent marks. For a family $X$ with uniformly bounded all-row mean return $\bar\mu$ define
+\begin{align*}
+ k_N(x)&=\inf_u\{\norm{b_x-(I-P_x)u}_\infty+\osc(u)/N\},\\
+ \Delta_N(X)&=\sup_{x\in X}\max_{1\le t\le N}\norm{H_t(x)}_\infty/N,
+ \qquad H_t=t(J_t-g).
+\end{align*}
+The marked renewal inequality, with its physical-return remainder $B_N(X)$, is
+\begin{equation}\label{eq:inherited-marked}
+ \sup_X k_N\le(\bar\mu+2)\Delta_N(X)+B_N(X).
+\end{equation}
+The reverse bound $\Delta_N(X)\le\sup_X k_N+B_N(X)$ is also valid. Both proofs, including the actual first-excursion renewal converse, are retained in the complete marked-occupation companion. The remainder always belongs to the family over which the supremum is taken, including a product family of occupation tests. The exact finite dual of $k_N$ is
+\begin{equation}\label{eq:marked-dual}
+ k_N(x)=\max\left\{z^Tb_x:\ \norm{z}_1\le1,\quad
+ \tfrac12\norm{(I-P_x)^Tz}_1\le N^{-1}\right\}.
+\end{equation}
+The vector $z$ is signed, may depend on $x$, and is an analytical certificate rather than a runtime input or an occupation probability.
+
+\begin{proposition}[Observable access from one prescribed start]\label{prop:access}
+Suppose a parameter-independent paid initialization of at most $L$ calls, padded to $L$ if necessary, produces a boundary row $I$ and reports its tag, with probabilities $\rho_i(x)\ge a>0$ for all rows, all $x\in X$. Conditional on that tag the subsequent excursion law is exactly the declared law from that row. Assume the test family includes the gated bounded-score tests $\one_{I=i}$ times the row-$i$ score; initialization calls are unscored. Define the discrepancy of this accessible test family by
+\[
+ \Delta_N^{\rm vis}(X)=\sup_{x\in X}\max_{i,\ 1\le t\le N}
+ \frac{\rho_i(x)|H_t(x)_i|}{N+L}.
+\]
+For every fixed $x$ and every feasible $z$ in~\eqref{eq:marked-dual},
+\begin{equation}\label{eq:access-lower}
+ \Delta_N^{\rm vis}(X)\ge
+ \frac{aN}{(N+L)(\bar\mu+2)}\bigl(z^Tb_x-B_N(X)\bigr)_+.
+\end{equation}
+Centering by the limiting gain is an analytical comparison; runtime gates only the raw score and never reads $g$, $x$ or $z$. This is a fixed-initial-law, observable-test lower, not a lower for an ungated scalar average or for an arbitrary decision loss.
+\end{proposition}
+\begin{proof}
+Disintegration at the initialization tag gives exactly the contribution $\rho_i(x)H_t(x)_i$ for a gated test. Hence $\Delta_N^{\rm vis}(X)\ge aN\Delta_N(X)/(N+L)$. For the fixed $x,z$, dual feasibility and~\eqref{eq:inherited-marked} give $z^Tb_x\le (\bar\mu+2)\Delta_N(X)+B_N(X)$. Combine the inequalities and nonnegativity. The tag gate requires a stored Boolean value once a particular test is chosen. An autonomous tester additionally pays for its prefix clock, for example by a product with $2(N+L+1)$ labels. The physical initialization costs $L$ calls. These are extra resources of the accessibility interface, not free properties of the original observer.
+\end{proof}
+Accessibility alone does not prevent scalar cancellation. Let $P$ exchange two rows, $\tau=1$, and row rewards be $0,1$. Then $g=(1/2,1/2)$, $b=(-1/2,1/2)$, and $H_t=b$ for odd $t$, $H_t=0$ for even $t$. Thus for every $N\ge1$, $\Delta_N=1/(2N)$ and the dual (or the one-variable primal) gives $k_N=1/(2N)$. From the fixed uniform initial law the ungated scalar discrepancy is zero at every prefix, although both rows are accessible. The reported tag restores the gated test. If a row has zero initialization probability, an obstruction confined to its inaccessible closed class need not be visible at all. Neither failure is remedied by calling a signed dual vector an acquired measure.
+
+\begin{lemma}[Physical crossing convention]\label{lem:crossing-new}
+For positive integer durations set $T_0=0$, $T_j=\sum_{\ell=1}^j\tau_\ell$ and
+$C_N=\min\{j\ge1:T_j\ge N\}$. Then $C_N\le N$; excursion $j$ starts before call $N$ exactly when $T_{j-1}<N$, and there are $C_N$ such starts. In the older shifted convention $S_k=T_{k-1}$ and $K_N=\min\{k\ge1:S_k\ge N\}$, one has $K_N=C_N+1\le N+1$, while the number of summands $k<K_N$ is at most $N$.
+\end{lemma}
+\begin{proof}
+Since $T_j\ge j$, the crossing occurs by $j=N$. Strict increase gives the assertion about starts, including when $T_{C_N}=N$: the next excursion starts at $N$, not before it. Substituting $S_k=T_{k-1}$ proves the shifted identities. The overshoot is $T_{C_N}-N$. Stopped sums use the predictable indicator $\one_{T_{j-1}<N}$, not an independence claim about the final excursion mark.
+\end{proof}
+The complete retained physical-time proof uses this corrected convention; its estimate is unchanged. The bounded-Lipschitz test class for subprobability occupations is
+$\{f:\norm f_\infty\le1,\ \Lip(f)\le1\}$, so it includes the constant one and controls scored mass as well as location. For the resolution test $\phi=\min(\dist(\cdot,C)^2,r^2)$ with $0<r\le1$, $\phi/(2r)$ belongs to this class. Projection of centers into $\conv K$ cannot increase distance to points of $K$. Repeated readouts at different control labels yield at most, not necessarily exactly, $M$ distinct codepoints. These conventions apply to the retained geometric lower without promoting a fixed-exploration witness to an all-controller witness.

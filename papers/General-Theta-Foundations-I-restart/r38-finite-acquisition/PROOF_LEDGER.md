@@ -1,0 +1,17 @@
+# Proof ledger
+
+**Claim status:** full written proofs on their explicitly stated sufficient class; not independently formalized or externally accepted. No assertion of an arbitrary causal-experiment classification.
+
+1. Predictive quotient: equality of coordinates is equivalent to executable-future-test equality by an explicit separating assumption. Borel image/section is assumed and verified for realizations, not inferred from dimension.
+2. Positive lift: subtract kappa times the programmed state from the actual physical state in C. The remainder may leave C_K. Whole-base raw image sends it back to C_K. Actual row overlap then supplies one shared output ensemble, including labels. This extra hypothesis is essential to the argument.
+3. Quiet access: each good report is an event in the actual execution with conditional mass >=v, not independent sampling or free postselection. Local representatives drift with at most L_V times cell diameter. k is fixed before M. The block mass is v^k.
+4. Uniform observer mixing: P^b = gamma S +(1-gamma)Q in the direct-sum C_K cone. Q is positive mass preserving. This yields uniqueness and attraction of represented ensembles, not of every microscopic transcript.
+5. Stationary calibration: Kakutani domain consists of unnormalized rows in their own compact convex cell closures. Values are nonempty convex; positive-mass rows pass to limits by domination/boundary nullity; zero rows contribute zero. Tied actions remain simplices. A witnessing table is fixed once, rather than continuously recomputed.
+6. Bellman: feedback-uniform acquired overlap gives block span contraction. Perspective concavity preserves concavity; Brier loss gives strong concavity. Bounded bias follows before any finite observer is selected.
+7. Risk: at the invariant calibrated ensemble the Bellman identity is exactly an acquired Jensen loss. Actual density plus distributional curvature supplies the upper. Uniform mixing sums entrance cost by b/gamma, independently of memory.
+8. Converse: full-history conditional projection is carried out for the same acquisition policy as the observer. Each actual law at each cut has density upper Lambda, so even time-dependent label readouts suffer c M^(-2/d). Optimizing after this comparison gives the lower relative to J_*(n), not a mismatched oracle baseline.
+9. Quantum: positivity on all positive matrices, explicit normalized congruence inverse/Jacobian, and quiet-effect accessibility are separate checks. No common-basis reduction; no unbounded operator closure.
+10. Singular: fixed visible branch probabilities remain actual masses. Conditional relative laws use their own affine hull; representatives may pool in the full convex domain. The extension concerns acquired dimension, not an unsupported claim of physical pure-state rank after depolarization.
+11. Compilation: every enumerated exact table stays within its own cells, so its mixing certificate is uniform. Arithmetic approximations are bounded at the executed instrument/label level, not by impossible TV proximity of discrete and continuous report laws. Program, workspace, clock and time are separate.
+
+**Unclosed:** near-necessary compressibility characterization; sharp general short-horizon lower/upper beyond the displayed sandwich; unknown-kernel learning; arbitrary nondominated/infinite-dimensional/degenerating strata; optimal computational frontier; general unbounded stopping. The new lift does not settle these by definition.

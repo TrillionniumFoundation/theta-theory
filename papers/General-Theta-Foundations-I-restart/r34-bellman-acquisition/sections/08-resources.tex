@@ -1,0 +1,69 @@
+\section{Causal composition, precision and an attained joint law}\label{sec:resources}
+\subsection{Typed causal simulation}
+A simulator from a source experiment to a target experiment is parameter independent and has a report transformation, a strategy lift specifying legal source actions for each target action, a charged internal state, a clock/call map, and a terminal task readout. Action compatibility includes the causal order of interventions. Its discrepancy is measured on the complete stopped and scored law, including the target controller's fresh randomization, committed response and protected audit, not only on report marginals.
+
+\begin{proposition}[Same-task simulation composition]\label{prop:simulation}
+Suppose a simulator uses at most $R$ internal labels, maps at most $n$ target calls to at most $c(n)$ source calls, and couples the complete stopped/scored laws with failure probability at most $\varepsilon$. Suppose the common loss takes values in $[0,L_{\max}]$. Every target controller with $M$ labels then induces a source controller with at most $RM$ labels and risk at most its target risk plus $L_{\max}\varepsilon+e_{\rm out}$, where $e_{\rm out}$ bounds any task-readout mismatch on the coupled event. Simulator program, workspace, physical time and calibration are separately charged. Two compatible simulators compose with product state counts, composed call maps, and error at most the sum of their complete-law coupling errors.
+\end{proposition}
+\begin{proof}
+The source retains the ordered pair of simulator and target labels. The strategy lift reads this pair and produces only the currently permitted source action sequence; its internal clock is among the $R$ states. The simulator supplies the target report and the target update uses its own coupled fresh coin. Induction on completed calls couples the stopped target execution and protected audit. Loss agrees up to $e_{\rm out}$ on success and differs by at most $L_{\max}$ on failure. The union bound gives the composed discrepancy, and the paired state and composed physical call counts are literal. A one-way simulator gives this one-way implementable upper only; a reverse minimax inequality requires a reverse comparison or an independent source lower bound. No TV-to-large-deviation or finite-time-to-infinite-horizon inference is made.
+\end{proof}
+
+\subsection{Finite-bit execution is an additional assertion}
+\begin{proposition}[Certified finite precision]\label{prop:numeric}
+Consider an ideal calibrated controller in Lemma~\ref{lem:implementation}, possibly with action slacks summing in expectation to at most $\gamma$. Suppose it has a finite certificate for all incoming conditional-centroid integrals and action values, primitive evaluation, and a finite arithmetic implementation of its global cell rules. At phase $t$, assume primitive coupling failure probability $\xi_t$, arithmetic or tail failure probability $\zeta_t$, and a bound $h_t$ on the pre-quantization error outside these failures. Suppose the ideal actual unpooled row mixture obeys the \emph{unconditional} boundary bound
+\[
+ \Pp\{W_t\text{ is within }h_t\text{ of a cell boundary}\}\le\omega_t(h_t).
+\]
+If every rounded terminal response is within $\delta_{\rm out}$ of its programmed centroid, then a finite-bit implementation with the same dynamic labels and fixed action table has
+\begin{equation}\label{eq:numerics}
+ R_{\rm bit}\le V_0(u_0)+C(M-n)^{-2/d}+\gamma+\delta_{\rm out}^2
+       +L_{\max}\sum_{t=1}^n[\xi_t+\zeta_t+\omega_t(h_t)].
+\end{equation}
+For the full-dimensional grids, $\omega_t(h)\le C\Lambda h m_t^{1/d}$ while $h$ is below the cell scale. Analogous relative boundary certificates apply to separately labeled strata.
+\end{proposition}
+\begin{proof}
+Use the same ideal action table in both programs; a Bellman tie is handled offline by a fixed action with certified slack, not by assuming that close beliefs choose the same action. Define an intermediate reference execution using the ideal labels but the rounded terminal response table. Conditional calibration makes its risk exceed the ideal risk by exactly the mean squared readout rounding error, at most $\delta_{\rm out}^2$. This comparison is unconditional, so no invalid centering on the event of previous numerical success is required.
+
+Couple the physical primitives and private coins of this reference execution and the finite implementation until the first label mismatch. Their fixed action rows then agree. A first mismatch can occur only on a primitive or arithmetic failure or when the ideal value lies in the boundary strip. For each phase this first-mismatch event is contained in the corresponding event on the \emph{unconditional ideal execution}; summing these probabilities is valid without conditioning a row law on past successful arithmetic. Until mismatch the rounded readout tables also agree. The complete loss bound and the union bound prove~\eqref{eq:numerics}. The action-slack term follows from~\eqref{eq:bellman-defect} for the actual ideal action table and its own forward-calibrated centroids. The grid boundary estimate follows by integrating the density over strips of total volume at most $C h m_t^{1/d}$.
+\end{proof}
+
+For $p$-bit constants a direct representation stores $O(dpM+M\log|A|+M\log M)$ bits for centroids, actions and state routing, in addition to the read-only grid and primitive programs. It uses the evaluator's declared report buffer and arithmetic workspace; none is identified with $\log_2M$. Offline Bellman evaluation and forward integration can be expensive and are not counted as zero time. The proposition assumes their certificates, rather than deducing computability from abstract Borel existence. For Gaussian evaluation a charged tail event may bound finite arithmetic; the physical experiment still reports the untruncated real value. A discrete rounded report is not close in TV to that continuous report merely because its numerical error is small.
+
+\subsection{A protected post-control bit}
+A bit acquired \emph{before} a controlled experiment can be encoded into the physical state through later actions. The retained-bit lower for a prescribed passive core in \cite{GTFBayes} cannot therefore be transplanted to controlled sensing without a new argument. The following ordering closes that side channel while keeping all resources and the same task explicit.
+
+After preparation and the $n$ controlled core reports, prepare an independent fair $U\in\{-1,1\}$ and make one paid report $B$: it equals $U$ with probability $1-a$ and is an erasure symbol with probability $a$. No further core action is allowed. The observer then commits its response in $D\times[-1,1]\times[-\delta,\delta]$. The protected terminal audit scores the core target, $U$, and an unobservable fixed calibration offset $\theta\in\{-\delta,\delta\}$ by the sum of their squared losses. The program is independent of $\theta$. Write the corresponding minimax risks as $\calR^{\rm joint}$, and compare the bit-report interface with an exact-bit target that has the identical core, action order and audit.
+
+\begin{theorem}[Attained acquisition--memory--calibration--deficiency law]\label{thm:joint}
+The source-to-exact-bit causal deficiency in this protected interface is exactly $\varepsilon=a/2$. With $N=n+3$ physical calls and $n\ge1$, the checkpoint satisfies
+\[
+ \calR^{\rm joint}_{\rm cp}(N,m,\delta,\varepsilon)-V_0(u_0)
+       \asymp m^{-2/d}+\delta^2+\varepsilon.
+\]
+The autonomous class is nonempty exactly when $M\ge n+2=N-1$, and on that class
+\begin{equation}\label{eq:joint}
+ \calR^{\rm joint}_{\rm aut}(N,M,\delta,\varepsilon)-V_0(u_0)
+       \asymp (M-N+2)^{-2/d}+\delta^2+\varepsilon.
+\end{equation}
+Constants depend only on the fixed core certificates and task normalization, not on $n,M,a,\delta$ in a bounded declared calibration range. Replacing the core by Theorem~\ref{thm:strata} replaces its power by $\Xi_w$. These are attained errors of this experiment, not lower bounds inferred from arbitrary allowed simulator or numerical tolerances.
+\end{theorem}
+\begin{proof}
+On erasure a stateless simulator guesses a fresh fair sign; otherwise it reports the observed sign. Its disagreement with the protected true $U$ is exactly $a/2$, and it reproduces all other parts of the target. Conversely the target has zero probability that its early completed bit report differs from the protected terminal $U$. In the source, conditional on an erasure and the entire core history, $U$ remains fair and inaccessible; no causal simulator can reduce disagreement below $a/2$. It cannot call the audit before completing the bit report or make an uncharged repeated bit acquisition. This proves exact deficiency.
+
+The minimum bit squared risk from the full available information is $a$, attained by the responses $1,-1,0$ to the three symbols. The unobservable calibration contributes at least $\delta^2$ under the common equal prior on its two signs and is attained by response zero. These priors are independent of the core. The core lower from Theorem~\ref{thm:main} thus adds to these two lower terms, rather than requiring incompatible least-favorable alternatives.
+
+For an autonomous observer, let $m_n$ be its number of labels immediately after the core and before the bit call. The preceding $n$ phase supports are disjoint by the positive-support trace argument. A bit-action label cannot serve at a core phase because the action type and prescribed order are fixed by the label; a halt label cannot serve before the bit. Hence
+\[
+ m_n\le M-n-1=M-N+2.
+\]
+The bit is prepared after every core action, so conditional on this core label its report and coins are independent of the core state. Processing them cannot reduce the core risk below the conditional-mean risk at that cut. The all-row final-core Jensen lower gives $c m_n^{-2/d}$. The complete bit and calibration lower bounds remain valid simultaneously. This proves~\eqref{eq:joint}'s lower and the analogous checkpoint lower. A chain of $n+2$ labels proves the exact feasibility threshold; its readout may be coarse.
+
+For the upper, use the core calibrated controller, retain its terminal label during the bit call, and then create three terminal copies for the bit responses $1,-1,0$. If the core phase widths are $m_t$, the total is
+\[
+ 1+\sum_{t<n}m_t+4m_n.
+\]
+For large enough $k=M-n-1$, the integer allocation proof applies with phase costs $c_t=1$ for $t<n$ and $c_n=4$, and with available extra budget $k-3$. The geometric sum remains bounded, since only one cost changed by a factor four. For $k\ge6$, $k-3\ge k/2$, giving core excess $Ck^{-2/d}$. For the finitely small values $1\le k<6$, a one-label-per-required-phase chain has bounded task loss, absorbed by a fixed multiple of $k^{-2/d}$. Use calibration response zero. The bit loss is $a=2\varepsilon$. A checkpoint uses three copies of a core code and the same small-budget convention. This proves both upper bounds. In the stratified case the same allocation is applied to the fixed finite collection of powers.
+\end{proof}
+
+The location of the bit call is part of this theorem. It neither overwrites the earlier passive retained-bit theorem nor silently changes its two-lane clock charge. In particular the physical count $N$ includes preparation, all $n$ controlled acquisitions, the separate bit report, and the audit; the audit is not an observation the controller may use to choose its committed response.

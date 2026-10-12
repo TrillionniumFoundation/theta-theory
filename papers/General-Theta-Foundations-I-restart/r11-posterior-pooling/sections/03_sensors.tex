@@ -1,0 +1,86 @@
+\section{Controlled sensors with overlapping noise}\label{sec:sensors}
+We now verify the preceding theorem from kernels rather than from prescribed posterior geometry. Let $m=d+1$, and let every transition matrix have entries at least $\tau>0$. Reports take values in $[-1,1]^d$. For a reference sensor, relative to Lebesgue measure, set
+\begin{equation}\label{eq:rawsensors}
+ f_0(y)=2^{-d},\qquad f_j(y)=2^{-d}(1+\lambda y_j),
+       \quad 1\le j\le d,\qquad 0<\lambda<1.
+\end{equation}
+Actions may permute the hidden labels and report coordinates and may choose different positive transition matrices. A fixed finite family is selected in advance. More generally $\lambda$ may range in a fixed compact subinterval of $(0,1)$, with the constants below replaced by their uniform bounds. Each action consumes one report and one physical transition. The hidden state is not reset to a publicly revealed value.
+
+\begin{theorem}[Raw posterior geometry and adaptive sensor completion]\label{thm:sensors}
+For the kernels \eqref{eq:rawsensors}, Definition~\ref{def:smoothing} holds with
+\begin{equation}\label{eq:sensorconstants}
+ \kappa=\frac{\tau(1-\lambda)}{1+\lambda},\qquad
+ \rho=\frac{(1+\lambda)^{d+2}}{2^d\lambda^d\tau^{d+1}},
+\end{equation}
+or with any smaller $\kappa$. Thus Theorem~\ref{thm:pooling} holds for every horizon and every full-history action policy in the declared family. The acquired posterior law has full dimension $d$ after a single report; this rank is derived from the raw kernel.
+
+If at each phase some legal transition is invertible, the hidden posterior together with that phase is a minimal predictive realization for the executable next-report tests and terminal audit. In particular there is no unverified latent parameter geometry in the dimension assertion.
+
+For $d=1$ take
+\[
+ T=\begin{pmatrix}1-\alpha&\alpha\\\alpha&1-\alpha\end{pmatrix},
+       \qquad 0<\alpha<1/2,
+\]
+and two sensors $+$ and $-$, where $+$ has $(f_0,f_1)=(1,1+\lambda y)/2$ and $-$ has $(f_0,f_1)=(1+\lambda y,1)/2$. From the symmetric preparation, the optimal two-call policy changes its second sensor with the first noisy report and has strictly smaller risk than every fixed two-sensor sequence. All posterior supports overlap on both hidden states at every finite time. For each fixed $n$ its optimal checkpoint and total-state autonomous excess risks are both of order $M^{-2}$.
+\end{theorem}
+\begin{proof}
+Write $q=pT$, so $q_i\ge\tau$, and $D=1+\lambda\sum_{j=1}^dq_jy_j$. Then $1-\lambda\le D\le1+\lambda$, the report density is $D/2^d$, and
+\begin{equation}\label{eq:rawposterior}
+ u_0=\frac{q_0}{D},\qquad u_j=\frac{q_j(1+\lambda y_j)}{D}.
+\end{equation}
+Every coordinate is at least $\kappa$. The map from $y$ to $(u_1,\ldots,u_d)$ has the explicit inverse
+\[
+ y_j=\lambda^{-1}\left(\frac{q_0u_j}{q_ju_0}-1\right).
+\]
+The matrix determinant lemma, or direct differentiation, gives
+\begin{equation}\label{eq:posteriorjacobian}
+ \det\frac{\partial(u_1,\ldots,u_d)}{\partial(y_1,\ldots,y_d)}
+    =\frac{\lambda^d\prod_{j=0}^d q_j}{D^{d+1}}>0.
+\end{equation}
+Consequently the pushed-forward density is
+\[
+ \frac{D^{d+2}}{2^d\lambda^d\prod_{j=0}^d q_j}\le\rho.
+\]
+The boundary of the report cube has zero mass. This is a full-dimensional actual probability law, not a chosen volume measure on a reachable set. Permutations only change coordinates and preserve the uniform constants.
+
+For minimality, under a reference sensor the bounded next-report tests satisfy
+\[
+ \E[y_j\mid p,a]=\lambda(pT^a)_j/3\quad(1\le j\le d).
+\]
+When $T^a$ is invertible these expectations identify $p$; the terminal audit identifies its own posterior directly. Equal posteriors conversely determine all future laws by the finite-state Markov property. Finite-horizon history spaces are finite unions of compact report cubes and their posterior maps are continuous, so their images are compact Borel spaces. The interface phase is included; histories with different available continuations are not identified.
+
+It remains to prove genuine feedback. With one call left, let $q$ be the predicted probability of hidden state one before its report. For the plus sensor, elementary conditional variance gives the two-coordinate Brier risk
+\begin{equation}\label{eq:onesensorvalue}
+ b_+(q)=2q(1-q)-2q^2(1-q)^2I(q),\qquad
+ I(q)=\frac{\lambda^2}{2}\int_{-1}^1\frac{y^2}{1+q\lambda y}\,dy
+     =\sum_{k=0}^\infty\frac{\lambda^{2k+2}q^{2k}}{2k+3}.
+\end{equation}
+The uniformly convergent series follows from $\lambda<1$. The minus sensor has $b_-(q)=b_+(1-q)$. All nonconstant coefficients of $I$ are positive, whence
+\begin{equation}\label{eq:threshold}
+ b_-(q)-b_+(q)=2q^2(1-q)^2\{I(q)-I(1-q)\}
+ \begin{cases}>0,&q>1/2,\\=0,&q=1/2,\\<0,&q<1/2.\end{cases}
+\end{equation}
+Thus the best sensor is plus above $1/2$ and minus below it.
+
+The first two choices are symmetric from preparation $(1/2,1/2)$, so fix the first sensor as plus. Its report density and next predicted probability are
+\[
+ r_0(y)=\frac{1+\lambda y/2}{2},\qquad
+ q(y)=\alpha+(1-2\alpha)\frac{1+\lambda y}{2+\lambda y}.
+\]
+In particular $q(y)-1/2$ has the sign of $y$. The two quantities to compare are
+\begin{align}
+ R_{\rm fixed}^{(2)}&=\min_{a\in\{+,-\}}\int_{-1}^1b_a(q(y))r_0(y)\,dy,
+                 \label{eq:fixedtwosensors}\\
+ R_{\rm feedback}^{(2)}&=\int_{-1}^1\min_{a\in\{+,-\}}b_a(q(y))r_0(y)\,dy.
+                 \label{eq:feedbacktwosensors}
+\end{align}
+Their difference is the smaller of the strictly positive integrals of $b_+-b_-$ on $(-1,0)$ and $b_--b_+$ on $(0,1)$, weighted by $r_0$. This also compares with sequences starting with minus, by complementing the hidden state and exchanging sensor names. For an explicit bound, the $k=1$ term of \eqref{eq:onesensorvalue} and positivity of all later differences give
+\[
+ R_{\rm fixed}^{(2)}-R_{\rm feedback}^{(2)}
+ \ge\frac{\alpha^2(1-\alpha)^2(1-2\alpha)\lambda^5(1-\lambda/2)}{20(2+\lambda)}>0.
+\]
+Indeed on each half-interval $|y|\in[1/2,1]$, one has $q(1-q)\ge\alpha(1-\alpha)$,
+$|2q-1|\ge(1-2\alpha)\lambda/[2(2+\lambda)]$, and $r_0\ge(1-\lambda/2)/2$. This proves the strict gain without a numerical experiment. Positive transition entries and positive likelihoods leave both hidden states with positive posterior mass after every report. The final memory assertion follows from Theorem~\ref{thm:pooling} with $d=1$.
+\end{proof}
+
+This is controlled hidden-state sensing with continuous, overlapping emissions. The all-horizon theorem optimizes every declared sensor choice by \eqref{eq:bellman}; a closed formula for that optimal policy is not assumed. The two-call calculation proves that the class actually contains observation-dependent optimal actions. It is not an assertion that a threshold of this form remains optimal at every longer horizon. The model is a calibrated finite-state sensor family, not an unknown-kernel or arbitrary nonlinear-filter theorem.

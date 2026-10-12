@@ -1,0 +1,7 @@
+# Historical coverage and preservation
+
+Canonical source is fixed in PINNED_INPUTS.md. The v0.1 foundations outline, restart charter, theorem targets and realization registry control the new direction. The r1, r2 and r3 reports, their response/pipeline ledgers, and the latest r4 report were examined. The r4 native manuscript and its 39-file manifest were recovered and hash-checked; its complete REMOTE subtree is preserved unchanged as the sibling supplement. All 38 of its formal statements remain there with their original hypotheses.
+
+The new main does not import a v96 manuscript or promote an ordered-measurement realization into a mother theorem. Old quantum ordered-measurement/discrimination, finite-action, streaming-memory, and other realization families keep independent status. The old v1–v96 archive and old review branches are not modified. A branch inventory or a hash-preserved source is not represented as a fresh proof audit of every historical result.
+
+Unified/reproved here: predictive quotient typing; conditional prediction quantization; true-law causal error transport; finite acquisition/oracle decomposition; explicit state/resource composition and continuation separation. Extended in the singular realization: completed-domain nonreset transport without the earlier invariant-preparation/occupation premise. Not subsumed by the new inward theorem: every allocation-weighted countable-stratum curve, reset-preserved bridge, soft-information converse, or separate quantum/space theorem. Those remain complementary or independent, not deleted.
