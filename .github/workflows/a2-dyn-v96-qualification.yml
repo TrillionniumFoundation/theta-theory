@@ -1,0 +1,55 @@
+name: A2-DYN v96 exact-label occupation and complete-source qualification
+on:
+  push:
+    branches:
+      - revision/a2-dyn-v96-referee-response-2026-10-13
+      - revision/a2-dyn-v96-referee-copy-2026-10-13
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: a2-dyn-v96-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  qualify-manuscript:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Pin reviewed source, snapshots and exact checkout
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD:papers/A2-DYN-v95-referee-response)" = "5d15fd482383c35aac22d922c730a5d20cd69507"
+          test "$(git rev-parse HEAD:papers/A2-DYN-v96-referee-response/provenance/v95-root)" = "769c2bf87f6217a63755a3d03ebabf2059042865"
+          test "$(git rev-parse HEAD:reviews/a2-dyn-v95-external-top4-review-2026-10-13/REFEREE_REPORT.md)" = "23d0415a5c2823b67259c3697fb46d5b896c7584"
+          mkdir -p papers/A2-DYN-v96-referee-response/evidence
+          printf '%s\n%s\n' "$GITHUB_SHA" "$GITHUB_REF" > papers/A2-DYN-v96-referee-response/evidence/exact-checkout.txt
+          git rev-parse HEAD:papers/A2-DYN-v96-referee-response >> papers/A2-DYN-v96-referee-response/evidence/exact-checkout.txt
+          git archive HEAD papers/A2-DYN-v94-referee-response papers/A2-DYN-v95-referee-response papers/A2-DYN-v96-referee-response reviews/a2-dyn-v95-external-top4-review-2026-10-13 .github/workflows/a2-dyn-v96-qualification.yml A2_DYN_V96_REVISION_INDEX.md > papers/A2-DYN-v96-referee-response/evidence/exact-source.tar
+      - name: Install native TeX and finite-check dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern python3-numpy python3-mpmath python3-sympy python3-scipy poppler-utils
+      - name: Preserve sources and compile all 231 mathematical modules
+        env:
+          TZ: UTC
+        run: bash papers/A2-DYN-v96-referee-response/build.sh
+      - name: Upload exact-SHA article and complete-archive evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a2-dyn-v96-${{ github.sha }}-${{ github.run_id }}
+          if-no-files-found: error
+          retention-days: 90
+          path: |
+            papers/A2-DYN-v96-referee-response/build/*.pdf
+            papers/A2-DYN-v96-referee-response/build/*.log
+            papers/A2-DYN-v96-referee-response/build/*.fls
+            papers/A2-DYN-v96-referee-response/build/*.aux
+            papers/A2-DYN-v96-referee-response/build/*-pass*.txt
+            papers/A2-DYN-v96-referee-response/build/*.tex
+            papers/A2-DYN-v96-referee-response/evidence/*
