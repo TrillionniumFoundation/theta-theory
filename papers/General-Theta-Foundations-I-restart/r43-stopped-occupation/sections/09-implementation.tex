@@ -1,0 +1,44 @@
+\section{Finite implementation and numerical budgets}\label{sec:implementation}
+Theorem~\ref{thm:main} is an exact Borel implementation theorem with finitely many retained labels. Its calibrated constants, action probabilities and cell tests are not automatically finite-bit instructions. We next state what certificates suffice to compile them and where the hazard enters numerical sensitivity.
+
+\begin{proposition}[Stopped perturbation at fixed label count]\label{prop:numerical}
+Fix a homogeneous table of Theorem~\ref{thm:main}. Suppose a finite implementation can be coupled to it so that, at each call before the first mismatch, the conditional probability of an action, cell, stop or primitive mismatch is at most $\eta$. This bound must hold for every true physical predictive input and every programmed row that can occur; it cannot be inferred from calibration only at $\tau$. If its readout error is at most $v$, and the ideal task diameter is at most $D_*$, then
+\begin{equation}\label{eq:numerical}
+ |R_{\rm finite}-R_{\rm ideal}|
+ \le L\min\{1,\eta/s\}+2D_*v+v^2.
+\end{equation}
+For the externally capped protocol replace $1/s$ by $(1-\beta^H)/s\le H$. The implementation uses the same retained labels if all temporary registers are erased before the next call.
+\end{proposition}
+\begin{proof}
+Before the first mismatch the coupled core histories, labels and actions coincide. The chance of reaching call $t$ is $\beta^{t-1}$ under the ideal independently generated stop process. Sum its conditional mismatch probability over these calls. This gives $\eta\sum_{t\ge1}\beta^{t-1}=\eta/s$; capping truncates the sum. On the complement, only the readout changes, and expansion of its squared loss bounds this by $2D_*v+v^2$. The bound uses the actual whole stopped law, not a pointwise asymptotic numerical statement.
+\end{proof}
+
+One sufficient per-call certificate decomposes $\eta$ into primitive-coupling failure, arithmetic failure, action-probability approximation and a cell-boundary term. If the normalized pre-quantization value is perturbed by at most $\rho$, the last term is bounded by
+\begin{equation}\label{eq:boundary-mass}
+ \sup_{x,q,a}\int\one_{\{\dist(F_a(y,q),\partial\mathcal P_m)\le\rho\}}
+                     \ell_a(y,x)\,d\lambda_a(y).
+\end{equation}
+Here $x$ is the true physical predictive input and $q$ the programmed row constant; they need not agree. A common likelihood support, domination and null boundaries imply convergence to zero for each fixed finite table. A computable uniform modulus, when claimed, is an additional numerical certificate. In particular, quantizing a continuous raw report does not make its discrete distribution close in total variation to that raw distribution.
+
+\begin{proposition}[Effective table approximation]\label{prop:effective}
+Fix $s>0$ and $m$. Suppose the raw instruments, audit, compact domains and common partitions have effective compact descriptions; their finite instrument integrals and readout costs can be enclosed to arbitrary rational accuracy; and the frozen transition integrals are uniformly continuous in row constants and action probabilities with a supplied computable modulus. Then the optimal risk within the compact family of common-cell tables with one initial label and $m$ recurrent labels is computably approximable from above and below. For any $\xi>0$, a rationally specified table with the same labels has risk at most
+\[
+ V_s(u_0)+Cm^{-2/d}+\xi.
+\]
+This assertion is finite computability, not polynomial complexity or an effective bound on the search time uniform as $s\downarrow0$.
+\end{proposition}
+\begin{proof}
+Allow row representatives in all compact cell closures, arbitrary action probabilities, arbitrary initial action probabilities, and readouts in a compact legal response set. This parameter space is compact and contains the table constructed above. For a fixed table, let $P$ and $B_0$ be its recurrent and first-call instruments. On the sum cone base norm, $\|P\|\le1$. If another genuine stochastic table has $\|P-\widetilde P\|\le e$ and $\|B_0-\widetilde B_0\|\le e_0$, then
+\begin{equation}\label{eq:resolvent-error}
+ \|Z-\widetilde Z\|
+ \le e_0+\frac{\beta e}{s},
+ \quad Z=s(I-\beta P)^{-1}B_0.
+\end{equation}
+Subtract the two fixed-point equations and use the Neumann-series norm bound $1/s$ and $\|\widetilde Z\|=1$. Risk is a continuous linear functional of the terminal ensemble for fixed readouts and uniformly continuous in the readouts. Certified integral continuity and \eqref{eq:resolvent-error} therefore give an effective modulus on the compact table space.
+
+Enumerate finite rational nets of this space, enclosing the risk at every net point by rational interval integration and a finite Neumann sum. Its omitted terminal mass is $\beta^{T}$ after $T$ calls; its loss remainder is at most $L\beta^{T}$. Subtract the table-space modulus from the smallest lower endpoint to obtain a global lower bound, and retain the table of smallest upper endpoint for an upper bound. Refinement makes their difference arbitrarily small. No fixed-point solver convergence is assumed, no local optimization failure is used as a lower bound, and the certified minimizing table retains exactly the allowed label architecture. The finite approximants need not preserve exact conditional calibration or exact Bellman tie sets; closeness of the executed risk is what is proved.
+\end{proof}
+
+For the Gaussian realization, finite Gaussian mixture integrals, tail enclosures and logistic boundary estimates supply these certificates on compact row domains. For the quantum realization, positive eigenvalue floors and compact semialgebraic effect domains give square-root continuity and integration enclosures; in the marked case the integration is performed separately in each relative chart. These claims require computable raw coefficients, such as rational parameters and certified computable unitaries. An arbitrary real coefficient is not thereby made finitely describable. The explicit scalar benchmark has the stronger contraction-based compiler of Proposition~\ref{prop:binary}.
+
+A finite representation stores $O(m(d+|A|)p)$ bits of row constants, probabilities and responses at precision $p$, in addition to the read-only primitive code and common partition description. Current report coordinates and arithmetic registers are temporary workspace with an explicit primitive-dependent size $W(p,d)$; they are not persistent across calls. The next label uses $\lceil\log_2(m+1)\rceil$ bits externally, or $\lceil\log_2(2m+1)\rceil$ internally. Program bits are not counted as dynamic labels, but are not declared free: they are a separate resource coordinate. Expected execution cost is at most the certified per-call cost divided by $s$, plus preparation and audit costs. A hard execution-time cap needs the separate capped protocol. These are sufficient implementation budgets, not matching lower frontiers for program size, arithmetic space or time.

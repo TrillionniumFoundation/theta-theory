@@ -1,0 +1,37 @@
+\section{Common-task error and resource composition}\label{sec:composition}
+A simulation compares experiments with the same protected audit and committed response, not their separate full-history baselines. This distinction is needed even under squared loss.
+
+\begin{proposition}[Typed stopped simulation]\label{prop:simulation}
+Let a parameter-independent causal simulator lift every legal program of a target experiment to a source experiment. It must specify action compatibility, causal report transformation, its internal state, the strategy lift, the stopping interface, the protected audit and the task readout. Suppose, for every lifted program, the complete stopped law differs from the target law by total variation at most $\varepsilon$ and the common loss lies in $[0,L]$. If the target program has $M$ labels and the simulator has at most $R$ retained states, its direct source realization uses at most $RM$ labels and satisfies
+\[
+ R_{\rm source}(\widetilde\gamma)\le R_{\rm target}(\gamma)+L\varepsilon.
+\]
+If one target call uses at most $c$ source acquisitions, including unsuccessful attempts, and initialization uses $c_0$, then the source pathwise count is at most $c_0+c\tau$ and its mean is at most $c_0+c/s$. Program, workspace, calibration and physical time remain separate accounts. Composing two such simulators adds their uniform complete-law deficiencies and multiplies their state counts.
+\end{proposition}
+\begin{proof}
+The product of target and simulator state supplies the next source action, report interpretation and halt status; no target history outside that state is retained. Couple the complete laws maximally. Their losses agree off a set of probability at most $\varepsilon$, proving the risk estimate. Pathwise counting precedes expectation. For composition, apply the triangle inequality and the contraction of total variation under a parameter-independent Markov kernel, uniformly over the lifted strategies. This comparison includes the audit and stopping randomness: agreement only on each fixed-time report marginal does not establish the asserted complete-law coupling. The argument gives no reverse minimax lower unless an appropriate reverse simulation or a separate hard experiment is proved.
+\end{proof}
+
+\begin{theorem}[Attained same-task calibration and deficiency]\label{thm:joint}
+Augment an experiment of Theorem~\ref{thm:main} by an independent fair bit $U$. One paid call reports $U$ with probability $1-a$ and an erasure mark with probability $a\in[0,1]$. Later core calls contain no additional information about $U$ conditional on the selected core actions. A final protected audit scores the core target, $U$, and an invisible fixed calibration value $\vartheta\in\{-\delta,\delta\}$ by the sum of squared losses, where $0\le\delta\le1$. The program knows $a,\delta$, not $U$ or $\vartheta$.
+
+The parameter-independent causal deficiency of this interface to the exact early-bit interface, with that bit required before core acquisition and protected at the terminal audit, equals $\varepsilon=a/2$. Let $\calR_{\rm joint}(s,M,\delta,\varepsilon)$ be the infimum worst-case risk over homogeneous observers with an external independent geometric auditor. For $M\ge7$,
+\begin{equation}\label{eq:joint}
+ \calR_{\rm joint}(s,M,\delta,\varepsilon)-V_s(u_0)
+ \asymp M^{-2/d}+\delta^2+\varepsilon.
+\end{equation}
+The constants are uniform in $s,M,a,\delta$. The pathwise physical acquisition count, including preparation, early bit and terminal audit, is $\tau+3$, of mean $s^{-1}+3$. An internal-halt implementation uses $6m+4$ labels in place of the external construction's $3m+4$; hence the same order holds for $M\ge10$. No hard cap is implicit.
+\end{theorem}
+\begin{proof}
+On an erasure, guessing fairly simulates the early exact-bit report. Coupling it to the protected bit makes the complete-law mismatch probability $a/2$. Conversely, condition on the erasure. Any report committed before the core calls is independent of $U$, so it disagrees with the protected bit with probability $1/2$. This event has zero target probability. The total-variation lower is $a/2$, for every causal simulator permitted by this interface. Additional late core calls cannot recover the already required report.
+
+For the risk lower, place the symmetric prior on the two calibration signs. The observations do not depend on this sign, giving squared Bayes loss at least $\delta^2$. The residual bit variance is $a/4=\varepsilon/2$ even with full history; conditional on the early bit information, the core's arbitrary adaptive acquisition policy cannot improve on $V_s(u_0)$. Conditional projection of the core audit gives its full-history risk plus finite-readout error. The actual stopped core predictive law is still a mixture of the certified rows, including after policies use the available bit information. The all-center argument therefore adds $cM^{-2/d}$. These lower terms coexist under one preparation and task, rather than coming from incompatible adversarial examples. The worst-case calibration risk dominates their Bayes average.
+
+For the upper, let $m=\lfloor(M-4)/3\rfloor\ge1$. Use one initial label for the early-bit action. Its three possible reports select disjoint lanes with bit readouts $0$, $1/2$, $1$. Each lane contains a separate copy of the core initial label and its $m$ recurrent labels. Run the same calibrated core table in all lanes and read out zero for the calibration coordinate. This uses $1+3(1+m)=3m+4\le M$ labels and attains
+\[
+ V_s(u_0)+Cm^{-2/d}+a/4+\delta^2.
+\]
+The lanes are deliberately not merged; their state cost is explicit. Replacing each core copy by its $1+2m$ internal-halt construction gives $1+3(1+2m)=6m+4$. The bit call and audit are not free reports. This proves \eqref{eq:joint} and all claimed accounting. It does not assert that these lane constructions are minimal for each small integer budget.
+\end{proof}
+
+An externally capped version follows by imposing $\tau_H$ on this same experiment. Proposition~\ref{prop:simulation} and Theorem~\ref{thm:cap} add at most a constant times $\beta^H$ to the displayed excess, and the pathwise count is $H+3$. Calibration, a numerical tolerance and a deficiency \emph{upper bound} are not interchangeable lower-bound parameters: Theorem~\ref{thm:joint} has explicitly realized the two unavoidable errors.
