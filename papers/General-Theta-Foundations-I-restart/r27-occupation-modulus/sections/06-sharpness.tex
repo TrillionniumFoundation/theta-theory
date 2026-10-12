@@ -1,0 +1,57 @@
+\section{A sharp retained-information experiment}\label{sec:sharpness}
+Consider a fixed unknown $\theta\in[-1,1]$, put $t=|\theta|$ and $s=\operatorname{sign}(\theta)$ when $t>0$. One diagnostic call requires a decision $u\in\{-1,+1\}$ before its report. Its score is $t\one_{\{u\ne s\}}$, with score zero at $t=0$. The score is recorded on an environment-owned audit wire and is not supplied as feedback, now or later. The visible report is $s$ with probability $\lambda(t)$ and $\bot$ otherwise, independently across physical preparations conditional on $\theta$. Here $\lambda$ is continuous, $\lambda(0)=0$, and $\lambda(t)>0$ for $t>0$. The raw probabilities and scores are continuous on $[-1,1]$; the vanishing factor $t$ removes the apparent sign discontinuity at zero. The observer's label is retained.
+
+\begin{theorem}[Exact diagnostic value and sharp corrector rate]\label{thm:diagnostic}
+For every $n\ge1$ and every $M\ge2$, even allowing arbitrary full-history competing policies, the minimax $n$-call risk is
+\begin{equation}\label{eq:diagnostic-value}
+ D_n(\lambda)=\sup_{0\le t\le1}\frac{t}{2n}
+                   \sum_{j=0}^{n-1}(1-\lambda(t))^j.
+\end{equation}
+One stationary two-label program attains it for all $n$: initialize its sign label fairly, retain it on $\bot$, and replace it by every conclusive report. Its normalized-discount value is
+\begin{equation}\label{eq:diagnostic-discount}
+ D_\beta(\lambda)=\sup_{0\le t\le1}
+ \frac{t(1-\beta)}{2[1-\beta(1-\lambda(t))]}.
+\end{equation}
+For $\lambda(t)=t^k$ with integer $k\ge2$, these values are respectively of orders $n^{-1/k}$ and $(1-\beta)^{1/k}$. The two-label program satisfies Theorem~\ref{thm:transfer} on the entire parameter interval, although its group-inverse norm and its exact task bias are unbounded. Its approximate-corrector price satisfies
+\begin{equation}\label{eq:sharp-price}
+ \calC(a)\asymp_k a^{-(k-1)}\qquad(a\downarrow0).
+\end{equation}
+A stationary one-label program has minimax average risk $1/2$ when $\lambda(1)=1$; two retained labels have minimax average risk zero.
+\end{theorem}
+\begin{proof}
+Fix $t>0$ and average the two models $\theta=t,-t$ with equal weights, solely for a minimax lower bound. Until the first conclusive report their observable histories have the same law. Their decisions may depend on arbitrary past actions and private fresh randomization, but the conditional average error probability before that report is $1/2$. At decision $j+1$, this event has probability $(1-\lambda(t))^j$. Therefore every policy has worst-model risk at least the expression in~\eqref{eq:diagnostic-value}, for each $t$. The two-label program has exactly this risk under each sign: the initial fair guess remains fair before revelation and is correct afterwards. It attains the lower for every $t$ simultaneously, proving the optimized claim. Summing the discounted geometric series gives~\eqref{eq:diagnostic-discount}.
+
+For $\lambda(t)=t^k$,
+\[
+ \frac{t}{2n}\sum_{j<n}(1-t^k)^j
+ \le\frac12\min(t,t^{1-k}/n).
+\]
+Splitting at $t=n^{-1/k}$ gives the upper rate. At that value of $t$, the sum divided by $n$ is bounded below by a positive absolute constant (with $n=1$ handled directly), giving the lower. The discount bounds follow by splitting at $t=(1-\beta)^{1/k}$; the denominator is $(1-\beta)+\beta t^k$, and $\beta\le1/2$ is absorbed by a fixed constant.
+
+For positive $\theta$, order the labels as correct, incorrect. Then
+\[
+ P_t=\begin{pmatrix}1&0\\t^k&1-t^k\end{pmatrix},\quad
+ r_t=\binom{0}{t},\quad \tau=1,\quad g_t=0.
+\]
+For negative $\theta$ exchange the labels; at zero $P_0=I$ and $r_0=0$. Thus the gain is identically zero from either entering label while the recurrent rank changes. The group inverse has norm of order $t^{-k}$ and an exact corrector needs oscillation $t^{1-k}$. An approximate corrector with residual at most $a$ must have oscillation at least $(t-a)_+/t^k$. Conversely choose an oscillation $(t-a)_+/t^k$ between the incorrect and correct labels. This attains that residual bound. Hence
+\[
+ \calC(a)=\sup_{0<t\le1}(t-a)_+/t^k,
+\]
+which is comparable to $a^{1-k}$ by the choices $t=2a$ for the lower and $t\ge a$ for the upper. Theorem~\ref{thm:transfer} now produces the sharp rate by balancing its two terms.
+
+A one-label stationary program has the same decision distribution before every report and cannot retain whether a revelation occurred. At $\theta=\pm1$ its worst error is at least $1/2$, attained by fair decisions. The two-label program has average zero for each parameter, and the uniform bound already proved makes its worst-model finite-horizon risk tend to zero. No internal horizon or uncharged cycle number is used.
+\end{proof}
+This is a task-sensitive retained-learning law, not a claim about ordinary bandit feedback with observed losses. Finite-memory learning itself is classical~\cite{HellmanCover}; the role of the example here is to attain both the uniform corrector modulus and the all-policy causal acquisition value through a recurrent-rank change.
+
+\begin{example}[Duration and exit cannot be separated]\label{ex:marked}
+There are three boundary labels. From label 1, exit to label 2 with probability $1/2$ after one zero-score call, or to label 3 with probability $1/2$ after three zero-score calls. Labels 2 and 3 are absorbing with unit-duration cycles and respective scores zero and one. Then
+\[
+ g=(1/2,0,1)^\top,\quad d=(2,1,1)^\top,\quad
+ T_{1\cdot}=(0,1/2,3/2).
+\]
+The first coordinate of $r-Tg$ is $-3/2$, whereas that of $r-Dg$ is $-1$. From label 1 the exact finite-call risk is $1/2-3/(2N)$ for $N\ge3$. Thus the duration--exit mark matters even in a three-state experiment. This is a check on the information pattern of the bias equation, not a new counterexample to classical semi-Markov theory.
+\end{example}
+
+\begin{example}[What the task criterion excludes]\label{ex:discontinuity}
+Replace the rare-revelation loss amplitude $t$ by one on the incorrect label while keeping $P_t$ above and assigning the same positive incorrect-label loss at $t=0$. From that label the average is zero for $t>0$ and one at $t=0$. Finite responses remain continuous in this version because the reward no longer depends on $t$, but gain continuity fails. Approximate corrector prices are infinite for every $a<1$, and no uniform acquisition limit is asserted. Conversely constant zero rewards make every boundary degeneration invisible. These two cases show why cost-universal recurrence and task-visible regularity are genuinely different conditions.
+\end{example}

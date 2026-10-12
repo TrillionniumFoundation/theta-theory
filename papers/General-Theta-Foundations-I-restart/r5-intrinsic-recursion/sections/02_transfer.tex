@@ -1,0 +1,120 @@
+\section{The causal acquired-geometry theorem}\label{sec:transfer}
+Let $S$ be a standard Borel predictive-state domain equipped with a separable metric $d$ generating its Borel structure. The physical state $S_t$ here is the \emph{predictive} state derived from the experiment, not necessarily its hidden microscopic state. At an active step, its report kernel and update are
+\[
+ J_t(dy\mid x),\qquad F_t(x,y)\in S.
+\]
+Both are Borel. The update is declared on all true and representative states used below, including the report versions needed to evaluate a representative on a physical report. This is a genuine hypothesis: almost-sure versions separately chosen for each representative do not suffice. The state and the strategy interface determine the true report kernel; when a fixed controller is needed it is included in the declared interface and separately charged.
+
+Let $w:S\to[1,\infty)$ be a Borel envelope. Static covering data at resolution $r_M>0$ consist of at most $M$ representatives $c_1,\ldots,c_m$ and a Borel cover $A_1,\ldots,A_m$ of $S$ satisfying
+\begin{equation}\label{eq:inward}
+ x\in A_i\quad\Longrightarrow\quad
+ d(x,c_i)\le r_M w(x),\qquad w(c_i)\le w(x).
+\end{equation}
+No recursive coding rule is included in this assumption. In an exact Borel machine membership in the finite cover is a declared operation. A finite-bit implementation additionally requires certified membership or enclosure routines; its error and workspace are not inferred from Borel measurability alone.
+
+Let $\cF_{t-1}$ contain the entire observed action--report past, the encoder's retained label, and its independent randomization already used. It does not contain unobserved hidden states or latent apparatus coins. Independent public randomization is allowed but is not an information source about the preparation. Let $D_t\in\{0,1\}$ be the active-step indicator. For some deterministic $\vartheta_t\in[0,1]$, require
+\begin{equation}\label{eq:conditional}
+ \Pp(D_t=1\mid\cF_{t-1})=\vartheta_t,\qquad
+ \law(Y_t\mid\cF_{t-1},D_t=1)=J_t(\cdot\mid S_{t-1}).
+\end{equation}
+On $D_t=0$ both the predictive state and retained label are copied exactly. The hold report and its cost are still recorded. Any active randomization used to choose $F_t$ is included in $Y_t$. The first identity, being constant conditionally on the entire past, is the precise independence needed for the hold mixture. No independence between $Y_t$ and the old approximation error is assumed.
+
+The raw moment conditions, uniform over the indicated deterministic times and all $x,z\in S$, are
+\begin{align}
+ \int d(F_t(x,y),F_t(z,y))^2 J_t(dy\mid x)
+   &\le \kappa d(x,z)^2,\qquad 0\le\kappa<1,\label{eq:pair}\\
+ \int w(F_t(z,y))^2 J_t(dy\mid x)
+   &\le a w(z)^2+b,\qquad 0\le a<1,
+       \quad 0\le b<\infty.\label{eq:envelope}
+\end{align}
+Crucially, the integration in \eqref{eq:envelope} is under the true state $x$, even though the envelope is evaluated at the candidate update from $z$. No stationary law or terminal occupation domination occurs in these conditions. They permit occasional expansion, but are sufficient conditions rather than a characterization of all finite-memory predictable experiments.
+
+\begin{theorem}[Raw-kernel construction and acquired-risk transfer]\label{thm:inward}
+Fix a prepared causal experiment, a deterministic horizon $T$, and exploration independent of the encoder. Suppose its realized predictive state satisfies \eqref{eq:conditional}--\eqref{eq:envelope}, and static data \eqref{eq:inward} are given for each allowed label budget $M$. Suppose a legal seed routine retains a representative $\widehat S_0$ in this codebook with
+\[
+ \E w(\widehat S_0)^2\le H_0,
+ \qquad \norm{d(S_0,\widehat S_0)}_{L^2}\le e_0.
+\]
+All seed calls and states are charged. A known deterministic prepared state is an admissible seed. Suppose the task score is $P_T=f_T(S_T)$ and $f_T$ is $L$-Lipschitz for the task norm. Define
+\begin{equation}\label{eq:radius}
+ H=\max\{H_0,b/(1-a)\},\qquad
+ E_M=\max\left\{e_0,\frac{r_M\sqrt H}{1-\sqrt\kappa}\right\}.
+\end{equation}
+Then the static data determine a Borel recursive encoder with at most $M$ retained labels, using only its preceding label and the current active report, such that
+\begin{equation}\label{eq:main}
+ B_T+q_M(\nu_T)=R_\cp(T,M)
+ \ \le\ R_\on(T,M)
+ \ \le\ B_T+L^2E_M^2.
+\end{equation}
+The constants are independent of $T$ and the sequence $(\vartheta_t)$ whenever the displayed hypotheses have uniform constants. They contain no reciprocal terminal stratum mass. If an actual submeasure $\underline\nu_T\le\nu_T$ of mass $m_T>0$ satisfies, for a declared $s_M>0$,
+\begin{equation}\label{eq:sb-main}
+ \sup_{u}\underline\nu_T(B(u,s_M))\le \frac{m_T}{2M},
+\end{equation}
+then $R_\cp(T,M)-B_T\ge m_T s_M^2/2$. In particular, if $e_0\le C_0r_M$, $s_M\ge c_0r_M$, and $m_T$ is bounded below, checkpoint and online excess risks have the same order $r_M^2$ on this class.
+\end{theorem}
+
+The theorem separates three distinct inputs: a static global cover, local inequalities for the raw report kernel, and a converse from actual acquired mass. None is an assumption about the optimal online risk. A complicated model may still make any of these inputs difficult to verify. Its advantage over a supplied-local-machine hypothesis is logical and constructive: the finite recursive machine and its error recurrence are conclusions. Its advantage over an occupation-reference argument is that transient changes in support do not create uncharged error terms, provided the uniform two-point and envelope bounds hold.
+
+\begin{lemma}[Conditional projection and checkpoint quantization]\label{lem:projection}
+For the task in \eqref{eq:score}, every forecast $a$ based on the history and independent algorithm randomization satisfies
+\begin{equation}\label{eq:projection}
+ \E\norm{Y-a}^2=B_T+\E\norm{P_T-a}^2.
+\end{equation}
+Consequently $R_\cp(T,M)=B_T+q_M(\nu_T)$, including independent shared-seed and randomized encoders or decoders.
+\end{lemma}
+\begin{proof}
+Condition on the history and algorithm randomization. The conditional mean of $Y$ is still $P_T$, so the cross term vanishes. Fix a value of an independent shared seed. A randomized decoder can be replaced by its conditional mean given the retained label, leaving at most $M$ centers and decreasing squared loss. For any such center list, randomized label selection cannot improve on the closest center. Choose the first closest center to obtain a Borel selector. Thus every seed-conditional distortion is at least $q_M(\nu_T)$; independence of the seed leaves the law $\nu_T$ unchanged. Conversely any finite list and its nearest-center checkpoint selector approach the infimum in \eqref{eq:q}. Integration over the seed proves the assertion. The same argument applies separately to each executable probe.
+\end{proof}
+
+\begin{lemma}[Inward envelope and true-law error recursion]\label{lem:recursion}
+Choose the first index $i$ for which $x\in A_i$ and put $Q_M(x)=c_i$. On active steps define
+\begin{equation}\label{eq:machine}
+ \widetilde S_t=F_t(\widehat S_{t-1},Y_t),\qquad
+ \widehat S_t=Q_M(\widetilde S_t);
+\end{equation}
+on holds copy $\widehat S_{t-1}$. Then $\E w(\widehat S_t)^2\le H$ for every $t$, and with $e_t=\norm{d(S_t,\widehat S_t)}_{L^2}$,
+\begin{equation}\label{eq:energy}
+ e_t^2\le(1-\vartheta_t)e_{t-1}^2+
+ \vartheta_t\big(\sqrt\kappa e_{t-1}+r_M\sqrt H\big)^2.
+\end{equation}
+In particular $e_t\le E_M$.
+\end{lemma}
+\begin{proof}
+The least-index selection in a finite Borel cover is Borel and obeys both inequalities in \eqref{eq:inward}. Given $\cF_{t-1}$, both the true and approximate states are known, so \eqref{eq:conditional} and \eqref{eq:envelope} imply
+\[
+ \E[w(\widehat S_t)^2\mid\cF_{t-1},D_t=1]
+ \le a w(\widehat S_{t-1})^2+b.
+\]
+Induction and $aH+b\le H$ yield the envelope bound, after mixing with the exact hold branch. The same bound holds for $\E[w(\widetilde S_t)^2\mid D_t=1]$, since $D_t$ is independent of the previous complete past. If $\vartheta_t=0$ only the hold branch is present and no conditional-on-active assertion is needed.
+
+On the active branch, the triangle inequality and \eqref{eq:inward} give
+\[
+ d(S_t,\widehat S_t)
+ \le d(F_t(S_{t-1},Y_t),F_t(\widehat S_{t-1},Y_t))
+       +r_Mw(\widetilde S_t).
+\]
+Use \eqref{eq:pair} conditionally on the complete past and then Minkowski in $L^2$ on the active branch. The first term has norm at most $\sqrt\kappa e_{t-1}$ and the second at most $r_M\sqrt H$. On holds the old error is unchanged. Mixing the \emph{squares} of these branch norms proves \eqref{eq:energy}. Finally, if $e_{t-1}\le E_M$, the active root is at most $E_M$ by \eqref{eq:radius}; both branch squares are then at most $E_M^2$. Induction starts at the stated seed. This also proves the bound when there are arbitrarily long intervals with no active steps.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:inward}]
+The rule \eqref{eq:machine} retains only its representative index, and hence is a legal $M$-label recursion. Its readout is $f_T(\widehat S_T)$, projected to the task box if necessary. Lemma~\ref{lem:recursion} and Lipschitz continuity give root-mean-square task error at most $LE_M$. Lemma~\ref{lem:projection} gives the two equal-baseline bounds in \eqref{eq:main}; every online output is also a legal checkpoint output, which gives the middle comparison. For any list of at most $M$ centers, the union of the open $s_M$-balls has $\underline\nu_T$-mass at most $m_T/2$. Outside the union the distance to the list is at least $s_M$, including boundary points. Its distortion is therefore at least $m_Ts_M^2/2$. This proves the last assertion, also for randomized encoders by Lemma~\ref{lem:projection}.
+\end{proof}
+
+\begin{corollary}[Controlled numerical perturbations]\label{cor:perturb}
+In Theorem~\ref{thm:inward}, replace the active candidate $F_t(z,y)$ by a declared Borel numerical value $G_t(z,y)$ satisfying
+\begin{equation}\label{eq:perturb}
+ d(G_t(z,y),F_t(z,y))\le u,
+ \qquad w(G_t(z,y))\le w(F_t(z,y))
+\end{equation}
+for all declared inputs. Allow an additional root-mean-square readout error $v$. Then
+\[
+ R_\on(T,M)\le B_T+(L E_{M,u}+v)^2,
+ \qquad
+ E_{M,u}=\max\left\{e_0,
+        \frac{r_M\sqrt H+u}{1-\sqrt\kappa}\right\}.
+\]
+A deterministic bound $u=u_{\rm cal}+u_{\rm num}+u_{\rm input}$ may combine calibration, arithmetic, and finite-input enclosure errors when \eqref{eq:perturb} has been certified for their common implementation.
+\end{corollary}
+\begin{proof}
+The inward envelope inequality in \eqref{eq:perturb} preserves \eqref{eq:envelope} for the numerical candidate and therefore preserves the proof of the envelope bound. The active error triangle gains the deterministic term $u$ before Minkowski is applied. Replace $r_M\sqrt H$ by $r_M\sqrt H+u$ in \eqref{eq:energy} and its invariant radius. The additional readout perturbation adds in the same $L^2$ task norm. No assertion about arbitrary, envelope-increasing rounding is used.
+\end{proof}
