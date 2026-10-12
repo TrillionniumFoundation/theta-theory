@@ -1,0 +1,55 @@
+name: A2-DYN v95 two-ended radial and bidirectional source qualification
+on:
+  push:
+    branches:
+      - revision/a2-dyn-v95-referee-response-2026-10-13
+      - revision/a2-dyn-v95-referee-copy-2026-10-13
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: a2-dyn-v95-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  qualify-manuscript:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Pin reviewed sources and exact checkout
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD:papers/A2-DYN-v94-referee-response)" = "f0788580c4fab60cdcef0277f8d92052fd12dd15"
+          test "$(git rev-parse HEAD:papers/A2-DYN-v95-referee-response/provenance/v94-root)" = "598924949e644a71dc9a6d6644c3287ee593a08d"
+          test "$(git rev-parse HEAD:reviews/a2-dyn-v94-external-top4-review-2026-10-13/REFEREE_REPORT.md)" = "e8804c69db02415d59d244529ceb6d422fa4ddde"
+          mkdir -p papers/A2-DYN-v95-referee-response/evidence
+          git archive HEAD papers/A2-DYN-v93-referee-response papers/A2-DYN-v94-referee-response papers/A2-DYN-v95-referee-response papers/A2-DYN-v88-referee-response papers/A2-DYN-v88-main-preserved reviews/a2-dyn-v94-external-top4-review-2026-10-13 .github/workflows/a2-dyn-v95-qualification.yml A2_DYN_V95_REVISION_INDEX.md > papers/A2-DYN-v95-referee-response/evidence/exact-source.tar
+          printf '%s\n%s\n' "$GITHUB_SHA" "$GITHUB_REF" > papers/A2-DYN-v95-referee-response/evidence/exact-checkout.txt
+          git rev-parse HEAD:papers/A2-DYN-v95-referee-response >> papers/A2-DYN-v95-referee-response/evidence/exact-checkout.txt
+      - name: Install native TeX and diagnostic dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern python3-numpy python3-mpmath python3-sympy python3-scipy poppler-utils
+      - name: Preserve sources and compile all 228 proof modules
+        env:
+          TZ: UTC
+        run: bash papers/A2-DYN-v95-referee-response/build.sh
+      - name: Upload exact-SHA article and complete archive evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a2-dyn-v95-${{ github.sha }}-${{ github.run_id }}
+          if-no-files-found: error
+          retention-days: 90
+          path: |
+            papers/A2-DYN-v95-referee-response/build/*.pdf
+            papers/A2-DYN-v95-referee-response/build/*.log
+            papers/A2-DYN-v95-referee-response/build/*.fls
+            papers/A2-DYN-v95-referee-response/build/*.aux
+            papers/A2-DYN-v95-referee-response/build/*-pass*.txt
+            papers/A2-DYN-v95-referee-response/build/*.tex
+            papers/A2-DYN-v95-referee-response/evidence/*
