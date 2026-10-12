@@ -1,0 +1,67 @@
+name: Theta R44 stopped-disintegration immutable-source publication
+on:
+  push:
+    branches:
+      - foundation/general-theta-restart-r44-stopping-disintegration-research-2026-10-12
+    paths:
+      - .github/workflows/theta-r44-stopping-disintegration.yml
+      - .github/scripts/theta-r44-publish.py
+permissions:
+  contents: write
+concurrency:
+  group: theta-r44-stopping-disintegration-publication
+  cancel-in-progress: false
+jobs:
+  publication:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 80
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      SOURCE_DATE_EPOCH: '1791676800'
+      FORCE_SOURCE_DATE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      TZ: UTC
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 2
+          sparse-checkout: |
+            .github
+            foundations/general-theta
+            papers/General-Theta-Foundations-I-restart
+      - name: Publish ordinary source and export pinned input before building
+        run: python3 .github/scripts/theta-r44-publish.py source
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r44-ordinary-source
+          path: ${{ env.SOURCE_EXPORT_DIR }}
+          retention-days: 30
+      - name: Install declared typesetting and regression dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended cm-super lmodern poppler-utils python3-venv
+          python3 -m venv "$RUNNER_TEMP/r44-venv"
+          "$RUNNER_TEMP/r44-venv/bin/pip" install pypdf==5.9.0 numpy==2.2.6
+          echo "$RUNNER_TEMP/r44-venv/bin" >> "$GITHUB_PATH"
+      - name: Full source-bound native and retained mathematical builds
+        run: |
+          python papers/General-Theta-Foundations-I-restart/r44-stopping-disintegration/build.py --source-sha "$SOURCE_SHA" --expected-tree "$EXPECTED_TREE" --output "$R44_PUBLICATION_DIR/build" --receipt "$R44_PUBLICATION_DIR/BUILD_RECEIPT.json" > "$RUNNER_TEMP/r44-build.stdout"
+          git diff --exit-code
+      - name: Publish artifact-only child and export complete delivery
+        run: python .github/scripts/theta-r44-publish.py artifacts
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r44-source-and-build
+          path: ${{ env.DELIVERY_DIR }}
+          retention-days: 30
+      - name: Build diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: theta-r44-build-diagnostics
+          path: |
+            ${{ runner.temp }}/r44-build.stdout
+            ${{ runner.temp }}/r44-publication/BUILD_RECEIPT.json
+          if-no-files-found: ignore

@@ -1,0 +1,52 @@
+\section{A nonhomogeneous Gaussian filtering realization}\label{sec:classical}
+Let the hidden state be $J_t\in\{1,\ldots,D_c\}$, where $D_c\ge2$, and put $d=D_c-1$. Let $P$ be an invertible column-stochastic matrix with entries at least $\alpha>0$. The raw call first reports $Y_t\mid J_{t-1}=i\sim N(m_i,\Sigma)$ and then draws $J_t$ from column $i$ of $P$. Take report dimension $d$, positive definite $\Sigma$, and affinely independent means $m_1,\ldots,m_{D_c}$. Larger report dimensions with a full-rank likelihood image work identically. The preparation has known law $x_0\in K=P\Delta_{D_c-1}$. The terminal audit is the categorical vector $Z_n=e_{J_n}$, observed only after committing the answer.
+
+The report-then-transition convention makes the prediction domain uniformly interior without modifying the actual Gaussian reports. If $f_i$ are their densities, the raw positive instrument is
+\begin{equation}\label{eq:gaussian-instrument}
+ L_y=P\operatorname{diag}(f_1(y),\ldots,f_{D_c}(y)),\qquad
+ \ell(y,x)=\sum_i x_i f_i(y),\qquad
+ F(y,x)=P\frac{\operatorname{diag}(f(y))x}{\ell(y,x)}.
+\end{equation}
+These are obtained from the hidden-state kernel. The coordinate tests are categorical probabilities, and unnormalized continuation tests are linear in them. Mixtures of prepared hidden states realize the simplex and its domain $K$. The coordinate audit separates the post-call predictions. Hence the declared predictive quotient and affine closure are realized, rather than postulated.
+
+\begin{theorem}[All positive invertible transitions]\label{thm:gaussian}
+The raw experiment~\eqref{eq:gaussian-instrument} satisfies Theorem~\ref{thm:main} with acquisition dimension $d=D_c-1$ and certificate (P). In particular its checkpoint and total-state autonomous excess risks are, uniformly for $n\ge1$ and feasible $M$,
+\[
+ \calR_{\rm cp}(n,M)-B_n\asymp M^{-2/d},\qquad
+ \calR_{\rm aut}(n,M)-B_n\asymp(M-n)^{-2/d}.
+\]
+Constants may be chosen uniformly on compact parameter families having the stated positivity, invertibility and likelihood-rank bounds. No condition such as three times a total-variation mixing coefficient being less than one is required. The observation protocol is fixed; the infimum is over all observers of that protocol.
+\end{theorem}
+\begin{proof}
+Every $x\in K$ has $x_i\ge\alpha$. On the simplex interior use Hilbert's metric
+\[
+ h(x,z)=\max_i\log(x_i/z_i)-\min_i\log(x_i/z_i).
+\]
+On $K$ it has finite diameter and is uniformly equivalent to the Euclidean tangent norm. Positive diagonal multiplication and subsequent normalization preserve $h$.
+
+We record an elementary contraction for $P$. Interpolate by the normalized geometric path $x(s)\propto x^{1-s}z^s$, $0\le s\le1$. Differentiating $\log(Px(s))_i$ gives the average of $v_j=\log(z_j/x_j)$ with weights
+$w_{ij}=P_{ij}x_j(s)/(Px(s))_i$, minus a common normalization derivative. Since $(Px(s))_i\le1$, every row of weights dominates the same subprobability $\alpha x(s)$ of mass $\alpha$. The oscillation of the row averages is thus at most $(1-\alpha)\operatorname{osc}v$. Integrating gives
+\begin{equation}\label{eq:classical-hilbert}
+ h(Px,Pz)\le(1-\alpha)h(x,z).
+\end{equation}
+Initially $x,z$ may be any strictly positive simplex points; approximation extends the relevant image statements to closed input faces. Combining diagonal isometry with~\eqref{eq:classical-hilbert} proves (P) for~\eqref{eq:gaussian-instrument}, with $a_t=1-\alpha<1$ at every phase. The filter is genuinely nonlinear in its incoming belief.
+
+It remains to derive actual acquisition mass. Write
+$w_i=x_if_i(Y)/\ell(Y,x)$ and set $v_i=\log(w_i/w_{D_c})$ for $1\le i\le d$. Then
+\[
+ v_i=\log(x_i/x_{D_c})+(m_i-m_{D_c})^T\Sigma^{-1}Y
+ -\tfrac12(m_i^T\Sigma^{-1}m_i-m_{D_c}^T\Sigma^{-1}m_{D_c}).
+\]
+Under the actual report law this vector is a mixture of $D_c$ nonsingular Gaussian laws. Their covariance is fixed and positive definite by affine independence; their means range over a compact set because $x_i\ge\alpha$. Its density therefore satisfies $g_x(v)\le C\exp(-c\norm v^2+C\norm v)$ uniformly in $x$. The inverse log-odds map has Jacobian $\prod_{i=1}^{D_c}w_i$. Moreover
+\[
+ (\textstyle\prod_i w_i)^{-1}
+ =(1+\textstyle\sum_{i=1}^d e^{v_i})^{D_c}e^{-\sum_{i=1}^dv_i}
+ \le C e^{C\norm v}.
+\]
+Consequently the actual density of $w$ on the entire simplex is uniformly bounded, including approaches to its boundary. The invertible affine transformation $w\mapsto Pw$ gives a uniform density bound on $K$, and hence~\eqref{eq:mass}. The dimension here is the rank of the acquired likelihood-coordinate map, not the report dimension or a formally added covariance.
+
+The compact full-dimensional convex body $K$ has Euclidean covers of size $Ch^{-d}$; metric equivalence gives the required Hilbert covers. Choose the lowest-index nearest codepoint to obtain a Borel rule. Finally
+$\|\ell(\cdot,x)-\ell(\cdot,z)\|_{L^1}\le\|x-z\|_1$, proving report continuity. Every Gaussian density is positive everywhere, so all conditional report laws have the same null sets. The clock lemma applies. All estimates are uniform under the displayed compact parameter restrictions.
+\end{proof}
+
+This realization is an ordinary finite-memory nonlinear hidden-state filter with a one-step-ahead categorical forecast. For example the symmetric two-state transition with off-diagonal probability $0.01$ has total-variation coefficient $0.98$; a bound requiring $3\cdot0.98<1$ is unavailable, while~\eqref{eq:classical-hilbert} still gives a valid contraction. The resulting constant deteriorates as the transition approaches a reducible or deterministic limit; the theorem does not assert uniformity there. No report is discarded, accepted conditionally, or resampled without payment. The Gaussian change-of-variables argument is inherited in method from the earlier acquired-density theorem; the new scope here comes from the normalized causal defect and the same-report cone-metric implementation, not from claiming a new Gaussian density formula.

@@ -1,0 +1,36 @@
+name: Theta R44 pinned research export alternate runner
+on:
+  push:
+    branches:
+      - foundation/general-theta-restart-r44-stopping-disintegration-research-2026-10-12
+    paths:
+      - .github/workflows/theta-r44-review-export22.yml
+permissions:
+  contents: read
+jobs:
+  export:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .github
+            foundations/general-theta
+            papers/General-Theta-Foundations-I-restart
+          fetch-depth: 1
+      - name: Execute identical pinned source decoder
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 - <<'PY'
+          import pathlib,textwrap
+          text=pathlib.Path('.github/workflows/theta-r44-review-export.yml').read_text()
+          code=text.split("python3 - <<'PY'\n",1)[1].split('\n          PY\n',1)[0]
+          exec(compile(textwrap.dedent(code),'pinned_source_decoder','exec'))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r44-pinned-research-sources
+          path: ${{ runner.temp }}/r44-input
+          retention-days: 30

@@ -1,0 +1,7 @@
+# Actual history and literature coverage
+
+Read the four canonical controls; the complete R32 report; the complete native R34 source and its response/concordance, assumptions, resources and derivations; the R35 and R36 research contracts. The R34 ordinary-source package was downloaded through the connected GitHub Actions artifact API, not inferred from prior conversational summaries. Targeted inherited proofs used here are the Bayesian conditional identity and acquired-mass curvature/controlled-overlap arguments. Native proofs are rederived without treating the historical companions as automatic correctness certificates.
+
+The inherited source hierarchy is retained and rebuilt in full as specified by the build chain. The old independent realization and frozen branches are not altered. Not every v1--v96 theorem, every old external report or every realization has been independently re-proved in this turn. The claim is source preservation and declared proof-dependency inspection, not global historical recertification.
+
+Primary literature checked on 11 October 2026: Yu--Bertsekas 2008 (publisher abstract/metadata); Demirci--Kara--Yuksel 2024 (publisher and arXiv HTML); Saldi--Yuksel--Linder arXiv:1503.02244v3 (author abstract); Kim arXiv:2601.03132v1 (author abstract/HTML); Borkar--Mitter--Tatikonda publisher record; Kakutani bibliographic primary landing; Varshney's author/institution publication record. The level of access is not upgraded into a full-paper theorem-by-theorem comparison. No comprehensive priority search is claimed.
