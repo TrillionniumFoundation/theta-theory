@@ -1,0 +1,55 @@
+name: A2-DYN v97 capped coarea and failed-source recovery qualification
+on:
+  push:
+    branches:
+      - revision/a2-dyn-v97-referee-response-2026-10-13
+      - revision/a2-dyn-v97-referee-copy-2026-10-13
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: a2-dyn-v97-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  qualify-manuscript:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Pin original sources and exact checkout
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD:papers/A2-DYN-v96-referee-response)" = "4490aafb771c8ff417c55030319a02d9602564fa"
+          test "$(git rev-parse HEAD:papers/A2-DYN-v97-referee-response/provenance/v96-source)" = "4490aafb771c8ff417c55030319a02d9602564fa"
+          test "$(git rev-parse HEAD:reviews/a2-dyn-v96-external-top4-review-2026-10-13/REFEREE_REPORT.md)" = "ea21dc4b10a43ffa53e7a3b0b79bf48f34ac0404"
+          mkdir -p papers/A2-DYN-v97-referee-response/evidence
+          printf '%s\n%s\n' "$GITHUB_SHA" "$GITHUB_REF" > papers/A2-DYN-v97-referee-response/evidence/exact-checkout.txt
+          git rev-parse HEAD:papers/A2-DYN-v97-referee-response >> papers/A2-DYN-v97-referee-response/evidence/exact-checkout.txt
+          git archive HEAD papers/A2-DYN-v97-referee-response papers/A2-DYN-v96-referee-response reviews/a2-dyn-v96-external-top4-review-2026-10-13 .github/workflows/a2-dyn-v97-qualification.yml A2_DYN_V97_REVISION_INDEX.md | gzip -n > papers/A2-DYN-v97-referee-response/evidence/active-and-baseline-source.tar.gz
+      - name: Install native TeX and diagnostic dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern python3-numpy python3-mpmath python3-sympy python3-scipy poppler-utils
+      - name: Preserve all inherited sources and compile 234 proof modules
+        env:
+          TZ: UTC
+        run: bash papers/A2-DYN-v97-referee-response/build.sh
+      - name: Upload exact-SHA article and complete archive evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a2-dyn-v97-${{ github.sha }}-${{ github.run_id }}
+          if-no-files-found: error
+          retention-days: 90
+          path: |
+            papers/A2-DYN-v97-referee-response/build/*.pdf
+            papers/A2-DYN-v97-referee-response/build/*.log
+            papers/A2-DYN-v97-referee-response/build/*.fls
+            papers/A2-DYN-v97-referee-response/build/*.aux
+            papers/A2-DYN-v97-referee-response/build/*.tex
+            papers/A2-DYN-v97-referee-response/build/*-pass*.txt
+            papers/A2-DYN-v97-referee-response/evidence/*
