@@ -1,0 +1,5 @@
+# Source correction before final referee handoff
+
+The first full hosted build succeeded (run 37952803871, ordinary source 04459ac1335e9e9b58740c4a35c9b38feb8d1bb3, artifact de3f5cde7e0e248757b1cd01eab58d411e232dc6). Subsequent author-side proof review corrected the loss normalization in Proposition 7.1: for arbitrary calibration decisions in [-delta,delta], the squared error is at most 4delta^2, whereas the attaining zero readout has error delta^2. Therefore the full-program uniform loss bound is diam(K)^2+5 for delta<=1. The matching risk law and its proof are unchanged.
+
+The amended ordinary source is committed before a new full build. The first artifact remains in Git ancestry; its native generated PDFs/receipts are superseded by the new source-bound build, not presented as final. All earlier R22 and historical mathematical subtrees remain identical. The final evidence records only the final source, artifact and independent rebuild. Neither successful compilation nor this correction note certifies the remaining continuum proofs.

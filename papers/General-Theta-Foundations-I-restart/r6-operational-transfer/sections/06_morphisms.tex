@@ -1,0 +1,111 @@
+\section{Stopped causal morphisms and common-risk composition}\label{sec:morphisms}
+We now fix the measurable and computational meaning of experiment comparison. The direction $\mathfrak E\rightsquigarrow\mathfrak F$ means that the source $\mathfrak E$ implements the target $\mathfrak F$. It is not a comparison of two separately optimized controllers on a shared report stream.
+
+\subsection{Measurable coupling and report continuity}
+\begin{lemma}[A jointly measurable maximal coupling]\label{lem:coupling}
+Let $P_z,Q_z$ be probability kernels from a standard Borel parameter space $Z$ to a standard Borel report space $Y$. There is a probability kernel $C_z$ on $Y\times Y$ with these marginals and
+\[
+ C_z\{(y,y'):y\ne y'\}=\TV(P_z,Q_z),
+ \qquad \TV(P,Q):=\sup_A|P(A)-Q(A)|.
+\]
+\end{lemma}
+\begin{proof}
+Let $R_z=(P_z+Q_z)/2$. Choose increasing finite partitions of $Y$ whose union generates its Borel sigma field and separates points. Such partitions follow from a countable separating generator of a standard Borel space. On an atom $A$ put $p_k(z,y)=P_z(A)/R_z(A)$, with value zero when the denominator vanishes. These functions are jointly measurable and bounded by two. For every fixed $z$, the martingale convergence theorem applied to the Radon--Nikodym derivative $dP_z/dR_z$ gives a limit equal to that derivative $R_z$-almost everywhere. Define $p$ to be the clipped limsup and $q=2-p$. These are jointly measurable versions of the two densities for each $z$; their exceptional sets need not be independent of $z$.
+
+The kernel $\mu_z(dy)=\min(p(z,y),q(z,y))R_z(dy)$ has measurable mass $c_z$. Its two residual measures have mass $1-c_z$ and are mutually singular. Set
+\[
+ C_z=\operatorname{diag}_*\mu_z+
+ \frac{(P_z-\mu_z)\otimes(Q_z-\mu_z)}{1-c_z}
+ \quad(c_z<1),
+\]
+and set $C_z=\operatorname{diag}_*P_z$ if $c_z=1$. Products of finite kernels and the displayed measurable case distinction are kernels. The diagonal is Borel. The residual product gives it zero mass by mutual singularity, so disagreement has probability $1-c_z=\TV(P_z,Q_z)$. This also proves the parameterized measurability needed for successive causal couplings.
+\end{proof}
+
+\begin{proposition}[Stopped report-law comparison]\label{prop:report}
+Suppose the true and representative report kernels obey
+$\TV(J_t(\cdot\mid x,a),J_t(\cdot\mid z,a))\le L_Jd(x,z)$
+uniformly in the declared actions. Suppose the terminal task-report kernel has the analogous constant $L_Y$. Use the same declared controller, controller randomization and visible stopping rule $\tau\le T$ in the exact and simulated experiments. Let $\widehat S_t$ be the shadow recursion driven by the physical reports. Then their complete stopped report-and-task laws differ in total variation by at most
+\begin{equation}\label{eq:stoppedtv}
+ \min\left\{1,
+ L_J\E\sum_{t=1}^{\tau}d(S_{t-1},\widehat S_{t-1})
+ +L_Y\E d(S_\tau,\widehat S_\tau)\right\}.
+\end{equation}
+At a deterministic $T$, Theorem~\ref{thm:main} bounds this by
+$\min\{1,(TL_J+L_Y)\mathcal E_M\}$ in the exact-readout case.
+\end{proposition}
+\begin{proof}
+Use Lemma~\ref{lem:coupling} successively until the first discrepancy. Before that discrepancy the controllers see the same reports, choose the same actions and make the same stop decisions. Conditional disagreement probability at a continuing step is bounded by $L_Jd(S_{t-1},\widehat S_{t-1})$. Continue a physical-law shadow after any discrepancy, so its error estimates still apply without conditioning its law on successful coupling. Sum first-discrepancy probabilities and couple the final task on the agreement event. The indicators of continuing are the physical $\{t\le\tau\}$ up to disagreement; dropping the agreement indicator gives \eqref{eq:stoppedtv}. At deterministic times use Cauchy--Schwarz and the uniform root error. This proof does not replace a stopped sum by $\E\tau$ times an unconditional deterministic-time bound.
+\end{proof}
+
+For the Gaussian filter, report laws are mixtures of the same emission kernels with weights $\pi Q$. Total variation is at most $\tfrac12\norm{\pi Q-\rho Q}_1\le\tfrac12 d_H(\pi,\rho)$; the last inequality follows by differentiating the softmax along a log-coordinate segment. The indexed terminal probe has $L_Y=1/4$. In the singular experiment the report law does not depend on the coordinate within a mode; cross-mode total variation is at most one and the cross-mode distance is $2\sqrt{1800}$. Its affine probe is also Lipschitz. These are direct raw-kernel continuity checks. Uniform prediction risk does not imply infinite-transcript or large-deviation equivalence.
+
+\subsection{Typed experiment morphisms}
+Fix a common parameter set $\Lambda$ and two prepared families $\mathfrak E=(K^{E,\lambda},\mu^{E,\lambda})_{\lambda\in\Lambda}$ and $\mathfrak F=(K^{F,\lambda},\mu^{F,\lambda})_{\lambda\in\Lambda}$. All state, action, report, cost and terminal-outcome spaces are standard Borel. Source and target visible histories are finite products
+\[
+ H^E_n=Y^E_0\times\prod_{j=1}^n(A^E_j\times Y^E_j\times\mathcal C^E_j),
+ \qquad H^F_i=Y^F_0\times\prod_{j=1}^i(A^F_j\times Y^F_j\times\mathcal C^F_j).
+\]
+Disjoint unions over lengths carry their usual standard Borel structure. Histories include a preparation report, all failures and publicly available resource records. Legal action correspondences are declared measurable subsets of $H\times A$. The specified strategy classes consist of parameter-independent Borel action kernels supported on these correspondences, together with bounded visible stop rules and terminal decision rules. All such rules may use permitted independent randomization, but not the unknown $\lambda$.
+
+\begin{definition}[A certified stopped causal morphism]\label{def:morphism}
+For a fixed target horizon $T$, a morphism $\mathfrak E\rightsquigarrow\mathfrak F$ consists of the following data and requirements.
+
+\emph{Causal realization.} A parameter-independent transducer has a declared internal state space $\mathcal U$, initialization kernel, source-action kernels, report transformations, and state-update kernels. Each physical operation depends only on its current retained registers, the current virtual action, the current source report and its allowed fresh randomness. Equivalently its virtual history maps are causal on source stopped histories. A strategy lift $\mathscr L:\Pi_F\to\Pi_E$ specifies the resulting source policy for each declared target policy. It must be induced by those kernels, not by access to unretained histories. Its source actions are legal at every declared reachable interface.
+
+\emph{Clock and stopping compatibility.} Virtual completion times $0\le\sigma_0\le\cdots\le\sigma_T$ are source stopping times, bounded by a declared physical-call budget $N(T)$. Virtual reports and costs at step $i$ are measurable at $\sigma_i$. For every target stop $\tau\le T$, $\sigma_\tau$ is a legal source stop; no subsequent source information is used in the virtual terminal decision. A phase/clock register and the cost transformation specify which physical actions realize each virtual action, including preparation, waits and failed attempts. Action availability after each transformed prefix must agree with the declared target interface.
+
+\emph{Common task.} A parameter-independent Borel terminal map $\chi$ takes the actual source terminal outcome and available stopped registers to the common scored-outcome space $\mathcal O$. The target has its declared outcome in that same space. The decision map sends the retained tuple to the same decision space $\mathcal A_*$. A loss $\ell:\mathcal O\times\mathcal A_*\to[0,L_*]$ is fixed. Merely matching unscored transcript marginals is not a common-task certificate.
+
+\emph{Uniform defect.} For every $\lambda\in\Lambda$, $\beta\in\Pi_F$ and its declared $\tau\le T$, let $\widetilde P^{\beta,\tau}_\lambda$ be the joint law of the virtual stopped history, permitted public policy coins, and transformed common outcome. Let $P^{F,\beta,\tau}_\lambda$ be the corresponding true target law. Require
+\begin{equation}\label{eq:defect}
+ \sup_{\lambda,\beta,\tau}
+ \TV(\widetilde P^{\beta,\tau}_\lambda,P^{F,\beta,\tau}_\lambda)
+ \le\varepsilon.
+\end{equation}
+All laws and comparisons use these same declared classes; a single-controller calculation certifies only the singleton class unless uniformity is proved.
+
+\emph{Resource realization.} A finite implementation separately bounds predictor labels $M$, transducer states $R$, controller states $D$, phase/clock states $Q$, temporary writable bits $W$, read-only program bits $L_{\rm prog}$, calibration and input precision, raw calls and physical time. Any register consulted later is persistent and belongs to the counted tuple. Workspace must be erased before the next declared persistent cut or included there. Uniformly finite resource bounds are extra data, not implications of the Borel description.
+\end{definition}
+
+The definition includes the preparation stage $\sigma_0$ and permits zero-call virtual deterministic operations, provided the finite virtual horizon and clock rule prevent an uncharged infinite execution. A raw acquisition count does not count only successful virtual reports. Parameters in read-only constants must be known calibration, not unknown true values. Complete defect is stronger than one-step marginal closeness.
+
+\begin{theorem}[Common-risk composition and a reverse converse]\label{thm:morphism}
+A morphism in Definition~\ref{def:morphism} implements every certified target predictor with a serial source state count
+\begin{equation}\label{eq:tuple}
+ K\le MRDQ
+\end{equation}
+and source risk at most $r_\lambda+L_*\varepsilon$ when its target risk is $r_\lambda$. For two composable morphisms, assume the first lifted policy, its stops and common-task maps lie in the second certified class. Their complete defects add, capped at one; serial state overheads multiply. Raw calls and physical time are sums over the actually executed physical subroutines; nested per-call upper bounds may therefore multiply. Simultaneously required workspace and stored program descriptions admit the corresponding additive upper accounts.
+
+In particular Theorem~\ref{thm:main} yields the common-risk upper
+\begin{equation}\label{eq:composedrisk}
+ R_E(MRDQ)\le B_T+(L_f\mathcal E_{M,u}+v)^2+L_*\varepsilon,
+\end{equation}
+where $\mathcal E_{M,u}$ denotes \eqref{eq:constants} at numerical allowance $u$, with the target benchmark $B_T$ and certified acquisition budget. Root metric errors are combined before squaring; complete bounded-loss defect is added afterwards.
+
+Suppose additionally a reverse morphism converts every source $K$-state procedure in the comparison class to a target procedure with at most $\Psi(K)$ states and defect at most $\varepsilon_-$. For the same fixed preparation, task and risk criterion,
+\begin{equation}\label{eq:reverse}
+ R_E(K)\ge R_F(\Psi(K))-L_*\varepsilon_-.
+\end{equation}
+Thus actual target acquired-law lower bounds transfer at the explicitly inflated budget. The same implication holds for minimax risks when both certificates are uniform in the same parameter set.
+\end{theorem}
+\begin{proof}
+Retain the tuple of predictor, transducer, controller and clock states. Run the prescribed source subroutine, transform its report, update the target predictor and use the compatible task map. Causality, action compatibility and the stopping conditions make this a legal source procedure. Its tuple set has at most $MRDQ$ elements. The bounded-loss inequality for the convention in Lemma~\ref{lem:coupling} gives risk difference at most $L_*\varepsilon$ from \eqref{eq:defect}, also after the common decision kernel is applied.
+
+For composition insert the intermediate joint stopped law. Apply the triangle inequality and contraction of total variation under the downstream parameter-independent causal transformation. The class-closure hypothesis is needed to apply the second defect certificate to the lifted adaptive policy. Clock compatibility identifies the composed stopping time and common task. Serial storage of both tuples gives the product bound; summing all actual calls and time, including failures and preparation, gives the cost accounts. These are constructive upper accounts, not claims that every register is indispensable.
+
+For the reverse assertion apply the same upper argument to an arbitrary source procedure and its target realization. It gives $R_F(\Psi(K))\le r_E+L_*\varepsilon_-$; take the infimum over source procedures. For minimax risks take the supremum in $\lambda$ before the infimum, using parameter-uniform certificates. The target and source Bayes baselines need not agree; no subtraction of separately recomputed baselines is performed.
+\end{proof}
+
+\begin{proposition}[An executable interface converse]\label{prop:interface}
+Before a memory cut an experiment reports a tag $J\in\{1,\ldots,D\}$, with positive probabilities $p_j$, and a score $U$ of conditional law $\nu_j$. After the cut no report reveals either. A declared continuation requires exact recovery of $J$ as well as a squared forecast of $U$. The optimal distortion with $K$ retained states is
+\begin{equation}\label{eq:tagallocation}
+ \inf_{\substack{m_j\ge1\ \sum_jm_j\le K}}
+     \sum_jp_jq_{m_j}(\nu_j),
+\end{equation}
+with infeasibility if $K<D$. Independent randomization cannot improve this value. For uniform tags and uniform $d$-cube laws the value is of order $(D/K)^{2/d}$ for $K\ge D$.
+\end{proposition}
+\begin{proof}
+Fix a shared seed outside the null set on which exact recovery can fail. A retained label cannot have positive probability for two distinct tags, because its tag readout would have to be two different point masses. The label sets therefore split into disjoint supports of sizes $m_j$. Conditional projection and nearest-center quantization give the lower in \eqref{eq:tagallocation}; disjoint codebooks attain its infimum arbitrarily closely. Condition on the independent seed to cover randomized schemes. Cube small balls give $q_m\ge c_dm^{-2/d}$ and a regular grid gives the reverse bound. Jensen's inequality and allocation of at least $\lfloor K/D\rfloor$ centers to each tag prove the stated order.
+\end{proof}
+
+An executable challenge to a tuple of independent interface tags can make its product cardinality necessary. Without such a challenge or a reverse certificate, $RDQ$ is only an upper overhead. Similarly a defect allowance does not force an error floor. Its linear bounded-loss scale is nevertheless attainable: if the target observes a fair bit $U$ exactly and the source erases it with probability $e$, guessing a fair virtual bit on erasure has joint-law defect $e/2$ from $(U,U)$. The source's optimal squared prediction risk for $U$ is $e/4$ (output $1/2$ on erasure), while the target risk is zero. Three retained labels suffice for the source. This proves order-sharpness for that specified erasure interface, not a universal positive lower for every experiment with an upper defect bound.

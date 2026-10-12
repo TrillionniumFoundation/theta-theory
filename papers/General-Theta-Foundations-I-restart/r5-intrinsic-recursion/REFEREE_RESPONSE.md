@@ -1,0 +1,24 @@
+# Response to the restart reports
+
+Review target: r4 report blob `fbaa8ac345f170971ffb0ee960369263016153b0`; r1 is the user-named initiating report. This response describes author-side mathematical revisions, not an independent referee endorsement or journal acceptance.
+
+## R1: quotient versions, broad transport, and a common risk
+The standard-Borel factorization and positive-density continuous-instrument argument are reproved in Proposition `prop:quotient`. No normalization on null reports is claimed. Theorem `thm:inward` constructs an online machine and derives its true-law error recurrence. Lemma `lem:calibration`, Propositions `prop:oracle` and `prop:output`, and both realization theorems use specified common tasks and baselines. The inherited r2 remedies and r3/r4 developments remain unchanged in the supplement; a universal robust floor is not inferred from an error certificate alone.
+
+## R4 §§5.2, 5.5, 12.1, 12.3: supplied local machine and conditional law
+The main theorem no longer takes a recursive quantizer as an assumption. Static finite Borel cells and representatives satisfy the two inequalities in (inward). The least-index selector constructs the code, and raw inequalities (pair) and (envelope), integrated under the TRUE state report kernel, prove its recursion. Equation (conditional) conditions on the complete observed past and all used algorithm randomization, but not latent hidden states. Exact hold mixing occurs between squared energies. This is a sufficient raw-kernel construction, not an intrinsic characterization or a claim that covering alone is enough.
+
+## R4 §§5.3, 12.2: occupation domination and changing support
+The new theorem does not use terminal occupation domination or a common invariant reference. It controls an envelope of candidate states directly. The singular theorem permits an arbitrary initial mode distribution, any deterministic sequence alpha_t in [0,1], and independent exact holds. Mode masses may start at zero, appear, or disappear. The acquired law is computed from its actual finite depth chain. This removes the reference-preparation requirement for the new class; it does not assert domination-free allocation-specific bounds for all countable strata. The previous weighted allocation and reset-preserved routes remain complementary.
+
+## R4 §§7, 13.2: nonuniform natural filter verification
+The filtering realization is now a class in every finite hidden-state dimension. Positive mixing matrices can vary arbitrarily with time. Between mixing gates, observations are informative but isometric in log odds, so arbitrarily long noncontracting runs occur. The proof derives a Hilbert/oscillation contraction directly from matrix entries, constructs a finite inward exponential product compander on the unbounded log-odds domain, and proves actual acquired small-ball mass using only the final mixing event. It obtains M^(-2/d) without a truncation logarithm. This is a theorem-level application, not a claim to have solved every weakly mixing filter or independently established priority.
+
+## R4 §§8–9, 12.5–12.6, 13.3–13.4: finite acquisition and resources
+The singular experiment acquires only B paid bits and later packets of at most six bits. Its atomic conditional law, acquisition variance, and memory error are connected by the exact common-oracle identity. The filter has a single indexed Bernoulli task with a matched label/output-grid/calibration region, plus its actual acquisition variance. Complete causal deficiency and simulator/controller/clock/workspace/program accounts compose through Theorem `thm:morphism`; necessity of extra interface states requires the explicit executable challenge in Proposition `prop:interface`. These are not universal lower bounds on every implementation register. Adaptive acquisition and full-vector converses are not declared closed.
+
+## R4 §§11, 12.7: theorem-level literature
+Section 7 compares hard retained labels to quantized filters, average contraction, Dobrushin stability, finite-window POMDP control (including the consulted Theorems 12, 16, 17 of Kara–Yuksel), nonanticipative information constraints, singular quantization, and experiment comparison. It identifies which parts are standard. Published references are used where verified; explicitly identified preprint versions are the versions consulted. No exhaustive priority certificate is claimed.
+
+## R4 §§12.4, 12.8 and technical comments
+Deterministic horizons, independent suspension, fixed exploration, exact Borel versus finite-bit implementation, biased-rounding calibration terms, and condition-number dependence are explicit in the main text. The new main has one mechanism and two realizations; all 38 earlier statements remain in the unchanged sibling supplement. Finite regression and typesetting evidence are expressly not continuum proof certificates. The resulting submission remains subject to independent mathematical and priority review.

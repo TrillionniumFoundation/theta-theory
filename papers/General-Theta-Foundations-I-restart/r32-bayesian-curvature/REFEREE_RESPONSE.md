@@ -1,0 +1,27 @@
+# Response to the R29 external referee
+
+## Fixed object and response
+
+We thank the referee for separating technical correctness from breadth and mathematical significance. The report is the complete 829-line object at review commit `204a9cc62c2c1ce48d0668f35c4bbc326118ebd7`, blob `dd9a1681b0e807e892c4c053640ec8e332ca94e1`. Its reviewed source is `31d06e6f21ccfe072016a7f0c9d39aeee4f6836f` and referee-ready head `09eda58be2297ce885c7f2b4447f24fec3a0c9b4`. R30 and R31 were research intakes, not completed manuscripts or later external reviews. This revision preserves them and the complete reviewed article.
+
+The mathematical response to sections 14.4 and 16.1 is a theorem for informative state-dependent likelihoods, not another Haar realization. The central statement is `thm:main`. The posterior transport is a normalized affine instrument, its quadratic potential is a convex perspective, and the exact residual has three nonnegative parts: old-information conditional Jensen loss, within-row quantization, and cross-row pooling. The all-Borel converse keeps those terms distinct. The common-cover construction proves globally executable matching order without assuming every static row optimizer can be simultaneously saturated.
+
+The same general theorem is independently verified for a natural finite-state Gaussian hidden process and a state-dependent noncommuting effect instrument. The Gaussian proof allows every positive invertible transition, even outside the previous sufficient `3*kappa` regime. The quantum proof likewise allows every strictly positive amount of the stated improvement, with no shared eigenbasis or Haar report. A bounded-gap version has noncontracting phases. A separate fully proved full-rank/pure-rank instrument yields the actual weighted two-stratum law.
+
+The charged-clock power law itself, Gaussian density method, positive congruence inverse, conditional pooling, elementary error devices and integer allocation have predecessors in the retained manuscripts. They are explicitly credited in the article and proof ledger. The new contribution is not a relabeled exponent: it is the normalized causal defect and its same-report stability mechanism, the wider raw parameter classes, and the retained-bit phase bottleneck in one scored experiment. The new passive-protocol comparison does not supersede the stronger adaptive-action quantifiers of the earlier continuation-value theorem.
+
+## Major comments
+
+The twelve major comments are answered individually in `REFEREE_COMMENT_CONCORDANCE.md`. Briefly: the main theorem and experiment-level assumptions are stated before realizations; static/one-step/global compatibility are separated; the nearest sequential and finite-state quantization literature is compared by information and resource patterns; a non-Haar nonlinear filtering consequence is proved; the quantum audit, classical observer restriction, dimension and spectral estimates are explicit; the two clock interfaces are tabulated; the complete temporal article is editorially separate; the title is retained with a precise mathematical scope; exact Borel and digital execution are adjacent; and the state-dependent direction is worked out rather than left as a roadmap.
+
+The title remains *General Theta Foundations I: Acquired Geometry and Causal Resource Transfer*. It does not assert a necessary-and-sufficient classification of all experiments. Every theorem states the finite affine closure, preparation, legal observer class and additional geometric/stability requirements it uses. No journal's acceptance or independent priority is claimed.
+
+## Technical comments and preservation
+
+All 28 technical comments are individually mapped in the concordance. The retained relative-report article is supplied in full as Companion G. Its formulas and historical source are unchanged; Appendix A provides the requested equality qualifications, modular spectral projector lemma, phase-count table, audit normalization, finite-chart section, singleton-remainder observation and precision/TV conventions. The corrected temporal Companion F receives a visible cover stating that it is the corrected preserved R27 text, not the original externally reviewed object. The original R27 source, original report and the earlier corrected copy remain distinct Git objects.
+
+The new source contains proofs and source audits, not numerical substitutes for them. Finite regression distinguishes exact rational cases from floating sanity. Source, artifact and read-only heads are bound only by the corresponding generated receipts, not by a promise in this response.
+
+## What remains for mathematical review
+
+The proof ledger identifies all arguments claimed complete on their stated classes. It also identifies genuine unresolved extensions: nonsummable state-dependent continuation profiles with matching all-observer lower bounds, automatic compatible recursion without a supplied global certificate, unknown-kernel learning, arbitrary nondominated or infinite predictive carriers, unbounded stopping and optimal joint program/workspace/time complexity. These are not silently included in the theorem. The referee should especially check the likelihood-reweighted barycenter, the all-label converse, cone contraction domains, the changing-rank potential, and the bit-retention phase dichotomy. The ambition of the mother problem is maintained; the claimed completed mathematics is delimited by proved hypotheses.

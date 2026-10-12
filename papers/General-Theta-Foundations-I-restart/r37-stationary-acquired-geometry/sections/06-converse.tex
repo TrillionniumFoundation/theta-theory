@@ -1,0 +1,44 @@
+\section{The all-controller converse and checkpoint law}\label{sec:converse}
+\begin{lemma}[Controlled conditional barycenters]\label{lem:barycenter}
+For any legal finite-state observer, let $Q_t=\E[X_t\mid S_t]$. Given $S_t$ and the next chosen action $A_t$, put $W_{t+1}=F_{A_t}(Y_{t+1},Q_t)$. Then
+\[
+ \E[X_{t+1}\mid S_t,A_t,Y_{t+1}]=W_{t+1},\qquad
+ Q_{t+1}=\E[W_{t+1}\mid S_{t+1}].
+\]
+All conditional statements concern their positive-mass events. They hold for Borel randomized updates and for time-dependent tables.
+\end{lemma}
+\begin{proof}
+The fresh action is independent of the physical state conditionally on the retained label. Both the report likelihood and the unnormalized test numerator are affine in that label's conditional predictive state. Consequently their conditional integrals are $\ell_a(y,Q_t)$ and $U_a(y,Q_t)$. Division on positive likelihood gives the first identity; equivalently it follows by integration against bounded measurable report functions, without conditioning a continuous report on a positive-probability singleton. Fresh update randomness carries no further physical information given $(S_t,A_t,Y_{t+1})$. The tower property proves the second identity. Earlier private randomizations are included in the observer filtration, and no future audit outcome is used. This is the likelihood-reweighted pooling identity of \cite{GTFBayes,GTFControlled}.
+\end{proof}
+
+\begin{proposition}[Bellman loss decomposition for every observer]\label{prop:all-observer}
+At each cut define
+\[
+ \Delta_t=\E\left[K_{A_t}h(Q_t)-\min_a K_ah(Q_t)\right],\qquad
+ J_{t+1}=\E h(Q_{t+1})-\E h(W_{t+1}).
+\]
+Then $\Delta_t\ge0$, $J_{t+1}\ge cM^{-2/d}$, and
+\begin{equation}\label{eq:bellman-loss}
+ \E g(Q_t)-\rho
+ =\E h(Q_t)-\E h(Q_{t+1})+\Delta_t+J_{t+1}.
+\end{equation}
+In particular the converse in Theorem~\ref{thm:main} holds without stationary calibration or an invariant start.
+\end{proposition}
+\begin{proof}
+Substitute the Bellman equation at $Q_t$ and then add and subtract $\E h(Q_{t+1})$. Lemma~\ref{lem:barycenter} identifies $\E K_{A_t}h(Q_t)=\E h(W_{t+1})$, proving the equality. The conditional state $Q_t$ is a realizable mixture, lies in $K$ for $t\ge1$, and lies in $D$ at the initial cut. Its actual outgoing law is a mixture of the rows in Definition~\ref{def:class}, hence has density at most $\Lambda$. Strong concavity and conditional pooling give
+\[
+ J_{t+1}\ge\E\norm{W_{t+1}-Q_{t+1}}^2
+ \ge q_M(\Law(W_{t+1}))\ge cM^{-2/d}.
+\]
+The label may be randomized and may pool arbitrarily different incoming rows; none of these enlarges its number of reproduction points. This is an information/decision lower against every declared program, not just a chosen common-cell construction.
+
+Sum \eqref{eq:bellman-loss} at $t=0,\ldots,n-1$. The bias telescope is bounded by $H$. Shifting the $g(Q_t)$ cuts to $1,\ldots,n$ costs at most $\osc_Dg/n$. Any actual label readout $r_{S_t}$ satisfies
+\[
+ \E\norm{Z_t-r_{S_t}}^2=\E g(Q_t)+\E\norm{Q_t-r_{S_t}}^2\ge\E g(Q_t).
+\]
+This identity means the potential single-audit risk; it does not insert intermediate physical audits. We obtain \eqref{eq:converse-main}. Proposition~\ref{prop:invariant}, the dyadic choice of $\alpha$, and \eqref{eq:bias-bounds} give the remaining assertions of Theorem~\ref{thm:main}. The lower constant in the finite matching region remains positive after choosing $C_*$ sufficiently large. We do not claim that this sufficient entrance scale is necessary.
+\end{proof}
+
+\begin{proof}[Proof of Corollary~\ref{cor:checkpoint}]
+Fix a legal acquisition strategy $\pi$. At the hidden uniform cut $T$, conditional projection gives Bayes risk $B_n^\pi$ plus the squared distortion of the actual $X_T$ law. The decoder has only its $M$-valued label, so optimizing its encoder and decoder gives $q_M(\nu_n^\pi)$. Randomization cannot lower the nearest-point cost. Infimizing over $\pi$ proves the identity. Each acquired row, and hence $\nu_n^\pi$, has density bounded by $\Lambda$ on $K$. Lemma~\ref{lem:smallball} gives a uniform lower. A single global cover with $M$ cells and fixed representatives gives a uniform $CM^{-2/d}$ upper, independently of the strategy and of $T$. Taking arbitrarily minimizing full-history strategies proves both inequalities. In particular, the actual mixture $\nu_n^\pi$ is not replaced by uniform volume or a formal reachable set.
+\end{proof}
