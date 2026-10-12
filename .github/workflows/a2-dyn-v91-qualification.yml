@@ -1,0 +1,54 @@
+name: A2-DYN v91 unweakened critical and original-source qualification
+on:
+  push:
+    branches:
+      - revision/a2-dyn-v91-referee-response-2026-10-12
+      - revision/a2-dyn-v91-referee-copy-2026-10-12
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: a2-dyn-v91-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  qualify-manuscript:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Pin reviewed sources and exact checkout
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD:papers/A2-DYN-v90-referee-response)" = "01d42f467a87817d7b756615a438f95bd8072369"
+          test "$(git rev-parse HEAD:reviews/a2-dyn-v90-external-top4-review-2026-10-12/REFEREE_REPORT.md)" = "6fb5c325fc24eff1934b8134a5c4432a90d04486"
+          mkdir -p papers/A2-DYN-v91-referee-response/evidence
+          git archive HEAD papers/A2-DYN-v72-referee-response papers/A2-DYN-v73-referee-response papers/A2-DYN-v74-referee-response papers/A2-DYN-v75-referee-response papers/A2-DYN-v76-referee-response papers/A2-DYN-v77-referee-response papers/A2-DYN-v78-referee-response papers/A2-DYN-v79-referee-response papers/A2-DYN-v80-referee-response papers/A2-DYN-v81-referee-response papers/A2-DYN-v82-referee-response papers/A2-DYN-v83-referee-response papers/A2-DYN-v84-referee-response papers/A2-DYN-v85-referee-response papers/A2-DYN-v86-referee-response papers/A2-DYN-v87-referee-response papers/A2-DYN-v88-referee-response papers/A2-DYN-v88-main-preserved papers/A2-DYN-v89-referee-response papers/A2-DYN-v90-referee-response papers/A2-DYN-v91-referee-response reviews/a2-dyn-v90-external-top4-review-2026-10-12 .github/workflows/a2-dyn-v91-qualification.yml A2_DYN_V91_REVISION_INDEX.md > papers/A2-DYN-v91-referee-response/evidence/exact-source.tar
+          printf '%s\n%s\n' "$GITHUB_SHA" "$GITHUB_REF" > papers/A2-DYN-v91-referee-response/evidence/exact-checkout.txt
+          git rev-parse HEAD:papers/A2-DYN-v91-referee-response >> papers/A2-DYN-v91-referee-response/evidence/exact-checkout.txt
+      - name: Install native TeX and finite-check dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern python3-numpy python3-mpmath python3-sympy python3-scipy poppler-utils
+      - name: Preserve sources and compile all 216 proof modules
+        env:
+          TZ: UTC
+        run: bash papers/A2-DYN-v91-referee-response/build.sh
+      - name: Upload exact-SHA article and complete-supplement evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a2-dyn-v91-${{ github.sha }}-${{ github.run_id }}
+          if-no-files-found: error
+          retention-days: 90
+          path: |
+            papers/A2-DYN-v91-referee-response/build/*.pdf
+            papers/A2-DYN-v91-referee-response/build/*.log
+            papers/A2-DYN-v91-referee-response/build/*.fls
+            papers/A2-DYN-v91-referee-response/build/*.aux
+            papers/A2-DYN-v91-referee-response/build/*-pass*.txt
+            papers/A2-DYN-v91-referee-response/build/*.tex
+            papers/A2-DYN-v91-referee-response/evidence/*
