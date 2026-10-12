@@ -1,0 +1,159 @@
+\section{Autonomous acquired-geometry completion}\label{sec:adaptivecompletion}
+The preceding definitions distinguish a predictive state from an implementation of that state. We now give a class theorem that closes this distinction while optimizing acquisition itself. The acquisition controller is included in the finite state, and there is no public clock. Neither independent report tails nor a prescribed refinement order is assumed.
+
+\subsection{A response-refining experiment}
+Let a standard-Borel preparation draw $\Theta$ with a fixed probability $\mu_0$. A bounded vector-valued audit has kernel $K^{\rm aud}(\theta,dy)$ and response
+\[
+ Z(\theta)=\int y\,K^{\rm aud}(\theta,dy)\in\R^d,\qquad
+ \mu=Z_*\mu_0,\qquad B_\infty=\E\|Y-Z\|^2.
+\]
+The norm is the fixed scored-task norm. Observation actions do not change the preparation or this audit kernel. Conditional on $\Theta$, observation randomness is independent of the audit randomness. The audit is executable after any declared bounded stopping rule, but its outcome is unavailable before prediction. This is a controlled observation class of causal experiments, not a claim about arbitrary interventions that change the scored outcome.
+
+At each finite visible history $h$, a known nonempty finite set $\mathcal A(h)$, of cardinality at most $K$, is available. An action $a$ produces a binary report $b$ through a Borel kernel. The history records both $a$ and $b$. A stop command is always legal. A complete history has depth equal to its number of observation calls. Preparation, each binary observation, and the final audit cost one raw call. An algorithm with at most $n$ observations therefore costs at most $N=n+2$ calls. Hidden report tapes cannot be reread, and the external interface supplies neither elapsed time nor a data-dependent phase.
+
+For every positive-probability history let $\mu_h$ be the actual conditional law of $Z$, $A_h=\operatorname{supp}\mu_h$, $m_h=\int z\,\mu_h(dz)$ and $v_h=\int\|z-m_h\|^2\mu_h(dz)$. Require compact $A_h$. For every legal $(h,a)$, write $p_{h,a,b}$ for the two actual conditional report probabilities. There are constants
+\begin{equation}\label{eq:refineconstants}
+ 0<p_*\le\tfrac12,\quad 0<a_*\le b_*<1,\quad D,g>0,
+\end{equation}
+and assigned positive scales $\ell_h$, all fixed before selecting a budget or policy, such that
+\begin{align}
+ p_*\le p_{h,a,b}&\le1-p_*,&
+ a_*\ell_h\le\ell_{hab}&\le b_*\ell_h,\label{eq:refinemass}\\
+ \operatorname{diam} A_h&\le D\ell_h,&
+ \operatorname{dist}(A_{ha0},A_{ha1})&\ge g\ell_h.\label{eq:refineseparation}
+\end{align}
+Both child supports carry their actual conditional laws; their union is $A_h$. All these assertions quantify over every legal finite history and action. Thus the scales, branch probabilities and available next actions may depend on observed values. The supports in \eqref{eq:refineseparation} are response supports derived from the preparation and audit, not an ambient parameter manifold. The separation condition is substantive: overlapping noisy response posteriors do not automatically satisfy it.
+
+The shrinking supports imply that any indefinitely continued legal observation policy determines $Z$ almost surely. The measure $\mu$ is nevertheless a preparation-response law, not the law acquired after finitely many reports. For a deterministic policy $\pi$ making $n$ observations, the latter is
+\begin{equation}\label{eq:actualrefinedlaw}
+ \nu_n^\pi=\law(m_{H_n^\pi}),\qquad
+ A_n^\pi=\E v_{H_n^\pi},\qquad A_n=\inf_\pi A_n^\pi.
+\end{equation}
+It is a finite atomic measure with its actual history probabilities. Define the acquired resource functional
+\begin{equation}\label{eq:acquiredfunctional}
+ \Psi(n,M)=\inf_\pi\{A_n^\pi+q_M(\nu_n^\pi)\}.
+\end{equation}
+Randomized policies are permitted in the decision problem; independent algorithm coins can be fixed when taking the infimum. The finite action sets make the full-history finite-horizon minima attainable. No unknown experimental parameter may be encoded in the policy or program.
+
+Let $R_{\rm cp}^{\rm ref}(n,M)$ be the optimal risk when acquisition may use the complete history, stopping occurs after at most $n$ observations, and only $M$ labels survive its final compression. Let $R_{\rm aut}^{\rm ref}(n,M)$ be the optimal risk of an autonomous machine with at most $M$ states in total, including its acquisition controller, stop status and any clock. Its action and update use only its current state and the current report. No separate uncharged time argument is available. A checkpoint decoder receives no extra history-dependent stopping time or action record beyond its retained label. Both models may have a charged read-only program and temporary workspace erased at every cut. The stopping-time audit is the same kernel in both models.
+
+\begin{theorem}[Adaptive causal acquired-geometry completion]\label{thm:autonomous}
+Assume \eqref{eq:refineconstants}--\eqref{eq:refineseparation}. There is a constant $C$, depending only on $p_*,a_*,b_*,D,g$, such that, for every integer $n\ge0$ and $M\ge1$,
+\begin{align}
+ R_{\rm cp}^{\rm ref}(n,M)-B_\infty&=\Psi(n,M),\label{eq:exactadaptivecp}\\
+ \Psi(n,M)\le R_{\rm aut}^{\rm ref}(n,M)-B_\infty
+ &\le C\Psi(n,M),\label{eq:autonomousmain}\\
+ \Psi(n,M)&\asymp A_n+q_M(\mu).\label{eq:oraclecomparison}
+\end{align}
+The constants are independent of the horizon, the memory budget, the policy and the depth-dependent geometry. Equation~\eqref{eq:acquiredfunctional}, not a formal reachable set, is the acquired-law form of the conclusion. The use of $\mu$ in \eqref{eq:oraclecomparison} is a proved oracle comparison.
+
+The upper constructs one autonomous finite-state acquisition and prediction procedure. Choose a full-history policy minimizing $A_n$, retain a mass--scale selected prefix tree of that policy, and stop at its leaves. With $m=\lfloor(M+1)/2\rfloor$, the retained tree has at most $m$ leaves and $2m-1\le M$ nodes. Those nodes are the entire machine state space. Its maximum observation count is at most $n$. In particular the theorem does not store an exact prefix and compress it afterward, nor does it leave the acquisition controller outside $M$.
+\end{theorem}
+
+We prove the assertion through a uniform comparison that also gives an exponent-free resolution curve. Fix any deterministic indefinitely continued policy. Its binary history tree has node masses $w_h=\PP(H_{|h|}=h)$ and energies
+\[
+ e_h=w_h\ell_h^2,\qquad \eta=p_*a_*^2\in(0,1),\qquad
+ \eta e_h\le e_{hab}\le(1-p_*)b_*^2e_h<e_h.
+\]
+Start with the root and repeatedly split a leaf of largest energy, using a fixed lexicographic order to break ties. Denote the $L$-leaf frontier by $\mathcal F_L$ and put
+\begin{equation}\label{eq:frontierprofile}
+ G_L=\sum_{h\in\mathcal F_L}e_h,\qquad t_L=\max_{h\in\mathcal F_L}e_h.
+\end{equation}
+Different policies need not have the same frontier or conditional masses.
+
+\begin{lemma}[Actual-mass frontier comparison]\label{lem:frontiercomparison}
+For every such policy and every $L\ge1$,
+\begin{equation}\label{eq:frontierquantization}
+ c_0G_L\le q_L(\mu)\le D^2G_L,
+ \qquad c_0=\frac{g^2\eta^3}{16}.
+\end{equation}
+Moreover $G_L$ is decreasing and $G_{2L}\ge2\eta^3G_L$. The constants are uniform in the policy; no stationary branching probabilities, dimension, covariance or independence hypothesis is used.
+\end{lemma}
+\begin{proof}
+At every greedy frontier, each leaf energy is at least $\eta t_L$. This holds at the root and is preserved by splitting a current maximum: both new energies are at least $\eta$ times the old maximum, while the new maximum cannot increase. From $L$ leaves to $2L$ leaves there are exactly $L$ further splits. At least one of the original $L$ leaf subtrees receives at most one split. It therefore has a remaining descendant of energy at least $\eta^2t_L$. Consequently
+\begin{equation}\label{eq:frontierdoubling}
+ t_{2L}\ge\eta^2t_L,\qquad
+ G_{2L}\ge2L\eta t_{2L}\ge2\eta^3G_L.
+\end{equation}
+Also the sum of two child energies is at most $b_*^2e_h$, which proves monotonicity of $G_L$.
+
+For the upper, output $m_h$ on each frontier cell. The mean squared error is $\sum_{h\in\mathcal F_L}w_hv_h\le D^2G_L$. This is an oracle code used only for this comparison.
+
+For the lower, consider $\mathcal F_{2L}$. The open $g\ell_h/4$-neighborhoods of its supports are pairwise disjoint. Indeed, two different frontier nodes descend from different children of their last common ancestor $u$. Their supports are separated by at least $g\ell_u$, whereas the sum of those two neighborhood radii is at most $g\ell_u/2$. Thus any set of $L$ reconstruction centers meets at most $L$ neighborhoods. On each of the at least $L$ missed supports every reconstruction has error at least $g\ell_h/4$. Its actual mass contribution is at least $g^2e_h/16$. The preceding estimates give
+\[
+ q_L(\mu)\ge\frac{g^2}{16}L\eta t_{2L}
+ \ge\frac{g^2\eta^3}{16}Lt_L\ge c_0G_L.
+\]
+The argument permits centers outside all supports. There is no conditioning-and-renormalization step, and every node mass is the actual preparation mass of its reported event.
+\end{proof}
+
+\begin{lemma}[Finite-horizon causal pruning]\label{lem:causalpruning}
+Fix a deterministic $n$-observation policy $\pi$ and an integer $m\ge1$. Among its nodes of depth less than $n$, split a maximum-energy current leaf until there are $m$ leaves or no such leaf remains. The resulting tree has at most $m$ leaves, depth at most $n$, and risk for reconstructing $Z$ at most
+\begin{equation}\label{eq:pruningrisk}
+ A_n^\pi+D^2G_m,
+\end{equation}
+where $G_m$ is the frontier profile of any legal infinite extension of $\pi$ with the same tie order.
+\end{lemma}
+\begin{proof}
+The strictly decreasing parent--child energies imply that the unrestricted greedy split order lists nodes in nonincreasing energy, with ancestors first. Such an order is well defined: above any positive threshold there are only finitely many nodes, since $e_h\le((1-p_*)b_*^2)^{|h|}e_\varnothing$.
+
+First truncate the unrestricted $m$-leaf tree at depth $n$. Its shallow leaves contribute no more than the unrestricted tree risk, bounded by $D^2G_m$. Each new depth-$n$ leaf contributes $w_hv_h$, and the sum of these contributions is at most $A_n^\pi$. This proves \eqref{eq:pruningrisk} for the truncated tree.
+
+The finite-horizon algorithm retains every split of that truncation and may make additional splits. To see this, delete all depth-$n$ or deeper nodes from the unrestricted ordered split list. The first $m-1$ remaining nodes, or all of them when fewer remain, are exactly the finite-horizon greedy splits. The splits belonging to the truncated unrestricted tree form an initial sublist. Thus the finite-horizon partition refines the truncation. Conditional variance decreases under refinement, proving the bound. Only the finite depth-$n$ policy and its actual masses and scales are needed to construct this tree. An infinite extension is used in the proof, not supplied to the machine.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:autonomous}]
+The audit assumption gives, directly for every admitted bounded stopping time and predictor,
+\begin{equation}\label{eq:auditoracle}
+ \E\|Y-\widehat y\|^2=B_\infty+\E\|Z-\widehat y\|^2.
+\end{equation}
+This is conditional projection given $\Theta$ and the stopped history, not a substitution of a random time into a deterministic bound. Continuing an early-stopped history with any legal observations can only increase the information available to a checkpoint encoder. It can ignore that extra information. Hence its infimum is attained among policies making $n$ observations. Conditional projection at that final history gives exactly \eqref{eq:exactadaptivecp}.
+
+Every algorithm, after fixing its independent coins, has at most $M$ possible forecasts and at most $n$ observations. Dropping the acquisition restriction gives the lower $q_M(\mu)$ for reconstructing $Z$. Dropping the memory restriction gives the separate lower $A_n$. Therefore
+\begin{equation}\label{eq:twolowers}
+ \Psi(n,M)\ge\max\{A_n,q_M(\mu)\}.
+\end{equation}
+The two infima have not been interchanged. The response law $\mu$ is policy independent; each acquired law $\nu_n^\pi$ need not be.
+
+Choose a minimizing full-history policy $\pi$. With $m=\lfloor(M+1)/2\rfloor$, apply Lemma~\ref{lem:causalpruning}. An autonomous machine stores the current node of the resulting finite binary tree. At an internal node it issues the policy's recorded legal action and follows the reported child. At a leaf it emits the recorded conditional mean, then stops and permits the audit. A full binary tree with at most $m$ leaves has at most $2m-1\le M$ nodes. The current node thus includes all acquired information used by the controller, the decision to stop and the terminal readout. No clock or elapsed-depth register is consulted. Tree depth is at most $n$ by construction. This proves the implementation claim and the bound $A_n+D^2G_m$.
+
+If $M\ge2$, then $M\le2m$. Monotonicity and \eqref{eq:frontierdoubling} imply
+\[
+ q_M(\mu)\ge c_0G_M\ge c_0G_{2m}\ge2c_0\eta^3G_m.
+\]
+For $M=1$ use \eqref{eq:frontierquantization} directly. Thus, with
+$C_0=\max\{1,16D^2/(g^2\eta^6)\}$, the constructed risk is at most
+\[
+ B_\infty+A_n+C_0q_M(\mu).
+\]
+Combine this with \eqref{eq:twolowers} and the inclusion of autonomous procedures among checkpoint procedures. Equations~\eqref{eq:autonomousmain} and \eqref{eq:oraclecomparison} follow with, for example, $C=1+C_0$. Fixing and then averaging algorithm coins proves the same statements for randomized procedures. The case $n=0$ is the one-node tree and is included.
+\end{proof}
+
+\subsection{Planning, precision and a complete state account}
+For the full-history acquisition problem the exact finite recursion is
+\begin{equation}\label{eq:acquisitionbellman}
+ V_0(h)=v_h,\qquad
+ V_k(h)=\min_{a\in\mathcal A(h)}\sum_{b=0}^1p_{h,a,b}V_{k-1}(hab),
+ \qquad A_n=V_n(\varnothing).
+\end{equation}
+This is ordinary finite-horizon dynamic programming. Its role is to supply an acquisition policy; the new comparison is its autonomous finite-state compilation with constants uniform in $n$ and $M$. An exhaustive evaluation can examine exponentially many histories. Such planning work is not hidden in the deployed state count or claimed optimal.
+
+\begin{corollary}[Finite-table implementation and one-task perturbations]\label{cor:autonomousdigital}
+Suppose a certified policy has $A_n^\pi\le A_n+\kappa$, its finite-horizon greedy split ordering is supplied, and its leaf means are represented with task-norm error at most $\delta_{\rm cal}+\delta_{\rm num}$. The compiled machine has at most $M$ autonomous states and risk
+\begin{equation}\label{eq:autonomouserrors}
+ R-B_\infty\le A_n+\kappa+C_0q_M(\mu)
+                 +(\delta_{\rm cal}+\delta_{\rm num})^2.
+\end{equation}
+For the following bit bounds assume that the actions are drawn from a fixed alphabet of at most $K$ primitive instructions; costs of their physical implementations are separate. For a rational output box in $\R^d$, $p$ fractional output bits per coordinate suffice for $\delta_{\rm num}\le c_d2^{-p}$. A read-only transition and output table uses
+\[
+ O\bigl(M(\log(M+1)+\log(K+1)+d(p+1)) +\log(n+1)\bigr)
+\]
+bits. A sequential implementation uses $O(\log(M+1)+\log(K+1)+\log(d+1)+p+1)$ scratch bits in addition to the retained state index, and at most $O((n+1)M(\log(M+1)+\log(K+1)+d(p+1)))$ elementary bit operations to scan this table, apart from charged physical-action execution. Output coordinates are write-only. No unit-cost large integers or random-access table lookup is assumed.
+
+If a parameter-independent causal morphism transfers the entire stopped experiment with defect at most $\varepsilon$ and loss bounded by $L_{\max}$, the transferred absolute-risk upper adds $L_{\max}\varepsilon$. If the simulator has $S$ states, the product implementation has at most $MS$ states, together with any additional genuinely used interface states. No general lower floor is inferred from an allowed calibration, numerical or defect budget.
+\end{corollary}
+\begin{proof}
+The pruning proof applies to the supplied policy and gives the extra $\kappa$. At each terminal leaf the residual $Z-m_h$ has conditional mean zero. Replacing $m_h$ by its fixed stored approximation therefore adds its squared task error without a cross term. Coordinate rounding gives the stated norm bound. Store for each node its action and two child indices, or its output coordinates and stop type. These are read-only records; the sole persistent data are the node index. Sequential scans and one-coordinate-at-a-time output give the displayed coarse bit and time bounds, with scratch erased and the interpreter/program head reset to its fixed entry position before the next cut. Computing the certified policy, comparisons and moments is separate preprocessing; decidability of exact comparisons of arbitrary computable reals is not asserted. The last conclusion is the bounded-loss total-variation inequality for the same stopped scored law and the typed product-state construction of Theorem~\ref{thm:morphism}.
+\end{proof}
+
+The theorem is not a statement that every small terminal width is causally sufficient. Uniform separation, positive conditional mass and bounded child-to-parent scale loss are what make a small arbitrary code comparable to a causally executable prefix tree. They also give the cardinality stability needed to charge internal controller nodes without changing the risk order. Without these hypotheses the earlier continuation obstruction can be strictly larger than terminal quantization, as the noisy realizations below demonstrate.

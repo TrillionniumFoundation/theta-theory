@@ -1,0 +1,180 @@
+\section{Sparse filters with endogenous missing observations}\label{sec:filters}
+We verify the block theorem on a standard hidden-state observation class, without a positive entry floor on the \emph{zero} entries of its transition matrices and without bounded likelihood ratios. Fix $n=d+1\ge2$. Let $P$ be a primitive zero--one support matrix, with $P^m$ strictly positive. At each time a declared action selects a stochastic matrix $Q_t$ with support $P$; each nonzero entry is at least $s>0$. Thus every realized product of $m$ such matrices has every entry at least $s^m$. The matrices may vary with time and with past reports; no common invariant law is assumed.
+
+Prepare the hidden state $Z_0$ uniformly on $\{0,\ldots,d\}$. After its transition, a state $i$ is reported as missing, $Y_t=\bot$, with probability $1-q_i^{a_t}$, and otherwise produces a Gaussian report in $\R^d$ with mean $\mu_i^{a_t}$ and covariance $\sigma^2I_d$. All kernels are known. Assume
+\begin{equation}\label{eq:hmmparams}
+ 0<q_-\le q_i^a\le q_+<1,\qquad
+ \norm{\mu_i^a}_\infty\le R,
+ \qquad \abs{\det B_a}\ge b_0>0,
+\end{equation}
+where row $i$ of $B_a$, $1\le i\le d$, is $(\mu_i^a-\mu_0^a)^{\mathsf T}/\sigma^2$. A finite action set is sufficient. The positive determinant hypothesis is used for a $d$-dimensional acquired lower bound, not for the upper construction. A fixed family of affinely independent Gaussian means verifies it; no preassigned Fisher or covariance geometry of the predictive quotient is assumed.
+
+Relative to Lebesgue measure plus a unit atom at $\bot$, the emission density is
+\begin{equation}\label{eq:emissions}
+ g_i^a(y)=q_i^a(2\pi\sigma^2)^{-d/2}
+ e^{-\norm{y-\mu_i^a}^2/(2\sigma^2)},\quad
+ g_i^a(\bot)=1-q_i^a.
+\end{equation}
+Missingness therefore reveals information about the hidden state when the $q_i^a$ differ. It is not an independent exact hold. The preparation, every transition/report attempt and the terminal probe each cost one raw acquisition. For a horizon $T$ the raw count is $T+2$.
+
+Let $\pi_{t,i}=\PP(Z_t=i\mid\cH_t)$ and let $\overline\pi_{T,i}=\PP(Z_T=i)$ under the fixed exploration. The posterior is positive, and Bayes' formula gives the pointwise update
+\begin{equation}\label{eq:bayes}
+ F_t(\pi,a,y)_i=\frac{(\pi Q_t)_i g_i^a(y)}{\sum_j(\pi Q_t)_j g_j^a(y)}.
+\end{equation}
+The time and action interface accompany the posterior. A terminal probe chooses $i\in\{1,\ldots,d\}$ uniformly and emits a Bernoulli report with mean
+\begin{equation}\label{eq:filtertask}
+ X_i+\theta,\qquad
+ X_i=\tfrac12+\tfrac14(\one_{\{Z_T=i\}}-\overline\pi_{T,i}),
+ \quad\theta\in\{-\delta,\delta\},\quad0\le\delta\le1/8.
+\end{equation}
+No acquisition reveals $\theta$. The posterior determines every continuation by kernel integration and is separated by these executable probes. It is therefore a direct realization of the predictive quotient. The task norm is $\norm{x}_d^2=d^{-1}\sum_i x_i^2$.
+
+On the open simplex set
+\[
+ d_H(\pi,\rho)=\osc_i\log(\pi_i/\rho_i),\qquad
+ D(\pi)=\osc_i\log\pi_i,\qquad w(\pi)=e^{\eta D(\pi)}.
+\]
+This is a separable Borel metric domain. The value of $\eta>0$ is chosen below from raw moment bounds.
+
+\begin{lemma}[Mass-preserving inward compander]\label{lem:masscompander}
+For every $M\ge1$ the open simplex has a Borel cover with at most $M$ representatives satisfying
+\begin{equation}\label{eq:compander}
+ d_H(\pi,Q_M\pi)\le C_{d,\eta}M^{-1/d}w(\pi),\quad
+ D(Q_M\pi)\le D(\pi),\quad
+ (Q_M\pi)_i\ge\pi_i/n\quad\hbox{for all }i.
+\end{equation}
+The uniform preparation is a representative. Thus the fixed admissibility relation
+\begin{equation}\label{eq:massrelation}
+ \mathcal D(\pi)=\{\rho:D(\rho)\le D(\pi),\ \rho_i\ge\pi_i/n\text{ for every }i\}
+\end{equation}
+is respected by the static cover, independently of $M$.
+\end{lemma}
+\begin{proof}
+Choose the least index $j$ of a largest coordinate of $\pi$ and set $v_i=\log(\pi_j/\pi_i)\ge0$, so $v_j=0$. For an integer $K\ge1$ define
+\[
+ \widehat v_i=-\eta^{-1}\log\left(\frac{\lceil K e^{-\eta v_i}\rceil}{K}\right),
+ \qquad Q\pi_i=\frac{e^{-\widehat v_i}}{\sum_h e^{-\widehat v_h}}.
+\]
+There are at most $nK^d$ representatives: at least one deficit is zero and each other transformed coordinate takes $K$ values. All cells are Borel. For $u=e^{-\eta v_i}$ and $\widehat u=\lceil Ku\rceil/K$, one has $u\le\widehat u\le u+K^{-1}$, including the unbounded last cell. Consequently
+\[
+ 0\le v_i-\widehat v_i\le e^{\eta v_i}/(\eta K).
+\]
+Since one error is zero, their oscillation is at most their maximum, bounded by $w(\pi)/(\eta K)$. This is exactly the projective error. Also $\max_i\widehat v_i\le\max_i v_i$, proving inwardness. Finally $\sum_i e^{-v_i}\ge1$ and $\sum_i e^{-\widehat v_i}\le n$, so $Q\pi_i/\pi_i\ge1/n$.
+
+For $M\ge n$ choose $K=\lfloor(M/n)^{1/d}\rfloor\ge\tfrac12(M/n)^{1/d}$. For $M<n$ use the single uniform representative. Its error is $D(\pi)\le e^{\eta D(\pi)}/(e\eta)$, so enlarging the dimension-dependent constant proves \eqref{eq:compander} for all budgets. The preparation has all deficits zero.
+\end{proof}
+
+\begin{lemma}[Raw block certificate]\label{lem:hmmraw}
+The raw experiment \eqref{eq:emissions}--\eqref{eq:bayes}, together with \eqref{eq:massrelation}, satisfies all kernel conditions of Theorem~\ref{thm:main}, with $L=1$ and explicit finite constants depending only on the fixed parameters in \eqref{eq:hmmparams}, $P,m,s$ and $d$. They are uniform in horizon and in the declared report-adapted action choices. Individual transitions need not have a strict projective contraction coefficient.
+\end{lemma}
+\begin{proof}
+For a nonnegative matrix with no zero column, differentiate $\log\sum_i e^{z_i}Q_{ij}$ in a direction $h$. Every derivative is a convex combination of the $h_i$, so oscillation cannot increase after integrating along a log-coordinate segment. Multiplication by the same positive likelihood vector cancels in the projective difference. Thus every one-step update is nonexpansive, including the missing report.
+
+Fix a cube $G=[-b,b]^d$ of positive volume. Uniform bounds on this cube are
+\[
+ g_-=q_-(2\pi\sigma^2)^{-d/2}
+       e^{-d(b+R)^2/(2\sigma^2)},\qquad
+ g_+=q_+(2\pi\sigma^2)^{-d/2}.
+\]
+Given any visible past, the probability of an observed report in $G$ is at least $p_0=g_-\lvert G\rvert>0$. The event $E$ of $m$ such reports has conditional probability at least $p=p_0^m$, without an independence assertion. On this event the matrix of the exact unnormalized block update,
+$Q_{s+1}\operatorname{diag}(g(Y_{s+1}))\cdots
+Q_{s+m}\operatorname{diag}(g(Y_{s+m}))$,
+has every entry between $l=s^m g_-^m$ and $u=g_+^m$.
+
+For any positive matrix with entries in $[l,u]$, its log-coordinate derivative probability vector for each output coordinate dominates $(l/u)$ times the common input probability vector. Subtract this common mass. The oscillation of the derivative is at most $(1-l/u)\osc(h)$, and integration gives contraction coefficient $\chi=1-l/u<1$. Off $E$ use nonexpansiveness. Therefore \eqref{eq:blockpair} holds with
+\begin{equation}\label{eq:hmmkappa}
+ \kappa=1-p(1-\chi^2)<1.
+\end{equation}
+
+It remains to control the \emph{rounded} trajectory inside that same block. Put $\beta=1/n$. On $E$, Bayes normalization is at most $g_+$, and every relation-preserving rounded state satisfies, coordinatewise,
+\[
+ z_j\ge\beta(g_-/g_+)z_{j-1}Q_{s+j}.
+\]
+Induction and primitive support imply
+\begin{equation}\label{eq:floor}
+ (z_m)_i\ge c_*:=\beta^m(g_-/g_+)^m s^m>0
+ \quad\hbox{for every }i.
+\end{equation}
+Hence $D(z_m)\le R_*:=\log(1/c_*)$, independently of the candidate at the block start. This is precisely where componentwise mass preservation, beyond inwardness, is used.
+
+For an arbitrary report put $V_a(y)=\osc_i\log g_i^a(y)$. The column sums of $Q$ lie in $[s,n]$, so
+\[
+ D(F_t(z,a,y))\le D(z)+C_s+V_a(y),\qquad C_s=\log(n/s).
+\]
+Relation-preserving rounding cannot increase this spread. The Gaussian likelihood ratios are affine in $y$ and the missing likelihood ratios are bounded. Thus for any fixed $\eta_0>0$,
+\[
+ \mathcal M=\sup_{x,a}\int e^{2\eta_0 V_a(y)}J_a(dy\mid x)<\infty.
+\]
+For completeness $V_a(y)\le v_0+v_1\norm{y}_1$ on the continuous part, with $v_1=2R/\sigma^2$ and $v_0$ at least both
+$\log(q_+/q_-)+dR^2/(2\sigma^2)$ and
+$\log((1-q_-)/(1-q_+))$.
+The Gaussian bound $\E e^{c\norm{Y}_1}\le2^d e^{cdR+dc^2\sigma^2/2}$ supplies an explicit finite upper for $\mathcal M$, uniformly over hidden-state mixtures.
+
+Let $Z=\sum_{j=1}^m(C_s+V_{a_{s+j}}(Y_{s+j}))\ge0$. Conditional iteration gives
+$\E e^{2\eta_0 Z}\le C_0:=(e^{2\eta_0 C_s}\mathcal M)^m$.
+Choose $0<\eta\le\eta_0$ with
+$(\eta/\eta_0)(C_0-1)\le p/2$.
+Convexity yields $e^{2\eta Z}-1\le(\eta/\eta_0)(e^{2\eta_0 Z}-1)$, whence
+\[
+ \E[e^{2\eta Z}\one_{E^c}\mid\cF_s]\le1-p/2=:a<1.
+\]
+On $E$ use \eqref{eq:floor}; on $E^c$ use $D(z_m)\le D(z_0)+Z$. This proves \eqref{eq:robustdrift} with $b=e^{2\eta R_*}$. The same growth estimate for each prefix proves \eqref{eq:within} with $A=C_0$, $B=0$. All estimates hold under the true report law for arbitrary adapted selections in \eqref{eq:massrelation}. No invariant distribution, observation window, or approximate-law drift is used.
+\end{proof}
+
+\begin{theorem}[An acquired law for sparse Gaussian hidden-state experiments]\label{thm:hmm}
+For the experiment above fix $T\ge m$, $M\ge1$ and $b_{\rm out}\ge1$. Require each terminal forecast to lie in $\{j2^{-b_{\rm out}}:0\le j\le2^{b_{\rm out}}\}$. Set
+\[
+ A_T=\frac1{16d}\sum_{i=1}^d\E[\pi_{T,i}(1-\pi_{T,i})],\qquad
+ b_\delta=\frac14-\frac1{16d}\sum_{i=1}^d
+ \overline\pi_{T,i}(1-\overline\pi_{T,i})-\delta^2.
+\]
+For constants $0<c<C<\infty$ depending only on the fixed class parameters,
+\begin{equation}\label{eq:hmmlaw}
+ c\{A_T+M^{-2/d}+2^{-2b_{\rm out}}+\delta^2\}
+ \le\mathcal R_\cp-b_\delta
+ \le\mathcal R_\on-b_\delta
+ \le C\{A_T+M^{-2/d}+2^{-2b_{\rm out}}+\delta^2\}.
+\end{equation}
+The same matched memory, output and calibration bounds hold after subtracting the common full-history acquisition term $A_T$. The risks are sign-minimax risks for the one indexed task \eqref{eq:filtertask}. All constants are uniform over the certified exploration rules for fixed $d$ and fixed parameter bounds; controller states are additional resources. The exponent $d$ is certified by positive actual acquired mass.
+\end{theorem}
+\begin{proof}
+The physical-oracle variance of \eqref{eq:filtertask}, averaged over the probe, is $b_\delta$ for either sign. The acquisition uncertainty is $A_T$, by conditional projection of each indicator of $Z_T$. The score map is $1/4$-Lipschitz from $d_H$ to $\norm{\cdot}_d$: differentiation of a softmax coordinate gives $\pi_i(h_i-\sum_j\pi_jh_j)$, bounded in absolute value by $\osc(h)$. Lemmas~\ref{lem:masscompander} and \ref{lem:hmmraw} and Theorem~\ref{thm:main} yield nominal online score distortion $CM^{-2/d}$, from the exact uniform seed. Dyadic rounding adds at most $2^{-b_{\rm out}}$ in root task error, and Proposition~\ref{prop:calibration} gives the upper.
+
+For the lower retain only the actual event $E_T$ that the last $m$ reports are observed and lie in $G$. Its probability is at least $p$. Conditional on a history at time $T-m$ and the first $m-1$ reports in this event, the prediction $r=\pi_{T-1}Q_T$ has every coordinate at least
+\[
+ c_r=(g_-/g_+)^{m-1}s^m.
+\]
+This follows by the unrounded coordinatewise argument used for \eqref{eq:floor}. The last action is already selected before $Y_T$. For that fixed action the map $y\mapsto(\pi_{T,1},\ldots,\pi_{T,d})$ is injective: its log ratios equal $B_{a_T}y$ plus a known vector. Its Jacobian determinant is
+\begin{equation}\label{eq:gaussjac}
+ \abs{\det B_{a_T}}\prod_{i=0}^d\pi_{T,i}
+ \ge b_0 c_p^{d+1},\qquad c_p=c_r(g_-/g_+).
+\end{equation}
+The conditional continuous report density is at most $g_+$. Thus, restricting to $y\in G$ and scaling the task coordinates by $1/4$, the resulting score submeasure has Lebesgue density at most
+\begin{equation}\label{eq:actualdensity}
+ C_{\rm dens}=4^d g_+/(b_0c_p^{d+1}).
+\end{equation}
+Integrating over the unrestricted distribution of the conditioning prefix, with its event indicator, preserves this upper bound. No smooth density for the remaining posterior law is required. The actual score submeasure on $E_T$ has mass at least $p$ and small balls of $\norm{\cdot}_d$ have mass at most $C_{\rm dens}v_dd^{d/2}r^d$. Proposition~\ref{prop:acquired} therefore gives $q_J(\nu_T)\ge cJ^{-2/d}$ for every $J\ge1$, with the constant reduced for any finitely many small budgets if necessary; the bounded-density ball bound itself is valid at every radius.
+
+A retained label determines one vector of possible probe forecasts, drawn from a grid of size $(2^{b_{\rm out}}+1)^d$. Averaging the two sign risks and applying Proposition~\ref{prop:calibration} gives the lower
+\[
+ A_T+\delta^2+c\min\{M,(2^{b_{\rm out}}+1)^d\}^{-2/d}.
+\]
+The last power equals
+$\max\{M^{-2/d},(2^{b_{\rm out}}+1)^{-2}\}$.
+Since $2^{b_{\rm out}}+1\le2^{b_{\rm out}+1}$ and the maximum of two nonnegative numbers is between half their sum and their sum, this is comparable to $M^{-2/d}+2^{-2b_{\rm out}}$. This proves \eqref{eq:hmmlaw}, and proves the stated bound on excess after subtracting $A_T$ rather than merely comparing the larger total risks.
+\end{proof}
+
+For example the four-state support of a lazy directed cycle, with positive entries only on each self-loop and its successor edge, is primitive but has one-step projective coefficient one because some row supports are disjoint. Taking any such transition weights bounded below, affinely independent Gaussian means, and unequal $q_i$ gives a nonempty class to which the block argument genuinely adds something. It does not manufacture a strict one-step coefficient by changing a reported missing value into an independent hold.
+
+\subsection{Certified finite numerical interfaces}
+The construction above is an exact Borel machine. Here is a finite enclosure route which preserves its load-bearing relation. Given certified intervals $[l_i,u_i]$ for unnormalized posterior log weights, each of width at most $h$, define
+\[
+ d_i=\max\{0,\max_jl_j-u_i\}.
+\]
+For the true deficits $v_i=\max_j z_j-z_i$, one has $0\le d_i\le v_i$ and $v_i-d_i\le2h$. At least one $d_i$ is zero, and every true maximal coordinate has $d_i=0$. Apply the deficit compander to $d_i$. Its output still has at most $nK^d$ possibilities, is inward, and dominates the true candidate coordinatewise by $1/n$. Its projective error is at most $r_M w+2h$. Thus \eqref{eq:localerror} holds with $u=2h$ without guessing a maximizing coordinate or assuming exact comparison at a cell boundary.
+
+Known computable calibration parameters and interval routines for sums, exponentials and logarithms give finite such enclosures on any bounded input box. Because Gaussian reports are unbounded, a uniform finite packet cannot encode every exact report. With a declared box $[-U,U]^d$, $U>R$, the probability of any out-of-box continuous report before time $T$ is at most
+\[
+ 2dT\exp(-(U-R)^2/(2\sigma^2)).
+\]
+Charge an explicit failure marker and use the bounded-loss cost of that event; inside the box use the enclosure construction. Input bins, workspace, program constants and arithmetic time are thereby finite and separately recorded. This finite-interface comparison uses the analogue task benchmark plus its certified input defect; it does not identify the digitally acquired posterior law with the analogue law used in \eqref{eq:actualdensity}. A digital-only checkpoint identity instead uses its own actual bin-history law. No horizon-independent finite packet claim follows from an exact Borel input.

@@ -1,0 +1,65 @@
+\section{From actual acquisition to a counted implementation}\label{sec:transfer}
+\subsection{Actual mass and checkpoint risk}
+A probability $\zeta$ satisfying $\zeta(B(z,h))\le A h^d$ obeys
+\begin{equation}\label{eq:mass-quantization}
+ q_m(\zeta)\ge c(A,d,h_0)m^{-2/d},\qquad m\ge1.
+\end{equation}
+Indeed choose $h=c_0m^{-1/d}\le h_0$ so that $mAh^d\le1/2$. The union of $m$ radius-$h$ balls has mass at most $1/2$, so every codebook has distortion at least $h^2/2$. The same lower holds for randomized encoders by conditional minimization. This is a bound on the actual probability, not a volume argument on a merely reachable set.
+
+The actual full-history law is
+$\nu_t=\int\mu_{t,u}\,\nu_{t-1}(du)$, so it inherits the same small-ball bound. A global cover of $K_t$ gives the matching upper. Conditional projection onto the complete history and then onto a checkpoint label gives
+\[
+ \inf\E\norm{Z_n-a(S)}^2=B_n+q_m(\nu_n).
+\]
+Nearest-center coding of $X_n$ attains the infimum over codebooks. A checkpoint is allowed to compute from the whole history; this is not yet an online program.
+
+\subsection{Common-cover recursion}
+Under (C), start at the known $X_0$. Suppose all positive incoming labels have programmed constants $u_s=\E[X_{t-1}\mid S_{t-1}=s]$. Choose a common at-most-$m_t$ Euclidean codebook covering $K_t$ to radius $h_t=Cm_t^{-1/d}$. From the actual old label and report compute $W=F_t(Y_t,u_s)$ and send it to its Borel nearest cell. Program the new representative as its conditional mean under this very observer's law. It lies in $K_t$ by convexity. Finite forward integration determines these constants; the program does not compute a full-history posterior at runtime.
+
+For this construction, regardless of how incoming rows overlap in an outgoing cell,
+\begin{equation}\label{eq:pool-cover}
+ D^{\rm row}_t+D^{\rm pool}_t
+ =\E\norm{W-\E[W\mid S_t]}^2
+ \le\E\norm{W-a_{S_t}}^2\le h_t^2.
+\end{equation}
+The competitor $a_{S_t}$ is the common codepoint. Combining~\eqref{eq:jensen-upper} and~\eqref{eq:pool-cover}, and iterating from $r_0=0$, gives
+\begin{equation}\label{eq:curvature-recursion}
+ r_n\le C\sum_{t=1}^n\left(\prod_{j=t+1}^n b_j\right)m_t^{-2/d}.
+\end{equation}
+Exact Borel implementability permits exact calibrated constants; computability and bit precision are separately addressed below. No independent rowwise quantizer is assumed to have zero pooling loss.
+
+Under (P), choose an at-most-$m_t$ global codebook in the declared metric. The observer stores only $\widehat X_t=Q_t(F_t(Y_t,\widehat X_{t-1}))$. Fix $\widehat X_0=X_0$. Along the same actual reports,
+\[
+ \operatorname{dist}_t(X_t,\widehat X_t)
+ \le a_t\operatorname{dist}_{t-1}(X_{t-1},\widehat X_{t-1})+C m_t^{-1/d}.
+\]
+Consequently its squared terminal risk is at most
+\begin{equation}\label{eq:pathwise-recursion}
+ B_n+C\left[\sum_{t=1}^n
+     \left(\prod_{j=t+1}^n a_j\right)m_t^{-1/d}\right]^2.
+\end{equation}
+Orthogonality to the full-history audit residual justifies adding $B_n$. The approximate state is a codepoint named by the finite label, not an extra real register. This proof does not require that the distribution of the approximate state equal the acquired full-history law.
+
+\subsection{Internal clocks and integer allocation}
+\begin{lemma}[Positive-path clock separation]\label{lem:clock}
+Let an autonomous finite-label machine use a reused Borel report row and independent update randomness, with deterministic halt status for each label. Suppose every physical conditional report law, at every finite history before halting, is equivalent to the same reference measure. If it halts exactly after $n$ reports almost surely, its positive-probability label sets at phases $0,\ldots,n$ are pairwise disjoint. Thus, writing $m_t$ for their sizes,
+\begin{equation}\label{eq:clock-count}
+ 1+\sum_{t=1}^n m_t\le M.
+\end{equation}
+\end{lemma}
+\begin{proof}
+For a nonhalt label $s$, the edge to $j$ is possible precisely when the set on which $k(j\mid s,y)>0$ has positive reference measure. Equivalence makes this criterion independent of phase or of the entering physical conditional law. Every finite path consisting of possible edges therefore has positive conditional probability whenever its initial label is reached. To justify the product assertion, successively condition on each actual history: the next edge probability is a strictly positive measurable function there, and its integral over a positive-probability prefix is positive.
+
+Suppose a nonhalt label were reached at phases $i<j<n$. From its occurrence at $j$, some finite label path of length $n-j$ reaches a halt label with positive probability, since the finite union of such paths has probability one. The same path from phase $i$ would halt strictly before $n$, a contradiction. Halt labels can occur only at phase $n$, and a label's halt status cannot change with phase. The initial support has at least one label. This proves~\eqref{eq:clock-count}. The proof uses common null sets, not equality of transition probabilities or a hidden phase counter.
+\end{proof}
+The lower in~\eqref{eq:autonomous} follows by applying~\eqref{eq:main-converse} and~\eqref{eq:mass-quantization} at phase $n$: there are at most $M-n$ terminal labels. The class is empty below $n+1$, and a single label per phase gives feasibility at and above that threshold.
+
+For the upper, let $B=M-n-1\ge0$ be the number of labels left after one per phase including the start. Choose $0<z<1$ and set
+\begin{equation}\label{eq:allocation}
+ m_t=1+\lfloor B(1-z)z^{n-t}\rfloor,\qquad 1\le t\le n.
+\end{equation}
+Then $1+\sum m_t\le M$. For $B\ge1$, $m_t\ge B(1-z)z^{n-t}$. Under (C), choose $z=\rho^{d/(d+2)}$ in~\eqref{eq:curvature-recursion}; the geometric sum of $\rho^kz^{-2k/d}$ is finite and gives $r_n\le CB^{-2/d}$. Under (P), choose $z=\rho^{d/(d+1)}$ in~\eqref{eq:pathwise-recursion}; the sum of $\rho^kz^{-k/d}$ is finite and gives the same order after squaring. For $B=0$ the uniform diameter bounds suffice; for $B\ge1$, $B$ and $B+1=M-n$ differ by at most a factor two. Use disjoint phase alphabets and their phase-specific rows to form one autonomous row. Every phase, codepoint and halt response is thereby counted. This finishes the proof of Theorem~\ref{thm:main}.
+
+\begin{remark}[What the theorem does and does not identify]\label{rem:profile}
+Without the geometric product bounds,~\eqref{eq:curvature-recursion} and~\eqref{eq:pathwise-recursion} retain their explicit continuation weights. They are upper bounds, not general matching weighted converses. The state-independent isometric examples in Companion G have nonsummable sensitivity and a genuinely different online curve despite unchanged acquired marginals. The present theorem does not erase that obstruction. Its horizon-uniform resource law is a sufficient stable class, not a universal classification of recursive compressibility.
+\end{remark}
