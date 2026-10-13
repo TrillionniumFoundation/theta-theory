@@ -1,0 +1,42 @@
+name: Theta R45 mathematical input export
+on:
+  push:
+    branches: [foundation/general-theta-restart-r45-adapted-stopping-research-2026-10-12]
+    paths: [.github/workflows/theta-r45-math-inputs.yml]
+permissions:
+  contents: read
+jobs:
+  export:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          sparse-checkout: |
+            .github
+            foundations/general-theta
+            papers/General-Theta-Foundations-I-restart
+            GENERAL_THETA_FOUNDATIONS_I_RESTART_R32_BAYESIAN_CURVATURE_EXTERNAL_REFEREE_REPORT_R32.md
+      - name: Export source and exact Git blob identities only
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import json,zipfile,subprocess
+          paths=['.github','foundations/general-theta','papers/General-Theta-Foundations-I-restart','GENERAL_THETA_FOUNDATIONS_I_RESTART_R32_BAYESIAN_CURVATURE_EXTERNAL_REFEREE_REPORT_R32.md']
+          names=subprocess.check_output(['git','ls-files',*paths],text=True).splitlines()
+          manifest={}
+          with zipfile.ZipFile('/tmp/R45_math_inputs.zip','w',zipfile.ZIP_DEFLATED) as z:
+              for name in names:
+                  p=Path(name)
+                  if {'artifacts','evidence','__pycache__'}.intersection(p.parts) or p.suffix in {'.pdf','.zip','.gz','.png','.jpg','.log'}: continue
+                  if p.is_file():
+                      z.write(name,name)
+                      manifest[name]=subprocess.check_output(['git','hash-object',name],text=True).strip()
+              z.writestr('PINNED_EXPORT.json',json.dumps({'head':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),'blobs':manifest,'purpose':'read-only source export; no old ref is modified'},indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r45-math-inputs
+          path: /tmp/R45_math_inputs.zip
+          retention-days: 30

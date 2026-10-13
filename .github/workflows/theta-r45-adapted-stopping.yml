@@ -1,0 +1,64 @@
+name: Theta restart R45 adapted stopping and actual acquired occupation
+on:
+  push:
+    branches: [foundation/general-theta-restart-r45-adapted-stopping-research-2026-10-12]
+    paths: [.github/workflows/theta-r45-adapted-stopping.yml]
+permissions:
+  contents: write
+concurrency:
+  group: theta-r45-adapted-stopping-publication
+  cancel-in-progress: false
+jobs:
+  publication:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      SOURCE_DATE_EPOCH: '1791676800'
+      FORCE_SOURCE_DATE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      TZ: UTC
+      LC_ALL: C.UTF-8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 2
+          sparse-checkout: |
+            .github
+            foundations/general-theta
+            papers/General-Theta-Foundations-I-restart
+      - name: Publish ordinary source on the new R45 branch before any build
+        run: python3 .github/scripts/theta-r45-publish.py source
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r45-ordinary-source
+          path: ${{ env.SOURCE_EXPORT_DIR }}
+          retention-days: 30
+      - name: Install pinned build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended cm-super lmodern poppler-utils python3-venv
+          python3 -m venv "$RUNNER_TEMP/r45-venv"
+          "$RUNNER_TEMP/r45-venv/bin/pip" install pypdf==5.9.0 numpy==2.3.5
+          echo "$RUNNER_TEMP/r45-venv/bin" >> "$GITHUB_PATH"
+      - name: Full native and unchanged historical ordinary and optimized regression and build
+        run: |
+          python papers/General-Theta-Foundations-I-restart/r45-adapted-stopping/build.py --source-sha "$SOURCE_SHA" --expected-tree "$EXPECTED_TREE" --output "$R45_PUBLICATION_DIR/build" --receipt "$R45_PUBLICATION_DIR/BUILD_RECEIPT.json" > "$RUNNER_TEMP/r45-build.stdout"
+          git diff --exit-code
+      - name: Publish artifact-only child on the same new research branch
+        run: python .github/scripts/theta-r45-publish.py artifacts
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r45-source-and-build-packet
+          path: ${{ env.DELIVERY_DIR }}
+          retention-days: 30
+      - name: Build stdout for diagnosis
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: theta-r45-build-stdout
+          path: ${{ runner.temp }}/r45-build.stdout
+          if-no-files-found: ignore
+          retention-days: 30

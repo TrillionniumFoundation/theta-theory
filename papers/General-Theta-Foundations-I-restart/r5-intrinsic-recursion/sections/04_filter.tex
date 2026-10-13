@@ -1,0 +1,138 @@
+\section{Intermittently mixing finite-state filters}\label{sec:filter}
+Fix an integer $d\ge1$, $0<p<1$, $0<a<1$, and $0<s\le1/(d+1)$. Prepare $Z_0$ uniformly on $\{0,1,\ldots,d\}$. At call $t$, independently choose a gate $G_t\sim\operatorname{Bernoulli}(p)$. If $G_t=1$, apply any declared stochastic transition matrix $T_t$ whose entries are at least $s$. If $G_t=0$, leave the hidden state unchanged. The matrices may depend on time and need not have a common invariant law. Conditional on $Z_t=i$, report $V_t\in[-1,1]^d$ with densities
+\begin{equation}\label{eq:filter-density}
+ g_0(v)=2^{-d},\qquad g_i(v)=2^{-d}(1+av_i),\quad 1\le i\le d.
+\end{equation}
+The visible report is $(G_t,V_t)$. These are positive normalized densities. The preparation, each call, and the final probe each cost one raw acquisition, so $N_{\rm raw}=T+2$.
+
+Let $\pi_{t,i}=\Pp(Z_t=i)$ be the known marginal obtained from the declared raw protocol. A terminal probe is available at each cutoff; the scored exploration invokes it after $T$ calls. It chooses an index $J$ uniformly from $\{1,\ldots,d\}$ and returns that index and a Bernoulli report of mean
+\begin{equation}\label{eq:filter-task}
+ X_J+\theta,\qquad X_i=\tfrac12+\tfrac14(1_{\{Z_T=i\}}-\pi_{T,i}),
+ \qquad \theta\in\{-\delta,\delta\},\quad 0\le\delta\le1/8.
+\end{equation}
+No acquisition depends on the unknown terminal sign. A retained label determines a forecast for each possible index; the squared loss averaged over the executed index is the norm $\norm{z}_d^2=d^{-1}\sum_{i=1}^d z_i^2$. This is one actual terminal experiment, not a postulated joint observation of incompatible probes.
+
+The gate-zero steps are not holds. Their observations are informative, but have no hidden mixing. A run of $k$ such steps has probability $(1-p)^k>0$ and is noncontracting in the stable metric below. Thus there is no uniform strict contraction over every fixed-length realized block. The model class has arbitrary finite hidden-state dimension and time-varying positive mixing matrices, rather than one selected scalar refresh model.
+
+\begin{lemma}[Predictive quotient and raw inequalities]\label{lem:filter-raw}
+Let $P_{t,i}=\Pp(Z_t=i\mid\cH_t)$ and $L_{t,i}=\log(P_{t,i}/P_{t,0})$ for $1\le i\le d$. At every finite history the posterior is strictly positive and realizes the predictive quotient, with the time/continuation interface included. On $\R^d$ use
+\begin{equation}\label{eq:osc-metric}
+ D(l,z)=\operatorname{osc}(l_1-z_1,\ldots,l_d-z_d,0),
+ \qquad \operatorname{osc}(u)=\max u-\min u.
+\end{equation}
+Write $P(l)$ for the softmax posterior with reference coordinate zero, and $H_t(l)$ for the log odds of $P(l)T_t$. The update is
+\begin{equation}\label{eq:filter-update}
+ F_g(l,v)=H_{t,g}(l)+(\log(1+av_i))_{i=1}^d,
+ \qquad H_{t,0}(l)=l,\quad H_{t,1}(l)=H_t(l).
+\end{equation}
+Set $\rho=1-s$, $A_s=\log(1/s)$, and $B_a=\log((1+a)/(1-a))$. Then \eqref{eq:pair} holds with
+\[
+ \kappa_f=1-p+p\rho^2<1.
+\]
+Choose $0<\eta< -\log(1-p)/(2B_a)$ and $w(l)=\exp(\eta D(l,0))$. The true-law envelope inequality \eqref{eq:envelope} holds with
+\begin{equation}\label{eq:filter-drift}
+ a_f=(1-p)e^{2\eta B_a}<1,
+ \qquad b_f=p e^{2\eta(A_s+B_a)}.
+\end{equation}
+These constants are uniform over all the declared matrices and all true and candidate states.
+\end{lemma}
+\begin{proof}
+The raw transition predicts $r=P(l)$ on gate zero and $r=P(l)T_t$ on gate one. Bayes' formula with \eqref{eq:filter-density} gives
+\begin{equation}\label{eq:filter-bayes}
+ P'_{i}=\frac{r_i(1+av_i)}{D_v},\quad
+ P'_0=\frac{r_0}{D_v},\qquad
+ D_v=1+a\sum_{i=1}^d r_i v_i.
+\end{equation}
+It gives \eqref{eq:filter-update} pointwise on every report in the cube. Positivity is preserved. The posterior determines every legal continuation by kernel integration; the indexed current terminal probe separates every one of its coordinates. Hence it realizes the quotient directly, even when a particular mixing matrix has deficient rank.
+
+We prove the needed contraction instead of assuming it for a Bayes recursion. Give the reference log coordinate the value zero, and differentiate the unnormalized predicted log coordinates in a direction $u\in\R^{d+1}$. Their derivatives are expectations of $u$ under the probability vectors
+\[
+ w_{jk}=\frac{P_j(l)T_{t,jk}}{\sum_hP_h(l)T_{t,hk}}.
+\]
+Since $T_{t,jk}\ge s$ and the denominator is at most one, $w_{jk}\ge sP_j(l)$ for every output coordinate $k$. The distributions for two output coordinates therefore share the subprobability vector $sP(l)$. Their expectations of $u$ differ by at most $(1-s)\operatorname{osc}(u)$. Integrate the derivative along the line segment between two log-odds vectors to obtain
+\[
+ D(H_t(l),H_t(z))\le\rho D(l,z).
+\]
+Every predicted coordinate lies in $[s,1]$, so $D(H_t(z),0)\le A_s$. The additive observation vector cancels from the difference of two updates on the same report. The gate is independent of the entire observed past and algorithm randomization; integration over it gives $\kappa_f$, regardless of the observation law's dependence on the true state.
+
+The oscillation of the observation vector, including its reference zero, is at most $B_a$. Thus $D(F_0(z,v),0)\le D(z,0)+B_a$ and $D(F_1(z,v),0)\le A_s+B_a$. Exponentiate and integrate under any true report law to obtain \eqref{eq:filter-drift}. The drift controls a wrong candidate driven by physical data; it is not a drift under the candidate's imagined observation law.
+\end{proof}
+
+\begin{lemma}[A multidimensional inward compander]\label{lem:compander}
+For $K\ge1$, put
+\begin{equation}\label{eq:compander}
+ c_j=\eta^{-1}\log\frac K{K-j},\qquad j=0,\ldots,K-1.
+\end{equation}
+For $x\ge0$ choose $j(x)=\min\{K-1,\lfloor K(1-e^{-\eta x})\rfloor\}$, set $Q_K(x)=c_{j(x)}$, and extend oddly. Apply this scalar map to each coordinate of $l\in\R^d$. The product cover has $(2K-1)^d$ representatives and obeys
+\begin{equation}\label{eq:compander-bound}
+ D(Q_Kl,0)\le D(l,0),\qquad
+ D(l,Q_Kl)\le\frac{2w(l)}{\eta K}.
+\end{equation}
+\end{lemma}
+\begin{proof}
+For a nonnegative scalar $x$, set $u=e^{-\eta x}$ and $v=(K-j(x))/K$. Then $u\le v$, $v-u\le1/K$, also in the unbounded last cell, and
+\[
+ 0\le x-Q_K(x)=\eta^{-1}\log(v/u)
+ \le\eta^{-1}(v-u)/u\le e^{\eta x}/(\eta K).
+\]
+The negative case is symmetric. Each coordinate preserves its sign and decreases its magnitude, so the maximum including reference zero cannot increase and the minimum cannot decrease. This proves inwardness for oscillation. Each scalar error is at most $e^{\eta|l_i|}/(\eta K)\le w(l)/(\eta K)$; their oscillation, including zero, is at most twice their largest magnitude. The product partition is Borel and covers the entire unbounded log-odds domain. There is no truncation of the actual law.
+\end{proof}
+
+\begin{theorem}[A class law under intermittent mixing]\label{thm:filter}
+In this finite-state experiment, fix $T\ge1$, $M\ge1$, and $b\ge1$. Each physical forecast at the terminal probe must lie in the fixed dyadic grid $\mathcal D_b=\{j2^{-b}:0\le j\le2^b\}$. Let $\mathcal R_\cp$ and $\mathcal R_\on$ be the two sign-minimax risks. Define
+\begin{align}
+ A_T&=\frac1{16d}\sum_{i=1}^d\E[P_{T,i}(1-P_{T,i})],\label{eq:filter-acquisition}\\
+ b_\delta&=\frac14-\frac1{16d}\sum_{i=1}^d
+                 \pi_{T,i}(1-\pi_{T,i})-\delta^2.\nonumber
+\end{align}
+There are $0<c<C<\infty$ depending only on $d,p,s,a$ such that, uniformly over the declared transition matrices, horizon, and budgets,
+\begin{equation}\label{eq:filter-law}
+ c\{A_T+M^{-2/d}+2^{-2b}+\delta^2\}
+ \le\mathcal R_\cp-b_\delta
+ \le\mathcal R_\on-b_\delta
+ \le C\{A_T+M^{-2/d}+2^{-2b}+\delta^2\}.
+\end{equation}
+The excess over the sign-aware full-history baseline $b_\delta+A_T$ has matching order $M^{-2/d}+2^{-2b}+\delta^2$. The dimension $d$ is verified by actual acquired posterior mass, not inserted as an ambient parameter count. The online upper follows from Theorem~\ref{thm:inward} and the static product cover, using no retained observation window or real posterior register.
+\end{theorem}
+\begin{proof}
+Let $\zeta_{T,i}=1/2+(P_{T,i}-\pi_{T,i})/4$. Each latent nominal score $X_i$ has expectation $1/2$, and the difference between its physical-oracle and full-history conditional means has squared error $\E[P_{T,i}(1-P_{T,i})]/16$. Average conditional projection over the independent executed probe index. This gives the stated $A_T$ and the same oracle variance $b_\delta$ under both calibration signs. Expanding the two sign risks gives the vector version of Lemma~\ref{lem:calibration}, with cross term
+\[
+ 2\delta\left|\frac1d\sum_{i=1}^d\E(\zeta_{T,i}-a_i)\right|
+ \le 2\delta\norm{\zeta_T-a}_{L^2(\norm{\cdot}_d)}.
+\]
+Thus lower and upper bounds differ by at most the factor-two estimate in that lemma.
+
+Choose the largest $K$ with $(2K-1)^d\le M$. Then $K\ge\tfrac14M^{1/d}$, including small budgets. The known uniform preparation has log odds zero and is exactly a representative. Lemmas~\ref{lem:filter-raw} and \ref{lem:compander} verify Theorem~\ref{thm:inward} with $H_0=1$, $e_0=0$, and $r_M=2/(\eta K)$. The softmax map is Lipschitz from oscillation to each coordinate: its directional derivative is $P_i(u_i-\sum_jP_ju_j)$, of magnitude at most $\operatorname{osc}(u)$. Hence the nominal score is $1/4$-Lipschitz into $\norm{\cdot}_d$. The online score distortion is at most $C M^{-2/d}$. Rounding each possible probe forecast to $\mathcal D_b$ adds a root error at most $2^{-b}$. Projection and the sign expansion give the upper in \eqref{eq:filter-law}.
+
+For a lower use only the actual event $G_T=1$, of mass $p$. Conditional on any previous history and this event, every predicted coordinate satisfies $r_i\ge s$. The map in \eqref{eq:filter-bayes} from the report cube to $(P'_1,\ldots,P'_d)$ is injective, with inverse
+\[
+ v_i=\frac1a\left(\frac{r_0P'_i}{r_iP'_0}-1\right).
+\]
+Its Jacobian determinant, by the rank-one determinant formula, is
+\begin{equation}\label{eq:filter-jacobian}
+ \left|\det\frac{\partial(P'_1,\ldots,P'_d)}{\partial(v_1,\ldots,v_d)}\right|
+ =\frac{a^d\prod_{i=0}^d r_i}{D_v^{d+1}}
+ \ge \frac{a^d s^{d+1}}{(1+a)^{d+1}}>0.
+\end{equation}
+The report density is $2^{-d}D_v\le2^{-d}(1+a)$. Change of variables bounds the conditional posterior density by a constant depending only on $d,s,a$; scaling each score coordinate by $1/4$ preserves such a bound with another constant $C_*$. Mixing the conditional densities over previous histories preserves it. The actual submeasure $\underline\nu_T(E)=\Pp(\zeta_T\in E,G_T=1)$ therefore has mass $p$ and, in the task norm, obeys
+\[
+ \sup_u\underline\nu_T(B(u,r))
+ \le pC_*v_d d^{d/2}r^d,
+\]
+where $v_d$ is the Euclidean unit-ball volume. Proposition~\ref{prop:submass} gives $q_m(\law(\zeta_T))\ge c_fm^{-2/d}$ for all $m\ge1$. No bounded density is assumed for the gate-zero part of the acquired law.
+
+A label determines a vector of $d$ possible probe forecasts. Under the output restriction this vector belongs to $\mathcal D_b^d$, of cardinality $(2^b+1)^d$. Proposition~\ref{prop:output} and the average of the two sign risks yield the lower
+\[
+ A_T+\delta^2+q_{\min(M,(2^b+1)^d)}(\law(\zeta_T)).
+\]
+The quantization term is at least a constant times $M^{-2/d}+2^{-2b}$. This proves \eqref{eq:filter-law} and the same comparison after subtracting the common acquisition term. The quantifiers include every finite dimension $d$, with dimension-dependent constants explicitly allowed.
+\end{proof}
+
+\subsection{Finite input and arithmetic}
+The theorem uses a continuous report as an exact Borel input, not a free finite communication packet. A certified box of coordinate widths at most $h$ containing the exact candidate can be shrunk coordinatewise toward zero: choose zero if the interval contains it, the left endpoint if positive, and the right endpoint if negative. The result has no larger oscillation including zero and is within $2h$ in the metric $D$. Corollary~\ref{cor:perturb} therefore applies with $u=2h$.
+
+For the observation log likelihood, the sensitivities to a report coordinate and to $a$ are bounded by $a/(1-a)$ and $1/(1-a)$. For two admissible mixing matrices differing entrywise by at most $e$, every predicted coordinate differs by at most $e$; if both matrices have entries at least $s$, their predicted log coordinates differ by at most $e/s$, giving an oscillation error at most $2e/s$. The identity branch is implemented exactly. Certified log-sum-exp and likelihood evaluations thus produce a common enclosure from separate matrix-calibration, input, and arithmetic allowances. The nominal marginal $\pi_T$ used in the readout is computed from the declared protocol; any error in it is charged in the readout allowance $v$.
+
+Round the positive scalar table nodes downward by at most $\tau$ and select the largest rounded node not exceeding a candidate coordinate's magnitude. They remain inward. The scalar covering error increases by at most $\tau$, so the product is an inward cover of radius $2/(\eta K)+2\tau$. All comparisons are rational and terminate, including ties. For computable parameters, interval logarithm routines provide any fixed table tolerance. Table descriptions or on-demand generation, temporary arithmetic, input packets of $d$ coordinates, and the controller for the matrix schedule are separate program and workspace costs. The persistent prediction state is only the product-table index.
+
+The constants deteriorate as mixing vanishes or as the acquired observation loses rank. Informative gate-zero calls cannot be relabeled as exact holds to remove their genuine dependence on $p$. Nor is $A_T$ asserted to have an $N^{-1}$ rate: the hidden dynamics continually create uncertainty. Kernel learning, optimized interventions, and stopping-dependent acquisition need additional theorems rather than reinterpretation of this fixed-protocol result.
