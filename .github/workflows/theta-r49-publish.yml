@@ -1,0 +1,138 @@
+name: Theta R49 acquired-risk source and complete retained build
+on:
+  push:
+    branches:
+      - foundation/general-theta-restart-r49-acquired-risk-research-2026-10-13
+    paths:
+      - '.github/workflows/theta-r49-publish.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: theta-r49-publication
+  cancel-in-progress: true
+# Runs 38336980910 and 38338217432 never acquired an x64 runner.
+# Retry the supported ARM pool; the complete frozen source pins are unchanged.
+jobs:
+  publication:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 90
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      R49_BRANCH: foundation/general-theta-restart-r49-acquired-risk-research-2026-10-13
+      R49_PATH: papers/General-Theta-Foundations-I-restart/r49-acquired-risk
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Materialize hash-verified ordinary source without changing historical mathematics
+        run: |
+          python3 - <<'PY'
+          import hashlib,json,lzma,os,pathlib,subprocess
+          root=pathlib.Path.cwd(); dst=root/os.environ['R49_PATH']
+          if dst.exists(): raise RuntimeError('new manuscript path already exists')
+          pins=['24a33e88433c8c6f6f7276da0558347e04dd0179','ef9dcbec9dc4c756d6fd18a31ba539cde9cc3b1d','5bb693260ddc2b40e667753ce8f904fd8978aca4','1b7b3f3e299b9758447bb190e361af6027a76fa3']
+          def blob(b): return hashlib.sha1(b'blob '+str(len(b)).encode()+b'\0'+b).hexdigest()
+          parts=[]
+          for i,pin in enumerate(pins,1):
+              data=(root/f'.github/data/theta-r49-source-part{i}.xzpart').read_bytes()
+              if blob(data)!=pin: raise RuntimeError('transport part mismatch '+str(i))
+              parts.append(data)
+          raw=b''.join(parts)
+          if hashlib.sha256(raw).hexdigest()!='5251f5e9f464d9e18dd62826bf0a0161d4c636e70b7de05f979a7b0e3dc008ad': raise RuntimeError('transport digest mismatch')
+          files=json.loads(lzma.decompress(raw))
+          if len(files)!=29: raise RuntimeError('unexpected new-source count')
+          for name,text in files.items():
+              rel=pathlib.Path(name)
+              if rel.is_absolute() or '..' in rel.parts or '.git' in rel.parts: raise RuntimeError('unsafe source path')
+              target=dst/rel;target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(text.encode())
+          same={'RECOVERY_PINS.json':'d735e6a854d29b55b0afdd6c8d9eb616a5f2879b','sections/02-experiments.tex':'241dbd091a8573f1d90ced760081c0627759a585','sections/04-occupation-proof.tex':'b0b142e2911bea3b3f4218a366a0f4ef52f553db','sections/04b-exact-budget.tex':'05a0593f89c8da478487ab5a8a9a73951747d044','sections/05-acquired-profile.tex':'aef2130d26e123ab30b47e096bf3b09a5a01219b','sections/06-realizations.tex':'5f893aa59710d256c93244c6eafda0cbdf49350d','sections/07-singular.tex':'3f0f45a655834e3115bed8600e73e6124257d0b2','sections/08-errors.tex':'f353a1d90ed1f9b1be305b54088c6bc50248252d','sections/A-quotient.tex':'6c5639570f4893c19f08429a3297ef7f0649d789','sections/B-computation.tex':'5540c14a659891364521a912b57fa13fa7f0e843','sections/B2-finite-description.tex':'919df30df2d02230f612e86e150c6afa65a57621','sections/C-bayesian-connection.tex':'80366de1b228f75a3c7b71268b4ec7b93e7cbd0b','verify.py':'403281709f84bc8ba9fcf5e479abbedf471f1989'}
+          old=dst.parent/'r48-stopped-risk-transfer'
+          for name,pin in same.items():
+              data=(old/name).read_bytes()
+              if blob(data)!=pin: raise RuntimeError('retained source mismatch '+name)
+              target=dst/name;target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(data)
+          reviews=[(root/'GENERAL_THETA_FOUNDATIONS_I_RESTART_R32_BAYESIAN_CURVATURE_EXTERNAL_REFEREE_REPORT_R32.md','R32_EXTERNAL_REFEREE_REPORT.md','3731f79996e11cdac66ce7c8a3ee5fdf1fffcd21'),(old/'REFEREE_RESPONSE.md','R48_REFEREE_RESPONSE.md','31415b9f444d3a4d856a5eddf4d354ee1e506237')]
+          for origin,name,pin in reviews:
+              data=origin.read_bytes()
+              if blob(data)!=pin: raise RuntimeError('review input mismatch '+name)
+              target=dst/'review_inputs'/name;target.parent.mkdir(exist_ok=True);target.write_bytes(data)
+          audit=json.loads(subprocess.check_output(['python3',str(dst/'verify.py')]))
+          if audit['ordinary_source_projection_tree_sha']!='759871a1b29560689dcc45ff2c9dd68637680fa4': raise RuntimeError('source projection mismatch')
+          print(json.dumps(audit,sort_keys=True,indent=2))
+          PY
+          git diff --exit-code
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          test "$(git ls-remote origin "refs/heads/$R49_BRANCH" | cut -f1)" = "$GITHUB_SHA"
+          git add -- "$R49_PATH"
+          git commit -m 'source(theta R49): sharp same-budget transfer and exact singular acquisition-memory frontier'
+          git push origin "HEAD:refs/heads/$R49_BRANCH"
+          echo "R49_SOURCE_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - name: Install complete retained-build dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended lmodern cm-super poppler-utils python3-venv
+          python3 -m venv "$RUNNER_TEMP/r49-venv"
+          "$RUNNER_TEMP/r49-venv/bin/pip" install numpy scipy pypdf mpmath
+      - name: Build native article and entire retained R48 chain read-only
+        run: |
+          "$RUNNER_TEMP/r49-venv/bin/python" "$R49_PATH/build.py" --source-sha "$R49_SOURCE_SHA" --prepared-root "$GITHUB_WORKSPACE" --output "$RUNNER_TEMP/r49-output" --retained
+          git diff --exit-code
+          test -z "$(git ls-files --others --exclude-standard)"
+      - name: Bind publication receipts and separate artifact commit
+        run: |
+          python3 - <<'PY'
+          import hashlib,json,os,pathlib,shutil,subprocess
+          root=pathlib.Path.cwd();out=pathlib.Path(os.environ['RUNNER_TEMP'])/'r49-output'
+          d=root/os.environ['R49_PATH'];artifacts=d/'artifacts';artifacts.mkdir()
+          receipt=json.loads((out/'BUILD_RECEIPT.json').read_text())
+          if receipt['status']!='PASS' or receipt['source_commit']!=os.environ['R49_SOURCE_SHA']: raise RuntimeError('unbound build')
+          files={f.name:hashlib.sha256(f.read_bytes()).hexdigest() for f in sorted(out.iterdir()) if f.is_file()}
+          pub={'source_commit':os.environ['R49_SOURCE_SHA'],'workflow_trigger_commit':os.environ['GITHUB_SHA'],'workflow_run_id':os.environ['GITHUB_RUN_ID'],'canonical':'18000b21e4bfd89180ccb069e46ac0f21621f34d','retained_head':'caa0c3165438176ab29de61b5ec2e708ab62783e','retention_commit':'ff275f59fc8ed0ff34bc040d8fb2008e57432345','external_review_head':'65bd07d89b04274c587d2ae4100511d99c39b0f2','source_tree':subprocess.check_output(['git','rev-parse','HEAD^{tree}']).decode().strip(),'ordinary_source_projection_tree_sha':receipt['ordinary_source_projection_tree_sha'],'files_sha256':files,'scope':'R49 native and full R48 retained chain; not all repository papers; builds are not proof, priority or significance certification'}
+          (out/'PUBLICATION_RECEIPT.json').write_text(json.dumps(pub,sort_keys=True,indent=2)+'\n')
+          for f in out.iterdir():
+              if f.is_file(): shutil.copyfile(f,artifacts/f.name)
+          PY
+          test "$(git ls-remote origin "refs/heads/$R49_BRANCH" | cut -f1)" = "$R49_SOURCE_SHA"
+          git add -- "$R49_PATH/artifacts"
+          git commit -m 'artifacts(theta R49): bind ordinary source to complete native and retained builds'
+          git push origin "HEAD:refs/heads/$R49_BRANCH"
+          echo "R49_ARTIFACT_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - name: Prepare independent reconstruction packets
+        run: |
+          python3 - <<'PY'
+          import os,pathlib,shutil,subprocess
+          out=pathlib.Path(os.environ['RUNNER_TEMP'])/'r49-output';pack=pathlib.Path(os.environ['RUNNER_TEMP'])/'r49-packets';native=pack/'native';native.mkdir(parents=True)
+          for f in out.iterdir():
+              if f.is_file() and (f.suffix!='.pdf' or f.name=='General_Theta_Foundations_I_restart_R49.pdf'): shutil.copyfile(f,native/f.name)
+          (native/'SOURCE_SHA.txt').write_text(os.environ['R49_SOURCE_SHA']+'\n')
+          (native/'ARTIFACT_SHA.txt').write_text(os.environ['R49_ARTIFACT_SHA']+'\n')
+          (native/'GIT_TREE.txt').write_bytes(subprocess.check_output(['git','ls-tree','-r','HEAD']))
+          pdfs=sorted(f for f in out.glob('*.pdf') if f.name!='General_Theta_Foundations_I_restart_R49.pdf')
+          for i,f in enumerate(pdfs):
+              group=pack/f'retained-{i//8+1}';group.mkdir(exist_ok=True);shutil.copyfile(f,group/f.name)
+          print('Retained PDF count:',len(pdfs))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r49-native-${{ env.R49_SOURCE_SHA }}
+          path: ${{ runner.temp }}/r49-packets/native
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r49-retained-1-${{ env.R49_SOURCE_SHA }}
+          path: ${{ runner.temp }}/r49-packets/retained-1
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r49-retained-2-${{ env.R49_SOURCE_SHA }}
+          path: ${{ runner.temp }}/r49-packets/retained-2
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r49-retained-3-${{ env.R49_SOURCE_SHA }}
+          path: ${{ runner.temp }}/r49-packets/retained-3
+          retention-days: 30

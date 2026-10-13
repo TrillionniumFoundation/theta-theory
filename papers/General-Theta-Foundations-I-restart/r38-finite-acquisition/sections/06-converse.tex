@@ -1,0 +1,52 @@
+\section{The lower bound against every legal observer}\label{sec:converse}
+\begin{lemma}[Controlled conditional barycenters]\label{lem:barycenter}
+For any legal finite-state observer let $Q_t=\E[X_t\mid S_t]$ and set
+$W_{t+1}=F_{A_t}(Y_{t+1},Q_t)$. Then
+\[
+ \E[X_{t+1}\mid S_t,A_t,Y_{t+1}]=W_{t+1},\qquad
+ Q_{t+1}=\E[W_{t+1}\mid S_{t+1}].
+\]
+The identities hold on positive-mass events for randomized Borel updates, also for time-dependent tables.
+\end{lemma}
+\begin{proof}
+The fresh action coin is independent of the physical state conditionally on the label. Affinity of both the unnormalized test numerator and the report likelihood gives conditional integrals $U_a(y,Q_t)$ and $\ell_a(y,Q_t)$. Division at positive likelihood, or equivalently integration against bounded report functions, proves the first identity without conditioning a continuous report on a positive-probability singleton. Fresh update randomness conveys no additional physical information given $(S_t,A_t,Y_{t+1})$. The tower property proves the second. The full history includes prior private coins, not a future audit. This is the likelihood-reweighted identity of \cite{GTFBayes,GTFControlled}, rather than interchange of a nonlinear Bayes update and an unreweighted expectation.
+\end{proof}
+
+\begin{proposition}[Bellman and checkpoint lower bounds]\label{prop:all-observer}
+Define
+\[
+ \Delta_t=\E\bigl[K_{A_t}h(Q_t)-\min_aK_ah(Q_t)\bigr],\qquad
+ J_{t+1}=\E h(Q_{t+1})-\E h(W_{t+1}).
+\]
+For every declared observer,
+\begin{equation}\label{eq:bellman-loss}
+ \E g(Q_t)-\rho
+  =\E h(Q_t)-\E h(Q_{t+1})+\Delta_t+J_{t+1},
+ \qquad \Delta_t\ge0,\quad J_{t+1}\ge cM^{-2/d}.
+\end{equation}
+In particular
+\begin{equation}\label{eq:converse-main}
+ R_n\ge\rho+cM^{-2/d}-C/n.
+\end{equation}
+For comparison with $J_*(n)$ the stronger bound $R_n\ge J_*(n)+cM^{-2/d}$ holds, as does Corollary~\ref{cor:checkpoint}.
+\end{proposition}
+\begin{proof}
+Substitute \eqref{eq:acoe} at $Q_t$ and add and subtract $\E h(Q_{t+1})$. Lemma~\ref{lem:barycenter} proves the identity. The law of $W_{t+1}$ is an actual mixture of acquired rows with density at most $\Lambda$, even if $Q_t$ is not on the exact filter's support. Strong concavity gives
+\[
+ J_{t+1}\ge\E\norm{W_{t+1}-Q_{t+1}}^2
+            \ge q_M(\Law(W_{t+1}))\ge cM^{-2/d}.
+\]
+Sum from $t=0$ to $n-1$, bound the bias telescope by $H$, and shift the bounded stage costs to cuts $1,\ldots,n$. Any actual label readout satisfies
+$\E\norm{Z_t-r_{S_t}}^2=\E g(Q_t)+\E\norm{Q_t-r_{S_t}}^2$,
+which proves \eqref{eq:converse-main}.
+
+The exact finite-acquisition comparison is obtained before discarding information. Fix any unrestricted acquisition policy $\pi$, including any causal private coins. Conditional projection at the hidden uniform cut gives
+\[
+ R_n=B_n^\pi+\E\norm{X_T-r_J}^2.
+\]
+For a checkpoint, minimization over its $M$ label-only readouts is exactly $q_M(\nu_n^\pi)$. Pointwise nearest assignment gives the upper; randomized assignment cannot improve the minimum distance to a fixed finite codebook. Compactness of $B$ permits taking the codebook infimum, and an approximate codebook would suffice without attainment.
+
+For every policy, each positive-time $X_t$ has an actual row-mixture density bounded by $\Lambda$. This includes adaptive action selection and the actual preparation at the first call. Thus $q_M(\nu_n^\pi)\ge cM^{-2/d}$ uniformly over $\pi$. A common grid with representatives in the cell closures gives the uniform upper $CM^{-2/d}$. Taking the infimum over the same policy class proves \eqref{eq:checkpoint}.
+
+Finally the executed finite observer is one of those acquisition policies, and its existing label is a permissible checkpoint encoder of the complete acquisition history and private randomization. Its fixed readouts have at most $M$ reproduction points. The same projection and small-ball argument therefore proves $R_n\ge B_n^\pi+cM^{-2/d}\ge J_*(n)+cM^{-2/d}$ directly. If the enlarged lower-bound class also uses time-dependent readouts, apply the projection and the uniform small-ball lower separately at each cut before averaging; there are still at most $M$ readouts at that cut. Thus no free-time decoder is inserted into the checkpoint identity. This does not subtract two separately optimized policy baselines. Repeated readouts can only reduce the effective codebook. Together with Proposition~\ref{prop:invariant} and \eqref{eq:bias-bounds}, it completes Theorem~\ref{thm:main}.
+\end{proof}
