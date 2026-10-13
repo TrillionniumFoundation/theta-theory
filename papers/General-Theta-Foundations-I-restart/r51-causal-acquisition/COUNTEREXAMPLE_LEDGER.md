@@ -1,0 +1,12 @@
+# Counterexample and sharpness ledger — R51
+
+1. **False scalar domination after informative rejection.** The Gaussian current posterior depends on prior failures. It is treated by physical occupation balance, not by declaring its last report regenerative.
+2. **Independent actionwise codebooks are not a common codebook.** The dual keeps one C and one (z,λ) for every action. Mixing action-specific optimal values need not be the optimum with one shared output dictionary.
+3. **Conditioning away rare strata.** Removing the atomic/continuous mass b destroys the threshold N(1-b)=1 and the r-dependent memory transition. The exact single-output formula and matching multi-output bounds provide explicit witnesses.
+4. **Zero row/pooling defect is not global sufficiency.** Appendix A prepares two fair bits, retains only the first, then queries either one. Three final labels encode the retained conditional prediction exactly, so row and pooling losses vanish, but forgotten-state loss is 1/2. Zero error at the incoming cut needs four labels, even for randomized encoders.
+5. **C and P are different stability conditions.** Appendix C gives a positive Gaussian kernel with metric factor 49/50 but perspective curvature >48020000/46268279>1, and a positive hold/reset instrument with curvature a<1 but a noncontracting all-hold word. The latter is a certificate counterexample, not a regular small-ball realization.
+6. **M is not output capacity.** In the autonomous mean-stop model one live label must be paid, giving m=M-1. The fixed-deadline M-n rule is neither used nor contradicted; it has a different stopping interface.
+7. **TV does not control arbitrary mean stopping.** The general R49 rare-state examples remain intact. The linear R51 modulus explicitly repairs a constant hazard on a regenerative task and therefore does not contradict them.
+8. **Computed checkpoint upper is not an optimum.** The same-task Gaussian bin table is a realizable upper bound. No numerical grid failure is used for its converse; the only exact all-program optimum claimed there is autonomous M=2.
+9. **A risk allowance is not a minimax obstruction.** δ² and ε lower bounds use actual indistinguishable calibration alternatives and an attained erased-bit experiment, not a nominal permissible error.
+10. **A physical vector is not automatically the predictive quotient.** Unknown model parameters can remain predictive after the current physical state is observed. Appendix A keeps this distinction explicit.
