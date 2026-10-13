@@ -1,0 +1,5 @@
+# Exact-SHA qualification
+
+`bash build.sh` requires an exact Git checkout. `bash build.sh --local` is a full byte-pinned local archive build outside CI; `--preview` checks the focused article only. Full modes build the complete archive and article and require their actual recorder union to contain all 243 core files. The archive contains all 240 inherited cores; the article loads six immediate inherited cores plus three new ones.
+
+The verifier pins the v99 paper tree, controlling v98 report blob and both distinct v88 variants, checks every inherited byte and executable mode and each v99 top-level snapshot, recomputes inherited claim status, and permits exactly the two justified capacity/margin supersessions. It compares normal/optimized diagnostics and rejects unstable references, warnings, overfull boxes and page clipping. Source receipts and fixture counts are not mathematical certification. Final source SHA and completed run conclusion, not workflow presence or baseline success, determine remote qualification.

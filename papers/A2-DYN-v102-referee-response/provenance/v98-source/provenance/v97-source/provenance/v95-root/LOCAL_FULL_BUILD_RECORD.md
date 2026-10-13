@@ -1,0 +1,5 @@
+# Revision 95 local preview record
+
+The focused article was compiled natively from the new source and the byte-preserved v94 input files. It has 10 pages and directly records the three new cores, 226–228. All 4,948 exact rational fixtures pass in ordinary and optimized Python with identical output. The final preview log has stable references and passes the LaTeX/package-warning, overfull-box and missing-character gates. Word-box checks pass; all article pages were rendered and inspected.
+
+This is a focused local preview, not a local full-archive build or an exact remote checkout qualification. A complete copy of the newest inherited archive was not materialized for this preview. The committed full build and workflow require all 228 cores, the entire preceding article and supplement, pinned sources and both execution modes; no preview switch is permitted in CI. Final exact-SHA workflow conclusions must be read separately. No continuum proof certificate or independent human audit is inferred.

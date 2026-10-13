@@ -1,0 +1,9 @@
+# A2-DYN revision 85 — local full-source build record
+
+The source-pinned v84 archive was preserved and the complete new v85 packet was built locally with native TeX. The final layout build produced a 19-page focused journal and a 664-page complete supplement. The actual recorder union contains all 198 cores: retained modules 190–192 and new modules 196–198 in the journal, and all 195 inherited cores in the supplement. The compact dependency guide is on supplement page 3 with current theorem, equation and proof-page references.
+
+The 5,111 new finite fixtures pass and their normal/optimized outputs agree. Inherited diagnostics are also retained and executed. Source checks confirm 195 inherited cores, 245 inherited Python files, 13 inherited appendices, 740 existing provenance files, and 57 verbatim snapshots of the v84 root files. Final reference, warning and page-box gates pass. All journal pages were rendered and inspected as a contact sheet, with the new theorem page and the dependency guide inspected individually. The final bibliography is kept together on the last article page.
+
+The controlling v84 report was read completely through GitHub and its blob is pinned. The materialized local baseline archive does not contain that subsequently created report; local verification records that limitation rather than claiming to have checked absent bytes. Exact Git/CI qualification requires the actual report file and exact blob, the correct v84 tree, and an exact checkout of the new author SHA.
+
+These are local build and preservation results, not a remote-qualification receipt, a continuum proof certificate, or an independent specialist audit. Final remote runs and their artifacts must be read at the newly committed author SHA on both response and referee-copy refs. The unproved zero-residence and fractional concentration charges are not promoted by these diagnostics.
