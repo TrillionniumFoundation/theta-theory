@@ -1,0 +1,64 @@
+\section{Proof of the transfer theorem}
+\begin{lemma}[Predictable effort and terminal domination]\label{lem:domination}
+Every finite-cost legal procedure satisfies
+\[
+ \kappa_-\E_\theta\sum_{t\le\tau}A_t
+ \le\E_\theta\sum_{t\le\tau}c_t.
+\]
+Its terminal mark law $\lambda_\theta$ obeys
+\begin{equation}\label{eq:terminal-domination}
+ \lambda_\theta\le u\left(\E_\theta\sum_{t\le\tau}A_t\right)\nu.
+\end{equation}
+These conclusions allow arbitrary history-dependent commands and stopping using the full report.
+\end{lemma}
+\begin{proof}
+Because $\{t\le\tau\}$ is measurable before call $t$, sum \eqref{eq:effort-drift} to $\tau\wedge n$. The expectation of the terminal potential tends to zero: it is zero on $\{\tau\le n\}$, uniformly bounded elsewhere, and $\tau<\infty$ almost surely. Monotone convergence for the nonnegative cost and count yields the first assertion. At least one productive call is necessary, so $N<\kappa_-$ is infeasible.
+
+For a Borel set $D\subset\mathsf X$, the actual terminal subcount is bounded pathwise by the full productive count:
+\[
+ \one_{\{X_\tau\in D\}}
+ \le\sum_{t\le\tau}A_t\one_{\{X_t\in D\}}.
+\]
+Take expectations, condition before each productive report, and use \eqref{eq:mass-upper}. This proves \eqref{eq:terminal-domination} first as a measure inequality. Radon--Nikodym then gives $\lambda_\theta=h_\theta\nu$ with $0\le h_\theta\le uN/\kappa_-$ and mass one. Informative selection through $V_t$ cannot invalidate domination by the full acquired count. This step does not assert that the acquired count is a constant multiple of $\nu$.
+\end{proof}
+
+\begin{lemma}[Correlated rejection with a paid acquisition program]\label{lem:rejection}
+Fix $b\ge1$, a dictionary $C$ and a Borel density $0\le h\le b$ of mass one. Run $\mathcal G$ repeatedly. At a productive mark $x$, accept with probability $h(x)/b$, using a fresh coin; on acceptance output a nearest dictionary value, and on rejection return to its designated live label. Then the number $J$ of attempts has $\E_\theta J\le b/\ell$, the expected raw cost is at most $\kappa_+b/\ell$, and the terminal marked distortion is at most
+\[
+ \frac u\ell\int d_C h\,d\nu.
+\]
+The construction uses $B+m$ labels. It does not assume independent attempts.
+\end{lemma}
+\begin{proof}
+At every productive history the acceptance probability is at least $\ell/b$, by \eqref{eq:mass-lower}. The same is true conditional on the beginning of its attempt, by the tower property. Thus
+\[
+ \Pp_\theta(J>j)\le(1-\ell/b)^j,
+ \qquad \E_\theta J\le b/\ell.
+\]
+Let $C_j$ be the raw cost of the $j$th attempt when started. The event $\{J\ge j\}$ is known at its start, and its conditional mean cost is at most $\kappa_+$. Tonelli and conditioning give
+\[
+ \E_\theta\sum_{j\le J}C_j
+ =\sum_{j\ge1}\E_\theta[\one_{\{J\ge j\}}\E_\theta(C_j\mid\text{attempt start})]
+ \le\kappa_+\E_\theta J.
+\]
+No independence between $C_j$, the report and acceptance was used.
+
+Conditional on each productive history, the expected distortion contributed by acceptance is at most $u b^{-1}\int d_C h\,d\nu$. Summing over actual attempts gives the claimed terminal bound. There is exactly one terminal contribution almost surely. The extra report is ignored only by this particular upper construction, not by the competing lower class. The live labels execute $\mathcal G$ and return on rejection; the $m$ terminal labels store the fixed output. Private randomness is fresh and leaves no uncharged seed.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:main}]
+For every procedure and every model, apply \eqref{eq:task-compare} to its actual prediction. Randomizing over a fixed squared-loss dictionary cannot improve upon its nearest member. Lemma~\ref{lem:domination} gives the lower profile for its actual terminal measure. Take the worst model and then the infimum over common procedures. An autonomous procedure has at least one live label, hence at most $M-1$ fixed terminal values. If $b_0$ live labels are mandatory under a common admitted model, use that model for the sharpened lower; the other modelwise inequalities still hold. The common-model quantifier is important.
+
+For attainment in \eqref{eq:profile}, the densities form a weak-star compact subset of $L^\infty(\nu)$: $0\le h\le b$ is closed by nonnegative $L^1$ tests and the mass constraint is closed. Use compactness with nets; no sequential compactness of general stopped trajectory laws is asserted. The dictionary lies in compact $H^m$. Its squared-distance function converges uniformly when its centers converge, since $H$ and $f$ are bounded. The objective is therefore jointly continuous and a minimum exists. Choose Borel representatives clipped into $[0,b]$ and a deterministic Borel tie rule for nearest centers. Such changes on $\nu$-null sets do not change any actual law because of \eqref{eq:mass-upper}.
+
+If $\ell N/\kappa_+>1$, apply Lemma~\ref{lem:rejection} at $b=\ell N/\kappa_+$ to a minimizer. Its cost is at most $N$ in every model; multiply its distortion bound by $k_+$. If $\ell N/\kappa_+\le1$, take $b=1$. The only feasible density is $h=1$ almost everywhere, so acceptance is certain at the first productive report. Its cost is at most $\kappa_+\le N$, and its distortion at most $u\Qm_m(1)$, which is bounded by the displayed $u/\ell$ factor. This endpoint argument avoids falsely charging $\kappa_+/\ell$ for certain acceptance. The upper also qualifies as a checkpoint procedure. Setting $m=M-B$ gives the autonomous upper.
+\end{proof}
+
+\begin{example}[Why exact primary closure cannot be inferred]\label{ex:closure}
+Let a hidden sign have two different posterior probabilities after histories $h_1,h_2$ in the same visible gate phase, and let its next success probabilities be $p_+$ and $p_-$ conditional on the sign. Then
+\[
+ \Pp(\mathrm{success}\mid h_i)
+   =p_-+(p_+-p_-)\Pp(E=+1\mid h_i)
+\]
+differs with $i$. Multiplying a total phase count by one fixed success row is wrong. Nevertheless each conditional probability lies in $[p_-,p_+]$ and the effort and program certificates of Theorem~\ref{thm:herald} hold. The theorem does not repair the false equality by replacing the true history with an averaged artificial state.
+\end{example}

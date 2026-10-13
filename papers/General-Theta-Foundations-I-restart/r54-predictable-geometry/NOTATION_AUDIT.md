@@ -1,0 +1,11 @@
+# Notation audit
+
+`theta`: fixed inaccessible model, not a changing adversary. `H`: compact convex task carrier; script H: full visible history. `A_t`: predictable productive-call indicator, not an action name. `c_t`: reported physical cost. `tau`: internal first commitment time, finite almost surely. `nu`: actual known reference acquisition law; `nu_0`: raw preparation/report reference before comparison; neither is the formal reachable volume. `lambda_theta`: actual terminal mark law. `h`: selected density; separately raw history in explanatory prose, never in the same formula.
+
+`f,w`: task proxy and nonnegative residual-risk mark. `f_*,w_*`: intrinsic conditional minimax center/radius. `s`: conditional variance minus B0. `K`: fiber ratio; script K or kernel K in the Borel appendix is a distinct typed object. `k_minus,k_plus`: task comparison constants. `ell,u`: actual conditional density envelopes. `kappa_minus,kappa_plus`: cost per productive acquisition certificates. `b_minus,b_plus`: density caps, not bits.
+
+`m`: terminal dictionary cardinality. `M`: total autonomous alphabet. `B`: upper live navigator count. `b_phys`: compulsory physical-command cover lower. `Q_m`: acquired marked distortion profile; matrix Q in Section 9 is a finite killed transition, explicitly introduced afresh. `N`: expected raw cost until commitment; joint-task total N includes two extra calls. `p_minus,p_plus`: hidden/history gate bounds; integer p in the dyadic paragraph is the explicitly local binary precision. `q`: positivity floor in raw realizations; q(h) in the appendix is the predictive evaluation map, not that scalar.
+
+`delta`: output/numerical error in a generic perturbation proposition versus an actual inaccessible calibration offset in the joint task, never silently equated. `epsilon`: TV = sup_A |P(A)-Q(A)|; erasure probability is 2 epsilon. `rho,eta,zeta`: killed-potential drift, risk and cost error coefficients. `W,U`: proof certificates, not stored runtime state.
+
+Stable labels are verified for uniqueness and resolution. TeX recorder inputs must equal the active-source list. The build receipt supplies final theorem numbering. No v97 numbering or historical branch operations appear in the formal mathematical body.

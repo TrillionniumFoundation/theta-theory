@@ -1,0 +1,103 @@
+\section{Finite precision with a stopped resource certificate}
+\label{sec:numerics}
+For a reference finite live alphabet, write $Q$ for its substochastic continuation matrix, $c_i\ge c_*>0$ for reference per-call costs, and $b_i\ge0$ for the expected terminal loss contributed on one call from label $i$. The terminal values themselves are not live states. A proof certificate consists of nonnegative finite vectors
+\begin{equation}\label{eq:potentials}
+ W\ge c+QW,\qquad U\ge b+QU.
+\end{equation}
+The implementation may be history dependent and have different one-call quantities $\widetilde Q_h,\widetilde b_h,\widetilde c_h$, but must stay inside the entire certified live alphabet and choose physically legal commands exactly.
+
+\begin{theorem}[Killed-potential implementation bound]\label{thm:perturbation}
+Suppose, on every surviving implementation history at live label $i$,
+\begin{align}
+ ((\widetilde Q_h-Q)W)_i&\le\rho c_i,&0\le\rho&<1,\label{eq:drift-W}\\
+ \widetilde b_h(i)+(\widetilde Q_hU)_i&\le U_i+\eta c_i,&\eta&\ge0,\label{eq:drift-U}\\
+ \widetilde c_h(i)&\le(1+\zeta)c_i,&\zeta&\ge0.\label{eq:drift-cost}
+\end{align}
+The implemented observer stops almost surely and satisfies
+\begin{equation}\label{eq:implementation}
+ \E\sum_{t\le\widetilde\tau}\widetilde c_t
+   \le\frac{1+\zeta}{1-\rho}W_{i_0},\qquad
+ \E[\text{terminal loss}]
+   \le U_{i_0}+\frac{\eta}{1-\rho}W_{i_0}.
+\end{equation}
+These are uniform bounds if the assumptions are uniform over the unknown model and full raw history.
+\end{theorem}
+\begin{proof}
+The first certificate and \eqref{eq:drift-W} imply
+\[
+ W_i-(\widetilde Q_hW)_i\ge(1-\rho)c_i.
+\]
+Set the potential to zero after stopping. Summing to $\widetilde\tau\wedge n$ gives
+\[
+ (1-\rho)\E\sum_{t\le\widetilde\tau\wedge n}c_{S_{t-1}}
+ +\E[W_{S_n}\one_{\{\widetilde\tau>n\}}]\le W_{i_0}.
+\]
+Keep the nonnegative remaining term until this inequality has been proved. Monotone convergence yields a finite expected reference cost. Its positive minimum implies finite expected duration and almost-sure stopping. Summing \eqref{eq:drift-U} similarly gives
+\[
+ \E[\text{loss contributed by time }n]
+ +\E[U_{S_n}\one_{\{\widetilde\tau>n\}}]
+ \le U_{i_0}+\eta\E\sum_{t\le\widetilde\tau\wedge n}c_{S_{t-1}}.
+\]
+Drop only the nonnegative remaining $U$ term and let $n\to\infty$. Nonnegative loss and almost-sure stopping give the second bound. The actual-cost bound follows separately from \eqref{eq:drift-cost}. Terminal-law total variation alone was not used to bound expected duration.
+\end{proof}
+
+\begin{proposition}[Finite comparison implementation of the regular upper]\label{prop:finite-cells}
+Suppose the packing data used in Proposition~\ref{prop:geometry} are supplied by finite certified centers, and the current marked coordinates $(f,\sqrt w)$ and those centers can be evaluated to error at most $t/8$ at a declared cost. Assume centers can be approximated within $H$ with that certificate. The regular upper in Corollary~\ref{cor:regular} then has a finite-comparison implementation with the same $B+m$ label bound and the same risk order. For coordinates in a fixed rational box of dimension $k$, precision $p=O(1+\log(1/t))$ suffices; a direct implementation uses $O(mkp)$ program bits, $O(kp+\log m)$ workspace bits, and $O(mkp^2)$ elementary bit operations per productive call, besides the certified coordinate-evaluation cost.
+\end{proposition}
+\begin{proof}
+Use the $j\le m$ disjoint inner rectangles of radius and reliability threshold $t$ constructed in Proposition~\ref{prop:geometry}. Their union has mass at least $1/b$. Replace the locations by certified approximations and use an outward threshold between $3t/2$ and $2t$ for the approximate location distance and reliability, chosen dyadically with its arithmetic error included. Every true inner rectangle is accepted, and every accepted true point has location distance and reliability at most $3t$ from its reported center. Accept the union deterministically, outputting the first matching center. Conditional acceptance probability is at least $\ell/b$, so the same predictable-attempt proof gives cost at most $\kappa_+b/\ell$. The marked distortion of every accepted point is at most $18t^2$, up to the fixed center-approximation factor. No normalization by an unknown exact rectangle mass and no arbitrary density-evaluation oracle is needed.
+
+Store the finitely many rational centers and thresholds in a read-only table. A sequential scan keeps the current coordinates, temporary squared distances and a cell index in workspace. Schoolbook rational comparisons give the displayed bit bounds; all live routing states remain those of $\mathcal G$. The finite set of output values is the center list. At bounded effective budget, accept the first productive report and use one fixed center. This proves the complete range after changing a fixed risk constant. The proposition is conditional on computable certified geometric and report data; it neither computes an arbitrary Borel kernel nor gives an efficient global method for discovering those certificates.
+\end{proof}
+
+\subsection*{A complete dyadic certificate}
+Take Theorem~\ref{thm:classical} with $K=[0,1]$, independent uniform reference coordinates $(Y,T)$ under $\nu_0$, $\beta=1/4$, $\phi(y,t)=2y-1$, $q=1/4$, $\gamma=1/4$, and gate bounds $p_-=1/8$, $p_+=1/4$. The actual primary laws are not independent of the hidden state; only the primitive reference measure is a product. Here
+\[
+ c=3/4,\quad C=5/4,\quad a_0=1/20,\quad
+ a_v=19/100,\quad k_-=19/300,\quad k_+=3.
+\]
+Use a three-state observer: gate, acquisition, and terminal value $1/2$. Its ideal acquisition acceptance set is
+\[
+ A=\{3/8\le Y\le5/8,\ 0\le T\le1/8\}.
+\]
+The area is $1/32$, so every productive conditional acceptance probability is at least $s_0=3/128$. The reference continuation matrix takes gate success $1/8$ and acquisition acceptance $s_0$. With reference costs $c_G=c_A=1$, its exact cost potentials are
+\begin{equation}\label{eq:dyadic-potentials}
+ W_G=384,\quad W_A=376,
+ \qquad U_G=U_A=1/16.
+\end{equation}
+Indeed $W_G=1+(7/8)W_G+(1/8)W_A$ and $W_A=1+(1-s_0)W_G$. Every actual ideal row has at least these success probabilities, so satisfies the same super-solutions. On acceptance, $|Y-1/2|+T\le1/4$ and the actual squared audit loss is at most $1/16$, proving the $U$ certificate without knowing the model.
+
+Now let $p=14$, $e=2^{-p}$, and assume the report digitizer supplies $p$-fractional-bit coordinates clipped to $[0,1]$ with deterministic errors at most $e$. Accept only if
+\begin{equation}\label{eq:inward-test}
+ 3/8+e\le\widehat Y\le5/8-e,\qquad \widehat T\le1/8-e.
+\end{equation}
+Every accepted true report belongs to $A$. Every true report in
+\[
+ A_{\rm in}=[3/8+2e,5/8-2e]\times[0,1/8-2e]
+\]
+is accepted. In the coupling using the \emph{same physical report}, a changed routing decision can therefore occur only in $A\setminus A_{\rm in}$. Its conditional probability is at most
+\[
+ d_e=\frac54\left\{\frac1{32}-(1/4-4e)(1/8-2e)\right\}
+      =\frac{10235}{134217728}.
+\]
+This is a boundary-mass estimate, not a claim that a continuous law and its digitized atomic law are close in total variation. Gate routing is unchanged. Reducing acceptance can increase the acquisition continuation potential by at most $384d_e$, so one valid complete certificate is
+\begin{equation}\label{eq:dyadic-errors}
+ \rho=\frac{30705}{1048576},\qquad \eta=0,\qquad\zeta=0.
+\end{equation}
+The $U$ inequality still holds because every accepted true loss is at most $1/16$ and both live $U$ values equal that bound. Thus the implemented observer obeys
+\begin{equation}\label{eq:dyadic-final}
+ \E\tau\le\frac{384\cdot1048576}{1017871}<400,
+ \qquad R\le1/16.
+\end{equation}
+The strictly positive slack from the physical budget $400$ is
+$400-402653184/1017871=4495216/1017871$. A direct conditional-hazard calculation gives the sharper count bound
+$9/[\frac34(1/4-4e)(1/8-2e)]$; the looser displayed interval already follows from the killed-potential certificate.
+
+For an all-strategy lower at the same raw budget and alphabet, the two physical ports require two live labels, leaving one output. The effort lower gives at most $400/5=80$ productive calls. Their primary densities are at most $5/4$ relative to the uniform reference, so the terminal law has density at most $100$. For any output $r$, the sublevel
+$T^2+(Y-r)^2\le z$ in $[0,1]^2$ has area at most $\pi z/2$. Integrating $\Pp(T^2+(Y-r)^2>z)\ge(1-50\pi z)_+$ yields mean marked distortion at least $1/(100\pi)$. Therefore
+\begin{equation}\label{eq:dyadic-risk-interval}
+ \frac{19}{30000\pi}\le R_\aut^\Theta(400,3)\le\frac1{16}.
+\end{equation}
+The lower allows all randomized legal three-state procedures, not only threshold rules. These certified constants are not claimed optimal.
+
+The thresholds in \eqref{eq:inward-test}, in integer units $2^{-14}$, are $6145,10239,2047$. Three 15-bit constants occupy 45 read-only program bits, in addition to a fixed instruction interpreter and the exactly represented output $1/2$. Two 15-bit input registers and a fixed number of control bits suffice as temporary workspace; comparisons take $O(p)$ bit operations per productive report. There are three persistent labels, encoded by two bits, and no stored time counter or retained random seed. If a physical call plus digitization costs at most $t_{\rm raw}(p)$ time and the comparisons cost at most $C_{\rm cmp}p$, the expected execution time is bounded by $400[t_{\rm raw}(14)+14C_{\rm cmp}]$. The promised digitizer accuracy and its cost are part of this implementation contract, not supplied at infinite precision for free.
