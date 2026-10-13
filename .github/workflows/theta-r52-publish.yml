@@ -1,0 +1,90 @@
+name: Theta R52 stopped experiment source and complete retained build
+on:
+  push:
+    branches:
+      - foundation/general-theta-restart-r52-stopped-experiment-research-2026-10-13
+    paths:
+      - '.github/workflows/theta-r52-publish.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: theta-r52-publication
+  cancel-in-progress: true
+jobs:
+  publication:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 90
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      R52_BRANCH: foundation/general-theta-restart-r52-stopped-experiment-research-2026-10-13
+      R52_PATH: papers/General-Theta-Foundations-I-restart/r52-stopped-experiment
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Materialize hash-verified ordinary source and pinned review inputs
+        run: |
+          test "$(git hash-object .github/scripts/theta-r52-publish.py)" = '51e28375c4f4302ad2ddbf95a6c15a4cb2e55fb0'
+          python3 .github/scripts/theta-r52-publish.py materialize
+          git diff --exit-code
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          test "$(git ls-remote origin "refs/heads/$R52_BRANCH" | cut -f1)" = "$GITHUB_SHA"
+          git add -- "$R52_PATH"
+          git commit -m 'source(theta R52): marked acquired-risk transfer, memory saturation and nonregenerative stopping laws'
+          git push origin "HEAD:refs/heads/$R52_BRANCH"
+          echo "R52_SOURCE_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - name: Install complete retained-build dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended lmodern cm-super poppler-utils python3-venv
+          python3 -m venv "$RUNNER_TEMP/r52-venv"
+          "$RUNNER_TEMP/r52-venv/bin/pip" install numpy scipy pypdf mpmath
+      - name: Build complete native and retained source without mutation
+        run: |
+          "$RUNNER_TEMP/r52-venv/bin/python" "$R52_PATH/build.py" --source-sha "$R52_SOURCE_SHA" --prepared-root "$GITHUB_WORKSPACE" --output "$RUNNER_TEMP/r52-output" --retained > "$RUNNER_TEMP/r52-build.stdout" 2>&1
+          git diff --exit-code
+          test -z "$(git ls-files --others --exclude-standard)"
+      - name: Bind artifact commit directly to immutable mathematical source
+        run: |
+          python3 .github/scripts/theta-r52-publish.py artifacts
+          test "$(git ls-remote origin "refs/heads/$R52_BRANCH" | cut -f1)" = "$R52_SOURCE_SHA"
+          git add -- "$R52_PATH/artifacts"
+          git commit -m 'artifacts(theta R52): bind 25 PDFs and complete build receipts to frozen ordinary source'
+          git push origin "HEAD:refs/heads/$R52_BRANCH"
+          echo "R52_ARTIFACT_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - name: Prepare independent reconstruction packets
+        run: python3 .github/scripts/theta-r52-publish.py packets
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r52-native-${{ env.R52_SOURCE_SHA }}
+          path: ${{ runner.temp }}/r52-packets/native
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r52-retained-1-${{ env.R52_SOURCE_SHA }}
+          path: ${{ runner.temp }}/r52-packets/retained-1
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r52-retained-2-${{ env.R52_SOURCE_SHA }}
+          path: ${{ runner.temp }}/r52-packets/retained-2
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r52-retained-3-${{ env.R52_SOURCE_SHA }}
+          path: ${{ runner.temp }}/r52-packets/retained-3
+          retention-days: 30
+      - name: Preserve execution logs even on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: theta-r52-execution-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/r52-build.stdout
+            ${{ runner.temp }}/r52-output/FAILED_NATIVE_LATEX.log
+          if-no-files-found: ignore
+          retention-days: 30
