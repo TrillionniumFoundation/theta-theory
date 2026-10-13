@@ -1,0 +1,11 @@
+# Revision 53 qualification
+
+The controlling v52 report is verified as Git blob `9f50c9909cc137d67babfd69f6508de2ce3254cf`; the full frozen v52 paper tree is `a5f687493f1f574c700cf28c10f24f25841ad0d7`. No missing-report exception is allowed. The bootstrap source-snapshot run only supplied exact report bytes and is not a manuscript qualification run.
+
+`tools/verify_v53.py` checks all 114 core inclusions, 109 unchanged inherited cores, the exact two-module repair ledger, 143 unchanged inherited Python scripts, every inherited label, the compiled A--X synopsis and appendices, old bibliography entries and the one added citation, all provenance copies, four report blobs, the full baseline tree, the ordinary-source Merkle identity and the read-only workflow hash.
+
+The new finite checks cover the sinc-square Fourier normalization and shift, factorial cancellation, centered three-block size bounds, exact finite Rademacher moments, the uniform dyadic sum, exponential-tail transport truncation and conditional roof domination. Negative controls reject small mass implying small height, bounded-Lipschitz convergence implying Wasserstein convergence without moments, and roof TV controlling an unbounded reference-roof cost. They are algebraic and finite models, not continuum proofs.
+
+The entire inherited finite-check chain is run. Ordinary and optimized outputs must agree. Six retained arithmetic/geometric scripts run separately. Native TeX is built with shell escape disabled until references stabilize, rejecting undefined references, LaTeX/package warnings, overfull boxes and missing characters. Theorem-label-based rendering records the actual PDF page count and image hashes.
+
+The dynamic receipt is emitted only after strict checks and native compilation. In GitHub Actions it requires a clean scoped source, event SHA equal to checkout SHA, and the computed full manuscript tree equal to the committed tree. It records the run ID and attempt, PDF/log/source hashes and all frozen-report checks. A local build identifies itself as local. Neither local nor remote qualification is independent human proof verification, a full raw pointwise theorem, or a bound for positive physical roof heights.

@@ -1,0 +1,72 @@
+name: A2-DYN v103 endpoint-distance paired-source qualification
+on:
+  push:
+    branches:
+      - revision/a2-dyn-v103-referee-response-2026-10-13
+      - revision/a2-dyn-v103-referee-copy-2026-10-13
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: a2-dyn-v103-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  qualify-manuscript:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Pin the original author source and controlling review
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD:papers/A2-DYN-v102-referee-response)" = "2ac230d86ffc9c4907e57f0e425b80d97971a6c9"
+          test "$(git rev-parse HEAD:reviews/a2-dyn-v102-external-top4-review-2026-10-13/REFEREE_REPORT.md)" = "6c6bbd2fc9fd5e6da575ac6db9827448e091af3d"
+          mkdir -p papers/A2-DYN-v103-referee-response/evidence
+          printf '%s\n%s\n' "$GITHUB_SHA" "$GITHUB_REF" > papers/A2-DYN-v103-referee-response/evidence/exact-checkout.txt
+          git rev-parse HEAD:papers/A2-DYN-v103-referee-response >> papers/A2-DYN-v103-referee-response/evidence/exact-checkout.txt
+      - name: Install native TeX and finite-check dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern python3-numpy python3-mpmath python3-sympy python3-scipy poppler-utils
+      - name: Preserve all sources and compile all 249 mathematical modules
+        env:
+          TZ: UTC
+        run: |
+          set -o pipefail
+          bash papers/A2-DYN-v103-referee-response/build.sh 2>&1 | tee papers/A2-DYN-v103-referee-response/evidence/full-build-output.txt
+      - name: Record final native qualification summary
+        run: |
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          p=Path('papers/A2-DYN-v103-referee-response/evidence')
+          c=json.loads((p/'v103-checks.json').read_text())
+          r=json.loads((p/'v103-render.json').read_text())
+          with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as f:
+              f.write('# A2-DYN v103 exact-source qualification\n')
+              f.write('Commit: `'+c['source']['checkout_sha']+'`\n\n')
+              f.write('Paper tree: `'+c['source']['paper_tree']+'`\n\n')
+              f.write('New finite fixtures: '+str(c['finite_checks']['total_checks'])+'\n\n')
+              for name in ('main','supplement'):
+                  f.write(name+': '+str(r[name]['pages'])+' pages; '+str(len(r[name]['core_modules']))+' recorded core files; SHA256 `'+r[name]['pdf_sha256']+'`\n\n')
+              f.write('Full recorder union: 249. Source/build evidence is not mathematical certification.\n')
+          PY
+      - name: Upload final-SHA PDFs and qualification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a2-dyn-v103-${{ github.sha }}-${{ github.run_id }}
+          if-no-files-found: error
+          retention-days: 90
+          path: |
+            papers/A2-DYN-v103-referee-response/build/*.pdf
+            papers/A2-DYN-v103-referee-response/build/*.log
+            papers/A2-DYN-v103-referee-response/build/*.fls
+            papers/A2-DYN-v103-referee-response/build/*.aux
+            papers/A2-DYN-v103-referee-response/build/*-pass*.txt
+            papers/A2-DYN-v103-referee-response/build/*.tex
+            papers/A2-DYN-v103-referee-response/evidence/*

@@ -1,0 +1,7 @@
+# Response to external v81 referee report — A2-DYN revision 82
+
+Controlling report: review/a2-dyn-v81-external-top4-review-2026-10-11 at commit 614b15b2bb77f2887e95f685a0cfb6b2db44e99d. Frozen v81 author SHA 49957346c784071bf6f2e18a7ae6f2d724254f20. All original topic and exact labels remain unchanged.
+
+The review correctly identifies two distinct complete positive height defects: initial critical source and nongrazing outgoing first-exit surface flux. The present increment does not assume that the v81 fixed-width volume result proves a pointwise estimate. Module 189 provides an explicit dyadic majorant for the unbounded critical Abel convolution, and records the precise tail-uniformity condition required to commute an infinite dyadic sum with the collision limsup. It establishes a concrete positive-power sufficient envelope with its scale exponent and full original labels. It also proves that the separate one-sided first-exit surface source cannot be controlled merely by this volume statement.
+
+No unsupported conclusion is promoted. Both critical and surface decay estimates, and hence the organizing exact-label pointwise LLT, remain open mathematical tasks. The 188 original proof modules are retained verbatim through the v81 directory and its frozen source tree; the present new article inherits the complete v81 material and adds module 189. The v81 source-validation scripts are inherited but remain pinned to v81, so their existence does not certify a v82 full build. No final-v82 exact-SHA qualification is claimed before actual runs.
