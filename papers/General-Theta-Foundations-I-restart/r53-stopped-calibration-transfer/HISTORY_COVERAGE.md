@@ -1,0 +1,7 @@
+# Historical coverage and preservation
+
+The remote search identified R32 as the latest external restart review and R52 as the newest author source/build inspected. The canonical head and four control files were pinned. The actual R52 native Actions artifact was downloaded, its prepared source package extracted, and its complete R52 manuscript, audit/response and relevant proof pipeline read. The full R32 report, the native R52 stopped calibration/geometry/Gaussian/composition arguments and the controlling outline/charter/targets were inspected. Prior pipeline/realization lineages were inventoried through the prepared source and existing provenance.
+
+This is not a claim to have re-proved every result of v1–v96, every historical report, or every retained companion. Complete retained rebuilding checks source consistency and execution, not all historical mathematics. The exact executed build scope is in BUILD_RECEIPT.json.
+
+The new branch starts at canonical and retains the R52 tree through an additional parent, adding only the native R53 directory and a new scoped workflow/evidence. No old review, realization or frozen archive ref is a write target. All inherited R52 source subtrees remain unchanged. The complete R52 article is delivered separately; its own retained chain preserves earlier restart mathematics. The old realization branches remain independent, not renamed as foundations. See PINNED_INPUTS.json and final preservation receipt for exact SHAs.

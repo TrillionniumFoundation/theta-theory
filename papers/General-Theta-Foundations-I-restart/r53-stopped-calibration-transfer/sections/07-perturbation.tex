@@ -1,0 +1,55 @@
+\section{Finite precision without a one-call stopping floor}
+\label{sec:perturbation}
+A protocol mode may prohibit stopping altogether. A lower bound on stop probability at every raw call is therefore the wrong implementation certificate. The appropriate object is a finite killed potential.
+
+\begin{theorem}[Killed-potential resource perturbation]\label{thm:perturbation}
+For a finite live-label program, first discard live labels unreachable from the initial label under the reference execution. On the entire remaining live alphabet let $Q$ be the substochastic continuation matrix, $c_i\ge c_*>0$ a reference mean call cost and $b_i\ge0$ a reference mean one-call terminal-loss contribution. Assume finite nonnegative vectors $W,U$ on this alphabet satisfy
+\begin{equation}\label{eq:potentials}
+ W=c+QW,\qquad U=b+QU.
+\end{equation}
+A possibly history-dependent numerical implementation remains action compatible, never enters a live label outside this certified alphabet, and for every surviving history with live label $i$ satisfies
+\begin{align}
+ \E[W(S')\one_{\rm continue}\mid\mathcal H]&\le (QW)_i+\rho c_i,\label{eq:driftW}\\
+ \E[\ell_{\rm term}\one_{\rm stop}+U(S')\one_{\rm continue}\mid\mathcal H]
+   &\le U_i+\eta c_i,\label{eq:driftU}\\
+ \E[c_{\rm actual}\mid\mathcal H]&\le(1+\zeta)c_i,\label{eq:driftC}
+\end{align}
+where $0\le\rho<1$, $\eta,\zeta\ge0$, and $\ell_{\rm term}\ge0$ is the common bounded terminal loss. The inequalities are uniform in the hidden model. Then the implementation stops almost surely and
+\begin{align}
+ \E\sum_{t\le\tau}c_{S_{t-1}}&\le\frac{W(i_0)}{1-\rho},\qquad
+ \E C_{\rm actual}\le\frac{(1+\zeta)W(i_0)}{1-\rho},\label{eq:cost-stability}\\
+ R_{\rm num}&\le U(i_0)+\frac{\eta W(i_0)}{1-\rho}.\label{eq:risk-stability}
+\end{align}
+No positive one-call stop probability, uniform mixing or comparison of discrete and continuous report laws in total variation is required.
+\end{theorem}
+\begin{proof}
+Extend $W,U$ by zero after commitment. By \eqref{eq:potentials} and \eqref{eq:driftW}, the expected drop of $W$ at a live call is at least $(1-\rho)c_i$. Sum up to $\tau\wedge n$, retain the nonnegative remaining potential, and let $n\to\infty$. Monotone convergence proves the first bound in \eqref{eq:cost-stability}. Since $c_i\ge c_*$, the expected number of calls is finite, so commitment occurs almost surely. Summing \eqref{eq:driftC} proves the actual-cost bound. Summing \eqref{eq:driftU} in the same way bounds the accumulated terminal-loss contribution by $U(i_0)+\eta\E\sum c_i$. There is exactly one terminal contribution almost surely, proving \eqref{eq:risk-stability}. Neither argument infers expected duration from a terminal-law distance.
+\end{proof}
+
+For a stationary approximation $(\widetilde Q,\widetilde b,\widetilde c)$ it suffices to verify
+\[
+ (\widetilde Q-Q)W\le\rho c,\quad
+ (\widetilde Q-Q)U+\widetilde b-b\le\eta c,\quad
+ \widetilde c\le(1+\zeta)c
+\]
+coordinatewise. These are finite certificate inequalities. Potentials are computed on the reachable transient part produced by Lemma~\ref{lem:realization}; a phantom recurrent class is not inverted. When $b$ majorizes the conditional terminal loss in every hidden model, the same construction gives valid $U$ for that entire family.
+
+\begin{example}[A zero-hazard mode]\label{ex:gate-drift}
+For the gate protocol with acceptance probability $s$ per active call,
+\[
+ Q=\begin{pmatrix}1-p&p\\1-s&0\end{pmatrix},\qquad
+ c=\begin{pmatrix}1\\1\end{pmatrix},\qquad
+ W_G=\frac{1+1/p}{s},\quad W_A=W_G-\frac1p.
+\]
+The gate stop hazard is zero, but the potentials are finite for every $p,s>0$. At $p=0$ no such finite potential exists. If gate coins and mode parsing are exact and each active decision changes by probability at most $e<s$ under the same raw primary report, direct cycle counting gives
+\[
+ \E C_{\rm num}\le\frac{\kappa(p)}{s-e},\qquad
+ R_{\rm num}\le\frac{b_A+L_\ell e}{s-e},
+\]
+where $b_A$ bounds the reference active-call terminal-loss contribution and $0\le\ell\le L_\ell$. This follows by counting active attempts and the exactly $1/p$ mean gate calls preceding each attempt. The bound is not obtained by conditioning on successful gates for free.
+\end{example}
+
+\subsection*{Executable numerical certificates and accounting}
+The ideal theorems use Borel routing and real constants in the usual label model. A finite-description realization additionally requires computable centers, actions and acceptance cells, certified current-report evaluation, and a uniform bound on ambiguous boundary mass. Approximation couples the routing decisions on the \emph{same physical report}; a discrete approximation to a continuous report is not close in total variation merely because its coordinates are close. Mode parsing and action legality must be preserved exactly. Certified arithmetic and boundary bounds then imply the finite inequalities above. One chooses a reference cost with enough slack to satisfy $(1+\zeta)W(i_0)/(1-\rho)\le N$; no budget violation is renamed approximation error.
+
+For $k$-dimensional centers of $b_r$ bits per coordinate, a mode/action table of description length $L_A$, and routing/coin descriptions of length $L_\gamma$, one explicit program bound is $O(kmb_r+L_A+L_\gamma+L\log(L+m))$. Persistent labels cost $\lceil\log_2(L+m)\rceil$ bits in addition to that read-only description. Current-call arithmetic has separately certified workspace $W_{\rm tmp}(b)$ and time $T_{\rm eval}(b)$; at fixed precision its expected total time is at most $T_{\rm eval}(b)\E\tau$ plus preparation, planning and audit. For the gate example the dependence on $p$ must remain in the potential or exact cycle count. These are constructive upper certificates, not optimal lower bounds for all computational resources.

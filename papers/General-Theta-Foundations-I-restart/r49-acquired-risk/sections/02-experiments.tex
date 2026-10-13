@@ -1,0 +1,82 @@
+\section{Prepared experiments and finite observers}\label{sec:experiments}
+\subsection{The raw experiment and its predictive representation}
+Let the hidden state, report and history spaces be standard Borel. A preparation and a finite action set $\calA$ specify normalized positive causal kernels
+\[
+ K_a^\theta(dx',dy\mid x),\qquad \theta\in\Theta.
+\]
+The model $\theta$ is fixed during a run and is not an input to the observer. The singleton case is included. Every chosen action incurs one acquisition. The observer may stop after any acquired report, but not before the first. After stopping, a specified protected audit is executed: it cannot be used to decide whether to continue. Fresh randomization is independent of the hidden experiment conditional on the visible history.
+
+We impose the following finite predictive representation, to be verified from the raw kernels. Let $E$ be a finite-dimensional real vector space, $C\subset E$ a closed, pointed, generating cone, and $e\in E^*$ strictly positive on $C\setminus\{0\}$. Its base
+\[
+ D=\{x\in C:e(x)=1\}
+\]
+is compact. A preparation is $x_0^\theta\in D$. For each action, $Y_a$ is standard Borel and $\lambda_a$ is a finite positive measure. There are measurable positive linear maps
+\begin{equation}\label{eq:raw-instrument}
+ L_a^\theta(y):C\longrightarrow C,\qquad
+ \int\norm{L_a^\theta(y)}\lambda_a(dy)<\infty,
+ \qquad \int eL_a^\theta(y)x\,\lambda_a(dy)=e(x).
+\end{equation}
+The measures $\lambda_a$ are common to all models, but the integrability constants need not be uniform in $\theta$. Starting from $x$, the report has density $eL_a^\theta(y)x$ and the updated predictive state is
+\begin{equation}\label{eq:update}
+ F_a^\theta(y,x)=\frac{L_a^\theta(y)x}{eL_a^\theta(y)x}
+\end{equation}
+on positive-evidence reports. If the denominator is zero, positivity implies $L_a^\theta(y)x=0$; no positive-probability posterior is assigned there.
+
+This representation means that the selected executable future tests, their report pullbacks and the audit moments belong to a finite affine closure. Its linear evaluations must separate the predictive quotient under consideration. The closure is a hypothesis, not a consequence of finite physical dimension alone. Appendix~\ref{app:quotient} gives a measurable construction and minimality statement, including the distinction between the actual quotient and the compact convex base used to certify positive mixtures.
+
+For the audit, let $Z\in\R^k$ be bounded. There are linear maps $T_\theta:E\to\R^k$ and $c_\theta\in E^*$ such that, at predictive state $x\in D$,
+\begin{equation}\label{eq:audit}
+ \E_\theta[Z\mid x]=T_\theta x,\qquad
+ \E_\theta[\norm Z^2\mid x]=c_\theta(x).
+\end{equation}
+The decoder lies in a common compact convex set $H\subset\R^k$ containing all possible conditional means. The loss is $\norm{Z-r}^2$, uniformly bounded by a declared constant $L$. All models have this same report, action, audit and loss interface. The unnormalized terminal cost is the continuous function
+\begin{equation}\label{eq:terminal-cost}
+ G_\theta(d,r)=c_\theta(d)-2\ip{r}{T_\theta d}+e(d)\norm r^2,
+ \qquad d\in C,\quad r\in H.
+\end{equation}
+For a known single model, minimizing in $r$ gives the continuous perspective
+\begin{equation}\label{eq:perspective}
+ \overline g(d)=c(d)-\frac{\norm{Td}^2}{e(d)},\quad e(d)>0,
+ \qquad \overline g(0)=0.
+\end{equation}
+The continuity at zero follows from compactness of $D$. In a model family the minimization in $r$ cannot be performed separately for each model.
+
+\subsection{What the machine may retain}
+A homogeneous autonomous observer has a nonempty live set $S$ and a nonempty terminal set $J$, disjoint, with
+\begin{equation}\label{eq:state-budget}
+ |S|+|J|\le M.
+\end{equation}
+Its initial live label is $s_0$. A live label $s$ selects an action according to $p_{sa}$. Having read $y$, the observer routes to $i\in S\sqcup J$ with Borel probabilities
+\begin{equation}\label{eq:routing}
+ \gamma_i(s,a,y)\ge0,\qquad \sum_{i\in S\sqcup J}\gamma_i(s,a,y)=1.
+\end{equation}
+An arrival in $J$ halts and supplies decoder $r_j\in H$. The stop/continue decision and the destination are one joint kernel. All $p,\gamma,r$ are independent of $\theta$ and of the time index. Private random bits are fresh; a retained random seed would require an additional state. The report and selected action can be processed within the current transition, but no uncharged value survives it. In particular, a terminal label is not a live label together with a free external halting bit.
+
+Let $\tau\ge1$ be the number of acquisitions before the first terminal label. A program is admissible at budget $N$ if
+\begin{equation}\label{eq:mean-budget}
+ \sup_{\theta\in\Theta}\E_\theta\tau\le N<\infty.
+\end{equation}
+This implies almost-sure termination for each model. No statement is made about programs outside this admissible class. Define
+\[
+ \calR_\aut^\Theta(N,M)
+ =\inf_{(p,\gamma,r)\text{ satisfying }\eqref{eq:state-budget},\eqref{eq:mean-budget}}
+      \sup_{\theta\in\Theta}\E_\theta\norm{Z-r_{J_\tau}}^2.
+\]
+For $N\ge1,M\ge2$ the class is nonempty: acquire once and halt at a fixed decoder. For $N<1$ or $M<2$ it is empty under this interface. Its infimum is then $+\infty$, a convention about admissibility, not a divergent statistical loss.
+
+A checkpoint with $m$ terminal labels may use the entire visible history for acquisition and stopping, subject to the same mean constraint, and then encode the stopped history into one of $m$ labels. Only this final encoding is constrained by $m$. This stronger architecture has no claimed free implementation by an $m$-state autonomous observer.
+
+\subsection{Acquired occupation and terminal ensembles}
+For one fixed program let $X_t^\theta\in D$ denote the exact predictive state after $t$ reports. Define
+\begin{align}
+ z_s^{\theta,\mathrm{act}}
+  &=\E_\theta\sum_{t=0}^{\tau-1}\one_{\{S_t=s\}}X_t^\theta,
+ &d_j^{\theta,\mathrm{act}}
+  &=\E_\theta[\one_{\{J_\tau=j\}}X_\tau^\theta].\label{eq:actual-occupation}
+\end{align}
+These are vector integrals in the positive cone. Their masses are actual visit counts and stopping probabilities:
+\[
+ \sum_s e(z_s^{\theta,\mathrm{act}})=\E_\theta\tau,\qquad
+ \sum_j e(d_j^{\theta,\mathrm{act}})=1.
+\]
+The vectors in \eqref{eq:actual-occupation} are proof objects, not registers in the observer. When solving algebraic balance equations below, a candidate $z_s^\theta$ must not be called an actual occupation until its preparation-generated part has been identified.

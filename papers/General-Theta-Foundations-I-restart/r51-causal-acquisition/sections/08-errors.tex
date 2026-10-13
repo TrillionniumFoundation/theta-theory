@@ -1,0 +1,48 @@
+\section{Common-task error composition and physical resources}\label{sec:errors}
+\begin{proposition}[Typed causal simulation]\label{prop:simulation}
+Suppose a parameter-independent causal simulator takes a target experiment into a source experiment. Its report transformation, strategy lift, available actions, stopping decision and protected task readout are compatible. Suppose it uses at most $R$ internal states, including its clock, has a verified mean native-call bound $\kappa N+c$ for every simulated target procedure of mean at most $N$, and approximates the complete stopped and scored target law in total variation by at most $\eps$. For a common loss in $[0,L]$,
+\begin{equation}\label{eq:morphism}
+ \calR_{\rm source}(\kappa N+c,RM)
+ \le \calR_{\rm target}(N,M)+L\eps.
+\end{equation}
+Two such simulations compose with additive deficiencies, state multiplier $R_1R_2$, and mean-call bound $\kappa_1\kappa_2N+\kappa_1c_2+c_1$. Program descriptions, temporary workspace and physical execution time are separately charged.
+\end{proposition}
+\begin{proof}
+Run the target observer and simulator in their product state, of size at most $RM$. The lifted actions and the joint clock are causal because only past reports and fresh coins are used. The assumed mean certificate applies to that executed policy. The total variation convention is $\norm{P-Q}_\TV=\sup_A|P(A)-Q(A)|$, under which the difference in expectations of a loss in $[0,L]$ is at most $L\eps$. Infimizing gives \eqref{eq:morphism}. Composition follows from substitution of the mean bound, the product of states, and kernel contraction and the triangle inequality for total variation. A reverse risk bound needs a reverse simulator or a separate converse; it does not follow by reversing this inequality.
+\end{proof}
+
+If implementation errors can be coupled at a common pre-call history with mismatch probability at most $\eta(h)$, and the final protected audit with error $\eta_f(h)$, first-discrepancy coupling gives the complete-task error bound
+\begin{equation}\label{eq:stopped-coupling}
+ \min\left\{1,\E\sum_{t=1}^{\tau}\eta(\calF_{t-1})+\E\eta_f(\calF_\tau)\right\}.
+\end{equation}
+Indeed the first mismatch at call $t$ has probability at most the ideal expectation of $\one_{\{\tau\ge t\}}\eta(\calF_{t-1})$; sum these events and then the protected audit event. A nonterminating approximate trajectory is recorded as a failure outcome. This proves a bounded-risk comparison, not an expected-cost comparison. Theorem~\ref{thm:central}\textup{(iv)} supplies the additional same-budget repair for regenerative tasks. The general stopped perturbation theorem in the companion~\cite{GTF49} treats nonregenerative raw instruments with a different, square-root, modulus.
+
+For a fixed stopped law, a decoder error of norm at most $v$ obeys
+\begin{equation}\label{eq:readout}
+ \sqrt{\E\norm{X_\tau-\widehat r_J}^2}
+ \le\sqrt{\E\norm{X_\tau-r_J}^2}+v.
+\end{equation}
+This is the $L^2$ triangle inequality. It does not apply unchanged when numerical error also changes the stopping law; that effect must first be controlled by \eqref{eq:stopped-coupling} and an appropriate budget certificate. A raw likelihood error, a numerical coordinate error, and an unobserved calibration shift are distinct quantities.
+
+\begin{theorem}[Attained joint law through a singular threshold]\label{thm:joint}
+Take the regenerative atomic--regular experiment of Theorem~\ref{thm:singular}. On accepting a core report, freeze the core state and perform exactly one additional bit acquisition. An unknown fixed sign $\chi\in\{-1,1\}$ is reported correctly with probability $1-e$ and is erased with probability $e$. It affects no preceding core report. Another unknown fixed sign $\omega\in\{-\delta,\delta\}$ affects no observer report. The observer commits predictions of the core audit, $\chi$, and $\omega$, and one protected joint audit then reveals their scored values. No core restart or bit reread is legal.
+
+For $0\le e\le1$, $0\le\delta\le1$, $n\ge1$ and $M\ge9$, put $\eps=e/2$ and $r=[1-n(1-b)]_+$. Then
+\begin{equation}\label{eq:joint}
+ \calR_{\rm ext}(n,M,\delta,\eps)-B
+ \asymp
+ \frac{r^{1+2/s}}{(nb)^{2/s}M^{2/s}}+\delta^2+\eps.
+\end{equation}
+The constants are uniform in these budgets and error parameters and depend only on the regular-support data. The bit source has causal deficiency exactly $\eps$ relative to the exact bit report with the same protected truth. An attaining-order implementation uses $1+4m\le M$ total states, where $m=\lfloor(M-1)/4\rfloor$.
+
+Counting one initial preparation, all core acquisitions, the bit call and the final audit gives total physical mean budget $\mathsf N=n+3$. Thus in total-call notation $n=\mathsf N-3$ and $\mathsf N\ge4$; these three calls are not hidden in the geometric term.
+\end{theorem}
+\begin{proof}
+Use the one-live-state core construction with $m$ centers. Its $m$ accepted labels are bit-waiting states, not final outputs. The bit has three reports, leading to $3m$ terminal labels whose bit decoders are $+1,0,-1$. The calibration decoder is zero. Total memory is one core-live state, $m$ bit-waiting states and $3m$ final labels. The geometric upper from Theorem~\ref{thm:singular} uses $m-1$ continuous centers; for $M\ge9$, $m-1\ge M/16$. Add the exact bit squared risk $e$ and calibration risk $\delta^2$ to get the upper, including the region $r=0$.
+
+For a converse, any legal extended procedure chooses its core stop before the bit report. The core law therefore has continuous terminal mass at least $r$ and density cap $nb$. The first component of its eventual decoder has at most $M$ values. The lower proof of Theorem~\ref{thm:singular}, applied to that full codebook, still holds even if a later bit report selects among those values. Average over the two signs $\chi$ and $\omega$. Conditional on erasure, all pre-audit information is independent of $\chi$, so the squared bit risk is at least one on that event. The calibration sign is independent of all such information, and its averaged squared risk is at least $\delta^2$. These losses add to the core lower. A maximum over the four sign alternatives is at least their average. This proves \eqref{eq:joint}.
+
+On a nonerased bit, the simulator outputs the report; on erasure it guesses a fair sign. It is parameter independent, preserves the protected truth and has error $e/2$ for each sign. Conversely under a uniform prior on the two signs no pre-audit simulator has information about the sign on erasure, so its average error is at least $e/2$. The worst sign error is at least that average. This proves exact deficiency. It is an attained interface defect, not merely an allowed tolerance. The state and physical-call counts follow from the stated protocol.
+\end{proof}
+
+The hidden-offset and erased-bit devices are inherited from the earlier same-task constructions~\cite{GTF49,GTF32}. What changes in \eqref{eq:joint} is their conjunction with a mass-dependent singular acquisition frontier. A permission to make error $\delta$ or $\eps$ need not force that much risk in an arbitrary experiment.
