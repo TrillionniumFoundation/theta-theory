@@ -1,0 +1,9 @@
+# General Theta Foundations I — exact-budget stopped-risk transfer
+
+The editorial object is `main.tex`. Its title remains *General Theta Foundations I: Acquired Geometry and Causal Resource Transfer*. All inherited mathematical sections are included, not replaced by a roadmap. The new central part (iv), Section “Exact-budget construction and occupation-weighted stability”, the informative-instrument section, and the general finite-description appendix are this revision's mathematical additions.
+
+The theorem connects positive prepared experiments, a finite executable affine predictive closure, one parameter-independent causal finite-state observer, actual occupation and terminal acquisition geometry, and a common bounded terminal risk. Under effective raw-instrument certificates, every prescribed rational mean budget N>=1 and state budget M>=2 admits arbitrarily tight lower/upper risk certificates and an implementing finite program at the **same N,M**. No posterior contraction or uniform absorption of all competing programs is required. The effective hypotheses and the distinction from explicit sharp geometric rates are part of the theorem.
+
+Run `python verify.py`, `python regression.py`, and `python build.py --output <outside-directory>` from a clean source tree. Add `--retained --prepared-root <root>` for all retained manuscripts. Ordinary and optimized-mode regressions are both required. Finite checks and PDF builds are not proofs or priority certificates.
+
+`REFEREE_RESPONSE.md` and its concordance identify what has and has not been resolved. `PINNED_INPUTS.json` records actual input commits. Source, artifact and final read-only commits are recorded separately in delivery evidence after those operations succeed. No historical review, realization, archive, or canonical branch is a write destination.

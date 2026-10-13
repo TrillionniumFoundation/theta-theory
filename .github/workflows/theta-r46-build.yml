@@ -1,0 +1,44 @@
+name: Theta R46 read-only mathematical build
+on:
+  push:
+    branches: [foundation/general-theta-restart-r46-causal-stopping-research-2026-10-12]
+    paths:
+      - .github/workflows/theta-r46-build.yml
+      - papers/General-Theta-Foundations-I-restart/r46-causal-stopping/**
+      - '!papers/General-Theta-Foundations-I-restart/r46-causal-stopping/evidence/**'
+      - '!papers/General-Theta-Foundations-I-restart/r46-causal-stopping/artifacts/**'
+permissions:
+  contents: read
+jobs:
+  mathematical-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Install mathematical typesetting and finite-check dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils python3-venv
+          python3 -m venv "$RUNNER_TEMP/theta-r46-venv"
+          "$RUNNER_TEMP/theta-r46-venv/bin/pip" install numpy scipy pypdf mpmath
+      - name: Build immutable native source and full retained mathematical chain
+        run: |
+          "$RUNNER_TEMP/theta-r46-venv/bin/python" papers/General-Theta-Foundations-I-restart/r46-causal-stopping/build.py \
+            --source-sha "$GITHUB_SHA" \
+            --retained --prepared-root "$GITHUB_WORKSPACE" \
+            --output "$RUNNER_TEMP/theta-r46-build"
+          git diff --exit-code
+          test -z "$(git ls-files --others --exclude-standard)"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r46-source-bound-build
+          path: ${{ runner.temp }}/theta-r46-build/
+          if-no-files-found: error
+          retention-days: 90

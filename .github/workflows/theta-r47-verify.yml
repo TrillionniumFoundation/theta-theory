@@ -1,0 +1,107 @@
+name: Theta R47 source and mathematical verification
+on:
+  push:
+    branches:
+      - foundation/general-theta-restart-r47-stopping-transfer-research-2026-10-13
+    paths:
+      - '.github/workflows/theta-r47-verify.yml'
+      - 'papers/General-Theta-Foundations-I-restart/r47-stopping-transfer/**'
+      - '!papers/General-Theta-Foundations-I-restart/r47-stopping-transfer/evidence/**'
+      - '!papers/General-Theta-Foundations-I-restart/r47-stopping-transfer/artifacts/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verification:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Export immutable scoped source and hash-pinned historical text
+        run: |
+          mkdir -p "$RUNNER_TEMP/r47-input"
+          python3 - <<'PY'
+          import gzip,hashlib,json,lzma,os,pathlib,shutil,subprocess,tarfile
+          root=pathlib.Path.cwd(); out=pathlib.Path(os.environ['RUNNER_TEMP'])/'r47-input'
+          target=pathlib.Path(os.environ['RUNNER_TEMP'])/'r47-prepared'; target.mkdir()
+          paths=subprocess.check_output(['git','ls-files','-z']).decode().split('\0')
+          copied={}; excluded={'.git','artifacts','evidence','__pycache__'}
+          for name in paths:
+              if not name: continue
+              p=pathlib.Path(name)
+              wanted=(name.startswith('papers/General-Theta-Foundations-I-restart/') or name.startswith('foundations/general-theta/') or (len(p.parts)==1 and name.startswith('GENERAL_THETA') and p.suffix=='.md') or any(name.startswith('.github/'+kind+'/theta-r'+v) for kind in ('data','scripts') for v in ('43','44','45')))
+              if not wanted or excluded.intersection(p.parts) or p.suffix.lower() in {'.pdf','.png','.jpg','.jpeg','.ttf','.otf','.woff','.woff2'}: continue
+              src=root/p
+              if src.is_symlink() or not src.is_file(): continue
+              dst=target/p; dst.parent.mkdir(parents=True,exist_ok=True); shutil.copyfile(src,dst)
+              copied[name]=hashlib.sha256(src.read_bytes()).hexdigest()
+          pins=json.loads((root/'papers/General-Theta-Foundations-I-restart/r46-causal-stopping/RECOVERY_PINS.json').read_text())
+          recovered=[]
+          for item in pins:
+              dest=target/item['destination']
+              if not (dest/'main.tex').exists():
+                  parts=[]
+                  for path,expected in item['parts']:
+                      data=(target/path).read_bytes()
+                      actual=hashlib.sha1(('blob '+str(len(data))+'\0').encode()+data).hexdigest()
+                      if actual!=expected: raise RuntimeError('transport blob mismatch '+path)
+                      parts.append(data)
+                  raw=b''.join(parts)
+                  if hashlib.sha256(raw).hexdigest()!=item['transport_sha256']: raise RuntimeError('transport digest mismatch')
+                  records=json.loads(lzma.decompress(raw))
+                  for name,record in records.items():
+                      rel=pathlib.Path(name)
+                      if rel.is_absolute() or '..' in rel.parts or {'.git','artifacts','evidence','transport'}.intersection(rel.parts): raise RuntimeError('unsafe recovered path')
+                      data=record['text'].encode()
+                      if hashlib.sha256(data).hexdigest()!=record['sha256']: raise RuntimeError('recovered digest mismatch')
+                      f=dest/rel
+                      if f.exists() and f.read_bytes()!=data: raise RuntimeError('refusing differing historical overwrite')
+                      f.parent.mkdir(parents=True,exist_ok=True); f.write_bytes(data)
+              report=target/'GENERAL_THETA_FOUNDATIONS_I_RESTART_R32_BAYESIAN_CURVATURE_EXTERNAL_REFEREE_REPORT_R32.md'
+              data=report.read_bytes()
+              if hashlib.sha1(('blob '+str(len(data))+'\0').encode()+data).hexdigest()!='3731f79996e11cdac66ce7c8a3ee5fdf1fffcd21': raise RuntimeError('review input mismatch')
+              f=dest/'review_inputs/R32_EXTERNAL_REFEREE_REPORT.md'; f.parent.mkdir(exist_ok=True); f.write_bytes(data)
+              recovered.append(item)
+          sha=subprocess.check_output(['git','rev-parse','HEAD']).decode().strip()
+          (out/'SOURCE_SHA.txt').write_text(sha+'\n')
+          (out/'GIT_TREE.txt').write_bytes(subprocess.check_output(['git','ls-tree','-r','HEAD']))
+          (out/'INPUT_RECEIPT.json').write_text(json.dumps({'source_commit':sha,'scope':'General Theta ordinary source, controls, root reports and pinned recovery data; repository binaries excluded','copied':copied,'recovery_pins':recovered,'files':{str(f.relative_to(target)):hashlib.sha256(f.read_bytes()).hexdigest() for f in sorted(target.rglob('*')) if f.is_file()}},sort_keys=True,indent=2)+'\n')
+          with (out/'prepared.tar.gz').open('wb') as raw:
+              with gzip.GzipFile(fileobj=raw,mode='wb',mtime=0) as gz:
+                  with tarfile.open(fileobj=gz,mode='w') as tar: tar.add(target,arcname='prepared')
+          print('Scoped source bytes', (out/'prepared.tar.gz').stat().st_size)
+          PY
+          git diff --exit-code
+          test -z "$(git ls-files --others --exclude-standard)"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r47-input-${{ github.sha }}
+          path: ${{ runner.temp }}/r47-input
+          retention-days: 30
+      - name: Install build dependencies
+        if: hashFiles('papers/General-Theta-Foundations-I-restart/r47-stopping-transfer/build.py') != ''
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended lmodern cm-super poppler-utils python3-venv
+          python3 -m venv "$RUNNER_TEMP/r47-venv"
+          "$RUNNER_TEMP/r47-venv/bin/pip" install numpy scipy pypdf mpmath
+      - name: Build and verify source without modification
+        if: hashFiles('papers/General-Theta-Foundations-I-restart/r47-stopping-transfer/build.py') != ''
+        run: |
+          "$RUNNER_TEMP/r47-venv/bin/python" papers/General-Theta-Foundations-I-restart/r47-stopping-transfer/build.py --source-sha "$GITHUB_SHA" --prepared-root "$GITHUB_WORKSPACE" --output "$RUNNER_TEMP/r47-output" --retained
+          git diff --exit-code
+          test -z "$(git ls-files --others --exclude-standard)"
+      - uses: actions/upload-artifact@v4
+        if: always() && hashFiles('papers/General-Theta-Foundations-I-restart/r47-stopping-transfer/build.py') != ''
+        with:
+          name: theta-r47-build-${{ github.sha }}
+          path: ${{ runner.temp }}/r47-output
+          if-no-files-found: warn
+          retention-days: 30
