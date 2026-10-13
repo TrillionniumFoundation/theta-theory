@@ -1,0 +1,86 @@
+name: Theta R53 finite-protocol source and complete retained build
+on:
+  push:
+    branches:
+      - foundation/general-theta-restart-r53-stopped-calibration-transfer-research-2026-10-13
+    paths:
+      - '.github/workflows/theta-r53-build.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: theta-r53-publication
+  cancel-in-progress: false
+jobs:
+  publication:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      R53_BRANCH: foundation/general-theta-restart-r53-stopped-calibration-transfer-research-2026-10-13
+      R53_PATH: papers/General-Theta-Foundations-I-restart/r53-stopped-calibration-transfer
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 3
+      - name: Verify immutable ordinary source and retained dependencies
+        run: |
+          test "$GITHUB_REF_NAME" = "$R53_BRANCH"
+          test "$(git rev-parse "HEAD:$R53_PATH")" = '794ee2032d99a16440be949fc85cbb618cf9d41d'
+          test "$(git hash-object papers/General-Theta-Foundations-I-restart/r52-stopped-experiment/build.py)" = 'cf67a0bb3b8932b46c2db98f7115928dbaa2b677'
+          python3 "$R53_PATH/verify.py"
+          git diff --exit-code
+      - name: Install complete retained-build dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended lmodern cm-super poppler-utils python3-venv
+          python3 -m venv "$RUNNER_TEMP/r53-venv"
+          "$RUNNER_TEMP/r53-venv/bin/pip" install numpy scipy pypdf mpmath
+      - name: Build native and full retained mathematics read-only
+        run: |
+          "$RUNNER_TEMP/r53-venv/bin/python" "$R53_PATH/build.py" --source-sha "$GITHUB_SHA" --prepared-root "$GITHUB_WORKSPACE" --output "$RUNNER_TEMP/r53-output" --retained > "$RUNNER_TEMP/r53-build.stdout" 2>&1
+          git diff --exit-code
+          test -z "$(git ls-files --others --exclude-standard)"
+      - name: Bind artifact commit directly to mathematical source
+        run: |
+          python3 .github/scripts/theta-r53-artifacts.py artifacts
+          test "$(git ls-remote origin "refs/heads/$R53_BRANCH" | cut -f1)" = "$GITHUB_SHA"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- "$R53_PATH/artifacts"
+          git commit -m 'artifacts(theta R53): bind native and 25 complete retained PDFs to immutable source'
+          git push origin "HEAD:refs/heads/$R53_BRANCH"
+      - name: Prepare independent reconstruction packets
+        run: python3 .github/scripts/theta-r53-artifacts.py packets
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r53-native-${{ github.sha }}
+          path: ${{ runner.temp }}/r53-packets/native
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r53-retained-1-${{ github.sha }}
+          path: ${{ runner.temp }}/r53-packets/retained-1
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r53-retained-2-${{ github.sha }}
+          path: ${{ runner.temp }}/r53-packets/retained-2
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r53-retained-3-${{ github.sha }}
+          path: ${{ runner.temp }}/r53-packets/retained-3
+          retention-days: 30
+      - name: Preserve execution logs even on failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: theta-r53-execution-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/r53-build.stdout
+            ${{ runner.temp }}/r53-output/FAILED_NATIVE_LATEX.log
+          if-no-files-found: ignore
+          retention-days: 30
