@@ -5,7 +5,7 @@ import hashlib,json,os,shutil,subprocess,sys
 BRANCH='foundation/general-theta-restart-r53-stopped-calibration-transfer-research-2026-10-13'
 REL='papers/General-Theta-Foundations-I-restart/r53-stopped-calibration-transfer'
 BASE='d0836f0348c2cc961196d34228d655cd1de10616'
-NATIVE_TREE='794ee2032d99a16440be949fc85cbb618cf9d41d'
+NATIVE_TREE='fc70164da7c1239674f847074ad568e255f390f9'
 ROOT=Path(os.environ['GITHUB_WORKSPACE'])
 OUT=Path(os.environ['RUNNER_TEMP'])/'r53-output'
 PACK=Path(os.environ['RUNNER_TEMP'])/'r53-packets'

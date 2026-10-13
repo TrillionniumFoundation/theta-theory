@@ -10,7 +10,7 @@ permissions:
   contents: write
 concurrency:
   group: theta-r53-publication
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   publication:
     runs-on: ubuntu-24.04
@@ -24,11 +24,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 3
+          fetch-depth: 5
       - name: Verify immutable ordinary source and retained dependencies
         run: |
           test "$GITHUB_REF_NAME" = "$R53_BRANCH"
-          test "$(git rev-parse "HEAD:$R53_PATH")" = '794ee2032d99a16440be949fc85cbb618cf9d41d'
+          test "$(git rev-parse "HEAD:$R53_PATH")" = 'fc70164da7c1239674f847074ad568e255f390f9'
           test "$(git hash-object papers/General-Theta-Foundations-I-restart/r52-stopped-experiment/build.py)" = 'cf67a0bb3b8932b46c2db98f7115928dbaa2b677'
           python3 "$R53_PATH/verify.py"
           git diff --exit-code
