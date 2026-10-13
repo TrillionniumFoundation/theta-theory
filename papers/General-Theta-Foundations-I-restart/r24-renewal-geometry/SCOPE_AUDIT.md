@@ -1,0 +1,11 @@
+# Scope audit
+
+Proved in the native manuscript under its explicit hypotheses: average-risk attainment for one common finite-state program in a charged physical-plus-observer regenerative protocol; fixed-model finite-family determination; uniform expected finite-acquisition and vanishing-discount comparison; sharp temporal and cycle-defect moduli; primitive effective same-M lower/upper certification; actual occupation-geometric matching for fixed exploration; noncontractive heavy-tailed, singular holding and changing-rank realizations; two independent raw hidden/quantum verifications.
+
+Not asserted: unrestricted nonreset average-cost optimality; uniform pathwise sample-deviation rates; a general nondominated adaptive controller compactness theorem; a complete numerical invariant that is necessary and sufficient without supplied cover/stability; learning an unknown kernel or a regret rate; efficient synthesis; a complete optimal joint region for program length, scratch, precision, planning/physical time or minimal simulator state; an internally exact N-call stopping theorem from an externally evaluated N; TV-to-LDP equivalence; finite-to-infinite-path domination; unbounded-operator closure.
+
+The general average theorem optimizes its complete declared stationary common-program class. The geometric matching laws fix known preparation and exploration. A model-dependent predictive state in a proof is not supplied as a parameter oracle to an unknown-model controller. No realization theorem is used in reverse to prove foundations.
+
+The two sharpness parameters have different meanings: epsilon is an attained complete-cycle deficiency under task/clock constraints; delta in the exact example is an actual inaccessible scored coordinate. General numerical tolerances instead enter upper bounds through certified loss and kernel moduli. The signed N^(-p) boundary comparison is not an unavoidable positive estimation error.
+
+The title and G1/G3 objective are retained. This is a substantive but scoped advance, not a claim that every General Theta experiment has been classified. Top-four significance, correctness and priority require independent mathematical assessment. Repository preservation and builds are not breakthroughs or theorem certification.

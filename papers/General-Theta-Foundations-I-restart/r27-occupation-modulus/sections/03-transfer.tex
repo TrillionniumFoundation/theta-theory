@@ -1,0 +1,140 @@
+\section{Qualitative regularity and robust optimization}\label{sec:transfer}
+For this section impose the compact continuous-response hypotheses of Definition~\ref{def:responses}, including the uniform return envelope. Use the arrays and physical-call objectives defined in Section~\ref{sec:modulus}.
+For $a>0$ define the task-corrector price
+\begin{equation}\label{eq:corrector-price}
+ \calC_X(a)=\sup_{x\in X}\inf\left\{\osc(u):
+  \norm{r-Tg-(I-P)u}_\infty\le a\right\}.
+\end{equation}
+The infimum is $+\infty$ if the constraint is empty; we will show it is never empty pointwise. Oscillation is $\max_i u_i-\min_i u_i$. The exact price at $a=0$ need not be uniformly finite.
+
+\begin{theorem}[Task-visible causal transfer]\label{thm:transfer}
+Under the hypotheses above, $J_N(x)\to g(x)$ and $J_\beta(x)\to g(x)$ pointwise. The following five statements are equivalent:
+\begin{enumerate}
+\item[(i)] The vector $g:X\to\R^m$ is continuous.
+\item[(ii)] Whenever $x_j\to x$ and $\Pi_{S(x_j)}\to E$, one has $Eg(x)=g(x)$.
+\item[(iii)] $\sup_x\norm{J_N(x)-g(x)}_\infty\to0$.
+\item[(iv)] $\sup_x\norm{J_\beta(x)-g(x)}_\infty\to0$ as $\beta\uparrow1$.
+\item[(v)] $\calC_X(a)<\infty$ for every $a>0$.
+\end{enumerate}
+For every $a>0$, without assuming (i), the following inequalities hold whenever their right sides are finite:
+\begin{align}
+ \sup_x\norm{J_N-g}_\infty
+ &\le a+\frac{\calC_X(a)}{N}+B_N,\label{eq:physical-bound}\\
+ \sup_x\norm{J_\beta-g}_\infty
+ &\le a+(1-\beta)\calC_X(a)
+ +(1-\beta)^2\sum_{N\ge1}N\beta^{N-1}B_N.\label{eq:discount-bound}
+\end{align}
+If $\sup_{x,i}\E_i\tau^{1+p}\le K$ for $0<p\le1$, the last tail terms are at most $mKN^{-p}$ and $mK(1-\beta)^p$, respectively. The factor $m$ can be omitted when one common stochastically dominating lifetime has this moment bound. All comparisons use the same program and the same retained-label budget.
+\end{theorem}
+Condition (ii) permits a change of recurrent rank. It asks only that each limiting projection fix the limiting \emph{task gain}; it does not require the projection itself to converge. Uniformity is asserted on the entire declared compact family $X$, not on arbitrary experiments lacking the response or return assumptions.
+
+\begin{lemma}[Marked bias and physical-time gain]\label{lem:marked}
+The vector $g$ is $P$-harmonic. If $C$ runs over the closed classes of $P$, $\pi_C$ is its stationary row on $C$, and $w_C(i)$ is the absorption probability from $i$, then
+\begin{equation}\label{eq:class-gain}
+ g_i=\sum_C w_C(i)\frac{\pi_Cr}{\pi_Cd}.
+\end{equation}
+Moreover $b=r-Tg$ satisfies $\Pi_Pb=0$, and $(I-P)u=b$ has a finite solution.
+\end{lemma}
+\begin{proof}
+$S$ has the same off-diagonal graph, closed classes and absorption probabilities as $P$. On $C$ its stationary row is $\pi_C D/(\pi_Cd)$, which proves~\eqref{eq:class-gain} and harmonicity. On a closed class $g_j=g_C$ for every possible exit, so $(Tg)_i=d_i g_C$ there and $\pi_Cb=0$. Every row of $\Pi_P$ is an absorption mixture of such rows, hence $\Pi_Pb=0$. The range of $I-P$ is the kernel of $\Pi_P$. For example the group inverse
+\[
+ G_P=(I-P+\Pi_P)^{-1}-\Pi_P
+\]
+satisfies $(I-P)G_P=I-\Pi_P$, so $u=G_Pb$ is a solution. These are finite-state multichain identities, not a contraction or irreducibility assumption.
+\end{proof}
+
+\begin{lemma}[Approximate marked corrector at physical time]\label{lem:physical}
+For a fixed experiment--program pair and any $u$ with $\norm{b-(I-P)u}_\infty\le a$,
+\[
+ \norm{J_N-g}_\infty
+ \le a+\frac{\osc(u)}N+\frac1N\sum_{t=1}^N\max_i\E_i(\tau-t)_+.
+\]
+\end{lemma}
+\begin{proof}
+Let $I_k$ be the entering label of excursion $k$, $\tau_k$ its duration, and $R_k$ its reward. Set $S_0=0$ and $S_k=\sum_{j<k}\tau_j$. The boundary filtration $\mathcal F_k$ contains precisely the past before excursion $k$ is run. Define
+\[
+ K_N=\min\{k\ge1:S_k\ge N\}.
+\]
+Then $K_N\le N$ and $\{k<K_N\}=\{S_k<N\}\in\mathcal F_k$. With $e=b-(I-P)u$, the conditional mean of
+\[
+ R_k-\tau_k g(I_{k+1})+u(I_{k+1})-u(I_k)
+\]
+is $e(I_k)$. Summing with these predictable indicators is legitimate: the number of terms is bounded by $N$ and their absolute expectations are finite.
+
+Since $Pg=g$, $g(I_k)$ is a bounded martingale. Summation by parts gives
+\[
+ \sum_{k<K_N}\tau_k g(I_{k+1})
+ =S_{K_N}g(I_{K_N})-
+   \sum_{k<K_N}S_k\bigl(g(I_{k+1})-g(I_k)\bigr).
+\]
+The second sum has expectation zero because its coefficients are predictable and less than $N$. Also $\E g(I_{K_N})=g(I_0)$. Consequently the expected reward of the completed crossing excursion, less $Ng(I_0)$, is the sum of a residual bounded by $aN$, a corrector boundary term bounded by $\osc(u)$, and $\E[(S_{K_N}-N)g(I_{K_N})]$.
+
+The reward after call $N$ but before the crossing excursion ends lies in $[0,S_{K_N}-N]$. So does $(S_{K_N}-N)g(I_{K_N})$. Their difference has absolute expectation at most the expected overshoot, not twice that quantity. There is at most one boundary at any integer physical time $s$. Conditioning there gives
+\[
+ \E(S_{K_N}-N)\le
+ \sum_{s=0}^{N-1}\max_i\E_i(\tau-(N-s))_+.
+\]
+Division by $N$ proves the assertion. The proof allows dependence among reward, exit label and duration; it never replaces $T$ by $DP$.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:transfer}]
+Pointwise finite-acquisition convergence follows from Lemma~\ref{lem:physical} with the exact finite corrector of Lemma~\ref{lem:marked} and $a=0$. Its tail term vanishes by integrability. Taking the infimum over correctors and then the supremum proves~\eqref{eq:physical-bound}; an arbitrarily small excess over the infimum can be removed. For bounded scores Abel summation yields the exact identity
+\begin{equation}\label{eq:abel}
+ J_\beta=(1-\beta)^2\sum_{N\ge1}N\beta^{N-1}J_N.
+\end{equation}
+The weights sum to one, proving pointwise discount convergence and~\eqref{eq:discount-bound}.
+
+For the moment statement,
+\[
+ \sum_{t=1}^N\max_i\E_i(\tau-t)_+
+ \le\sum_i\E_i[\tau\min(\tau,N)]\le mK N^{1-p}.
+\]
+A common dominating lifetime replaces the sum over labels by one expectation. If $G$ is geometric on $\N$ with success probability $1-\beta$, Jensen's inequality gives
+\[
+ (1-\beta)^2\sum_{N\ge1}N^{1-p}\beta^{N-1}
+ =(1-\beta)\E G^{1-p}\le(1-\beta)^p.
+\]
+
+Finite-response continuity makes each $J_N$ continuous; a uniformly convergent bounded discounted series makes $J_\beta$ continuous. Thus (iii) or (iv) implies (i). Equations~\eqref{eq:physical-bound}--\eqref{eq:discount-bound}, first with a fixed small $a$ and then with large $N$ or $\beta$ close to one, give (v)$\Rightarrow$(iii),(iv).
+
+Suppose (i) holds. Then $b(x)=r(x)-T(x)g(x)$ is continuous and bounded, say by $B$. By Lemma~\ref{lem:marked},
+\[
+ A_n(x)b(x):=\frac1n\sum_{k=1}^nP(x)^k b(x)\longrightarrow0
+\]
+pointwise. This convergence is uniform. Indeed, for each $x_0$ choose a block length $q$ with $\norm{A_q(x_0)b(x_0)}<\epsilon$. The same bound, with $2\epsilon$, holds in a neighborhood by finite-dimensional continuity. Decomposing any $n$ into blocks of length $q$ and a remainder, and using stochastic contraction, gives $\norm{A_n b}\le2\epsilon+qB/n$ there. A finite cover of $X$ supplies a uniform bound on the chosen lengths. Now put
+\[
+ u_n(x)=\sum_{k=0}^{n-1}(1-k/n)P(x)^k b(x).
+\]
+Direct telescoping gives $(I-P)u_n=b-A_n b$ and $\osc(u_n)\le(n+1)B$. Choosing one sufficiently large $n$ for a given $a$ proves (v). No uniform bound on the exact group inverse has been used.
+
+Finally, if $x_j\to x$ and $\Pi_{S(x_j)}\to E$, then $ES(x)=S(x)E=E$. Hence $E\Pi_{S(x)}=E$. Continuity of $c$ gives $g(x_j)\to Ec(x)=Eg(x)$ along that subsequence. Thus (i) implies (ii). Conversely the projections belong to a compact set of stochastic matrices, so every subsequence has such a further subsequence. Condition (ii) forces all resulting limits of $g(x_j)$ to equal $g(x)$, which proves (i).
+\end{proof}
+
+\begin{corollary}[Cost-universal sublevels as a special case]\label{cor:group}
+If $\sup_x\norm{G_{P(x)}}_\infty\le H$, then
+\[
+ \sup_x\norm{J_N-g}_\infty\le\frac{2\bar\mu H}{N}+B_N.
+\]
+On a compact family of stochastic matrices, uniform boundedness of $G_P$, continuity of $\Pi_P$, locally constant recurrent rank, and uniform Ces\`aro convergence for all bounded rewards are equivalent. None is necessary for the single-task theorem.
+\end{corollary}
+\begin{proof}
+Each coordinate of $r$ and $Tg$ lies in $[0,d_i]$, so $\norm b_\infty\le\bar\mu$. The exact solution $G_Pb$ has oscillation at most $2H\bar\mu$. For the classical equivalence use
+\[
+ \sum_{k=0}^{n-1}(P^k-\Pi_P)=(I-P^n)G_P.
+\]
+Uniform convergence implies continuity of the projection and hence locally constant integer trace. Fixed nullity at one permits a locally fixed spectral contour: otherwise an additional eigenvalue could approach one and increase nullity at the limiting stochastic matrix, whose eigenvalue one is semisimple. The contour projection and $G_P$ are then continuous; a finite cover bounds the norm. A bounded sequence of group inverses is precompact in finite dimension, and passing their defining polynomial identities to a limit shows that a norm sublevel is closed. These standard facts are recorded to delimit, not enlarge, the scope of the task theorem~\cite{Meyer,LamondPuterman}.
+\end{proof}
+
+\begin{corollary}[Robust attainment without an imposed recurrence bound]\label{cor:robust}
+Let $\Theta$ and a nonempty legal program class $\Gamma_M$ be compact metric spaces, with continuous initial-label law included in the program. Assume Theorem~\ref{thm:transfer}(i) on $X=\Theta\times\Gamma_M$. Then
+\begin{equation}\label{eq:robust-value}
+ V_M=\min_{\gamma\in\Gamma_M}\sup_{\theta\in\Theta}g(\theta,\gamma)
+ =\sup_{\substack{F\subset\Theta\\0<|F|<\infty}}
+       \min_{\gamma\in\Gamma_M}\max_{\theta\in F}g(\theta,\gamma),
+\end{equation}
+where scalar gains use that initial law. The optimal expected $N$-call and normalized-discount values converge to $V_M$ with the errors in~\eqref{eq:physical-bound}--\eqref{eq:discount-bound}. Cluster points of asymptotically optimal programs are average optimal.
+\end{corollary}
+\begin{proof}
+Joint gain continuity makes the worst-model objective continuous on the compact program space. For a proposed level $v$, the closed sets $\{\gamma:g(\theta,\gamma)\le v\}$ have the finite-intersection property precisely when every finite-model problem admits that level. Compactness proves~\eqref{eq:robust-value}; there is no exchange of minimization with maximization. Uniform same-program errors pass through both extrema. Compactness and continuity then prove the assertion about cluster points.
+\end{proof}
+When $\Gamma_M$ is the full legal class, this is an unrestricted result within the stated raw interface. When it is an architecture, the conclusion is only about that architecture. The task criterion must be proved on the whole class used in the optimization.

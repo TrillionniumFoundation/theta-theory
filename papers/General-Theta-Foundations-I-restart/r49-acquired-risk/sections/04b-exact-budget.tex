@@ -1,0 +1,186 @@
+\section{Exact-budget construction and occupation-weighted stability}\label{sec:effective}
+The realization criterion does not by itself make its Borel witness computable. This section closes that gap under effective hypotheses on the unnormalized experiment, not on an optimal observer or a normalized filter. Three different operations must be distinguished: stopping regularization creates budget slack, approximation perturbs an executable kernel, and finite evaluation certifies the perturbed program. None changes the persistent-state set.
+
+\subsection{Stopping regularization without an extra label}
+For a fixed program write $P$ for its live-ensemble map and $Q$ for its terminal map, as in Section~\ref{sec:occupation-proof}. Choose an already available terminal label $j_0$. For $0<\rho\le1$, first sample the original routing decision. If it is live, replace it by $j_0$ with independent probability $\rho$; otherwise leave it unchanged. The physical state after the call is not reset. In ensemble notation,
+\begin{equation}\label{eq:killed-routing}
+ P_\rho=(1-\rho)P,\qquad Q_\rho=Q+\rho RP,
+\end{equation}
+where $R$ sends every live component, with its same physical vector, to terminal component $j_0$. This is a homogeneous report-only program. Its conditional stopping probability at every possible live configuration is at least $\rho$.
+
+\begin{lemma}[A paid mean margin]\label{lem:margin}
+For every admissible program, every model, and $0<\rho\le1$, the regularized program uses the same labels and satisfies
+\begin{align}
+ \E_\theta\tau_\rho
+ &\le1+(1-\rho)(\E_\theta\tau-1),\label{eq:mean-margin}\\
+ |R_\theta(\gamma_\rho)-R_\theta(\gamma)|
+ &\le L\rho(\E_\theta\tau-1).\label{eq:killing-risk}
+\end{align}
+Consequently, for $1\le N_1\le N_2$ and fixed $M\ge2$,
+\begin{equation}\label{eq:budget-lipschitz}
+ 0\le\calR_\aut^\Theta(N_1,M)-\calR_\aut^\Theta(N_2,M)
+       \le L(N_2-N_1).
+\end{equation}
+This statement requires only a common bounded task and the availability of the stated terminal fallback; no finite predictive closure is needed.
+\end{lemma}
+\begin{proof}
+Couple the original experiment and the modified one until the latter stops. For the unmodified stopping time $\tau$ and independent geometric $G$ with success probability $\rho$, the modified stopping time is $\min(\tau,G)$. For $t\ge1$,
+\[
+ \Pp(\tau_\rho>t)=(1-\rho)^t\Pp(\tau>t).
+\]
+Summing the tails and bounding $(1-\rho)^t\le1-\rho$ proves \eqref{eq:mean-margin}. The programs and their terminal audits agree unless a live routing decision is replaced. The union bound gives
+\[
+ \Pp(G<\tau)\le\rho\sum_{t\ge1}\Pp(\tau>t)
+                  =\rho(\E\tau-1).
+\]
+Both losses belong to $[0,L]$, so this proves \eqref{eq:killing-risk}, including a possible change in the physical state at the earlier audit. For $N_2>1$, set $\rho=(N_2-N_1)/(N_2-1)$, using the unchanged program when $\rho=0$. Apply the two inequalities uniformly over models and then take infima. The case $N_2=1$ is immediate. No mixture seed needs to persist: the replacement coin is fresh on every live transition.
+\end{proof}
+
+\subsection{Two norms for two different obligations}
+On $E$ use the base norm
+\[
+ \bnorm v=\inf\{e(v_+)+e(v_-):v=v_+-v_-,\ v_\pm\in C\},
+\]
+and on an ensemble its sum over labels. A positive mass-preserving map is a contraction in these norms; this follows by applying it to each positive part and taking the infimum. In particular, the map $(P,Q)$ from a live ensemble to its live and terminal successors is contractive. For a regularized program, $\bnorm{P_\rho}\le1-\rho$ and $\bnorm{(I-P_\rho)^{-1}}\le\rho^{-1}$.
+
+Consider two implementations on the same live and terminal labels and the same physical ordered space. Denote their maps and preparations by $(P,Q,a)$ and $(\widetilde P,\widetilde Q,\widetilde a)$. The first is admissible and has actual occupation $z=\sum_{t\ge0}P^ta$ and mean $T=\boldsymbol e(z)$. The second has a stopping floor $\rho$. Define its occupation-weighted defect against the first by
+\begin{equation}\label{eq:weighted-defect}
+ D_z=\bnorm{\widetilde a-a}
+       +\bnorm{(\widetilde P-P)z}
+       +\bnorm{(\widetilde Q-Q)z}.
+\end{equation}
+This is measured on the preparation-generated occupation, not an arbitrary solution of a balance equation.
+
+\begin{lemma}[Terminal risk versus expected acquisition]\label{lem:resolvent-error}
+Under these hypotheses both terminal laws exist, and
+\begin{align}
+ \bnorm{\widetilde d-d}&\le D_z,\label{eq:terminal-defect}\\
+ |\E\widetilde\tau-\E\tau|&\le D_z/\rho.\label{eq:mean-defect}
+\end{align}
+If the same decoder is used and the terminal cost functionals differ by at most $\alpha$ per unit positive mass, then
+\begin{equation}\label{eq:risk-defect}
+ |\widetilde R-R|\le LD_z+\alpha.
+\end{equation}
+In particular, if $\bnorm{\widetilde a-a}\le\delta_0$ and the joint one-call maps differ in induced base norm by at most $\eta$, then $D_z\le\delta_0+\eta T$. No stability of the normalized posterior map is assumed.
+\end{lemma}
+\begin{proof}
+Write $\widetilde Z=(I-\widetilde P)^{-1}$ and $\widetilde K=\widetilde Q\widetilde Z$. Uniform killing implies convergence of the series defining $\widetilde Z$. The positive map $\widetilde K$ preserves live mass: summing conservation through $t$ transitions leaves a surviving mass at most $(1-\rho)^t$ times the initial mass. Hence $\bnorm{\widetilde K}\le1$. Since $z=a+Pz$ and $\widetilde z=\widetilde Z\widetilde a$,
+\[
+ \widetilde z-z=\widetilde Z\bigl[(\widetilde a-a)+(\widetilde P-P)z\bigr].
+\]
+The norm bound on $\widetilde Z$ and the norm-one mass functional prove \eqref{eq:mean-defect}. Moreover,
+\[
+ \widetilde d-d=\widetilde K\bigl[(\widetilde a-a)+(\widetilde P-P)z\bigr]
+                         +(\widetilde Q-Q)z.
+\]
+The map $(u,v)\mapsto\widetilde Ku+v$ is contractive for the sum base norm. This proves \eqref{eq:terminal-defect}. A terminal cost between $0$ and $L$ on every normalized positive component has dual base norm at most $L$. Applying it, and then accounting for its change on the unit terminal mass, proves \eqref{eq:risk-defect}. Finally $z$ is positive and $\bnorm z=T$, giving the last assertion. The proof uses unnormalized finite-dimensional positive maps, not a joint classical hidden-state interpretation of a quantum experiment.
+\end{proof}
+
+The factors in \eqref{eq:terminal-defect} and \eqref{eq:mean-defect} have different meanings. A rare routing discrepancy has small probability but may be followed by a long surviving excursion. For a one-live-state program whose stopping probability changes from $\rho$ to $\rho+u$, the mean changes by $u/[\rho(\rho+u)]$. Thus a mean-cost estimate cannot simply be replaced by the bounded-risk estimate.
+
+\begin{proposition}[Same-budget stability of the optimal risk]\label{prop:same-budget}
+Suppose two model families have the same labels, actions, report interface, ordered physical space, and bounded terminal task. Uniformly over models and all common routing programs, assume preparation error at most $\delta_0$, joint one-call error at most $\eta$, and terminal cost error at most $\alpha$. Put $\zeta=\delta_0+N\eta$. For $N\ge1$ and $M\ge2$,
+\begin{equation}\label{eq:optimal-modulus}
+ \left|\calR_{\aut,1}^\Theta(N,M)-\calR_{\aut,2}^\Theta(N,M)\right|
+ \le \min\left\{L,
+ L\left[\sqrt{2(N-1)\zeta}+\zeta\right]+\alpha\right\}.
+\end{equation}
+The program transferred in either direction respects the same $N,M$. The exponent in this sufficient modulus is not asserted optimal.
+\end{proposition}
+\begin{proof}
+First let $N>1$ and $0<\zeta<(N-1)/2$. Apply Lemma~\ref{lem:margin} to an arbitrary admissible program with
+$\rho=\sqrt{2\zeta/(N-1)}$. Its mean in the first experiment is at most $N-\rho(N-1)$. In the second, the same regularized routing still has stopping floor $\rho$. Lemma~\ref{lem:resolvent-error} bounds its mean by
+\[
+ N-\rho(N-1)+\zeta/\rho
+       =N-\tfrac12\rho(N-1)\le N.
+\]
+Its risk has increased by at most $L\rho(N-1)+L\zeta+\alpha$. Take infima, and exchange the two experiments for the reverse inequality. If $\zeta\ge(N-1)/2$, set $\rho=1$. Both programs then halt after one call, their means are exactly one, and the same argument gives $L(N-1)+L(\delta_0+\eta)+\alpha$, no greater than the second quantity in \eqref{eq:optimal-modulus}. If $N=1$, every admissible run stops on the first call; send all originally live routes to $j_0$, which changes no actual law, and use the one-call estimate. If $\zeta=0$, the actual maps and costs agree to their stated tolerance, and only $\alpha$ remains. Since both values lie in $[0,L]$, the truncation by $L$ is valid.
+\end{proof}
+
+\subsection{Effective primitive hypotheses}
+The next definition is additional input for finite synthesis. It is not part of the geometric or occupation identities.
+
+\begin{definition}[Effective raw-instrument certificate]\label{def:effective}
+In addition to Section~\ref{sec:experiments}, suppose the following data are given.
+\begin{enumerate}[label=\textup{(E\arabic*)}]
+\item The model set is an effectively compact metric space: finite nets with a certified covering radius can be constructed. The preparation, the action instruments in the integral induced base norm, and the terminal cost functionals have computable uniform moduli in the model parameter. Their values on the finite nets are computable. The physical dimension and cone norm are fixed and computably represented.
+\item For every $h>0$ a finite common report partition $\mathcal B_{a,h}$ is supplied. For positive-reference-mass cells $B$, put
+\[
+ \overline L_{a,h}^\theta(y)=\lambda_a(B)^{-1}\int_B L_a^\theta(v)\lambda_a(dv)
+ \quad(y\in B).
+\]
+There is a computable bound $\eta_h\downarrow0$ with
+\begin{equation}\label{eq:report-approximation}
+ \sup_{\theta,a}\int\bnorm{L_a^\theta(y)-\overline L_{a,h}^\theta(y)}\lambda_a(dy)
+       \le\eta_h.
+\end{equation}
+The cell instrument integrals can be computed with certified error. Reference-null cells may be assigned any fixed route. The executed partition selector is either exact under the declared digitization primitive or has a uniform, certified induced-instrument defect included in $\eta_h$.
+\item The common decoder body has finite computable legal nets with uniformly controlled loss error. In particular, at a decoder mesh $s$ there is a finite list of finitely described legal outputs whose replacement changes every terminal cost by at most $\omega_H(s)\downarrow0$. The lists, not a model-dependent decoder, are part of the program.
+\item Computable positive-map and audit integrals, together with the preceding norm bounds, permit interval evaluation of a finite product to arbitrary absolute error. The running acquisition cost is exactly one per call. $N$ is rational when a finite algorithm is requested.
+\end{enumerate}
+\end{definition}
+These assumptions include the cost of obtaining the numerical report partition. They do not turn an arbitrary Borel membership problem into a finite operation. They are verified below from classical and quantum raw instruments, including examples with arbitrarily slow or absent physical mixing.
+
+\begin{lemma}[Uniform reduction of every Borel program]\label{lem:finite-routing}
+Fix a partition as in \eqref{eq:report-approximation}, a decoder net, an integer $q\ge1$, and a dyadic $0<\rho\le1$. Every regularized Borel program on $S,J$ has a program on the same labels, using only the current report cell and probabilities with dyadic denominator $Q=2^q$ before regularization. Both have stopping floor $\rho$. Their joint one-call maps differ by at most
+\begin{equation}\label{eq:eta-compile}
+ \eta=\eta_h+\frac{2(|\calA|-1)}{Q}
+                      +\frac{2(|S|+|J|-1)}{Q}.
+\end{equation}
+The decoder replacement costs at most $\omega_H(s)$. The finite grid used here contains approximations to all legal Borel programs, not only smooth or previously constructed observers.
+\end{lemma}
+\begin{proof}
+For the unregularized routing average $\gamma_i(s,a,y)$ over each cell with respect to the common reference measure. This produces common simplex entries $\beta_i(s,a,B)$, independent of the true model. The finite-cell program executes the actual cell instrument, not a conditional experiment. Its $i$th output is the integral of $\gamma_i\overline L$; hence the difference from the original is the integral of $\gamma_i(L-\overline L)$. Summing norms over destinations, using nonnegativity and $\sum_i\gamma_i=1$, gives at most $\eta_h$ for each input physical unit state and live label. The same bound for signed inputs follows from the base-norm decomposition.
+
+A $d$-simplex has a $Q$-grid point within $2(d-1)/Q$ in $\ell^1$: round its first $d-1$ coordinates down and give the remainder to the last. Apply this first to action rows and then to each report-routing row. Normalization and positivity of the physical instrument make their errors at most the corresponding $\ell^1$ errors in the joint ensemble norm. Triangle inequality gives \eqref{eq:eta-compile}. Averaging and rounding the original rows, then applying the same regularization, is legitimate because \eqref{eq:killed-routing} is a positive mass-preserving postprocessing of the joint next-label output. It cannot enlarge the error. It also leaves a stopping floor $\rho$ regardless of rounding. Finally use the supplied legal decoder net.
+\end{proof}
+
+\begin{theorem}[Finite certificates at the same mean and state budgets]\label{thm:effective-budget}
+Under Definition~\ref{def:effective}, for every rational $N\ge1$, integer $M\ge2$, and rational accuracy $\varepsilon>0$, a finite algorithm returns a common finitely described observer $\widehat\gamma$ and rational numbers $\ell,u$ such that
+\begin{equation}\label{eq:exact-budget-certificate}
+ \sup_\theta\E_\theta\widehat\tau\le N,\qquad
+ |\widehat S|+|\widehat J|\le M,\qquad
+ \ell\le\Phi^\Theta(N,M)=\calR_\aut^\Theta(N,M)
+       \le\sup_\theta R_\theta(\widehat\gamma)\le u,
+ \qquad u-\ell\le\varepsilon.
+\end{equation}
+No stopping floor is imposed on competing observers, and no uniform absorption assumption is imposed on the original experiment. The construction is finite, not claimed computationally efficient.
+\end{theorem}
+\begin{proof}
+Assume first $N>1$. Choose a positive dyadic $\rho<1$ sufficiently small, and put $\sigma=\rho(N-1)$. Choose the common report partition and probability grid so fine that
+\begin{equation}\label{eq:reserve-choice}
+ \eta N/\rho\le\sigma/8.
+\end{equation}
+Choose the decoder net sufficiently fine. Enumerate every cardinality pair $|S|,|J|\ge1$, $|S|+|J|\le M$, every grid action and routing table, and every tuple of net decoders; use a fixed first live label initially. Apply the same regularization to every table. This is a finite class independent of the model.
+
+We describe a certified test, without assuming that feasibility at a boundary is decidable. Every candidate has stopping floor $\rho$, so its mean is at most $1/\rho$ from any normalized live ensemble. For two nearby models with preparation difference $d_0$, joint instrument difference $d_1$, and terminal cost difference $d_f$, Lemma~\ref{lem:resolvent-error} gives uniform moduli
+\begin{equation}\label{eq:evaluation-moduli}
+ \Delta_T\le d_0/\rho+d_1/\rho^2,
+ \qquad \Delta_R\le L(d_0+d_1/\rho)+d_f.
+\end{equation}
+For an inexact executed selector with induced-instrument defect $\eta_{\mathrm{sel}}$, include the additional mean bound $\eta_{\mathrm{sel}}/\rho^2$ and risk bound $L\eta_{\mathrm{sel}}/\rho$ in the evaluation upper intervals. Choose its accuracy along with the partition so these bounds fit the tolerances below; the physical executed table, rather than only its ideal cell surrogate, is being certified. Use a model net and certified finite-product evaluation to enclose the suprema of the candidate's mean and risk. Truncating the live series after $k$ terms leaves mean at most $(1-\rho)^k/\rho$, and truncating terminal accumulation leaves risk at most $L(1-\rho)^k$. Thus finite $k$, finite model nets, and sufficiently small arithmetic intervals yield upper bounds $T^+,R^+$ with
+\begin{equation}\label{eq:eval-errors}
+ 0\le T^+-\sup_\theta\E_\theta\tau\le\sigma/4,
+ \qquad 0\le R^+-\sup_\theta R_\theta\le\epsilon_e.
+\end{equation}
+Accept only tables for which the computed rational $T^+\le N$. Unknown or boundary cases may be discarded; no false feasibility is accepted.
+
+For any admissible original program, Lemma~\ref{lem:margin} first gives a program with mean at most $N-\sigma$ and risk increase at most $L\sigma$. Lemma~\ref{lem:finite-routing} and the occupation-sensitive version of Lemma~\ref{lem:resolvent-error}, with the original mean at most $N$, yield a grid program satisfying
+\[
+ \sup_\theta\E_\theta\tau_{\mathrm{grid}}\le N-7\sigma/8,
+ \qquad \sup_\theta R_\theta(\gamma_{\mathrm{grid}})
+       \le\sup_\theta R_\theta(\gamma)+L\sigma+L\eta N+\omega_H(s).
+\]
+By \eqref{eq:eval-errors} this grid program is accepted. In particular the finite accepted set is nonempty, and this covering statement holds for every competing Borel program, including a minimizing program supplied by Theorem~\ref{thm:main}(i).
+
+Let $u$ be the smallest accepted $R^+$ and choose its program. Since every accepted program is truly feasible, $\calR_\aut^\Theta\le u$. Conversely the preceding approximation and \eqref{eq:eval-errors} give
+\[
+ u\le\calR_\aut^\Theta(N,M)+E,
+ \qquad E=L\sigma+L\eta N+\omega_H(s)+\epsilon_e.
+\]
+The parameters can be chosen effectively so that a rational upper bound $E^+\le\varepsilon$ holds. Set $\ell=\max\{0,u-E^+\}$, increasing $u$ only by an already included rational rounding allowance. Then \eqref{eq:exact-budget-certificate} follows. The lower bound covers all Borel programs because every such feasible program has an accepted approximation; it is not a lower bound inferred from an unsuccessful local search.
+
+For $N=1$, every admissible run stops after its first report under every model. Replacing all live destinations of its first action row by $j_0$ therefore changes no actual law. It has a one-live-label implementation with at most the same number of terminal labels. Enumerate only one-call finite tables with no live routing. Their mean is identically one, so no budget comparison or margin is needed. The report, probability, model and decoder approximations give the same two-sided certificate by a single integral and finite enumeration. This treats the endpoint without taking a nonuniform limit in $\sigma$.
+\end{proof}
+
+Theorem~\ref{thm:effective-budget} proves part (iv) of Theorem~\ref{thm:main}. Its finite enumeration controls the global risk value; it does not certify a general closed-form dimension law or a polynomial search complexity. The resource--resolution rates in the next section require actual acquisition geometry in addition to the effective raw data.

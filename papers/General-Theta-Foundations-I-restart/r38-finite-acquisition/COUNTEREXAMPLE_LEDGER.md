@@ -1,0 +1,14 @@
+# Counterexample / limitation ledger
+
+1. **Physical mixing does not imply observer mixing.** A physical source refreshed independently at every step, paired with an update that preserves its old label forever, has as many closed label classes as initial labels. Native appendix explains why common-grid locality, not raw latent ergodicity alone, matters.
+2. **Rowwise zero quantization loss does not imply zero pooling loss.** Two positive-mass incoming point rows at distinct values sent to one common label have positive pooled conditional variance. Native appendix includes this example, independently of any realization.
+3. **Invariance is not attraction.** The identity kernel has many invariant laws. Stationary calibration alone does not justify arbitrary-preparation finite-n risk. The new executed-ensemble minorization closes this gap on the stated class.
+4. **Restricted-cone positivity is insufficient for the lift.** x-kappa q can leave C_K. The proof requires positivity on C and raw image into C_K. No silent assumption of closure under subtraction is permitted.
+5. **A formal acquired support is not mass.** A full-dimensional reachable set can carry a singular or atomic actual law. Geometry is verified by raw row pushforwards and actual branch weights, not reachability.
+6. **Mixing constants need not survive degenerate parameters.** Gaussian determinants or transition floors and quantum depolarization/effect parameters approaching endpoints can destroy uniform constants. n,M uniformity is for a fixed certified experiment, not over those degenerations.
+7. **Finite precision is not transcript TV.** A rounded discrete report law can have TV distance one from a continuous report law. The compilation bound is on the post-decision ensemble instrument and scored task.
+8. **An error ceiling need not create a lower bound.** Exact calibration or simulation may remain available within a tolerance class. The native joint lower uses an actually hidden sign and an actually erased bit with exact deficiency.
+9. **External random audit is not internal exact deadline.** Prior M-n clock laws are preserved in companions for their own protocol. This task counts the external clock separately and never reads its phase.
+10. **1/n entrance upper is not universally sharp.** Starting at the calibrated invariant ensemble removes that transient. No matching positive 1/n lower is claimed for all initializations or tasks.
+
+The legacy comparison between likelihood-curvature (C) and same-report transport (P) remains a separate historical issue: the changing-rank curvature route is retained, but this revision does not present a new fully quantitative converse example for each route. It replaces their role in the native stationary theorem with a directly proved joint-ensemble certificate; this is not a claim that either old stability route is necessary.

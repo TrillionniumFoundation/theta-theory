@@ -1,0 +1,11 @@
+# General Theta Foundations I — restart R38
+
+**Native article:** `main.tex`, 12 October 2026. The mother problem and title are unchanged. The latest located external report is R32; R34 and R37 are intervening completed mathematical sources, not fictitious new reviews.
+
+The new central proof lifts actual acquired overlap through a positive cone to a joint physical/label minorization. It proves a globally calibrated homogeneous observer with no artificial label erasure and finite-acquisition excess between c M^(-2/d) and C(M^(-2/d)+1/n). The same table works at every n and from every allowed preparation; all-controller lower bounds use actual acquired laws. The constants controlling entrance and per-call numerical amplification no longer shrink with memory size. Controlled Gaussian and noncommuting quantum instruments verify the same theorem. The native article also gives a weighted singular extension, an explicit binary benchmark, attained same-task calibration/deficiency and effective finite-state compilation.
+
+These are complete proofs on a declared sufficient class, requiring independent verification. They are not an arbitrary-experiment classification or an editorial acceptance certificate. The 1/n upper is not claimed to be an unavoidable lower term. The matching region is n >= c_* M^(2/d); the general shorter-horizon law remains unresolved. Kernels are known, the test closure is finite, whole-base interiority and robust acquired accessibility are substantive conditions, and the external audit clock is paid separately.
+
+Read the central theorem, positive-cone lift, uniform-grid mixing and invariant calibration in that order. Then audit the raw kernels, binary example, singular profile and error interfaces. The full R37 article is retained as Companion J; I, H and every older complete companion retain their identities. No old mathematical source is rewritten. The original R27 and the explicitly corrected temporal companion F are not conflated.
+
+`verify.py` audits source/citations/labels. `regression.py` performs finite algebra/numerical checks only. `build.py` rebuilds the native article and complete retained chain. Receipts in `evidence/` distinguish source, artifacts and final read-only validation; no build or finite test replaces a continuum proof.

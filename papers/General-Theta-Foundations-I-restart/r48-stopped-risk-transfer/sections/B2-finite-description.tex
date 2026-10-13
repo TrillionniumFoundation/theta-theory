@@ -1,0 +1,36 @@
+\section{Description, workspace, and evaluation costs of the general construction}\label{app:finite-description}
+This appendix accounts for the finite program in Theorem~\ref{thm:effective-budget}. It supplements, rather than replaces, the sharper geometric implementation in Appendix~\ref{app:computation}.
+
+Let $l=|S|$, $j=|J|$, $a=|\calA|$, $m=l+j\le M$, and let every action partition have at most $b$ cells. Let grid probabilities have denominator $Q=2^q$, and let $\rho=2^{-k}$. More general dyadic $\rho$ are handled by the same finite-bit sampling. Suppose each legal decoder has a supplied description of at most $D_H$ bits, and the action and partition primitives have total description $D_{\rm raw}$.
+
+\begin{proposition}[A literal finite-state implementation]\label{prop:description}
+One explicit representation of the returned program uses
+\begin{equation}\label{eq:program-bits}
+ D_{\rm prog}\le D_{\rm raw}
+  +C\bigl[la(q+1)+labm(q+1)+jD_H+k+m\log(m+a+b+1)\bigr]
+\end{equation}
+read-only program bits and at most $M$ persistent labels. If partition evaluation uses temporary workspace $W_h$ and time $T_h$, table scanning and exact dyadic sampling give temporary workspace
+\begin{equation}\label{eq:general-workspace}
+ W_{\rm temp}\le W_h+C\bigl(q+k+\log(m+a+b+1)\bigr)
+\end{equation}
+and per-acquisition transition time at most
+\begin{equation}\label{eq:general-time}
+ T_h+C(a+m)(q+k+\log(m+a+b+1))
+\end{equation}
+in a bit-operation model with sequential read-only table access to the selected row. More expensive table addressing may instead be charged explicitly; it is not a persistent-state resource. The expected number of physical acquisitions is at most $N$, and the protected audit is an additional specified physical call. There is no pathwise acquisition cap.
+\end{proposition}
+\begin{proof}
+Store one dyadic action simplex per live label, one dyadic destination simplex per live-label/action/cell triple, all terminal decoder descriptions, the stopping parameter, and the finite row addresses. This gives \eqref{eq:program-bits}. To sample a dyadic row draw exactly $q$ fresh bits, interpret them as an integer in $\{0,\ldots,Q-1\}$, and scan the cumulative integer weights. If the destination is live, draw $k$ further fresh bits and replace it by the existing terminal label $j_0$ precisely when they are all zero. These coins are not retained. The report cell and all arithmetic are temporary and are erased at the transition boundary. Integer accumulation and row scanning give the stated workspace and time. No posterior vector, model index, persistent random seed, or horizon counter is present. The certified mean bound is \eqref{eq:exact-budget-certificate}; counting the protected audit separately does not alter it.
+\end{proof}
+
+For a decoder list of size $H_0$, a crude bound on the number of enumerated tables for fixed cardinalities is
+\begin{equation}\label{eq:search-count}
+ (Q+1)^{la+labm}H_0^j.
+\end{equation}
+Sum this over the finitely many cardinality choices. For each table and each model-net point, the transient ensemble dimension is $l\dim E$. Truncating after $t$ powers with
+\[
+ (1-\rho)^t/\rho\le\eta_T,\qquad L(1-\rho)^t\le\eta_R
+\]
+provides explicit tail intervals for mean and risk. Matrix products are evaluated to additional certified precision. These operations may be extremely costly as $\rho\downarrow0$. They are counted as offline synthesis and are not charged to the acquisition counter or silently removed from the total computational resource vector.
+
+The bounds above are constructive upper bounds. Neither the program-description rate nor the exponential search count is claimed optimal. In particular, the existence of finite certificates does not supply an information-theoretic lower bound for all programs, workspace, and runtime simultaneously. The same-budget risk lower in Theorem~\ref{thm:effective-budget} concerns risk against all legal Borel observers, and is logically different from a lower bound on computational effort.
