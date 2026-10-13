@@ -1,0 +1,9 @@
+# General Theta Foundations I — acquired-risk revision R49
+
+The editorial object is `main.tex`, titled *General Theta Foundations I: Acquired Geometry and Causal Resource Transfer*. The source includes all mathematical sections of the preceding complete R48 article and adds a general budget-normalized transfer, two raw-instrument verifications, an exact singular acquisition–memory frontier, and an explicit finite-phase clock proof.
+
+The central theorem separates inherited exact occupation/profile/effective results (parts i–iv) from the new same-budget stability theorem (part v). With preparation and one-call base-norm errors delta0 and eta, the paid perturbation scale is zeta=delta0+N eta. A complete survival-envelope proof removes the extra horizon loss. Two-state globally optimal experiments prove the square-root order necessary on the declared general class. A rare-preparation experiment gives an exact failure frontier for every N>=1,M>=2 and matching squared-prediction bounds; at N=1/p its fixed-M small-mass exponent is (M-1)/M.
+
+Gaussian hidden-state and noncommuting quantum instruments verify the same general transfer, without normalized posterior contraction. Their broad informative classes are not claimed to have a universal closed-form acquired-dimension rate. The exact singular class supplies sharp converse content and is not substituted for the mother theorem.
+
+Run `python verify.py`, `python regression.py`, `python -O regression.py`, and `python build.py --output /outside/native`. Full retained mode is documented in BUILD_GUIDE.md. Tests and PDF checks are not proofs. Source, artifact and read-only delivery commits are separate and recorded only after the corresponding remote operations succeed. No old review, realization, archive or canonical ref is a write destination.

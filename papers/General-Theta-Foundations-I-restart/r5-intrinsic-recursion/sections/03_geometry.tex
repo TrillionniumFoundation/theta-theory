@@ -1,0 +1,76 @@
+\section{Acquisition, geometric converses, and output cuts}\label{sec:geometry}
+The geometric quantity in \eqref{eq:main} is the quantization error of the actual score law. The following elementary consequences specify which kinds of acquired evidence suffice for a lower bound and how finite acquisition changes that evidence.
+
+\begin{proposition}[A partial acquired-mass witness]\label{prop:submass}
+Let $\underline\nu\le\nu$ have mass $m>0$. Suppose
+\[
+ \sup_u\underline\nu(B(u,r))\le A r^d
+ \quad (0<r\le r_0),\qquad d>0.
+\]
+For any $M$ with $(m/(2AM))^{1/d}\le r_0$,
+\[
+ q_M(\nu)\ge \frac m2\left(\frac{m}{2AM}\right)^{2/d}.
+\]
+The submeasure may be the joint law of the score and a positive-probability event. No regularity is required of $\nu-\underline\nu$.
+\end{proposition}
+\begin{proof}
+Apply \eqref{eq:sb-main} with $s_M=(m/(2AM))^{1/d}$. The union argument in the proof of Theorem~\ref{thm:inward} uses only domination $\underline\nu\le\nu$, not a decomposition into observable or separated strata.
+\end{proof}
+
+\begin{proposition}[Actual acquisition and a common oracle]\label{prop:oracle}
+Let $\mathcal H\subset\mathcal G$ be sigma fields under a fixed prepared experiment, let $Y$ be the bounded scored report, and set
+\[
+ X=\E[Y\mid\mathcal G],\quad P=\E[X\mid\mathcal H],
+ \quad b_\circ=\E\norm{Y-X}^2,\quad
+ A=\E\norm{X-P}^2,\quad \nu=\law(P).
+\]
+An encoder may use $\mathcal H$ but not the additional oracle information in $\mathcal G$. Then
+\begin{equation}\label{eq:oracle}
+ R_\cp(M)-b_\circ=A+q_M(\nu),\qquad
+ A+q_M(\nu)\ge q_M(\law(X)).
+\end{equation}
+If a legal online construction has $R_\on(M)-b_\circ\le A+C r_M^2$ and $q_M(\law(X))\ge c r_M^2$, then
+\begin{equation}\label{eq:oracle-match}
+ A+q_M(\nu)\asymp R_\on(M)-b_\circ\asymp A+r_M^2,
+\end{equation}
+with constants depending only on $c,C$. The statement allows $\nu$ to be finite atomic.
+\end{proposition}
+\begin{proof}
+Successive conditional projection gives, for each forecast $a$ based on $\mathcal H$ and independent randomization,
+\[
+ \E\norm{Y-a}^2=b_\circ+A+\E\norm{P-a}^2
+                  =b_\circ+\E\norm{X-a}^2.
+\]
+Minimize the first identity by Lemma~\ref{lem:projection}. After fixing any independent shared seed and replacing randomized readouts by their label-conditional means, the second distortion uses at most $M$ centers for $X$ and is bounded below by its unrestricted quantization error. Hence the checkpoint excess is at least both $A$ and $cr_M^2$, and therefore at least $\tfrac12\min(1,c)(A+r_M^2)$. The stated online upper and the checkpoint--online order prove \eqref{eq:oracle-match}. The ideal law supplies a lower witness, not a replacement for the actual law in the exact identity.
+\end{proof}
+
+\begin{proposition}[Persistent-label and output-alphabet cuts]\label{prop:output}
+Let $G$ be a fixed finite subset of the task box, independent of the acquired history. Require the final physical forecast to lie in $G$, while the encoder retains at most $M$ labels. Then the nominal checkpoint excess over $B_T$ is
+\begin{equation}\label{eq:qgrid}
+ q_{M,G}(\nu_T)
+  :=\min_{C\subset G,\ \#C\le M}\int\operatorname{dist}(p,C)^2\nu_T(dp),
+\end{equation}
+and in particular it is at least $q_{\min(M,\#G)}(\nu_T)$. If a nominal online readout has root-mean-square score error $e$ and every point of the task box lies within $h$ of $G$, rounding gives risk at most $B_T+(e+h)^2$.
+\end{proposition}
+\begin{proof}
+For a fixed encoder, the decoder's expected loss is affine in its probability distribution over $G$, label by label; an extreme point minimizes it. It is therefore enough to consider deterministic decoders with at most $\min(M,\#G)$ distinct outputs. Nearest-center checkpoint selection proves \eqref{eq:qgrid}. Conditioning on an independent shared seed gives the same lower bound. Rounding the online readout changes it by at most $h$, and Minkowski followed by conditional projection gives the upper. This is a restriction on the output alphabet, not a theorem about every use of numerical precision.
+\end{proof}
+
+\begin{lemma}[A common calibration ambiguity]\label{lem:calibration}
+Let a bounded latent nominal score $X$ satisfy $\E X=1/2$ and $X\pm\delta\in[0,1]$. The acquisition history and all its legal processing have laws independent of $\theta\in\{-\delta,\delta\}$, and the terminal report has conditional mean $X+\theta$. Let
+\[
+ b_\delta=\E[X(1-X)]-\delta^2,
+ \quad P=\E[X\mid\mathcal H],\quad A=\E(X-P)^2.
+\]
+For every forecast $a$ independent of the unknown sign,
+\begin{equation}\label{eq:calibration}
+ \sup_{\theta=\pm\delta}\E_\theta(Y-a)^2-b_\delta
+ =A+\E(P-a)^2+\delta^2+2\delta\abs{\E(P-a)}.
+\end{equation}
+The right side lies between $A+\E(P-a)^2+\delta^2$ and $A+2\E(P-a)^2+2\delta^2$. When $a$ is an unbiased nominal decoder, the first bound is an equality.
+\end{lemma}
+\begin{proof}
+Since $\E X=1/2$, the oracle Bernoulli variance $\E[(X+\theta)(1-X-\theta)]$ equals $b_\delta$ for either sign. Projection first on the latent score and then on $\mathcal H$ gives $b_\delta+A+\E(P+\theta-a)^2$. Expand the square and maximize over the two signs to obtain \eqref{eq:calibration}. The upper follows from $\abs{\E(P-a)}\le\norm{P-a}_{L^2}$ and $2\delta e\le\delta^2+e^2$. A zero mean error removes the cross term. The conclusion does not treat biased deterministic numerical decoding as automatically unbiased.
+\end{proof}
+
+These propositions isolate different lower mechanisms. Acquired small-ball mass constrains label or output resolution. The conditional variance $A$ constrains what the finite acquisition has learned. An inaccessible calibration sign constrains one specified uncertainty class. No statement here asserts a universal positive lower floor for an arbitrary calibration certificate, numerical error bound, or simulation deficiency: an upper allowance can overestimate the error of a particular experiment.

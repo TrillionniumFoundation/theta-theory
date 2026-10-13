@@ -1,0 +1,39 @@
+\section{Approximate continuation distinctions and retained information}\label{sec:soft-state}
+An exact continuation challenge forces disjoint state supports, as shown in Theorem~\ref{thm:tag}. Approximate challenges need a different argument: state supports may overlap, but their overlap consumes the information available for geometric resolution. The following converse applies to fused, randomized implementations; it does not assume a product register layout.
+
+Let $C$ be uniform on $\{1,\ldots,L\}$, $L\ge2$, and let $U$ be independent of $C$ and uniform on the box $\prod_{i=1}^d[-a_i/2,a_i/2]$, with $a_1\ge\cdots\ge a_d>0$. The prepared experiment reveals $(C,U)$ through a paid input before a memory cut. Thereafter a legal continuation asks for $C$, or asks for a squared-prediction readout of $U$ using independently executable bounded probes. Affine rescaling embeds the coordinates in Bernoulli means in $[0,1]$; below the distortion $D$ is measured in the unscaled Euclidean coordinate metric. The known scaling converts it to the corresponding prediction excess. There is no further observation informative about $(C,U)$ between the cut and these readouts. Let $R$ be an independent shared random seed and $S$ the complete retained state, taking at most $M$ values conditional on $R$. The test selecting the continuation carries no information about $(C,U)$.
+
+The entropy ingredients are classical \cite{cover}; their use here is tied to the explicitly retained-information cut. Use natural logarithms and let $h_2(t)=-t\log t-(1-t)\log(1-t)$. For $0\le\eta\le1-1/L$ write
+\[
+ f_L(\eta)=\log L-h_2(\eta)-\eta\log(L-1).
+\]
+
+\begin{theorem}[Noisy continuation--resolution converse]\label{thm:soft-state}
+Suppose a continuation decoder recovers $C$ with error probability at most $\eta$. For any geometric decoder, even one additionally given the true $C$ for free, its mean squared distortion satisfies
+\begin{equation}\label{eq:soft-converse}
+ D\ge\max_{1\le l\le d}\frac{l}{2\pi e}
+       \left(\prod_{i=1}^l a_i\right)^{2/l}
+       \exp\left\{\frac{2}{l}\big(f_L(\eta)-\log M\big)\right\}.
+\end{equation}
+Necessarily $\log M\ge f_L(\eta)$. If a nominal workspace of $W$ bits is permitted to survive the cut, replace $\log M$ in both statements by $\log M+W\log2$. Workspace erased before the cut does not alter the bound. The result holds for every preprocessing algorithm and every program length or runtime compatible with the experiment.
+\end{theorem}
+\begin{proof}
+We give the entropy argument to specify precisely the resource cut. Introduce the error indicator for the tag decoder. Conditional on that indicator and its decoded tag, there is at most one possible correct tag and at most $L-1$ possible incorrect tags. The chain rule and entropy maximization on a finite set give
+\[
+ H(C\mid S,R)\le h_2(\eta)+\eta\log(L-1),
+\]
+using monotonicity of the right side on $[0,1-1/L]$. Thus $I(C;S\mid R)\ge f_L(\eta)$. The state alphabet gives $H(S\mid R)\le\log M$, and the chain rule gives
+\begin{equation}\label{eq:information-cut}
+ I(U;S\mid C,R)\le\log M-f_L(\eta).
+\end{equation}
+These statements remain true when the encoding is stochastic.
+
+For the first $l$ coordinates, the prior differential entropy conditional on $(C,R)$ is $\log\prod_{i\le l}a_i$. Replace a randomized geometric decoder by its conditional mean. Conditional translation by its output preserves differential entropy. Among distributions on $\R^l$ with mean square at most $d_0$, entropy is at most $(l/2)\log(2\pi e d_0/l)$: compare with the centered spherical Gaussian of variance $d_0/l$ using nonnegativity of relative entropy, and optimize that variance. Apply this conditional bound and then Jensen's inequality to obtain
+\[
+ I(U_1,\ldots,U_l;S\mid C,R)
+ \ge \log\prod_{i\le l}a_i-\frac l2\log\frac{2\pi eD}{l}.
+\]
+One may first use positive variances and then take a limit when a conditional distribution is degenerate. Finite state entropy bounds the mutual information, so the extended-entropy version gives the same inequality. Data processing and \eqref{eq:information-cut} now give \eqref{eq:soft-converse} for each $l$. Nonnegativity of conditional mutual information gives the feasibility condition. With $W$ surviving bits the retained alphabet has cardinality at most $M2^W$, while erased words convey no information to a later decoder. This proves the last assertion.
+\end{proof}
+
+At $\eta=0$ the factor $\exp f_L(0)=L$ recovers the geometric scale associated with $M/L$ effective labels, up to constants. For nonzero error it supplies a continuous information cost, rather than declaring the tag either entirely free or entirely mandatory. The exact support-allocation theorem remains stronger when zero error is required. This converse is a retained-information bound, not an optimal-runtime theorem, and it does not establish a matching noisy-tag upper at every point of the resource vector. It cannot be used to label an arbitrary simulator register as necessary: the distinguishing continuation must be part of the actual experiment.

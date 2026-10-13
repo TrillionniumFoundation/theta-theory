@@ -1,0 +1,171 @@
+\section{Proof: acquired overlap, Bellman curvature and executable allocation}\label{sec:proof}
+\subsection{Conditional calibration and exact defects}
+The next proposition states the inherited conditional mechanism in its controlled form. It also records exactly where action optimality enters.
+\begin{proposition}[Controlled calibration and Bellman defects]\label{prop:identity}
+Let a legal finite controller have actual incoming barycenter $Q_{t-1}=\E[X_{t-1}\mid S_{t-1}]$. After its chosen action and report put
+\[
+ W_t=F_{t,A_t}(Y_t,Q_{t-1}),\qquad Q_t=\E[W_t\mid S_t].
+\]
+Then $Q_t=\E[X_t\mid S_t]$. For its best terminal readout, the exact risk decomposition is
+\begin{equation}\label{eq:bellman-defect}
+ R-V_0(u_0)=\sum_{t=1}^n\Delta_t+\sum_{t=1}^n J_t,
+\end{equation}
+where
+\begin{align*}
+ \Delta_t&=\E\left[\int V_t(w)\mu_{t,A_t,Q_{t-1}}(dw)
+                         -V_{t-1}(Q_{t-1})\right]\ge0,\\
+ J_t&=\E V_t(Q_t)-\E V_t(W_t)\ge0.
+\end{align*}
+An arbitrary terminal response adds its nonnegative excess over the conditional mean.
+
+For completeness, set
+$\Phi_{t,a}(u)=\int\norm{U_{t,a}(y,u)}^2/\ell_{t,a}(y,u)\,d\lambda_{t,a}$.
+If $r_t=\E\norm{X_t-Q_t}^2$, the normalized three-defect identity is
+\begin{equation}\label{eq:three-defect}
+ r_t=\E[\Phi_{t,A_t}(X_{t-1})-\Phi_{t,A_t}(Q_{t-1})]
+                 +D_{{\rm row},t}+D_{{\rm pool},t}.
+\end{equation}
+All terms are nonnegative. These identities require the raw affine response, not the hypotheses of Definition~\ref{def:class}.
+\end{proposition}
+\begin{proof}
+Conditional on an incoming label and its newly chosen action, fresh action randomization is independent of the old physical state and history. Thus the conditional mean remains $Q_{t-1}$. Affinity in~\eqref{eq:raw} gives, by conditional integration,
+\[
+ \Pp(Y_t\in dy\mid S_{t-1},A_t)=\ell_{t,A_t}(y,Q_{t-1})\lambda_{t,A_t}(dy),
+\]
+\[
+ \E[X_t\one_{\{Y_t\in dy\}}\mid S_{t-1},A_t]
+     =U_{t,A_t}(y,Q_{t-1})\lambda_{t,A_t}(dy).
+\]
+Division off the null set proves $W_t=\E[X_t\mid S_{t-1},A_t,Y_t]$. The update coins are fresh, and all incoming edges into a new label are included; the tower property proves the assertion about $Q_t$. This proof uses measurable conditional integration rather than conditioning a continuous report on a positive-probability singleton.
+
+Concavity of $V_t$ follows by taking the infimum of the affine risks of all fixed continuation trees with committed terminal responses. Jensen's inequality gives $J_t\ge0$; Bellman optimality gives $\Delta_t\ge0$. Adding the displayed definitions telescopes to $\E g(Q_n)-V_0(u_0)$, which is precisely the best label-based risk by~\eqref{eq:task}.
+
+For~\eqref{eq:three-defect}, let $C_t=\E[W_t\mid S_{t-1},A_t,S_t]$. Two conditional Pythagorean identities give
+\[
+ \E\norm{W_t}^2-\E\norm{Q_t}^2
+ =\underbrace{\E\norm{W_t-C_t}^2}_{D_{{\rm row},t}}
+ +\underbrace{\E\norm{C_t-Q_t}^2}_{D_{{\rm pool},t}}.
+\]
+The raw identities identify $\E\norm{X_t}^2$ and $\E\norm{W_t}^2$ with the two perspective integrals in~\eqref{eq:three-defect}. Their difference is also
+$\E\norm{X_t-\E[X_t\mid S_{t-1},A_t,Y_t]}^2$.
+This proves its sign without differentiability. When differentiation is dominated, the unambiguous second-variation formula is
+\begin{equation}\label{eq:hessian}
+ \frac12D^2\Phi_{t,a}(u)[v,v]
+ =\int\frac{\norm{A_{t,a}(y)v-(c_{t,a}(y)v)F_{t,a}(y,u)}^2}
+                 {\ell_{t,a}(y,u)}\,d\lambda_{t,a}.
+\end{equation}
+It follows by differentiating the scalar quadratic perspective; otherwise its closed convex extension suffices. No covariance or Fisher metric has been assumed.
+\end{proof}
+
+\subsection{The new continuation mechanism}
+\begin{lemma}[From acquired overlap to Bellman sensitivity]\label{lem:span}
+Under~\eqref{eq:overlap}, with $\vartheta=1-\epsilon_*$,
+\begin{equation}\label{eq:span}
+ \osc_D V_t\le \vartheta^{\lfloor(n-t)/b\rfloor}\osc_D g,
+ \qquad
+ \Lip_K V_t\le r^{-1}\vartheta^{\lfloor(n-t)/b\rfloor}\osc_D g.
+\end{equation}
+For $\vartheta=0$, the expression is interpreted as one for exponent zero and zero otherwise.
+\end{lemma}
+\begin{proof}
+For a bounded terminal continuation $f$, every $b$-step policy and initial state has terminal law $\epsilon_*\zeta_s+(1-\epsilon_*)\xi$ for a probability $\xi$. Its expectation lies in
+\[
+ \epsilon_*\int f\,d\zeta_s+
+           (1-\epsilon_*)[\inf_D f,\sup_D f].
+\]
+Taking the infimum over policies preserves this same interval. Therefore the oscillation of the $b$-step Bellman transform is at most $(1-\epsilon_*)\osc_D f$. A shorter block cannot increase the range. Iteration proves the first inequality. This is the common-mass span contraction principle; its use here is on the acquired predictive kernels uniformly over feedback, not on a latent transition alone.
+
+Let $v$ be concave on $D$, and let $x,y\in K$. Extend the line segment from $x$ backwards by length $r$, and from $y$ forwards by length $r$; both extension points belong to $D$. Monotonicity of the slopes of a concave function on this line bounds the slope on $[x,y]$ in absolute value by $\osc_Dv/r$. This proves the second inequality. No differentiability or choice of optimal action on a switching surface is required. In particular, one-step Wasserstein Lipschitz coefficients of the controlled acquired kernel never enter the argument.
+\end{proof}
+
+\begin{lemma}[Acquired density integrates nonsmooth curvature]\label{lem:curvature}
+Let $v$ be concave and $L$-Lipschitz on a compact convex set $K\subset\R^d$ with nonempty interior, and let $\lambda$ be a probability on $K$ with density at most $\Lambda$. For each integer $m\ge1$ there is a global grid partition $\mathcal P_m$ with at most $m$ cells such that
+\begin{equation}\label{eq:jensen-grid}
+ \sum_{C\in\mathcal P_m}\lambda(C)v\left(\frac{\int_Cx\,d\lambda}{\lambda(C)}\right)
+     -\int v\,d\lambda\le C_{K,d}\Lambda Lm^{-2/d}.
+\end{equation}
+Zero-mass cells are omitted. The grid does not depend on $v$ or $\lambda$; its conditional centroids do.
+\end{lemma}
+\begin{proof}
+We supply the boundary-valid argument from the acquired-curvature method of \cite{GTFControl}. The convex function $f_0=-v$ has a convex $L$-Lipschitz extension to all $\R^d$: take the supremum of all supporting planes at interior points of $K$. All slopes have norm at most $L$; agreement on the interior and continuity give agreement on $K$. Let $\kappa=\Delta f$ be its positive distributional Laplacian measure.
+
+For a grid cube $C$ of side $h$, centered at $z_C$, first mollify $f$ and subtract its tangent at $z_C$, obtaining a nonnegative convex function $w$ vanishing there. Put $R=2\sqrt d h$. The submean inequality, radial monotonicity and convex radial slopes give, for $x\in C$,
+\[
+ w(x)\le C_d R^{-d}\int_{B_R(z_C)}w
+ \le C_d\operatorname{av}_{\partial B_R}w
+ \le C_dR\operatorname{av}_{\partial B_R}\partial_rw
+ =C_dR^{2-d}\int_{B_R(z_C)}\Delta f.
+\]
+In dimension one the boundary average is the average at the two endpoints. The tangent terms cancel at the conditional barycenter, and $w$ is nonnegative there. Passing through mollification and enlarging the ball slightly proves the cell bound
+\[
+ \int_C f\,d\lambda-\lambda(C)f(\E[X\mid C])
+ \le C_dh^{2-d}\lambda(C)\kappa(\overline B_{3\sqrt d h}(z_C)).
+\]
+On a fixed bounded neighborhood of $K$, a smooth nonnegative cutoff $\chi$ gives
+$\int\chi\,d\kappa=-\int\nabla\chi\cdot\nabla f\le L\int|\nabla\chi|$.
+The enlarged grid balls have bounded overlap and $\lambda(C)\le\Lambda h^d$. Summation yields $C_{K,d}\Lambda Lh^2$. A bounding cube divided in each coordinate into $\lfloor m^{1/d}\rfloor$ intervals has at most $m$ cells and $h\le C_Km^{-1/d}$. This also covers $m=1$ after adjusting the fixed constant. The extension and its curvature measure are proof objects, not observer memory.
+\end{proof}
+
+\subsection{Implementation, lower bound and clock}
+\begin{lemma}[Calibrated feedback implementation]\label{lem:implementation}
+For any positive integers $m_1,\ldots,m_n$, there is a controller with disjoint phase alphabets of these sizes and one initial label, whose risk obeys
+\begin{equation}\label{eq:implemented}
+ R-V_0(u_0)\le C\Lambda\sum_{t=1}^n\Lip_K(V_t)m_t^{-2/d}.
+\end{equation}
+Its next-label rule is defined for all legal incoming labels and reports.
+\end{lemma}
+\begin{proof}
+Inductively assign to every positive-mass label its actual conditional barycenter $q_s$. Choose a minimizing action in~\eqref{eq:bellman} at $q_s$; a finite action set and continuous Bellman transforms give a Borel selector, with a fixed tie rule. Compute $F_{t,a_s}(y,q_s)$ and send it to its cell in the single global partition $\mathcal P_{m_t}$. The next representative is the conditional mean of this unpooled value after integrating over \emph{all} incoming labels and reports entering that cell. It belongs to $K$ by convexity. Arbitrary legal representatives are assigned to unused labels.
+
+Proposition~\ref{prop:identity} proves calibration for this very implemented law. Its row mixture has density at most $\Lambda$. Every $\Delta_t$ vanishes, and Lemma~\ref{lem:curvature} bounds $J_t$. Summation proves~\eqref{eq:implemented}. The only retained dynamic datum is the label; the calibrated centroid and selected action are programmed constants attached to it. There is no independent exact posterior state. The grid and update are global, so an unlikely but legal report does not escape the controller's definition.
+\end{proof}
+
+\begin{lemma}[All-policy acquired-mass lower]\label{lem:lower}
+Every terminal acquired law of a full-history policy has density at most $\Lambda$. Encoding it into $m$ labels incurs squared distortion at least
+\begin{equation}\label{eq:smallball}
+ c_d\Lambda^{-2/d}m^{-2/d},\qquad
+ c_d=\tfrac12(2v_d)^{-2/d},
+\end{equation}
+where $v_d$ is unit-ball volume. For every controller, the final term $J_n$ in~\eqref{eq:bellman-defect} satisfies the same bound with the number of terminal labels in place of $m$.
+\end{lemma}
+\begin{proof}
+Condition before the last report on the actual incoming history and chosen action. The row bound in Definition~\ref{def:class} survives mixing, including private action randomness. For any $m$ centers, their radius-$r_0$ balls have total probability at most $\Lambda mv_dr_0^d$. Choose $r_0=(2\Lambda mv_d)^{-1/d}$; at least half the mass is outside. This proves~\eqref{eq:smallball}. Randomized assignment cannot improve the pointwise minimum over its finitely many readouts.
+
+Since $g=c-\norm\cdot^2$ with affine $c$, $J_n=\E\norm{W_n-Q_n}^2$. Its actual unpooled law is also a mixture of rows at retained barycenters and chosen actions, hence has the same density bound. Repeated readouts only reduce the number of distinct centers. All previous defects and action slacks are nonnegative, which is why the converse compares with the full-history adaptive optimum rather than with a fixed controller.
+\end{proof}
+
+\begin{lemma}[Internal exact-deadline charge]\label{lem:clock}
+Under the autonomous support condition, positive-probability label supports at cuts $0,1,\ldots,n$ of any legal internally clocked controller are pairwise disjoint. Consequently $M\ge n+1$ and the last cut has at most $M-n$ labels.
+\end{lemma}
+\begin{proof}
+If one label occurred at cuts $s<t$, run a reference trace from that label using the controller's own action and update randomization and drawing each report from $\lambda_a$. Every finite actual future trace, conditional on any possible incoming physical history, is equivalent to this reference trace: iterated conditional densities are strictly positive and finite almost everywhere. The assertion is about positive-measure label edges, not individual report values. From the occurrence at $t$, halting after $n-t$ further calls has probability one. Equivalence forces the same event from the occurrence at $s$, contradicting the exact deadline. A halt label cannot be nonhalt at an earlier cut either. Each cut is nonempty. Conversely a deterministic chain with $n+1$ labels and arbitrary legal fixed actions realizes the deadline.
+\end{proof}
+
+\begin{lemma}[Integer allocation]\label{lem:allocation}
+Put $p=2/d$, $a_t=r^{-1}\osc_Dg\,\vartheta^{\lfloor(n-t)/b\rfloor}$ and $A_n=\sum_ta_t^{1/(1+p)}$. For $k\ge1$ there are integers $m_t\ge1$ with
+\[
+ \sum_tm_t\le n+k-1,\qquad
+ \sum_ta_tm_t^{-p}\le2^pA_n^{1+p}k^{-p}.
+\]
+Moreover $A_n\le b(r^{-1}\osc_Dg)^{1/(1+p)}/(1-\vartheta^{1/(1+p)})$, with the evident interpretation at $\vartheta=0$.
+\end{lemma}
+\begin{proof}
+For $A_n>0$ set $w_t=a_t^{1/(1+p)}$ and
+$m_t=1+\lfloor(k-1)w_t/A_n\rfloor$. When $k\ge2$, $m_t\ge(k-1)w_t/A_n$, and summation gives $A_n^{1+p}(k-1)^{-p}\le2^pA_n^{1+p}k^{-p}$. For $k=1$, use $\sum a_t\le A_n^{1+p}$. The geometric series proves the last assertion. If all weights vanish, one label per phase suffices. This counts a real phase label even at an insensitive cut; constants deteriorate explicitly as $\vartheta\uparrow1$.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:main}]
+Conditional projection of the audit onto the full terminal history and then onto the checkpoint label proves~\eqref{eq:cp-exact}; measurable nearest-center quantization gives the infimum, and conditional centroids lie in $K$. The baseline of every policy is at least $V_0(u_0)$. Lemma~\ref{lem:lower} proves the checkpoint lower; a full-history Bellman-optimal policy followed by a global grid gives its upper. Weak continuity, finite actions and compact response sets give the needed Borel selectors by backward induction, or an arbitrarily small slack followed by a limit of the displayed risk bound.
+
+For the autonomous upper put $k=M-n$. Lemmas~\ref{lem:span}, \ref{lem:implementation} and~\ref{lem:allocation} give the desired controller with $1+\sum m_t\le M$. The bound on $A_n$ is independent of $n$. For the lower, Lemma~\ref{lem:clock} and the final Jensen lower in Lemma~\ref{lem:lower} give $c_0(M-n)^{-2/d}$ for every controller. The clock lemma also proves the exact nonemptiness threshold. This establishes all statements without an interchange of minimax quantifiers or an oracle action sequence.
+\end{proof}
+
+In operational terms, the alphabet is allocated as follows:
+\[
+\begin{array}{c|ccc}
+\text{cut}&0&1,\ldots,n-1&n\\\hline
+\text{role}&\text{initial action}&\text{acquire, update, count}&\text{halt and respond}\\
+\text{labels}&1&m_1,\ldots,m_{n-1}&m_n
+\end{array}
+\]
+Thus $M-n$ is an upper bound on remaining terminal width after paying at least one label at each earlier cut. It is not an average width or a bit budget. A free time stamp or free terminal request changes this architecture and invalidates this clock subtraction.
