@@ -1,0 +1,9 @@
+# Actual history coverage
+
+The remote branch search found research R48 and latest external review R32. The review branch and report blob were pinned before editing. Canonical was read as18000b21e4bfd89180ccb069e46ac0f21621f34d; the four controlling files were read from the retained canonical lineage. Actual R48 source and its full predecessor material were downloaded from workflow38301382216/artifact11772475177, not inferred from earlier chat summaries.
+
+This round directly examined the complete R32 report and technical concordance, R48 experimental formulation, central theorem, occupation proof, exact-budget proof, geometric profile, raw Gaussian/quantum realization, singular/error sections and audit/build sources; it also checked the stopped/predictive/curvature lineage and relevant historical derivation/control material needed for the changes. The formal v1 outline and G1/G3 targets remain controlling. R33–R48 are later research/development inputs, not invented external acceptances.
+
+All historical subtrees present at R48 are retained byte-for-byte as Git objects; the full R48 article and complete retained build chain are delivery companions. The old realization/archive/review branches are never write destinations. Their results remain independent unless a stated theorem-level dependency explicitly imports them. Retention and compilation do not amount to rereading and reproving every v1–v96 proof, every old report, or every realization paper. No such exhaustive re-certification is claimed.
+
+The new proof review is concentrated on the survival normalization, finite-phase lower bound, exact actual-occupation frontier and raw transfer verifications. The external absorption/phase-type primary sources were checked, and the mathematical standard tool is proved with attribution. Final evidence will state the exact build and independent-reconstruction scope after execution.

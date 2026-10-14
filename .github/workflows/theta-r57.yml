@@ -1,0 +1,97 @@
+name: General Theta R57 source-bound publication
+on:
+  push:
+    branches: [foundation/general-theta-restart-r57-role-aware-transfer-research-2026-10-14]
+    paths:
+      - .github/workflows/theta-r57.yml
+      - .github/scripts/theta-r57-publish.py
+      - .github/data/theta-r57-source.part*
+permissions:
+  contents: write
+concurrency:
+  group: theta-r57-publication
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      SOURCE_DATE_EPOCH: '1791849600'
+      FORCE_SOURCE_DATE: '1'
+      TZ: UTC
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install mathematical build dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+          python -m pip install numpy==2.3.5 scipy==1.17.0 pypdf==5.9.0
+      - name: Publish immutable ordinary source
+        id: source
+        run: python .github/scripts/theta-r57-publish.py prepare
+      - name: Build complete native and retained mathematics
+        run: >-
+          python papers/General-Theta-Foundations-I-restart/r57-role-aware-transfer/build.py
+          --source-sha '${{ steps.source.outputs.source_sha }}'
+          --prepared-root '${{ github.workspace }}' --retained
+          --output '${{ runner.temp }}/theta-r57-build'
+      - name: Publish binary artifacts with source parent
+        id: artifacts
+        run: python .github/scripts/theta-r57-publish.py store --build '${{ runner.temp }}/theta-r57-build'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r57-native-${{ github.run_id }}
+          path: ${{ runner.temp }}/theta-r57-build/download/native/
+          if-no-files-found: error
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r57-retained-1-${{ github.run_id }}
+          path: ${{ runner.temp }}/theta-r57-build/download/retained-1/
+          if-no-files-found: error
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r57-retained-2-${{ github.run_id }}
+          path: ${{ runner.temp }}/theta-r57-build/download/retained-2/
+          if-no-files-found: error
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r57-retained-3-${{ github.run_id }}
+          path: ${{ runner.temp }}/theta-r57-build/download/retained-3/
+          if-no-files-found: error
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r57-retained-4-${{ github.run_id }}
+          path: ${{ runner.temp }}/theta-r57-build/download/retained-4/
+          if-no-files-found: warn
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r57-retained-5-${{ github.run_id }}
+          path: ${{ runner.temp }}/theta-r57-build/download/retained-5/
+          if-no-files-found: warn
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r57-retained-6-${{ github.run_id }}
+          path: ${{ runner.temp }}/theta-r57-build/download/retained-6/
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Preserve failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: theta-r57-diagnostics-${{ github.run_id }}
+          path: ${{ runner.temp }}/theta-r57-build/
+          if-no-files-found: warn

@@ -1,0 +1,30 @@
+name: Theta R56 explicit binary artifact preservation
+on:
+  push:
+    branches:
+      - foundation/general-theta-restart-r56-balanced-task-transfer-research-2026-10-14
+    paths:
+      - '.github/workflows/theta-r56-materialize.yml'
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: theta-r56-publication
+  cancel-in-progress: false
+jobs:
+  preserve:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 4
+      - name: Verify and store original built PDF bytes
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 .github/scripts/theta-r56-materialize.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r56-binary-preservation-${{ github.run_id }}
+          path: ${{ runner.temp }}/r56-materialization/proof
+          retention-days: 30

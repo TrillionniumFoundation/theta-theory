@@ -1,0 +1,74 @@
+name: Theta R54 predictable geometry source and full retained build
+on:
+  push:
+    branches:
+      - foundation/general-theta-restart-r54-predictable-geometry-research-2026-10-13
+    paths:
+      - '.github/workflows/theta-r54-build.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: theta-r54-publication
+  cancel-in-progress: false
+jobs:
+  publication:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      R54_PATH: papers/General-Theta-Foundations-I-restart/r54-predictable-geometry
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 5
+      - name: Publish verified ordinary mathematical source first
+        run: python3 .github/scripts/theta-r54-publish.py source
+      - name: Install complete retained-build dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended lmodern cm-super poppler-utils python3-venv
+          python3 -m venv "$RUNNER_TEMP/r54-venv"
+          "$RUNNER_TEMP/r54-venv/bin/pip" install numpy scipy pypdf mpmath
+      - name: Build native and complete retained mathematics read-only
+        run: |
+          "$RUNNER_TEMP/r54-venv/bin/python" "$R54_PATH/build.py" --source-sha "$R54_SOURCE_SHA" --prepared-root "$GITHUB_WORKSPACE" --output "$RUNNER_TEMP/r54-output" --retained > "$RUNNER_TEMP/r54-build.stdout" 2>&1
+          git diff --exit-code
+          test -z "$(git ls-files --others --exclude-standard)"
+      - name: Publish artifacts directly after immutable source
+        run: python3 .github/scripts/theta-r54-publish.py artifacts
+      - name: Prepare independent reconstruction packets
+        run: python3 .github/scripts/theta-r54-publish.py packets
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r54-native-${{ github.run_id }}
+          path: ${{ runner.temp }}/r54-packets/native
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r54-retained-1-${{ github.run_id }}
+          path: ${{ runner.temp }}/r54-packets/retained-1
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r54-retained-2-${{ github.run_id }}
+          path: ${{ runner.temp }}/r54-packets/retained-2
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r54-retained-3-${{ github.run_id }}
+          path: ${{ runner.temp }}/r54-packets/retained-3
+          retention-days: 30
+      - name: Preserve executed diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: theta-r54-execution-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/r54-build.stdout
+            ${{ runner.temp }}/R54_SOURCE_PUBLICATION.json
+            ${{ runner.temp }}/r54-output/FAILED_NATIVE_LATEX.log
+          if-no-files-found: ignore
+          retention-days: 30

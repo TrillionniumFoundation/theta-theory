@@ -1,0 +1,15 @@
+# Proof audit — R49
+
+The ordinary manuscript supplies full proofs; the following is a separate adversarial checklist, not an independent referee report.
+
+- Survival envelope: both functionals have decreasing discrete increments; Jensen uses the piecewise-linear interpolation and E tau<=N. Noninteger N, rho=1 and 0^0 conventions are explicit. Equality in the probability bound does not provide a free observer clock.
+- Margin: Delta_N >= rho N(N-1)/(2(1+rho N)). The fractional part contributes b(1-b)/2 with the correct nonnegative sign. The normalized choice t=s+sqrt(s^2+2s) is checked algebraically; t>N uses one-call stopping, not an invalid rho>1. N=1 is proved separately.
+- Perturbation: terminal norm is controlled by actual weighted defect; mean has 1/rho. Rerouted joint instruments retain that stopping floor after all approximation. No conditional-on-coupling-success law replaces actual occupation. Infimum and reversed transfer are explicit.
+- Raw realizations: Gaussian derivatives integrated on the full report space; quantum effect differences bounded before normalization. The positive-effect improvement solves A X+X B=E-Etilde and does not require commutation. The quarter effect-parameter exponent is sufficient, not claimed optimal.
+- Finite-phase lemma: standard comparison credited to O'Cinneide; Aldous–Shepp is the earlier variance result. The included Laplace proof handles fixed initial state, geometric returns, trace process and initial mixtures. The discrete optimal phase count is <=k, not an algebraic matrix rank or an unbounded free clock.
+- All-M frontier: b>0 makes the all-failure clock actually relevant and finite in mean. Success stopping and terminal merging can only improve the failure objective. The lower is obtained by a monotone scalar inequality for every legal randomized program. Equality construction uses the same k live phases. Squared-prediction equality is restricted to M=2; all M has matching comparison.
+- Critical asymptotic: verify the branch condition at the deterministic k-clock; derive F/b to infinity before dividing the polynomial. Fixed M,p are not silently allowed to diverge.
+- Raw-transition witness: terminal masses p/D, rho(q-h)/D and h/D sum to one. Mean binds at optimum. The raw norm difference is2h; the exact global equation is F^2=(N-1)h(1-F). Unknown h in an interval uses the worst endpoint common program.
+- Finite description: split total mean approximation allowance v between bisection and rounding. Round failure stopping/phase advance in the direction that decreases actual mean. Constants in program length are not presented as optimal.
+
+Inherited proofs are included and attributed. This audit does not claim independent proof certification or priority. Still open here: general informative-filter intrinsic power laws without the profile hypotheses, the old referee's two stability-route comparison examples, a certified numerical Gaussian optimal-table benchmark, non-dominated/infinite-carrier classification and the joint optimal computational-resource frontier.

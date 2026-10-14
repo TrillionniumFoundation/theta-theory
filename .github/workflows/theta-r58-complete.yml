@@ -1,0 +1,62 @@
+name: General Theta R58 complete source-bound build
+on:
+  push:
+    branches: [foundation/general-theta-restart-r58-reference-stability-research-2026-10-14]
+    paths: [.github/workflows/theta-r58-complete.yml]
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: theta-r58-complete
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 90
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install isolated build tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended poppler-utils
+          python -m pip install 'numpy==2.3.5' 'scipy==1.17.0' 'pypdf==5.9.0' 'PyYAML==6.0.2'
+      - name: Publish sealed ordinary mathematical source
+        id: source
+        run: python .github/scripts/theta-r58-publish.py prepare
+      - name: Acquire exact retained source without changing historical files
+        id: inputs
+        run: |
+          gh api repos/TrillionniumFoundation/theta-theory/actions/artifacts/11863579443/zip > "$RUNNER_TEMP/r56-pinned.zip"
+          python .github/scripts/theta-r58-publish.py historical --archive "$RUNNER_TEMP/r56-pinned.zip" --target "$RUNNER_TEMP/theta-r58-prepared"
+      - name: Full ordinary and optimized regression, independent builds and reference checks
+        run: |
+          python papers/General-Theta-Foundations-I-restart/r58-reference-stability/build.py --source-sha '${{ steps.source.outputs.source_sha }}' --prepared-root "$RUNNER_TEMP/theta-r58-prepared" --retained --output "$RUNNER_TEMP/theta-r58-build"
+      - name: Publish source-bound PDF artifacts
+        id: artifacts
+        run: python .github/scripts/theta-r58-publish.py store --build "$RUNNER_TEMP/theta-r58-build"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r58-complete
+          path: ${{ runner.temp }}/theta-r58-build/download/complete
+          if-no-files-found: error
+          retention-days: 90
+      - name: Preserve failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: theta-r58-failure-diagnostics
+          path: |
+            ${{ runner.temp }}/theta-r58-build/*.log
+            ${{ runner.temp }}/theta-r58-build/BUILD_RECEIPT.json
+          if-no-files-found: ignore
+          retention-days: 90

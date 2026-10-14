@@ -1,0 +1,7 @@
+# Historical coverage — actual audit, not a universal certification
+
+This revision read the latest R32 external report and its 12 major/32 technical comments, the four canonical control files, the R37 native manuscript and stationary proof/realization/compilation pipeline, and relevant R34/R32 proof dependencies. R35/R36 research intake status is distinguished from completed papers. R37's source/export/publication records and complete build chain were inspected. Primary current literature comparisons are recorded separately.
+
+The R37 source artifact supplies the earlier complete mathematical subtrees and reports. They are preserved by original Git identities and rebuilt through their original source/projection checks. This is stronger than copying excerpts, but it is not a fresh line-by-line certification of every inherited proof. Not every historical referee report, v1–v96 derivation, independent realization or frozen-archive paper has been re-proved or re-read in full in this turn.
+
+The actual theorem dependencies used natively are listed in THEOREM_MAP.md. Old ordered-measurement, causal-memory, finite-action and streaming branches remain independent research lines. Their presence in the repository does not establish that the new hypotheses cover them. No content is deleted, overwritten, deprecated as worthless or silently retitled. The source publisher verifies old mathematical subtrees/control identities before and after new writes. Final receipts distinguish actual rebuild coverage from requested whole-history coverage.

@@ -1,0 +1,62 @@
+\section{A finite-state clock inequality}\label{app:clock-order}
+This appendix records a standard phase-type comparison in the precise discrete form needed above. O'Cinneide~\cite{OC} proves the stronger convex-order minimality of an Erlang law of fixed phase order and mean, extending the coefficient-of-variation result of Aldous and Shepp~\cite{AS}. The following direct Laplace-transform proof is included to expose the state-count and time conventions; the phase-type extremality itself is not a new claim.
+
+\begin{lemma}[Laplace bound for a finite absorption mechanism]\label{lem:phase-laplace}
+Let $W$ be the almost surely finite absorption time of a continuous-time Markov chain with at most $k\ge1$ transient states, allowing an initial mixture and an atom at zero. Suppose $\E W=m<\infty$. Then for every $s\ge0$,
+\begin{equation}\label{eq:phase-laplace}
+ \E e^{-sW}\ge(1+sm/k)^{-k}.
+\end{equation}
+\end{lemma}
+\begin{proof}
+We prove the assertion by induction, first for a fixed initial state $i$. In a transient state the total occupation time, obtained by suppressing excursions away from that state, is exponential: its visits have independent exponential holding times, and the number of returning excursions is geometric. This proves the assertion for one transient state. Mixtures with an atom at zero are handled by convexity of $m\mapsto(1+sm)^{-1}$.
+
+For the induction step, split $W=U+V$, where $U$ is time spent at the initial state and $V$ is time spent at the other states. Let $r<1$ be the probability of returning to $i$ after an exit. If $r=0$ the following formula is read with a geometric count identically zero. The strong Markov property gives a geometric number $K$ of returning excursions, with
+\[
+ \E z^K=g(z)=\frac{1-r}{1-rz},\qquad 0\le z\le1.
+\]
+Holding times at $i$ are exponential and independent of the destination and of the excursion. Conditional on a return, the excursion duration has one fixed law; conditional on the final nonreturn, its remaining duration has another fixed law. The successive pieces are independent conditional on $K$, with distributions not depending on its value. If $u$ is the holding-time Laplace transform, $v$ the final nonreturn duration transform and $y$ the returning-excursion transform, then
+\[
+ \E e^{-sW}=uvg(uy),\quad
+ \E e^{-sU}=u g(u),\quad
+ \E e^{-sV}=v g(y).
+\]
+For $0\le u,y\le1$ one has $g(uy)\ge g(u)g(y)$, because
+\[
+ (1-ru)(1-ry)-(1-r)(1-ruy)=r(1-u)(1-y)\ge0.
+\]
+Thus the Laplace transform of $W$ is at least the product of those of $U$ and $V$. The trace process obtained by suppressing time at $i$ is a continuous-time Markov chain on at most $k-1$ transient states, with a possible initial atom at absorption. This follows directly by summing the geometrically many instantaneous returns through $i$; equivalently its generator on the remaining states is the corresponding Schur complement. Its absorption time is $V$. The trace on $\{i\}$ has the exponential absorption time $U$. Put $a=\E U$ and $b=\E V$. By induction and the arithmetic--geometric mean inequality,
+\[
+ \E e^{-sW}\ge\frac1{1+sa}\frac1{(1+sb/(k-1))^{k-1}}
+       \ge\frac1{(1+s(a+b)/k)^k}.
+\]
+Degenerate trace components follow by a limit or by deleting zero occupation states. Finally, for a mixture of initial states, apply the fixed-state conclusion and the convexity of $m\mapsto(1+sm/k)^{-k}$. This also includes the possible atom at zero.
+\end{proof}
+
+\begin{lemma}[Exact discrete clock frontier]\label{lem:discrete-clock}
+Fix $p\in(0,1)$, $q=1-p$, and $k\ge1$. Let $T\ge1$ be the absorption-call count of any homogeneous randomized machine with at most $k$ live states and one terminal state. Assume $\E T=m<\infty$. Then
+\begin{equation}\label{eq:clock-frontier-bound}
+ \E q^T\ge g_{k,p}(m),
+\end{equation}
+where
+\begin{equation}\label{eq:clock-frontier}
+ g_{k,p}(m)=
+ \begin{cases}
+ (1-\beta)q^j+\beta q^{j+1},
+    &1\le m\le k,\quad j=\lfloor m\rfloor,
+      \ \beta=m-j,\\[2pt]
+ (1+pm/(qk))^{-k},&m\ge k.
+ \end{cases}
+\end{equation}
+The two expressions agree at $m=k$. Every point of this frontier is attained with at most $k$ live states. The function $g_{k,p}$ is continuous and strictly decreasing from $q$ to zero, and is Lipschitz with constant at most $p$ on $[1,\infty)$.
+\end{lemma}
+\begin{proof}
+For $m\le k$, the piecewise linear interpolant of $j\mapsto q^j$ is convex. Jensen's inequality gives the first bound, attained by $T\in\{j,j+1\}$ with probabilities $1-\beta,\beta$. Such a clock uses $\lceil m\rceil$ live states: it advances deterministically until the $j$th call, halts there with probability $1-\beta$, and otherwise halts at the next call. If $\beta=0$ it uses only $j$ states.
+
+For $m\ge k$, attach independent mean-one exponential holding times to the calls of the discrete machine, only for purposes of proof. The resulting time $W$ is phase type with at most $k$ transient states, generator $Q-I$ if $Q$ is the live routing matrix, and $\E W=\E T=m$. At $s=p/q$, conditioning on $T$ gives
+$\E e^{-sW}=\E(1+s)^{-T}=\E q^T$. Lemma~\ref{lem:phase-laplace} proves the second bound. It is attained by the sum of $k$ independent geometric variables with success probability $\rho=k/m\le1$: a machine successively traverses $k$ phases, advancing one phase with probability $\rho$ at each call and halting on the advance from the last phase. Its mean is $k/\rho$ and its transform is
+\[
+ \left(\frac{q\rho}{p+q\rho}\right)^k
+ =\left(1+\frac{pm}{qk}\right)^{-k}.
+\]
+This construction is discrete and pays one actual call for each step. The auxiliary exponential holds supply no physical clock or computational resource. On the linear pieces the derivative magnitude is $pq^j\le p$; on $m\ge k$ it is at most its value $pq^k\le p$ at $k$. These formulas prove all remaining assertions.
+\end{proof}

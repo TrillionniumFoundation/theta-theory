@@ -1,0 +1,51 @@
+\section{Finite-bit execution and its separate resources}\label{sec:compilation}
+The stationary correspondence proves existence in a hard-label Borel architecture. The following additional statement supplies an effective implementation, without calling the fixed point an algorithm.
+
+\begin{proposition}[Certified finite compilation]\label{prop:compilation}
+In addition to Theorem~\ref{thm:main}, assume effective compact nets in $K$, computable finite instrument integrals, a certified $\eta_*>0$, and uniform effective boundary/integration moduli for the chosen global grid. Use a fixed dyadic erasure rate $\alpha$. For any prescribed accuracy parameters there is a finite search over actual $M$-label programs, with codepoints in a finite $\sigma$-net and dyadic action probabilities of denominator $Q$, whose returned program satisfies
+\begin{equation}\label{eq:compiled}
+ R_\infty\le \rho+C(M-1)^{-2/d}+\alpha H
+ +\frac{L_0\tau_{\rm tab}}{\alpha\eta_*}+\kappa+\delta_{
+m out}^2.
+\end{equation}
+Here $\tau_{\rm tab}$ is a certified uniform ensemble-map error of table approximation, $\kappa$ is the final finite search/evaluation slack, and $\delta_{
+m out}^2$ is a certified weighted squared readout error. A finite-precision implementation with per-step ensemble error $\tau_{
+m run}$ adds at most $L_0\tau_{
+m run}/(\alpha\eta_*)$, provided it preserves the independent erasure and the raw minorization. The search leaves the number of retained labels equal to $M$; it is not claimed to be efficient.
+\end{proposition}
+\begin{proof}
+There is a fixed $C_B$ such that every normalized $z\in C$ is order-dominated by $C_B(1,q)$, uniformly for $q\in K$: a uniform ball about $K$ lies inside the compact state base $B$. The same interior ball implies, for small $\norm{q-q'}$, the two-sided order estimate
+\[
+ -C_B\norm{q-q'}(1,q)\le_C (0,q'-q)
+       \le_C C_B\norm{q-q'}(1,q).
+\]
+Apply the positive instrument, then normalize its mass. Positivity and boundedness of the state base give a common Lipschitz bound for $F_a(y,q)$ in $q\in K$, off the common null set, independent of $y$. The upper domination also bounds a physical report law at any normalized $z\in C$ by $C_B$ times its law at the programmed codepoint $q$. Thus codepoint perturbation of size $\sigma$ changes a cell decision only in a strip of width $C\sigma$ about its grid boundaries, under a report measure dominated by an actual acquired row. The bounded row density gives a uniform strip-mass modulus. For a fixed $m$-cell grid one may use
+\[
+ \tau_{\rm tab}\le C_m\sigma+C|A|/Q,
+\]
+with a computable finite $C_m$ under the stated grid certificates. More generally the given effective modulus suffices. This bound holds for all positive input ensembles, not only calibrated ones or positive-mass stationary labels. Rounding action probability vectors to denominator $Q$ changes their $\ell^1$ distances by at most $C|A|/Q$.
+
+Enumerate codepoints for all labels from the $\sigma$-net and all dyadic action rows; update each by the same report grid and erase with the fixed probability $\alpha$. Every enumerated object is a genuine positive instrument and has the minorization $\alpha\eta_*$. There are at most
+\[
+ |\operatorname{Net}(K,\sigma)|^M (Q+1)^{M|A|}
+\]
+such tables before finite readout rounding. This family includes a table approximating the stationary fixed-point program, whether or not the approximant chooses exact Bellman minimizers. The map error bound and Proposition~\ref{prop:perturbation} compare their invariant risks with the original fixed readouts.
+
+For each candidate, compute its invariant ensemble by certified integration and positive iteration. After $k$ iterations its exact truncation error is at most $2(1-\alpha\eta_*)^k$, and the integration error has a computable geometric amplification bound. To optimize its readouts, use conditional centroids of this actual invariant ensemble. Very small-mass labels need not be divided by an interval containing zero: if their total certified upper mass is at most $\delta_{\rm out}^2/L_0$, use any legal response there. For the remaining labels, positive lower mass bounds permit interval division and coordinate refinement to the remaining weighted squared-error budget. Refinement eventually supplies such a partition of labels, including those with zero true mass. The best centered readout does no worse than the unrounded fixed-point readout used for the comparison. Finite interval evaluation and refinement of all candidates yield a program within $\kappa$ of their minimum. This proves \eqref{eq:compiled}.
+
+A running implementation still executes the unmodified physical report kernel. Approximate arithmetic, finite report representation and fallbacks can be coupled to the exact table outside a certified per-step error event. The resulting ensemble-map error is $\tau_{
+m run}$; a Gaussian tail fallback does not redefine the physical experiment by truncation. Preserve the exact dyadic erasure coin and use Proposition~\ref{prop:perturbation}. No assertion is made that a program runs forever without any numerical exception.
+\end{proof}
+
+To retain the order $M^{-2/d}$, it suffices to choose $\alpha\asymp M^{-2/d}$, $\tau_{\rm tab}+\tau_{\rm run}\lesssim\alpha\eta_*M^{-2/d}$, and $\kappa,\delta_{
+m out}^2\lesssim M^{-2/d}$. Small mixing gaps are therefore paid for in precision and offline integration, not hidden in label counting. For fixed finite grid rules a table description has the explicit upper form
+\[
+ O\!\left(Md\log(1/\sigma)+M|A|\log Q+Md\,p_{
+m out}\right)
+       +\text{shared primitive and grid description},
+\]
+where $p_{
+m out}$ is the actually certified readout precision. It is not asserted to be a universal function of $\delta_{
+m out}$ independently of rare-label masses. The retained label needs $\lceil\log_2M\rceil$ bits. A direct interpreter additionally uses workspace for a $d$-coordinate primitive evaluation, its precision, a cell search and fresh dyadic coins; its bound is $W_{\rm primitive}(p)+O(dp+\log M+|A|\log Q)$. Each call takes the certified primitive-evaluation time plus the cell-search and coin costs. Offline enumeration has the displayed finite cardinality and its own iteration/integration time. None of these resources is identified with the persistent label budget, and no computationally optimal lower is claimed.
+
+The compact quantum kernels have effective smooth-integration and strip certificates when their parameters and a fixed interior spectral floor are given effectively. The Gaussian class has the same certificates from its log-odds formula and explicit normal tails on compact parameter certificates. This is an additional effectiveness assertion, not a statement that arbitrary real-valued kernels admit finite descriptions.
