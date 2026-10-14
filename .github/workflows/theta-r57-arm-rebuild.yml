@@ -8,7 +8,7 @@ permissions:
   actions: write
 concurrency:
   group: theta-r57-citation-complete-arm
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   publish:
     runs-on: ubuntu-24.04-arm
@@ -54,7 +54,25 @@ jobs:
           w=yaml.safe_load(raw)
           matches=[s['run'] for s in w['jobs']['publish']['steps'] if s.get('name')=='Seal citation-compatible ordinary source']
           if len(matches)!=1:raise RuntimeError('Expected exactly one pinned source step')
-          Path('/tmp/theta-r57-seal.sh').write_text(matches[0])
+          script=matches[0]
+          anchor='changed=[]\n'
+          patch="""changed=[]
+          proof=d/'sections/04a-perturbation.tex'
+          old=proof.read_text()
+          a='For the first assertion let every productive call cost one'
+          b='For the first assertion take $H=[-1,1]$, and let every productive call cost one'
+          if a not in old and b not in old: raise RuntimeError('Sharpness proof anchor changed')
+          proof.write_text(old.replace(a,b,1))
+          audit=d/'PROOF_AUDIT.md'
+          text=audit.read_text()
+          if 'Explicit common audit carrier' not in text:
+              audit.write_text(text+'\\n## Explicit common audit carrier\\n\\nThe sharp task-defect witness uses H=[-1,1] for both audit values and readouts. Both conditional audit means vanish; the second model changes only the conditional variance on a report region of mass 1/b, to be. Its selected loss defect is at most e for every readout. Conditional variance bounds every program below by be; waiting for that region attains be. The symmetric audit construction was already present in the first ordinary source; the carrier is now explicit.\\n')
+          """
+          import textwrap
+          patch=textwrap.dedent(patch)
+          if script.count(anchor)!=1:raise RuntimeError('Source seal anchor must be unique')
+          script=script.replace(anchor,patch,1)
+          Path('/tmp/theta-r57-seal.sh').write_text(script)
           PY
           bash /tmp/theta-r57-seal.sh
       - name: Complete native and retained mathematical build
