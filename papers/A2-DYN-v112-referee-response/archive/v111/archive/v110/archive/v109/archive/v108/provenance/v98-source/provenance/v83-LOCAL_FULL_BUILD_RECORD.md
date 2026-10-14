@@ -1,0 +1,9 @@
+# Revision 83 local source and build record
+
+The materialized v81 remote archive and reconstructed v82 source were checked against the exact frozen Git trees. The v82 paper tree is `d1908253a6d134b5b1e4c732e84ad111ad4f836a`; the reviewed v81 paper tree is `1d68fef5bbd1abc573d8e517e845cf889fe6431c`.
+
+All source-preservation and finite-diagnostic steps passed in normal and optimized Python, with matching output. The new finite fixture count is 3,616. The inherited certificate consumer was passed the actual producer path `evidence/certify_excursion.json`, without changing the historical Python source. Container execution timeouts interrupted monolithic local runs; the remaining steps were rerun to completion and checked individually. No timed-out invocation is recorded as a completed run.
+
+Native compilation with the committed build function produced a 13-page article and a 634-page complete supplement. Both references stabilized and both final logs passed the warning, overfull-box, undefined-reference and missing-character gates. Actual recorder coverage is all 192 cores: 3 new article cores and 189 inherited supplement cores. Word geometry passed on every page. All article pages and selected supplement pages were rendered; the article contact sheet and representative full pages were inspected.
+
+This is local archive evidence, not remote exact-SHA qualification. The local source archive does not contain the controlling v81 report bytes; its path and blob were verified through GitHub reads. Exact Git mode and CI require those bytes and the pinned report blob. The new workflow must qualify the final author SHA on response and referee-copy branches; source intake and previous version runs do not substitute for that result. No mathematical proof certification or independent human specialist approval is claimed.

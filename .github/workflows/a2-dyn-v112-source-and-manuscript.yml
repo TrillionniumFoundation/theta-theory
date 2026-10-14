@@ -1,0 +1,62 @@
+name: A2-DYN v112 exact-source and revised manuscript
+on:
+  push:
+    branches:
+      - revision/a2-dyn-v112-referee-response-2026-10-14
+      - revision/a2-dyn-v112-referee-copy-2026-10-14
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: a2-dyn-v112-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  source-and-manuscript:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 16
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /papers/A2-DYN-v112-referee-response/*
+            !/papers/A2-DYN-v112-referee-response/archive/
+      - name: Verify exact source and complete historical preservation
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          mkdir -p /tmp/a2-dyn-v112-evidence
+          python3 papers/A2-DYN-v112-referee-response/tools/check_source.py > /tmp/a2-dyn-v112-evidence/source.json
+          python3 -O papers/A2-DYN-v112-referee-response/tools/check_source.py > /tmp/a2-dyn-v112-evidence/source-optimized.json
+          cmp /tmp/a2-dyn-v112-evidence/source.json /tmp/a2-dyn-v112-evidence/source-optimized.json
+          printf '%s\n%s\n' "$GITHUB_SHA" "$GITHUB_REF" > /tmp/a2-dyn-v112-evidence/exact-checkout.txt
+          git rev-parse HEAD:papers/A2-DYN-v112-referee-response/archive/v111 > /tmp/a2-dyn-v112-evidence/historical-tree.txt
+          tar --exclude='./archive' --exclude='./build' --exclude='./__pycache__' --exclude='*/__pycache__' -czf /tmp/a2-dyn-v112-evidence/active-source.tar.gz -C papers/A2-DYN-v112-referee-response .
+      - name: Install active-manuscript dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+      - name: Build and check the revised article
+        run: |
+          set -euo pipefail
+          bash papers/A2-DYN-v112-referee-response/build.sh 2>&1 | tee /tmp/a2-dyn-v112-evidence/build.txt
+          git diff --exit-code -- papers/A2-DYN-v112-referee-response
+      - name: Upload exact-SHA sources and validation evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a2-dyn-v112-${{ github.sha }}-${{ github.run_id }}
+          if-no-files-found: error
+          retention-days: 90
+          path: |
+            /tmp/a2-dyn-v112-evidence/*
+            papers/A2-DYN-v112-referee-response/build/*.pdf
+            papers/A2-DYN-v112-referee-response/build/*.log
+            papers/A2-DYN-v112-referee-response/build/*.aux
+            papers/A2-DYN-v112-referee-response/build/*.fls
+            papers/A2-DYN-v112-referee-response/build/*.json
+            papers/A2-DYN-v112-referee-response/build/*.png
+            papers/A2-DYN-v112-referee-response/build/*-pass*.txt

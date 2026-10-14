@@ -1,0 +1,3 @@
+# A2-DYN revision 77: referee status
+
+Authority: `SOURCE_MANIFEST.json`. The new uniform endpoint geometry, explicit momentum-angle flow, complete angular recoupling and finite angular current are submitted for further mathematical review. The organizing pointwise law remains conditional on the complete collision-normalized angular defect estimate. Neither that estimate, unconditional downstream normalizations, independent human review, nor formal certification is marked proved. All v76 requests are addressed individually in `RESPONSE_TO_REFEREE.md`, with completed and remaining parts separated.
