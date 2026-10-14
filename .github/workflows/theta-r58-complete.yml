@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 90
     env:
       PYTHONDONTWRITEBYTECODE: '1'
@@ -28,11 +28,46 @@ jobs:
       - name: Install isolated build tools
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended poppler-utils
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
           python -m pip install 'numpy==2.3.5' 'scipy==1.17.0' 'pypdf==5.9.0' 'PyYAML==6.0.2'
-      - name: Publish sealed ordinary mathematical source
+      - name: Publish proofread sealed ordinary source
         id: source
-        run: python .github/scripts/theta-r58-publish.py prepare
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib,json,os,runpy,subprocess,sys
+          helper=Path('.github/scripts/theta-r58-publish.py')
+          ns=runpy.run_path(str(helper)); need=ns['need']; git=ns['git']; run=ns['run']
+          run('git','config','user.name','github-actions[bot]')
+          run('git','config','user.email','41898282+github-actions[bot]@users.noreply.github.com')
+          before=git('rev-parse','HEAD'); need(ns['remote']()==before,'remote changed')
+          ns['preservation'](before)
+          root=Path(ns['DEST']); manifest=root/'SOURCE_MANIFEST.json'
+          old='bb1f6178d472173e70baaf5bb462ca08a33293e92394a8c5bbd096db02cba57d'
+          new='fea8ca55592c59d8cac848cf7e98872fb26c15c213916a92f69ce1823cfa9e0f'
+          projection='85e02e0aeb1e200f1bad7388bb7b55512b94a2db'
+          digest=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+          current=digest(manifest); need(current in {old,new},'unexpected source manifest')
+          if current==old:
+              p=root/'sections/03-calibrated-experiments.tex'
+              need(digest(p)=='aaef17a5a74391ec9ffe7c8d41f34d1626fa52ef208ce202bfeabb4f01e56911','unexpected TeX input')
+              text=p.read_text(); needle='i\\ {\nm productive}'
+              need(text.count(needle)==2,'exact two subscript corrections required')
+              p.write_text(text.replace(needle,'i\\ {\\rm productive}'))
+              need(digest(p)=='2020ba78bdf06ef27cf265cdea8b0f2834c8cf9cb610fbbe9b8f10f6163e46dd','corrected TeX digest')
+              run(sys.executable,str(root/'seal.py'))
+              text=helper.read_text()
+              need(text.count(old)==1 and text.count('db9984429eb65d2f57e12ac4f3dc5d0c7bc45f0c')==1,'publisher seal pins')
+              helper.write_text(text.replace(old,new).replace('db9984429eb65d2f57e12ac4f3dc5d0c7bc45f0c',projection))
+              run('git','add','--',str(root),str(helper))
+              run('git','commit','-m','math(theta): proofread occupation indices and seal final R58 source without altering theorems')
+              need(git('rev-parse','HEAD^')==before,'ordinary source parent')
+          audit=json.loads(subprocess.check_output([sys.executable,str(root/'verify.py')],text=True))
+          need(digest(manifest)==new and audit['ordinary_source_projection_tree_sha']==projection,'final source seal mismatch')
+          source=git('rev-parse','HEAD'); ns['preservation'](source)
+          if source!=before: ns['publish'](before)
+          ns['bind']('source_sha',source)
+          PY
       - name: Acquire exact retained source without changing historical files
         id: inputs
         run: |
