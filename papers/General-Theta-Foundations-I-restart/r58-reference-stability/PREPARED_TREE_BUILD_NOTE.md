@@ -1,0 +1,3 @@
+# Prepared historical source scope
+
+The complete prepared historical input is the byte-verified R56_prepared_sources.zip with SHA-256 bdf7ff7c082f9ff0b71db0b69f2f788e8456e5032c3f082d015b9054c4d8e9a9 from artifact 11863579443. The outer downloaded artifact SHA-256 is 558e4fdee6ab775217028db6001a5c05bdef9e2942720c99813fc95b6fdf33e8. Its receipt binds source 808ef512a73d5b1911257af2669a4e7ed97107ed. Pinned R57 native source and new sealed R58 source are added without changing the prepared inputs. The archived original report is added only if absent and only at its exact Git blob. Incidental repository directories are not silently treated as complete standalone manuscripts; all repository history remains preserved in Git.

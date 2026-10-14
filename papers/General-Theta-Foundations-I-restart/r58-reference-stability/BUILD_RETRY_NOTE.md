@@ -1,0 +1,3 @@
+# Inherited build failure and resolved input route
+
+R57's failed run 38519732902 compiled its native manuscript but could not retrieve a named historical artifact from run 38518148737. That failure was not a successful complete R57 delivery. R58 uses the exact, successfully downloaded R56 artifact ID 11863579443 and pins both its outer digest and R56_prepared_sources.zip digest. The local complete R57 reconstruction passed before the new R58 build. No historical manifest check is removed to bypass missing inputs. Actual new hosted and independent results, whether successful or not, are recorded separately after execution.
