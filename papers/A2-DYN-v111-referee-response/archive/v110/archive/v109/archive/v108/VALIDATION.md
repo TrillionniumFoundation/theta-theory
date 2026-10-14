@@ -1,0 +1,3 @@
+# Exact-source revision 105 qualification
+
+The dedicated GitHub Actions workflow pins v104 author tree `a40ca28399c3aa4b2a0d76191b2816e47ef79b3a` and the latest external review blob `a22f11ea053a7e22dbfcf2cd98b0489d6ef4bfc1`. It preserves all inherited Git bytes/modes and snapshots, checks normal/optimized Python diagnostics, compiles the focused AMS article and complete inherited archive, verifies stabilized references and PDF bounds, and checks the union of all 255 mathematical modules in TeX recorder traces. Success is not independent proof certification; the original microscopic height remains unproved.

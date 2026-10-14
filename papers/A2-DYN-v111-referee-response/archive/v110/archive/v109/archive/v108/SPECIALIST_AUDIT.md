@@ -1,0 +1,3 @@
+# A2-DYN v105 independent-audit requirements
+
+Independent geometric-measure/billiards scrutiny is required for the Borel maximal-segment coarea, exact physical normalization and one-sided endpoint traces. Operator specialists must verify the width-independent leading constant of the inherited fixed-window paired average used for **each** previously fixed positive residence window, and the uncut inverse-gradient source estimate. A geometric-optics specialist must verify complete outgoing shortage payment by one physical volume window and multiplicity-one angular sheet sum. An independent analyst must verify the limit order of the proposed negative-residence insertion. Native builds and finite fixtures are not proof certification.
