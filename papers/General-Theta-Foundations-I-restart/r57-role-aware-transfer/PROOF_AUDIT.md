@@ -9,3 +9,7 @@ The directional theorem derives the posterior from the original Gaussian joint l
 Finite moment separation is only inside a declared finite convex hull. Integrated positive-instrument continuity is not strict normalized-filter contraction. Role-aware simulation is an upper construction with counted export classes, not optimal memory invariance. Complete stopped/scored TV is never used alone for expected waiting time.
 
 Build, exact finite regression and floating integration checks test transcription and finite witnesses only. Independent external review is required for correctness, priority and importance.
+
+## Explicit common audit carrier
+
+The sharp task-defect witness uses H=[-1,1] for both audit values and readouts. Both conditional audit means vanish; the second model changes only the conditional variance on a report region of mass 1/b, to be. Its selected loss defect is at most e for every readout. Conditional variance bounds every program below by be; waiting for that region attains be. The symmetric audit construction was already present in the first ordinary source; the carrier is now explicit.

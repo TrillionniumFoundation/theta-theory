@@ -44,6 +44,7 @@ def verify():
     cites=[v.strip() for item in re.findall(r'\\cite\{([^}]+)\}',text) for v in item.split(',')];bib=re.findall(r'\\bibitem\{([^}]+)\}',text)
     require(len(labels)==len(set(labels)),'duplicate label');require(set(refs)<=set(labels),'unresolved label '+str(set(refs)-set(labels)))
     require(len(bib)==len(set(bib)) and set(cites)<=set(bib),'bibliography mismatch')
+    require(set(bib)<=set(cites),'uncited native bibliography '+str(set(bib)-set(cites)))
     require(set(active)=={n for n in files if n.endswith('.tex')},'inactive native TeX')
     require(not re.search(r'\b(?:TODO|FIXME|TBD)\b',text),'unfinished manuscript marker')
     require({'thm:main','def:stopping','lem:packing','thm:approx','prop:sharp-approx','thm:directional','prop:role-composition','prop:moment','thm:joint'}<=set(labels),'missing central obligations')
