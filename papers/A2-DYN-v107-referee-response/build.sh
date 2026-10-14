@@ -22,9 +22,7 @@ compile() {
     previous=$current
   done
   [[ $stable == 1 ]] || { echo "References did not stabilize: $name"; return 1; }
-  if grep -Eq 'LaTeX Warning|Package .* Warning|Overfull|undefined|Missing character' "build/$name.log"; then
-    grep -En 'LaTeX Warning|Package .* Warning|Overfull|undefined|Missing character' "build/$name.log"; return 1
-  fi
+  python3 tools/audit_v107_texlog.py "$name" > "evidence/v107-$name-tex-diagnostics.json"
 }
 compile supplement
 compile main
