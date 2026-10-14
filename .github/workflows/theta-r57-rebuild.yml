@@ -53,22 +53,35 @@ jobs:
               new=re.sub(r'\\cite\{([^}]*,[^}]+)\}',separate,old)
               if new!=old:
                   f.write_text(new);changed.append(str(f.relative_to(d)))
-          if not changed: raise RuntimeError('Expected grouped citations to normalize')
+          intro=d/'sections/01-introduction.tex'
+          paragraph=(r'Almost-sure expected-cost reachability in partially observed control is studied in \cite{CCGK}, and fixed-memory limit-sure reachability in \cite{ACSS}. '
+                     r'Sufficiency results for chattering policies in absorbing decision processes are developed in \cite{DPChatter}. '
+                     'These works concern policy classes and reachability or occupation criteria; the present matching assertions require, in addition, the specified report--audit balance and acquisition certificates.\n\n')
+          text=intro.read_text()
+          if '\\cite{CCGK}' not in text:
+              anchor='The contribution is the causal'
+              if anchor not in text: raise RuntimeError('Introduction anchor changed')
+              intro.write_text(text.replace(anchor,paragraph+anchor,1))
+          vf=d/'verify.py';text=vf.read_text()
+          anchor="require(len(bib)==len(set(bib)) and set(cites)<=set(bib),'bibliography mismatch')"
+          addition="\n    require(set(bib)<=set(cites),'uncited native bibliography '+str(set(bib)-set(cites)))"
+          if 'uncited native bibliography' not in text:
+              if anchor not in text: raise RuntimeError('Verifier anchor changed')
+              vf.write_text(text.replace(anchor,anchor+addition,1))
           (d/'BUILD_RETRY_NOTE.md').write_text(
               '# Citation-audit rebuild\n\n'
               'The initial hosted run 38514626770 failed its auxiliary-file citation audit after the native 27-page PDF compiled. '
               'Its error was `declared citation CGM97 absent from aux`. CGM97 and GG99 were already cited together in the source. '
-              'This follow-up expands grouped native citation commands into individually emitted citation records, preserving every key and all mathematical prose. '
-              'It does not remove bibliography entries or weaken any mathematical, source, label, or build check. '
-              'The ordinary source is re-sealed before a new immutable source commit; the complete retained build is rerun.\n\n'
-              'Changed native inputs: '+', '.join(changed)+'.\n')
+              'This follow-up emits grouped citation keys separately. It also supplies contextual introduction citations for three inherited bibliography entries (CCGK, ACSS, DPChatter) and strengthens the source verifier to reject uncited native entries. '
+              'All existing bibliography entries and mathematical statements are retained. The ordinary source is re-sealed before its immutable source commit; the complete retained build is rerun.\n\n'
+              'Citation-normalized native inputs: '+', '.join(changed)+'.\n')
           PY
           python "$D/seal.py"
           python "$D/verify.py"
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -- "$D"
-          git commit -m 'source(theta): preserve all references with individual auxiliary citation records'
+          git commit -m 'source(theta): complete bibliography context and individual auxiliary citation records'
           test "$(git ls-remote origin refs/heads/$GITHUB_REF_NAME | cut -f1)" = "$BEFORE"
           git push origin "HEAD:refs/heads/$GITHUB_REF_NAME"
           echo "source_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
