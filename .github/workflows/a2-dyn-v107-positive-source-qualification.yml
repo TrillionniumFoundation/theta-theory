@@ -1,0 +1,60 @@
+name: A2-DYN v107 two-ended positive-source qualification
+on:
+  push:
+    branches:
+      - revision/a2-dyn-v107-positive-source-referee-response-2026-10-14
+      - revision/a2-dyn-v107-positive-source-referee-copy-2026-10-14
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: a2-dyn-v107-positive-source-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  qualify-manuscript:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 16
+          persist-credentials: false
+      - name: Pin exact revision and inherited author source
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD:papers/A2-DYN-v106-referee-response)" = "6acebbc6669612b32171bb9f50b5bbbd7b77459f"
+          mkdir -p papers/A2-DYN-v107-referee-response/evidence
+          printf '%s\n%s\n' "$GITHUB_SHA" "$GITHUB_REF" > papers/A2-DYN-v107-referee-response/evidence/exact-checkout.txt
+      - name: Install native TeX and inherited numerical dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern python3-numpy python3-mpmath python3-sympy python3-scipy poppler-utils
+      - name: Verify exact source and compile every numbered module
+        env:
+          TZ: UTC
+        run: |
+          set -o pipefail
+          bash papers/A2-DYN-v107-referee-response/build.sh 2>&1 | tee papers/A2-DYN-v107-referee-response/evidence/full-build-output.txt
+      - name: Upload exact-SHA PDFs, new sources and diagnostic evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a2-dyn-v107-${{ github.sha }}-${{ github.run_id }}
+          if-no-files-found: error
+          retention-days: 90
+          path: |
+            papers/A2-DYN-v107-referee-response/build/*.pdf
+            papers/A2-DYN-v107-referee-response/build/*.log
+            papers/A2-DYN-v107-referee-response/build/*.fls
+            papers/A2-DYN-v107-referee-response/build/*.aux
+            papers/A2-DYN-v107-referee-response/build/*-pass*.txt
+            papers/A2-DYN-v107-referee-response/build/*.tex
+            papers/A2-DYN-v107-referee-response/evidence/*
+            papers/A2-DYN-v107-referee-response/main.tex
+            papers/A2-DYN-v107-referee-response/core/25[3-7]_*.tex
+            papers/A2-DYN-v107-referee-response/appendices/v10[5-7]_*.tex
+            papers/A2-DYN-v107-referee-response/RESPONSE_TO_REFEREE.md
+            papers/A2-DYN-v107-referee-response/PROOF_LEDGER.md
+            papers/A2-DYN-v107-referee-response/SOURCE_MANIFEST.json
+            papers/A2-DYN-v107-referee-response/PUBLICATION_STATUS.json
