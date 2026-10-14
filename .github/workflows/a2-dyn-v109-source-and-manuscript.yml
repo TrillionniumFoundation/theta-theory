@@ -1,0 +1,57 @@
+name: A2-DYN v109 exact-source and manuscript qualification
+on:
+  push:
+    branches:
+      - revision/a2-dyn-v109-capacity-abundance-referee-response-2026-10-14
+      - revision/a2-dyn-v109-capacity-abundance-referee-copy-2026-10-14
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: a2-dyn-v109-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  source-and-manuscript:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 16
+          persist-credentials: false
+      - name: Freeze the controlling source and report
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD:papers/A2-DYN-v108-referee-response)" = e66a1dec484f419d88c05f12a7e2ec5310430448
+          test "$(git rev-parse HEAD:reviews/a2-dyn-v108-canonical-capacity-external-top4-review-2026-10-14/REFEREE_REPORT.md)" = 5080564a78a192984acc272bc31c7ef8165bda4e
+          mkdir -p /tmp/a2-dyn-v109-evidence
+          git archive --format=tar.gz HEAD papers/A2-DYN-v108-referee-response reviews/a2-dyn-v108-canonical-capacity-external-top4-review-2026-10-14 > /tmp/a2-dyn-v109-evidence/inherited-source.tar.gz
+          git ls-tree -r HEAD papers/A2-DYN-v108-referee-response > /tmp/a2-dyn-v109-evidence/inherited-tree.txt
+          printf '%s\n%s\n' "$GITHUB_SHA" "$GITHUB_REF" > /tmp/a2-dyn-v109-evidence/exact-checkout.txt
+      - name: Install manuscript dependencies
+        if: hashFiles('papers/A2-DYN-v109-referee-response/build.sh') != ''
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern python3-numpy python3-mpmath python3-sympy python3-scipy poppler-utils
+      - name: Qualify the current manuscript when present
+        if: hashFiles('papers/A2-DYN-v109-referee-response/build.sh') != ''
+        run: |
+          set -euo pipefail
+          bash papers/A2-DYN-v109-referee-response/build.sh 2>&1 | tee /tmp/a2-dyn-v109-evidence/manuscript-build.txt
+      - name: Upload exact-checkout source and evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a2-dyn-v109-${{ github.sha }}-${{ github.run_id }}
+          if-no-files-found: error
+          retention-days: 90
+          path: |
+            /tmp/a2-dyn-v109-evidence/*
+            papers/A2-DYN-v109-referee-response/build/*.pdf
+            papers/A2-DYN-v109-referee-response/build/*.log
+            papers/A2-DYN-v109-referee-response/build/*.aux
+            papers/A2-DYN-v109-referee-response/build/*.fls
+            papers/A2-DYN-v109-referee-response/build/*-pass*.txt
+            papers/A2-DYN-v109-referee-response/evidence/*
