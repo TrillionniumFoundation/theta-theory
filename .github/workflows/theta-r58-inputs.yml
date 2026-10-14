@@ -1,0 +1,39 @@
+name: General Theta R58 pinned inputs
+on:
+  push:
+    branches: [foundation/general-theta-restart-r58-reference-stability-research-2026-10-14]
+    paths: [.github/workflows/theta-r58-inputs.yml]
+permissions:
+  contents: read
+jobs:
+  inputs:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 97cf6bb4719d15482f79162569766403dab607e8
+          sparse-checkout: |
+            papers/General-Theta-Foundations-I-restart/r57-role-aware-transfer
+            foundations/general-theta
+            .github/workflows
+            .github/scripts
+          fetch-depth: 1
+      - name: Export exact source and controls
+        run: |
+          python - <<'PY'
+          import pathlib,zipfile,subprocess,json
+          root=pathlib.Path('.'); dest=pathlib.Path('/tmp/r58-inputs');dest.mkdir()
+          paths=[root/'papers/General-Theta-Foundations-I-restart/r57-role-aware-transfer',root/'foundations/general-theta',root/'.github/workflows',root/'.github/scripts']
+          with zipfile.ZipFile(dest/'r57_pinned_source.zip','w',zipfile.ZIP_DEFLATED) as z:
+              for base in paths:
+                  if base.exists():
+                      for p in sorted(base.rglob('*')):
+                          if p.is_file(): z.write(p,p.as_posix())
+          (dest/'PIN.json').write_text(json.dumps({'commit':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),'root_tree':subprocess.check_output(['git','rev-parse','HEAD^{tree}'],text=True).strip()},indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r58-pinned-inputs
+          path: /tmp/r58-inputs
+          if-no-files-found: error
+          retention-days: 90
