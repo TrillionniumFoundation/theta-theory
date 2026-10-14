@@ -24,13 +24,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Cancel only superseded R57 runs
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          for id in 38515889126 38516290137 38516840004 38517494276; do
-            gh api --method POST "repos/TrillionniumFoundation/theta-theory/actions/runs/$id/cancel" || true
-          done
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
@@ -56,13 +49,60 @@ jobs:
           matches=[s['run'] for s in w['jobs']['publish']['steps'] if s.get('name')=='Seal ordinary source using the committed citation repair']
           if len(matches)!=1:raise RuntimeError('Expected exactly one pinned source step')
           Path('/tmp/theta-r57-source.sh').write_text(matches[0])
+          d=Path('papers/General-Theta-Foundations-I-restart/r57-role-aware-transfer')
+          (d/'PREPARED_TREE_BUILD_NOTE.md').write_text(
+              '# Prepared historical build scope\n\n'
+              'Run 38518697784 published ordinary source fefe16afff90400a06abc2b480d2b13c30eb6245 and compiled the native manuscript, but its retained build rejected a raw repository checkout as a prepared source tree: the incidental R55 directory lacked its required .gitignore. '
+              'The repair does not create historical files, remove historical results, or weaken manifest validation. '
+              'The hosted build now downloads the exact R56 native artifact 11863579443 from run 38496786241, verifies the archive SHA-256 558e4fdee6ab775217028db6001a5c05bdef9e2942720c99813fc95b6fdf33e8 and the inner R56_prepared_sources.zip SHA-256 bdf7ff7c082f9ff0b71db0b69f2f788e8456e5032c3f082d015b9054c4d8e9a9, then overlays only the new ordinary R57 source and the byte-pinned R56 review. '
+              'This is the complete prepared historical scope used successfully in local preflight, not an assertion that every incidental repository directory is a complete standalone manuscript. '
+              'The whole repository remains preserved in Git. A new ordinary source commit precedes the complete source-bound build and artifact commit.\n')
           PY
           bash /tmp/theta-r57-source.sh
+      - name: Assemble exact retained prepared sources
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/theta-theory/actions/artifacts/11863579443/zip > '${{ runner.temp }}/r56-native-pinned.zip'
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib,io,json,os,shutil,zipfile
+          temp=Path(os.environ['RUNNER_TEMP']); archive=temp/'r56-native-pinned.zip'
+          def need(ok,msg):
+              if not ok:raise RuntimeError(msg)
+          def sha(data):return hashlib.sha256(data).hexdigest()
+          raw=archive.read_bytes()
+          need(sha(raw)=='558e4fdee6ab775217028db6001a5c05bdef9e2942720c99813fc95b6fdf33e8','R56 native archive digest')
+          with zipfile.ZipFile(io.BytesIO(raw)) as z:
+              payload=z.read('R56_prepared_sources.zip')
+              receipt=json.loads(z.read('BUILD_RECEIPT.json'))
+          need(sha(payload)=='bdf7ff7c082f9ff0b71db0b69f2f788e8456e5032c3f082d015b9054c4d8e9a9','R56 prepared payload digest')
+          need(receipt['source_commit']=='808ef512a73d5b1911257af2669a4e7ed97107ed' and receipt['prepared_sources_zip_sha256']==sha(payload),'R56 source receipt binding')
+          target=temp/'theta-r57-prepared';need(not target.exists(),'prepared directory must be fresh');target.mkdir()
+          with zipfile.ZipFile(io.BytesIO(payload)) as z:
+              for name in z.namelist():
+                  p=Path(name);need(not p.is_absolute() and '..' not in p.parts,'unsafe prepared path')
+              z.extractall(target)
+          base={str(p.relative_to(target)):sha(p.read_bytes()) for p in target.rglob('*') if p.is_file()}
+          rel=Path('papers/General-Theta-Foundations-I-restart/r57-role-aware-transfer');d=Path.cwd()/rel
+          need(not (target/rel).exists(),'new native source must be additive')
+          manifest=json.loads((d/'SOURCE_MANIFEST.json').read_text())
+          shutil.copytree(d,target/rel)
+          report='GENERAL_THETA_FOUNDATIONS_I_RESTART_R56_BALANCED_TASK_TRANSFER_EXTERNAL_REFEREE_REPORT_R56.md'
+          data=(Path.cwd()/report).read_bytes()
+          need(hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()=='15c692a39c17a34a408e2979f049c87b804179f8','R56 report pin')
+          if (target/report).exists():need((target/report).read_bytes()==data,'retained report must not change')
+          else:(target/report).write_bytes(data)
+          need(all((target/p).is_file() and sha((target/p).read_bytes())==h for p,h in base.items()),'retained prepared input mutation')
+          print('Prepared source files:',sum(p.is_file() for p in target.rglob('*')))
+          PY
       - name: Complete native and retained mathematical build
         run: >-
           python papers/General-Theta-Foundations-I-restart/r57-role-aware-transfer/build.py
           --source-sha '${{ steps.source.outputs.source_sha }}'
-          --prepared-root '${{ github.workspace }}' --retained
+          --prepared-root '${{ runner.temp }}/theta-r57-prepared' --retained
           --output '${{ runner.temp }}/theta-r57-build'
       - name: Publish artifacts with source parent
         run: python .github/scripts/theta-r57-publish.py store --build '${{ runner.temp }}/theta-r57-build'
