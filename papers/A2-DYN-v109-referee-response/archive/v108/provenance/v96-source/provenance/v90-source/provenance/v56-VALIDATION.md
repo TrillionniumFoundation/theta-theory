@@ -1,0 +1,7 @@
+# Validation: revision 56
+
+The verifier binds the complete v55 paper tree, the v55 report blob, all older frozen reports, inherited byte identity, every compiled core and mathematical label, the ordinary payload Merkle tree and the read-only workflow hash. Normal and optimized finite diagnostics must agree exactly. New finite models check rational exponents, interval-cover triples, simultaneous anchored block averages, exact conditional denominators, roof total-variation factors, two-point path bounds and good-anchor likelihoods. Spike and zero-reference negative controls prevent confusing small mass with essential height or assigning a likelihood to a zero arithmetic class.
+
+The complete native TeX build rejects undefined references, missing characters, LaTeX/package warnings and overfull boxes. The renderer finds new theorem pages in the actual auxiliary file and records image hashes. The dynamic receipt records the actual event SHA, clean scoped source, run ID and attempt, committed paper tree and PDF hash. Static metadata does not predeclare a future workflow successful.
+
+Local preflight may omit a not-yet-materialized report only when explicitly requested and never in GitHub Actions. This is not full source qualification. The remote workflow checks every report with no bypass. No finite diagnostic or typesetting run certifies continuum billiard geometry, the principal height endpoint or independent human review.

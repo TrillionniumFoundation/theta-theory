@@ -1,0 +1,9 @@
+# Historical derivation audit: revision 57
+
+The complete source archive of v56 at `4292877a5100c4c22975d9d563a1c54793139db4` was downloaded from successful run `37903942132` and its ZIP digest checked. The frozen v56 report was read in full, including sections 28--29. The new branch begins from that review rather than from the obsolete v35/v36 material in earlier conversations.
+
+The new proofs use the actual fourth moment and covariance identification (module 30), covariance change and occupation realization (77 and 81--86), continuous moving scalar peaks and the finite arithmetic transition kernel (87), complete local raw variation (107), scalar positive-error identity (109), collision path-valued raw inversion and actual-return clock coupling (110--111). The weak endpoint, positive incidence/clearance source bounds and common maximal exceptional sets (114--120) were checked to distinguish source mass from essential height. They remain byte-identical and compiled.
+
+The key new dependency is spectral: prior continuity at zero damping did not bound `sqrt(m)` times a moving drift. Positive exponential-moment domination and a nonzero full-collision pairing provide the missing squared-drift/damping inequality. This permits the global reference-tail bound required to untruncate the local variation theorem. The joint bridge proof explicitly uses the actual coupled clock identity rather than inferring independence from two marginal limits.
+
+All 120 inherited core files, 159 Python files, old appendices and references remain byte-identical. The former three lead statements and entire post-title front matter are preserved verbatim in a new compiled appendix, and the complete old main and status files are archived. No inherited theorem is deleted or silently reclassified as proved by a finite diagnostic.

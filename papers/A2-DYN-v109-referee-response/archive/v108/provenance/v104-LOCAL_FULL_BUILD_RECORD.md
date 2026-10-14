@@ -1,0 +1,5 @@
+# Local build provenance and limits
+
+The local mathematical staging build starts from the completed v102 artifact at author SHA 0cc27da5fbfb480e9a8fdbe7631ed3f869c99cd9. Every required v103 mathematical addition and the complete v103 main source have explicit actual Git blob pins. The delivery records each materialized value and whether it matches; unverified reconstruction is not accepted as the frozen source. The native assembly attempts both the article and the complete inherited archive, without a preview mode that suppresses old core modules.
+
+The actual source-audit, finite-diagnostic, native-build and rendering outcomes are in DELIVERY_STATUS.json and the accompanying evidence. A failed or incomplete local audit is not a successful Git-checkout qualification. No qualified PDF is exported unless both the source audit and native gates pass. Neither old v102 success nor the failed v103 workflow qualifies this revision. The strict build in the complete actual Git checkout is separately required before publication.
