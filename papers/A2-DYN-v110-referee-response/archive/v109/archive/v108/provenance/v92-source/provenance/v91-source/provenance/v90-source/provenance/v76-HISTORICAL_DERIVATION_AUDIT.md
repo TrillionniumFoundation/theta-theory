@@ -1,0 +1,7 @@
+# Historical derivation audit — revision 76
+
+The entire latest v75 referee report was read against its pinned reviewed author source. Detailed review concentrated on the active v75 journal article and modules 168--170, plus the exact section and tame source in 164, the arithmetic transition in 87, protected critical/noncritical transport in 96 and 98, jump/cusp separation in 95, and contact determinant/incidence gains in 131. The v72/v73/v74 assembly route, v75 build verifier, recorder checker, manifest and qualification workflow were inspected. This is not a claim to have independently re-proved every one of the 170 inherited modules.
+
+The positive transport on protected noncritical sets is inherited, not newly discovered. The new full-source transport retains actual stop losses instead of assuming protected neighborhoods. The local positive critical jump is also inherited in mechanism; the new work gives its explicit optical bound and a Morse-adapted coupling with no charge for its constant-density part. The new complete-source persistence implication does not convert these local estimates into an unproved uniform sum.
+
+All historical mathematics remains byte-preserved. The v75 article is retained verbatim in provenance and incorporated into the complete supplement. The old input maps and prior qualification notes are historical material; the new manifest and proof ledger are the current authority.

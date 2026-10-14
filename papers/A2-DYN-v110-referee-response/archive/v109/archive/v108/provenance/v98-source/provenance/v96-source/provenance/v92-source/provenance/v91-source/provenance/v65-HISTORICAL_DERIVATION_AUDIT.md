@@ -1,0 +1,9 @@
+# Historical derivation audit for the v65 author revision
+
+The controlling v62 external report was read through its major requests, technical comments and final requirements. The v63 manuscript, source manifest and validation documents were inspected at the frozen author SHA. The exact-source archive from successful baseline workflow run `38025623447`, artifact `11659203512`, provided the pinned source, historical revisions and frozen reports. The complete v63 source verifier was rerun locally without a preflight exemption; its source checks and 25 inherited diagnostic groups passed.
+
+The mathematical dependencies examined for this revision include the complete-height endpoint action (94), bounded germs and critical collars (95–96), exact-index critical deconcentration (97), first-defect ordering (101), physical/decision source separation (103–104), image-clearance geometry (105), positive raw-error representation (108), inverse-incidence determinant and clearance coarea (131–133), and buffered caustic localization (134–136). These readings distinguish the existing protected critical-cluster theorem from the unprotected boundary source now treated locally. They do not constitute a specialist reproof of every inherited module.
+
+Every one of the 136 baseline core modules, 187 Python files, compiled appendices and 1809 mathematical labels is retained. The source checker verifies this byte-for-byte and by recursive TeX inclusion. Sixteen replaced metadata/frontmatter files have byte-identical v63 snapshots. Historical directories, review reports and root project files are not rewritten.
+
+The new modules do not claim that a normal-to-normal derivative exists across a competing-hit singularity. They use the physical-side contact graph and preserve every original source restriction. The actual additional claims and their limits are listed in the proof ledger and itemized response.

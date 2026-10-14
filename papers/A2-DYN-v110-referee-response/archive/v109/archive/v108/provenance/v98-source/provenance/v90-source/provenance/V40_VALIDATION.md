@@ -1,0 +1,9 @@
+# Revision 40 validation protocol
+
+The source verifier checks the exact v39 paper tree `549a0879a747bf0a2506a0fb7d1fdd847d2d7577`, 83 byte-identical inherited core files, 95 byte-identical inherited Python files, the bibliography and compiled A--X synopsis, old-label retention, all 86 current core inclusions, five leading theorems, the ordinary-source Merkle identity, the read-only workflow hash, and the controlling report blob `34fd05b1740816104f38ca84c75826b11eec1694` when present. A remote run is required to contain that report; a local source archive predating the report records its absence rather than claiming to verify it.
+
+New finite diagnostics check cut-count and length-sum algebra, the two-stage equivalent-norm choice, finite cyclic Fourier residues, selected endpoint orientation, spectral projection coefficients including a scalar phase different from one, and a parameter-near-resonance negative control. All relevant inherited finite checks remain included. Normal and optimized outputs must agree exactly.
+
+The native build repeats until cross-references stabilize and rejects undefined references, missing glyphs, LaTeX/package warnings and overfull boxes. A dynamic receipt emitted only after success records the actual checked-out SHA, event SHA, run ID and attempt, scoped-source cleanliness, PDF and log hashes, manifest identity and all verified source hashes. The rendering script locates new theorems from the actual aux labels.
+
+The baseline qualification is v39 run `37703491265`, artifact `11518588432`, archive digest `b954a00c3f77593b17a9af621d48415b780686639b37c66f21340c5c30f7373c`. It is not evidence for v40. The exact completed v40 run and dynamic receipt are authoritative for v40 execution. No successful run is predeclared here; source and finite validation do not constitute continuum proof certification or independent human review.
