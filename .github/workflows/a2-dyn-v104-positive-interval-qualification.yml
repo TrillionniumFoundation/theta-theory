@@ -1,0 +1,58 @@
+name: A2-DYN v104 positive angular-interval source qualification
+on:
+  push:
+    branches:
+      - revision/a2-dyn-v104-positive-interval-referee-response-2026-10-14
+      - revision/a2-dyn-v104-positive-interval-referee-copy-2026-10-14
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: a2-dyn-v104-positive-interval-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  qualify-manuscript:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Pin exact author source and preserved variants
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD:papers/A2-DYN-v103-referee-response)" = "3657fe1eb821ec398484f0487f3a8095dd44deed"
+          test "$(git rev-parse HEAD:reviews/a2-dyn-v103-submission-state-external-top4-review-2026-10-13/REFEREE_REPORT.md)" = "952e695da87ea365053f284cff18b819e80a48e4"
+          mkdir -p papers/A2-DYN-v104-referee-response/evidence
+          printf '%s\n%s\n' "$GITHUB_SHA" "$GITHUB_REF" > papers/A2-DYN-v104-referee-response/evidence/exact-checkout.txt
+          git rev-parse HEAD:papers/A2-DYN-v104-referee-response >> papers/A2-DYN-v104-referee-response/evidence/exact-checkout.txt
+      - name: Install native TeX and finite-check dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern python3-numpy python3-mpmath python3-sympy python3-scipy poppler-utils
+      - name: Preserve all sources and compile all 252 mathematical modules
+        env:
+          TZ: UTC
+        run: |
+          set -o pipefail
+          bash papers/A2-DYN-v104-referee-response/build.sh 2>&1 | tee papers/A2-DYN-v104-referee-response/evidence/full-build-output.txt
+      - name: Record successful exact-SHA source archive
+        run: |
+          git archive HEAD papers/A2-DYN-v104-referee-response A2_DYN_V104_POSITIVE_INTERVAL_REVISION_INDEX.md .github/workflows/a2-dyn-v104-positive-interval-qualification.yml | gzip -n > papers/A2-DYN-v104-referee-response/evidence/qualified-author-source.tar.gz
+      - name: Upload exact-SHA PDFs and evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a2-dyn-v104-positive-interval-${{ github.sha }}-${{ github.run_id }}
+          if-no-files-found: error
+          retention-days: 90
+          path: |
+            papers/A2-DYN-v104-referee-response/build/*.pdf
+            papers/A2-DYN-v104-referee-response/build/*.log
+            papers/A2-DYN-v104-referee-response/build/*.fls
+            papers/A2-DYN-v104-referee-response/build/*.aux
+            papers/A2-DYN-v104-referee-response/build/*-pass*.txt
+            papers/A2-DYN-v104-referee-response/build/*.tex
+            papers/A2-DYN-v104-referee-response/evidence/*

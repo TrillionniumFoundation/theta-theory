@@ -1,0 +1,11 @@
+# Validation: A2-DYN v41
+
+The exact baseline is v40 at `d07c73f9db6a27c216fcfb2f32f844d63858c90b`, paper tree `647d3d842655bf71e1d64afdc3321b016c190229`. Its downloaded artifact digest and baseline source verifier were checked before the new revision was edited.
+
+The v41 verifier checks all 89 core inclusions, the complete inherited 86-core/99-script byte identity, all 1141 inherited mathematical labels, all A--X statements, the unchanged bibliography, archived v40 front matter and records, the exact controlling report, the complete ordinary-source Git-tree digest, and the read-only workflow hash. The ordinary and `-O` outputs must agree byte-for-byte.
+
+The new finite diagnostics test 12 exact Gaussian pinning identities, 6 complex Gaussian integrals, 2278 finite hypergeometric bridge moments, 2813 half-open actual-return/time-change identities, 36 finite group filters and 116 finite residue criteria. Five negative controls reject deletion of near-peripheral terms, unpinned moment scaling, removal of a nontrivial arithmetic factor, inference of pointwise density control from intervals, and the wrong Fourier dimension. All tests are finite algebraic or numerical models, not continuum proof certificates. Inherited diagnostics are retained and the standard six geometry/return diagnostics are rerun.
+
+The native TeX build runs without shell escape to stable references and rejects LaTeX/package warnings, undefined references, missing characters and overfull boxes. The rendering script locates the new theorem/proof intervals from actual auxiliary-file labels rather than a guessed page number. The dynamic receipt records the actual event SHA, run ID and attempt, scoped-source cleanliness, source-tree identity and PDF/log hashes. Static documentation does not predeclare any future workflow successful.
+
+The relevant mathematical boundaries remain: inherited billiard geometry and anisotropic inequalities require specialist verification; the uniform bridge has its stated lower-mass condition; the fixed finite packet is not a replacement conditioning event; shrinking intervals do not supply pointwise roof-density bounds. No independent human audit or full raw-return proof certificate is claimed.
