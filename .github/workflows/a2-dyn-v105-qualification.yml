@@ -1,0 +1,58 @@
+name: A2-DYN v105 physical residence and adaptive reach qualification
+on:
+  push:
+    branches:
+      - revision/a2-dyn-v105-referee-response-2026-10-14
+      - revision/a2-dyn-v105-referee-copy-2026-10-14
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: a2-dyn-v105-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  qualify-manuscript:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Pin reviewed sources and final author checkout
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD:papers/A2-DYN-v104-referee-response)" = "a40ca28399c3aa4b2a0d76191b2816e47ef79b3a"
+          test "$(git rev-parse HEAD:reviews/a2-dyn-v104-positive-interval-external-top4-review-2026-10-14/REFEREE_REPORT.md)" = "a22f11ea053a7e22dbfcf2cd98b0489d6ef4bfc1"
+          mkdir -p papers/A2-DYN-v105-referee-response/evidence
+          printf '%s\n%s\n' "$GITHUB_SHA" "$GITHUB_REF" > papers/A2-DYN-v105-referee-response/evidence/exact-checkout.txt
+          git rev-parse HEAD:papers/A2-DYN-v105-referee-response >> papers/A2-DYN-v105-referee-response/evidence/exact-checkout.txt
+      - name: Install native TeX and finite-check dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern python3-numpy python3-mpmath python3-sympy python3-scipy poppler-utils
+      - name: Preserve sources and compile all 255 mathematical modules
+        env:
+          TZ: UTC
+        run: |
+          set -o pipefail
+          bash papers/A2-DYN-v105-referee-response/build.sh 2>&1 | tee papers/A2-DYN-v105-referee-response/evidence/full-build-output.txt
+      - name: Archive exact-SHA author source
+        run: |
+          git archive HEAD papers/A2-DYN-v105-referee-response A2_DYN_V105_REVISION_INDEX.md .github/workflows/a2-dyn-v105-qualification.yml | gzip -n > papers/A2-DYN-v105-referee-response/evidence/qualified-author-source.tar.gz
+      - name: Upload source, PDFs and validation evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a2-dyn-v105-${{ github.sha }}-${{ github.run_id }}
+          if-no-files-found: error
+          retention-days: 90
+          path: |
+            papers/A2-DYN-v105-referee-response/build/*.pdf
+            papers/A2-DYN-v105-referee-response/build/*.log
+            papers/A2-DYN-v105-referee-response/build/*.fls
+            papers/A2-DYN-v105-referee-response/build/*.aux
+            papers/A2-DYN-v105-referee-response/build/*-pass*.txt
+            papers/A2-DYN-v105-referee-response/build/*.tex
+            papers/A2-DYN-v105-referee-response/evidence/*
