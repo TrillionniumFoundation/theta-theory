@@ -1,0 +1,66 @@
+\section{Finite descriptions and stopped numerical certificates}
+\label{sec:numerics}
+An arbitrary Borel acceptance set is not a finite computer program. We first state the error bound on the scale that a stopped experiment actually uses.
+
+\begin{proposition}[Relative-acceptance implementation]\label{prop:relative}
+Consider an implemented attempt program with the same legal physical ports and $B$ live states as the ideal one. On every surviving pre-attempt history suppose its conditional expected cost is at most $\widetilde\kappa$, its acceptance probability is at least $(1-\rho)/b$, and its unnormalized terminal loss is at most $(Q+\eta)/b$, where $0\le\rho<1$, $\eta\ge0$, $b\ge1$. It then terminates almost surely and satisfies
+\begin{equation}\label{eq:relative}
+ \E C\le\frac{\widetilde\kappa b}{1-\rho},\qquad
+ R\le\frac{Q+\eta}{1-\rho}.
+\end{equation}
+The terminal alphabet is the actual exported dictionary. These bounds remain valid for unknown history-dependent implementation errors satisfying the stated conditional certificates.
+\end{proposition}
+\begin{proof}
+The probability of surviving $j$ attempts is at most $(1-(1-\rho)/b)^j$. Predictable summation of the bounded conditional costs and nonnegative terminal-loss contributions proves both inequalities and finite expected attempts. Each attempt terminates almost surely by its own cost certificate. No comparison of terminal distributions was used to infer duration.
+\end{proof}
+
+For example, an absolute one-attempt acceptance error $e$ and unnormalized loss error $e_L$ give $\rho=be$ and $\eta=be_L$, not $\rho=e$ and $\eta=e_L$. Rare selection amplifies these absolute errors. A task-readout perturbation of size $\delta$ in a carrier of diameter $D_H$ changes loss by at most $2D_H\delta+\delta^2$ \emph{conditional on acceptance}; its unnormalized error is weighted by acceptance mass. A continuous report and a digitized atomic report need not be close in total variation; boundary-event or unnormalized moment estimates must be supplied instead.
+
+\begin{proposition}[Finite-description upper at the same cost]\label{prop:finite}
+In addition to exact balance, assume the known reference measure admits an effective sequence of finite physical report partitions with certified approximation of bounded acceptance functions in $L^1(\nu)$. Assume finite points in $H$ and their exported values can be approximated within $H$ with certified uniform error, and their primitive report classifiers and probabilities have declared finite descriptions, execution costs and integration error bounds. Then, for every $b\ge1$, $m\ge1$ and $e>0$, there is a finite-description observer with at most $B+D_0m$ states, cost at most $\kappa b$ and risk at most $\Qm_m(b)+e$. This is an existence and approximation result under effective certificates, not a polynomial-time discovery theorem for arbitrary kernels.
+\end{proposition}
+\begin{proof}
+For $b>1$, choose $1<b'<b$. By Lemma~\ref{lem:attain}, $\Qm_m(b')$ can be made arbitrarily close to $\Qm_m(b)$. Approximate its optimal finite dictionary inside $H$ and use its nearest-center cells. Approximate the bounded acceptance $h/b'$ and this finite center assignment jointly on a finite partition. The assumptions supply certified $L^1(\nu)$ error bounds. Because all squared losses are bounded and dictionary errors change them uniformly, the acceptance and unnormalized loss errors tend to zero. The ideal acceptance $1/b'$ has a strictly positive margin above $1/b$. Take the approximation sufficiently accurate that its acceptance is still at least $1/b$. Balance makes these quantities the same on every surviving history and model. Its risk is its unnormalized loss divided by acceptance; it tends to the ideal risk. The attempt count proof then gives cost at most $\kappa b$. For $b=1$, accept the first report identically and approximate only the dictionary and assignment; no acceptance margin is needed. Current partition indices and command coins are scratch variables, and only the routing or exported output label persists.
+
+The argument is constructive once the indicated approximation and integration certificates are supplied. A finite search over candidate dictionaries and report partitions, with bounded integration intervals, can certify an available upper. No claim that a local optimizer supplies a global lower is involved. Fully effective global convergence additionally uses effective compactness of the dictionary carrier and uniform integration bounds; a finite dictionary net and the Lipschitz loss then give finite lower and upper profile approximations, potentially at exponential search cost.
+\end{proof}
+
+For regular geometry, finitely supplied centers and coordinate certificates give a direct upper without learning an arbitrary acceptance density. Replace inner rectangles from Proposition~\ref{prop:geometry} by outward rounded rectangles, accepting every true inner rectangle and only points with marked distance at most a fixed multiple of its radius. Actual mass remains at least $1/b$ and distortion remains of the same order. With $m$ centers in a fixed $k$-dimensional box and radius $t$, $p=O(1+\log(1/t))$ precision bits suffice when the coordinate evaluation has that error certificate. A sequential implementation uses $O(mkp)$ read-only data bits, $O(kp+\log m)$ scratch bits and $O(mkp^2)$ elementary arithmetic operations per productive report, in addition to the specified physical evaluation and command costs. These are sufficient costs, not optimal bit/time lower bounds.
+
+\subsection*{An end-to-end dyadic example at zero positivity floor}
+Use the classical family of Theorem~\ref{thm:classical} with independent uniform $(Y,T)\in[0,1]^2$, post-command audit $Z=Y+TE$, and $p_0=1/4$. Thus $\kappa=5$. Use three states: gate, acquisition, and terminal value $1/2$. Ideally accept
+\[
+ A=[3/8,5/8]\times[0,1/8].
+\]
+Under balanced task measures,
+\begin{equation}\label{eq:dyadic-ideal}
+ \nu(A)=1/32,\qquad
+ \int_A[(y-1/2)^2+t^2]\,dy\,dt=1/3072.
+\end{equation}
+Let $e=2^{-14}$, and suppose the physical digitizer supplies clipped coordinates with errors at most $e$, using only $(Y,T)$ and not the discarded sign-flip coin. Accept when
+\[
+ 3/8+e\le\widehat Y\le5/8-e,\qquad \widehat T\le1/8-e.
+\]
+The accepted true report lies in $A$, and every point in
+$A_{\rm in}=[3/8+2e,5/8-2e]\times[0,1/8-2e]$ is accepted. Put
+\begin{equation}\label{eq:dyadic-constants}
+ \alpha_-=(1/4-4e)(1/8-2e),\quad
+ \beta_+=1/3072,\quad
+ W_G=5/\alpha_-,\quad W_A=W_G-4,\quad
+ U_G=U_A=\beta_+/\alpha_-.
+\end{equation}
+These are exact rational numbers. The reference rows with gate success $1/4$ and productive acceptance $\alpha_-$ obey
+$W\ge\one+QW$ and $U\ge\beta+QU$. Every actual gate row has greater success and every implemented productive row has acceptance at least $\alpha_-$ and loss contribution at most $\beta_+$. Thus the same inequalities hold directly for the implemented raw rows: a killed-potential certificate has relative perturbation constants $\rho=\eta=\zeta=0$ relative to these conservative rows. Summing the finite-horizon inequalities, \emph{including} the nonnegative surviving $W$ and $U$ terms before taking the limit, proves
+\begin{equation}\label{eq:dyadic-final}
+ \E C\le 5/\alpha_-<161,\qquad R\le1/(3072\alpha_-).
+\end{equation}
+Equivalently these bounds follow from Proposition~\ref{prop:relative} with the conservative acceptance and numerator. A same-report changed decision lies only in $A\setminus A_{\rm in}$, whose probability is at most $1/32-\alpha_-$. No total-variation comparison of continuous and atomic report laws was made.
+
+For a matching all-program lower at the same budget $161$ and three states, Theorem~\ref{thm:main} gives $\Qm_1(161/5)$. For any output $r$, a sublevel $t^2+(y-r)^2\le z$ in $[0,1]^2$ has area at most $\pi z/2$. Integration of the selected tail gives $\Qm_1(b)\ge1/(\pi b)$. When $b\ge8/\pi$, a half-disk centered at $(1/2,0)$ of area $1/b$ stays inside the square and attains equality. Consequently
+\begin{equation}\label{eq:dyadic-interval}
+ \frac5{161\pi}=R_\aut^\Theta(161,3)
+ \le R_{\rm dyadic}\le\frac1{3072\alpha_-}.
+\end{equation}
+The equality is the ideal Borel optimum; the displayed dyadic observer is a separately certified nearby finite implementation.
+
+The three threshold integers are $6145,10239,2047$, requiring 45 read-only bits at 15 bits each, plus the fixed comparator program and output $1/2$. Two 15-bit digitized-coordinate registers, one fresh flip bit and fixed control scratch suffice within a productive call. The three persistent states require two encoding bits; neither a counter nor a retained random seed is present. Comparisons use $O(14)$ bit operations per productive call. If a gate call costs at most $t_G$ time and productive preparation, digitization and comparison together cost at most $t_A(14)$, expected physical execution time is at most $161\max(t_G,t_A(14))$. The promised digitizer and balanced physical pulse costs are not free. One subsequent physical audit makes the total expected raw-call budget at most $162$.

@@ -1,0 +1,74 @@
+name: Theta R56 balanced task transfer source and complete retained build
+on:
+  push:
+    branches:
+      - foundation/general-theta-restart-r56-balanced-task-transfer-research-2026-10-14
+    paths:
+      - '.github/workflows/theta-r56-build.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: theta-r56-publication
+  cancel-in-progress: false
+jobs:
+  publication:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      R56_PATH: papers/General-Theta-Foundations-I-restart/r56-balanced-task-transfer
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 5
+      - name: Publish verified ordinary mathematical source first
+        run: python3 .github/scripts/theta-r56-publish.py source
+      - name: Install full retained-build dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended lmodern cm-super poppler-utils python3-venv
+          python3 -m venv "$RUNNER_TEMP/r56-venv"
+          "$RUNNER_TEMP/r56-venv/bin/pip" install numpy scipy pypdf mpmath
+      - name: Read-only native and complete retained builds
+        run: |
+          "$RUNNER_TEMP/r56-venv/bin/python" "$R56_PATH/build.py" --source-sha "$R56_SOURCE_SHA" --prepared-root "$GITHUB_WORKSPACE" --output "$RUNNER_TEMP/r56-output" --retained > "$RUNNER_TEMP/r56-build.stdout" 2>&1
+          git diff --exit-code
+          test -z "$(git ls-files --others --exclude-standard)"
+      - name: Publish artifacts directly after immutable source
+        run: python3 .github/scripts/theta-r56-publish.py artifacts
+      - name: Prepare independent reconstruction packets
+        run: python3 .github/scripts/theta-r56-publish.py packets
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r56-native-${{ github.run_id }}
+          path: ${{ runner.temp }}/r56-packets/native
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r56-retained-1-${{ github.run_id }}
+          path: ${{ runner.temp }}/r56-packets/retained-1
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r56-retained-2-${{ github.run_id }}
+          path: ${{ runner.temp }}/r56-packets/retained-2
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r56-retained-3-${{ github.run_id }}
+          path: ${{ runner.temp }}/r56-packets/retained-3
+          retention-days: 30
+      - name: Preserve actual diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: theta-r56-execution-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/r56-build.stdout
+            ${{ runner.temp }}/R56_SOURCE_PUBLICATION.json
+            ${{ runner.temp }}/r56-output/FAILED_NATIVE_LATEX.log
+          if-no-files-found: ignore
+          retention-days: 30

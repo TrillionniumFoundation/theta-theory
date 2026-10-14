@@ -1,0 +1,11 @@
+# Historical reading and preservation coverage
+
+The four canonical controlling documents were read in full, including the original outline's G1/G3 targets, E1–E12 boundaries and v1/old-program interface map. All 31 `PIPELINE_DERIVATION.md` files in the actually downloaded R53 prepared-source chain (R4 through R53, with gaps in numbering where no such delivered manuscript exists) were read; their content digests and paths are recorded in `HISTORICAL_INPUTS.json`.
+
+The latest full R53 external report, at `e8eed6849b34afd200bf9532eaa1a68f32e9ee48`, was read in full. Its exact blob is retained as `review_inputs/R53_EXTERNAL_REFEREE_REPORT.md`. The R53 native manuscript and pertinent R52 proofs/build machinery were inspected directly. The R53 complete native/retained chain was independently rebuilt before revision (62 isolated builds), which checks source/build consistency, not all historical proofs.
+
+The original v1 index was read at canonical `archive/general-theta/v1/GTF_I_V1_INDEX.md`. Its pinned original source `28df7ce8b15f5020d349193605f964105d875033` and `papers/GTF-I-v1/PROOF_LEDGER.md` were read to recover the original dependency and scope map; that ledger's exact blob is `95944cfddfd26b8dfcc47d18bafe051c9901e22a`. Its full 34-page proof corpus was not newly line-by-line recertified. The realization registry identifies the independent causal-memory, finite-action, streaming and ordered-measurement research branches; their current mathematical independence is preserved. All those branches and the v2–v96 frozen archive are non-write targets.
+
+Earlier referee reports and their responses remain in the retained source chain; their historical decisions were consulted through the native pipelines and provenance, not represented as a fresh complete audit of every old referee report. The source tree inherits the entire R53 review tree by an additive canonical-first merge. The final publication check must verify that no predecessor file changed; this includes old review, realization and archive content in that tree. Branch-level no-write protection does not assert that every independent branch was rebuilt.
+
+The main paper is sufficient for judging the new theorems. Complete historical companions remain separately accessible, with original assumptions, and are not 647 pages of required prerequisites.

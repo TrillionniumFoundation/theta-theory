@@ -1,0 +1,107 @@
+\section{The ordinary filtering task}\label{sec:filters}
+We verify the block side of Theorem~\ref{thm:transfer} for a structurally different raw experiment. The prediction loss is the usual squared error for a categorical hidden state, not an auxiliary centered probe designed to expose individual coordinates.
+
+Fix $n=d+1\ge2$ and a finite action set. A known matrix $Q_t^a$ has a fixed primitive zero--one support $P$, with $P^m$ entrywise positive, and every nonzero entry of $Q_t^a$ is at least $s_*>0$. Thus every supported product of $m$ such matrices has all entries at least $s_*^m$. Prepare $Z_0$ uniformly on $\{0,\ldots,d\}$. After each transition, state $i$ emits the missing symbol $\bot$ with probability $1-q_i^a$ and otherwise a Gaussian vector of mean $\mu_i^a$ and covariance $\sigma^2I_d$. Require
+\begin{equation}\label{eq:gaussparams}
+ 0<q_-\le q_i^a\le q_+<1,\quad \norm{\mu_i^a}_\infty\le R,
+ \quad \sigma>0,
+ \quad \abs{\det B_a}\ge b_*>0,
+\end{equation}
+where the $i$th row of $B_a$, $1\le i\le d$, is $(\mu_i^a-\mu_0^a)^{\mathsf T}/\sigma^2$. The determinant condition is for the acquired lower bound, not for the upper. The finite class parameters and primitive support are fixed; no assertion is uniform as these lower bounds vanish. Time-dependent known emissions can also be used when the same bounds hold.
+
+With respect to Lebesgue measure and a unit atom at $\bot$ the emission density is
+\[
+ g_i^a(y)=q_i^a(2\pi\sigma^2)^{-d/2}
+       e^{-\norm{y-\mu_i^a}^2/(2\sigma^2)},\qquad
+ g_i^a(\bot)=1-q_i^a.
+\]
+For any fixed report-adapted legal exploration, the posterior is positive and has the raw Bayes update
+\begin{equation}\label{eq:filterupdate}
+ F_t(\pi,a,y)_i=
+ \frac{(\pi Q_t^a)_i g_i^a(y)}{\sum_j(\pi Q_t^a)_j g_j^a(y)}.
+\end{equation}
+The posterior with its declared time/action interface determines all future tests. A terminal audit of $Z_T$, executed after the forecast, separates posterior coordinates, so this is a direct predictive realization. Every transition/report attempt, including a missing report, costs one call. Including preparation and the audit, raw acquisition is $T+2$.
+
+Put $d_H(\pi,\rho)=\osc_i\log(\pi_i/\rho_i)$ and $D_H(\pi)=\osc_i\log\pi_i$. This is a separable metric on the open simplex with its usual Borel structure. The subscripts distinguish spread from the admissibility relation and controller cardinality.
+
+\begin{lemma}[A mass-preserving finite cover]\label{lem:filtercover}
+For some $\eta>0$ chosen from the raw class constants below, put $w(\pi)=e^{\eta D_H(\pi)}$. There are at most $M$ Borel code representatives with
+\[
+ d_H(\pi,Q_M\pi)\le C_{d,\eta}M^{-1/d}w(\pi),\quad
+ D_H(Q_M\pi)\le D_H(\pi),\quad (Q_M\pi)_i\ge\pi_i/n.
+\]
+The uniform seed is a representative. The cover preserves the budget-independent relation
+\begin{equation}\label{eq:filterrelation}
+ \mathcal A(\pi)=\{\rho:D_H(\rho)\le D_H(\pi),\ \rho_i\ge\pi_i/n\text{ for all }i\}.
+\end{equation}
+\end{lemma}
+\begin{proof}
+Choose the least maximal coordinate $j$, and set $v_i=\log(\pi_j/\pi_i)\ge0$. For integer $K\ge1$ define
+\[
+ \widehat v_i=-\eta^{-1}\log\bigl(\lceil Ke^{-\eta v_i}\rceil/K\bigr),
+ \qquad (Q\pi)_i=e^{-\widehat v_i}/\sum_h e^{-\widehat v_h}.
+\]
+At least one deficit is zero, and there are at most $nK^d$ representatives. The cells are Borel. From $u\le\lceil Ku\rceil/K\le u+K^{-1}$ one obtains
+$0\le v_i-\widehat v_i\le e^{\eta v_i}/(\eta K)$.
+The oscillation of these errors bounds the projective distance. Inwardness follows from $0\le\widehat v_i\le v_i$. Moreover $\sum_i e^{-v_i}\ge1$ and $\sum_i e^{-\widehat v_i}\le n$, proving the componentwise lower bound. Choose $K=\lfloor(M/n)^{1/d}\rfloor$ when $M\ge n$. For $M<n$ use only the uniform center and $D_H(\pi)\le e^{\eta D_H(\pi)}/(e\eta)$, increasing the fixed constant. The construction and relation are valid on the whole candidate simplex, not only on an observed trajectory.
+For completeness, choosing $K=\lfloor(M/n)^{1/d}\rfloor$ when $M\ge n$ gives $K\ge\tfrac12(M/n)^{1/d}$ and $nK^d\le M$, hence $K^{-1}\le2n^{1/d}M^{-1/d}$. This is the stated all-budget conversion.
+\end{proof}
+
+\begin{lemma}[Physical block contraction and robust drift]\label{lem:filterblock}
+The update \eqref{eq:filterupdate} and relation \eqref{eq:filterrelation} satisfy \eqref{eq:pair}--\eqref{eq:within} with $L=1$, some $\kappa,a<1$ and finite $b,A,B$. Constants depend only on the fixed class parameters and are uniform in deterministic horizon and report-adapted actions. Individual updates need not contract strictly.
+\end{lemma}
+\begin{proof}
+For a nonnegative matrix with no zero column, the derivative of $\log\sum_i e^{z_i}Q_{ij}$ is a convex average of the input direction. Its oscillation cannot increase. Integrating along a segment in log coordinates proves projective nonexpansiveness. Multiplication by a common positive likelihood vector cancels in the log-ratio difference, including at $\bot$.
+
+Choose a fixed cube $G=[-b_1,b_1]^d$. On $G$, uniformly in the hidden state and action, $0<g_-\le g_i^a(y)\le g_+<\infty$. Given every past, $\PP(Y_t\in G\mid\mathcal H_{t-1})\ge p_0=g_-|G|>0$. If $E_j$ denotes the first $j$ reports of a block lying in $G$, then
+\[
+ \PP(E_j\mid\mathcal H_s)
+ =\E[\one_{E_{j-1}}\PP(Y_{s+j}\in G\mid\mathcal H_{s+j-1})\mid\mathcal H_s]
+ \ge p_0\PP(E_{j-1}\mid\mathcal H_s).
+\]
+Thus the good block $E_m$ has conditional mass at least $p=p_0^m$, without an independence assumption. Its unnormalized product matrix has entries in $[l,u]$, where $l=s_*^m g_-^m$ and $u=g_+^m$. Every column derivative distribution then dominates $(l/u)$ times the same input probability distribution. Removing that common mass gives projective gain $\chi=1-l/u<1$. Off the block use nonexpansiveness, so $\kappa=1-p(1-\chi^2)<1$.
+
+For any adapted relation-preserving perturbed sequence, the good block gives componentwise
+$z_j\ge n^{-1}(g_-/g_+)z_{j-1}Q_{s+j}^{a_{s+j}}$.
+Its final coordinates are at least $c_*=n^{-m}(g_-/g_+)^ms_*^m$. Therefore $D_H(z_m)\le R_*:=\log(1/c_*)$. This proves why a cone-mass constraint, not spread inwardness alone, is needed through a sparse product.
+
+For an arbitrary report let $V_a(y)=\osc_i\log g_i^a(y)$ and $C_s=\log(n/s_*)$. Then $D_H(F(z,a,y))\le D_H(z)+C_s+V_a(y)$, and admissible rounding does not increase spread. Gaussian log-likelihood ratios are affine functions of $y$, and the missing ratios are bounded. Hence for any fixed $\eta_0>0$,
+$\mathcal M:=\sup_{x,a}\int e^{2\eta_0 V_a(y)}J_a(dy\mid x)<\infty$.
+For example $V_a(y)\le v_0+v_1\norm{y}_1$, and
+$\E e^{c\norm{Y}_1}\le2^d e^{cdR+dc^2\sigma^2/2}$ gives a uniform finite bound on the continuous component. Conditional iteration yields $\E e^{2\eta_0 Z}\le C_0$ for the block sum $Z=\sum_j(C_s+V_{a_{s+j}}(Y_{s+j}))$.
+
+Choose $0<\eta\le\eta_0$ so that $(\eta/\eta_0)(C_0-1)\le p/2$. Convexity in the exponent gives
+$e^{2\eta Z}-1\le(\eta/\eta_0)(e^{2\eta_0Z}-1)$.
+Consequently $\E[e^{2\eta Z}\one_{E_m^c}\mid\mathcal H_s]\le1-p/2$. On $E_m$ the envelope is at most $e^{\eta R_*}$; off it, it is at most $w(z_0)e^{\eta Z}$. This proves \eqref{eq:drift} with $a=1-p/2$, $b=e^{2\eta R_*}$. The same growth estimate for every prefix gives \eqref{eq:within} with $A=C_0$, $B=0$. The proof applies to every adapted admissible perturbation under the true report law, not just to the chosen encoder.
+\end{proof}
+
+\begin{theorem}[Sharp state order for squared filtering loss]\label{thm:brier}
+Use the ordinary Euclidean norm inherited from $\R^{d+1}$ on the simplex. Euclidean projection of any forecast onto that closed convex simplex cannot increase its squared loss against a categorical outcome.
+Under the preceding raw assumptions, fix $T\ge m$ and any report-adapted exploration independent of the predictor. Let
+\[
+ B_T^{\rm fil}=\E\norm{e_{Z_T}-\pi_T}_2^2.
+\]
+For prediction of the categorical state under loss $\norm{e_{Z_T}-A}^2_2$, with $A$ in the closed simplex,
+\begin{equation}\label{eq:brier}
+ cM^{-2/d}\le R_\cp(T,M)-B_T^{\rm fil}
+ \le R_\on(T,M)-B_T^{\rm fil}\le CM^{-2/d}.
+\end{equation}
+The constants are uniform in $T$ and the specified exploration at fixed dimension, support, primitive length and parameter bounds. The readout state is a prediction label, not an unrestricted optimized controller. Controller and deterministic clock resources remain separate.
+\end{theorem}
+\begin{proof}
+Differentiating the softmax along a log-coordinate segment gives derivative components $\pi_i(h_i-\sum_j\pi_jh_j)$. The sum of their absolute values, and hence their Euclidean norm, is at most $\osc(h)$. The posterior readout is therefore $1$-Lipschitz from $d_H$ to Euclidean norm. Lemmas~\ref{lem:filtercover} and \ref{lem:filterblock}, with the exact uniform seed, verify every upper hypothesis of Theorem~\ref{thm:transfer} and give $CM^{-2/d}$.
+
+For the lower, retain only the actual event that the last $m$ reports lie in $G$. It has mass at least $p$. Conditional on the prefix and the first $m-1$ reports of this event, the predictive weights $r=\pi_{T-1}Q_T^{a_T}$ have coordinates at least $c_r=(g_-/g_+)^{m-1}s_*^m$. The last action is selected \emph{before} the final report. Its log posterior ratios are $B_{a_T}y$ plus a fixed vector, so the map from $y$ to the first $d$ posterior coordinates is injective. The softmax derivative in those coordinates is $\operatorname{diag}(\pi_1,\ldots,\pi_d)-vv^{\mathsf T}$, where $v=(\pi_1,\ldots,\pi_d)$. The matrix determinant lemma gives determinant $\prod_{i=0}^d\pi_i$. Thus the report-to-posterior Jacobian has absolute determinant at least $b_*c_p^{d+1}$ on $G$, where $c_p=c_r g_-/g_+$.
+
+The last conditional report density is at most $g_+$. The resulting posterior submeasure has density at most $g_+/(b_*c_p^{d+1})$ in its first $d$ coordinates. Integrating over the conditioning prefix with its event indicator preserves this bound. The submeasure has its actual mass at least $p$; it is not normalized to mass one. An ambient Euclidean ball projects to a $d$-ball of the same radius, so its mass is at most $C_1r^d$. The union-of-balls lower in Theorem~\ref{thm:transfer} gives $cM^{-2/d}$. Projection for the categorical task identifies the common baseline and completes the proof.
+\end{proof}
+
+Report continuity is also explicit: mixtures of the same emission kernels have total variation at most $\frac12\norm{\pi Q-\rho Q}_1\le\frac12d_H(\pi,\rho)$. The terminal categorical audit obeys the same bound without $Q$. The total stopped-law comparison in Section~\ref{sec:composition} therefore applies. This risk theorem does not require a preassigned Fisher geometry; the exponent comes from a positive submeasure of the actual posterior law.
+
+For a finite numerical interface, a bounded input box is essential. If all continuous reports before $T$ are clipped outside $[-U,U]^d$, then the failure probability is at most $2dT\exp(-(U-R)^2/(2\sigma^2))$. Choosing
+\begin{equation}\label{eq:clipping}
+ U=R+\sigma\sqrt{2\log(2dT/\zeta)}
+\end{equation}
+limits this defect to $\zeta\in(0,1)$. In particular $\zeta=M^{-2/d}$, with a harmless fixed reduction when $M=1$, requires growth of order $\sqrt{\log T+\log M}$ at fixed parameters. If intervals $[l_i,u_i]$ enclose unnormalized posterior log weights with width at most $h$, deficits $d_i=\max(0,\max_jl_j-u_i)$ satisfy $0\le d_i\le v_i$ and $v_i-d_i\le2h$. Applying the compander to these lower deficits preserves \eqref{eq:filterrelation} and gives local allowance $u=2h$. Proposition~\ref{prop:repair} charges clipping by bounded loss. These are enclosure and defect certificates; unlike Theorem~\ref{thm:digital}, they do not assert a complete optimal Gaussian bit-complexity region.
+
+The density in the lower proof is with respect to the chart $(\pi_1,\ldots,\pi_d)$, with $\pi_{d+1}=1-\sum_{i\le d}\pi_i$; its Euclidean metric is comparable to the full simplex metric. Choosing the clipping failure probability $\zeta=O(M^{-2/d})$ adds at most the bounded-loss constant times $\zeta$ and therefore preserves the displayed excess order.

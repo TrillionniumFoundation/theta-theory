@@ -1,0 +1,77 @@
+\section{An exact informative Gaussian acquisition frontier}\label{sec:gaussian}
+We now leave task regeneration. The current hidden state cannot be recovered from the last Gaussian report, and its full posterior depends on the past. The result below is a consequence of raw occupation balance and the classical likelihood-ratio principle~\cite{NP}; it is not an application of \eqref{eq:regen}.
+
+Prepare $X_0\in\{-1,1\}$ uniformly. Before each report let the hidden chain change sign with probability $q\in(0,1/2]$. Then report
+\[
+ Y_t\mid X_t=\pm1\ \sim\ N(\pm\mu,1),\qquad \mu>0,
+\]
+independently conditional on the hidden path. The convention is \emph{transition first, report second}. After the observer stops, the protected audit is $X_\tau$, with no intervening transition. The observer has exactly one live state and one terminal state, total $M=2$, and must use at least one call. Thus its most general Borel randomized program stops with a probability $u(y)\in[0,1]$ depending only on the current report. Its terminal prediction is one constant. The parameters $q,\mu$ are known; this theorem is not an unknown-parameter minimax claim.
+
+Put $\kappa=(1-2q)/(2q)$ and let $\overline\Phi$ be the standard normal survival function. For $h\in\R$ define
+\begin{align}
+ a_+(h)&=\overline\Phi(h-\mu),&
+ a_-(h)&=\overline\Phi(h+\mu),\notag\\
+ D(h)&=a_+(h)+a_-(h)+2\kappa a_+(h)a_-(h),\notag\\
+ T(h)&=\frac{2+\kappa\{a_+(h)+a_-(h)\}}{D(h)},&
+ m(h)&=\frac{a_+(h)-a_-(h)}{D(h)}.\label{eq:gaussian-curve}
+\end{align}
+
+\begin{theorem}[All-program two-state frontier]\label{thm:gaussian}
+For every $N>1$ there is a unique $h_N\in\R$ with $T(h_N)=N$, and
+\begin{equation}\label{eq:gaussian-risk}
+ \calR_\aut(N,2)=1-m(h_N)^2.
+\end{equation}
+An attaining program stops exactly when $Y_t\ge h_N$ and predicts $m(h_N)$. At $N=1$ the optimum is one, attained by stopping after every first report and predicting zero. The lower bound covers all Borel randomized two-state programs, not only threshold candidates.
+\end{theorem}
+\begin{proof}
+For an arbitrary legal routing $u$, let $a_\pm=\int u(y)\varphi(y\mp\mu)dy$. Positive equivalent report densities imply $a_-=0$ if and only if $a_+=0$; that case never stops and is inadmissible. Let $v_\pm$ be the actual expected numbers of pre-decision reports in states $\pm1$, and let $d_\pm=a_\pm v_\pm$ be the probabilities of the two hidden states at stopping. Write $t=v_++v_-=\E\tau$ and $m=d_+-d_-$. These are actual finite occupations, not a formal invariant solution. With
+\[
+ P=\begin{pmatrix}1-q&q\\q&1-q\end{pmatrix},\qquad
+ v=\tfrac12\binom11+P\operatorname{diag}(1-a_+,1-a_-)v,
+\]
+subtracting the two components gives $v_+-v_-=-\kappa m$, whereas adding gives $a_+v_++a_-v_-=1$. Solving these two equations and the definition of $m$ yields
+\begin{equation}\label{eq:occupation-gaussian}
+ t=\frac{2+\kappa(a_++a_-)}{a_++a_-+2\kappa a_+a_-},\qquad
+ m=\frac{a_+-a_-}{a_++a_-+2\kappa a_+a_-}.
+\end{equation}
+Conversely any nonzero routing has a uniform per-call stop probability at least $\min(a_+,a_-)>0$, so these equations describe its actual occupation and finite mean. Its optimal constant prediction is $m$, with risk $1-m^2$.
+
+Reflecting $u(y)$ into $u(-y)$ if necessary preserves cost and risk and makes $a_+\ge a_-$. At fixed $a_-=b>0$, increasing $a_+=a$ increases $m$ and decreases $t$. For the common denominator $D=a+b+2\kappa ab$, the relevant derivatives are
+\[
+ \frac{\partial m}{\partial a}=\frac{2b+2\kappa b^2}{D^2}>0,
+ \qquad
+ \frac{\partial t}{\partial a}=-\frac{2(1+\kappa b)^2}{D^2}<0.
+\]
+The Gaussian likelihood ratio $\varphi(y-\mu)/\varphi(y+\mu)=e^{2\mu y}$ is strictly increasing. Among all $0\le u\le1$ with given $a_-$, the upper-tail rule maximizes $a_+$. One can see this without any existence theorem: choose $h$ having the same negative-state tail mass, multiply $u_h-u$ by $\varphi(y-\mu)-e^{2\mu h}\varphi(y+\mu)$, and integrate. The integrand is nonnegative and the second term cancels. Thus every randomized routing is dominated in both cost and risk by a threshold routing.
+
+For thresholds, $T(h)$ is continuous and strictly increasing from one to infinity. Monotonicity follows also pathwise from nested threshold hitting times, with strictness from the positive probability that the first report lies between two distinct thresholds. The limit at infinity follows from $a_\pm\to0$. The ratio $R(h)=a_+(h)/a_-(h)$ is strictly increasing: it is the conditional mean of the strictly increasing likelihood ratio under the negative-state tail law. Since $a_+(h)$ decreases and
+\[
+ m(h)=\frac{R(h)-1}{R(h)+1+2\kappa a_+(h)},
+\]
+$m(h)$ strictly increases from zero to one. A feasible threshold with mean less than $N$ can therefore be raised to $h_N$, improving its risk. Combining this fact with the preceding domination proves the all-program lower and the attaining construction. At $N=1$, $\tau\ge1$ and $\E\tau\le1$ force a stop after one call almost surely; equivalent report densities force $u=1$ almost everywhere, so its constant Bayes prediction is zero.
+\end{proof}
+
+\begin{proposition}[A same-task checkpoint comparison]\label{prop:gaussian-checkpoint}
+Fix the optimal threshold $h=h_N$ and the same physical stopping protocol. Let $h=t_0<t_1<\cdots<t_m=+\infty$ be fixed report-bin boundaries. Put
+\[
+ v_\pm=\frac{N\mp\kappa m(h)}2,\quad
+ p_{j,\pm}=v_\pm\{\overline\Phi(t_{j-1}\mp\mu)
+                         -\overline\Phi(t_j\mp\mu)\}.
+\]
+A checkpoint encoding only the final report bin, with $m$ fixed decoder values, has exactly
+\begin{equation}\label{eq:cp-construction}
+ R_{\cp,\mathrm{bin}}
+ =1-\sum_{j=1}^m
+        \frac{(p_{j,+}-p_{j,-})^2}{p_{j,+}+p_{j,-}}.
+\end{equation}
+Terms of zero mass are zero. In particular the unrestricted-history optimum obeys $\calR_\cp(N,m)\le R_{\cp,\mathrm{bin}}$. This is an attainable checkpoint upper bound, not an equality with the unrestricted optimum.
+\end{proposition}
+\begin{proof}
+Sum the raw report density over the actual pre-report occupation. The terminal joint density of $(X_\tau,Y_\tau)$ is $v_\pm\varphi(y\mp\mu)\one_{y\ge h}$. Integrating each bin gives $p_{j,\pm}$. Their total mass is one by the stop equation. The conditional mean on a bin is $(p_{j,+}-p_{j,-})/(p_{j,+}+p_{j,-})$; conditional squared projection gives \eqref{eq:cp-construction}. The checkpoint may use the entire history but is allowed to use only its final report, so the inequality follows. Different unrestricted stopping protocols may improve it; no optimality for that larger class is inferred.
+\end{proof}
+
+\subsection*{Certified finite-parameter benchmark}
+The accompanying arithmetic certificate specializes to $q=1/4$, $\mu=1$ and budgets $N=2,4,8$. It encloses $h_N$ by rational bisection, evaluates \eqref{eq:gaussian-risk} with outward interval bounds, and applies \eqref{eq:cp-construction} with two and four fixed report bins. Normal tails are bounded by an alternating power series with an explicit remainder and rational enclosures of $\pi$ and its square root; no empirical tail truncation is used. The native source includes its generated table below. These checks validate finite arithmetic and an executable example; the continuum all-program proof is the preceding theorem.
+\input{sections/gaussian-table}
+
+The threshold is a program constant, not a persistent real-valued state. A rational lower approximation to $h_N$ has mean at most $N$ and approaches the optimal risk continuously. A bounded current-report arithmetic routine needs its own workspace and accuracy certificate; Section~\ref{app:compute} describes the resource distinction. The Gaussian theorem does not imply a multi-state or unrestricted-checkpoint closed form, nor does it solve the separate fixed-horizon uniform-constant benchmark requested for the older filtering theorem.

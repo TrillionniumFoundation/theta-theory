@@ -1,0 +1,40 @@
+\section{Causal simulation and a simultaneous risk law}
+\label{sec:composition}
+We use $\TV(P,Q)=\sup_A|P(A)-Q(A)|$. A causal experiment morphism is a parameter-independent simulator with a strategy lift, a report transformation, a compatible physical-command map, an explicit internal state and clock, and a terminal task readout. The simulator must complete each virtual report before it receives later physical reports. Its error certificate compares the \emph{entire stopped scored transcript}, including the audit and stopping decision, under each lifted legal strategy. This is stronger than comparing a fixed-time terminal marginal.
+
+\begin{proposition}[Typed error and resource composition]\label{prop:composition}
+Suppose a simulator from a physical experiment to a target experiment has at most $S$ internal states, uniform stopped-transcript defect at most $\eps$, and separately certified expected physical costs for every lifted procedure. A target observer using at most $M$ states then has a physical implementation with at most $SM$ paired states. For the same nonnegative loss bounded by $L$, its risk is at most the target risk plus $L\eps$. Two such simulators have additive defects and multiplicative state bounds, provided the second certificate applies uniformly to the lifted strategy class and the first simulator's complete interface.
+
+If an additional deterministic output error is at most $\delta$ and the exact prediction-to-audit distance is at most $D$, the pointwise squared-loss change is at most $2D\delta+\delta^2$. Perturbations of stopping or costs instead require a certificate such as Theorem~\ref{thm:perturbation}. No matching lower follows merely from allowing these errors.
+\end{proposition}
+\begin{proof}
+Store the simulator state and observer state as a pair. The command, report and task compatibility requirements make the composition executable by induction over completed virtual calls. No report can be obtained from future data. For a loss in $[0,L]$, integration of its level sets bounds the change in expectation by $L\TV$. Triangle inequality and contraction of total variation under the common second stochastic map give additive errors. The second map must be common and its strategy class valid; otherwise this argument is unavailable. The product of the finite alphabets counts the internal simulator state, with any retained clock or seed included. Expected physical cost is controlled by its own certificate, not by total variation. Finally expand $\|Z-(r+\Delta)\|^2-\|Z-r\|^2$ and use $\|\Delta\|\le\delta$. A one-way simulator only transfers an upper; a converse needs a reverse compatible simulation or an independent decision lower.
+\end{proof}
+
+The next result supplies actual alternatives for simultaneous lower terms. It is a selected same-task product experiment, not a universal assertion that every deficiency or numerical tolerance creates unavoidable risk.
+
+\begin{theorem}[Actual calibration and early erasure]\label{thm:joint}
+Take either raw realization of Section~\ref{sec:realizations}, with regular geometry and $p_+/p_-\le\Gamma$. Before the core, pay for one call that prepares a fair sign $E$. It reports that sign except on an independent erasure event of probability $2\eps$, $0\le\eps\le1/2$, when it reports $\mathtt{?}$. This virtual interface must finish before the first core call. The core hidden state and all its primitive randomness are independent of $E$ and of the erasure indicator. After commitment, one paid vector audit reports
+\[
+ (Z,E,\sigma\delta)\in H\times\{-1,1\}\times\{-\delta,\delta\},
+ \qquad \sigma\in\{-1,1\}.
+\]
+The fixed unknown calibration sign $\sigma$ does not enter any pre-audit kernel and is not observed before this audit. Use the sum of the three squared losses, with all three predictions fixed at commitment. Write $N_c=N-2$. For $N_c\ge\kappa_+$ and $M\ge13$,
+\begin{equation}\label{eq:joint-law}
+ \mathcal R_\aut^\Theta(N,M,\delta,\eps)
+ \asymp F(N_c/\kappa_+,M)+\delta^2+\eps.
+\end{equation}
+The same conclusion holds for checkpoint dictionary size $M$. Constants depend on the raw and geometric certificates, not on $N,M,\delta,\eps$. The early erasure channel has exact causal deficiency $\eps$ to the un-erased early-sign interface under the declared immediate-completion rule.
+\end{theorem}
+\begin{proof}
+On the erased branch every immediate virtual sign is independent of the fair $E$. Against the target's correct pair (early sign, audited $E$), conditional total variation is at least $1/2$: the equality event has target probability one and simulated probability $1/2$. Its branch mass is $2\eps$. Returning a fresh fair sign on erasure attains total variation $\eps$ for the complete scored transcript. On non-erasure the exact sign is passed through. The core cannot improve this immediate simulator: its reports arrive later and, inductively from the product raw kernels and fresh primitive coins, contain no information about an erased $E$. The worst core policy may depend on the reported early tag, but conditional on that tag the same core certificates hold.
+
+For the risk lower, every procedure's core productive count is bounded by its expected core cost, which is at most $N_c$. Its terminal core-mark law is therefore dominated exactly as in Lemma~\ref{lem:domination}, even after conditioning and then averaging over the early tag. Projecting its at most $M$ terminal predictions to the core carrier leaves at most $M$ values. The calibrated geometric lower gives a constant multiple of $F(N_c/\kappa_+,M)$, uniformly over the model. On erasure the best prediction of $E$ has squared risk one, hence its unconditional contribution is $2\eps$. The two unobserved calibration alternatives have identical pre-audit laws. Averaging their risks yields $\delta^2+\E r_\sigma^2\ge\delta^2$; one of them is at least this average. Since the core lower holds under either alternative, the three nonnegative terms hold simultaneously. No supremum/infimum interchange is involved.
+
+For the upper use one initial label and three copies of the two-live-label core program, one for each tag $+, -,\mathtt{?}$. Each copy uses a core dictionary of size
+\[
+ m=\left\lfloor\frac{M-1}{3}\right\rfloor-2\ge2,
+ \qquad 1+3(2+m)\le M.
+\]
+Predict the reported sign, or zero on erasure, and predict zero for the calibration coordinate. Apply Corollary~\ref{cor:regular} at core budget $N_c$. Since $m$ is bounded below by a fixed positive multiple of $M$ for $M\ge13$, its geometric rate is comparable to that in \eqref{eq:joint-law}. The other two risks are exactly $2\eps$ and $\delta^2$. The preparation call and vector audit are the two additional physical calls, so the total budget is $N_c+2=N$. The same construction has a checkpoint dictionary of at most $M$ triple-valued predictions. The lower for checkpoint is identical. This establishes the stated same-task law, not just separate sharpness examples for separate tasks.
+\end{proof}

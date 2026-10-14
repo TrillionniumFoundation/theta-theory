@@ -1,0 +1,38 @@
+\section{Finite descriptions, arithmetic and implementation}\label{app:compute}
+The state-optimal results concern Borel randomized observers. They do not identify their persistent-label count with their program length or temporary computational space. We give a precise effective qualification for the regenerative class.
+
+Assume that $H$ has computable finite $h$-nets, and that each response law is supplied with finite Borel partitions of cell diameter at most $h$, with interval-computable cell masses. A partition-membership primitive for the current physical report is supplied together with its program, workspace, time and error certificates. This last input is substantive: arbitrary computable measures do not automatically have computable masses on every chosen boundary. The laws, nets, partitions, finite action set, unit costs and real budget $N$ are known. For numerical search $N$ is computable, and a positive margin from one is given when $N>1$.
+
+\begin{proposition}[Same-state finite-precision implementation]\label{prop:finite}
+Under these effective inputs, for every $N\ge1$, $m\ge1$ and $\alpha>0$ there is a finitely described one-live-state observer with $m$ terminal labels, mean acquisition at most $N$, and risk at most $B+\Psi_m(N)+\alpha$. Its coefficients and decoders can be chosen rational. If there are at most $K_h$ cells per action, an explicit table description uses
+\begin{equation}\label{eq:program}
+ O\bigl(|\calA|K_h(m+1)\log Q+mdp+|\calA|\log Q\bigr)
+\end{equation}
+program bits, in addition to the given partition primitive, for routing denominator $Q$ and $p$-bit decoder coordinates. Temporary workspace for evaluating and sampling a row is
+\begin{equation}\label{eq:workspace}
+ O\bigl(\log(|\calA|K_h(m+1))+\log Q+dp\bigr)
+\end{equation}
+plus the primitive workspace. This is an existence and exhaustive-synthesis statement, not an efficient-planning or optimal-workspace theorem.
+\end{proposition}
+\begin{proof}
+Start with an optimal one-live-state Borel program. Replace, for each action and partition cell, its terminal-label probabilities by their cell averages under $\nu_a$. This preserves every action-indexed terminal-label mass and the one-call stopping probability $s\ge1/N$. Within a cell, squared distances to a fixed decoder vary by at most $2Dh+h^2$, where $D$ bounds the diameter of the task domain. Replacing decoder values by an $h$-net adds at most the same order. Summing over accepted mass and dividing by $s$ shows that the risk increases by at most $4Dh+2h^2$, not by a factor proportional to an uncharged horizon. We may approximate the finitely many averages by rational numbers.
+
+To keep the budget exact during rational approximation, first redirect a fraction $\rho$ of continuations to one existing terminal label. If $N>1$, the resulting stopping mass satisfies
+\[
+ s_\rho-1/N\ge\rho(1-1/N)>0,
+\]
+and its excess-risk increase is at most $\rho L(N-1)$. Rounding the action and row simplices to denominator $Q$ changes the one-call joint law by at most $d_Q=(|\calA|+m+1)/Q$ up to a fixed harmless factor that can be doubled in choosing $Q$. Choose $Q$ so that this defect and the cell-mass evaluation error are less than one quarter of the displayed stopping margin. Then the stopping probability has a certified lower bound $1/N$, hence the mean stays at most $N$. Its risk perturbation is bounded by $2LN d_Q$ after increasing the harmless rounding constant if necessary. Choose $h,\rho,Q$ and the mass precision successively so the sum of these errors is below $\alpha$.
+
+At $N=1$ the exact program accepts on every call. Keep the continuation probabilities exactly zero, and round only action and terminal-label probabilities; stopping remains certain. The same cell and decoder estimates converge to zero. Exhaustively enumerate the finite rational tables and center grids, keeping only those with a certified stop probability at least $1/N$. The preceding construction proves that this search contains an $\alpha$-optimal table once its parameters are fine enough. Risk evaluation is a finite sum of interval-computable masses and bounded coefficients. This argument does not assume an effective algorithm for finding a Borel optimizer before enumeration.
+
+Storing all table entries and decoder coordinates gives \eqref{eq:program}. During execution only the row index, current random integer and current coordinate calculations need workspace, giving \eqref{eq:workspace}; no such value persists across calls. Rational sampling may use a finite-denominator uniform-integer primitive, or fair-bit rejection sampling with its own expected random-bit and time cost. Exact fair-bit implementation does not give a deterministic worst-case random-bit bound for arbitrary denominators. The expected number of table executions is at most $N$; multiply the declared per-execution primitive cost accordingly. Offline enumeration and integration costs remain separate and may be very large.
+\end{proof}
+
+The term ``rational decoder'' in the proposition allows a rational approximation in a fixed ambient box; if $H$ has no suitable rational points, project conceptually for the comparison but execute the nearby rational box decoder. Squared-loss continuity gives the same estimate with a slightly enlarged fixed diameter. Neither this observation nor the table count supplies a free high-precision physical report. Nonzero classification-error probabilities must enter the complete-task coupling and budget repair separately.
+
+The normal-tail certificate used in Section~\ref{sec:gaussian} is elementary. For rational $x\ge0$,
+\[
+ \Phi(x)=\frac12+\frac1{\sqrt{2\pi}}
+ \sum_{k=0}^{\infty}\frac{(-1)^k x^{2k+1}}{2^k k!(2k+1)}.
+\]
+After an index for which successive absolute terms decrease, the tail lies between the next two alternating partial sums. Rational bounds on $\pi$ follow from Machin's identity and the alternating arctangent series; rational bisection of a square gives bounds on $(2\pi)^{-1/2}$. Symmetry treats negative arguments. The implementation uses these intervals, not floating-point values of an unproved external special-function approximation. The bisection endpoints themselves give a feasible lower-threshold digital program and a rigorous bracket on its continuum optimum. This arithmetic is a verification of the displayed example, not a proof of optimality over a continuum of routing functions.

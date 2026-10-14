@@ -1,0 +1,98 @@
+\section{Two-sided finite-resource implementation}\label{sec:effective}
+The exact theorem concerns Borel controllers. This section imposes additional effective data and constructs finite tables. Its comparison class remains every controller in Definition~\ref{def:controller} at the same $M$.
+
+\subsection{Independent error certificates}
+Fix a prefix length $N$. For each action let $\mathcal P_{a,h}$ be a finite Borel partition, with decidable cell membership and computable reference masses. Reference-null cells may be assigned any row. Let $C_{\mathbf a,h}$ be conditional expectation on the product of these partitions under $\sigma_{\mathbf a}$. Suppose supplied bounds satisfy
+\begin{equation}\label{eq:eta}
+ \sup_{\theta,d}\norm{f_{\theta,t}^{\mathbf a,d}
+                 -C_{\mathbf a,h}f_{\theta,t}^{\mathbf a,d}}_1
+       \le\eta_{t,\mathbf a,h},\qquad 1\le t\le N,
+\end{equation}
+and tend effectively to zero for each finite prefix. Define
+\begin{equation}\label{eq:EN}
+ E_N(h)=(1-\beta)\sum_{t=1}^N\beta^{t-1}
+       \min\left\{1,M\sum_{\mathbf a\in A^t}\eta_{t,\mathbf a,h}\right\}.
+\end{equation}
+The possibly large action-word factor is explicit. No efficient estimate is implied merely by existence of the tensors.
+
+For the effective layer only, $\Theta$ is a computably compact metric family with finite nets $\Theta_s\subset\Theta$. We require a supplied controller-uniform bound
+\begin{equation}\label{eq:Omega}
+ |J_{\theta,\beta}^{N}(\gamma)-J_{\theta',\beta}^{N}(\gamma)|
+       \le\Omega_N(s)\quad(d(\theta,\theta')\le s)
+\end{equation}
+for every Borel controller, with $\Omega_N(s)\to0$ effectively. One sufficient certificate replaces $\eta_{t,\mathbf a,h}$ in \eqref{eq:EN} by a uniform $L^1$ difference of the two response densities. Raw-kernel couplings often give much smaller bounds, as in Section~\ref{sec:models}.
+
+Let $D_\rho\subset D$ be a finite loss net: each $d$ has $d'\in D_\rho$ with $\sup_z|\ell(d,z)-\ell(d',z)|\le\omega_D(\rho)$. Require certified finite-prefix risk integration for every listed table and model. These are extra computational assumptions, not consequences of compactness alone.
+
+\begin{lemma}[One common cell average]\label{lem:average}
+For every $\gamma\in\Gamma_M$, average each row $k_{ia}$ once on each $\sigma_a$ cell, obtaining $\bar\gamma$ with the same action rows and readouts. Then
+\[
+ \sup_\theta|J_{\theta,\beta}^N(\gamma)-J_{\theta,\beta}^N(\bar\gamma)|\le E_N(h).
+\]
+Every averaged row is a legal continuing controller for every model, without equivalent active-cell supports.
+\end{lemma}
+\begin{proof}
+For a fixed action and label word, conditioning on a product cell gives
+\[
+ \int (C_{\mathbf a,h}f)\prod_s k_s\,d\sigma_{\mathbf a}
+       =\int f\prod_s \bar k_s\,d\sigma_{\mathbf a}.
+\]
+All repeated occurrences of a row use the same one-coordinate cell average. In the difference of \eqref{eq:expansion}, group label paths by their final label $j$. At a fixed report word their nonnegative controller weights, summed over all label paths for a fixed action word, are at most one. Consequently the absolute difference is bounded by
+\[
+ \sum_{\mathbf a}\sum_{j=1}^M
+ \norm{f_{\theta,t}^{\mathbf a,d_j}-C_{\mathbf a,h}f_{\theta,t}^{\mathbf a,d_j}}_1
+ \le M\sum_{\mathbf a}\eta_{t,\mathbf a,h}.
+\]
+Clipping at one and summing the discount weights proves the assertion. All actions are universally legal and every row is stochastic. There is neither a forbidden newly created path nor an exact stopping constraint to violate. No equivalence of conditional null sets is used.
+\end{proof}
+
+\begin{lemma}[Finite probability tables]\label{lem:round}
+Let $Q=2^p\ge1$. Every cell controller can be approximated by rows with entries in $Q^{-1}\mathbb Z$ and readouts in $D_\rho$, at the same $M$, with uniform prefix risk error at most
+\begin{equation}\label{eq:BN}
+ B_N(Q,\rho)=(1-\beta)\sum_{t=1}^N\beta^{t-1}
+       \min\{1,t(|A|+M)/Q\}+\omega_D(\rho)(1-\beta^N).
+\end{equation}
+In particular $B_N\le (|A|+M)/(Q(1-\beta))+\omega_D(\rho)$.
+\end{lemma}
+\begin{proof}
+Round a simplex row by flooring $Q$ times each entry and allocating the remaining integer units among the largest fractional parts, with deterministic tie-breaking. An $r$-entry row changes in total variation by at most $r/Q$. Couple the action and next-label samples until their first discrepancy, using the same physical kernels while the samples agree. Up to call $t$ the probability of a discrepancy is at most $t(|A|+M)/Q$. Outside that event, only the specified readout error remains. Bounded loss and discount summation give \eqref{eq:BN}. No support condition is necessary for legality in this continuing class.
+\end{proof}
+
+\begin{theorem}[Same-budget certified implementation]\label{thm:compile}
+Assume the effective data above. Let $B_a=|\mathcal P_{a,h}|$, including all positive reference cells. Enumerate all action rows and report rows of denominator $Q$ and readouts in $D_\rho$. The complete list $\mathscr G$ has at most
+\begin{equation}\label{eq:list}
+ |D_\rho|^M {Q+|A|-1\choose |A|-1}^{M}
+       \prod_{a\in A}{Q+M-1\choose M-1}^{M B_a}
+\end{equation}
+members. For each $g\in\mathscr G$ and $\theta_i\in\Theta_s$, compute
+$l_{g,i}\le J_{\theta_i,\beta}^{N}(g)\le u_{g,i}$ with $u_{g,i}-l_{g,i}\le\zeta$.
+Set $L=\min_g\max_i l_{g,i}$ and $U=\min_g\max_i u_{g,i}$. Then
+\begin{equation}\label{eq:interval}
+ \boxed{\max\{0,L-E_N-B_N\}\le V_\beta^\Theta(M)
+       \le\min\{1,U+\Omega_N(s)+\beta^N\},\qquad U-L\le\zeta.}
+\end{equation}
+A minimizer of $\max_i u_{g,i}$ is one implementing table on the original family. Its state alphabet is still $M$; it need not know $\theta$ or count to $N$. The total certified optimality gap is at most
+$E_N+B_N+\Omega_N(s)+\beta^N+\zeta$.
+The endpoints converge effectively by first choosing $N$ and then refining the supplied data. This is a global lower bound against all Borel controllers, not a local search certificate.
+\end{theorem}
+\begin{proof}
+Let $R_N$ be the Borel prefix value, and $R_{N,G}^\Theta$ its restriction to the complete list. Lemmas~\ref{lem:average} and \ref{lem:round}, uniformly over $\theta$, give
+\[
+ R_N\le R_{N,G}^\Theta\le R_N+E_N+B_N.
+\]
+Let $S_G=\min_g\max_{\theta_i\in\Theta_s}J_{\theta_i,\beta}^{N}(g)$. Net inclusion and \eqref{eq:Omega} give
+$S_G\le R_{N,G}^\Theta\le S_G+\Omega_N(s)$ and $L\le S_G\le U$.
+A minimizer of the lower envelopes has every upper envelope at most its lower envelope plus $\zeta$, so $U-L\le\zeta$. The selected upper minimizer has full risk at most $U+\Omega_N(s)+\beta^N$. Combining these inequalities with \eqref{eq:tail} proves \eqref{eq:interval}. The model modulus is needed on the upper endpoint only. Counting integer simplex rows gives \eqref{eq:list}. All integrations use one fixed model for the whole prefix. The model net and the enumeration are offline certificates, not information delivered to the running observer.
+\end{proof}
+
+\begin{remark}[Why effective response data can exist]\label{rem:compactdensities}
+For a finite prefix, if $(\theta,d)\mapsto f_{\theta,t}^{\mathbf a,d}$ has compact image in $L^1$ and the partitions generate the report sigma fields, their conditional expectations converge uniformly on that compact image. To see this, cover the image by finitely many $L^1$ balls; use convergence at the centers and the $L^1$ contraction of conditional expectation. Effectivity still needs computable moduli and integrations. This observation permits vanishing and changing densities. It does not turn bare domination into an algorithm.
+\end{remark}
+
+\subsection{Representation costs}
+Put $P=M|A|+M^2\sum_aB_a$. A direct integer-table representation uses at most
+\[
+ P\lceil\log_2(Q+1)\rceil+M\lceil\log_2|D_\rho|\rceil
+\]
+bits, plus descriptions of partitions, readouts and interpreter. The live cut state uses $\lceil\log_2M\rceil$ bits. With a read-only random-access table, row sampling and lookup require
+$O(p+\log M+\log|A|+\log(1+\max_aB_a))$ temporary bits in addition to the supplied classification and readout workspace. Sampling scans at most $|A|+M$ entries per call; sequential-tape access must pay its actual scan cost. Fresh $p$-bit uniforms implement dyadic rows exactly. Report parsing, comparison near cell boundaries, and physical acquisition times are separate supplied costs; exact access to an arbitrary real report is not asserted to be finite-bit hardware. Numerical classification error is handled in Section~\ref{sec:resources}. The list size times the model-net size bounds the number of offline evaluations, not the time of each one. None of these upper accounts is claimed to be a matched complexity lower bound.

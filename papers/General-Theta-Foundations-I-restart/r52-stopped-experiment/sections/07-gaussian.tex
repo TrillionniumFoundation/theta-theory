@@ -1,0 +1,155 @@
+\section{Nonregenerative Gaussian acquisition and a singular stopping transition}
+\label{sec:gaussian}
+The preceding theorem does not require recovery of the audit mean from the current report. The following consequence makes that distinction quantitative in an informative experiment without an auxiliary reliability coordinate.
+
+Let $X_t\in\{-1,1\}$ be the protected sign at call $t$. Given the surviving history, before the report suppose
+\begin{equation}\label{eq:prior-floor}
+ q\le \Pp(X_t=1\mid\mathcal H_{t-1})\le1-q,
+ \qquad0<q\le\tfrac12.
+\end{equation}
+Conditionally on $X_t$, report $Y_t\sim N(\mu X_t,1)$, $\mu>0$, and audit $X_\tau$ after stopping. Every call costs one. This hypothesis follows from the raw controlled two-state transition kernel with all entries in $[q,1-q]$. Transitions may depend on the chosen action and on an unknown fixed model. They need not be symmetric. Preparation may be arbitrary because transition precedes reporting. The observer cannot access $X_t$.
+
+Write $f_\pm(y)=\varphi(y\mp\mu)$ and set
+\[
+ \nu(dy)=\tfrac12(f_++f_-)dy,\qquad
+ A(y)=\frac{\min(f_+,f_-)}{f_++f_-}
+     =\frac1{1+e^{2\mu|y|}}.
+\]
+The symmetric fair preparation gives the actual reference law $\nu$. For $t\ge1$, let $h_t\ge0$ be the unique solution of
+\begin{equation}\label{eq:two-sided-threshold}
+ \overline\Phi(h_t-\mu)+\overline\Phi(h_t+\mu)=t^{-1},
+ \qquad Q_\mu(t)=t\overline\Phi(h_t+\mu).
+\end{equation}
+In particular $h_1=0$. The quantity $Q_\mu(t)$ is the marked profile with proxy $\operatorname{sign}(y)$ and at least two centers: it equals
+$t\int_{|y|\ge h_t}A(y)\nu(dy)$. Rearrangement by the increasing reliability $|y|$ proves this identity even for fractional selection rules.
+
+\begin{theorem}[All-history Gaussian acquisition bounds]\label{thm:gaussian-all}
+For every $N\ge1$, every checkpoint dictionary size $m\ge2$, and every autonomous budget $M\ge3$,
+\begin{equation}\label{eq:gaussian-sandwich}
+ 4qQ_\mu(2(1-q)N)
+ \le R_\cp^\Theta(N,m),\ R_\aut^\Theta(N,M)
+ \le4Q_\mu(N).
+\end{equation}
+The lower bound permits all history-dependent randomized stopping rules and all history-dependent terminal predictions, without a finite-memory constraint. One common three-state program attains the displayed upper, independently of the unknown transitions. Consequently
+\begin{equation}\label{eq:gaussian-order}
+ R_\cp^\Theta(N,m)\asymp R_\aut^\Theta(N,M)
+ \asymp Q_\mu(N)
+ \asymp \exp\{-2\mu\sqrt{2\log N}-2\mu^2\}
+\end{equation}
+as $N\to\infty$, uniformly in the stated $m,M$. The last comparison is not a ratio-one assertion for the risk. The profile itself satisfies
+$Q_\mu(N)/\exp\{-2\mu\sqrt{2\log N}-2\mu^2\}\to1$.
+\end{theorem}
+\begin{proof}
+Fix any legal procedure with $\E\tau\le N$, and condition also on its private past. At a surviving history write $p=\Pp(X_t=1\mid\mathcal H_{t-1})$ and let $u_t(y)\in[0,1]$ be its conditional stop probability. Any terminal decoder incurs at least conditional variance. Multiplying that variance by the raw report density gives
+\[
+ \frac{4p(1-p)f_+(y)f_-(y)}{pf_+(y)+(1-p)f_-(y)}
+ \ge4q(1-q)\min(f_+(y),f_-(y)).
+\]
+Define the actual predictable counting density
+$g(y)=\E\sum_{t\le\tau}u_t(y)$. Tonelli gives $0\le g\le N$. Since the conditional report density is at most $2(1-q)$ times $\nu$, terminal mass one implies
+$\int g\,d\nu\ge[2(1-q)]^{-1}=:a_0$. Therefore
+\[
+ R\ge8q(1-q)\int A g\,d\nu
+ \ge8q(1-q)a_0 Q_\mu(N/a_0).
+\]
+The last inequality selects the smallest values of $A$ with a density bounded by $N$ and mass at least $a_0$. This is a lower bound over all actual histories, not a stationary posterior approximation.
+
+For the upper, stop when $|Y_t|\ge h_N$ and predict $\operatorname{sign}(Y_t)$, using one live and two terminal labels. Under either hidden sign the stop probability is the same number $1/N$. Hence it is $1/N$ after every surviving history, and $\E\tau=N$ exactly, although the hidden state does not regenerate. Under either sign the probability of an erroneous accepted sign on a single call is $\overline\Phi(h_N+\mu)$. Squared loss is four on this event. Summing survival probabilities gives risk $4N\overline\Phi(h_N+\mu)$.
+
+To verify the rate, put $x=h_N-\mu$. Mills' inequalities, obtained by integrating $\varphi'(x)=-x\varphi(x)$, give for $x>0$
+\[
+ \frac{x}{x^2+1}\varphi(x)<\overline\Phi(x)<\frac{\varphi(x)}x.
+\]
+They imply $x-\sqrt{2\log N}\to0$ and
+\[
+ \frac{\overline\Phi(x+2\mu)}{\overline\Phi(x)}
+ =(1+o(1))\exp(-2\mu x-2\mu^2),\qquad
+ N\overline\Phi(x)\to1.
+\]
+This proves the stated ratio-one asymptotic for $Q_\mu$. For any fixed $c\ge1$, $Q_\mu(cN)/Q_\mu(N)\to1$. Positivity and continuity on bounded intervals then bound this ratio away from zero for all $N\ge1$. Apply this with $c=2(1-q)$. It proves the uniform comparability claims, not an exact finite-budget checkpoint optimum.
+\end{proof}
+
+The calibration mechanism is explicit here. If $e$ is the posterior probability that the proxy sign is wrong, then $e\le(1-q)A/q$, while $e(1-e)$ is bounded below by a positive multiple of $A$. Thus $v=4e(1-e)\asymp A$ and $|m-\operatorname{sign}(y)|^2=4e^2\le C A$, uniformly over all histories. The proof above improves the general envelope constants by using the unnormalized variance directly. The protected audit is fixed; selecting a reliable current sign does not estimate an unchanging hidden parameter.
+
+\begin{proposition}[A noncommuting Gaussian instrument]\label{prop:gaussian-quantum}
+Let $D_q$ be the qubit channel of Theorem~\ref{thm:quantum}, and for selectable unitaries $V_a$ let
+\[
+ D_y=\operatorname{diag}(\sqrt{f_+(y)},\sqrt{f_-(y)}),\qquad
+ \mathcal G_a(dy)(\rho)=D_yV_aD_q(\rho)V_a^*D_y\,dy.
+\]
+After stopping, measure $\sigma_z$ without an intervening transition. Then Theorem~\ref{thm:gaussian-all} applies to this audit for every causal selection of $a$. The measurement effects for different $V_a$ can be noncommuting. No common eigenbasis for the instruments or reset of the physical state is assumed.
+\end{proposition}
+\begin{proof}
+The displayed completely positive instrument integrates to a trace-preserving map because $\int D_y^2dy=I$. Before measurement $V_aD_q(\rho)V_a^*\succeq qI$, so its diagonal weights belong to $[q,1-q]$. The joint law of $y$ and the subsequent $\sigma_z$ outcome is precisely $pf_+(y)dy$ or $(1-p)f_-(y)dy$. Thus the raw prior-floor and conditional audit identities used in the proof hold at every history, including histories selected by rejection. Coherences need not vanish after $D_y\rho D_y$, and distinct rotated effects need not commute. Report total variation is Lipschitz in the input trace norm. On bounded report sets the normalized update is uniformly continuous; Gaussian tails remain part of the experiment and are not conditioned away. The finite Hermitian instrument representation gives an executable predictive carrier, and the observer uses only its three charged classical labels.
+\end{proof}
+
+\subsection{Actual revealing mass and a singular threshold}
+Modify either Gaussian experiment as follows. Independently at each call, with probability $\beta\in[0,1]$ execute a marked revealing operation and report the protected sign exactly. Otherwise execute the Gaussian operation. For the classical model this reports the current sign. For the quantum model it is the rank-one projective instrument $\rho\mapsto P_\pm V_aD_q(\rho)V_a^*P_\pm$, with its sign and branch marked. The immediate audit has that same sign; the next call still starts with its declared transition or channel. This is a genuine mixture of continuous and singular acquired information on the same physical carrier.
+
+\begin{theorem}[A non-power singular acquisition threshold]\label{thm:reveal}
+With $m\ge2$ and $M\ge3$, zero risk is possible exactly when $\beta N\ge1$. If $r=1-\beta N>0$ and
+\[
+ t=\frac{N(1-\beta)}r\ge1,
+\]
+then
+\begin{equation}\label{eq:reveal-sandwich}
+ 4q\,rQ_\mu(2(1-q)t)
+ \le R_\cp^\Theta(N,m),\ R_\aut^\Theta(N,M)
+ \le4rQ_\mu(t).
+\end{equation}
+All constants are uniform in $N,\beta,m,M$ for fixed $q,\mu$. In particular, for fixed $0<\beta<1$ and $N\uparrow1/\beta$, the matching risk order is
+\[
+ r\exp\{-2\mu\sqrt{2\log(1/r)}\}.
+\]
+The factor $r$ is actual nonrevealing terminal mass; it is not removed by renormalizing the continuous stratum.
+\end{theorem}
+\begin{proof}
+The expected acquired count of revelations is $\beta\E\tau\le\beta N$. Hence every procedure has nonrevealing terminal mass at least $r$. Apply the preceding unnormalized-variance calculation only on nonrevealing calls. Its counting density is bounded by $N(1-\beta)$, and its $\nu$-mass is at least $r/[2(1-q)]$. Rearrangement gives the lower in \eqref{eq:reveal-sandwich}. This proves strict positivity when $r>0$, including for decoders with unlimited memory.
+
+For the upper, accept every revelation and accept a Gaussian report when $|y|\ge h_t$. The stop hazard at every history is
+$\beta+(1-\beta)/t=1/N$. The mean cost is exactly $N$, and the actual nonrevealing terminal mass is $N(1-\beta)/t=r$. Its erroneous-sign contribution is $4N(1-\beta)\overline\Phi(h_t+\mu)=4rQ_\mu(t)$. One live and two terminal labels suffice. If $\beta N\ge1$, wait for the first revelation, of mean cost $1/\beta$, and predict its sign. The asymptotic follows from Theorem~\ref{thm:gaussian-all}; here $t$ is a fixed positive multiple of $1/r$ up to a factor tending to one. No full-rank density lower bound is imposed on the atomic branch.
+\end{proof}
+
+\subsection{The complete two-state curve, including the critical atom}
+For this subsection only, take the known symmetric classical transition with flip probability $q$, fair preparation, and let $\kappa=(1-2q)/(2q)$. For a one-live, one-terminal program write $a,b$ for its stop probabilities conditional on signs $+1,-1$. Its mean time and terminal mean are
+\begin{equation}\label{eq:two-state-occupation}
+ T(a,b)=\frac{2+\kappa(a+b)}{a+b+2\kappa ab},\qquad
+ m(a,b)=\frac{a-b}{a+b+2\kappa ab}.
+\end{equation}
+The upper likelihood-ratio boundary consists, in increasing selectivity, of
+\begin{align}
+ &(a,b)=(1,b),&&1-\beta\le b\le1,\label{eq:roc}\\
+ &a=\beta+(1-\beta)\overline\Phi(h-\mu),\quad
+ b=(1-\beta)\overline\Phi(h+\mu),&&-\infty<h<\infty,\notag\\
+ &(a,b)=(\beta,0),&&\beta>0.\notag
+\end{align}
+The first segment randomizes on the negative revelation; the middle accepts the positive revelation and the upper Gaussian tail, but no negative revelation. Empty segments at $\beta=0$ or $1$ are omitted.
+
+\begin{theorem}[Exact all-program two-state curve]\label{thm:two-state}
+For $\beta=0$, put $N_0=+\infty$; for $\beta>0$, put
+$N_0=2/\beta+\kappa$. At $N=1$ the optimal two-state risk is one. For $1<N<N_0$, there is a unique point $(a_N,b_N)$ on \eqref{eq:roc} with $T(a_N,b_N)=N$, and
+\[
+ R_\aut(N,2)=1-m(a_N,b_N)^2.
+\]
+For $N\ge N_0$ the optimum is zero. These statements cover all Borel randomized two-state programs. Thus, for $0<\beta\le1$, the exact zero-risk threshold is $2/\beta+\kappa$ for two states, but $1/\beta$ for three or more states. Both thresholds count the live controller.
+\end{theorem}
+\begin{proof}
+Let $v_\pm$ be the actual expected numbers of reports in the two signs, and $d_+=av_+$, $d_-=bv_-$. Summing and subtracting the killed two-state balance gives
+$d_++d_-=1$ and $v_+-v_-=-\kappa(d_+-d_-)$. Solving yields \eqref{eq:two-state-occupation}. Every nonzero routing has positive stop probability after a transition, bounded below by $q(a+b)$, and therefore finite occupation. Its optimal single constant prediction is $m$, with risk $1-m^2$. This occupation calculation is inherited from the unmarked Gaussian experiment~\cite{GTF51}; the atomic boundary and its consequences are new here.
+
+Reflect signs if necessary to have $a\ge b$. At fixed $b$, direct differentiation gives
+\[
+ \partial_a m=\frac{2b(1+\kappa b)}{(a+b+2\kappa ab)^2},\qquad
+ \partial_a T=-\frac{2(1+\kappa b)^2}{(a+b+2\kappa ab)^2}.
+\]
+Thus maximizing $a$ improves both risk and cost, with the zero-$b$ endpoint treated directly. The likelihood ratio is $+\infty$ on the positive revelation, $e^{2\mu y}$ on the Gaussian branch, and zero on the negative revelation. The elementary Neyman--Pearson comparison~\cite{NP} therefore gives exactly \eqref{eq:roc}, including randomization on the final atom. No threshold restriction has been assumed for the competing programs.
+
+Along this nested family the hitting time increases strictly from one to $N_0$: the endpoint has $a=\beta,b=0$ and \eqref{eq:two-state-occupation} gives $2/\beta+\kappa$. For $\beta=0$ the limit is infinite. The ratio $a/b$ increases strictly, while $a$ decreases, so
+$m=(a/b-1)/(a/b+1+2\kappa a)$ increases from zero to one. The negative-atom segment obeys the same conclusion directly. This proves existence, uniqueness and budget saturation before $N_0$; after that budget the positive-revelation rule has risk zero. At $N=1$ stopping is compulsory at the first report, and a single terminal value cannot distinguish its sign. The three-state threshold was proved in Theorem~\ref{thm:reveal} over all histories.
+\end{proof}
+
+Theorems~\ref{thm:gaussian-all} and \ref{thm:reveal} provide matching all-history checkpoint orders, while Theorem~\ref{thm:two-state} provides an exact finite-budget two-state value. Neither assertion identifies the exact unrestricted checkpoint value at every finite budget, nor the exact intermediate positive-risk curve for every $M\ge3$. These distinctions are essential in comparing a finite-memory machine with a full-history stopping rule.
+
+\subsection*{Finite arithmetic certificate}
+\input{sections/gaussian-table}
+The accompanying certificate encloses the normal tails and threshold roots by rational interval arithmetic. It reports the all-history lower, the three-state upper at the same mean budget, and the exact two-state curve, including the revealed-atom transition. These are finite-parameter checks of the formulas; their all-history and continuum validity comes from the preceding proofs.

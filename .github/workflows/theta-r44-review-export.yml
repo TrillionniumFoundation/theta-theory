@@ -1,0 +1,70 @@
+name: Theta R44 pinned research source export
+on:
+  push:
+    branches:
+      - foundation/general-theta-restart-r44-stopping-disintegration-research-2026-10-12
+    paths:
+      - .github/workflows/theta-r44-review-export.yml
+permissions:
+  contents: read
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .github
+            foundations/general-theta
+            papers/General-Theta-Foundations-I-restart
+            GENERAL_THETA_FOUNDATIONS_I_RESTART_R32_BAYESIAN_CURVATURE_EXTERNAL_REFEREE_REPORT_R32.md
+          sparse-checkout-cone-mode: false
+      - name: Decode pinned deposited research source without changing old branches
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 - <<'PY'
+          import ast,base64,hashlib,json,lzma,os,pathlib,shutil,subprocess,urllib.request,zipfile
+          root=pathlib.Path.cwd()
+          source=root/'.github/scripts/theta-r43-publish.py'
+          values={}
+          for node in ast.parse(source.read_text()).body:
+              if isinstance(node,ast.Assign) and len(node.targets)==1 and isinstance(node.targets[0],ast.Name):
+                  try: values[node.targets[0].id]=ast.literal_eval(node.value)
+                  except (ValueError,TypeError): pass
+          pieces=[]
+          for sha in values['BLOBS']:
+              req=urllib.request.Request('https://api.github.com/repos/TrillionniumFoundation/theta-theory/git/blobs/'+sha,headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json'})
+              with urllib.request.urlopen(req,timeout=60) as resp: data=json.load(resp)
+              raw=base64.b64decode(data['content'])
+              if hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()!=sha: raise RuntimeError('blob mismatch')
+              pieces.append(raw)
+          raw=b''.join(pieces)
+          if hashlib.sha256(raw).hexdigest()!=values['TRANSPORT_SHA256']: raise RuntimeError('transport mismatch')
+          files=json.loads(lzma.decompress(raw))
+          dest=root/'papers/General-Theta-Foundations-I-restart/r43-stopped-occupation'
+          for name,item in files.items():
+              p=pathlib.PurePosixPath(name)
+              if p.is_absolute() or '..' in p.parts: raise RuntimeError('unsafe path')
+              content=item['text'].encode()
+              if hashlib.sha256(content).hexdigest()!=item['sha256']: raise RuntimeError('source hash mismatch')
+              target=dest/name
+              if target.exists() and target.read_bytes()!=content: raise RuntimeError('would overwrite '+name)
+              target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(content)
+          out=pathlib.Path(os.environ['RUNNER_TEMP'])/'r44-input';out.mkdir()
+          binding={'snapshot_commit':os.environ['GITHUB_SHA'],'r43_bootstrap':'1909092aeccc74b227fb568eafad6e958efb62d5','r32_review':'65bd07d89b04274c587d2ae4100511d99c39b0f2','transport_sha256':hashlib.sha256(raw).hexdigest(),'decoded_source_files':len(files),'status':'INPUT_EXPORT_ONLY; no build or proof certification'}
+          with zipfile.ZipFile(out/'pinned_research_sources.zip','w',zipfile.ZIP_DEFLATED) as z:
+              for folder in ('papers/General-Theta-Foundations-I-restart','foundations/general-theta','.github'):
+                  for p in sorted((root/folder).rglob('*')):
+                      if p.is_file() and 'artifacts' not in p.parts and 'evidence' not in p.parts and '__pycache__' not in p.parts: z.write(p,p.relative_to(root))
+              for p in root.glob('GENERAL_THETA_FOUNDATIONS_I_RESTART_*REFEREE_REPORT*.md'): z.write(p,p.name)
+              z.writestr('R44_INPUT_BINDING.json',json.dumps(binding,indent=2)+'\n')
+          (out/'binding.json').write_text(json.dumps(binding,indent=2)+'\n')
+          print(json.dumps(binding,indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r44-pinned-research-sources
+          path: ${{ runner.temp }}/r44-input
+          retention-days: 30

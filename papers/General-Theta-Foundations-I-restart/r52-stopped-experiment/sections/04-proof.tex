@@ -1,0 +1,69 @@
+\section{Proof of the transfer theorem}
+\begin{lemma}[Conditional task comparison]\label{lem:comparison}
+For every legal pre-audit history, report and prediction $r\in H$,
+\[
+ k_-\{w_a(y)+\|f_a(y)-r\|^2\}
+ \le \E[\|Z-r\|^2\mid\mathcal H_{t-1},a,y]-B_0
+ \le k_+\{w_a(y)+\|f_a(y)-r\|^2\}.
+\]
+The same inequalities remain valid after an independent routing coin chooses $r$.
+\end{lemma}
+\begin{proof}
+Write $m=m_{t,a}(y)$, $v=v_{t,a}(y)$ and $w=w_a(y)$. Conditional projection gives the middle expression as $v-B_0+\|m-r\|^2$. The upper follows from
+$\|m-r\|^2\le2\|f_a-r\|^2+2c_bw$.
+For the lower,
+\[
+ w+\|f_a-r\|^2\le(1+2c_b)w+2\|m-r\|^2
+ \le k_-^{-1}\{v-B_0+\|m-r\|^2\}.
+\]
+The coin has no audit information, so conditioning on its selected value does not change $m$ or $v$.
+\end{proof}
+
+\begin{lemma}[Actual stopped occupation]\label{lem:occupation}
+For any legal history-dependent procedure of finite expected cost, put
+\[
+ x_a=\E\sum_{t\le\tau}\one_{\{A_t=a\}},\qquad
+ \zeta_a(D)=\Pp(A_\tau=a,Y_\tau\in D).
+\]
+Then $\sum_a\zeta_a(Y_a)=1$, $\sum_ac_ax_a\le N$, and
+$\zeta_a\le u_ax_a\nu_a$. These are assertions about its actual execution law.
+\end{lemma}
+\begin{proof}
+Positive minimum cost implies $\E\tau<\infty$ and hence almost-sure termination. For a Borel set $D$, the expected number of action-$a$ reports in $D$ is
+\[
+ \sum_t\E\left[\one_{\{\tau\ge t,A_t=a\}}
+       \Pp(Y_t\in D\mid\mathcal H_{t-1},A_t=a)\right]
+ \le u_ax_a\nu_a(D).
+\]
+The terminal count is no larger than this acquired count. Predictability is used before the report; conditioning the law after rejection back to a reference law would not justify this calculation.
+\end{proof}
+
+\begin{proof}[Lower bounds]
+Apply Lemma~\ref{lem:comparison} to the actually committed output, then replace its squared distance by the minimum over the fixed output dictionary. With $h_a=d\zeta_a/d\nu_a$ and $x'_a=u_ax_a$, Lemma~\ref{lem:occupation} yields a feasible point of $\Xi_m(N;c/u)$. This proves the checkpoint lower for each model and then for the common worst-model infimum. An autonomous program has at least one live label, so at most $M-1$ terminal values. Its entire action and stopping policy is already included in the preceding lower bound.
+\end{proof}
+
+\begin{proof}[Common finite-state upper]
+Take a minimizing point $(C,x,h)$ of $\Xi_m(N;c/\ell)$ and put $T=\sum_a x_a/\ell_a\ge1$. At one live label, choose action $a$ with probability $x_a/(\ell_aT)$. For $x_a>0$, accept report $y$ with probability $h_a(y)/x_a$, route to a nearest proxy center in $C$, and otherwise continue at the same live label. Actions with $x_a=0$ are not selected. A fixed Borel tie rule is used.
+
+At every surviving history, the conditional probability of stopping is at least
+$T^{-1}\sum_a\int h_a\,d\nu_a=T^{-1}$. Therefore $\E_\theta\tau\le T$, uniformly in $\theta$. Conditional expected acquisition cost per call is the fixed number $T^{-1}\sum_ac_ax_a/\ell_a$, so total expected cost is at most $N$. The conditional contribution to protected excess risk on one call is at most
+\[
+ \frac{k_+}{T}\sum_a\frac{u_a}{\ell_a}\int d_{a,C}h_a\,d\nu_a
+ \le \frac{k_+K_0}{T}\Xi_m(N;c/\ell).
+\]
+Summing over actual survival probabilities proves the upper. It uses no persistent real vector, posterior or random seed. The parameter-independent program has one live label and $m$ terminal labels; its actual selected law need not equal $h_a\nu_a$.
+\end{proof}
+
+\begin{proof}[Existence, dual and exact special case]
+The counts belong to $0\le x_a\le N/c_a$. On this box the functions $h_a$ lie in weak-star compact subsets of $L^\infty(\nu_a)$. The inequalities $0\le h_a\le x_a$ and the mass constraint are weak-star closed, as can be tested against nonnegative $L^1$ functions. The centers belong to compact $H^m$, and their squared distance functions converge uniformly when the centers converge. Since $w_a$ is bounded, the objective is jointly continuous in these topologies. This proves existence and the feasibility criterion.
+
+For fixed centers, minimizing the mass--cost Lagrangian over $0\le h_a\le x_a$ gives
+\[
+ z-\lambda N+\sum_ax_a\left\{\lambda c_a-\int(z-d_{a,C})_+d\nu_a\right\}.
+\]
+Minimizing in $x_a\ge0$ yields \eqref{eq:dual}. To prove equality, consider the convex cone of achievable triples (terminal mass, cost, marked distortion), with nonnegative slack in the last two coordinates. Its bounded-cost slices are closed by the compactness just proved. At mass one and $N>\min c_a$, the projected point is interior to the feasible mass--cost cone. A supporting plane to the finite convex distortion value has a nonpositive cost coefficient and can be normalized to distortion coefficient one. Testing it on the one-action rays gives precisely \eqref{eq:dual}, with equality at the optimum. At the endpoint, take budgets decreasing to $\min c_a$; compactness gives convergence of the primal values, and evaluation of the interior dual optimizers at the endpoint gives the supremum formula. No boundedness of endpoint multipliers is inferred.
+
+For the two-action assertion, at an optimizer discard actions with no terminal mass. Freeze each remaining action's conditional terminal distribution, per-unit terminal cost and per-unit terminal distortion. Reoptimize only its weights subject to total mass one and one cost inequality. An extreme minimizer has at most two positive weights: three positive weights admit a nonzero two-sided perturbation preserving total mass and cost. Rescaling the frozen counts and densities preserves their pointwise domination. This standard finite-dimensional argument makes no claim about a uniquely optimal action mixture.
+
+Finally, in the zero-mark regenerative case the conditional loss is exactly $B_0+\|f_a-r\|^2$. The lower occupation inequality uses $u_a=1$. The construction chooses $a$ with probability $x_a/\sum x_a$ and accepts with $h_a/x_a$; its stopping mass is exactly $1/\sum x_a$ at every call. Its actual terminal submeasures are exactly $h_a\nu_a$, and its expected action counts are exactly $x_a$. The exact equalities follow. This last mechanism is the inherited report-recoverable result~\cite{GTF51}; the conditional task comparison is what permits the nonzero-mark extension.
+\end{proof}
