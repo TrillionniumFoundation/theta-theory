@@ -1,0 +1,117 @@
+name: General Theta R57 complete source-bound build
+on:
+  push:
+    branches: [foundation/general-theta-restart-r57-role-aware-transfer-research-2026-10-14]
+    paths: [.github/workflows/theta-r57-complete.yml]
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: theta-r57-complete-vm
+  cancel-in-progress: true
+jobs:
+  publish:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 60
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      SOURCE_DATE_EPOCH: '1791849600'
+      FORCE_SOURCE_DATE: '1'
+      TZ: UTC
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Cancel only superseded R57 runs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for id in 38515889126 38516290137 38516840004 38517494276; do
+            gh api --method POST "repos/TrillionniumFoundation/theta-theory/actions/runs/$id/cancel" || true
+          done
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install mathematical build dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+          python -m pip install numpy==2.3.5 scipy==1.17.0 pypdf==5.9.0 PyYAML==6.0.2
+      - name: Publish sealed ordinary source
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib,yaml
+          p=Path('.github/workflows/theta-r57-arm-rebuild.yml')
+          raw=p.read_bytes()
+          blob=hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()
+          if blob!='44f0e0ba49d72ea63a9e51778e9024c93f765e72':
+              raise RuntimeError('Pinned source-sealing workflow changed')
+          w=yaml.safe_load(raw)
+          matches=[s['run'] for s in w['jobs']['publish']['steps'] if s.get('name')=='Seal ordinary source using the committed citation repair']
+          if len(matches)!=1:raise RuntimeError('Expected exactly one pinned source step')
+          Path('/tmp/theta-r57-source.sh').write_text(matches[0])
+          PY
+          bash /tmp/theta-r57-source.sh
+      - name: Complete native and retained mathematical build
+        run: >-
+          python papers/General-Theta-Foundations-I-restart/r57-role-aware-transfer/build.py
+          --source-sha '${{ steps.source.outputs.source_sha }}'
+          --prepared-root '${{ github.workspace }}' --retained
+          --output '${{ runner.temp }}/theta-r57-build'
+      - name: Publish artifacts with source parent
+        run: python .github/scripts/theta-r57-publish.py store --build '${{ runner.temp }}/theta-r57-build'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r57-native-${{ github.run_id }}
+          path: ${{ runner.temp }}/theta-r57-build/download/native/
+          if-no-files-found: error
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r57-retained-1-${{ github.run_id }}
+          path: ${{ runner.temp }}/theta-r57-build/download/retained-1/
+          if-no-files-found: error
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r57-retained-2-${{ github.run_id }}
+          path: ${{ runner.temp }}/theta-r57-build/download/retained-2/
+          if-no-files-found: error
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r57-retained-3-${{ github.run_id }}
+          path: ${{ runner.temp }}/theta-r57-build/download/retained-3/
+          if-no-files-found: error
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r57-retained-4-${{ github.run_id }}
+          path: ${{ runner.temp }}/theta-r57-build/download/retained-4/
+          if-no-files-found: warn
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r57-retained-5-${{ github.run_id }}
+          path: ${{ runner.temp }}/theta-r57-build/download/retained-5/
+          if-no-files-found: warn
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theta-r57-retained-6-${{ github.run_id }}
+          path: ${{ runner.temp }}/theta-r57-build/download/retained-6/
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Preserve failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: theta-r57-diagnostics-${{ github.run_id }}
+          path: ${{ runner.temp }}/theta-r57-build/
+          if-no-files-found: warn
