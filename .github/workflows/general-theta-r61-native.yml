@@ -1,0 +1,52 @@
+name: General Theta I R61 native source verification
+on:
+  push:
+    branches: [revision/general-theta-r61-primitive-continuation-20261015]
+    paths:
+      - 'papers/General-Theta-Foundations-I-restart/r61-primitive-continuation/**'
+      - '.github/workflows/general-theta-r61-native.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-and-build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          sparse-checkout: papers/General-Theta-Foundations-I-restart
+      - name: Export exact source tree before execution
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/r61-result/source"
+          git archive "$GITHUB_SHA" papers/General-Theta-Foundations-I-restart | tar -x -C "$RUNNER_TEMP/r61-result/source"
+          printf '%s\n' "$GITHUB_SHA" > "$RUNNER_TEMP/r61-result/SOURCE_COMMIT.txt"
+          git ls-tree -r "$GITHUB_SHA" papers/General-Theta-Foundations-I-restart > "$RUNNER_TEMP/r61-result/SOURCE_TREE.txt"
+      - name: Install native verification dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-fonts-recommended lmodern poppler-utils python3-numpy python3-scipy python3-sympy
+      - name: Verify current complete revision when present
+        shell: bash
+        run: |
+          set -euo pipefail
+          P=papers/General-Theta-Foundations-I-restart/r61-primitive-continuation
+          if test -f "$P/verify.py"; then
+            /usr/bin/python3 "$P/verify.py" --out "$RUNNER_TEMP/r61-result/verification" --source-commit "$GITHUB_SHA"
+          else
+            printf '%s\n' 'Source export only: R61 manuscript not yet deposited; no R61 build or mathematical success claimed.' > "$RUNNER_TEMP/r61-result/EXPORT_ONLY.txt"
+          fi
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: general-theta-r61-native-${{ github.sha }}
+          path: ${{ runner.temp }}/r61-result
+          if-no-files-found: error
+          retention-days: 90
