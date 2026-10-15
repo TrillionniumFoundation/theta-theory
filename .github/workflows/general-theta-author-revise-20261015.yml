@@ -1,0 +1,60 @@
+name: General Theta I author revision corpus
+on:
+  push:
+    branches: [revision/general-theta-foundations-i-author-revise-2026-10-15]
+    paths: [.github/workflows/general-theta-author-revise-20261015.yml]
+permissions:
+  contents: read
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Export immutable paper sources and historical inventory
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/theta-author-corpus
+          git fetch origin '+refs/heads/*:refs/remotes/origin/*'
+          git for-each-ref --format='%(objectname)%09%(refname)' refs/remotes/origin > /tmp/theta-author-corpus/ALL_REFS.tsv
+          git log --all --format='%H%x09%P%x09%aI%x09%s' -- '*General*Theta*' '*general-theta*' > /tmp/theta-author-corpus/COMMIT_HISTORY.tsv
+          git archive 29de5433c2c4f45d5174a87a8588fd3a24d3f84a papers/General-Theta-Foundations-I-restart foundations/general-theta GENERAL_THETA_RESTART_INDEX.md GENERAL_THETA_RESTART_MANIFEST.json | tar -x -C /tmp/theta-author-corpus
+          python3 - <<'PY'
+          import subprocess,pathlib,json,hashlib,re
+          out=pathlib.Path('/tmp/theta-author-corpus'); records=[]; seen=set(); rows=[]
+          refs=subprocess.check_output(['git','for-each-ref','--format=%(objectname)\t%(refname)','refs/remotes/origin'],text=True).splitlines()
+          suffixes={'.tex','.bib','.md','.txt','.json','.tsv','.csv','.py','.yml','.yaml','.sh','.lock'}
+          for row in refs:
+              sha,ref=row.split('\t',1)
+              if not re.search(r'general[-_]theta|theta[-_]foundations',ref,re.I): continue
+              tree=subprocess.check_output(['git','ls-tree','-r','-z',sha])
+              selected=[]
+              for item in tree.split(b'\0'):
+                  if not item: continue
+                  meta,path=item.split(b'\t',1); mode,typ,blob=meta.decode().split(); path=path.decode()
+                  if typ!='blob': continue
+                  relevant=re.search(r'general[-_ ]theta|theta[-_ ]foundations',path,re.I)
+                  if not relevant: continue
+                  selected.append({'path':path,'blob':blob})
+                  if pathlib.PurePosixPath(path).suffix.lower() not in suffixes: continue
+                  rows.append({'ref':ref,'commit':sha,'path':path,'blob':blob})
+                  if blob in seen: continue
+                  seen.add(blob)
+                  data=subprocess.check_output(['git','cat-file','blob',blob])
+                  p=out/'historical-blobs'/blob;p.parent.mkdir(exist_ok=True);p.write_bytes(data)
+                  records.append({'blob':blob,'sha256':hashlib.sha256(data).hexdigest(),'bytes':len(data)})
+              safe=hashlib.sha256(ref.encode()).hexdigest()[:20]
+              p=out/'ref-trees'/f'{safe}.json';p.parent.mkdir(exist_ok=True)
+              p.write_text(json.dumps({'ref':ref,'commit':sha,'files':selected},indent=2))
+          (out/'HISTORICAL_TEXT_INDEX.json').write_text(json.dumps(rows,indent=2))
+          (out/'BLOB_HASHES.json').write_text(json.dumps(records,indent=2))
+          (out/'EXPORT_RECEIPT.json').write_text(json.dumps({'source':'29de5433c2c4f45d5174a87a8588fd3a24d3f84a','export_commit':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),'unique_text_blobs':len(records),'index_rows':len(rows),'scope':'matching General Theta branch heads; complete commit history separately indexed','not_a_referee_report':True},indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: general-theta-author-corpus-${{ github.sha }}
+          path: /tmp/theta-author-corpus
+          retention-days: 30
