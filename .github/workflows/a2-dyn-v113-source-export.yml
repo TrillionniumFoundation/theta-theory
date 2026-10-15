@@ -1,0 +1,56 @@
+name: A2-DYN v113 frozen source export
+on:
+  push:
+    branches: [revision/a2-dyn-v113-clearance-geometry-2026-10-15]
+    paths: [.github/workflows/a2-dyn-v113-source-export.yml]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 3
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /papers/A2-DYN-v112-referee-response/*
+            !/papers/A2-DYN-v112-referee-response/archive/
+      - name: Export exact original sources without changing any manuscript
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/a2dyn-v113-export
+          git rev-parse HEAD > /tmp/a2dyn-v113-export/export-commit.txt
+          git ls-remote --heads origin > /tmp/a2dyn-v113-export/all-branch-heads.tsv
+          git ls-tree -r d7fd0b24314d7341f9a611130bb650371d2d5ef2 > /tmp/a2dyn-v113-export/baseline-tree.tsv
+          python3 - <<'PY'
+          import subprocess,json,zipfile,hashlib,pathlib
+          root=pathlib.Path('/tmp/a2dyn-v113-export')
+          raw=(root/'baseline-tree.tsv').read_text()
+          entries=[]; seen=set()
+          with zipfile.ZipFile(root/'proof-source-blobs.zip','w',zipfile.ZIP_DEFLATED) as z:
+              for line in raw.splitlines():
+                  left,path=line.split('\t',1); mode,typ,sha=left.split()
+                  if typ!='blob' or 'a2-dyn' not in path.lower(): continue
+                  if not path.lower().endswith(('.tex','.bib','.sty','.cls','.md','.json','.py','.sh','.yml','.yaml','.txt','.csv','.tsv')): continue
+                  entries.append({'path':path,'mode':mode,'sha':sha})
+                  if sha not in seen:
+                      data=subprocess.check_output(['git','cat-file','blob',sha])
+                      actual=hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()
+                      if actual!=sha: raise RuntimeError('blob identity mismatch')
+                      z.writestr('blobs/'+sha,data); seen.add(sha)
+              z.writestr('path-manifest.json',json.dumps(entries,indent=2)+'\n')
+          (root/'export-summary.json').write_text(json.dumps({'baseline_commit':'d7fd0b24314d7341f9a611130bb650371d2d5ef2','paths':len(entries),'unique_blobs':len(seen),'scope':'A2-DYN historical text/proof/validation source; binary objects remain identified by full tree'},indent=2)+'\n')
+          PY
+          sha256sum /tmp/a2dyn-v113-export/* > /tmp/a2dyn-v113-export/SHA256SUMS
+      - uses: actions/upload-artifact@v4
+        with:
+          name: a2dyn-v113-frozen-proofs-${{ github.sha }}
+          path: /tmp/a2dyn-v113-export/*
+          if-no-files-found: error
+          retention-days: 90
