@@ -1,0 +1,68 @@
+name: A2-DYN clearance coarea exact-source qualification
+on:
+  push:
+    branches: [revision/a2-dyn-clearance-coarea-2026-10-15]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: a2-dyn-clearance-coarea-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  source-and-manuscript:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 4
+          persist-credentials: false
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /papers/A2-DYN-v112-referee-response/*
+            !/papers/A2-DYN-v112-referee-response/archive/
+            /papers/A2-DYN-clearance-coarea-2026-10-15/*
+            !/papers/A2-DYN-clearance-coarea-2026-10-15/archive/
+            /reviews/a2-dyn-*/REFEREE_REPORT.md
+      - name: Recover complete active proofs and record preserved trees
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/a2-dyn-coarea-evidence
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          printf '%s\n%s\n' "$GITHUB_SHA" "$GITHUB_REF" > /tmp/a2-dyn-coarea-evidence/exact-checkout.txt
+          git rev-parse HEAD:papers/A2-DYN-v112-referee-response > /tmp/a2-dyn-coarea-evidence/v112-tree.txt
+          test "$(cat /tmp/a2-dyn-coarea-evidence/v112-tree.txt)" = 5e74283f6084ea46f1aae0ba398cbca4c8ea821f
+          git ls-tree -r HEAD:papers/A2-DYN-v112-referee-response > /tmp/a2-dyn-coarea-evidence/v112-full-tree.txt
+          git archive HEAD papers/A2-DYN-v112-referee-response/core papers/A2-DYN-v112-referee-response/main.tex papers/A2-DYN-v112-referee-response/model.tex papers/A2-DYN-v112-referee-response/inputs.tex reviews | gzip > /tmp/a2-dyn-coarea-evidence/baseline-proofs-and-reviews.tar.gz
+          if test -f papers/A2-DYN-clearance-coarea-2026-10-15/build.sh; then
+            git rev-parse HEAD:papers/A2-DYN-clearance-coarea-2026-10-15/archive/v112 > /tmp/a2-dyn-coarea-evidence/preserved-v112-tree.txt
+            test "$(cat /tmp/a2-dyn-coarea-evidence/preserved-v112-tree.txt)" = 5e74283f6084ea46f1aae0ba398cbca4c8ea821f
+            tar --exclude='./archive' --exclude='./build' --exclude='*/__pycache__' -czf /tmp/a2-dyn-coarea-evidence/revision-active-source.tar.gz -C papers/A2-DYN-clearance-coarea-2026-10-15 .
+          else
+            printf '%s\n' 'SOURCE RECOVERY ONLY: no revised manuscript exists in this commit.' > /tmp/a2-dyn-coarea-evidence/RECOVERY_ONLY.txt
+          fi
+      - name: Install LaTeX for an actual revised manuscript
+        if: ${{ hashFiles('papers/A2-DYN-clearance-coarea-2026-10-15/build.sh') != '' }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+      - name: Build and verify actual revision
+        if: ${{ hashFiles('papers/A2-DYN-clearance-coarea-2026-10-15/build.sh') != '' }}
+        run: |
+          set -euo pipefail
+          bash papers/A2-DYN-clearance-coarea-2026-10-15/build.sh 2>&1 | tee /tmp/a2-dyn-coarea-evidence/build.txt
+          git diff --exit-code -- papers/A2-DYN-clearance-coarea-2026-10-15
+      - name: Upload exact-SHA sources and actual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a2-dyn-clearance-coarea-${{ github.sha }}-${{ github.run_id }}
+          if-no-files-found: error
+          retention-days: 90
+          path: |
+            /tmp/a2-dyn-coarea-evidence/*
+            papers/A2-DYN-clearance-coarea-2026-10-15/build/*.pdf
+            papers/A2-DYN-clearance-coarea-2026-10-15/build/*.log
+            papers/A2-DYN-clearance-coarea-2026-10-15/build/*.json
+            papers/A2-DYN-clearance-coarea-2026-10-15/build/*-pass*.txt
