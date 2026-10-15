@@ -1,0 +1,58 @@
+name: A2-DYN clearance-roof exact-source manuscript qualification
+on:
+  push:
+    branches: [revision/a2-dyn-clearance-roof-2026-10-15]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: a2-dyn-clearance-roof-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  exact-source-and-build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 4
+          persist-credentials: false
+          sparse-checkout: |
+            papers/A2-DYN-clearance-roof-2026-10-15
+      - name: Verify exact source, immutable baseline, ancestry and isolation
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python3 papers/A2-DYN-clearance-roof-2026-10-15/tools/check_source.py --repository
+      - name: Install native build and mathematical diagnostic dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends python3-numpy python3-sympy texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+      - name: Rebuild unchanged baseline and actual new manuscript
+        run: |
+          set -euo pipefail
+          bash papers/A2-DYN-clearance-roof-2026-10-15/build.sh
+          python3 papers/A2-DYN-clearance-roof-2026-10-15/tools/check_source.py --repository
+      - name: Record exact checkout and active-source archive
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/a2-dyn-clearance-roof-evidence
+          printf '%s\n%s\n' "$GITHUB_SHA" "$GITHUB_REF" > /tmp/a2-dyn-clearance-roof-evidence/exact-checkout.txt
+          git rev-parse HEAD:papers/A2-DYN-v112-referee-response > /tmp/a2-dyn-clearance-roof-evidence/preserved-v112-tree.txt
+          tar --exclude='./build' --exclude='./__pycache__' --exclude='*/__pycache__' -czf /tmp/a2-dyn-clearance-roof-evidence/source.tar.gz -C papers/A2-DYN-clearance-roof-2026-10-15 .
+      - name: Upload actual exact-SHA evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a2-dyn-clearance-roof-${{ github.sha }}-${{ github.run_id }}
+          if-no-files-found: error
+          retention-days: 90
+          path: |
+            /tmp/a2-dyn-clearance-roof-evidence/*
+            papers/A2-DYN-clearance-roof-2026-10-15/build/*.json
+            papers/A2-DYN-clearance-roof-2026-10-15/build/*.log
+            papers/A2-DYN-clearance-roof-2026-10-15/build/*-pass*.txt
+            papers/A2-DYN-clearance-roof-2026-10-15/manuscript/*.pdf
+            papers/A2-DYN-clearance-roof-2026-10-15/evidence/current/current-validation.json
