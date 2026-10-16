@@ -1,0 +1,17 @@
+# R62 primary-literature and priority record
+
+Checked 15 October 2026. This is an author comparison, not independent priority certification. The complete older bibliography is preserved, and the following direct neighbors are now compared in the native manuscript.
+
+| Source | Primary material examined | Precise relationship |
+|---|---|---|
+| J. Liu and S. Verdu, Rejection Sampling and Noncausal Sampling under Moment Constraints, ISIT 2018, DOI 10.1109/ISIT.2018.8437857 | Princeton/author institutional record and abstract; full primary paper was not successfully retrieved | Moment constraints for causal/noncausal selected indices and sampling–covering duality are prior work. A complete theorem-by-theorem full-text audit of this paper remains outstanding |
+| D. Goc and G. Flamich, On Channel Simulation with Causal Rejection Samplers, ISIT 2024, DOI 10.1109/ISIT57864.2024.10619339, arXiv:2401.16579v2 | Full arXiv HTML, especially Theorem III.1 and its predictable-count proof; author's publication record confirms published venue/DOI | The iid density-cap expected-index lower and classical rejection implementation are not new here. Code length of a shared-randomness index is not finite retained controller memory |
+| Z. Li and T. Liu, Ranking Experiments under Sequential Sampling, arXiv:2608.19897v2, 28 August 2026 | Full primary HTML, Theorems 1 and 2, and author research page | The R59 report cites v1, the older single-author binary paper. V2 is multistate and coauthored; generic pairwise KL ordering and uniform exact terminal-experiment conversion must be compared in their updated scope. No publication acceptance is claimed |
+| S. Ying and M. Ying, Reachability Analysis of Quantum Markov Decision Processes, arXiv:1406.6146, Theorem 3.6; journal version Inform. Comput. 263 (2018), 31–51 | Primary PDF parsed text; screenshot attempts failed and no visual figure assessment is claimed | The qualitative invariant-subspace obstruction is explicitly credited. R62 proves the stated quantitative fallback-to-same-budget risk approximation, not a new generic quantum reachability criterion |
+| J. Fu et al., Algorithmic Analysis of Termination Problems for Nondeterministic Quantum Programs, arXiv:2402.15827v1 | Primary full HTML checked | Hermitian reachable spaces are established and remain credited in the inherited R61 theorem |
+
+Primary locations: https://collaborate.princeton.edu/en/publications/rejection-sampling-and-noncausal-sampling-under-moment-constraint/ ; https://arxiv.org/html/2401.16579v2 ; https://gergely-flamich.github.io/publications/ ; https://arxiv.org/html/2608.19897v2 ; https://www.zihaoliecon.com/research ; https://arxiv.org/pdf/1406.6146 ; https://arxiv.org/html/2402.15827v1 .
+
+The exact same-budget sandwich in the native primitive-instrument theorem is the current author assertion for review. It does not claim to originate Bellman equations, compact sequence forms, semidefinite programming, no-dark-space tests, rejection sampling, or population trimming. The local task-matrix order is not Blackwell order over all losses, a Le Cam deficiency characterization, a complete quantum sufficiency theorem, or the Li–Liu asymptotic sequential order. The phase diagram solves the displayed geometric comparator, not a recognized open problem asserted solved merely by naming it.
+
+The most demanding novelty and top-four significance questions remain for independent scrutiny. A failed source retrieval is not treated as a successful full-text priority audit.
