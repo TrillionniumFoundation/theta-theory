@@ -1,0 +1,11 @@
+# Execution and validation protocol
+
+The recovered momentum-critical predecessor was actually rebuilt before this revision: 78 native pages; all ten inherited programs normal/optimized with equal outputs; source gate and three-pass typesetting succeeded. Its complete fresh command receipt is retained in the delivery, not inferred from old CI prose.
+
+For this revision run `bash build.sh all`. `tools/qualify_radial.py` records every real command, cwd, UTC start/end, elapsed time, exit code and log SHA-256. It checks the current source manifest, all 26 unchanged original numbered bodies and seven interfaces, the complete 28-body input closure, and the original target status. All eleven diagnostic programs run normally and under `-O`; their results and raw new physical cases must agree. The current and exact momentum-predecessor entry points each receive three actual LaTeX passes, followed by the reference/label/overfull-box gate. The completed receipt includes source manifest, PDF and case hashes, exact Python/NumPy/SymPy/LaTeX versions, and every command record.
+
+New finite verification includes symbolic matrices, exact rational Schur/polar calculations, the four exact all-direction covering margins, integer candidate counts, actual nearest-disk specular derivative checks and genuine inverse-momentum continuation near alternating normal critical orbits. All exclusions and numerical resolution limits are counted. Continuum geometry, all-word root bounds and the original ordered LLT are justified only by their written proofs and stated inputs, never by these finite cases.
+
+Evidence directories and the manifest itself are excluded from self-hashing. A separate completed receipt binds actual evidence to the exact source-manifest digest. Failed attempts and initial typeset logs remain in the full delivery; they are not classified as passes. A final PDF is rendered for visual inspection in addition to native diagnostic checks.
+
+Remote CI is a distinct event. The dedicated workflow checks `git rev-parse HEAD == GITHUB_SHA`, records the article tree, runs the strict source gate and full qualifier, and uploads logs/artifacts even on failure. Only an actual re-read of the exact-SHA workflow can establish its completion. Neither a queued workflow nor a successful local run is called remote CI success; neither is mathematical certification.

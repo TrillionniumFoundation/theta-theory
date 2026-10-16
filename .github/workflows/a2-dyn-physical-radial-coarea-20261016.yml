@@ -1,0 +1,57 @@
+name: A2-DYN exact radial coarea and physical-horizon qualification
+on:
+  push:
+    branches: [revision/a2-dyn-physical-radial-coarea-2026-10-16]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: a2-dyn-radial-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  qualification:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    defaults:
+      run:
+        shell: bash
+        working-directory: papers/A2-DYN-physical-radial-coarea-author-revision
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 2
+          persist-credentials: false
+          sparse-checkout: |
+            papers/A2-DYN-physical-radial-coarea-author-revision
+      - name: Record exact checked-out source
+        run: |
+          set -euo pipefail
+          mkdir -p build/remote
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git rev-parse HEAD > build/remote/commit.txt
+          git rev-parse HEAD:papers/A2-DYN-physical-radial-coarea-author-revision > build/remote/article-tree.txt
+          git ls-tree -r HEAD:papers/A2-DYN-physical-radial-coarea-author-revision > build/remote/article-files.txt
+          python3 tools/check_radial_source.py 2>&1 | tee build/remote/source-gate.json
+      - name: Install native build dependencies
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends python3-venv texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+      - name: Run complete exact-source qualification
+        run: |
+          set -euo pipefail
+          python3 -m venv build/venv
+          source build/venv/bin/activate
+          python -m pip install -r requirements.txt
+          bash build.sh all 2>&1 | tee build/remote/qualification.log
+      - name: Upload actual logs, native PDFs and source identities
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a2-dyn-radial-${{ github.sha }}-${{ github.run_id }}
+          retention-days: 90
+          if-no-files-found: error
+          path: |
+            papers/A2-DYN-physical-radial-coarea-author-revision/build/remote
+            papers/A2-DYN-physical-radial-coarea-author-revision/build/radial
