@@ -1,0 +1,247 @@
+\section{Compact uncertainty: certified risk at the unchanged budget}\label{sec:compact-risk}
+The preceding primitive construction uses finitely many operating models. A finite grid of an unknown continuum is not itself a robust model family: a policy that meets its budget on the grid can overspend between grid points. We now control that discrepancy from the raw instruments, including the unbounded waiting cost after completion. The resulting finite programs enclose the optimal risk for a compact model family and produce a common finite-label observer at the \emph{original} budget. No model index is revealed to the observer. The proof replaces a worst-horizon accumulation by the actual pre-call occupation of the tested policy.
+
+Robustness and approximation of partially observed control have substantial prior theory \cite{KaraYuksel20,Demirci25,Saldi25}. The particular assertion here concerns an undiscounted stopping task, a uniform expected-cost constraint, finite output width, and a physically executable completion which restores that same constraint. It is not priority for model approximation or perturbation bounds in general.
+
+\subsection{A compact family of primitive instruments}
+Use the finite command/report interface of Section~\ref{sec:primitive-risk}, but let the unknown, \emph{fixed throughout a run}, model $\theta$ range over a nonempty compact metric space $\Theta$. All models act on the same $d$-dimensional physical space. Productive report sets and legal commands are common. Each normalized instrument is $\{\mathcal I_{\theta,a,y}\}_y$, each nonnegative call cost has observable $G_{\theta,a}$, and the prospective terminal loss at $r\in D$ has observable $F_{\theta,a,y,r}$. Here $D$ is compact metric, and
+\[
+ c_*I\preccurlyeq G_{\theta,a}\preccurlyeq c^*I,\qquad
+ 0\preccurlyeq F_{\theta,a,y,r}\preccurlyeq LI,
+ \qquad 0<c_*\le c^*<\infty,
+\]
+with $L>0$. An observed cost or phase used by a policy must be included in the declared report; it is not another free input. Additional preparation, return and terminal-audit charges use the same explicit convention as before.
+
+For two models define symmetric primitive discrepancies
+\begin{align}
+ \epsilon_I(\theta,\phi)
+ &=\frac12\max_a\sup_{\rho\succeq0,\,\tr\rho=1}
+       \sum_y\|\mathcal I_{\theta,a,y}(\rho)
+                    -\mathcal I_{\phi,a,y}(\rho)\|_1,\label{eq:raw-model-distance}\\
+ \epsilon_g(\theta,\phi)&=\max_a\|G_{\theta,a}-G_{\phi,a}\|,\qquad
+ \epsilon_F(\theta,\phi)=\sup_{a,y\in Y_a^+,r\in D}
+                 \|F_{\theta,a,y,r}-F_{\phi,a,y,r}\|.\nonumber
+\end{align}
+Assume these discrepancies tend uniformly to zero with the model distance. Assume also a common modulus $\omega(\eta)\downarrow0$ for terminal losses as decision distance tends to zero. Joint continuity on the compact model and decision carriers is one sufficient primitive condition. The report-resolved trace distance in \eqref{eq:raw-model-distance} is for classical feedback on the specified physical system; a coherent external reference or quantum controller is not included by calling it a diamond distance.
+
+A finite set $F\subset\Theta$ is an $(\epsilon_I,\epsilon_g,\epsilon_F)$-cover when each $\theta\in\Theta$ has a $\phi\in F$ with all three discrepancies bounded by these displayed numbers. The bounds, not just the grid points, are the certificate. Compactness and the assumed continuity provide arbitrarily fine finite covers. An \emph{effective} cover requires supplied representations and certified moduli; compactness alone does not provide an algorithm on unspecified real data.
+
+\begin{lemma}[A uniform common fallback from compact primitive data]\label{lem:compact-fallback}
+There is a proper common policy of finite uniform expected cost for every model and every initial density matrix if and only if no model has a common dark subspace. In this case any one fixed full-support command row, stopped at its first productive report, is a uniform fallback. With the notation of Theorem~\ref{thm:primitive-fallback},
+\[
+ \delta=\min_{\theta\in\Theta}\lambda_{\min}
+            [I-(\mathcal T_\theta^*)^dI]>0,\qquad
+ \kappa_0=c^*d/\delta
+\]
+is a valid cost bound. If a finite cover has instrument error at most $\epsilon_I$, then
+\begin{equation}\label{eq:certified-dark-margin}
+ \delta\ge\min_{\phi\in F}\lambda_{\min}
+           [I-(\mathcal T_\phi^*)^dI]-d\epsilon_I.
+\end{equation}
+A positive right side certifies the common fallback on the entire family, not only on the cover.
+\end{lemma}
+\begin{proof}
+A dark subspace in even one model prevents any all-initial-state policy from committing there, by the commandwise argument of Theorem~\ref{thm:primitive-fallback}. If none exists, that theorem makes every displayed depth-$d$ observable positive definite. Its entries depend continuously on $\theta$. Compactness and continuity of the least eigenvalue therefore give a strictly positive minimum. The same block-survival proof bounds every expected cost by $c^*d/\delta$, using the one fixed row and no model-dependent choice.
+
+For the quantitative inequality, if $0\preccurlyeq A_y\preccurlyeq HI$, instrument normalization permits subtraction of $HI/2$ in every report component. Trace duality gives, for every density matrix,
+\begin{equation}\label{eq:effect-distance}
+ \left|\sum_y\tr\left[A_y
+   (\mathcal I_{\theta,a,y}-\mathcal I_{\phi,a,y})(\rho)\right]\right|
+       \le H\epsilon_I(\theta,\phi).
+\end{equation}
+Indeed the sum of the traces of the differences is zero, and the remaining terms are at most $H/2$ times the sum of their trace norms. To compare killed maps on $0\preccurlyeq A\preccurlyeq I$, take $A_y=A$ on nonproductive reports and zero on productive ones, and average the common command row. Telescope the $d$ powers. Positive subunital maps preserve the interval $[0,I]$ and contract the Hermitian operator norm, so each of the $d$ differences has norm at most $\epsilon_I$. The least-eigenvalue inequality gives \eqref{eq:certified-dark-margin}. This argument uses bounded effects, not a normalized posterior or a positive likelihood floor.
+\end{proof}
+
+\subsection{Perturbation controlled by actual occupation}
+For a common depth-$T$ realization plan, write $C_{\theta,T}$, $S_{\theta,T}$ and $V_{\theta,T}$ as before. After the decision following report $T$, the open branches have not yet executed another call. For a fixed initial density $\rho$, put
+\[
+ n_{\phi,T}(\rho)=\E_{\phi,\rho}\min(\tau,T).
+\]
+This is the actual number of begun calls in the finite prefix under $\phi$. The next lemma requires a budget only in this source model, not in a hybrid execution.
+
+\begin{lemma}[Occupation-sensitive prefix comparison]\label{lem:occupation-perturbation}
+For every common depth-$T$ plan, every initial density matrix and every $\kappa\ge0$,
+\begin{align}
+ |\tr\rho(S_{\theta,T}-S_{\phi,T})|
+ &\le\epsilon_I n_{\phi,T}(\rho),\label{eq:prefix-survival-error}\\
+ \left|\tr\rho\bigl[(V_{\theta,T}+LS_{\theta,T})
+                   -(V_{\phi,T}+LS_{\phi,T})\bigr]\right|
+ &\le L\epsilon_I n_{\phi,T}(\rho)+\epsilon_F,\label{eq:prefix-risk-error}\\
+ \left|\tr\rho\bigl[(C_{\theta,T}+\kappa S_{\theta,T})
+                   -(C_{\phi,T}+\kappa S_{\phi,T})\bigr]\right|
+ &\le n_{\phi,T}(\rho)
+       [\epsilon_g+\epsilon_I(c^*(T-1)+\kappa)].\label{eq:prefix-cost-error}
+\end{align}
+Here the errors may be replaced by any certified bounds for this pair of models. In particular, a source reserve $C_{\phi,T}+c_*S_{\phi,T}\preccurlyeq NI$ implies $n_{\phi,T}(\rho)\le N/c_*$ for all $\rho$. Thus the loss error need not grow as $T\epsilon_I$ on a fixed-cost prefix, whereas the cost comparison still has an explicit remaining-horizon factor.
+\end{lemma}
+\begin{proof}
+Use backward cost or score observables on the finite history tree. At a pre-call node $h$ with $t<T$ calls already made, average its common command row. For the loss padded by $L$ on open depth-$T$ leaves, the target-model post-report continuation observable is a convex combination of the terminal score and the subsequent padded score; it lies in $[0,LI]$. For the survival indicator the corresponding observable lies in $[0,I]$. For cost padded by $\kappa$ on open leaves it lies in $[0,(c^*(T-t-1)+\kappa)I]$. These are deterministic bounds for the finite prefix, valid before any comparison of its stopping laws.
+
+Subtract the two backward recursions by writing
+\[
+ \mathcal I_\theta^*A_\theta-\mathcal I_\phi^*A_\phi
+ = (\mathcal I_\theta^*-\mathcal I_\phi^*)A_\theta
+       +\mathcal I_\phi^*(A_\theta-A_\phi).
+\]
+At each node, \eqref{eq:effect-distance} bounds the first term by the corresponding continuation bound times $\epsilon_I$. Iterate the second term with the \emph{source} path instruments and source controller weights. Pairing at the initial state expresses the accumulated discrepancy as a sum over actual source pre-call occupation. The total of these masses is $n_{\phi,T}(\rho)$, including all failures and all private random choices.
+
+For cost, the immediate observable difference adds at most $\epsilon_g$ per source call. Replacing $T-t-1$ by $T-1$ gives \eqref{eq:prefix-cost-error}. For terminal loss, the differences of the actual terminal observables add at most $\epsilon_F$ times source commitment mass through the cutoff, which is at most one. They are not charged at every rejected report. The padded terminal value at an open cutoff is the same $L$ in both models. These facts prove \eqref{eq:prefix-risk-error}; survival has no terminal-observable discrepancy. The positive source cost floor gives the last assertion.
+
+One can equivalently obtain the recursion by first fixing all private choices at each visible history and then integrating them. The common behavioral realization is justified by Lemma~\ref{lem:common-plan}. The proof does not reveal $\phi$ to the controller, condition on a future audit, run a competitor on a fictitious reference past, or divide by a possibly zero report mass.
+\end{proof}
+
+\subsection{A finite certificate at precisely the required budget}
+Fix a nonempty finite dictionary $C\subset D$ and a common fallback which can start from \emph{every} current physical state in every $\theta$, commits with a value in $C$, has uniform cost at most $\kappa$, and uses $B$ live labels. Initially Lemma~\ref{lem:compact-fallback} supplies one with $B=1$; the cost hierarchy below supplies cheaper ones. Assume $N>\kappa$.
+
+Let $q_{F,C,T}(N)$ be the finite semidefinite value \eqref{eq:primitive-finite} with constraints only at the finitely many cover models $\phi\in F$, but with the same common realization plan. Define
+\begin{align}
+ D_T&=\min\{1,(N/c_*-1)/T\},\nonumber\\
+ e_{F,T}&=(\kappa-c_*)D_T+
+ \frac{N}{c_*}[\epsilon_g+\epsilon_I(c^*(T-1)+\kappa)],\label{eq:compact-budget-error}\\
+ z_{F,T}&=LD_T+L\frac{N}{c_*}\epsilon_I+\epsilon_F,
+ \qquad
+ \Gamma_{F,T}=z_{F,T}+\frac{Le_{F,T}}{N-\kappa+e_{F,T}}.\label{eq:compact-risk-error}
+\end{align}
+A proper fallback must make at least one call, so $\kappa\ge c_*$. These errors are nonnegative.
+
+\begin{theorem}[Same-budget risk enclosure for compact uncertainty]\label{thm:compact-risk}
+Under the primitive hypotheses just stated, the finite problem is feasible and attains its value, and
+\begin{equation}\label{eq:compact-risk-sandwich}
+ q_{F,C,T}(N)\le R_{\Theta,C}(N)
+       \le\min\{L,q_{F,C,T}(N)+\Gamma_{F,T}\}.
+\end{equation}
+The upper is realized by one proper finite-label controller of expected cost at most $N$ for \emph{every} $\theta\in\Theta$ and every initial density matrix. It uses one dictionary, not a modelwise family of dictionaries. With $a$ commands and at most $y$ reports per command, sufficient live labels are
+\begin{equation}\label{eq:compact-labels}
+ 1+B+\sum_{t=0}^{T-1}(ay)^t.
+\end{equation}
+Event-stopped total labels are the maximum of this bound and $|C|$; state-stopped total labels are their sum.
+
+For nested covers and increasing horizons the finite lower values are nondecreasing. If $T\to\infty$, $T\epsilon_I\to0$, and $\epsilon_g,\epsilon_F\to0$, their limit equals $R_{\Theta,C}(N)$. At a fixed slack $N-\kappa>0$, taking $T\asymp\epsilon^{-1/2}$ when all primitive errors are at most $\epsilon$ gives an explicit $O(\sqrt\epsilon)$ enclosure. This is an upper modulus, not a claim that its exponent is optimal.
+\end{theorem}
+\begin{proof}
+The actual fallback has cost below $N$ in all models, so its prefixes prove feasibility on $F$. A finite plan lies in a compact sequence-form polytope, and the constraints are closed with $0\le q\le L$. The minimum is attained. Restriction of any feasible full policy on $\Theta$ to the finite models and horizon proves the lower. Adding cover models or extending the horizon cannot weaken that lower, by the restriction lemma.
+
+Take a finite optimizer. At every $\phi\in F$, the reserve gives $S_{\phi,T}\preccurlyeq D_TI$ and source call occupation at most $N/c_*$. For any $\theta$ choose a covering $\phi$. Complete the same prefix on the actual experiment with the declared fallback at every open leaf. Positivity bounds the completed cost by $C_{\theta,T}+\kappa S_{\theta,T}$ and the completed loss by $V_{\theta,T}+LS_{\theta,T}$. At the covering model these are respectively at most $N+(\kappa-c_*)D_T$ and $q_{F,C,T}(N)+LD_T$. Lemma~\ref{lem:occupation-perturbation} now gives completed cost at most $N+e_{F,T}$ and loss at most $q_{F,C,T}(N)+z_{F,T}$ in \emph{every} model and initial state. The fallback is applied on the actual post-prefix state, not the state at the covering model. Its all-state guarantee is what makes this completion legal and proper.
+
+Before the first physical call, choose the completed prefix with probability
+\[
+ p=\frac{N-\kappa}{N-\kappa+e_{F,T}}
+\]
+and the fallback alone otherwise. The choice is independent of the unknown model and input. Its robust expected cost is at most $p(N+e_{F,T})+(1-p)\kappa=N$. Its loss is at most
+\[
+ p(q_{F,C,T}+z_{F,T})+(1-p)L
+       \le q_{F,C,T}+z_{F,T}+(1-p)L.
+\]
+This is the claimed gap. The actual loss is always at most $L$, giving the truncation of the upper. Both branches commit almost surely, so does their mixture. The sole initial choice is compiled into one initial row whose within-call branch choice routes to prefix or fallback labels; it is not an uncounted persistent seed. The finite tree has at most the displayed sum of live node roles, and the fallback uses $B$. The role-packing lemma proves both total-label counts.
+
+The explicit errors tend to zero under the stated joint refinement. Compact continuity supplies arbitrarily fine model covers, so such refinements exist. For the rate, substitute $D_T=O(T^{-1})$ and bound the mixture denominator below by $N-\kappa$. The gap is at most a constant times $T^{-1}+\epsilon T+\epsilon$, yielding the asserted choice. None of these estimates assumes independence of the physical states between calls or a mean-cost tail converging uniformly over feasible policies.
+\end{proof}
+
+\begin{corollary}[Preserving an optimized finite output width]\label{cor:compact-width}
+Let $R_{\Theta,m}(N)$ optimize over all dictionaries of at most $m$ points in $D$. For a finite $\eta$-net $D_\eta$, minimize $q_{F,C,T}(N)$ over tuples $C\in D_\eta^m$ with repetition, and call the result $q_{F,m,T,\eta}(N)$. The fallback may use any one value of the chosen dictionary without changing its costs. Then
+\[
+ [q_{F,m,T,\eta}(N)-\omega(\eta)]_+
+ \le R_{\Theta,m}(N)
+ \le\min\{L,q_{F,m,T,\eta}(N)+\Gamma_{F,T}\}.
+\]
+The common observer has at most $m$ outputs. In particular model and decision approximation do not create a hidden continuum-sized decoder or a stored model estimate.
+\end{corollary}
+\begin{proof}
+Round each point of any feasible competitor's single dictionary to one net point, identically at every history. Its costs and stopping law do not change. Bounded terminal-observable error changes expected loss by at most $\omega(\eta)$ because the terminal events have total mass one. Restricting gives the lower. A finite net has finitely many tuples, so choose a minimizer and apply Theorem~\ref{thm:compact-risk} for the upper. Repetitions can only reduce the actual width.
+\end{proof}
+
+\subsection{The least feasible cost and every interior budget}
+The primitive fallback cost $\kappa_0$ can be far from optimal. It must not become an artificial admission threshold. For each finite cover and horizon, let
+\[
+ a_{F,T}=\min\{a:C_{\phi,T}+c_*S_{\phi,T}\preccurlyeq aI\ (\phi\in F)\},
+\]
+ignoring task loss and committing a fixed dummy value. This is an attained finite semidefinite problem with $c_*\le a_{F,T}\le\kappa_0$. Put $D_T^0=\min\{1,(\kappa_0/c_*-1)/T\}$ and
+\begin{equation}\label{eq:compact-cost-certificate}
+ E_{F,T}=(\kappa_0-c_*)D_T^0+
+ \frac{\kappa_0}{c_*}[\epsilon_g+
+                  \epsilon_I(c^*(T-1)+\kappa_0)],\qquad
+ U_{F,T}=a_{F,T}+E_{F,T}.
+\end{equation}
+Here a cover needs only instrument and cost errors. Let $N_{\min}(\Theta)$ be the least uniform expected cost of a common proper policy.
+
+\begin{theorem}[Constructive compact-family feasibility threshold]\label{thm:compact-cost}
+One has
+\[
+ a_{F,T}\le N_{\min}(\Theta)\le U_{F,T}.
+\]
+The upper is the certified cost bound of an actual common finite-label policy. Along nested covers and horizons with $T\epsilon_I\to0$ and $\epsilon_g\to0$, the lower bounds increase to $N_{\min}(\Theta)$ and the running minima of the upper bounds decrease to the same number. The least cost is attained by a full-history common policy.
+
+For every $N>N_{\min}(\Theta)$, a sufficiently fine finite cover and sufficiently large horizon exhibit $U_{F,T}<N$. Their completed policy is a finite-label fallback with certified $\kappa=U_{F,T}<N$. Consequently Theorem~\ref{thm:compact-risk} and Corollary~\ref{cor:compact-width} apply at \emph{every strictly interior feasible budget}, with no supplied balancing program or reference witness. For effective data and certified covers this is a terminating search for a strictly feasible fallback, not a dimension-only efficient synthesis bound. Finite-memory attainment at $N=N_{\min}(\Theta)$ is not asserted.
+\end{theorem}
+\begin{proof}
+Every actual proper policy supplies a feasible reserved prefix on the cover, proving the lower. Complete a lower optimizer with the original uniform fallback. At a covering model, its open mass is at most $D_T(a_{F,T})\le D_T^0$, its expected prefix calls at most $a_{F,T}/c_*\le\kappa_0/c_*$, and its padded cost at most $a_{F,T}+(\kappa_0-c_*)D_T^0$. Apply \eqref{eq:prefix-cost-error} with padding $\kappa_0$ to every covered model. This proves the upper and its operational realization. It bounds the cost on arbitrary current states, since the prefix problem and perturbation bound were uniform in their initial density matrices.
+
+The error in \eqref{eq:compact-cost-certificate} tends to zero along the stated refinement. Restriction and addition of models prove lower monotonicity; the running minimum construction gives upper monotonicity without incorrectly claiming that the raw error bounds themselves decrease. The squeeze proves both limits.
+
+For attainment, choose proper common policies with uniform costs decreasing to $N_{\min}$. The countable product of finite nodewise probability simplexes is compact. Every finite-prefix reserved cost constraint at each fixed model and state is closed in these coordinates. A finite collection of such constraints at budget $N_{\min}$ is feasible: take a convergent subnet of the selected policies' coordinates and use continuity of the finite-prefix operators and convergence of their budgets. Compactness then gives one policy satisfying all these constraints simultaneously. Its survival is at most $D_T(N_{\min})$ after $T$ calls, and the positive floor and monotone convergence prove properness and total cost at most $N_{\min}$ in every model. No uniform expected-cost tail estimate was used.
+
+At a strictly larger requested budget, the upper sequence eventually falls below it. The completed policy attaining that certificate supplies exactly the fallback required for the risk theorem. Relabelling its dummy output to a chosen task decision changes no call, so it works for any eventual dictionary. Its finite live-state count is retained in \eqref{eq:compact-labels}. Effective cover and primitive arithmetic hypotheses are additional inputs for performing these tests; the proof does not infer them from topological compactness.
+\end{proof}
+
+\begin{corollary}[Effective synthesis from compact algebraic primitives]\label{cor:compact-algebraic}
+Suppose $\Theta\subset\R^p$ and $D\subset\R^k$ are nonempty compact semialgebraic sets defined over the real algebraic numbers. Suppose the real and imaginary entries of the primitive instrument maps and costs are polynomial in $\theta$, and the terminal-loss entries are polynomial in $(\theta,r)$. Assume the common finite interface, positive cost floor and absence of dark subspaces as above. Then $N_{\min}(\Theta)$ is a computable real. For every algebraic $N>N_{\min}(\Theta)$, integer $m\ge1$ and positive algebraic accuracy $\xi$, a terminating finite procedure produces a common finite-label observer of cost at most $N$ whose risk differs from $R_{\Theta,m}(N)$ by at most $\xi$, with algebraic controller probabilities and decoder values.
+
+The procedure also produces rigorous lower and upper value bounds. It need not be computationally efficient; the statement concerns a supplied finite polynomial description, not learning the experiment from data. Exact bounded-bit sampling, minimal program size and finite-memory optimality at the boundary are separate questions.
+\end{corollary}
+\begin{proof}
+All assertions about positivity of the finite-dimensional Hermitian primitive matrices, normalization, and $O_{\theta,d}\succeq\delta I$ are first-order polynomial assertions over real algebraic coefficients. Represent complex entries by their real and imaginary parts, and use principal minors for positive semidefiniteness. Quantifier elimination over real closed fields \cite{Seidenberg54} therefore verifies these assertions and exhibits an algebraic $\delta>0$ valid for all $\theta$ when it exists. Compactness and the no-dark lemma guarantee existence. The positive lower cost bound and finite upper cost/loss bounds may also be chosen algebraic: compactness gives such bounds, and the same polynomial tests verify them. This gives an algebraic bound $\kappa_0$ for the common one-row fallback.
+
+At a fixed horizon, use common sequence weights and a tuple of $m$ decoder values as variables. Composing a finite number of polynomial primitive maps gives polynomial coefficients in $\theta$. The constraints $C_{\theta,T}+c_*S_{\theta,T}\preccurlyeq NI$ and $V_{\theta,T}\preccurlyeq qI$ for all $\theta\in\Theta$ are thus a finite first-order real-algebraic formula. Compactness of the finite plan and decoder space gives an attained minimum. Its value and some minimizing variables are algebraic, by quantifier elimination and the existence of algebraic points in nonempty semialgebraic sets defined over the real algebraic numbers. This is a robust finite-horizon optimization, not necessarily an ordinary finite-list semidefinite program or a convex optimization in the decoder variables.
+
+The same method computes the uniform reserved cost minimum $a_{\Theta,T}$. Complete its optimizer with the known fallback. With no model-grid error, its cost is at most
+\[
+ a_{\Theta,T}+(\kappa_0-c_*)
+           \min\{1,(\kappa_0/c_*-1)/T\}.
+\]
+This explicit interval converges to $N_{\min}$ and can be made narrower than any rational tolerance, proving computability. If $N>N_{\min}$, enumeration of these finite uniform problems eventually certifies a completed fallback cost $\kappa<N$; it has finite labels and algebraic probabilities. The uniform risk problem just described and the completion-mixture proof then have gap at most
+\[
+ LD_T(N)+\frac{L(\kappa-c_*)D_T(N)}{N-\kappa+(\kappa-c_*)D_T(N)}.
+\]
+Choose a finite $T$ making this less than $\xi$, compute an algebraic optimizer, and mix its completion with the certified fallback. The mixing probability is algebraic and restores the original budget. Its one common decoder tuple has at most $m$ values. This proves every claimed termination and approximation assertion without supposing a finite grid represents a continuum exactly. Real-algebraic elimination may be extremely expensive, and equality at the limiting feasibility boundary is not decided by an unbounded strict-threshold search.
+\end{proof}
+
+\subsection{Two-sided robustness and boundaries of the theorem}
+\begin{corollary}[Robustness of the optimal constrained risk]\label{cor:optimal-robustness}
+Let $\Theta_1,\Theta_2$ be two compact families on the same interface. Suppose each member of either family is within $(\epsilon_I,\epsilon_g,\epsilon_F)$ of some member of the other. Suppose one common finite-label fallback costs at most $\kappa<N$ on their union, with the same cost and loss bounds. Then, for fixed $C$ or optimized width $m$,
+\[
+ |R_{\Theta_1}(N)-R_{\Theta_2}(N)|\le\Gamma_{F,T}
+       \quad(T\ge1),
+\]
+where the right side is the explicit expression \eqref{eq:compact-budget-error}--\eqref{eq:compact-risk-error} evaluated at the pairwise error bounds; no finite cover is needed in this corollary. Hence it is at most the infimum of these bounds over $T$. In particular it tends to zero with the primitive errors at a fixed positive budget slack. The same-budget $O(\sqrt\epsilon)$ upper modulus follows when all three errors are at most $\epsilon$.
+\end{corollary}
+\begin{proof}
+Take any feasible policy on $\Theta_1$ within $\xi$ of its optimal risk and truncate it at depth $T$. Its reserve and nonnegative loss bounds hold at every member of $\Theta_1$. For each target in $\Theta_2$, use its close source member in the occupation comparison. Complete and mix with the common fallback exactly as in Theorem~\ref{thm:compact-risk}. This gives a single policy feasible at $N$ on $\Theta_2$ with risk at most $R_{\Theta_1}(N)+\xi+\Gamma_{F,T}$. For optimized width, its one source dictionary is used on every target and by the fallback. Let $\xi\downarrow0$, then reverse the roles. This compares the optimal risks through feasible strategies and does not exchange a minimization and a maximization.
+\end{proof}
+
+\begin{example}[Risk need not be continuous at the feasibility boundary]\label{ex:boundary-discontinuity}
+In physical dimension one, both commands $A,B$ always report a productive result. There is one retained decoder value. Let its prospective losses be zero after $A$ and one after $B$. At model $\theta=0$, both call costs are one; at $\theta=\epsilon>0$, they are respectively $1+\epsilon$ and one. There is no instrument or loss perturbation, only cost error $\epsilon_g=\epsilon$, and there is no dark state. At budget $N=1$, any positive probability of choosing $A$ or continuing after the first report costs strictly more than one in the perturbed model. Thus $R_{\{0\}}(1)=0$ while $R_{\{\epsilon\}}(1)=1$. Both instances remain feasible. Therefore the strict interior/slack condition cannot simply be deleted from a general continuity theorem. The example can be realized by command-dependent deterministic future audits and squared loss at the same decoder.
+\end{example}
+
+\begin{example}[Why the remaining-horizon cost term is real]\label{ex:cost-horizon}
+In dimension one, command $A$ costs one and is immediately productive at the source; at the target it fails with probability $\epsilon\in(0,1/2]$ and is productive otherwise. Command $W$ costs one and is never productive. Use a prefix that first calls $A$, commits on success, and after failure makes $T-1$ calls to $W$ before leaving the cutoff open. Source prefix occupation is exactly one. Instrument discrepancy is $\epsilon$, while costs and task observables have not changed. The target's cost padded by $\kappa$ on the open leaf is exactly
+\[
+ 1+\epsilon(T-1+\kappa),
+\]
+compared with source value one. Repeated $A$ is a genuine fallback of cost at most two. This attains the instrument term of \eqref{eq:prefix-cost-error} when $c^*=1$. It proves the need for a remaining-horizon factor for arbitrary tested prefixes; it does \emph{not} prove sharpness of the optimized-risk square-root modulus.
+\end{example}
+
+\begin{example}[Even affine primitive families cannot be certified at vertices]\label{ex:vertex-risk}
+Let $\theta\in[0,1]$, physical dimension one, and one unit-cost command whose productive report is a Bernoulli($\theta$) bit. At commitment a fresh independent Bernoulli($\theta$) bit is the future audit. Fix $C=\{0,1\}$ with squared loss. Both the report instruments and the post-report loss observables are affine in $\theta$. Nevertheless, for every budget $N\ge1$,
+\[
+ R_{\{0,1\},C}(N)=0,\qquad R_{[0,1],C}(N)=\tfrac12.
+\]
+For the two endpoint models, committing the first report as prediction has zero loss. For the full interval this rule has risk $2\theta(1-\theta)\le1/2$ at cost one. Under $\theta=1/2$, the prospective audit is fair conditional on any finite stopping history and any selected decision in $C$; every proper policy therefore has loss exactly $1/2$. This gives the matching lower against arbitrary history and randomization. It is a continuum-uncertainty obstruction even with a uniform one-call fallback and no hidden dynamical state. A convex parameter set and affine primitive entries do not justify testing only its vertices: finite-path coefficients and adaptive terminal scores need not be affine in the fixed unknown parameter.
+\end{example}
+
+\begin{example}[Pointwise termination and model switching are different]\label{ex:compact-limits}
+The noncompact scalar family with productive probability $p\in(0,1]$ terminates in every model but has no finite uniform cost. Its compact closure adds the dark model $p=0$. Compactness and a positive certified margin are therefore substantive.
+
+Nor is the model allowed to change adversarially during a run. With one command on a qubit, let model 1 have failure Kraus operator $|0\rangle\langle1|$ and model 2 have $|1\rangle\langle0|$, with the complementary productive effects. Each fixed model terminates within two calls from every initial state. Alternating models 1 and 2 from state $|1\rangle$ causes failure forever. The compact finite union satisfies the present fixed-model theorem but not a switching-adversary theorem. Such uncertainty requires a different joint survival certificate.
+\end{example}
+
+This compact-family result is an intrinsic constrained-risk approximation on its stated finite physical interface, not an intrinsic characterization of when the geometric profile $\Q$ is exact. It supplies no uncharged model-identification phase and requires no normalized-filter contraction. Its cost threshold, risk certificate, finite output and finite observer implementation come from the same primitive data. The separate exact geometric, spectral, reset-communication and predictive-realization theorems retain their own hypotheses and research questions.
