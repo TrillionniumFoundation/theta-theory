@@ -1,0 +1,88 @@
+name: A2-DYN physical momentum and critical-source qualification
+on:
+  push:
+    branches: [revision/a2-dyn-momentum-critical-source-2026-10-16]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: a2-dyn-momentum-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  qualification:
+    name: ${{ matrix.mode }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [native-typesetting, full-source-and-diagnostics]
+    defaults:
+      run:
+        shell: bash
+        working-directory: papers/A2-DYN-momentum-critical-source-author-revision
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 2
+          persist-credentials: false
+          sparse-checkout: |
+            papers/A2-DYN-momentum-critical-source-author-revision
+      - name: Record exact checked-out source
+        run: |
+          set -euo pipefail
+          mkdir -p build/remote
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git rev-parse HEAD > build/remote/commit.txt
+          git rev-parse HEAD:papers/A2-DYN-momentum-critical-source-author-revision > build/remote/article-tree.txt
+          git ls-tree -r HEAD:papers/A2-DYN-momentum-critical-source-author-revision > build/remote/article-files.txt
+      - name: Full source gate (no missing-script exemption)
+        if: matrix.mode == 'full-source-and-diagnostics'
+        run: |
+          set -euo pipefail
+          python3 tools/check_momentum_source.py 2>&1 | tee build/remote/source-gate.log
+      - name: Install native build dependencies
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends python3-venv texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+      - name: Exact native source identity and typesetting
+        if: matrix.mode == 'native-typesetting'
+        run: |
+          set -euo pipefail
+          python3 - <<'PYCODE' | tee build/remote/native-source-gate.json
+          import hashlib,json
+          from pathlib import Path
+          m=json.loads(Path('SOURCE_MANIFEST.json').read_text())
+          n=0
+          for name,expected in m['current_files'].items():
+              if name.endswith('.tex'):
+                  b=Path(name).read_bytes()
+                  if hashlib.sha256(b).hexdigest()!=expected['sha256']:
+                      raise RuntimeError('native TeX identity mismatch: '+name)
+                  n+=1
+          print(json.dumps({'native_tex_identities_checked':n,'scope':'native typesetting only, not complete source qualification or mathematical certification'}))
+          PYCODE
+          for pass in 1 2 3; do
+            pdflatex -interaction=nonstopmode -halt-on-error -file-line-error -recorder -output-directory=build/remote main.tex > "build/remote/pass-${pass}.log" 2>&1
+          done
+          python3 tools/audit_tex.py --build-dir build/remote | tee build/remote/typeset-audit.json
+      - name: Exact diagnostic dependencies and complete qualification
+        if: matrix.mode == 'full-source-and-diagnostics'
+        run: |
+          set -euo pipefail
+          python3 -m venv build/venv
+          source build/venv/bin/activate
+          python -m pip install -r requirements.txt
+          bash build.sh all 2>&1 | tee build/remote/qualification.log
+      - name: Upload actual logs, native PDF and source identities
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: a2-dyn-momentum-${{ matrix.mode }}-${{ github.sha }}-${{ github.run_id }}
+          retention-days: 90
+          if-no-files-found: error
+          path: |
+            papers/A2-DYN-momentum-critical-source-author-revision/build/remote
+            papers/A2-DYN-momentum-critical-source-author-revision/build/momentum
