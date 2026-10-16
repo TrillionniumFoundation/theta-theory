@@ -1,0 +1,9 @@
+# Validation protocol and actual-evidence locations
+
+Run `python3 tools/qualify_revision.py all` in a clean copy. The exact required native source list and SHA-256/Git-blob identities are in `SOURCE_MANIFEST.json`. Missing or changed required files, unexpected active core bodies, normal/-O output disagreement, changed raw physical cases, failed commands, unresolved references, duplicate labels or overfull boxes are fatal. The checks never overwrite a mismatched source to pass a gate.
+
+The qualifier runs thirteen diagnostics twice, with real physical-case JSON retained for momentum, radial, recovered endpoint and current reflection programs. The exact-rational matrix tests do not claim physical realizability. The physical tests trace actual triangular-lattice collisions with the original clock and selectors. Scripts support the native proofs; they do not prove continuum geometry, uniform pressure, a normalized source limit or the raw pointwise theorem.
+
+The current receipt is generated at `build/revision/current-validation.json`, including command arrays, actual exit codes/times/log digests, source-manifest identity, numerical-library/compiler versions, normal/-O equality and native PDF audit. This is local execution unless independently tied to a GitHub run by a later observed receipt. Do not infer remote CI success from this document.
+
+The inherited complete endpoint source was actually requalified in this round, yielding 85-page radial and 92-page endpoint native builds. Its receipt and all command logs are retained in the preservation delivery. The new current native build is 97 pages at the pre-publication audit. Initial rejected startup/layout attempts are preserved separately. The final source digest and page count must be taken from the executed current receipt, not this descriptive protocol.
