@@ -1,0 +1,11 @@
+# R62 source-bound author revision delivery
+
+The complete English manuscript, current technical supplement, response and native sources are in `../r62-primitive-risk/`. The mathematical source commit is `1523511dfbfafb6ecf878cf22722ed246da5dc7e`, repository tree `d8bd69cfc42518f5e0bfab9ce89b29cd7abb53f7`, paper subtree `7b495713105b4697bfd590236ad212b9e7295db5`.
+
+The local verification was actually rerun after this source commit was created, from a complete directory whose Git blob/tree encoding matches that exact remote paper subtree. It produced the 66-page main article, 6-page current supplement and 37-page preserved companion, passed 315 exact finite and 514 floating finite diagnostics, and gave identical normal/optimized diagnostic output. Full logs, PDFs, data, sources and the complete historical text corpus are included in the accompanying downloadable review package. The adjacent JSON records the precise output hashes and environment.
+
+This delivery commit adds only this separate publication directory. It does not change the verified mathematical subtree. The publication records are deliberately outside the source manifest and outside the native verifier's input directory, avoiding self-reference and avoiding unlisted generated files in the immutable source. No existing author or referee branch is overwritten, and no other paper folder is edited.
+
+For independent review start with `../r62-primitive-risk/main.tex`, `supplement.tex`, `RESPONSE_TO_REFEREE.md` and `THEOREM_MAP.md`. The complete newly controlling R59 report is preserved byte-for-byte in `inputs/review/`. It reviews R59, not R61/R62; its accepted closures and still-open significance questions remain distinguished. Rebuild from the source directory with `python3 verify.py --out /tmp/theta-r62-independent --source-commit <checked-out-SHA>`.
+
+The new read-only workflow runs on the author revision branch and must be evaluated at its actual head SHA. A local build, a preceding R59 success, or an absent/queued R62 run is not a passed R62 independent-host build. Finite diagnostics and native compilation do not constitute formal proof, independent human approval, exhaustive priority certification or a journal decision.
