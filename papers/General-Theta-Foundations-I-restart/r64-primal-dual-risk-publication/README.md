@@ -1,0 +1,13 @@
+# R64 source-bound author revision delivery
+
+The complete current English manuscript, technical supplement, native source and author response are in `../r64-primal-dual-risk/`.
+
+The mathematical source commit is `7e397f934457894d1dba961cb126e9aef9023dfc`, whose repository root tree is `58697d6a88962611f742b9e0b539603abfde1b0a` and paper tree is `2fb9a4d5c12c65bab080e3a5b29b397d34823098`. It continues the genuine R63 repository commit `2bb08a6323fb0198e8ba93a4870b74304431fedc`, preserving the whole preceding paper subtree and all other repository content. The present publication directory is added in a separate child commit and does not change those verified mathematical bytes.
+
+The native verifier was actually rerun after the source commit existed, on a local directory whose complete Git tree equals the remote paper subtree. It produced the 85-page main, 10-page current supplement and 37-page retained R58 companion. All four diagnostic generations agreed between ordinary and optimized Python: 3,313 finite checks passed, including 2,537 exact checks and 776 floating checks. R64 itself adds 285 checks, including seven numerical LP searches followed by independent exact rational primal/dual verification. Two builds of the final source produced byte-identical PDFs and extracted texts. The complete commands, logs, recorder files, environment and hashes accompany the downloadable review package.
+
+Start the next independent review with the current `main.tex`, `supplement.tex`, `RESPONSE_TO_REFEREE.md`, `THEOREM_MAP.md` and `PROOF_AUDIT.md`. The newly controlling R59 third report is copied unchanged; it reviews R59, not R63/R64. The previous reports and responses remain separately preserved. The entire R63 tree is retained byte-for-byte, not replaced by this metadata.
+
+Rebuild from a real checkout by running `python3 verify.py --out /tmp/theta-r64-independent --source-commit <checked-out-SHA>` in the current paper directory. The verifier checks checkout HEAD when Git is available. This local execution was a content-addressed source export, not a full repository checkout. Publication records are outside the mathematical source manifest, avoiding circular claims about a receipt's own future SHA.
+
+The isolated read-only R64 workflow must be evaluated at its actual tested SHA. A preceding R59 success, a local build, or an absent/queued R64 run is not R64 hosted success. Finite checks and native compilation do not establish formal correctness, independently commissioned human approval, exhaustive novelty/priority, or a top-four journal decision. The original research title and journal objective remain unchanged.
