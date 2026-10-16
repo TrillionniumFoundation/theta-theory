@@ -12,52 +12,83 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           fetch-depth: 1
-      - name: Freeze exact source and all A2-DYN branch heads
+          sparse-checkout: |
+            papers/A2-DYN-grazing-resolvent-author-revision
+          sparse-checkout-cone-mode: true
+      - name: Freeze A2-DYN source DAG without expanding historical copies
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p /tmp/a2-dyn-resolvent-evidence
           git rev-parse HEAD > /tmp/a2-dyn-resolvent-evidence/exact-checkout.txt
           git ls-remote --heads origin > /tmp/a2-dyn-resolvent-evidence/all-remote-heads.tsv
-          python3 - <<'PY'
+          python3 -u - <<'PY'
           import pathlib,subprocess,json,hashlib,datetime,tarfile
-          out=pathlib.Path('/tmp/a2-dyn-resolvent-evidence')
-          selected=[]
-          for line in (out/'all-remote-heads.tsv').read_text().splitlines():
-              sha,ref=line.split()
-              if 'a2-dyn' in ref.lower() or 'a2_dyn' in ref.lower(): selected.append((sha,ref))
-          # Fetch precisely the frozen SHA, not a branch name which can move.
+          out=pathlib.Path('/tmp/a2-dyn-resolvent-evidence'); history=out/'history'; history.mkdir()
+          def relevant(s): return 'a2-dyn' in s.lower() or 'a2_dyn' in s.lower()
+          selected=[line.split() for line in (out/'all-remote-heads.tsv').read_text().splitlines() if relevant(line)]
+          unique=list(dict.fromkeys(x[0] for x in selected))
           with (out/'fetch.log').open('w') as log:
-              for start in range(0,len(selected),40):
-                  batch=selected[start:start+40]
-                  subprocess.run(['git','fetch','--no-tags','--depth=1','origin']+[sha+':refs/census/'+str(start+i) for i,(sha,ref) in enumerate(batch)],stdout=log,stderr=subprocess.STDOUT,check=True)
-          objects=out/'history'/'blobs';objects.mkdir(parents=True)
-          commits=out/'history'/'commits';commits.mkdir()
-          records=[];seen=set()
-          for sha,ref in selected:
-              raw=subprocess.check_output(['git','cat-file','commit',sha]);(commits/sha).write_bytes(raw)
-              entries=subprocess.check_output(['git','ls-tree','-r','-z',sha]).split(b'\0')
-              kept=[]
-              for entry in entries:
-                  if not entry:continue
-                  meta,path=entry.split(b'\t',1);mode,kind,blob=meta.decode().split();path=path.decode()
-                  key=path.lower()
-                  if kind!='blob' or not ('a2-dyn' in key or 'a2_dyn' in key):continue
-                  if blob not in seen:
-                      data=subprocess.check_output(['git','cat-file','blob',blob])
-                      expected=hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()
-                      if expected!=blob:raise RuntimeError('Git blob identity mismatch')
-                      (objects/blob).write_bytes(data);seen.add(blob)
-                  kept.append({'path':path,'mode':mode,'blob':blob})
-              tree=raw.splitlines()[0].decode().split()[1]
-              records.append({'ref':ref,'commit':sha,'tree':tree,'entries':kept})
-          index={'captured_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'scope':'all frozen A2-DYN-named branch heads; all A2-DYN-named paths at those heads; not every intermediate commit','branches':records,'unique_blobs':len(seen),'mathematical_proof_certificate':False}
-          (out/'history'/'INDEX.json').write_text(json.dumps(index,indent=2)+'\n')
-          with tarfile.open(out/'a2-dyn-historical-source.tar.xz','w:xz') as archive:archive.add(out/'history',arcname='history')
-          (out/'historical-summary.json').write_text(json.dumps({'branch_count':len(selected),'unique_blobs':len(seen),'archive_sha256':hashlib.sha256((out/'a2-dyn-historical-source.tar.xz').read_bytes()).hexdigest()},indent=2)+'\n')
+              for start in range(0,len(unique),32):
+                  batch=unique[start:start+32]
+                  print('Fetching frozen commits',start,len(unique),flush=True)
+                  subprocess.run(['git','fetch','--no-tags','--depth=1','origin']+[s+':refs/census/'+s for s in batch],stdout=log,stderr=subprocess.STDOUT,check=True)
+          trees={}; marked=set(); scans={}; blobset=set(); commits={}; roots=[]
+          def tree(sha):
+              if sha in trees:return trees[sha]
+              entries=[]
+              for item in subprocess.check_output(['git','ls-tree','-z',sha]).split(b'\0'):
+                  if not item:continue
+                  meta,name=item.split(b'\t',1);mode,kind,obj=meta.decode().split()
+                  entries.append({'name':name.decode(),'mode':mode,'type':kind,'sha':obj})
+              trees[sha]=entries
+              return entries
+          def keep(sha):
+              if sha in marked:return
+              marked.add(sha)
+              for entry in tree(sha):
+                  if entry['type']=='tree':keep(entry['sha'])
+                  elif entry['type']=='blob':blobset.add(entry['sha'])
+          def scan(sha):
+              if sha in scans:return scans[sha]
+              hits=[]
+              for entry in tree(sha):
+                  name=entry['name'];obj=entry['sha']
+                  if relevant(name):
+                      hits.append({'path':name,**entry})
+                      if entry['type']=='tree':keep(obj)
+                      elif entry['type']=='blob':blobset.add(obj)
+                  elif entry['type']=='tree':
+                      for hit in scan(obj):hits.append({**hit,'path':name+'/'+hit['path']})
+              scans[sha]=hits
+              return hits
+          for number,(sha,ref) in enumerate(selected):
+              if sha not in commits:
+                  raw=subprocess.check_output(['git','cat-file','commit',sha]);commits[sha]=raw.decode()
+              root=commits[sha].splitlines()[0].split()[1]
+              hits=scan(root)
+              roots.append({'ref':ref,'commit':sha,'tree':root,'a2_dyn_roots':hits})
+              if number%20==0:print('Indexed',number,'refs;',len(trees),'unique trees;',len(blobset),'unique scoped blobs',flush=True)
+          (history/'INDEX.json').write_text(json.dumps({'captured_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'scope':'all named A2-DYN branch HEADs and all A2-DYN-named paths reachable from those trees, retained as a DAG; not every intermediate commit; no independent mathematical certification','refs':roots,'commits':commits,'trees':{sha:trees[sha] for sha in marked}},separators=(',',':'))+'\n')
+          blobs=history/'blobs';blobs.mkdir()
+          proc=subprocess.Popen(['git','cat-file','--batch'],stdin=subprocess.PIPE,stdout=subprocess.PIPE)
+          for i,sha in enumerate(sorted(blobset)):
+              proc.stdin.write((sha+'\n').encode());proc.stdin.flush()
+              header=proc.stdout.readline().split()
+              if len(header)!=3 or header[1]!=b'blob':raise RuntimeError('missing blob '+sha)
+              size=int(header[2]);data=proc.stdout.read(size)
+              if proc.stdout.read(1)!=b'\n':raise RuntimeError('batch delimiter')
+              if len(data)!=size or hashlib.sha1(b'blob '+str(size).encode()+b'\0'+data).hexdigest()!=sha:raise RuntimeError('blob mismatch '+sha)
+              (blobs/sha).write_bytes(data)
+              if i%1000==0:print('Saved scoped blobs',i,len(blobset),flush=True)
+          proc.stdin.close();proc.wait()
+          with tarfile.open(out/'a2-dyn-historical-source.tar.gz','w:gz',compresslevel=4) as archive:archive.add(history,arcname='history')
+          summary={'branch_count':len(selected),'unique_commits':len(commits),'unique_scoped_trees':len(marked),'unique_scoped_blobs':len(blobset),'archive_sha256':hashlib.sha256((out/'a2-dyn-historical-source.tar.gz').read_bytes()).hexdigest(),'full_intermediate_history_read':False,'mathematical_validation':False}
+          (out/'historical-summary.json').write_text(json.dumps(summary,indent=2)+'\n')
+          print(json.dumps(summary),flush=True)
           PY
       - name: Install native mathematical build dependencies
         if: ${{ hashFiles('papers/A2-DYN-grazing-resolvent-author-revision/tools/qualify_revision.py') != '' }}
@@ -76,7 +107,7 @@ jobs:
             tar -czf /tmp/a2-dyn-resolvent-evidence/active-source.tar.gz -C papers/A2-DYN-grazing-resolvent-author-revision .
           fi
           git status --porcelain=v1 > /tmp/a2-dyn-resolvent-evidence/post-run-status.txt
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
           name: a2-dyn-grazing-resolvent-${{ github.sha }}-${{ github.run_id }}
