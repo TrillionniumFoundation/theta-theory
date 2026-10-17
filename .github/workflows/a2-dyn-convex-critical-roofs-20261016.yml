@@ -1,0 +1,58 @@
+name: A2-DYN convex critical roofs
+on:
+  push:
+    branches: ['revision/a2-dyn-convex-critical-roofs-2026-10-16']
+    paths:
+      - '.github/workflows/a2-dyn-convex-critical-roofs-20261016.yml'
+      - 'papers/A2-DYN-convex-critical-roofs-author-revision/**'
+permissions:
+  contents: read
+jobs:
+  native-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 1
+          sparse-checkout: |
+            papers/A2-DYN-convex-critical-roofs-author-revision
+          sparse-checkout-cone-mode: true
+      - name: Record exact checkout and current remote identities
+        run: |
+          mkdir -p /tmp/a2dyn-convex
+          git rev-parse HEAD > /tmp/a2dyn-convex/exact-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/a2dyn-convex/exact-tree.txt
+          git ls-remote --heads origin > /tmp/a2dyn-convex/all-heads.tsv
+          python3 - <<'PY'
+          import pathlib,json,datetime
+          root=pathlib.Path('/tmp/a2dyn-convex')
+          refs=[]
+          for line in (root/'all-heads.tsv').read_text().splitlines():
+              sha,ref=line.split()
+              if 'a2-dyn' in ref.lower() or 'a2_dyn' in ref.lower():refs.append({'ref':ref,'sha':sha})
+          present=pathlib.Path('papers/A2-DYN-convex-critical-roofs-author-revision/main.tex').is_file()
+          (root/'census.json').write_text(json.dumps({'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'refs':refs,'native_manuscript_present':present,'this_step_certifies_mathematics':False},indent=2)+'\n')
+          PY
+      - name: Install native source dependencies
+        if: ${{ hashFiles('papers/A2-DYN-convex-critical-roofs-author-revision/main.tex') != '' }}
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended texlive-science lmodern
+          python3 -m pip install numpy==2.3.5 sympy==1.14.0
+      - name: Build and diagnose exact native source
+        if: ${{ hashFiles('papers/A2-DYN-convex-critical-roofs-author-revision/main.tex') != '' }}
+        working-directory: papers/A2-DYN-convex-critical-roofs-author-revision
+        run: python3 tools/qualify_convex_revision.py
+      - name: Preserve qualification outputs
+        if: always()
+        run: |
+          if test -d papers/A2-DYN-convex-critical-roofs-author-revision; then
+            tar -czf /tmp/a2dyn-convex/native-source-and-execution.tar.gz -C papers/A2-DYN-convex-critical-roofs-author-revision .
+          fi
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: a2dyn-convex-${{ github.sha }}-${{ github.run_id }}
+          path: /tmp/a2dyn-convex/
+          if-no-files-found: error
