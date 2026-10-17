@@ -1,0 +1,49 @@
+\section{Explicit common recursion for the spectral dual}
+We give the finite recursion used by the main article's primal--dual theorem. Its cost atoms are $(\phi_i,\rho_i,\alpha_i)$ and its task atoms are $(\theta_j,\sigma_j,\beta_j)$, where preparations are density matrices, weights are nonnegative, $\sum_j\beta_j=1$, and $\lambda=\sum_i\alpha_i$. The theorem permits pure preparations and sparse lists; the recursion itself works for any such finite lists. A pre-call history $h$ records actions and reports of its $t$ completed calls. Set
+\[
+ \rho_{i,h}=\mathcal I_{\phi_i,h}(\rho_i),\qquad
+ \sigma_{j,h}=\mathcal I_{\theta_j,h}(\sigma_j).
+\]
+No controller probability occurs in these unnormalized matrices. Define
+\begin{align*}
+ a(h,a)&=\sum_i\alpha_i\tr(G_{\phi_i,a}\rho_{i,h}),\\
+ b(h,a,y,r)&=\sum_j\beta_j
+               \tr(F_{\theta_j,a,y,r}\sigma_{j,hay}),\\
+ U(h)&=c_*\sum_i\alpha_i\tr\rho_{i,h}\quad(|h|=T).
+\end{align*}
+For $|h|<T$, compute backwards
+\begin{align*}
+ W(h,a,y)&=
+ \begin{cases}
+ \min\{\min_{r\in C}b(h,a,y,r),U(hay)\},& y\text{ productive},\\
+ U(hay),&y\text{ nonproductive},
+ \end{cases}\\
+ U(h)&=\min_{a\text{ legal at }h}
+          \{a(h,a)+\sum_y W(h,a,y)\}.
+\end{align*}
+At a compulsory terminal report omit the continuation alternative. At an impossible word all relevant matrices may vanish; the arbitrary minimizing choice there has no physical consequence. The dual value is $U(\varnothing)-\lambda N$.
+
+\begin{proposition}[Exact slack accounting for a common finite tree]\label{prop:supp-dual-slack}
+Let $\gamma(h,a)$ be a plan's sequence weight before the physical report and let $\gamma(h,a,y,r)$ and $\gamma(h,a,y,c)$ be its commitment and continuation weights. The difference between its scalarized reserved objective and $U(\varnothing)-\lambda N$ equals the sum of its nonnegative local Bellman slacks, weighted by these sequence weights. In particular every positive-weight alternative must have zero slack at equality. The matrices in the recursion are analytic data used to choose a single common tree, not an observer-owned model register.
+\end{proposition}
+\begin{proof}
+For a command choice the slack is
+$a(h,a)+\sum_yW(h,a,y)-U(h)\ge0$.
+For a productive commitment it is $b(h,a,y,r)-W(h,a,y)\ge0$, and for continuation it is $U(hay)-W(h,a,y)\ge0$; the latter is zero when continuation is forced. Multiply by the corresponding sequence weights and sum over the tree. The common flow equalities cancel every internal occurrence of $U$ and $W$. At the root its incoming weight is one. At a depth-$T$ open leaf the remaining term is exactly the reserved cost; at a terminal leaf it is exactly its weighted task loss. Thus the uncancelled terms are the claimed objective difference. Finiteness makes all sums literal finite identities. A finite sum of nonnegative terms vanishes exactly when every term with positive coefficient vanishes.
+\end{proof}
+
+If several physical atoms assign zero probability to a reached word, no division by those probabilities is taken. This is why a common unnormalized recursion remains valid with changing supports. A dual-minimizing deterministic tree may have large cost or risk in an individual model. It is not a primal optimal strategy unless the original robust constraints and complementary slackness are also verified.
+
+\section{Conic compression and what a certificate proves}
+The sparse bound uses affine coordinates on the plan polytope, not the number of tree variables before flow reduction. At an optimal feasible $x_*$, each active risk gradient is augmented by 1 and each active cost gradient by 0. Their conic combination is $(g,1)$, with $g$ in the negative normal cone. If the positive support has more than $k+1$ generators, choose a nonzero linear dependence $\sum_i t_i a_i=0$. Reverse its sign if necessary so some $t_i>0$, and replace positive coefficients $w_i$ by
+\[
+ w_i'=w_i-\left(\min_{t_j>0}\frac{w_j}{t_j}\right)t_i.
+\]
+All new coefficients are nonnegative and at least one vanishes. The augmented vector is unchanged, so the risk mass remains one. There is no requirement to preserve the old total cost-multiplier mass: all cost atoms are active at $x_*$, and the strict feasible point bounds the new mass by $L/(N-\kappa)$. Iteration proves finite support. This is the classical conic Carath\'eodory mechanism, applied to the specified common-plan constraints.
+
+The certificate therefore has four logically separate components: a robustly feasible plan, active physical risk and cost preparations, a common-tree minimum of the scalarized expression, and a paid completion if the object being certified is an infinite stopped experiment. Exact arithmetic may verify each finite identity. A numerical optimizer which only reports convergence verifies none of the universal model inequalities by that fact alone. For a semialgebraic compact model set, the universal inequalities have the real-algebraic description given in the main article; a numerical grid is not substituted for them.
+
+\section{Boundary compactness is not compactness of occupation measures}
+The common infinite-plan space is compact in its countable product coordinates. The bounded-cost subset is closed because every finite cost reserve is continuous modelwise. The terminal loss is bounded, so its tail is uniformly at most $L(N/c_*-1)/T$. These facts prove boundary attainment and increasing finite lower convergence. They do not prove continuity of total cost in that topology. The earlier example with a small probability of a very long run has bounded mean while retaining a nonvanishing expected cost tail. Thus the map from a strategic plan to its full occupation measure need not be continuous. Occupation-measure compactness and uniform absorption have their own hypotheses in the existing theory; the argument here neither assumes them silently nor claims to improve that theory in arbitrary Borel control spaces.
+
+For the boundary theorem, each finite tree has finitely many actions and reports. Its countable product is compact metrizable, which is why a subsequence suffices in that proof. This is not a replacement of the older profile's weak-star compactness argument by an unjustified sequential argument. Optimized output tuples lie in compact metric $D^m$ and use a common decision modulus. A hard output-width class is not convex in general; randomizing two dictionaries does not preserve its width.

@@ -1,0 +1,19 @@
+# R71 literature and priority audit
+
+This is an author-side comparison. It does not certify earliest priority or journal significance. Classical tools are credited in the native manuscript; the new memory statements are evaluated separately from those tools.
+
+## Primary sources examined in this round
+
+**Fanizza, Lumbreras and Winter, *Quantum Theory in Finite Dimension Cannot Explain Every General Process with Finite Memory*, Communications in Mathematical Physics 405, 50 (2024), DOI 10.1007/s00220-023-04913-4; arXiv:2209.11225v2.** The primary full text, Theorem 2 and its finite-classical-memory argument were examined. Positive and completely positive process realizations, finite quantum versus unbounded classical memory, rational-resolvent pole obstructions and noise-dependent classical-size bounds are existing theory. Its varying-angle lower bound is not credited to this paper. R71 studies the entire least-memory function at a fixed phase: the uniform rational-approximation envelope, both exact logarithmic exponents, and the necessary-and-sufficient condition for constant-factor cubic behavior. The finite-label observer, prescribed initial state, bounded decoder and physical squared-task reduction keep their explicit inherited hypotheses.
+
+**Hone and Varona, *Continued fractions and irrationality exponents for modified Engel and Pierce series*, Monatshefte fuer Mathematik 190 (2019), 501-516, DOI 10.1007/s00605-018-1244-1; arXiv:1810.10127v1.** The primary full text and PDF equation (3.3) were examined, including a page image. The formula relating irrationality exponent to successive convergent denominators is classical and expressly credited. R71 proves the determinant, error, best-approximation and exponent identities in the form it uses; it claims no new arithmetic identity. The new conclusions convert this arithmetic into two exact stochastic-memory growth exponents and a uniform-law rigidity criterion.
+
+The inherited primary comparisons with Dmitriev--Dynkin, Johnson--Paparella and Kirkland--Smigoc on stochastic eigenvalue regions, and with Monras--Winter, Benvenuti--Farina, O'Cinneide and Maier on positive realization, remain in the complete native bibliography and prior audit. Those full earlier literature audits are preserved, not described as newly repeated page-by-page comparisons. Rabin--Scott, observable-operator representations, absorbing-MDP geometry, causal rejection sampling and the other adjacent theories retain their established roles.
+
+## Novelty boundaries
+
+No novelty is claimed for stochastic spectral regions, the sector inequality, polygon realizations, rational approximation, irrationality-exponent identities, nonnegative realization or Perron theory. The exact spectral and leakage reductions are inherited from R69/R70 and not re-presented as new R71 work. The proposed new contribution is the complete universal envelope and its resulting fixed-phase growth spectrum, uniform-law iff criterion, oscillations and counted physical mixture consequences.
+
+The proof does not require an unproved badly-approximable claim for the algebraic unit phase (3+4i)/5, nor substitute a finite continued-fraction sample for a global certificate. It distinguishes a logarithmic exponent from constant-factor asymptotics. In multiple frequencies it does not interchange liminf with a finite maximum. The old general-M squared-sign risk frontier and timing frontier remain different unresolved problems.
+
+Targeted searches combining stochastic/positive realization, classical quantum memory, Karpelevic regions, continued fractions and irrationality exponents did not identify an exact prior statement of the new envelope in the primary texts inspected. That search result is not an exhaustive novelty or priority certificate; independent mathematical assessment remains necessary. No human expert endorsement or editorial decision is invented.

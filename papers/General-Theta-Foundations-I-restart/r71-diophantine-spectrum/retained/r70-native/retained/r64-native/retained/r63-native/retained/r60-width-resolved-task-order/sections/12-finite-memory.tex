@@ -1,0 +1,134 @@
+\section{Exact finite-memory synthesis on reachable quantum supports}\label{sec:finite-memory}
+The preceding hierarchy characterizes full-history strategies. We now fix the observer alphabet and give a finite certificate that respects its persistent memory. The physical models in this section are time-homogeneous and finite-dimensional, with finite command and report sets and globally legal command rows. Restricted preparation faces and physical command domains have an explicit extension in the supplement. A finite model family is required for the finite algebraic synthesis conclusion. The analytic certificate itself can be imposed modelwise on any declared family, always with the same controller variables.
+
+\subsection{The actual continuing instrument}
+Fix $\ell$ live classical labels, a prescribed initial label $s_0$, and $t$ terminal decoder values $r_u$ in a compact carrier $D$. In a model $\theta$, the hidden physical algebra is $M_{d_\theta}(\mathbb C)$. A command $a$ has completely positive report maps $\mathcal I_{\theta,a,y}$ with normalized report sum, and expected-cost observable $G_{\theta,a}\succeq\underline c I$, $\underline c>0$. A terminal audit following a productive report has bounded score observable $F_{\theta,a,y,j}(r_u)$ on the post-report state. Every terminal choice is made before that audit.
+
+The observer uses common command probabilities $p_{s,a}$. After command $a$ and report $y$, it uses common probabilities $q^0_{s,a,y,v}$ to continue at live label $v$, or $q^1_{s,a,y,u}$ to commit to decoder value $r_u$. These nonnegative probabilities sum to one. Nonproductive reports have all $q^1=0$. Only the current command, report and fresh randomness are available within that call; there is no external clock, port, persistent seed or hidden controller state.
+
+In the event-stopped interface, live and terminal roles may share labels, and $\max(\ell,t)$ total labels suffice. In the state-stopped interface their types are disjoint and $\ell+t$ labels are required. Any fixed overlap or halt partition can instead be declared explicitly. The physical quantum state is part of the experiment, not a free coherent controller memory.
+
+Use the block-diagonal live algebra $\mathcal A_\theta=\bigoplus_{s=1}^\ell M_{d_\theta}(\mathbb C)$. The actual continuing map and one-call observables are
+\begin{align}
+ (\mathcal T_\theta X)_v
+ &=\sum_{s,a,y}p_{s,a}q^0_{s,a,y,v}\mathcal I_{\theta,a,y}(X_s),\label{eq:memory-T}\\
+ (g_\theta)_s&=\sum_a p_{s,a}G_{\theta,a},\label{eq:memory-g}\\
+ (f_{\theta,j})_s&=\sum_{a,y,u}p_{s,a}q^1_{s,a,y,u}
+       \mathcal I_{\theta,a,y}^*(F_{\theta,a,y,j}(r_u)).\label{eq:memory-f}
+\end{align}
+The continuing map is completely positive and trace-nonincreasing. Its complementary one-call terminal effect is $b=I-\mathcal T^*(I)$. Normalization and the score bounds give
+\begin{equation}\label{eq:memory-bound}
+ g\succeq\underline c I,\qquad
+ \alpha_jb\preccurlyeq f_j\preccurlyeq\beta_jb.
+\end{equation}
+We suppress $\theta$ in modelwise arguments. Let $\iota(\rho)$ insert an initial physical matrix in block $s_0$. The cost through $n$ calls is the pairing with $\sum_{k<n}(\mathcal T^*)^kg$, and the terminal score through $n$ calls is the pairing with $\sum_{k<n}(\mathcal T^*)^kf_j$. These formulas count the actual continuing paths, including failures.
+
+\begin{lemma}[Finite determination of the reachable support]\label{lem:reachable-support}
+Put $D_\theta=\ell d_\theta$ and
+\begin{equation}\label{eq:reachable-Gram}
+ R_\theta=\sum_{n=0}^{D_\theta-1}\mathcal T_\theta^n\iota(I),\qquad
+ P_\theta=\operatorname{supp}R_\theta.
+\end{equation}
+This is the least block projection whose initial block is $I$ and whose support is invariant under the continuing instrument:
+\begin{equation}\label{eq:support-invariant}
+ \mathcal T(P)=P\mathcal T(P)P.
+\end{equation}
+Every actual live state is supported on $P$. Invariance is a support statement, not the equality $\mathcal T(P)=P$.
+\end{lemma}
+\begin{proof}
+Let $R_n=\sum_{k=0}^n\mathcal T^k\iota(I)$. Its supports increase. If the supports of $R_n$ and $R_{n+1}$ agree, then the support of $\mathcal T(R_n)=\sum_{k=1}^{n+1}\mathcal T^k\iota(I)$ lies there. Since $R_n$ is strictly positive on its support, it dominates a positive multiple of that support projection. Positivity shows that the projection's image also lies there. The support is therefore invariant and all later terms remain inside it. Otherwise its rank strictly increases. Starting with nonzero rank in dimension $D_\theta$ proves stabilization by $D_\theta-1$.
+
+Any invariant block projection containing the initial block contains every summand by positivity and hence their support. This proves leastness. Every raw positive reachable path operator is bounded by an appropriate positive sum in some iterate from $\iota(I)$, so its support lies in the least invariant projection. Equivalently apply the Kraus representation along the path. Thus all actual live states are contained in $P$.
+\end{proof}
+
+\subsection{An exact cost and task certificate}
+For a block projection $P$ satisfying invariance, let $\mathcal T_P$ be the restriction to its supported algebra, with adjoint $\mathcal T_P^*X=P\mathcal T^*(X)P$. All inverses below act on this finite-dimensional supported algebra, not on unreachable blocks of the full system.
+
+\begin{theorem}[Reachable-support potential certificate]\label{thm:memory-certificate}
+For one fixed common observer, the following are equivalent:
+
+\textup{(a)} In every model and from every initial density matrix it commits almost surely, has expected cost at most $N$, and has the prescribed terminal-score operators $A_{\theta,j}$.
+
+\textup{(b)} In every model there are a block projection $P$, a positive $H=PHP$, and Hermitian $K_j=PK_jP$, with $P_{s_0}=I$, \eqref{eq:support-invariant}, and
+\begin{align}
+ P(H-\mathcal T^*H-g)P&\succeq0,& H_{s_0}&\preccurlyeq NI,\label{eq:memory-cost-cert}\\
+ P(K_j-\mathcal T^*K_j-f_j)P&=0,& (K_j)_{s_0}&=A_{\theta,j},\label{eq:memory-score-cert}\\
+ \alpha_jP&\preccurlyeq K_j\preccurlyeq\beta_jP.\label{eq:memory-K-bounds}
+\end{align}
+One may choose the explicitly computed least reachable projection in \eqref{eq:reachable-Gram}. On it, proper finite-cost operation is equivalent to
+\begin{equation}\label{eq:memory-spectral}
+ \operatorname{spr}(\mathcal T_P)<1.
+\end{equation}
+Under this condition the unique exact cost and score solutions are
+\begin{equation}\label{eq:memory-resolvents}
+ H^{\min}=(I-\mathcal T_P^*)^{-1}(PgP),\qquad
+ K_j=(I-\mathcal T_P^*)^{-1}(Pf_jP).
+\end{equation}
+Every positive cost superpotential dominates $H^{\min}$ on this support. Testing its initial block and those of the $K_j$ is therefore necessary and sufficient, not merely a Lyapunov sufficient condition. Model-dependent certificates are analytic objects and are not stored by the common observer.
+\end{theorem}
+\begin{proof}
+Assume (b) and work on the invariant support. Iterating the cost inequality gives
+\[
+ \sum_{k=0}^{n-1}(\mathcal T_P^*)^k(PgP)
+       +(\mathcal T_P^*)^nH\preccurlyeq H.
+\]
+Trace against an initial density matrix, discard the nonnegative remainder and use the initial budget bound. The left partial sum is the actual cost through $n$ calls. Monotone convergence gives total expected cost at most $N$. The floor $PgP\succeq\underline cP$ bounds $\underline c\sum_{k<n}\Pr(\tau>k)$ by the same constant. Hence commitment is almost sure. The same argument gives finite cost from every state on $P$, with its bound supplied by $H$.
+
+Iteration of the score equation yields
+\[
+ K_j=\sum_{k=0}^{n-1}(\mathcal T_P^*)^k(Pf_jP)
+                    +(\mathcal T_P^*)^nK_j.
+\]
+The remaining trace is bounded in magnitude by $\max(|\alpha_j|,|\beta_j|)\Pr(\tau>n)$ and tends to zero. The finite sum records the scores on disjoint terminal events. Bounded scores and proper operation identify its limit with the actual terminal expectation. The initial block equation proves (a).
+
+For necessity fix a model, let $X_0=\iota(I)$, take the least reachable projection and write $D=\ell d$. Assumption (a) gives
+\[
+ \sum_{k\ge0}\langle g,\mathcal T^kX_0\rangle\le dN.
+\]
+The corresponding series starting at $\mathcal T^nX_0$ is a nonnegative tail of this series. Sum these tails for $0\le n<D$ to obtain
+\begin{equation}\label{eq:reachable-finite-cost}
+ \sum_{k\ge0}\langle g,\mathcal T^kR\rangle\le DdN.
+\end{equation}
+Since $R$ is strictly positive on its support, every positive supported matrix is bounded by a finite multiple of $R$. Positivity proves finite expected cost from every such matrix. This includes states which need not occur as individual pure conditional states on any one path.
+
+The positive partial cost potentials increase, and their pairing with $R$ is bounded by \eqref{eq:reachable-finite-cost}. Strict positivity of $R$ on its finite-dimensional support bounds their norms. They converge to a positive $H^{\min}$ solving $H^{\min}-\mathcal T_P^*H^{\min}=PgP$. Its initial block is precisely the cost operator and is at most $NI$.
+
+The cost floor also makes $\sum_k(\mathcal T_P^*)^kP$ converge in norm. In particular $(\mathcal T_P^*)^nP\to0$. Every supported Hermitian matrix lies between $-\|X\|P$ and $\|X\|P$; positivity makes its image under these powers tend to zero. Decompose any complex matrix into Hermitian parts. In finite dimension, convergence of all these powers forces every eigenvalue to have modulus less than one. Otherwise an eigenvector of modulus at least one would not tend to zero. This proves \eqref{eq:memory-spectral} and its norm-convergent Neumann inverse.
+
+The score series converges absolutely in norm by \eqref{eq:memory-bound} and the summable survival series. Normalization gives $PbP=P-\mathcal T_P^*P$, whose series sums to $P$. Consequently the score series sums to a $K_j$ between $\alpha_jP$ and $\beta_jP$, solves its equation and has the prescribed initial block. This proves (b) and both resolvent formulas.
+
+Conversely, spectral radius less than one gives finite cost through the same Neumann series and proper operation through normalization. Budget and targets are then exactly the initial-block conditions. Finally any positive cost superpotential dominates every partial cost potential by the first telescoping inequality, and thus dominates their limit. More precisely, its nonnegative drift slack $D_H=P(H-\mathcal T^*H-g)P$ satisfies
+\[
+ H-H^{\min}=(I-\mathcal T_P^*)^{-1}D_H\succeq0.
+\]
+This proves both minimality and the exact excess-certificate formula.
+\end{proof}
+
+\subsection{An attained finite-memory algebraic frontier}
+For synthesis the common probabilities, decoder values and modelwise certificate matrices become variables. The state-stopped interface is a finite union over permitted halt partitions. The event-stopped interface permits declared live/output reuse. Both keep a fixed initial live label.
+
+\begin{corollary}[Finite algebraic synthesis at an exact memory budget]\label{cor:memory-algebraic}
+Assume finitely many physical models with real algebraic primitive coefficients, a compact semialgebraic decoder carrier, and audit-score observables polynomial in decoder coordinates. Fix a total label budget $M$ and algebraic cost budget $N$. Existence of a common observer with the stated exact targets and cost at most $N$ is equivalent to feasibility of a finite system of polynomial equalities and positive-semidefinite inequalities. It is decidable by real-algebraic quantifier elimination. A feasible instance has a common controller and certificates with real algebraic entries.
+
+For bounded continuous nonnegative terminal loss, the worst-model, worst-initial-state loss at budget $N$ attains its minimum whenever the feasible fixed-memory class is nonempty. Under the algebraic hypotheses its optimum is real algebraic. These are exact existence statements, not polynomial-time bounds, rational-optimum claims or finite-bit exact implementation of all algebraic samplers.
+\end{corollary}
+\begin{proof}
+Use polynomial normalization and positivity for the probability rows. Encode Hermitian matrices by their real diagonal and real and imaginary off-diagonal coordinates. Positive semidefiniteness is equivalent to nonnegativity of every principal minor. Encode $P=P^*=P^2$, $P_{s_0}=I$, invariance, support of $H,K_j$, and the cost and score conditions of the theorem. All expressions in \eqref{eq:memory-T}--\eqref{eq:memory-f} and the certificate are polynomial in these variables. There are finitely many choices of live and terminal role counts and halt partitions under $M$. Every model retains its own certificate matrices but the same controller variables. For a loss upper bound $R$, replace its exact initial score target by $(K_{\rm loss})_{s_0}\preccurlyeq RI$. The theorem identifies this exactly with the required worst-state loss bound. Classical real-algebraic elimination proves decidability and algebraic witnesses \cite{Seidenberg54}; no new elimination algorithm is claimed.
+
+Attainment needs a separate argument because the auxiliary potentials may be unbounded away from their initial block. The probability rows and decoder tuples form a compact space. Every finite-prefix cost and score is continuous in these parameters. A limit of observers with cost at most $N$ has every finite-prefix cost at most $N$. Monotone convergence and the positive floor give the same total budget and proper operation for the limit. The uniform bound $\Pr(\tau>T)\le N/[\underline c(T+1)]$ makes bounded terminal-score tails uniformly vanish on this budget class. Therefore full terminal scores are continuous there, as are the finitely many largest-eigenvalue worst-model losses. Exact score constraints are closed. The loss minimum on a nonempty compact feasible set is attained.
+
+The achievable loss-bound set is semialgebraic over the real algebraic numbers by the first part. An attained finite endpoint of such a one-variable set is algebraic. Its nonempty fiber also has real algebraic coordinates. This proves the last statement without imposing a false compactness bound on the certificate matrices or claiming rational optimal probabilities.
+\end{proof}
+
+Finite-state POMDP synthesis, potential equations, spectral transience, quantum decision processes and real-algebraic methods have established antecedents \cite{Chatterjee15,Andriushchenko23,Barry14,Ying18,Saldi25}. The present claim is the precise common-model, all-initial-state, paid certificate with exact event/state semantics, its necessary reachable-support construction and its connection to acquired task balance. Those classical ingredients separately are not presented as new.
+
+\begin{example}[An unreachable recurrent block is not an obstruction]\label{ex:unreachable-loop}
+There are two live labels and one physical state. From the prescribed start $1$, a productive cost-one call commits immediately. Label $2$ is never reached and has a cost-one self-loop. The full continuing matrix is $\operatorname{diag}(0,1)$, with spectral radius one. Nevertheless the actual observer is proper and has cost one. Its reachable projection is $\operatorname{diag}(1,0)$; on that support the continuing matrix is zero and $H^{\min}=P$. Thus an unrestricted inverse of $I-\mathcal T$ or a global strict-transience requirement would incorrectly reject it. Scalar blocks embed this example in any quantum dimension.
+\end{example}
+
+\begin{corollary}[Same-task balance with a certified finite live count]\label{cor:memory-balance}
+Apply the finite-memory certificate to the localized mass, first-moment and squared-norm scores in Corollary~\ref{cor:balance-hierarchy}. A feasible certificate gives one actual finite-label common balancing program at its certified cost. Conversely every such observer on the declared time-homogeneous interface yields the certificate. If the return rule and all actual rooted continuations are also certified, the program's actual live roles and exported decoder values may be used in the upper widths of the transfer theorem. Failure at a prescribed $M$ is an obstruction for that observer class, not merely failure of a searched single-call mixture.
+\end{corollary}
+\begin{proof}
+The score list is finite and its quadratic expansion is exactly the unnormalized squared-task identity. The potential theorem is necessary and sufficient for the finite observer producing it. The common $p,q,r$ variables are the observer itself, so no uncounted history tape or model index is used. Its live labels and costs are those of its certified transitions. The rooted-continuation condition supplies the required uniformity when attempts repeat. The supplement gives the post-report compilation: prospective audits are not observed on rejected branches, and a logical subroutine return is not mistaken for an irrevocable outer halt. The transfer theorem then uses these same actual resource counts.
+\end{proof}

@@ -1,0 +1,143 @@
+\section{A finite test for reusable causal task balance}\label{sec:reusable}
+The synthesis theorems produce an acquisition routine, but its first invocation is not the whole stopped experiment. A rejected report changes the physical state. Checking only the average returned state loses the report history on which rejection depends. Requiring task equality on every density matrix on the reachable Hilbert support, on the other hand, can be unnecessarily strong. The correct object for exact linear task identities is the report-resolved real linear span of the unnormalized returned states.
+
+Fix a time-homogeneous routine with a finite visible return alphabet $X$. At a routine start, the physical state is a density matrix on a finite-dimensional carrier $K$. The routine is legal and proper on that carrier, as certified for example by Theorem~\ref{thm:memory-certificate}; all its physical operations and live roles are counted. On return $x$, a specified legal rejection operation produces the unnormalized next-start state
+\[
+ \mathcal R_x(\rho).
+\]
+The maps $\mathcal R_x$ are completely positive and $\sum_x\mathcal R_x$ is trace preserving. The rejection operation is trace preserving conditional on that return, so it does not change the return probability. It is performed only when the caller rejects and is charged separately when it has a physical cost. Its phase must be in the counted controller labels. There is no implicit physical reset.
+
+For finitely many bounded prospective audit scores, let $F_{x,j}$ be the Hermitian start-state observable of the unnormalized score on return $x$, before the caller's commitment decision. The future audit is not observed on rejection. Put $F_{x,0}=\mathcal R_x^*(I)$ for report mass. Fix constants $m_{x,j}$, including $m_{x,0}=\nu_x$, with $\sum_x\nu_x=1$. The initial preparation family $\mathcal S$ is a nonempty set of density matrices on $K$; it need not contain every such matrix. All data may be indexed by an unknown model $\theta$, but the actual routine and caller rules are the same in every model. The following statements are imposed modelwise without allowing the controller to read $\theta$.
+
+Let $d=\dim K$, let $\operatorname{Herm}(K)$ be the real vector space of Hermitian matrices, and define
+\begin{align}
+ W_0&=\operatorname{span}_{\R}\mathcal S, & r_0&=\dim W_0,\\
+ W_{n+1}&=W_n+\sum_{x\in X}\mathcal R_x(W_n),& n_0&=d^2-r_0.\label{eq:return-span}
+\end{align}
+The additions are sums of real linear subspaces, not sums of channels or support projections.
+
+\begin{theorem}[Finite report-resolved continuation criterion]\label{thm:return-span}
+One has $W_{n_0}=W_{n_0+1}=:W_\infty$. This is exactly the span of all positive, unnormalized routine-start states
+\[
+ \mathcal R_{x_n}\cdots\mathcal R_{x_1}(\rho),
+ \qquad \rho\in\mathcal S,\quad n\ge0.
+\]
+The following conditions are equivalent.
+
+\textup{(i)} After every finite positive-probability history of rejected returns, from every preparation in $\mathcal S$, the next routine has conditional marked audit moments $m_{x,j}$, including its report masses $\nu_x$.
+
+\textup{(ii)} Every residual $F_{x,j}-m_{x,j}I$ annihilates $W_\infty$ under the trace pairing.
+
+\textup{(iii)} Those residuals annihilate $W_{n_0}$.
+
+These conditions imply the same identities for every caller using the past returned marks and private randomness to choose acceptance, provided rejection uses exactly the declared return maps. They are also necessary when all finite sequences of rejections are legal caller choices. No unseen future audit, fresh model-dependent program or stored physical posterior is used by the caller.
+\end{theorem}
+\begin{proof}
+An equality $W_n=W_{n+1}$ makes $W_n$ invariant under every $\mathcal R_x$, so all subsequent subspaces agree. Before equality each dimension increases by at least one, starting at $r_0$ and never exceeding $d^2$. Stabilization therefore occurs by $n_0$. Induction expands $W_n$ as the span of word images of length at most $n$ of $W_0$; taking the invariant limit proves the first assertion.
+
+For a word $w=(x_1,\ldots,x_n)$ and $\rho\in\mathcal S$, write $A_w=\mathcal R_{x_n}\cdots\mathcal R_{x_1}(\rho)$. Complete positivity gives $A_w\succeq0$. If its trace is positive, the conditional next-start state is $A_w/\tr A_w$. Its marked expectation is $\tr(F_{x,j}A_w)/\tr A_w$, so equality to $m_{x,j}$ is precisely $\tr[(F_{x,j}-m_{x,j}I)A_w]=0$. If its trace is zero, positivity gives $A_w=0$, and the same unnormalized equality is automatic. Thus (i) is equivalent to annihilation of all word images, hence to (ii). Stabilization gives (iii).
+
+A caller's randomized rejection decisions contribute scalar nonnegative weights to each fixed visible word, because its choices use only that word and private randomness, not the hidden matrix. Conditioning also on its private tape changes these weights but not the physical word map. Integrating over compatible tapes preserves every displayed linear identity. Therefore the identities hold at every actual surviving caller history. Conversely deterministic rejection of the first $n$ returns makes each positive-probability word of length $n$ a possible start history, proving necessity. These arguments use finite histories; conditional-hazard summation, rather than a claim of renewal, supplies the infinite stopping conclusion below.
+\end{proof}
+
+\begin{corollary}[A finite-dimensional certificate for repeated finite-mark balance]\label{cor:reusable-balance}
+Take the mass, first-moment and squared-norm score targets of Corollary~\ref{cor:balance-hierarchy}. Suppose their residuals annihilate the report-resolved span in every model, and one invocation including its executed rejection return costs conditionally at most $\kappa$ on all actual start states. For any finite dictionary and any feasible $0\le h\le b$ with $\sum_x h(x)\nu_x=1$, accept return $x$ with probability $h(x)/b$. The resulting routine commits almost surely, costs at most $\kappa b$, and has exact terminal task value
+\[
+ \sum_x h(x)\nu_x\,[w(x)+\|f(x)-r(x)\|^2].
+\]
+The same finite observer implements every attempt, with no added intercall history register. A rejection return performed within the productive call adds no live role; an extra physical return subroutine must have its calls and live roles counted. This yields the upper construction needed by the transfer theorem from a finite report-resolved continuation test, rather than leaving its history-uniform task identity as an unverified premise.
+\end{corollary}
+\begin{proof}
+The three marked moment identities and expansion of the square give the same unnormalized task identity conditional on every actual start history by the theorem. Thus the conditional acceptance probability is $1/b$ and the unnormalized loss is $b^{-1}$ times the displayed value. Induction gives survival $(1-1/b)^n$ through $n$ invocations; summing begun invocations gives expected number $b$. Summing their conditional costs and disjoint terminal losses proves both assertions. For a final accepted invocation the rejection operation is not performed, and nonnegative cost only improves its budget. The decision is made at the final productive report before the prospective audit. The existing routine's live labels are reused on rejection, while its finite terminal decoder is read only on commitment. This proves the memory statement with the explicit return-operation qualification.
+\end{proof}
+
+The cost assumption in this corollary is not silently converted into a linear-span equality. A positive cost superpotential on the reachable support is a sufficient, checkable bound. If the exact whole-invocation cost observable $H$ is available and constant cost $\kappa$ is required at every reachable start, the condition is exactly $(H-\kappa I)\perp W_\infty$ by the same proof. A one-sided inequality on only the reachable positive states need not be equivalent to a Loewner inequality on their whole support; no such equivalence is asserted.
+
+\begin{example}[Averaging is too weak; support equality is too strong]\label{ex:return-span}
+On a qubit let $\rho_0=I/2$ and
+\[
+ \mathcal R_0(A)=\tfrac12\tr(A)|0\rangle\langle0|,
+ \qquad
+ \mathcal R_1(A)=\tfrac12\tr(A)|1\rangle\langle1|.
+\]
+The average return sends $\rho_0$ to itself, so iterating only that average generates the one-dimensional span of $I$. But the report-resolved span is the entire diagonal Hermitian subspace. The observable $\sigma_z$ has zero expectation at the initial and averaged returned state, and expectations $+1,-1$ at the two actual conditional starts. An initial or pooled calibration of that task therefore fails the required repeated identity.
+
+Conversely $\sigma_x$ annihilates the complete report-resolved diagonal span, though it is a nonzero operator on its full two-dimensional Hilbert support. A test insisting on the operator identity $\sigma_x=0$ on that support would reject an exact reachable-task identity. Both examples can be realized by a fair visible coin, a prospective Pauli audit at commitment, and a charged conditional replacement preparation on rejection. They distinguish a span of density matrices from a Hilbert-space support and do not make replacement preparations free.
+\end{example}
+
+\begin{proposition}[Finite exact arithmetic verification]\label{prop:return-arithmetic}
+For a fixed finite-dimensional routine whose return maps, task observables and a finite spanning preparation list have algebraic real and imaginary parts, the continuation criterion is decidable by finitely many exact linear-algebra operations. At most $d^2-r_0$ span enlargements are needed; each enlarges a space of dimension at most $d^2$. For a finite family of physical models the same test is performed in every model on the one fixed controller. This is a verification result for the supplied routine, not a polynomial-time synthesis theorem for its controller parameters or a complexity bound for evaluating arbitrary algebraic numbers.
+\end{proposition}
+\begin{proof}
+Represent Hermitian matrices by $d^2$ real coordinates and every return map by a real matrix on those coordinates. Starting with a basis of the supplied preparation span, append all its images under all return maps and retain a basis by exact elimination. The dimension argument in Theorem~\ref{thm:return-span} bounds the number of enlargements. At stabilization check the finitely many trace pairings with every residual. All operations and zero tests are exact in the finite algebraic field generated by the input entries. This implements the equivalence of the theorem.
+\end{proof}
+
+Finite reachable linear spans and word-equivalence tests have classical probabilistic-automata antecedents \cite{Tzeng92}; reachable Hilbert supports and quantum termination also have established theory \cite{LiYuYing12,Fu24}. Those algorithms and the dimension argument are not claimed as new. The assertion used here is the exact report-resolved test for repeated marked tasks, its distinction from pooled calibration and support-wide identities, and its paid post-report compilation into the same causal resource theorem.
+
+\subsection{Continuous reports and a sharp finite-depth obstruction}
+The finite-return restriction can be removed from the exact continuation test without asserting general effective synthesis. Let $X$ now be standard Borel. A rejected return is described by a completely positive instrument $D\mapsto\mathcal R(D)$, countably additive in the finite-dimensional space of linear maps, with $\mathcal R(X)$ trace preserving. Let $F_j(D)$ be finite Hermitian operator-valued prospective task measures and $m_j(D)$ their prescribed finite scalar measures; include report mass as $F_0(D)=\mathcal R(D)^*I$ and $m_0=\nu$. Each bounded score gives such a finite measure. Define
+\[
+ W_{n+1}=W_n+\operatorname{span}_{\R}\{\mathcal R(D)A:
+        D\in\mathcal B(X),\ A\in W_n\},\qquad
+ E_j(D)=F_j(D)-m_j(D)I.
+\]
+The operational identity below is an almost-sure identity at actual reached histories, not a condition imposed at individually null continuous reports.
+
+\begin{theorem}[Finite-depth criterion for standard Borel return instruments]\label{thm:borel-return}
+With $W_0=\operatorname{span}_{\R}\mathcal S$ of dimension $r_0$ and physical dimension $d$, the span stabilizes by depth $d^2-r_0$. Exact marked task identities after every finite report-dependent rejection history hold if and only if
+\begin{equation}\label{eq:borel-return}
+ \tr[E_j(D)A]=0\quad
+ (A\in W_{d^2-r_0},\ D\in\mathcal B(X),\ \text{every }j).
+\end{equation}
+If an identity fails, there is a witness using an allowed initial preparation, at most $d^2-r_0$ rejected returns, a rectangular cylinder of report events of positive probability, and one subsequent task event.
+
+There exists a finite Borel partition $\Pi$ of the return space with at most $2^{d^2-r_0}$ cells such that the maps $\{\mathcal R(C):C\in\Pi\}$ generate exactly the same reachable span as all Borel events. This is an existence statement about exact instrument measures. An arbitrary coarse partition or numerical binning is not such a certificate, and testing task-measure equality still requires its exact measure data.
+\end{theorem}
+\begin{proof}
+Dimension growth and invariance give stabilization exactly as before. Induction identifies $W_n$ with the span of the matrices
+$\mathcal R(D_n)\cdots\mathcal R(D_1)\rho$ for words of length at most $n$ and $\rho\in\mathcal S$. These are positive unnormalized states for rectangular cylinders. If a residual does not annihilate their span, it does not annihilate one such generator. That generator is positive and nonzero, so its trace is positive. This proves the bounded-depth witness assertion and necessity of the displayed condition.
+
+For sufficiency, fix an initial preparation and a finite depth. Iterating the instrument gives a finite positive operator-valued measure on $X^n$. Pairing it with a fixed residual $E_j(D)$ gives a finite signed scalar measure. Its value on every rectangular cylinder is zero by the invariant-span condition. Rectangles form a generating pi-system, so uniqueness of finite signed measures makes it zero on every measurable history event. A bounded nonnegative report-dependent rejection weight can be integrated against this zero measure; approximation by simple functions proves that the conditional task discrepancy is zero at the actual surviving histories. To obtain one common almost-sure set for all next task events, first use a countable generating algebra of the standard Borel report space, intersect its full-measure sets for the finitely many scores, and then use uniqueness of finite measures at each remaining history. Private caller randomness is integrated in the same way. This gives the asserted operational identities, including measurable rejection depending on the full report history rather than only on rectangles.
+
+For the finite partition, start with $V=W_0$. If $V$ is not invariant under all event maps, choose an event $D$ and an $A\in V$ such that $\mathcal R(D)A\notin V$. Add this event to a list and replace $V$ by the invariant span generated by all listed event maps and $W_0$. Its dimension increases by at least one. After at most $d^2-r_0$ such choices, the resulting space is invariant under every event map and hence equals $W_\infty$. Take the common Boolean refinement of the listed events. Every selected map is the sum of the maps of its partition cells. The invariant span under the partition maps therefore contains $W_\infty$, while each cell is a Borel event and so cannot generate a vector outside $W_\infty$. Equality follows. At most $2^{d^2-r_0}$ cells are needed. Nothing in this argument supplies an effective representation of those selected Borel events for arbitrary input measures.
+\end{proof}
+
+\begin{theorem}[Sharp and physically realizable continuation depth]\label{thm:sharp-return-depth}
+For every physical dimension $d\ge2$, there is a completely positive trace-preserving return channel, one initial full-rank preparation, one visible return mark and a bounded two-outcome prospective audit such that the prescribed squared-task balance holds after $n$ rejections for every $0\le n<d^2-1$, but fails after $d^2-1$ rejections. All real and imaginary parts of primitive matrix entries can be chosen real algebraic. Thus the witness depth $d^2-r_0$ is sharp already for $r_0=1$, even with one return mark and uniformly finite paid invocation cost.
+\end{theorem}
+\begin{proof}
+Put $q=d^2-1$. Choose a Hilbert--Schmidt orthonormal real basis $F_1,\ldots,F_q$ of traceless Hermitian matrices with algebraic entries. A generalized matrix-unit basis gives one, and $\|F_i\|_{\rm op}\le1$. Choose distinct numbers
+\[
+ \lambda_i=\frac{i}{2dq(q+1)},\qquad
+ \varepsilon=\frac1{2dq},\qquad
+ \rho_0=I/d+\varepsilon\sum_{i=1}^q F_i.
+\]
+The norm bound makes $\rho_0\succeq I/(2d)$ and its trace is one. Define
+\[
+ \Phi(A)=\tr(A)I/d+\sum_{i=1}^q\lambda_i\tr(F_iA)F_i.
+\]
+Its Choi matrix in the unnormalized convention is
+\[
+ J_\Phi=I\otimes I/d+\sum_i\lambda_i F_i^{\mathsf T}\otimes F_i.
+\]
+Since $\sum_i\lambda_i=1/(4d)$, the perturbation has norm at most $1/(4d)$. Thus $J_\Phi\succeq3I/(4d)$, which proves complete positivity. Taking traces proves trace preservation, and $\Phi(I)=I$, $\Phi(F_i)=\lambda_iF_i$. Consequently
+\[
+ \rho_n=\Phi^n(\rho_0)=I/d+\varepsilon\sum_i\lambda_i^nF_i.
+\]
+The $q+1=d^2$ matrices $\rho_0,\ldots,\rho_q$ are linearly independent by the Vandermonde determinant on the distinct nodes $1,\lambda_1,\ldots,\lambda_q$. There is therefore a Hermitian $L$ annihilating $\rho_0,\ldots,\rho_{q-1}$ but not $\rho_q$. This already proves the claimed depth. We give exact coefficients to make the physical realization explicit.
+
+Set $x_0=1$, $x_i=\lambda_i$ and $w_i=\prod_{j\ne i}(x_i-x_j)^{-1}$. The coefficient of degree $q$ in Lagrange interpolation of $x^n$ at these $q+1$ nodes gives
+\[
+ \sum_{i=0}^q w_i x_i^n=0\ (0\le n<q),\qquad
+ \sum_{i=0}^q w_i x_i^q=1.
+\]
+Let $L_0=w_0I+\varepsilon^{-1}\sum_{i=1}^q w_iF_i$ and
+$K=|w_0|+\varepsilon^{-1}\sum_{i=1}^q|w_i|>0$.
+Then $L=L_0/K$ is Hermitian with operator norm at most one, and
+$\tr(L\rho_n)=0$ for $n<q$, while $\tr(L\rho_q)=1/K>0$.
+The effects $(I+L)/2,(I-L)/2$ give a valid two-outcome audit $Z\in\{-1,1\}$ with mean $\tr(L\rho)$ and second moment one. All specified matrices and constants are algebraic; the square roots needed for a Kraus implementation of their positive Choi matrix may also be chosen algebraic by finite-dimensional spectral calculus.
+
+One routine emits a deterministic productive mark without changing the state. On acceptance, commit a readout and perform this prospective audit. On rejection, execute the physical channel $\Phi$ and return to the start. Charge the productive operation and rejected return separately; each invocation has cost at most two unit calls and a fixed finite implementation. After $n$ rejected invocations the actual start state is $\rho_n$. For the genuinely prepared initial reference, $f=0,w=1$, and the squared loss at readout $r\in[-1,1]$ is $1+r^2$ at every $n<q$. At $n=q$ it is $1+r^2-2r/K$, which differs for any nonzero $r$. Thus all marked mass, mean and squared-norm identities hold up to the asserted depth and the task identity then fails. No report of zero probability, infinitely expensive routine, free physical reset or numerical approximation is used.
+\end{proof}
+
+The Hermitian reachable-space method itself, including its distinction from Hilbert-space reachability, is expressly present in Fu et al.\ \cite{Fu24}; it is not introduced here. The extensions proved above are the standard Borel report-event formulation for reusable marked tasks, its finite-coarsening statement, and the matching physically realizable $d^2-1$ witness depth connected to paid rejection. Neither the finite witness bound nor its sharp example constitutes a general decision procedure for arbitrary continuous instrument measures.
