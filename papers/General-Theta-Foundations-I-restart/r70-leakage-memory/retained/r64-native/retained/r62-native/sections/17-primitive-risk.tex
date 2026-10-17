@@ -1,0 +1,170 @@
+\section{A constructive finite-budget frontier from primitive instruments}\label{sec:primitive-risk}
+The geometric transfer theorem identifies a geometric curve when its converse and construction certificates are available. We now give a different, intrinsic route for finite time-homogeneous experiments: derive a proper fallback from the raw instruments and compute converging bounds on the optimal task risk itself. Neither a reset state, a balancing group, a supplied reference member nor a posterior stored by the controller is assumed. The finite and all-initial-state qualifications are essential. The qualitative invariant-subspace obstruction has a direct antecedent in quantum reachability \cite[Theorem 3.6]{Ying14pre}; it is proved below to obtain the quantitative fallback required by the new budget-preserving approximation.
+
+\subsection{Primitive interface and universal termination}
+The unknown model belongs to a nonempty finite set $\Theta$. Model $\theta$ has physical space $\mathcal H_\theta$ of dimension $d_\theta$. The nonempty finite command set $\mathcal A$ is globally legal. A command has completely positive report maps $\mathcal I_{\theta,a,y}$ with normalized sum. Reports range over finite sets, with a declared productive subset $Y_a^+$. After a productive report a controller may commit a decision from a fixed dictionary $C$ or reject; after any rejected or nonproductive report the post-report state is the next state. No additional return or reset is available. An interface requiring extra physical return calls must first represent and charge those calls explicitly; the theorem is not applied by hiding them in an unpriced transition. Commitment occurs exactly once, before a future audit is observed. The audit loss for decision $r\in C$ is represented on the post-report state by
+\[
+ 0\preccurlyeq F_{\theta,a,y,r}\preccurlyeq LI,
+ \qquad 0<L<\infty.
+\]
+Nonnegative call costs have observables $c_*I\preccurlyeq G_{\theta,a}\preccurlyeq c^*I$, with $0<c_*\le c^*<\infty$. These are the precommit core costs. A final audit with one fixed separately charged cost is added to every total budget after the theorem; an action-dependent unmodelled terminal charge is not included by assertion. Policies share one set of command and decision rules across models and unknown initial density matrices. Let $R_C(N)$ be their least worst-model, worst-initial-state expected terminal loss at uniform expected cost at most $N$. Their precommit memory is unrestricted for this value; a finite-label implementation is derived, not assumed.
+
+Fix any command distribution $\pi_a>0$. The fallback chooses that row independently at every call and commits at the first productive report, using one fixed $r_0\in C$. Its killed physical map is
+\[
+ \mathcal T_\theta=\sum_a\pi_a\sum_{y\notin Y_a^+}\mathcal I_{\theta,a,y},
+ \quad B_\theta=I-\mathcal T_\theta^*I,
+ \quad O_{\theta,n}=I-(\mathcal T_\theta^*)^nI.
+\]
+A common dark subspace in one model is a nonzero subspace annihilated by every productive effect and invariant under every Kraus operator of every nonproductive report map. This condition is independent of the Kraus representation: it says that every positive state on the subspace remains there on failure and has zero productive probability for every command.
+
+\begin{theorem}[Primitive fallback and its sharp depth test]\label{thm:primitive-fallback}
+The following are equivalent: there is one common policy proper at finite uniform expected cost from every model and initial density matrix; no model has a common dark subspace; and $O_{\theta,d_\theta}$ is positive definite for every $\theta$. In that case the displayed one-row fallback is proper. With
+\[
+ \delta_\theta=\lambda_{\min}(O_{\theta,d_\theta})>0,
+ \qquad \kappa=\max_\theta c^*d_\theta/\delta_\theta,
+\]
+it costs at most $\kappa$ from every current physical state in every model. One may replace this bound by the sharper certified value
+\[
+ \kappa=\max_\theta\left\|(I-\mathcal T_\theta^*)^{-1}
+                  \sum_a\pi_aG_{\theta,a}\right\|.
+\]
+Only one live label and one output value are needed; these share a label in event stopping and require two labels in state stopping. Depth $d$ cannot be replaced uniformly by $d-1$. There is no dimension-only upper bound on expected cost.
+\end{theorem}
+\begin{proof}
+Work in one model. Put $K_n=\ker O_n$, so $K_0=\mathcal H$ and
+$O_{n+1}=B+\mathcal T^*O_n$. For a Kraus representation $\mathcal T(A)=\sum_vL_vAL_v^*$, positivity gives
+\[
+ K_{n+1}=\ker B\cap\bigcap_vL_v^{-1}K_n.
+\]
+The spaces decrease. Equality at two consecutive levels makes that space invariant under every $L_v$ and annihilated by $B$, hence makes all later levels equal. There are at most $d$ strict dimension drops, so $K_d$ is stable. Since every $\pi_a$ is positive, $\ker B$ is the intersection of the productive-effect kernels, and the $L_v$ include nonzero multiples of every nonproductive Kraus operator. Thus a nonzero $K_d$ is a common dark subspace. Conversely every such subspace lies in all $K_n$. Starting in it, no history policy can encounter a productive report: induction holds commandwise and reportwise. Such a policy cannot commit legally.
+
+If $K_d=0$, positivity yields $(\mathcal T^*)^dI\preccurlyeq(1-\delta)I$. Iteration bounds survival after $kd$ fallback calls by $(1-\delta)^k$ for every normalized input. Summing blocks gives expected calls at most $d/\delta$ and expected cost at most $c^*d/\delta$. The finite model set makes the maximum bound finite. The same estimate implies convergence of the positive cost series, whose sum is the stated resolvent; its largest eigenvalue is the exact uniform cost for the fixed row. The fallback does not read the model or physical state. Its single row and fixed decoder give the label counts.
+
+For sharp depth, on basis $e_1,\ldots,e_d$ take one nonproductive Kraus operator $L=\sum_{j=2}^d|e_{j-1}\rangle\langle e_j|$ and a productive effect $|e_1\rangle\langle e_1|$. Then $O_n$ is the projection onto the first $\min(n,d)$ basis vectors. The input $e_d$ requires exactly $d$ unit-cost calls. For the lack of a cost bound, already in dimension one a productive probability $\epsilon>0$ with unit costs has expected time $1/\epsilon$. This proves both limitations.
+\end{proof}
+
+The qualitative obstruction is inherited mathematical machinery, not a new discovery of invariant subspaces. Its purpose here is to supply an actual common fallback and its paid constant. Absence of an invariant dark subspace on a restricted preparation is a different problem; the all-initial-state hypothesis cannot be silently removed. Finiteness of $\Theta$ likewise cannot be replaced by modelwise termination in an arbitrary family without a uniform bound.
+
+\subsection{Finite problems and restoration of the exact budget}
+For a horizon $T\ge1$, use one common realization plan on the action--report tree, as in Lemma~\ref{lem:common-plan}. At every productive report include either commitment to $r\in C$ or continuation. Let $C_{\theta,T}$, $S_{\theta,T}$ and $V_{\theta,T}$ be, respectively, its expected cost through the first $T$ calls, its open effect after the depth-$T$ decision, and its accumulated terminal-loss operator. They are affine functions of the common sequence weights, computed by composing the primitive maps. In particular $0\preccurlyeq S_{\theta,T}\preccurlyeq I$ and $0\preccurlyeq V_{\theta,T}\preccurlyeq L(I-S_{\theta,T})$.
+
+Define the finite semidefinite value
+\begin{equation}\label{eq:primitive-finite}
+ q_{C,T}(N)=\min\left\{q:\ C_{\theta,T}+c_*S_{\theta,T}\preccurlyeq NI,
+ \quad V_{\theta,T}\preccurlyeq qI\quad(\theta\in\Theta)\right\}.
+\end{equation}
+The minimum is over the common plan and $0\le q\le L$. The reserve $c_*S$ is not a cutoff declaration of success: every open branch owes another paid call. For $N\ge\kappa$, prefixes of the actual fallback show feasibility. Compactness gives attainment. Set
+\[
+ D_T(N)=\min\{1,(N/c_*-1)/T\},\qquad
+ e_T=(\kappa-c_*)D_T(N).
+\]
+
+\begin{theorem}[Same-budget constructive risk frontier]\label{thm:primitive-risk}
+Under the preceding primitive conditions with no common dark subspace, the finite values are nondecreasing in $T$ and satisfy $q_{C,T}(N)\le R_C(N)$. For every $N>\kappa$,
+\begin{equation}\label{eq:primitive-gap}
+ 0\le R_C(N)-q_{C,T}(N)
+ \le L D_T(N)+\frac{L e_T}{N-\kappa+e_T}.
+\end{equation}
+The upper is realized by a common proper finite-label observer with expected cost at most the original $N$ in every model and from every initial state. Thus $q_{C,T}(N)\uparrow R_C(N)$ with an explicit $O(T^{-1})$ bound at each fixed $N>\kappa$. No reset or scalar posterior dynamics are required.
+
+Writing $a=|\mathcal A|$ and $y$ for the largest report count, a sufficient live-label bound is
+\[
+ 2+\sum_{t=0}^{T-1}(ay)^t.
+\]
+The event-stopped total is at most the maximum of this bound and $|C|$; the state-stopped total is at most their sum. These are existence bounds, not optimal memory, running-time or program-bit bounds.
+
+At $N=\kappa$ the completed finite plan still gives cost at most $N+e_T$ and loss at most $q_{C,T}(N)+LD_T(N)$. The same-budget claim at that boundary is not inferred from the displayed fraction. If $\kappa=c_*$, no budget excess is present and the same-budget bound $LD_T(N)$ holds for every $N\ge\kappa$.
+\end{theorem}
+\begin{proof}
+A genuine cost-$N$ policy restricted to depth $T$ satisfies the reserved cost inequality, because after every open path it must make at least one further call. Its truncated terminal loss is no greater than its full nonnegative loss. This proves the lower. A feasible plan at $T+1$ restricts to one at $T$: the new calls cost at least $c_*S_T$, new terminations reduce open mass, and their loss contributions are nonnegative. The reserve and risk inequalities therefore survive restriction, proving monotonicity.
+
+For any feasible prefix, normalization and the conditional cost floor give
+\[
+ C_T\succeq c_*\sum_{t=0}^{T-1}S_t
+       \succeq c_*[I+(T-1)S_T],\qquad S_0=I.
+\]
+Here each difference of successive open effects is positive. With the reserve this gives $S_T\preccurlyeq D_T(N)I$ in every model. Complete an optimizing prefix by executing the actual fallback at every open leaf. The fallback bound holds at every post-report state, including states never reached by a reference execution. Its cost and loss satisfy
+\[
+ C^{\rm comp}\preccurlyeq C_T+\kappa S_T
+       \preccurlyeq(N+e_T)I,\qquad
+ V^{\rm comp}\preccurlyeq V_T+LS_T
+       \preccurlyeq(q_{C,T}+LD_T)I.
+\]
+It is proper because the finite prefix is followed by a proper fallback. There is no assertion that the original policy's expected remaining cost is uniformly small.
+
+For $N>\kappa$, choose the completed policy with probability
+$p=(N-\kappa)/(N+e_T-\kappa)$ and the fallback with probability $1-p$, storing the branch in the ensuing live role. Its cost is at most $p(N+e_T)+(1-p)\kappa=N$. Its risk is at most
+$p(q_{C,T}+LD_T)+(1-p)L\le q_{C,T}+LD_T+Le_T/(N-\kappa+e_T)$.
+If $e_T=0$ choose the completed policy directly. This proves the upper and convergence. The boundary statements follow from the unmixed completion.
+
+A prefix stores its current action--report node, at most $\sum_{t<T}(ay)^t$ live roles; its current report is within-call input. One fallback role and one initial mixture role suffice. At that initial call, sample the branch and its command jointly; after the report either commit or enter the selected branch's counted next role. If both branches chose the same command, their conditional branch weights are proportional to their command probabilities, independent of the physical state, since the executed report instrument is identical. Equivalently use the joint within-call coin directly. No branch bit survives outside the retained label. Commitment uses the same fixed dictionary in both branches. Lemma~\ref{lem:roles} gives the two total counts.
+\end{proof}
+
+\begin{corollary}[Compact decisions at a fixed output width]\label{cor:primitive-width}
+Suppose the decision carrier $D$ is compact metric and the raw audit losses obey the common decision modulus $\omega$ of \eqref{eq:loss-modulus}. Fix width $m$. For a finite $\eta$-net $D_\eta\subset D$, let $q_{m,T,\eta}(N)$ be the least value in \eqref{eq:primitive-finite} among dictionaries in $D_\eta$ of size at most $m$. Then, for $N>\kappa$,
+\[
+ [q_{m,T,\eta}(N)-\omega(\eta)]_+
+ \le R_m(N)\le q_{m,T,\eta}(N)+LD_T(N)
+                         +\frac{Le_T}{N-\kappa+e_T}.
+\]
+The constructed observer uses at most $m$ terminal values. As $T\to\infty$ and $\eta\downarrow0$ this gives a two-parameter constructive characterization of the unrestricted-history finite-output risk, not just a verifier for a supplied balancing program. With algebraic primitive data and polynomial score dependence on algebraic net points, every finite test is a finite real-algebraic problem; exact real samplers and program arithmetic remain separate implementation resources.
+\end{corollary}
+\begin{proof}
+Round each point of any competing dictionary to the same chosen nearest net point at every history. Neither stopping nor cost changes, and at most $m$ values remain. Its expected loss changes by at most $\omega(\eta)$, because terminal events have total mass one. Restrict this rounded program to a finite prefix to obtain the lower. For the upper, choose an attaining net dictionary and apply Theorem~\ref{thm:primitive-risk}; the fallback uses a point of this same dictionary. There are finitely many such dictionaries, so the optimization is finite. With the stated algebraic inputs all coefficients of the finite plan are algebraic, and semidefinite inequalities can be expressed by principal minors. This gives decidability via the already credited real-algebraic method, not an efficient uniform algorithm for arbitrary real input data.
+\end{proof}
+
+\subsection{Removing the crude fallback threshold on every interior budget}
+The cost of an arbitrary positive command row may greatly exceed the least feasible cost. It is not an intrinsic resource threshold. The following preliminary optimization removes that restriction without assuming the optimal policy is already known.
+
+Let $\kappa_0$ be the uniform cost bound of the one-row fallback and let $H_\theta$ be its exact cost operator, so $0\preccurlyeq H_\theta\preccurlyeq \kappa_0I$. Ignore terminal loss for this preliminary step and commit one fixed dummy decision. Write $N_{\min}$ for the infimum of uniform expected cost among proper common policies. For a finite prefix define
+\[
+ W_{\theta,T}(H_\theta)
+   =\sum_{h:\,|h|=T}\gamma_{\rm open}(h)\,
+                       \mathcal I_{\theta,h}^*(H_\theta).
+\]
+Here $\gamma_{\rm open}$ includes the decision to continue after the depth-$T$ report, and $\mathcal I_{\theta,h}$ is its raw path map. This is the exact cost of executing the fallback at the open leaves. Both $W$ and the earlier $C_T,S_T$ are affine in the one common realization plan. Set
+\begin{align*}
+ a_T&=\min\{a:C_{\theta,T}+c_*S_{\theta,T}\preccurlyeq aI\quad(\theta\in\Theta)\},\\
+ u_T&=\min\{u:C_{\theta,T}+W_{\theta,T}(H_\theta)\preccurlyeq uI\quad(\theta\in\Theta)\}.
+\end{align*}
+
+\begin{theorem}[Constructive feasibility threshold and all interior budgets]\label{thm:interior-budget}
+Both finite problems attain their values, and
+\[
+ c_*\le a_T\uparrow N_{\min},\qquad
+ \kappa_0\ge u_T\downarrow N_{\min},
+\]
+with the quantitative enclosure
+\begin{equation}\label{eq:cost-enclosure}
+ 0\le u_T-a_T\le(\kappa_0-c_*)\min\{1,(\kappa_0/c_*-1)/T\}.
+\end{equation}
+The least common proper cost $N_{\min}$ is attained, though no finite-memory attainment is concluded at that boundary.
+
+For every $N>N_{\min}$ a finite search through these upper problems eventually exhibits $u_{T_0}<N$. Its optimizing prefix completed by the one-row fallback is an actual finite-label fallback of cost $\kappa=u_{T_0}<N$, valid from every initial state and model. Using it in Theorem~\ref{thm:primitive-risk} gives the same-budget risk enclosure for \emph{every strictly interior feasible budget}, not only budgets above the original one-row cost. If this improved fallback has $B$ live labels, the sufficient live bound becomes
+\[
+ 1+B+\sum_{t=0}^{T-1}(ay)^t.
+\]
+All decisions may still use one prescribed dictionary; the cost search is independent of its values. Algebraic primitive data give finite real-algebraic upper tests, but no uniform efficient bit-complexity claim is made.
+\end{theorem}
+\begin{proof}
+The prefix of a genuine proper policy satisfies the one-call reserve, so $a_T\le N_{\min}$. Restriction to shorter prefixes proves $a_T$ is nondecreasing. Every prefix completed by the fallback is proper and has exactly the cost $C_T+W_T(H)$; hence $u_T\ge N_{\min}$. Prefixes of the fallback itself give $u_T\le \kappa_0$. Extending an optimizing upper prefix by one fallback call reproduces its exact completed cost, by the identity $H_\theta=g_\theta+\mathcal T_\theta^*H_\theta$ and first-productive commitment. Therefore $u_{T+1}\le u_T$. Compactness of the finite plan space and continuity of its cost operators prove both attainments.
+
+For a lower optimizer, the reserve proof gives
+$S_{\theta,T}\preccurlyeq\min\{1,(a_T/c_*-1)/T\}I$. Positivity and $H_\theta\preccurlyeq \kappa_0I$ give $W_{\theta,T}(H_\theta)\preccurlyeq \kappa_0S_{\theta,T}$. Complete that very prefix. Its cost is at most
+\[
+ a_T+(\kappa_0-c_*)\min\{1,(a_T/c_*-1)/T\}.
+\]
+Since $a_T\le N_{\min}\le \kappa_0$, this proves \eqref{eq:cost-enclosure}. The squeeze proves both limits. For boundary attainment, the compact product of all finite nodewise decision simplexes has the finite-intersection property for the closed prefix cost constraints at budget $N_{\min}$: feasibility at the largest of finitely many horizons follows from $a_T\le N_{\min}$. A common infinite policy therefore obeys all reserved constraints. Their survival bound tends to zero, and monotone convergence gives properness and cost at most $N_{\min}$. This is the same compactness mechanism as the inherited synthesis theorem, not a finite-memory assertion.
+
+If $N>N_{\min}$, convergence of $u_T$ implies that the strict inequality $u_{T_0}<N$ holds at some finite level. An upper optimizer is itself the finite prefix and a physically executable fallback, not a model-dependent analytic certificate without a common policy. Its start-state uniformity permits it at every later open leaf of a time-homogeneous experiment. Substitute its cost and its counted live labels in the completion and initial-mixture proof; every inequality remains unchanged, except that its $B$ live roles replace the one fallback row. A fixed dummy decision may be replaced by any point of the eventual task dictionary without changing precommit calls or cost. Exact algebraic tests decide a strictly feasible upper threshold when the coefficients and proposed budget have the stated algebraic representation. General real data still require an exact oracle or further numerical certification.
+\end{proof}
+
+For example, two orthogonal nonzero failure projections have one-row fair fallback cost $\kappa_0=2$, but fair-first alternation has uniform cost $3/2$ and stops by call two. The cost upper problem at depth two therefore supplies a fallback below every budget $N>3/2$, including $3/2<N<2$. Thus the preliminary optimization removes a genuine restriction of the crude fallback, rather than only renaming its constant.
+
+\subsection{Robustness and scope of the construction}
+If two fallback killed maps on the same space satisfy
+$\|\mathcal T^*-\widetilde{\mathcal T}^*\|_{\infty\to\infty}\le\epsilon$
+on Hermitian matrices, telescoping powers gives
+$\|O_d-\widetilde O_d\|\le d\epsilon$: each positive subunital adjoint is a contraction in this norm. Hence $\delta-d\epsilon>0$ certifies a perturbed proper fallback and cost at most $c^*d/(\delta-d\epsilon)$, when the perturbed calls obey the same cost upper bound. This is a quantitative stability certificate for the fallback, not a claim that a terminal-law distance controls unbounded cost. The sharp ladder concerns depth; the scalar rare-success example shows why a spectral margin must enter any numerical certificate.
+
+This section treats finite known candidate models, not statistical learning of an unrestricted unknown kernel. It constructs a common policy without a lower witness, but does not prove that its risk is always the geometric profile $\Q$. The geometric transfer and this primitive synthesis are complementary routes: one gives interpretable sharp resource laws under its certificates, the other supplies a convergent constrained optimum and finite implementation on its finite interface. Quantum reachability, sequence form, potential arguments and semidefinite separation are established ingredients; the present assertion is their explicit paid, same-budget, fixed-output synthesis with a derived fallback and all-model/all-initial-state quantifiers.

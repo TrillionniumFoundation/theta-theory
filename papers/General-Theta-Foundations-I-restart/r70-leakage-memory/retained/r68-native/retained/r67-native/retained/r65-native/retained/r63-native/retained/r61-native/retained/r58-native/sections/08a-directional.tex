@@ -1,0 +1,87 @@
+\section{Nonintervening directional sensing}
+\label{sec:directional}
+The preceding binary sensor has only two possible targets. We now keep a continuum of targets and obtain a joint waiting--memory law without a balancing control. Fix $d\ge2$, $a,\sigma>0$. Behind the two-port heralding gate of Lemma~\ref{lem:gate}, a productive call observes
+\begin{equation}\label{eq:directional-kernel}
+ X=aU+\sigma G_d,\qquad U\in\mathbb S^{d-1},\qquad G_d\sim N(0,I_d).
+\end{equation}
+The current direction $U$ is the terminal audit, unchanged between this observation and its audit; the Gaussian noise is fresh. The direction may change arbitrarily between calls, depending on hidden and observed history. The uncertainty class includes every static direction and the model with a fresh uniform direction at every productive call, with gate success $p_0$. There are no commands that change the current target. The prediction space is the closed unit ball. The decoder is fixed and finite, as before. The effort constant is $\kappa=1+1/p_0$.
+
+Let $\nu_d$ be the actual report law under the uniform-direction reference, $R=\|X\|$, and $V=X/\|X\|$ away from its null origin. Set
+\begin{equation}\label{eq:directional-A}
+ A_d(s)=\frac{\int_{-1}^{1}z e^{sz}(1-z^2)^{(d-3)/2}\,dz}
+              {\int_{-1}^{1}e^{sz}(1-z^2)^{(d-3)/2}\,dz},\quad
+ s=aR/\sigma^2.
+\end{equation}
+For $b\ge1$, let $t_b\ge0$ be the unique radial threshold with $\nu_d(R\ge t_b)=1/b$, taking $t_1=0$, and define
+\begin{align}
+ D_d(b)&=b\int_{R\ge t_b}[1-A_d(aR/\sigma^2)^2]\,d\nu_d,\label{eq:directional-D}\\
+ U_d(b)&=2b\int_{R\ge t_b}[1-A_d(aR/\sigma^2)]\,d\nu_d.\label{eq:directional-U}
+\end{align}
+The relevant output geometry is the covering radius of the actual audit support:
+\begin{equation}\label{eq:directional-radius}
+ \rho_m=\min_{\substack{C\subset\overline B(0,1)\\1\le |C|\le m}}
+            \sup_{u\in\mathbb S^{d-1}}\operatorname{dist}(u,C).
+\end{equation}
+This definition allows interior as well as surface centers; it is not an ambient-volume quantization surrogate.
+
+\begin{theorem}[Waiting and finite output geometry]\label{thm:directional}
+For the raw experiment \eqref{eq:directional-kernel}, write $b=N/\kappa\ge1$. For each of the three following risks, with its indicated available output width $m$,
+\[
+ R=R_\cp^\Theta(N,m),\qquad
+ R=R_\evt^\Theta(N,m)\ (m\ge2),\qquad
+ R=R_\st^\Theta(N,m+2),
+\]
+one has
+\begin{equation}\label{eq:directional-bounds}
+ \max\{D_d(b),\rho_m^2\}\le R
+ \le\min\{1,(\sqrt{U_d(b)}+\rho_m)^2\},
+ \qquad D_d(b)\le U_d(b)\le2D_d(b).
+\end{equation}
+In particular, with constants depending only on $d,a,\sigma$,
+\begin{equation}\label{eq:directional-law}
+ R\asymp (1+\log b)^{-1/2}+m^{-2/(d-1)}.
+\end{equation}
+For $m\le d$ the risk is exactly one at every feasible acquisition budget. For $m\ge d+1$ it is strictly below one at sufficiently large $b$, and for each fixed $m$ it converges to $\rho_m^2$ as $b\to\infty$. Moreover,
+\begin{equation}\label{eq:directional-sharp}
+ D_d(b)\sim U_d(b)\sim
+ \frac{(d-1)\sigma}{a\sqrt{2\log b}}.
+\end{equation}
+The ratio of $R$ to this last expression tends to one uniformly along any budgets with $\rho_m=o((\log b)^{-1/4})$; it suffices that $m/(\log b)^{(d-1)/4}\to\infty$. An event-stopped gate is infeasible below two labels, and a state-stopped gate below three. No unknown-sensor learning or intervention on $U$ is asserted.
+\end{theorem}
+\begin{proof}
+We give the raw-kernel, statistical and geometric steps separately.
+
+\emph{Acquired posterior and the converse.}
+Bayes' formula for the uniform sphere preparation gives conditional density proportional to $\exp((a/\sigma^2)\langle X,u\rangle)$ with respect to surface probability. Integrating its axial coordinate gives \eqref{eq:directional-A}; transverse coordinates cancel by reflection. Thus the conditional mean is $A_d(s)V$ and the residual variance is $1-A_d(s)^2$. These quantities were derived from the joint observation--audit kernel. Differentiation under its bounded axial integral gives $A_d'(s)=\operatorname{Var}_s(z)>0$, while $A_d(0)=0$. The residual variance is therefore decreasing in $R$.
+
+The same-witness gate count and Lemma~\ref{lem:lower} imply that the terminal report measure of any competing rule has density at most $b$ relative to $\nu_d$. Forgetting its nonnegative dictionary loss gives the lower obtained by putting density $b$ on the smallest residual variance, namely the radial tail of mass $1/b$. To see this directly, write $w_*=1-A_d(at_b/\sigma^2)^2$ and compare any feasible $h$ with $b\one_{R\ge t_b}$: the integral of $(w-w_*)(h-b\one_{R\ge t_b})$ is nonnegative on both the tail and its complement, and the mass difference integrates to zero. This proves $R\ge D_d(b)$ against every legal strategy.
+
+For a fixed dictionary $C$, a static direction $u$ has loss at least $\operatorname{dist}(u,C)^2$ on every commitment. Taking the worst static $u$ and then minimizing dictionaries gives the second lower in \eqref{eq:directional-bounds}. It uses a different admitted model from the radial converse; hence the two lower contributions are combined by their maximum, not by an unjustified sum. Lemma~\ref{lem:packing} and the two mandatory gate contexts give exactly the stated dictionary widths.
+
+\emph{A common nonintervening upper.}
+At each productive call accept if $R\ge t_b$. Rotation invariance of the Gaussian noise makes the conditional acceptance probability $1/b$ for every current direction, and hence for every mixture determined by a surviving history. The expected cost is at most $\kappa b$, by conditional hazards and the gate bound. The same rotation invariance makes
+\[
+ \E[\|U-V\|^2\mid R\ge t_b,U=u]
+\]
+independent of $u$. Average this identity over a uniform $u$ and use the derived posterior mean to identify its value as $U_d(b)$. It remains valid after an arbitrary hidden history and after summing the disjoint commitment events. Choose a minimizing dictionary in \eqref{eq:directional-radius}, whose existence follows by compactness, and output its first nearest point to $V$. Pointwise $\|V-r_C(V)\|\le\rho_m$. The triangle inequality in $L^2$ gives risk at most $(\sqrt{U_d(b)}+\rho_m)^2$. The constant output zero gives the alternative upper one. The construction has two live roles and $m$ output roles; apply the packing lemma. Finally $1-A^2=(1-A)(1+A)$ with $0\le A\le1$ proves $D_d\le U_d\le2D_d$.
+
+\emph{Noise asymptotics.}
+Put $v=(d-3)/2>-1$ and change variables $y=s(1-z)$ in the denominator and first centered moment in \eqref{eq:directional-A}. After removing their common factors, their integrands are $e^{-y}y^v(2-y/s)^v$ and $y$ times that function, on $[0,2s]$. On $[0,s]$ dominated convergence applies, including $v=-1/2$. On $[s,2s]$, the possible endpoint singularity is integrable and its contribution, including either of these two polynomial factors, is bounded by a polynomial in $s$ times $e^{-s}$. The limiting ratio is therefore $\Gamma(v+2)/\Gamma(v+1)=v+1$. Consequently
+\[
+ 1-A_d(s)\sim\frac{d-1}{2s},\qquad
+ 1-A_d(s)^2\sim\frac{d-1}{s}.
+\]
+For fixed $U=u$, $a+\sigma G_1\le\|au+\sigma G_d\|\le a+\sigma\|G_d\|$. One-dimensional Gaussian tail bounds and the polar integral for the $\chi_d$ tail sandwich the radial tail. They give
+\[
+ t_b=a+\sigma\sqrt{2\log b}
+       +O\left(\frac{\log\log b}{\sqrt{\log b}}\right).
+\]
+The same bounds show, for every $c>0$, that the conditional probability of $R>(1+c)t_b$ given $R\ge t_b$ tends to zero. Thus $t_b/R\to1$ in conditional probability and, since it is bounded by one, in conditional mean. The displayed posterior asymptotics are uniform over $R\ge t_b\to\infty$. Inserting them into \eqref{eq:directional-D}--\eqref{eq:directional-U} proves \eqref{eq:directional-sharp}. On compact $b$ intervals $D_d$ is continuous and strictly positive, so $D_d(b)\asymp(1+\log b)^{-1/2}$ for all $b\ge1$.
+
+\emph{Finite output geometry.}
+For $0<r<1/2$, the surface probability of a sphere intersected with any Euclidean ball of radius $r$, whose center may be inside the unit ball, is at most $C_dr^{d-1}$. Indeed choose one point in that intersection; the intersection lies in the sphere cap of chord radius $2r$ about that point. Polar surface coordinates bound that cap. Hence $m$ such balls cannot cover the sphere unless $mr^{d-1}\ge c_d$. Conversely a maximal $r$-separated sphere set has at most $C'_dr^{-(d-1)}$ points, because its disjoint chord-radius $r/2$ caps each have mass at least $c'_dr^{d-1}$; maximality makes it an $r$-cover. Rescaling $r$ and enlarging constants for bounded $m$ gives $\rho_m\asymp m^{-1/(d-1)}$. Together with \eqref{eq:directional-bounds} and $(x+y)^2\le2x^2+2y^2$, this proves \eqref{eq:directional-law}.
+
+If $m\le d$, choose a unit vector orthogonal to the span of $c_i-c_1$ and orient it so that $\langle u,c_1\rangle\le0$. Then every $\|u-c_i\|^2\ge1$. The center zero shows $\rho_m=1$. For $m=d+1$, take regular simplex vertices $u_i$ on the unit sphere, with $\langle u_i,u_j\rangle=-1/d$ for $i\ne j$. Their simplex contains the ball of radius $1/d$, since each facet lies at that distance from zero. Thus $\max_i\langle u,u_i\rangle\ge1/d$ for every unit $u$. The centers $c_i=u_i/d$ consequently give $\rho_{d+1}^2\le1-1/d^2<1$. The assertions about exact risk one and eventual strict improvement follow from the two bounds. For fixed $m$, those bounds squeeze risk to $\rho_m^2$. Finally, when $\rho_m=o(\sqrt{D_d(b)})$, the upper divided by $D_d(b)$ tends to one, while the lower is at least one. This proves the uniform leading-constant assertion and completes the proof.
+\end{proof}
+
+The sphere posterior in this proof is the familiar exponential directional family; the derivation is included to fix the actual kernel and avoid an assumed information metric. The contribution here is the all-strategy waiting converse together with an unmodified-target implementation and an output-covering converse under the two fully specified stopping resources. It is distinct from choosing one report out of a fixed independent batch for distributional simulation, as in \cite{BP23}, \cite{SPJ26}.

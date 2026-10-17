@@ -1,0 +1,228 @@
+\section{Finite realization of uniformly interior instruments}\label{sec:interior-instruments}
+The boundary decision theorems identify the observer memory needed for an optimal task. We now consider a distinct, stronger form of physical-model reduction: one finite hidden classical model must preserve every controlled report word, every stopping rule and every terminal measurement of a declared instrument family. Its hidden labels are not made available to the observer. The distinction is essential: a finite hidden-state realization does not in general make the posterior, or an optimal observer, finite-state.
+
+Invariant positive cones are classical realization tools \cite{Heller65,MonrasWinter14}. Our purpose here is not another abstract cone criterion. We derive a finite invariant set from a quantitative condition on every actual report branch, give its dimension dependence and an explicit sparse implementation, and prove exact stopped-law and cost transfer. The commands need not commute, need not reset the input, and need not share a stationary state. The condition is sufficient, not necessary for every finite hidden realization. A matching noise exponent below concerns the expressly defined state-positive class, not every possible classical response representation.
+
+\subsection{A finite hull containing all uniformly mixed states}
+Let $\mathcal D_d$ be the density matrices on $\mathbb C^d$, $d\ge2$, and put
+\[
+ \mathcal D_d(\eta)=\{\rho\in\mathcal D_d:\rho\succeq\eta I/d\}
+       =(1-\eta)\mathcal D_d+\eta I/d,\qquad 0<\eta\le1.
+\]
+For unit vectors modulo phase use the metric
+\[
+ \operatorname{dist}([u],[v])
+ =\sqrt{1-|\langle u,v\rangle|^2}
+ =\tfrac12\|uu^*-vv^*\|_1=\|uu^*-vv^*\|_{\rm op}.
+\]
+In particular it satisfies the triangle inequality. All convex hulls below are hulls of actual positive density matrices, not signed coordinates.
+
+\begin{lemma}[An explicit interior hull]\label{lem:r68-hull}
+There are pure states $P_1,\ldots,P_K$ such that
+\begin{equation}\label{eq:r68-hull}
+ \mathcal D_d(\eta)\subseteq\operatorname{conv}\{P_1,\ldots,P_K\}
+              \subseteq\mathcal D_d,
+ \qquad K\le\left\lceil(4d/\eta)^{d-1}\right\rceil.
+\end{equation}
+Any additional $k$ prescribed initial states may be included as $k$ further generators. The generators are shared by all maps satisfying the same interior margin.
+\end{lemma}
+\begin{proof}
+For the unitarily invariant probability measure on complex projective space, a ball of radius $r\in[0,1]$ has mass $r^{2d-2}$. To verify the formula, normalize $d$ independent standard complex Gaussian coordinates. Their squared moduli before normalization are independent exponential variables. Changing variables to their sum and normalized proportions gives constant density on the probability simplex. Thus $|u_1|^2$ has density $(d-1)(1-x)^{d-2}$ on $[0,1]$, and the probability of $|u_1|^2>1-r^2$ is $r^{2d-2}$. This also proves the formula at the endpoints by continuity.
+
+Set $\varepsilon=\sqrt{\eta/d}$. A maximal set of rays with pairwise distances greater than $\varepsilon$ is an $\varepsilon$-net. The radius-$\varepsilon/2$ open balls about its points are disjoint. Their equal positive masses bound the cardinality by $(4/\varepsilon^2)^{d-1}$. Such a finite maximal set exists by successively adding uncovered points; the same mass bound forces this process to stop.
+
+Let $A$ be any Hermitian matrix, with greatest and least eigenvalues $a,b$. Choose a net vector $v$ within $\varepsilon$ of a greatest-eigenvalue vector. Expanding in that eigenbasis gives
+\[
+ \tr(Avv^*)\ge a-(a-b)\varepsilon^2.
+\]
+On the other hand,
+\[
+ \max_{\rho\in\mathcal D_d(\eta)}\tr(A\rho)
+ =a-\eta\bigl(a-\tr A/d\bigr)
+ \le a-\eta(a-b)/d.
+\]
+The net hull therefore has support function at least that of $\mathcal D_d(\eta)$ in every Hermitian direction. Finite-dimensional separation proves containment. The other inclusion and the additional-generator assertion follow from positivity and convexity.
+\end{proof}
+
+\subsection{Report-resolved positive interpolation}
+There is a finite set of globally legal commands $\mathcal A$ and, for each command, a finite report set $Y_a$. Write $\mathcal I_{a,y}$ for its completely positive report map and assume $\sum_y\mathcal I_{a,y}$ is trace preserving. A finite list $\rho^{(1)},\ldots,\rho^{(k)}$ of allowed prepared states is specified. The initial preparation index is fixed before execution; it is not an unknown state revealed to the observer. Assume the following unnormalized inequality for every command, report and positive input:
+\begin{equation}\label{eq:r68-branch-floor}
+ \mathcal I_{a,y}(X)\succeq
+       \frac{\eta}{d}\tr\bigl(\mathcal I_{a,y}(X)\bigr)I,
+ \qquad X\succeq0.
+\end{equation}
+A zero branch is allowed. No probability is divided out at zero. The hypothesis is on each recorded branch, not merely on the sum of the maps. It is satisfied when a depolarizing channel with mixing weight at least $\eta$ is physically applied after each report branch. Merely assuming positive definite outputs at each nonzero input is not used to infer a uniform ratio at a vanishing branch.
+
+A \emph{state-positive realization} consists of density matrices $\tau_1,\ldots,\tau_M$, including the prescribed preparations as designated initial labels, and nonnegative matrices $Q_{a,y}$ satisfying
+\begin{align}
+ \mathcal I_{a,y}(\tau_i)&=\sum_jQ_{a,y}(i,j)\tau_j,
+       &\sum_{y,j}Q_{a,y}(i,j)&=1.\label{eq:r68-intertwining}
+\end{align}
+The second equation includes all reports of a fixed command. The simulator in state $i$, on receiving command $a$, draws the pair $(y,j)$ with these probabilities, reports only $y$, and retains $j$ privately. For a terminal positive-operator-valued measurement $\{E_z\}_z$, it reports $z$ with probability $\tr(E_z\tau_j)$. A fixed finite decoder dictionary is handled by the unchanged external observer.
+
+\begin{theorem}[Uniform finite controlled realization]\label{thm:r68-instrument}
+Under \eqref{eq:r68-branch-floor}, a state-positive realization exists with
+\begin{equation}\label{eq:r68-size}
+ M\le k+\left\lceil(4d/\eta)^{d-1}\right\rceil.
+\end{equation}
+Each row of each $Q_{a,y}$ may be chosen with at most $d^2$ nonzero entries. The count is independent of the horizon, number of commands, number of reports, and choice of terminal measurement; those quantities still affect the transition-table size.
+
+For every adaptive randomized command policy using only past declared reports and its own randomness, this one realization preserves all finite report laws and all adaptively chosen terminal measurement laws. It also preserves the complete stopped law, including the event of never stopping. Every nonnegative cost that is a function of the executed command/report path has the same expectation, finite or infinite. If calls instead have specified unobserved nonnegative mean observables $G_a$, the assignment $c_a(i)=\tr(G_a\tau_i)$ preserves their total expected cost at every stopping rule. This latter assertion is an expectation statement, not a joint-law assertion about an unspecified random cost observation.
+\end{theorem}
+\begin{proof}
+Take the hull of Lemma~\ref{lem:r68-hull} and append the prepared states. For any generator $\tau_i$, let $s=\tr\mathcal I_{a,y}(\tau_i)$. If $s=0$, positivity makes the branch matrix zero, and set that whole row of $Q_{a,y}$ to zero. If $s>0$, its normalized output belongs to $\mathcal D_d(\eta)$ and hence to the pure-state core hull. Choose convex coefficients there and multiply them by $s$. This proves the first identity. Taking its trace and summing in $y$ proves row normalization.
+
+A convex combination in the trace-one Hermitian affine space needs at most $d^2$ generators. Indeed any larger supported list is affinely dependent; subtract a scalar multiple of an affine dependence until one positive coefficient becomes zero, preserving nonnegativity, total mass and represented matrix, and iterate. Applying this finite reduction separately to each branch gives the sparsity claim.
+
+For a fixed command/report history $h$, let $X_h$ be its unnormalized physical state and $p_h$ the simulator's unnormalized hidden-state row. Induction using \eqref{eq:r68-intertwining} gives the matrix identity
+\begin{equation}\label{eq:r68-history}
+ X_h=\sum_i p_h(i)\tau_i.
+\end{equation}
+It holds initially because the initial label is the prescribed preparation. Multiplying both sides by a report branch gives the next identity. Traces give the report probability, and pairing with any terminal effect gives its joint audit probability.
+
+For an adaptive observer the command probabilities and commitment probabilities conditional on a declared history are the same in the two experiments. Condition on its private tape, apply the same identity at each finite history, and integrate over that tape. Equivalently keep one unnormalized identity for every observer-memory state. The simulator's hidden state is not an extra input to this policy. Thus all finite stopped cylinders agree. The events of survival through $n$ calls decrease to nontermination; their equal probabilities give equality there as well. Bounded terminal measures follow by summing disjoint finite stopping events. Nonnegative path costs follow from equality of the path law and monotone convergence.
+
+For mean observables, the expected cost contribution at a begun history is $\tr(G_aX_h)=\sum_i p_h(i)c_a(i)$. Sum these identities first to a finite horizon and then monotonically to the stopping time. No total-variation bound on bounded terminal scores is used to infer an unbounded waiting-cost bound.
+\end{proof}
+
+This theorem realizes the prepared experiment, not an arbitrary entangled quantum input channel. It gives no affine encoding of every density matrix into one simplex and does not grant the hidden simulator label to the original observer. For a single prescribed initial state one anchor suffices. If $d=1$, the original scalar instrument already has one state. If $\eta=1$, every nonzero output is $I/d$, so one core state plus the preparation anchors suffices without a projective net.
+
+\begin{corollary}[Same-policy resource and risk invariance]\label{cor:r68-risk}
+The original instrument and its hidden classical realization have identical feasible expected-cost budgets and identical risks for each common report-based observer. Consequently their optimal risk curves agree at every fixed observer memory bound and every fixed decoder dictionary, including feasible boundary budgets. The assertion also holds modelwise for an unknown family satisfying one uniform margin, with model-dependent hidden transition tables and the same report interface; the parameter is not supplied to the observer. If the prepared state varies with the model, it is represented by one designated model-dependent anchor and a common pure-state core.
+
+An observer with $\ell$ live labels coupled to an $M$-state simulator has at most $\ell M$ joint live states. These are joint system states, not a claim that $M$ is the observer's optimal memory. Giving the hidden label to the observer changes the statistical experiment and invalidates the claimed same-policy comparison.
+\end{corollary}
+\begin{proof}
+Theorem~\ref{thm:r68-instrument} equates the cost and risk of every admissible observer without changing its transition rows, dictionary or report information. Taking the same constrained infimum gives the assertion, even when the infimum is not attained in that memory class. For a model family use the same core hull in every model and solve its branch identities separately; each modelwise equality holds for the same observer. Taking the supremum over the unknown model therefore preserves the robust objective and constraints. The product count records the two distinct retained coordinates.
+\end{proof}
+
+\subsection{A matching exponent for state-positive universal realization}
+Let $v_d(\eta)$ be the least number of arbitrary density matrices whose convex hull contains $\mathcal D_d(\eta)$. Mixed vertices are permitted. This number measures uniform state-positive representation, not the smallest hidden model for one selected scalar response.
+
+\begin{theorem}[Sharp noise exponent at fixed physical dimension]\label{thm:r68-noise-exponent}
+For $d\ge2$ and $0<\eta\le1/2$, put $s=\eta(1-1/d)$. Then
+\begin{equation}\label{eq:r68-noise-count}
+ s^{-(d-1)}\le v_d(\eta)
+           \le\left\lceil(4d/\eta)^{d-1}\right\rceil.
+\end{equation}
+Thus the exponent $d-1$ as $\eta\downarrow0$ is necessary and sufficient at each fixed $d$. Constants in this comparison depend on $d$.
+
+For every $0<\eta\le1/4$ there is also a finite-command, unit-call-cost prepared instrument satisfying \eqref{eq:r68-branch-floor} for which every state-positive exact realization preserving all terminal effects needs at least
+\begin{equation}\label{eq:r68-finite-noise-lower}
+ \bigl(4/(5\eta)\bigr)^{d-1}
+\end{equation}
+hidden states. Its command count may grow as the margin decreases. No lower bound of this exponent for unrestricted, possibly non-state-positive, response realizations is asserted.
+\end{theorem}
+\begin{proof}
+The upper is Lemma~\ref{lem:r68-hull}. For the lower, for each unit $u$ consider the state $(1-\eta)uu^*+\eta I/d$. Pairing a convex representation in density vertices $\tau_j$ with $uu^*$ shows that at least one vertex satisfies $\langle u,\tau_ju\rangle\ge1-s$.
+
+For any fixed density matrix $\tau$, this inequality holds on a set of projective measure at most $s^{d-1}$. If its largest eigenvalue $a$ is below $1-s$, the set is empty. Otherwise $a\ge1-s>1/2$ and its top eigenvector $v$ is unique. With $x=|\langle u,v\rangle|^2$, all other eigenvalues are at most $1-a$, so
+\[
+ \langle u,\tau u\rangle\le ax+(1-a)(1-x).
+\]
+To reach $1-s$ one needs $x\ge(a-s)/(2a-1)\ge1-s$; the last inequality is equivalent to $(1-a)(1-2s)\ge0$. The projective ball formula from the lemma now bounds the measure by $s^{d-1}$. The caps associated with all vertices cover every ray, so their measures sum to at least one. This proves the first lower.
+
+For the finite-command assertion take a finite projective $\eta/4$-net of rays $u_j$ and a command for each replacement channel
+\[
+ \Phi_j(X)=\tr(X)\bigl((1-\eta)u_ju_j^*+\eta I/d\bigr).
+\]
+These are valid completely positive, trace-preserving maps with the required margin, one deterministic report and unit cost. Exactness of every terminal effect after that command forces its output matrix to be a convex combination of the simulator's density vertices. Thus at each net point some vertex has expectation at least $1-s$. For an arbitrary ray $u$ choose a net point within $\eta/4$. Since the operator norm distance of the two projectors is at most $\eta/4$, pairing with any density matrix changes the expectation by at most $\eta/4$. The caps at level $1-s-\eta/4$ therefore cover all rays. Here $s+\eta/4\le5\eta/4<1/2$, and the preceding cap bound gives at least $(s+\eta/4)^{-(d-1)}\ge(4/(5\eta))^{d-1}$ vertices. This is a finite physical family, not an uncountable list disguised as a finite input.
+\end{proof}
+
+For unrestricted classical hidden models a single scalar response may admit non-quantum intermediate response vectors. The state-positive lower does not exclude that possibility. Conversely, a hidden decoder defined as a positive normalized affine functional of every terminal effect is necessarily of the form $E\mapsto\tr(E\tau)$ for a density matrix $\tau$: extend the affine functional linearly from the effect interval to the Hermitian space, use the trace pairing, and test rank-one positive effects. This explains the positivity requirement in the count rather than hiding it in an abstract factorization.
+
+\subsection{Sparse algebraic construction and several-step interiority}
+\begin{proposition}[Finite algebraic construction with sparse branch rows]\label{prop:r68-algebraic}
+For a finite instrument family and finite preparation list with real-algebraic entries and a supplied algebraic margin $\eta>0$, a state-positive realization can be constructed by a terminating real-algebraic procedure. One may use the size bound \eqref{eq:r68-size}, and all generator matrices and transition probabilities can be chosen algebraic. At most $d^2$ successors per command/report row are needed. The original margin condition is itself a finite quantified real-algebraic condition on pure inputs; a positive rational margin, if one exists, can be found by enumeration and such tests.
+
+This is a finite synthesis assertion, not a polynomial-time bound. The retained-state count, the number and algebraic encoding lengths of table entries, and the resources of exact random sampling remain different quantities.
+\end{proposition}
+\begin{proof}
+The existence proof uses at most $K=\lceil(4d/\eta)^{d-1}\rceil$ pure core projectors and the stated anchors. Treat their real Hermitian coordinates and all branch coefficients as variables. Impose $P_j\succeq0$, $\tr P_j=1$, $P_j^2=P_j$, the fixed anchor identities, nonnegative normalized rows, and the finitely many matrix equations \eqref{eq:r68-intertwining}. These are polynomial conditions over the real algebraic field; positivity can be expressed by principal minors. The preceding theorem proves feasibility. Real-closed-field elimination and sample-point construction give an algebraic solution \cite{Seidenberg54}. Row sparsity can be obtained afterwards by elimination of an affine dependence over the same algebraic field, or by a finite disjunction of supports of size at most $d^2$.
+
+For margin testing, it suffices by linearity to quantify over pure inputs $uu^*$ with $\|u\|=1$; the output inequality is again a principal-minor condition in real and imaginary coordinates. If some real positive margin works, a smaller positive rational margin works. Enumeration of positive rational candidates with an exact test therefore eventually succeeds on the strict-interiority class. No termination is asserted when no positive margin exists. For $J=\sum_a|Y_a|$, a sparse implementation stores at most $JM d^2$ nonzero branch probabilities, besides $Md^2$ density coordinates and any chosen audit table. These are storage counts of mathematical entries, not bit bounds for their encodings.
+\end{proof}
+
+\begin{theorem}[Interiority after a finite block, with its clock counted]\label{thm:r68-block}
+Suppose instead that for some integer $L\ge1$, every length-$L$ command/report branch product satisfies \eqref{eq:r68-branch-floor} with the same margin. Individual branches need not do so. Put $J=\sum_a|Y_a|$. Then an exact state-positive realization exists with at most
+\begin{equation}\label{eq:r68-block-count}
+ \left(k+\left\lceil(4d/\eta)^{d-1}\right\rceil\right)
+                        \sum_{j=0}^{L-1}J^j
+\end{equation}
+hidden states. It preserves intermediate reports and stopping within the block; it does not replace $L$ calls by one unpriced call.
+\end{theorem}
+\begin{proof}
+Start with the core projectors and preparation anchors. For each, list its normalized nonzero images under all command/report products of length less than $L$, retaining the product as part of the hidden label. There are at most the displayed number. At a depth below $L-1$, an actual branch goes to its listed child with its actual conditional probability. At depth $L-1$, the next product output is either zero or belongs to $\mathcal D_d(\eta)$; decompose it into the core and restart at depth zero. Zero branches have zero rows. These transitions satisfy the same matrix interpolation identity at every single call. Theorem~\ref{thm:r68-instrument}'s history induction therefore applies without suppressing any intermediate observation, audit or charge. The depth is encoded in the enlarged state label, not in an external clock.
+\end{proof}
+
+\subsection{Why forgetting the report invalidates the premise}
+The average channel can be completely depolarizing even though every recorded branch sends pure states to pure states. The Pauli instrument $\mathcal I_P(X)=PXP^*/4$ on a qubit is an example. Thus an average-state calculation cannot verify \eqref{eq:r68-branch-floor}.
+
+A stronger example has, in addition, a recorded irrational rotation. Mix half of that Pauli instrument with the single recorded branch $\mathcal I_u(X)=UXU^*/2$, where
+\[
+ U=5^{-1/2}\begin{pmatrix}2&-1\\1&2\end{pmatrix}.
+\]
+Its average sends every density matrix to at least $I/4$, but the report word $u^n$ retains the pure state $U^n|0\rangle\langle0|U^{*n}$. These states are all distinct: $e^{i\vartheta}=(3+4i)/5$ is not a root of unity, since $2\cos\vartheta=6/5$ would otherwise be a rational algebraic integer. A finite state-positive simulator preserving all terminal effects would represent every one of these pure states as a convex combination of its finite density vertices. An extreme point of $\mathcal D_2$ can only be represented by identical density matrices, so every distinct orbit state would have to occur as a vertex. This is impossible. Thus average interiority does not even guarantee finite state-positive realization, while all finite report words here have well-defined nonzero probabilities.
+
+The example is a boundary qualification of the positive theorem. It is not used in place of that theorem, and no unrestricted classical hidden-state impossibility is inferred from this particular extreme-state proof alone.
+
+\subsection{An explicit unrestricted memory obstruction at weak damping}
+The preceding matching exponent is for state-positive realization. A different argument gives a quantitative, albeit non-sharp, obstruction for every stochastic realization of the fixed-angle scalar qubit response. It sharpens the qualitative divergence in Theorem~\ref{thm:qubit-positive-phase} without changing its exact three-label result.
+
+\begin{lemma}[A finite near-peripheral spectral witness]\label{lem:r68-cycle}
+If an $M\times M$ row-stochastic matrix has a nonzero eigenvalue $z=\alpha e^{i\theta}$, $0<\alpha\le1$, then either $1-\alpha>1/(2M)$ or some $1\le l\le M$ satisfies
+\begin{equation}\label{eq:r68-cycle}
+ |1-e^{il\theta}|\le
+       \bigl(4\sqrt{2M^{M+1}}+M\bigr)\sqrt{1-\alpha}.
+\end{equation}
+The assertion does not require irreducibility, reversible rows or a lower bound on all positive transition probabilities.
+\end{lemma}
+\begin{proof}
+Normalize an eigenvector $x$ so that its largest coordinate modulus is one, attained at $i_0$, and multiply its phase so $x_{i_0}=1$. Let $X_n$ be the Markov chain starting there. Then $\mathbb E x_{X_n}=z^n$ and
+\[
+ \mathbb E|x_{X_n}-z^n|^2
+       =\mathbb E|x_{X_n}|^2-|z|^{2n}\le1-\alpha^{2n}.
+\]
+Choose once for each state a successor with transition probability at least $1/M$, and follow this directed path. Its first $n$ steps have probability at least $M^{-n}$, so their endpoint $i_n$ obeys
+\[
+ |x_{i_n}-z^n|\le\sqrt{M^n(1-\alpha^{2n})}
+                \le\sqrt{2nM^n(1-\alpha)}.
+\]
+Two of $i_0,\ldots,i_M$ agree, say $i_j=i_k$ with $j<k$. Their two bounds give
+$\alpha^j|1-z^{k-j}|\le2\sqrt{2M^{M+1}(1-\alpha)}$.
+If $1-\alpha\le1/(2M)$, Bernoulli's inequality gives $\alpha^j\ge1/2$. Finally
+$|1-e^{i(k-j)\theta}|\le|1-z^{k-j}|+1-\alpha^{k-j}$ and
+$1-\alpha^{k-j}\le M(1-\alpha)\le M\sqrt{1-\alpha}$.
+These inequalities prove the claim.
+\end{proof}
+
+\begin{corollary}[A rational exclusion margin for every memory size]\label{cor:r68-qubit-lower}
+Fix $\zeta=(3+4i)/5$ and $0<\alpha<1$. If
+\[
+ \tfrac12\bigl[1+\alpha^n\operatorname{Re}(\zeta^n)\bigr]
+           =e_1^{\mathsf T}Q^n d\quad(n\ge0),
+ \qquad Q\mathbf1=\mathbf1,\quad Q\ge0,\quad 0\le d\le1,
+\]
+with $M$ classical states, then
+\begin{equation}\label{eq:r68-qubit-lower}
+ 1-\alpha\ge\frac1{49M(25M)^M}.
+\end{equation}
+Consequently the exact memory in the fixed-angle calibration and common-squared-audit embeddings diverges at least on the order of
+$\log(1/(1-\alpha))/\log\log(1/(1-\alpha))$ as $\alpha\uparrow1$. This lower is not claimed to match the retained polygon upper or to solve the general-$M$ frontier.
+\end{corollary}
+\begin{proof}
+The response has three distinct nonzero exponential modes $1,\alpha\zeta,\alpha\bar\zeta$. Applying the characteristic recurrence of $Q$ to it and using Vandermonde independence forces $\alpha\zeta$ to be an eigenvalue. For every positive integer $l$, the nonzero Gaussian integer $(3+4i)^l-5^l$ has modulus at least one, so $|1-\zeta^l|\ge5^{-l}$. The nonzero assertion follows from the root-of-unity argument above.
+
+If $1-\alpha\le1/(2M)$, Lemma~\ref{lem:r68-cycle} gives
+\[
+ 5^{-M}\le\bigl(4\sqrt{2M^{M+1}}+M\bigr)\sqrt{1-\alpha}
+             \le7M^{(M+1)/2}\sqrt{1-\alpha}.
+\]
+Squaring proves \eqref{eq:r68-qubit-lower}. In the other case that bound is weaker than $1/(2M)$ and is automatic. Taking logarithms gives the exact necessary inequality
+\[
+ \log\frac1{1-\alpha}\le\log49+\log M+M\log(25M),
+\]
+which implies the stated asymptotic order by elementary inversion.
+\end{proof}
+
+Noise-dependent classical-memory obstructions for quantum processes precede this result. In particular Fanizza, Lumbreras and Winter prove a worst-angle lower bound for noisy qubit processes, conditional on positive realizations for the whole phase family \cite{Fanizza24}. Their statement is not a lower rate for the one fixed angle in this corollary, nor does our weaker fixed-angle estimate replace it. The new general contribution of this section is the branch-resolved constructive realization and its stopped-resource identity, together with the state-positive dimension exponent. The established cone and spectral mechanisms are credited rather than renamed.
