@@ -1,0 +1,114 @@
+name: A2-DYN physical-source author qualification
+on:
+  push:
+    branches: ['revision/a2-dyn-physical-source-2026-10-17']
+    paths:
+      - '.github/workflows/a2-dyn-physical-source-20261017.yml'
+      - 'papers/A2-DYN-physical-source-2026-10-17/**'
+permissions:
+  contents: read
+jobs:
+  source-and-native:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 1
+          sparse-checkout: |
+            papers/A2-DYN-physical-source-2026-10-17
+      - name: Freeze all A2-DYN named HEADs and scoped source objects
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/a2dyn-physical-source
+          git rev-parse HEAD > /tmp/a2dyn-physical-source/checkout.txt
+          git ls-remote --heads origin > /tmp/a2dyn-physical-source/all-heads.tsv
+          python3 -u - <<'PY'
+          import pathlib,subprocess,json,hashlib,datetime,tarfile
+          out=pathlib.Path('/tmp/a2dyn-physical-source'); history=out/'history'; history.mkdir()
+          def relevant(s): return 'a2-dyn' in s.lower() or 'a2_dyn' in s.lower()
+          selected=[line.split() for line in (out/'all-heads.tsv').read_text().splitlines() if relevant(line)]
+          unique=list(dict.fromkeys(x[0] for x in selected))
+          with (out/'fetch.log').open('w') as log:
+              for start in range(0,len(unique),32):
+                  batch=unique[start:start+32]
+                  print('Fetch',start,len(unique),flush=True)
+                  subprocess.run(['git','fetch','--no-tags','--depth=1','origin']+[s+':refs/census/'+s for s in batch],stdout=log,stderr=subprocess.STDOUT,check=True)
+          trees={};marked=set();scans={};blobset=set();commits={};roots=[]
+          def tree(sha):
+              if sha in trees:return trees[sha]
+              es=[]
+              for item in subprocess.check_output(['git','ls-tree','-z',sha]).split(b'\0'):
+                  if not item:continue
+                  meta,name=item.split(b'\t',1);mode,kind,obj=meta.decode().split()
+                  es.append({'name':name.decode(),'mode':mode,'type':kind,'sha':obj})
+              trees[sha]=es;return es
+          def keep(sha):
+              if sha in marked:return
+              marked.add(sha)
+              for e in tree(sha):
+                  if e['type']=='tree':keep(e['sha'])
+                  elif e['type']=='blob':blobset.add(e['sha'])
+          def scan(sha):
+              if sha in scans:return scans[sha]
+              hits=[]
+              for e in tree(sha):
+                  name=e['name'];obj=e['sha']
+                  if relevant(name):
+                      hits.append({'path':name,**e})
+                      if e['type']=='tree':keep(obj)
+                      elif e['type']=='blob':blobset.add(obj)
+                  elif e['type']=='tree':
+                      for h in scan(obj):hits.append({**h,'path':name+'/'+h['path']})
+              scans[sha]=hits;return hits
+          for i,(sha,ref) in enumerate(selected):
+              if sha not in commits:commits[sha]=subprocess.check_output(['git','cat-file','commit',sha]).decode()
+              root=commits[sha].splitlines()[0].split()[1]
+              roots.append({'ref':ref,'commit':sha,'tree':root,'a2_dyn_roots':scan(root)})
+              if i%30==0:print('Indexed',i,'heads',len(blobset),'scoped blobs',flush=True)
+          index={'captured_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'scope':'all frozen A2-DYN-named branch HEADs and A2-DYN-named path DAGs; not every intermediate commit or every historical CI run; not independent proof certification','refs':roots,'commits':commits,'trees':{s:trees[s] for s in marked}}
+          (history/'INDEX.json').write_text(json.dumps(index,separators=(',',':'))+'\n')
+          blobs=history/'blobs';blobs.mkdir()
+          proc=subprocess.Popen(['git','cat-file','--batch'],stdin=subprocess.PIPE,stdout=subprocess.PIPE)
+          for sha in sorted(blobset):
+              proc.stdin.write((sha+'\n').encode());proc.stdin.flush();head=proc.stdout.readline().split()
+              if len(head)!=3 or head[1]!=b'blob':raise RuntimeError('missing blob '+sha)
+              n=int(head[2]);data=proc.stdout.read(n)
+              if proc.stdout.read(1)!=b'\n' or len(data)!=n:raise RuntimeError('short batch read')
+              if hashlib.sha1(b'blob '+str(n).encode()+b'\0'+data).hexdigest()!=sha:raise RuntimeError('blob identity')
+              (blobs/sha).write_bytes(data)
+          proc.stdin.close();proc.wait()
+          with tarfile.open(out/'scoped-history.tar.gz','w:gz',compresslevel=4) as tar:tar.add(history,arcname='history')
+          summary={'heads':len(roots),'commits':len(commits),'trees':len(marked),'blobs':len(blobset),'sha256':hashlib.sha256((out/'scoped-history.tar.gz').read_bytes()).hexdigest(),'mathematical_validation':False}
+          (out/'census-summary.json').write_text(json.dumps(summary,indent=2)+'\n');print(json.dumps(summary))
+          PY
+      - name: Install native build dependencies
+        if: ${{ hashFiles('papers/A2-DYN-physical-source-2026-10-17/tools/qualify_revision.py') != '' }}
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended texlive-science lmodern poppler-utils
+          python3 -m pip install -r papers/A2-DYN-physical-source-2026-10-17/requirements.txt
+      - name: Qualify exact native article when delivered
+        if: ${{ hashFiles('papers/A2-DYN-physical-source-2026-10-17/tools/qualify_revision.py') != '' }}
+        working-directory: papers/A2-DYN-physical-source-2026-10-17
+        run: python3 tools/qualify_revision.py all
+      - name: Retain exact source and completed or failed execution
+        if: always()
+        run: |
+          mkdir -p /tmp/a2dyn-physical-source
+          if test -d papers/A2-DYN-physical-source-2026-10-17; then
+            tar -czf /tmp/a2dyn-physical-source/native-source-and-execution.tar.gz -C papers/A2-DYN-physical-source-2026-10-17 .
+          fi
+          git status --porcelain=v1 > /tmp/a2dyn-physical-source/post-status.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: a2dyn-physical-source-${{ github.sha }}-${{ github.run_id }}
+          path: |
+            /tmp/a2dyn-physical-source/*.json
+            /tmp/a2dyn-physical-source/*.tsv
+            /tmp/a2dyn-physical-source/*.txt
+            /tmp/a2dyn-physical-source/*.log
+            /tmp/a2dyn-physical-source/*.tar.gz
+          if-no-files-found: error
