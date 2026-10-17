@@ -1,0 +1,42 @@
+name: A2-DYN sublevel clearance continuation
+on:
+  push:
+    branches: ['revision/a2-dyn-sublevel-clearance-2026-10-17']
+    paths:
+      - '.github/workflows/a2-dyn-sublevel-clearance-20261017.yml'
+      - 'papers/A2-DYN-sublevel-clearance-author-revision/**'
+permissions:
+  contents: read
+jobs:
+  native-continuation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 1
+          sparse-checkout: |
+            papers/A2-DYN-sublevel-clearance-author-revision
+      - name: Pin comparison base without changing any remote ref
+        run: git fetch --no-tags --depth=1 origin b47b3a86bbd4dda39bf2f0db166626e0102903fd
+      - name: Install native continuation dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended lmodern poppler-utils
+      - name: Verify exact source, run diagnostics, and typeset the continuation
+        working-directory: papers/A2-DYN-sublevel-clearance-author-revision
+        run: python3 tools/qualify_revision.py
+      - name: Preserve actual source and execution even on failure
+        if: always()
+        run: |
+          mkdir -p /tmp/a2dyn-sublevel
+          git rev-parse HEAD > /tmp/a2dyn-sublevel/commit.txt
+          git rev-parse HEAD^{tree} > /tmp/a2dyn-sublevel/tree.txt
+          tar -czf /tmp/a2dyn-sublevel/source-and-execution.tar.gz -C papers/A2-DYN-sublevel-clearance-author-revision .
+          cp -r papers/A2-DYN-sublevel-clearance-author-revision/evidence/current /tmp/a2dyn-sublevel/validation || true
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: a2dyn-sublevel-${{ github.sha }}-${{ github.run_id }}
+          path: /tmp/a2dyn-sublevel/
+          if-no-files-found: error
