@@ -1,0 +1,33 @@
+name: A2-DYN summable revision bootstrap
+on:
+  push:
+    branches: ['revision/a2-dyn-summable-physical-source-2026-10-17']
+    paths:
+      - '.github/workflows/a2-dyn-summable-bootstrap-20261018.yml'
+permissions:
+  contents: write
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 1
+      - name: Verify and materialize exact local integration layer
+        shell: bash
+        run: |
+          set -euo pipefail
+          base64 -d .github/a2dyn-summable-bootstrap/payload.b64 > /tmp/a2dyn-missing-source.tar.gz
+          echo '33e411af21f5a33f18fbcf030c75b649526ad3ebad9acd835e342d921b27a65c  /tmp/a2dyn-missing-source.tar.gz' | sha256sum -c -
+          tar -xzf /tmp/a2dyn-missing-source.tar.gz
+          test -f papers/A2-DYN-summable-physical-source-author-revision/main.tex
+          test -f papers/A2-DYN-summable-physical-source-author-revision/core/303_clearance_section_and_exact_mark_transport.tex
+          test -f .github/workflows/a2-dyn-summable-physical-source-20261017.yml
+          git rm -r .github/a2dyn-summable-bootstrap
+          git rm .github/workflows/a2-dyn-summable-bootstrap-20261018.yml
+          git add .github/workflows/a2-dyn-summable-physical-source-20261017.yml papers/A2-DYN-summable-physical-source-author-revision
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'A2-DYN: materialize complete summable physical-source author revision'
+          git push origin HEAD:revision/a2-dyn-summable-physical-source-2026-10-17
