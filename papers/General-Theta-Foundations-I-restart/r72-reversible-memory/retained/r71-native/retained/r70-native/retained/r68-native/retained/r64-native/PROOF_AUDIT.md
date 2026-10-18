@@ -1,0 +1,26 @@
+# R64 author proof audit
+
+This is an author-side audit, not an independent referee report. The mathematical baseline is R63 remote commit `2bb08a6323fb0198e8ba93a4870b74304431fedc`; its full source tree is retained unchanged. The current response concerns the distinct R59 round-3 report. Accepted earlier proofs remain inherited.
+
+| Statement | Load-bearing proof | Scope / failure boundary |
+|---|---|---|
+| Boundary optimum and finite convergence | Compact common-plan product; all-depth open-call reserves; positive cost floor; bounded uniform terminal tails | Countable finitely branching shared tree, finite conditional cost means, bounded loss and compact decision tuple. No uniform remaining-cost integrability or finite boundary memory is inferred. |
+| Resource-price dual | Closed convex fixed-dictionary risk frontier; supporting lines; right-continuity at least budget | Exact at boundary, but finite multiplier attainment only asserted in the interior. A freely optimized hard-width union is not convex. |
+| Complete stopped-law criterion | Finite-prefix law is a finite combination of fixed audit measures; uniform survival gives uniform-TV compactness; finite-intersection separation | Fixed actual dictionary and protected audit. Tests keep all-model budget feasibility. Not arbitrary ancillary channel order, and moving numeric readouts need not be TV-continuous. |
+| Same-budget finite-label law density | Couple common prefixes; execute a real all-state fallback; restore cost by a counted initial mixture | Strict budget slack and one common fallback. Full raw paths and audit are compared; expected time is controlled by a separate cost argument. |
+| Sparse spectral certificate | Slater resource dual; active affine gradients; polytope tangent/normal cones; conic reduction in dimension k+1 | Compact continuous raw models and fixed dictionary/horizon. Pure eigenvector witnesses for costs and risks can differ. Support bound is sharp on compulsory one-call plan polytopes. |
+| Bellman equality | Propagate unnormalized physical states for each witness; minimize common actions; telescope flow-weighted nonnegative slacks | A dual-minimizing deterministic policy need not satisfy each primal budget. Both primal constraints and witness equality must be checked. |
+| Several resources | Supporting hyperplane for the vector resource epigraph; resource-indexed atoms; one jointly strict fallback; minimum mixing probability | At least one positive call-cost floor; other resources additive, nonnegative and bounded. No hard description/space/cardinality resource is disguised as an additive cost. |
+| Different-prior gap | Exact two-model cost/loss tables; independent cost/risk active atoms; explicit restricted-prior maximization | The common-prior relaxation gives 3/2-sqrt(2), below the true 1/2. It is not an admissible substitute for robust constraints. |
+| Hard-width gap | Last-command cost lower; two one-call implementations; exact penalized endpoint envelope | General bounded loss, not a claimed squared-loss counterexample. Mixing dictionaries genuinely increases the number of values. |
+| Timing frontier and minimal attaining memory | Mean bound from target time mass; geometric one-row maximization; repeated-live-state path pumping | One stateless physical command, deterministic report, no free clock/seed. Exact unrestricted and one-label curves and K-label threshold; intermediate-memory pumping bound not claimed sharp. |
+
+## Direct checks beyond proof prose
+
+Seven finite common-plan LP searches are followed by independent exact rational checks of all primal inequalities, flows, nonnegativity, dual signs, stationarity, objective equality and complementary slackness. The four sensing cases are finite prefix lower problems, not falsely reported as complete infinite-horizon optima. Three additional one-call cases have joint expected-resource constraints. Noncommuting quantum witness recursion is checked against a separate enumeration of all deterministic finite trees in the tested small instances. Timing chains, loop pumping, conic compression, hard-width and distinct-prior examples have exact finite algebra checks.
+
+Each diagnostic runs equally in ordinary and optimized Python; there are no removable assert-only tests. Floating optimization is a search mechanism, not an exact certificate until the separate rational conditions pass. Finite examples neither prove the continuum statements nor establish their novelty. Final counts and actual build hashes are in the source-bound build receipt rather than guessed here.
+
+## Remaining research and priority
+
+General geometric-profile necessity, arbitrary unknown-model predictive quotients, optimal intermediate-memory timing, and matched computational-resource frontiers remain unproved. Compactness, separation, semi-infinite finite-support duality, Bellman verification and phase-type representations are classical ingredients and are credited in the native text. The current claimed contribution is their explicitly proved interaction with performed stopped laws, robust open-call reserves, finite outputs and paid common implementations. No external human approval or top-four editorial decision is claimed.

@@ -1,0 +1,43 @@
+\section{A timing task with an exact attainment threshold}\label{sec:timing-memory}
+The complete stopped law can distinguish controllers whose terminal outputs are identical. A basic instance is a delayed-release protocol: a stateless physical device emits the same productive report at every unit-cost call, and the observer is asked to commit at a prescribed call. There is one legal command, a constant decoder and a constant audit. An autonomous observer has no free clock, call counter or persistent random tape. Its retained label is its only intercall state. Thus finite live-state implementations are discrete phase-type stopping mechanisms. Phase-type timing and its optimal variability have classical antecedents; the continuous-time coefficient-of-variation theorem of Aldous--Shepp \cite{AldousShepp87} is a different objective from the complete-law, discrete-call approximation considered here.
+
+Fix an integer $K\ge2$ and let the target stopped law be commitment exactly at call $K$. For a proper observer with stopping time $\tau\ge1$, its total-variation discrepancy from this target is $1-\Pr(\tau=K)$. Write $\Delta_{N,M}(K)$ for the smallest discrepancy at expected-call budget $N\ge1$ with at most $M$ autonomous live labels. Event stopping may reuse one live label for the constant decoder. State stopping requires an additional disjoint terminal label. Let $\Delta_{N,\infty}(K)$ denote the full-history optimum. This notation counts \emph{live} labels, not total labels, in both conventions.
+
+\begin{theorem}[Delayed release: budget curve, exact state threshold and pumping gap]\label{thm:timer-frontier}
+For every $K\ge2$ and $N\ge1$,
+\begin{equation}\label{eq:timer-unrestricted}
+ \Delta_{N,\infty}(K)=\frac{(K-N)_+}{K-1}.
+\end{equation}
+For one live label, put $n=\min\{N,K\}$. The exact optimum is
+\begin{equation}\label{eq:timer-one-state}
+ \Delta_{N,1}(K)=1-\frac1n\left(1-\frac1n\right)^{K-1}.
+\end{equation}
+At every $N>1$, the least live-label count attaining \eqref{eq:timer-unrestricted} is exactly $K$. Consequently its least total count is $K$ for event stopping and $K+1$ for state stopping. At $N=1$, immediate commitment with one live label already attains the discrepancy one.
+
+More quantitatively, for $M<K$, every feasible autonomous observer with $s=\Pr(\tau=K)$ obeys
+\begin{equation}\label{eq:timer-pumping}
+ s+\frac{s^2}{M^{2K-2}}\le1,
+ \qquad
+ (K-1)s+\frac{K s^2}{M^{2K-2}}\le N-1.
+\end{equation}
+These explicit bounds force a strict gap from the unrestricted optimum at every $N>1$. For $N\ge K$ they give the budget-independent bound
+$\Delta_{N,M}(K)\ge 1/(4M^{2K-2})$.
+The one-label curve and $K$-label attainment threshold are exact; no sharpness of the intermediate-$M$ quantitative bound is asserted.
+\end{theorem}
+\begin{proof}
+Put $s=\Pr(\tau=K)$. Since $\tau\ge1$,
+$\E\tau\ge1+(K-1)s$. Thus $s\le\min\{1,(N-1)/(K-1)\}$. This is attained by stopping at call one with probability $1-s$ and at call $K$ with probability $s$. It is an actual causal construction: at the first call either commit or enter a finite deterministic chain, and then advance one counted label per call until commitment. It uses $K$ live labels when $s>0$, with no external clock or surviving seed. For $N\ge K$ use the deterministic chain. This proves \eqref{eq:timer-unrestricted} and its upper state count. Equivalently, the bounded score $\one_{\{\tau\ne K\}}$ witnesses this complete-law discrepancy in Theorem~\ref{thm:complete-stopped-order}; the constant terminal-output marginal would not witness it.
+
+With one live label the post-report halt probability is one constant $p>0$, so $\tau$ is geometric on the positive integers. The budget says $p\ge1/N$, and its target mass is $p(1-p)^{K-1}$. Its derivative on $(0,1)$ has the sign of $1-Kp$. The maximum over $[1/N,1]$ is therefore at $p=1/\min(N,K)$. The endpoints give the same formula, proving \eqref{eq:timer-one-state}.
+
+For the lower state count and the quantitative bound, let $Q$ be the substochastic transition matrix on the live labels and let $h=(I-Q)\one$ be its halt vector. The initial live label is prescribed. A path that halts at call $K$ contains $K$ live labels before its calls and at most $M^{K-1}$ possible label sequences. If $s>0$, one such path has probability $q\ge s/M^{K-1}$. When $M<K$, its label sequence repeats a label. The intervening live cycle has length $\ell\ge1$ and transition-product probability $r$. Every other factor in the original path is at most one, so $r\ge q$. Traverse that same cycle once more and follow the original remainder to halt. This is a legal path of length $K+\ell$, of probability $qr\ge q^2$. It is disjoint from all length-$K$ paths. Normalization yields $1\ge s+q^2$, proving the first inequality. The identity $\E\tau=1+\E(\tau-1)$ yields
+\[
+ \E\tau\ge1+(K-1)s+(K+\ell-1)q^2
+          \ge1+(K-1)s+Kq^2,
+\]
+which proves the second. Zero-probability paths need no conditioning, and the case $s=0$ is immediate.
+
+For $1<N<K$, the positive quadratic term makes the largest permitted $s$ strictly smaller than $(N-1)/(K-1)$; for $N\ge K$ the first inequality makes it strictly smaller than one. Thus fewer than $K$ live labels cannot attain the unrestricted curve, even as an infimum. If $s\ge1/2$, the first inequality gives $1-s\ge1/(4M^{2K-2})$; if $s<1/2$, that bound is weaker than $1-s>1/2$. This gives the last assertion. The globally typed state-stopped interface has a separate terminal label, whereas the final event permits reuse in event stopping, yielding the two total counts.
+\end{proof}
+
+This temporal lower bound is not a command-domain incompatibility count: every live context has the very same legal command. It comes from repeated autonomous state and the extra observable stopping histories forced by a positive cycle. A clock supplied as a physical input, a nonconstant report encoding elapsed time, or a persistent external seed changes the interface and invalidates that lower. The result is an exact delayed-release consequence with matching budget and attainment counts, not a solution of the entire intermediate-state phase-type optimization or a claim to settle a previously recognized open timing problem.

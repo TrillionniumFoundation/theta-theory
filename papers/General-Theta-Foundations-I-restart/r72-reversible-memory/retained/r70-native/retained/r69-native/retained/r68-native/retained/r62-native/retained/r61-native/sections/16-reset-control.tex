@@ -1,0 +1,95 @@
+\section{Primitive optimal control for finite reset instruments}\label{sec:reset-control}
+An exact application should not require that a balancing group has already been built into the experiment. We give a class in which the best continuation and a least-favorable preparation can instead be derived from the primitive measurement instrument. The class includes any finite family of rank-one failure projections in any finite Hilbert dimension, as well as mixed post-failure states. It does not subsume an arbitrary-rank failure projection, whose posterior still depends on its input. The complete arbitrary-rank two-detector theorem is retained in the next section.
+
+Let $\mathcal H$ be finite-dimensional. There is a nonempty finite command set $\mathcal A$, nonterminal reports $i=1,\ldots,s$, and a terminal success. Assume $s\ge1$. A nonterminal branch has the physically specified map
+\begin{equation}\label{eq:reset-instrument}
+ \mathcal I_{a,i}(\rho)=\tr(E_{a,i}\rho)\sigma_i,
+ \qquad E_{a,i}\succeq0,\quad \sum_i E_{a,i}\preccurlyeq I,
+\end{equation}
+where $\sigma_i$ is a known density matrix and the report $i$ is observed. The aggregate success effect is $B_a=I-\sum_iE_{a,i}$. The instrument itself prepares the state $\sigma_i$ on failure; no additional freely available reset is assumed. One call has a nonnegative cost with conditional mean $\tr(G_a\rho)$, where
+\[
+ 0<c_*I\preccurlyeq G_a\preccurlyeq c^*I<\infty.
+\]
+Success requires immediate commitment and failure forbids it. The decoder has one fixed terminal value. All commands are legal. The initial state is arbitrary and unknown to the observer; the known post-report state is part of the physical model, not an unknown-state oracle. Commands and reports may be relabelled without changing these data.
+
+Set
+\[
+ Q_{iaj}=\tr(E_{a,j}\sigma_i),\qquad c_{ia}=\tr(G_a\sigma_i),
+ \qquad q_{ia}^{\rm suc}=1-\sum_jQ_{iaj}.
+\]
+A nonempty set $S\subset\{1,\ldots,s\}$ is a \emph{closed failure set} when $\sum_{j\in S}Q_{iaj}=1$ for every $i\in S$ and every command $a$.
+
+\begin{theorem}[Finite reset classification, optimum and preparation saddle]\label{thm:reset-control}
+There exists one common visible-history policy which is proper at finite uniform expected cost for every initial density matrix if and only if there is no closed failure set. If there is none, the finite Bellman system
+\begin{equation}\label{eq:reset-bellman}
+ v_i=\min_{a\in\mathcal A}\left(c_{ia}+\sum_jQ_{iaj}v_j\right),\qquad 1\le i\le s,
+\end{equation}
+has a unique finite nonnegative solution. It is the optimal remaining cost from each reported state $\sigma_i$. A deterministic minimizing command at every reported state attains it and is proper.
+
+Define Hermitian start-cost operators
+\[
+ L_a=G_a+\sum_jv_jE_{a,j}.
+\]
+The unknown-initial-state value is exactly
+\begin{align}
+ V_*&=\min_{p\in\Delta(\mathcal A)}\lambda_{\max}\left(\sum_a p_a L_a\right)\label{eq:reset-sdp}\\
+ &=\max_{\rho\succeq0,\ \tr\rho=1}\min_a\tr(\rho L_a).\label{eq:reset-dual}
+\end{align}
+Both extrema are attained. A minimizing initial command distribution followed by the deterministic Bellman continuation is one optimal policy for every initial state. A maximizing density matrix is a primitive least-favorable preparation against every visible-history policy. The latter statement is for unrestricted history; it is not automatically a saddle at every smaller memory budget.
+
+If $g$ distinct command values occur in a chosen deterministic Bellman selector, then $g+1\le\min(s,|\mathcal A|)+1$ live labels suffice with a prescribed initial label. If a minimizing initial distribution is a pure command already used by that selector, $g$ suffice. Event stopping permits reuse of a live label for the constant terminal value; state stopping adds one disjoint terminal label.
+\end{theorem}
+\begin{proof}
+If a closed failure set exists, start in any $\sigma_i$ with $i\in S$. Every command fails with probability one and reports another state in $S$. Induction makes success impossible under every policy; the positive cost floor makes its expected cost infinite.
+
+Suppose there is no such set. Choose every command independently with strictly positive probability. From each failure state there is a positive-probability directed path to success: otherwise the set of failure states reachable from that state would be nonempty and closed under every command, contradicting the assumption. A shortest such path visits no failure state twice and has at most $s$ edges. Finiteness gives a positive lower bound $\delta$ for the probability of following one such path in the next $s$ calls, uniformly in its starting failure state. Consequently survival after $ns$ calls is at most $(1-\delta)^n$. From an arbitrary initial state the first call either succeeds or enters one of the reported states. The expected number of calls is therefore uniformly at most $1+s/\delta$, and the expected cost at most $c^*(1+s/\delta)$. This proves existence using even a one-live-label randomized command row. Its role is feasibility, not optimality.
+
+For explicit primitive constants, if the row chooses each command with probability at least $\eta>0$ and $\epsilon>0$ is the smallest positive number among the finite collection $Q_{iaj},q_{ia}^{\rm suc}$, then one may take $\delta=(\eta\epsilon)^s$. Factors for a shorter path can be bounded below by this same number. Zero probabilities are not divided out or assigned a false positive floor.
+
+Start value iteration at $v^{(0)}=0$. The finite-horizon dynamic programming recursion gives $v^{(n+1)}_i=\min_a(c_{ia}+\sum_jQ_{iaj}v^{(n)}_j)$. These values increase and are bounded by the proper randomized policy's finite cost. Their limit $v$ is finite and solves \eqref{eq:reset-bellman}, since a finite minimum commutes with this coordinatewise limit. Select a minimizing command $\alpha(i)$ in each row. Iterating its equality bounds every partial expected cost by $v_i$. The positive floor then bounds the sum of survival probabilities, so the selected policy is proper and has finite cost. The bounded terminal remainder $\E[v_{I_n}\one_{\{\tau>n\}}]$ vanishes. Passing to the limit in the iterated equality identifies its cost as $v_i$.
+
+For any other proper policy, Bellman's inequality for each chosen command telescopes to $v_i$ no greater than its expected cost plus the same bounded survival remainder. Letting the horizon grow proves its cost at least $v_i$. An infinite-cost policy cannot improve this bound. The same argument for any finite nonnegative Bellman solution $w$ shows that its greedy policy realizes $w$ and that $w$ is below the cost of every proper policy. Comparing to $v$ in both directions proves uniqueness.
+
+Before the first call the observer has no report, so its first command has one model-independent distribution $p$. After a failure $j$, the physical state is exactly $\sigma_j$, irrespective of the original state or previous private coins. The already proved continuation lower therefore makes its initial cost at least
+$\tr[\rho\sum_a p_aL_a]$. The Bellman continuation attains this bound for every $\rho$. Taking the worst density matrix gives the largest eigenvalue, proving \eqref{eq:reset-sdp}. Compactness of the probability simplex gives its minimum.
+
+For completeness the dual equality follows directly from finite-dimensional separation. Let $\mathcal K=\operatorname{conv}\{L_a\}$ and let $v_* =\min_{L\in\mathcal K}\lambda_{\max}(L)$. The compact convex set $\mathcal K$ is disjoint from the open convex set $\{H:H\prec v_*I\}$. A separating real linear functional on Hermitian matrices is pairing with a nonzero Hermitian $R$, with $\inf_{L\in\mathcal K}\tr(RL)\ge\sup_{H\prec v_*I}\tr(RH)$. Finiteness of the right side forces $R\succeq0$, since otherwise moving $H$ arbitrarily far in a negative semidefinite direction makes that pairing unbounded above. Normalize $\tr R=1$; the right supremum is then $v_*$. This gives a density matrix with $\min_a\tr(RL_a)\ge v_*$. Conversely, pairing any density matrix with a minimizing $L$ bounds that minimum by $v_*$. This proves equality and dual attainment. The continuation lower makes the maximizing state a witness against every policy, not merely against first-call mixtures.
+
+To implement the policy, use one label for its initial distribution and a pure command label for each distinct value of $\alpha$. On failure report $j$, retain the label for $\alpha(j)$. The next row depends only on that retained label. Success commits immediately. If the initial row is already one of these pure rows, use that existing label as the start. The event/state packing lemma gives the terminal counts. No running clock, earlier report or persistent seed is available in addition to the labels.
+\end{proof}
+
+\begin{proposition}[Equality, rigidity and a memory lower certificate]\label{prop:reset-rigidity}
+Let $\rho_*$ be an attaining preparation in \eqref{eq:reset-dual}, and put
+\[
+ d_{ia}=c_{ia}+\sum_jQ_{iaj}v_j-v_i\ge0,\qquad
+ \mathcal A_i^*=\{a:d_{ia}=0\}.
+\]
+For every finite-cost policy with first-command distribution $p$, its cost satisfies the exact residual identity
+\begin{equation}\label{eq:reset-residual}
+ \E_{\rho_*}C
+ =\tr\!\left(\rho_*\sum_a p_aL_a\right)
+    +\E_{\rho_*}\sum_{n\ge1:\,\tau>n}d_{I_n,A_{n+1}}.
+\end{equation}
+Consequently an unrestricted optimum uses only commands in $\mathcal A_i^*$ at every positive-probability continuation from reported state $i$, under this preparation.
+
+Suppose a set $I$ of reported states is visited with positive probability by every robust optimum evaluated at $\rho_*$. Let $\chi(I)$ be the least number of subsets covering $I$ whose respective intersections of optimal command sets are nonempty. Every fixed-row autonomous optimum needs at least $\chi(I)$ live labels. If every minimizing initial row has support not contained in $\mathcal A_i^*$ for every $i\in I$, it needs at least $\chi(I)+1$. These are checkable lower certificates once the mandatory set and the initial-row condition have been proved, not assertions that every experiment has the same minimal memory.
+\end{proposition}
+\begin{proof}
+After each failed call, subtract $v_{I_n}$ from the cost of the next call plus the conditional next potential. The conditional difference is exactly $d_{I_n,A_{n+1}}$. Sum to a deterministic horizon, including the first-call cost and potential. The remaining potential has absolute value at most $\max_i v_i$ times the survival indicator. Finite expected cost and the floor make survival tend to zero. Monotone convergence for the nonnegative residual sum yields \eqref{eq:reset-residual}. Its first term is at least $V_*$ by the dual witness. A robust optimal policy's cost at $\rho_*$ is at most $V_*$, so every visited positive-probability residual vanishes.
+
+A retained label serving states in a subset $J$ has one command row. Its support must lie in every $\mathcal A_i^*$, $i\in J$, because each such visit has positive probability and any action of positive row weight with positive residual would contradict equality. Thus $\bigcap_{i\in J}\mathcal A_i^*$ is nonempty. The labels used by mandatory states cover $I$, proving the first lower. For an optimum, its first row is a minimizing row in \eqref{eq:reset-sdp}: its worst-state cost dominates the first-call lower, whose minimum is $V_*$. Under the additional support condition this initial row can serve none of the mandatory states, so its label is additional to their covering labels. This proves the sharpened count.
+\end{proof}
+
+\begin{corollary}[Arbitrary finite rank-one detector families]\label{cor:rank-one-family}
+Let the failure projection of detector $a$ be $P_a=|u_a\rangle\langle u_a|$ on any finite-dimensional Hilbert space, with $\|u_a\|=1$, and let its deterministic call cost be $k_a>0$. There is no intervening evolution or additional control. If all rays $\mathbb C u_a$ coincide, that ray is dark and the all-state value is infinite. Otherwise the value is finite and is given by Theorem~\ref{thm:reset-control}, with
+\[
+ v_i=\min_a\{k_a+|\langle u_i,u_a\rangle|^2v_a\},
+ \qquad L_a=k_aI+v_aP_a.
+\]
+Thus the continuation is a finite scalar system, while the unknown-initial-state optimization retains the full spectral geometry of the physical projections. There is no fixed prior or restriction to two detectors or two physical dimensions.
+\end{corollary}
+\begin{proof}
+A rank-one failure satisfies $P_a\rho P_a=\tr(P_a\rho)P_a$, so it is a reset branch with report $a$ and state $P_a$. If all rays agree, their common ray never succeeds. Otherwise choose two distinct rays and alternate their detectors. Their squared overlap is less than one. After the first failure every switch has this same strictly positive success probability, giving finite uniform cost. The classification theorem applies. Substitution of the reset transition probabilities gives the displayed formulas. The general equality and memory certificates retain the actual observed failure label and therefore apply to this family as well.
+\end{proof}
+
+The reduction to a finite absorbing decision problem, Bellman verification, convex separation and spectral duality are classical methods; quantum decision-process frameworks already provide much broader control languages \cite{Barry14,Ying18,Saldi25}. The contribution claimed here is the explicit primitive reset-instrument criterion, the common all-initial-state spectral value, its realization with charged rows, and the residual-based memory certificate within this experiment. It is distinct from optimizing the probing interval for a fixed detector with unitary evolution \cite{Kessler21,DelVecchio26}. It also does not replace the preserved two-stage reset communication and rank-constrained discrimination results by a first-detection theorem.

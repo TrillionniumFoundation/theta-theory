@@ -1,0 +1,11 @@
+# Independent referee entry — R69
+
+Read the complete current article and paired supplement. For the new mathematical center, begin with Section 3, `sections/28-spectral-memory.tex`. Its spectral necessity/sufficiency proof, sector bound, exact worst-phase law and fixed-phase cubic-root estimates are complete there. Its physical interpretation uses precisely `thm:r67-embedding` in the current main article: a real three-outcome squared audit, fixed two-value dictionary, and first-herald cost. The short `supplement-spectral.tex` closes scalar degeneracies and records construction/resource details.
+
+The rate proof does not require the full Karpelevic boundary classification, the entire inherited supplement or the nested archive. The sector bound and rational approximation used in it are proved explicitly. The classical matrix sources are cited for priority. The arithmetic condition is global at every denominator and is proved for one fixed quadratic phase; no such condition is assumed for the older algebraic rotation.
+
+The inherited instrument-wide, stopping-rigidity and actual-history proofs remain in the main article. General performed-law, robust-tie, compact optimization, timing, spectral/geometry/rank and other technical lines remain current in the supplement with their original hypotheses. The complete R68 tree is separately retained unchanged. Preservation is not a claim of a fresh independent review of every historic theorem.
+
+`RESPONSE_TO_REFEREE.md` addresses each major and technical R65 comment while crediting the R66–R68 closures. `THEOREM_INDEX.json` and `THEOREM_MAP.md` use actual paired-build numbers and pages. Keep both R69 PDFs together for cross-document links. Read the source-bound publication receipt for the precise tested source SHA and distinguish it from the later delivery commit and remote CI status.
+
+The finite-spectral-mixture theorem additionally treats a fixed finite collection of nonzero phase modes on a higher-dimensional protected carrier. Its lower retains every spectral obstruction and the full 2r+1 Hankel rank; its upper counts the initial mixture label and any constant tail block. It yields the same matched cubic-root exponent for certified fixed phase lists, not a universal theorem for arbitrary multi-frequency positive realizations.

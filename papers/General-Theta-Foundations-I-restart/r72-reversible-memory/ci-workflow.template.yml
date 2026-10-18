@@ -1,0 +1,46 @@
+# Install under .github/workflows only in an explicitly published successor.
+# This template alone is not an executed hosted workflow.
+name: General Theta R72 source-bound native verification
+on:
+  push:
+    branches:
+      - revision/general-theta-r72-reversible-memory-20261017
+    paths:
+      - papers/General-Theta-Foundations-I-restart/r72-reversible-memory/**
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          sparse-checkout: papers/General-Theta-Foundations-I-restart/r72-reversible-memory
+      - name: Install native dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends python3-venv texlive-latex-base texlive-latex-recommended texlive-fonts-recommended lmodern poppler-utils
+          python3 -m venv "$RUNNER_TEMP/theta-env"
+          "$RUNNER_TEMP/theta-env/bin/python" -m pip install -r papers/General-Theta-Foundations-I-restart/r72-reversible-memory/requirements.txt
+      - name: Verify exact source and all documents
+        shell: bash
+        run: |
+          set -euo pipefail
+          P=papers/General-Theta-Foundations-I-restart/r72-reversible-memory
+          "$RUNNER_TEMP/theta-env/bin/python" "$P/verify.py" --out "$RUNNER_TEMP/r72-result" --source-commit "$GITHUB_SHA"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: general-theta-r72-${{ github.sha }}
+          path: ${{ runner.temp }}/r72-result
+          if-no-files-found: error
+          retention-days: 90

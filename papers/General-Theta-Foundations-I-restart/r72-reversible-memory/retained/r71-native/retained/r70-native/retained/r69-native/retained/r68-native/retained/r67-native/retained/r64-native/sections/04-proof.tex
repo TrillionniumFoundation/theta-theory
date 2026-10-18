@@ -1,0 +1,77 @@
+\section{Proof of the central theorem}
+\begin{lemma}[Profile attainment]\label{lem:attainment}
+For every finite $m\ge1$ and $b\ge1$, the minimum in \eqref{eq:profile} is attained. The profile is nonincreasing in $m,b$ and left-continuous in $b>1$.
+\end{lemma}
+\begin{proof}
+Write a dictionary as an ordered tuple in the compact set $H^m$, permitting repetitions. The feasible densities are a weak-star closed subset of the radius-$b$ ball of $L^\infty(\nu)$: positivity, the upper bound and the mass equality are each closed under pairing with $L^1(\nu)$. They are therefore weak-star compact. As the tuple varies, its squared-distance function varies uniformly on $H$, since all points belong to a bounded set. Along a convergent product net, split the objective difference into this uniform variation and the weak-star pairing against the fixed bounded measurable loss at the limit tuple. This proves continuity of the objective and attainment. Nets avoid an unwarranted sequential compactness assumption. Monotonicity follows from inclusion of feasible sets. For left continuity take an optimizer $h$ at $b>1$ and let $h_\lambda=(1-\lambda)h+\lambda$. It has unit mass and cap $b_\lambda=(1-\lambda)b+\lambda<b$. Its objective tends to the optimum as $\lambda\downarrow0$, while monotonicity bounds the optimum at $b_\lambda$ between the optimum at $b$ and this objective.
+\end{proof}
+
+\begin{lemma}[Actual-history comparison measure]\label{lem:comparison}
+Fix any robustly admissible competitor of cost at most $N$, with its fixed terminal dictionary $C$. There are finite nonnegative measures $\xi_c$ on $X$, $c\in C$, such that $\xi=\sum_c\xi_c$ obeys
+\begin{align}
+ \xi&\le (\E_*A_\tau)\nu\le b_-\nu,\label{eq:measure-cap}\\
+ 1&\le u_-\xi(X)+A_N,\label{eq:measure-mass}\\
+ \E_*\|Z-\widehat r\|^2
+ &\ge l_-\sum_{c\in C}\int d_c\,d\xi_c-E_N.
+ \label{eq:measure-risk}
+\end{align}
+The measure $\xi$ is not asserted to be the terminal law of any comparison execution.
+\end{lemma}
+\begin{proof}
+Adjoin an independent uniform random variable to the current report on both sides. This is current-call randomness, not a seed retained between calls; it is sufficient to represent the competitor's randomized output and stopping decision. A finite-output kernel has such a representation by cumulative probabilities. At a fixed reached productive history $h$ and chosen command $a$, the post-report decision then gives an acceptance indicator $q_h(y)$ and an output $r_h(y)\in C$ on acceptance. Give $r_h$ an arbitrary fixed value on rejection. The notation $y$ now includes the current independent random variable. Integrating the original certificates over that variable preserves their constants. Dependence on the entire earlier history is permitted in these functions.
+
+For each Borel $D\subset X$, set
+\begin{equation}\label{eq:xi-definition}
+ \xi_c(D)=\E_*\sum_{j\le\tau:\ j\ {
+m productive}}
+ \int\one_{\{\pi_{H_{j-1},a_j}(y)\in D\}}
+ q_{H_{j-1}}(y)\one_{\{r_{H_{j-1}}(y)=c\}}
+ P^0_{H_{j-1},a_j}(dy,H).
+\end{equation}
+The outer expectation is the actual pre-call occupation at $\theta_*$. All terms are jointly measurable and nonnegative. Tonelli defines the measures, whose total is finite because $\E_*A_\tau\le b_-$. Summing over $c$ and dropping the acceptance indicator gives \eqref{eq:measure-cap}: each comparison row has mark law $\nu$.
+
+The analogous sum with the actual rows instead of $P^0$ has mass exactly one, because the actual procedure commits exactly once almost surely. Apply \eqref{eq:lower-mass} at each actual reached history, then sum. The occupation certificate yields \eqref{eq:measure-mass}. Apply \eqref{eq:lower-task} in the same way to the disjoint actual commitment events. Their expected losses sum to the actual risk. The comparison contribution is $d_{r_h(y)}(\pi_{h,a}y)$ by \eqref{eq:full-moments}; this identity conditions on the full current report and therefore does not overlook extra information seen by the competitor. The accumulated loss defect is at most $E_N$, giving \eqref{eq:measure-risk}. One may first truncate the number of calls. Monotone convergence for the nonnegative contributions and the finite defect bounds justify the limit.
+
+No actual past is replaced by a comparison past. In particular the competitor need not terminate, or obey a cost bound, if hypothetically run under the comparison experiment. This distinction is why the argument applies when that experiment is not an operating model.
+\end{proof}
+
+\begin{remark}[Why the full report is required]
+A constant mark can conceal a visible fair bit which also equals the future audit. A comparison using only that mark has $f=0,w=1$, but a two-value decoder reading the bit predicts it with zero loss. The hypotheses therefore condition on the full report seen by the competitor; matching a compressed mark marginal alone cannot establish the lower.
+\end{remark}
+
+\begin{lemma}[Live roles, output roles and physical compatibility]\label{lem:roles}
+A program with $\ell$ live roles and $t$ output roles has a state-stopped implementation with $\ell+t$ labels and an event-stopped implementation with $\max(\ell,t)$ labels, preserving every path cost and complete stopped scored law. Conversely an event-stopped $M$-label program has at most $M$ decoder values. A state-stopped $M$-label program with at least $B_0$ reached live labels has at most $M-B_0$ terminal decoder values.
+
+For a physical live-state certificate, consider finitely many mandatory pre-call contexts $I$ with no free context input. Suppose the commands legal at a history of context $i$ are exactly $\mathcal U_i$, and every terminating competitor visits every context with positive probability under the same witness. This positive probability may depend on the competitor; no uniform lower bound over competitors is required. Let $b_{\rm phys}$ be the least size of a cover of $I$ by subsets $J$ with $\bigcap_{i\in J}\mathcal U_i\ne\varnothing$. Then at least $b_{\rm phys}$ live labels are required. This certificate is invariant under duplicate names and bijective stateless recodings of the same physical commands.
+\end{lemma}
+\begin{proof}
+For state stopping take disjoint copies of the live and terminal role sets and type them zero and one. For event stopping embed the live and terminal role sets separately into one alphabet of size $\max(\ell,t)$. On continuing transitions use the live embedding; on commitment emit the final event and use the terminal embedding. A command row is read only on a continuing branch, while the decoder is read only after commitment. Sharing their label therefore causes no conflict and uses no continuing mode bit. Couple the original and recoded coins. Every finite stopped prefix and every path cost agree, and almost-sure termination gives equality of the stopped scored laws. A fixed decoder has one value per retained label. In state stopping the global halt map excludes each reached live label from the output set, proving its subtraction. Event stopping has no such exclusion.
+
+A live label reached in contexts $J$ must have one command distribution supported on all the corresponding $\mathcal U_i$. Since $J$ is finite, the union of the exceptional null command sets is null; hence their intersection supports a probability and is nonempty. The sets of contexts served by the labels cover $I$, proving the bound. Conversely a nonempty intersection contains a command and hence a Dirac command distribution. Replacing names without changing executed kernels, legal domains, costs and reports does not change these intersections. A translator which itself remembers a hidden phase is not such a recoding; its memory must be charged.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:transfer}]
+Fix a competing program. Lemma~\ref{lem:roles} bounds its decoder width by $m_-(M)$. Let $s=\xi(X)$ in Lemma~\ref{lem:comparison}. If $t_N>0$, then \eqref{eq:measure-mass} gives $s\ge t_N$. Scale the measure to $\xi'=(t_N/s)\xi$. It has mass $t_N$ and remains bounded above by $b_-\nu$. Thus $h=(d\xi'/d\nu)/t_N$ has unit mass and cap $b_-/t_N$. Nearest-dictionary projection and nonnegativity imply
+\[
+ \sum_{c\in C}\int d_c\,d\xi_c
+ \ge\int [w+\dist(f,C)^2]\,d\xi
+ \ge t_N\Q_{m_-(M)}(b_-/t_N).
+\]
+Together with \eqref{eq:measure-risk} this proves the asserted lower for this competitor. Its worst-model risk dominates its risk at $\theta_*$. Taking the infimum over competitors gives \eqref{eq:central-lower}, without exchanging an infimum and a supremum. Nonnegative loss gives the zero truncation and the stated case $t_N=0$.
+
+For the upper assume \eqref{eq:beta}. Choose an attained optimizer $(C,h)$ at width $m_+(M)$ and cap $\beta_N$. Let $r_C(x)$ be the first nearest point to $f(x)$ in a fixed ordering of $C$. After each attempt of $\mathcal G$, accept $x$ with probability $h(x)/\beta_N$, export $T_Jr_C(x)$ and commit; otherwise return to the start routing label. All these operations are Borel. The choice $J$ is used within the current attempt; any part retained thereafter is charged through the live role or exported decoder, not a free seed. The exports are assumed jointly measurable and take at most $D_0|C|$ distinct values, so their finite decoder and transitions are Borel as well.
+
+Conditional on every surviving attempt history, the acceptance probability is at least
+\begin{equation}\label{eq:hazard}
+ p=\frac{l_+}{\beta_N}-a_+=\frac1{b_+}>0.
+\end{equation}
+Consequently the probability of reaching attempt $j+1$ is at most $(1-p)^j$, by induction on conditional survival probabilities. In particular commitment is almost sure and the expected number of attempts is at most $1/p=b_+$. Each begun attempt has conditional expected cost at most $\kappa_+$, not merely a cost conditional on a favorable outcome. Summing the predictable attempt costs gives actual expected cost at most $\kappa_+b_+=N$.
+
+The conditional unnormalized loss contributed by an attempt is at most $u_+\Q_{m_+(M)}(\beta_N)/\beta_N+e_+$. Sum its contributions on the disjoint terminal events, using the same survival bound. The result is at most
+\[
+ b_+\left[\frac{u_+}{\beta_N}\Q_{m_+(M)}(\beta_N)+e_+\right],
+\]
+which is \eqref{eq:central-upper}. The program has $B$ live roles and at most $D_0m_+(M)$ terminal roles. Lemma~\ref{lem:roles} gives exactly the sufficient widths in \eqref{eq:widths}. A checkpoint counts only the terminal width. No physical renewal law was used: the conditional hazard controls survival even if the hidden state after rejection differs arbitrarily from its former state.
+
+If $\beta_N<1$, commit after the first attempt, and use an optimizer at cap one. The loss certificate with $q=1$ gives $u_+\Q_{m_+(M)}(1)+e_+$, and the whole-attempt cost is at most $\kappa_+$. This proves all remaining assertions.
+\end{proof}
