@@ -1,0 +1,5 @@
+# Qualification contract
+
+The authoritative manifest is frozen before execution. Success requires exact source and preservation checks, all20 inherited/new diagnostic programs in normal and -O modes with identical summaries and detailed cases, and a three-pass full native build with zero unresolved references, duplicate labels and overfull boxes. Each command records the exact source-manifest SHA-256, arguments, working directory, start/end, exit status and output hash. No stale phase is accepted. Real failures are retained, not rewritten as passes. The finite programs are auxiliary tests, not proofs of the continuous or asymptotic theorem.
+
+The actual current receipt is `build/revision/current-validation.json`. It must be inspected rather than assumed from this contract. The previous complete source was freshly rebuilt to116 pages; the remote standalone continuation failed before producing a PDF. Both distinct histories are preserved. New remote CI completion requires an actual run at the actual pushed source SHA, and is never inferred from local qualification.
