@@ -1,0 +1,252 @@
+\section{Weighted boundary decisions and positive stochastic realization}\label{sec:robust-realization}
+The deterministic residual quotient of Section~\ref{sec:boundary-memory} does not classify a robust problem with tied Bayes actions. In that case the object to realize is a probability-valued decision function, and its residuals need not take finitely many values. We first derive that object without assuming model-independent report probabilities. We then characterize its finite stochastic implementation by an invariant convex family, and give exact memory classifications for a random-horizon calibration task. The convex realization machinery is classical in origin: linear representations and positive realizations are different notions \cite{Jaeger00,ThonJaeger15,MonrasWinter14}. The new assertions concern the physical minimum-cost face, its robust optimal decision face, and their counted stochastic implementation.
+
+\subsection{State-dependent reports and a minimum-cost potential}
+Fix a compact metric model space $\Theta$, a finite-dimensional physical space $K$, a nonempty finite failure alphabet $Y$, and a fixed nonempty finite decoder dictionary $C$. All primitive matrices below depend continuously on $\theta$. The prepared density is $\rho_\theta$. There is one globally legal command, with completely positive branches $\mathcal S_\theta$ for a productive herald and $\mathcal K_{\theta,y}$ for failure $y$, whose sum is trace preserving. A rejected herald retains the actual post-$\mathcal S_\theta$ state; a failure retains the actual post-$\mathcal K_{\theta,y}$ state. No replacement preparation, inspection of the protected state, or additional unpriced operation is available. Calls have nonnegative cost with mean observable
+\[
+ c_* I\preccurlyeq G_\theta\preccurlyeq c^*I,\qquad 0<c_*\le c^*<\infty.
+\]
+Commitment is allowed only on a herald and precedes the prospective audit. Its loss at decoder $r$ has observable $0\preccurlyeq F_{\theta,r}\preccurlyeq LI$ on the post-herald state. An independently executed final audit cost must be added separately. The declared reports are the whole observer input; charged costs do not supply an additional observation channel. These are single-command hypotheses, not a finite-memory criterion for a general controlled POMDP.
+
+Put $\mathcal T_\theta=\sum_y\mathcal K_{\theta,y}$ and $d=\dim K$. Assume
+\begin{equation}\label{eq:weighted-depth}
+ I-(\mathcal T_\theta^*)^dI\succ0\qquad(\theta\in\Theta).
+\end{equation}
+This is the primitive depth test already proved in Theorem~\ref{thm:primitive-fallback}, now applied to the one command. Compactness gives a common $\delta>0$ with the left side at least $\delta I$. Thus first-herald survival after $n$ calls is at most
+\[
+ b_n=(1-\delta)^{\lfloor n/d\rfloor}.
+\]
+The uniformly convergent resolvent
+\[
+ H_\theta=(I-\mathcal T_\theta^*)^{-1}G_\theta,
+ \qquad c_*I\preccurlyeq H_\theta\preccurlyeq K_0I,
+ \quad K_0=c^*d/\delta
+\]
+is continuous in $\theta$. Write $h_\theta=\tr(H_\theta\rho_\theta)$, $N_0=\max_\theta h_\theta$ and $\Theta_0=\{\theta:h_\theta=N_0\}$. For $w=y_1\cdots y_n$, let $\mathcal K_{\theta,w}=\mathcal K_{\theta,y_n}\cdots\mathcal K_{\theta,y_1}$ and
+\[
+ \lambda_\theta(w)=\tr\mathcal S_\theta\mathcal K_{\theta,w}(\rho_\theta).
+\]
+The empty word is included. Words may have zero probability. We use the following support condition:
+\begin{equation}\label{eq:cost-support}
+ \lambda_\theta(w)>0\text{ for some }\theta
+ \quad\Longrightarrow\quad
+ \lambda_{\theta'}(w)>0\text{ for some }\theta'\in\Theta_0.
+\end{equation}
+This is a sufficient coverage condition for robust boundary rigidity, not a claimed necessary condition for every such rigidity. In particular it holds if one cost-maximizing model has $\mathcal S^*I\succ0$ and $\mathcal K_y^*I\succ0$ for every $y$. These inequalities ensure that every finite word has positive mass in that model; neither its posterior nor the model label is supplied to the observer.
+
+\begin{theorem}[Weighted herald rigidity]\label{thm:weighted-rigidity}
+For every proper finite-cost observer in a fixed model,
+\begin{equation}\label{eq:weighted-residual}
+ \mathbb E_\theta C_\tau
+ =h_\theta+
+ \mathbb E_\theta\sum_{i\le\tau:\,\text{herald }i\text{ rejected}}
+            \tr(H_\theta\rho_i^+),
+\end{equation}
+where $\rho_i^+$ is its normalized post-herald physical state. Consequently the least robust budget is $N_0$. Under \eqref{eq:cost-support}, every budget-$N_0$ observer commits at the first herald in every model. Model- and state-dependent failure and herald probabilities are permitted.
+\end{theorem}
+\begin{proof}
+At a reached pre-call state $\rho$, the expected cost plus the potential after continuing failures is
+$\tr[(G_\theta+\mathcal T_\theta^*H_\theta)\rho]=\tr(H_\theta\rho)$.
+Continuing after a herald adds exactly its post-herald potential, weighted by the actual rejection decision. Conditional summation to a deterministic horizon gives the displayed identity with cost and rejected-herald sums truncated, minus the remaining live potential. That remainder is bounded by $K_0\Pr_\theta(\tau>n)$ and tends to zero. Finite cost and the positive cost floor imply proper survival decay; monotone convergence applies to the two nonnegative sums. This proves \eqref{eq:weighted-residual}. First-herald commitment realizes $h_\theta$ simultaneously, so its largest value is the least robust budget.
+
+At every $\theta'\in\Theta_0$, a boundary observer has zero residual. Since $H_{\theta'}\succeq c_*I$, it rejects no herald with positive probability. Before the first herald, the distribution of its private memory conditional on the failure word depends only on that word and its own coins: there is one command, and the physical report maps do not depend on those coins. In particular its rejection probability at the first herald after $w$ is model independent. If $w$ is possible anywhere, \eqref{eq:cost-support} makes it possible at a cost-maximizing model, where this probability is zero. Thus the probability is zero in every model. The sufficient full-support test follows by successively taking traces of positive, nonzero branch outputs.
+\end{proof}
+
+The coverage qualification cannot be dropped. With unit calls, let one model have geometric herald rate $1/3$ and only failure letter $a$. Let another have a prepared two-state system whose first call fails with letter $b$, enters a state with deterministic heralds, and thereafter remains there. Both pass \eqref{eq:weighted-depth} (use a two-dimensional identity extension in the first model). Their first-herald costs are three and two. A policy accepting all $a$-histories but rejecting the first herald after $b$ still has robust cost three. The word $b$ is absent from the expensive model. This failure of coverage licenses an actual extra stopping decision; it is not a zero-probability technicality.
+
+\subsection{The optimal face with arbitrary robust ties}
+Assume \eqref{eq:cost-support}. Define the unnormalized loss coefficients
+\[
+ f_\theta(w,r)=\tr\bigl(F_{\theta,r}\mathcal S_\theta
+                  \mathcal K_{\theta,w}(\rho_\theta)\bigr),
+ \quad 0\le f_\theta(w,r)\le L\lambda_\theta(w).
+\]
+A boundary rule is $b=(b_w)_{w\in Y^*}\in\mathcal D:=\prod_{w\in Y^*}\Delta(C)$, independent of $\theta$, with risk
+$R_\theta(b)=\sum_{w,r}b_w(r)f_\theta(w,r)$.
+For a probability measure $\mu$ on $\Theta$ put
+$f_\mu(w,r)=\int f_\theta(w,r)\,d\mu(\theta)$ and
+$A_\mu(w)=\arg\min_{r\in C} f_\mu(w,r)$.
+
+\begin{theorem}[Weighted minimax face and tied optimality]\label{thm:weighted-face}
+The full-history boundary value and a least-favorable measure are attained, and
+\begin{equation}\label{eq:weighted-minimax}
+ V=\min_{b\in\mathcal D}\max_\theta R_\theta(b)
+   =\max_{\mu\in\mathcal P(\Theta)}
+           \sum_w\min_{r\in C}f_\mu(w,r).
+\end{equation}
+For any attaining $\mu_*$ the complete optimal face is
+\begin{equation}\label{eq:optimal-face}
+ \mathcal B_*=
+ \{b\in\mathcal D:R_\theta(b)\le V\ (\theta\in\Theta),\quad
+               \supp b_w\subseteq A_{\mu_*}(w)\ (w\in Y^*)\}.
+\end{equation}
+Words with zero $\mu_*$-averaged mass impose no extra decoder restriction. In general the support restrictions alone are insufficient: the inequalities for the individual models remain essential.
+\end{theorem}
+\begin{proof}
+The terms beyond length $n-1$ have sum at most $Lb_n$, uniformly in $b$ and $\theta$. Finite partial sums are jointly continuous, and this bound proves joint continuity on the compact convex rule space and on the compact model space. Passing from models to their probability measures makes the payoff bilinear and continuous. Compact minimax gives \eqref{eq:weighted-minimax}, with both extrema attained; equivalently apply finite-dimensional separating minimax to finite word truncations and then use the uniform tail and compactness. Minimization for fixed $\mu$ is wordwise, since each coordinate ranges over a simplex.
+
+For an optimal $b$, its $\mu_*$-average is both at most $V$ and at least the Bayes value $V$. Subtraction yields the nonnegative identity
+\[
+ 0=\sum_{w,r}b_w(r)
+       [f_{\mu_*}(w,r)-\min_u f_{\mu_*}(w,u)].
+\]
+Every summand vanishes. This gives the support restriction even without positive model-independent word masses; if a whole word has zero averaged mass, every coefficient there is zero and all actions are allowed. Conversely the model inequalities make $b$ robustly optimal, since $V$ is the infimum. This proves the full face, not sufficiency of Bayes ties alone. For example two constant loss vectors $(0,1)$ and $(1,0)$ have fair robust optimum $1/2$, while both pure actions are tied under the equal model mixture and each has worst risk one.
+\end{proof}
+
+\subsection{What replaces a deterministic residual congruence}
+View each $g\in\mathcal D$ as a probability-valued response function on future words. Its left shift is $(L_yg)(z)=g(yz)$. An \emph{anchored finite convex realization} of $b$ consists of $g_1=b,g_2,\ldots,g_M\in\mathcal D$ with
+\begin{equation}\label{eq:convex-invariance}
+ L_yg_s\in\operatorname{conv}\{g_1,\ldots,g_M\}
+       \quad(s=1,\ldots,M,\ y\in Y).
+\end{equation}
+The distinguished initial response $g_1$ is counted even if it is not an extreme point of this convex hull. This anchor reflects a prescribed initial live label; it must not be replaced by a free random initial state. The auxiliary $g_s$ need not themselves be robust optimal from a new preparation.
+
+\begin{theorem}[Exact stochastic boundary memory with ties]\label{thm:convex-memory}
+Under the weighted rigidity hypotheses, an exact robust boundary optimum with at most $M$ live labels exists if and only if some $b\in\mathcal B_*$ admits an anchored convex realization with at most $M$ generators. The least such generator count is the least exact live-label count. This criterion permits all robust ties, state-dependent word masses and stochastic transitions.
+
+For a specified response $b$, the block Hankel matrix
+\[
+ \mathsf H_b(w,(z,r))=b_{wz}(r)
+\]
+has rank at most the generator count. Finite Hankel rank alone is not sufficient. Event-stopped implementations use at most $\max(M,|C|)$ total labels, and state-stopped implementations at most $M+|C|$; unused decoder values can be removed from these upper counts.
+\end{theorem}
+\begin{proof}
+From \eqref{eq:convex-invariance} choose stochastic coefficients $Q_y(s,t)$ representing each shifted generator. Set the decoder row $D_s=g_s(\varnothing)$. Induction on word length gives
+\[
+ g_s(y_1\cdots y_n)=e_s^{\mathsf T}Q_{y_1}\cdots Q_{y_n}D.
+\]
+The machine starts in label one, updates on failures with these matrices, and on the first herald draws its decoder from $D_s$. It uses no physical-state input and realizes $b$ exactly, so \eqref{eq:optimal-face} proves optimality.
+
+Conversely, for each reached label of any stochastic machine define $g_s(z)$ to be its terminal decoder distribution after processing $z$ and then a herald. Its rows are probabilities. The Markov property gives $L_yg_s=\sum_tQ_y(s,t)g_t$, and the initial function is $b$. Unreachable labels may be removed; any unused rows can be completed arbitrarily. Thus the same number of reached labels gives the required generators, proving both directions and minimality. Factor the Hankel matrix as the row of reached state probabilities after $w$ times the column of future response probabilities from each state after $z$ to obtain the rank lower bound. The established event/state role packing gives the total-label upper counts.
+\end{proof}
+
+This is a positive realization criterion on the optimal decision face, not a claim to originate residual automata or finite-dimensional linear realization. Rabin--Scott and the Moore/Myhill--Nerode tradition characterize deterministic finite residual functions \cite{RabinScott59}; observable-operator and multiplicity-automaton theories separate linear rank from stochastic realization \cite{Jaeger00,ThonJaeger15}. Here exact unique Bayes actions recover the deterministic criterion of Section~\ref{sec:boundary-memory}. With ties, a convex family can have infinitely many different residual points, and selecting positive successors no longer preserves the required output probabilities. The next application exhibits both phenomena exactly.
+
+For finite primitive models the criterion also has a direct operator verification form. Given stochastic rows $Q_y,D$, define the killed map on the direct sum of $M$ physical blocks by
+\[
+ (\mathcal T_{\theta,Q}X)_t
+      =\sum_{s,y}Q_y(s,t)\mathcal K_{\theta,y}(X_s),
+ \qquad A_{\theta,s}=\sum_rD_s(r)\mathcal S_\theta^*F_{\theta,r}.
+\]
+The physical survival bound also bounds this map, independently of the memory rows. Its unique score potential is
+\begin{equation}\label{eq:positive-score-certificate}
+ Z_\theta-\mathcal T_{\theta,Q}^*Z_\theta=A_\theta,
+ \qquad 0\preccurlyeq Z_\theta\preccurlyeq LI.
+\end{equation}
+Its initial risk is $\tr((Z_\theta)_1\rho_\theta)$. Consequently, when an exact target value $V$ is supplied, stochastic rows satisfying this risk at most $V$ in every model are a finite necessary-and-sufficient certificate for exact $M$-label optimality. The equations follow by summing the absolutely convergent killed score series; normalization bounds its sum by $LI$, and transience proves uniqueness. With finitely many algebraic models and algebraic $V$, this is a finite real-algebraic existence test. It does not assume that the unknown optimum of an arbitrary problem is itself algebraic.
+
+\subsection{Robust Born-probability replication at an unknown random horizon}
+Consider a protected system prepared in $\rho$, one trace-preserving channel $\Phi$, and an effect $0\preccurlyeq E\preccurlyeq I$. On each call a failure has probability $t$ and applies $\Phi$; a herald has probability $1-t$ and leaves the system unchanged. The fixed unknown parameter ranges over $[t_-,t_+]\subset(0,1)$, with $t_-<t_+$. Calls cost one. On commitment output $r\in C=\{0,1\}$ before observing the Bernoulli audit $Z$ with effect $E$. There are two audit-loss models $\sigma\in\{-1,1\}$, neither affecting report probabilities, with loss
+\begin{equation}\label{eq:calibration-loss}
+ \ell_\sigma(r,Z)=\tfrac12[1+\sigma(r-Z)]\in[0,1].
+\end{equation}
+The unknown sign enforces two-sided calibration rather than choosing one favorable signed discrepancy. This is a replication task for the Born probability at a random horizon, not the squared-sign prediction task of the previous qubit theorem. The observer has no access to the protected system except the failure/herald reports.
+
+Write $\beta_n=\tr(E\Phi^n\rho)$ and let $b_n$ be the probability of output one after $n$ failures. The endpoint $t_+$ has the largest cost and full word support, so Theorem~\ref{thm:weighted-rigidity} forces first-herald commitment at the least budget $N_0=1/(1-t_+)$. A boundary policy has
+\begin{equation}\label{eq:analytic-calibration}
+ \sup_{t,\sigma}R_{t,\sigma}(b)
+ =\tfrac12+\tfrac12\sup_{t\in[t_-,t_+]}
+       \left|(1-t)\sum_{n\ge0}t^n(b_n-\beta_n)\right|.
+\end{equation}
+
+\begin{theorem}[Unique randomized optimum and exact realization memory]\label{thm:calibration-realization}
+The full-history boundary value is $1/2$, and its unique response kernel is $b_n=\beta_n$ for all $n\ge0$. An exact finite-memory optimum exists precisely when
+\begin{equation}\label{eq:born-realization}
+ \beta_n=e_1^{\mathsf T}Q^n d\quad(n\ge0)
+\end{equation}
+for a finite row-stochastic matrix $Q$ and a vector $d\in[0,1]^M$; its least size is the exact live memory. Under a least-favorable measure putting equal weight on the two signs at any fixed $t$, every wordwise action is Bayes-tied. Thus uniqueness of the robust randomized kernel does not imply uniqueness of any wordwise Bayes action.
+
+Put $g(t)=(1-t)\sum_{n\ge0}t^n\beta_n$. The exact one-live-label value is
+\begin{equation}\label{eq:calibration-one}
+ V_1=\tfrac12+\tfrac14(\max_tg(t)-\min_tg(t)).
+\end{equation}
+For every fixed $M$ the best risk is attained. Whenever \eqref{eq:born-realization} is impossible at that size, its risk is strictly greater than $1/2$. A $T$-label unary prefix chain gives a boundary-feasible risk at most $1/2+t_+^T/2$.
+\end{theorem}
+\begin{proof}
+A direct expectation of \eqref{eq:calibration-loss} gives \eqref{eq:analytic-calibration}. The choice $b_n=\beta_n$ proves value $1/2$, which is also a lower bound from the two opposite signs. At equality the power series $\sum_n(b_n-\beta_n)t^n$ vanishes on a nonempty interval inside its unit disk of convergence. The analytic identity theorem makes all its coefficients zero. For completeness, a nonzero convergent power series is locally its first nonzero power times a nonvanishing analytic factor at any interior zero; hence its zeros cannot accumulate in its disk unless it is identically zero. This proves uniqueness.
+
+Theorem~\ref{thm:convex-memory} in the unary alphabet gives exactly \eqref{eq:born-realization}. Averaging the two loss signs makes every conditional loss $1/2$, proving the least-favorable tie assertion. A one-label rule is a constant output probability $u$. Its discrepancy is $u-g(t)$; the midpoint of the minimum and maximum of $g$ minimizes the uniform absolute error, with radius half their difference. This proves \eqref{eq:calibration-one}.
+
+For fixed $M$, the compact set of stochastic rows and decoder values has continuous risk: each finite sum is continuous and the tail is uniformly at most $t_+^T$. Attainment and unique optimality prove the strict gap. Store labels $0,\ldots,T-1$, advance until the final label and repeat it thereafter, with outputs $\beta_0,\ldots,\beta_{T-1}$. It is exact for $n<T$ and differs by at most one later. Formula~\eqref{eq:analytic-calibration} bounds its risk excess by $t_+^T/2$. Its stopping is unchanged, so this is the same least budget, not an enlarged-budget approximation.
+\end{proof}
+
+\begin{theorem}[Every finite exact memory dimension occurs]\label{thm:calibration-k}
+For every $k\ge2$ and algebraic $a\in(0,1)$ there is a $k$-state protected classical channel in this task whose least exact stochastic live memory is exactly $k$. Take an initial chain of $k-1$ transient states: each stays with probability $a$ and advances with probability $1-a$; state $k$ is absorbing. Audit whether the state is still transient. Then
+\begin{equation}\label{eq:phase-survival}
+ \beta_n=\sum_{j=0}^{k-2}\binom nj(1-a)^j a^{n-j},\qquad
+ g(t)=1-\left(\frac{(1-a)t}{1-at}\right)^{k-1}.
+\end{equation}
+The exact one-label excess is $[g(t_-)-g(t_+)]/4$. For $k=2$, infinitely many different probabilistic residuals are implemented by just two stochastic labels.
+\end{theorem}
+\begin{proof}
+The number of advances before time $n$ is binomial until absorption, proving the formula for $\beta_n$ with $\binom nj=0$ for $j>n$. An independent observer copy of the transition probabilities, using only private coins and $k$ labels, gives the required decoder probability; it neither reads nor copies the actual protected state. This proves the upper memory bound.
+
+As a function of $n$, $\beta_n=a^nP(n)$ for a polynomial $P$ of degree exactly $k-2$. The shifted polynomials $P(n),\ldots,P(n+k-2)$ span all polynomials of degree at most $k-2$: successive finite differences lower the degree by exactly one, with nonzero leading coefficient. The scalar Hankel row/column rank is therefore $k-1$. Including both output probabilities $\beta_n,1-\beta_n$ adds the constant function, which is independent because every exponential-polynomial term tends to zero. Thus the probability-valued Hankel rank is $k$, giving the matching lower by Theorem~\ref{thm:convex-memory}. Summing the binomial series, using $\sum_{n\ge j}\binom nj x^{n-j}=(1-x)^{-j-1}$, gives $g$. It decreases with $t$, giving the stated one-label formula. For $k=2$ the residuals have first coordinate $a^n$, all distinct, although the displayed chain has two labels.
+\end{proof}
+
+\subsection{A sharp positive-realization transition for the protected qubit}
+Use the algebraic rotation from the preceding section,
+\[
+ U=5^{-1/2}\begin{pmatrix}2&-1\\1&2\end{pmatrix},\quad
+ c=\cos\vartheta=3/5,\ s=\sin\vartheta=4/5,
+\]
+with $\rho=|0\rangle\langle0|$, $E=|0\rangle\langle0|$ and
+$\Phi_\alpha(A)=\alpha UAU^*+(1-\alpha)\tr(A)I/2$, $0\le\alpha\le1$.
+For each fixed known retention factor $\alpha$, the required response is
+\begin{equation}\label{eq:damped-born}
+ \beta_n=\tfrac12[1+\alpha^n\cos(n\vartheta)],
+\end{equation}
+with $\beta_0=1$ also at $\alpha=0$.
+
+\begin{theorem}[Exact qubit realization phases]\label{thm:qubit-positive-phase}
+For the robust calibration task, the following hold.
+
+\textup{(a)} At $\alpha=1$ no finite classical memory attains the boundary optimum, although the probability-valued Hankel rank is three. At $\alpha=0$ the least exact live memory is two.
+
+\textup{(b)} At every $0<\alpha<1$ an exact stochastic optimum exists with at most
+\[
+ M_\alpha=\max\{3,\lceil\pi/\arccos\alpha\rceil\}
+\]
+live labels. The least number tends to infinity as $\alpha\uparrow1$.
+
+\textup{(c)} Put $\alpha_3=5/(3+4\sqrt3)$. The least exact live memory is three precisely when $0<\alpha\le\alpha_3$. It is at least four for $\alpha_3<\alpha<1$. The three-label assertion is global over all stochastic transition matrices and randomized decoder rows, not only circulant candidates.
+\end{theorem}
+\begin{proof}
+For $\alpha>0$, the three distinct modes $1$, $\alpha e^{i\vartheta}$ and $\alpha e^{-i\vartheta}$ have nonzero coefficients in \eqref{eq:damped-born}. Vandermonde independence gives Hankel rank three. Cayley--Hamilton applied to any representation \eqref{eq:born-realization} shows that its transition matrix must have the two latter modes as eigenvalues: substituting its characteristic recurrence and using independence of the three exponential sequences makes the characteristic polynomial vanish at each mode.
+
+Every unit-modulus eigenvalue $z$ of a finite stochastic matrix is a root of unity. Indeed choose an eigenvector coordinate of maximal modulus. Equality in the triangle inequality for its stochastic row forces every positive-probability successor to have the same maximal modulus and its value to equal $z$ times the current value. Follow positive successors to a repeated state. The directed cycle gives $z^j=1$ for some positive integer $j$. But $e^{i\vartheta}$ is not a root of unity: otherwise $2c=6/5$ would be a rational algebraic integer and hence an integer. This proves (a) at $\alpha=1$. At $\alpha=0$ a starting label with output one followed by an absorbing fair-output label realizes the sequence, whereas one label cannot change its initial output.
+
+For (b), take the regular $M_\alpha$-gon with vertices $v_j$ on the unit circle, including $v_0=(1,0)$. Its inradius is at least $\alpha$, so $\alpha R_\vartheta$ maps every vertex into the polygon. Choose barycentric coefficients $Q(j,l)$ of each image in these vertices and let $d_j=(1+(v_j)_1)/2$. Then $Q$ is stochastic, all $d_j\in[0,1]$, and the expected vertex after $n$ transitions from vertex zero is $(\alpha R_\vartheta)^nv_0$. This proves \eqref{eq:damped-born} exactly. If least exact memories stayed bounded along $\alpha\uparrow1$, compactness of their padded transition/decoder rows would give, by taking a subsequence and each finite coefficient limit, a finite realization at $\alpha=1$. This contradicts (a).
+
+For (c), define a circulant stochastic matrix with first row
+\[
+ u_0=\frac{1+2\alpha c}{3},\qquad
+ u_+=\frac{1-\alpha c+\sqrt3\alpha s}{3},\qquad
+ u_-=\frac{1-\alpha c-\sqrt3\alpha s}{3}.
+\]
+Its other rows are the cyclic translates. All entries are nonnegative exactly up to the asserted threshold. Its complex nonconstant eigenvalues are $\alpha(c\pm is)$, and decoder $(1,1/4,1/4)$ from the first state realizes \eqref{eq:damped-born}. The rank lower makes three minimal.
+
+Conversely any three-state realization has eigenvalues $1,\alpha(c+is),\alpha(c-is)$. For $B=I-Q$ put $a_i=B_{ii}=\sum_{j\ne i}Q_{ij}\ge0$. Its two nonzero eigenvalues are $u\pm iv$, where $u=1-\alpha c$ and $v=\alpha s$. Its trace and second characteristic coefficient give
+\[
+ \sum_i a_i=2u,\qquad
+ u^2+v^2=\sum_{i<j}(a_ia_j-Q_{ij}Q_{ji})
+       \le\sum_{i<j}a_ia_j\le\tfrac13(2u)^2.
+\]
+Therefore $\sqrt3\alpha s\le1-\alpha c$, exactly $\alpha\le\alpha_3$. No assumption of irreducibility, symmetry or deterministic decoding entered this lower bound.
+\end{proof}
+
+The damped channel has no strict limiting preference between the two signed calibration losses, and its exact optimal decoder law remains nonconstant at arbitrarily late times. Positive stochastic realization nevertheless succeeds for every $\alpha<1$. This does not contradict the earlier impossibility for unique squared-sign prediction: the fixed losses, the robust optimal face and the output law differ. The unit-circle obstruction and invariant positive cones belong to classical positive-realization theory \cite{MonrasWinter14}; the task-specific exact count, the global three-label threshold and the same-boundary physical implementation are proved here. No sharp asymptotic memory rate is inferred from the polygon upper.
+
+\begin{proposition}[Finite algebraic certificates and minimal synthesis]\label{prop:finite-realization-test}
+Suppose a probability-valued response has a supplied real-algebraic linear representation
+$b_w=a^{\mathsf T}T_wB$ of dimension $r$ on a finite alphabet. Existence of an exact stochastic realization with $M$ live labels is equivalent to the finite conditions
+\[
+ Q_y\ge0,\ Q_y\mathbf1=\mathbf1,\quad D\ge0,\ D\mathbf1=\mathbf1,
+ \qquad e_1^{\mathsf T}Q_wD=a^{\mathsf T}T_wB
+       \quad(|w|\le M+r-1).
+\]
+These are real-algebraic feasibility conditions, hence decidable at each prescribed $M$, and a feasible instance has algebraic controller entries. For the qubit family with algebraic $0<\alpha<1$, the finite upper from Theorem~\ref{thm:qubit-positive-phase} makes successive size tests a terminating synthesis of a minimal exact stochastic observer. No efficient bit bound or general decision procedure for unbounded positive realization is asserted.
+\end{proposition}
+\begin{proof}
+Use the block diagonal representation with transition $\operatorname{diag}(Q_y,T_y)$, initial row $(e_1^{\mathsf T},-a^{\mathsf T})$ and final columns $(D,B)^{\mathsf T}$. Its reachable row spaces grow from dimension at most one in ambient dimension $M+r$. Equality of successive spaces implies invariance under every letter, so the space generated by words of length at most $M+r-1$ contains all word rows. Annihilating the final columns on these finitely many words therefore annihilates them on every word. The reverse implication is immediate. The conditions are polynomial in the controller entries, with real-algebraic coefficients, so real-closed-field elimination decides feasibility and yields an algebraic sample when nonempty \cite{Seidenberg54}. The polygon construction supplies a finite upper; one can obtain a certified integer bound by testing $\alpha<\cos(\pi/M)$ with increasing integers, using algebraic comparisons. Thus finitely many prescribed-size tests find the first feasible size. This is a complete terminating construction for this family, not a claim about the complexity of general probabilistic automata.
+\end{proof}
