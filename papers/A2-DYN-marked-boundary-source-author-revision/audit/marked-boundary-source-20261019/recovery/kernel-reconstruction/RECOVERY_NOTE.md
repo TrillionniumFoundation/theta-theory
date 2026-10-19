@@ -1,0 +1,13 @@
+# Source recovery after loss of the uncommitted working directory
+
+The accompanying native 316, initial 316 derivation, native 318, native 318 checker, and two author reconstruction reports were recovered from complete tool-call text in the agent conversation. Their bytes match the SHA256 identities fixed before the interruption. `RECOVERED_SOURCE_AMENDMENT_RECHECK.json` records the fresh verification and the sole exact selector amendment from the original 316 derivation to its final source.
+
+The recovered reports remain byte-identical historical documents. Their references to previously retained execution directories and the original `FINAL_SOURCE_AMENDMENT_RECEIPT.json` describe their pre-interruption state. The full original amendment receipt is not recovered: its dynamic timestamp and full JSON were not printed. The original `check_marked_source_kernel.py` was not available in this agent's full-text context either. No report, program body, timestamp or old run count has been reconstructed from a summary and presented as original evidence.
+
+The fresh source recovery receipt is a new check. Any newly written checker and any execution after recovery must have a new filename or an explicitly new provenance record and real current execution metadata. None is to be presented as the lost original checker or as its historical run.
+
+## New mathematics checker and actual execution after recovery
+
+`check_marked_source_kernel_recovery.py` is a new, standard-library-only program, with SHA256 `b8ab31cc741afcaec59fc201a2a8e6054e215d6db3c36eaa5026ec39c13adc0b`. It uses exact rational arithmetic and sparse polynomial coefficient identities. Its eight groups check the printed geometry constants, full physical flux determinant and normalization, the two incidence cancellations, the signed reversal, complete record indices, original interior weights and the gamma threshold, the quadratic grazing budget, and exact one-sided polynomial endpoint examples. The native continuum proof and its inherited growth inputs remain necessary; the program does not replace them.
+
+Two actual post-recovery executions, normal Python and `python -O`, are retained under `new-checker-executions/20261019T145144159461Z/`. Both exited zero and passed all eight groups. Their stdout and details agree byte for byte, with SHA256 `f665c319c9e23cfcc7c651524a02e16c1132e6067201db01a4437a0e4598c4c0`. `NEW_EXECUTION_RECEIPT.json` records their actual commands, current timestamps, Python version and source identities. These are new executions of a new program, not a reconstruction of the lost seven-group original checker or its historical output.
