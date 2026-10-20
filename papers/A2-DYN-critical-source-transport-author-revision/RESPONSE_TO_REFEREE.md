@@ -38,7 +38,7 @@ Its roof pushforward is controlled in **total variation**. Theorem pc:fan also p
 
 ### 18.2 — First-order single-mark and cross-flight target-roof insertion
 
-We retain the exact line density \(d\nu=d\vartheta\,du/(4\pi R)\), one conditioning factor \(c_*^{-1}\), and the actual mark multiplicity. The first and terminal true-collision derivatives in 319 cancel the corresponding incidence losses; precisely \(l-2\) intervening collisions use native homogeneous growth. There is no collision at the marked foot. Joint collision-momentum selectors and the unchanged \(I_m\) moments from 316 remain available.
+We retain the exact line density \(d\nu=d\vartheta\,du/(4\pi R)\), one conditioning factor \(c_*^{-1}\), and the actual mark multiplicity. For \(l\ge2\), the first and terminal true-collision derivatives in 319 cancel the corresponding incidence losses, and precisely \(l-2\) intervening collisions use native homogeneous growth. The one-hit case \(l=1\) is estimated separately in the native proof. There is no collision at the marked foot. Joint collision-momentum selectors and the unchanged \(I_m\) moments from 316 remain available.
 
 Module 320 converts these source bounds into an all-offset regular boundary charge with the exact Jacobian. An original roof interval may restrict the positive measure, but the bound provides **no interval-width factor**. The first-order same-roof transfer insertion remains a necessary analytic interface. The second-factorial two-mark law is not used to pay a first-order witness.
 
@@ -119,7 +119,7 @@ Full positive physical sums precede all suprema. Each outer width is fixed befor
 | 21.6 Measure/topology | The ledger distinguishes collision volume, angular supremum sums, regular boundary charge, incoming fan, roof TV, weak/strong roof spaces, capacity moments and original normalized roof essential height. |
 | 21.7 Image/preimage and reversal | Modules 319–322 give exact Jacobians, \(IT_RI=T_R^{-1}\), and homogeneity indices \(-1,\ldots,-N\). The original section tests are transported, not replaced by a reversal-invariant section. |
 | 21.8 Critical/formal boundaries | The regular turning proof removes formal coverage from its stated regular measure. Module 322 uses actual positive physical sectors at common clearance, including collapsed slices, and merges sectors before counting. Distinct visited-grazing and nonleading/section/pairing measures remain explicit. |
-| 21.9 Actual CI and theorem status | CI is inspected at the actual source SHA with logs, artifacts and outcome retained. The 390-source historical assembly is actually rebuilt. Finite diagnostics and CI do not certify a continuum theorem or journal suitability. |
+| 21.9 Actual CI and theorem status | Actual run, job, artifact-list and status readbacks are retained in audit/remote-publication/ and identified in PUBLICATION_STATUS.json. The source commit, any executed CI checkout and this evidence carrier remain distinct; an unstarted queued job supplies no completed execution. The 390-source historical assembly is actually rebuilt locally. Finite diagnostics and CI do not certify a continuum theorem or journal suitability. |
 
 ## 6. Historical comments and retention
 

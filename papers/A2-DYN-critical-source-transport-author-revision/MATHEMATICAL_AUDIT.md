@@ -1,6 +1,6 @@
 # Current mathematical reconstruction audit
 
-This records internal author reconstruction of complete native arguments. It is not a referee review or independent expert certification. The detailed source-hash-bound reconstructions and initial execution records are in audit/mathematical-reconstruction/.
+This records internal author reconstruction of complete native arguments. It is not a referee review or independent expert certification. The detailed source-hash-bound reconstructions and initial execution records are in audit/mathematical-reconstruction/, with the detailed 319 and 320 reconstructions at audit/current-census/319_RECONSTRUCTION.md and audit/current-census/320_RECONSTRUCTION.md.
 
 ## 1. Exact source, model, arithmetic and event
 

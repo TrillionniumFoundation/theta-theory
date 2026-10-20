@@ -1,6 +1,6 @@
 # Fresh primary-source applicability audit
 
-The three cited author PDFs were fetched on 20 October 2026 (UTC), hashed and read at the theorem statements, definitions and indicated proof steps. Selected theorem pages were also rasterized and visually checked. `PRIMARY_SOURCE_READBACK.json` records the actual download identities; `THEOREM_LOCATORS.json` gives PDF-page locators. Original bibliography and prior audits remain unchanged in the historical source.
+The three cited author PDFs were fetched on 20 October 2026 (UTC), hashed and read at the theorem statements, definitions and indicated proof steps. Selected theorem pages were also rasterized and visually checked. `audit/current-census/literature/PRIMARY_SOURCE_READBACK.json` records the actual download identities; `audit/current-census/literature/THEOREM_LOCATORS.json` gives PDF-page locators. Original bibliography and prior audits remain unchanged in the historical source.
 
 ## Demers–Zhang
 

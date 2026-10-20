@@ -63,6 +63,6 @@ These interfaces are exact remaining mathematical statements, not assertions of 
 
 ## Internal reconstruction and finite execution
 
-The proof audits in audit/mathematical-reconstruction/ rederive the new determinant, chain rules, interval charging, absolute variation, radius/conditioning factors, singular endpoint conventions, capacity geometry and limit order. They are internal author reconstructions, not a fresh referee report.
+The proof audits in audit/mathematical-reconstruction/, together with audit/current-census/319_RECONSTRUCTION.md and audit/current-census/320_RECONSTRUCTION.md, rederive the new determinant, chain rules, interval charging, absolute variation, radius/conditioning factors, singular endpoint conventions, capacity geometry and limit order. They are internal author reconstructions, not a fresh referee report.
 
 Programs test exact polynomial/rational identities, optical indexing, interval overlays, endpoint multiplicities, geometric-series budgets and counterexamples to invalid inferences. Some old diagnostics sample genuine or formal parameter families only in their stated scope. Normal and optimized Python outputs are compared; runtime metadata are identified separately where the checker emits them. Every actual command has an exit code, source digest and log hash. Continuous physical geometry and the final LLT are established, if at all, by the written proofs rather than these finite programs.

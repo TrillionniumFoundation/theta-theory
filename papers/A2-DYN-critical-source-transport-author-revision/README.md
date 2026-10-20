@@ -4,6 +4,8 @@
 
 This is a full native **author revision** continuing the latest complete A2-DYN mathematical source. It preserves the triangular lattice, circular radius family, true collision map, original physical clock and section, exact joint records and raw four-coordinate inversion objective.
 
+The mathematical source was actually published at **86c947eccea6029258d9a362624866a475118a66** on **revision/a2-dyn-critical-source-transport-2026-10-20**. The later documentation/evidence carrier retains those exact mathematical and build bytes. [Publication receipts](PUBLICATION_RECEIPT.json) and [actual verification status](PUBLICATION_STATUS.json) identify the source commit, the dedicated remote run and the observation time separately. The completed local build is 211 pages; a queued GitHub Actions run is not a completed remote build.
+
 ### Read the manuscript and proofs
 
 - [Compiled complete English main, 211 pages](compiled/main.pdf).

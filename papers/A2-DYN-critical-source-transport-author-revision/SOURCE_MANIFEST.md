@@ -27,6 +27,8 @@ The article is actually readable and buildable. Its final head contains evidence
 
 ## Current authored source
 
+The actually published mathematical source is commit **86c947eccea6029258d9a362624866a475118a66**, root tree **4624f0eef13e655c39d6313f6779e6c72a86870e**, article tree **6830d79a554645422869c3531715f1a32161ce20**. Its exact parent is the complete author source fixed above. It adds only the new article and the dedicated workflow; the later documentation/evidence carrier preserves all frozen mathematical/build and compiled-PDF bytes.
+
 SOURCE_MANIFEST.json freezes all current mathematical/build inputs with path, mode, byte count, Git blob and SHA-256, plus the complete reachable TeX graph and contiguous native core list. It does not hash itself. Historical, audit and execution files have separate immutable anchors or actual command receipts, avoiding circular self-identities.
 
 The execution driver's mathematical-source digest includes current root TeX, complete core TeX, Python programs, requirements.txt and build.sh. Each actual command records that digest; after execution the driver checks that those source bytes did not change. The actual compiler recorder is compared to the declared input graph.
