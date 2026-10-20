@@ -1,0 +1,57 @@
+# Author mathematical reconstruction and verification scope
+
+This audit concerns the new full proof bodies 316–318. It is part of the author revision and is not a new referee report or a claim of human specialist certification. The exact parent, controlling report, inherited source and prior conclusions are fixed in the source audit and four literal history anchors. Current complete proof labels and resulting PDF locations are generated from the real TeX/auxiliary/PDF triple in `PROOF_INDEX.json`.
+
+## The new arguments and the checks that matter
+
+| Argument | Mathematical reconstruction | Auxiliary finite check and its limit |
+|---|---|---|
+| Clearance-source normalization | Reconstructed \(d\alpha\,dp=R^{-1}d\vartheta\,du\); first-image cancellation \(dp/d\vartheta=-(\kappa a+c)\); final-hit cancellation after exactly \(l-2\) propagated steps. Checked first-hit one-sign versus both-sign constants and the lower standoff. | `check_marked_source_kernel.py` uses symbolic coordinate determinants and exact index enumeration. It does not prove countable physical branch growth. That proof remains the native inherited source/growth chain. |
+| Original collision and section indices | Checked the backward count \(j-i+1\) and forward count \(i-j\), including all four endpoint cases and \(m=1\). Occupation remains 0 through \(m-1\), with a separate terminal test. The original selector is transported under reversal. | The program checks 170,640 finite index cases and exact sign/measure identities. These are diagnostics of the displayed formula, not a substitute for its general case split. |
+| Incidence moments | Reconstructed the unchanged interior sum, positive weighted Jensen inequality, \(W_0=56/3\), \(J_\gamma\le4/(2-\gamma)\), and the true grazing momentum width. There is one \(R^{-1}\) and one \(c_*^{-1}\). No product law is assumed. | Exact rational/symbolic inequalities supplement the all-exponent proof for \(1\le\gamma<2\). |
+| Literal one-sided trace | Checked actual first other collision, finite real-word continuation, later ordinary collisions with the marked disk, singular angular exclusions and one-sided signs of analytic original section/roof inequalities. Boundary evaluation is not substituted for the one-sided indicator. | A finite equality-endpoint example verifies the distinction; it does not establish arbitrary Borel continuity. The native theorem assumes that limit when needed. |
+| True boundary density | Reconstructed both coordinate determinants and the fixed-Gauss-angle roof vector. The clearance prefactor is \(1/(4\pi Rc_*)\); a section side has \(1/(4\pi c_*)\). The positive complementary cutoff at unvisited zero clearance remains one. | `check_marked_boundary_flux.py` checks exact rational two-coordinate inverses and physical/section factor cancellation. |
+| Two-half optical identity | Independently multiplied free-flight/kick matrices, retained determinant one, the positive ratios \(h_\pm\), the two reversal signs and positive determinant sum. Checked the extra single radius in the root weight and the signed Wronskian before absolute values. | The checker evaluates exact products and signed identities. Its finite products cannot establish the continuous orbit/word coverage, which is supplied natively. |
+| Uniform critical domain | Checked the inherited analytic contact domain, nonvanishing complex flight components, complex direction bound \(5/3\), endpoint-gradient bound \(4R_+\), Cauchy radii \(\eta/4,\eta/8\), and all Euclidean operator-norm conversions. | Exact constant inequalities check the slack in the displayed estimates. No floating-point plot is used to infer the domain. |
+| Inverse and localized second derivative | Reconstructed the strictly convex inverse on \(|g|<b_{\rm an}\), \(\|Dq\|\le\underline g^{-1}\), \(\|D^2q\|\le K_F^{\rm an}\underline g^{-3}\), and both second-order composition terms in \(K_{B,g}\). Contact and direction differences have the same physical depth factor. | The checker verifies the constants and exact polynomial Euler identity. A formal intermediate point is never asserted to be a physical configuration. |
+| Positive critical source sum | At the actual selected boundary, both zero-offset values vanish and the exact Euler remainder cancels the quadratic gradient factor in the denominator. The same pointwise bound is applied before the one-copy all-word angular sum. Closed normal-endpoint uniqueness uses real support equality and the incoming-root condition, including grazing. | Finite depth sums verify the geometric-series constant. The full analytic and Borel assignment arguments are explicit in the proof; no finite word sample supplies them. |
+| Full-real-word comparison | Reconstructed the same auxiliary minimum for two actual references, exponential phase comparison, strip-closure logarithmic estimate, physical slope derivatives/contraction and complete Jacobian telescoping. The real curves may lie in different components. | `check_cross_curve_distortion.py` checks nine declared groups, including exact slope algebra, recurrence constants and the physical terminal example. It does not prove a two-dimensional whole-cell pressure sum. |
+| Endpoint factor | The native one-flight family explicitly clears every other lattice disk, with squared vertical-clearance remainder \(359/1600\). It gives a finite positive limit of \(c_1J_1\) and divergence of \(J_1\) when no terminal strip is fixed. | The same exact formulas are checked symbolically; no plot or simulated collision sequence establishes the geometric clearance. |
+
+## Critical constants and every factor of the original measure
+
+The marked-source standoff is \(\sqrt{1827}/200\), and the last true-collision lower bound is \(k_-\tau_-=6/47\). The first source-root budget is one-sign \(M_*\); the inherited total \(A_*\) includes both signs. This distinction prevents a missing or duplicated two-sign factor. Collision-to-clearance coarea contributes exactly \(R^{-1}\), while \(d\nu_R^*\) contributes the original \(c_*^{-1}\). No additional conditional distribution is introduced at a mark.
+
+The boundary optical root weight has the same single \(R^{-1}\), because physical boundary arclength is \(s=R\alpha\). The optical endpoint products are deterministic functions of the same actual orbit in opposite directions; their determinant formula is not a factorization of independent measures. The constant 30000 from 313 enters the two-point comparison as \(30000^2\), not as an exponential in collision count.
+
+The common critical constants are functions of \(R_\pm,\tau_\pm,c_*\) and the literal native 292 analytic constants. In particular \(\underline g=9/40\), \(L_z=1217/200\), \(K_F^{\rm an}=2048R_+/\eta^2\), \(a_{\rm an}=\min(\eta/16,\underline g/(2K_F^{\rm an}))\), \(b_{\rm an}=\underline g a_{\rm an}/4\). The derivative estimate keeps the action gradient uniformly bounded instead of bounding the growing action. The inverse-chain-rule coefficient is
+\[
+ K_{B,g}=\frac{128L_B}{\eta\underline g^2}
+           +\frac{6L_BK_F^{\rm an}}{\underline g^3}.
+\]
+Dropping the second term would invalidate the stated cancellation bound. Both appear in the proof and checker.
+
+The exact Euler coefficient is \(s\), not \(1-s\):
+\[
+ D\mathcal B(g)g=\mathcal B(g)-\mathcal B(0)
+            +\int_0^1sD^2\mathcal B(sg)[g,g]\,ds.
+\]
+At a zero-offset actual boundary, its integral contributes the factor \(1/2\), which cancels the factor two in \(g^{\mathsf T}G^{-1}g\ge|g|^2/(2\Lambda_\circ)\). The complete angular mass \(4\pi\) then cancels only the geometric \(4\pi\) denominator, leaving \(C_{\rm zf}=\Lambda_\circ K_{B,g}/(R_-c_*)\). A second incident side, when applicable at a positive level, is an explicit second charge.
+
+## Coverage, singularities and exact limiting order
+
+All integrated boundary points are actual regular one-sided finite records. Their entire contact sequence agrees with the designated analytic inverse, not just the endpoints. The formal segment between the critical point and the selected gradient is used only inside the analytic identity. Interior grazing of the closed critical reference is permitted by the retained analytic theorem, while the selected regular source respects every actual collision and obstacle.
+
+The original critical fan at zero gradient is a separate angular source. Neither the kernel theorem nor the uniform cancellation removes it by saying that a collision-area set is null. For a nonzero formal offset the term \(-a_w/(g^{\mathsf T}G^{-1}g)\) remains visible. Short or disconnected covered pieces are included in the uniform theorem; uncovered pieces and actual section/pairing endpoints still need their own payment.
+
+For the covered class all physical words and marks are assigned once before integrating over both full angular circles. The common bound has no word-count factor. The full flight-depth sum is at most \(2C_{\rm zf}\gamma^D/(1-\gamma)\), \(\gamma=47/50\). Setting \(D=\lceil\vartheta_*m\rceil\) for fixed \(0<\vartheta_*<1/2\) leaves \(m^2\) times a uniformly decaying exponential. This is a positive-charge/roof-total-variation theorem; it is not the original roof essential-height estimate. No outer width limit is interchanged with the collision limsup or roof supremum.
+
+The pairwise word comparison closes an actual geometric input. It does not convert tiny cells into abundant comparison capacity, and it does not sum arbitrary cell suprema. The old false barrier-age descent route is retained as an unsuccessful proposal: two branches of the same creation age can meet through an earlier obstacle tangency. The proposed replacement by nearest actual past singularities and monotone barriers remains research unless its complete physical partition proof is supplied. None of the new native results uses that unfinished argument.
+
+## Reconstruction files and actual execution evidence
+
+The current audit preserves the complete three component derivations of 317, its assembly identity, independent boundary reconstruction, complete 318 reconstruction, all actual checker receipts and the root 316 derivation. The source census separately preserves its first independent 318 reconstruction. These files appear under [the current audit](audit/marked-boundary-source-20261019/); their source hashes and execution times determine their exact scope.
+
+The final paired run of the transverse checker contains nine named groups. A receipt wrapper initially expected ten, inherited from an inaccurate summary; its failed count expectation is preserved with the corrected validation of the actual nine passing groups. This is a correction of reporting metadata, not a new mathematical success or an erased failed execution. Earlier missing-SymPy attempts retain their failure logs and the later corrected environment runs.
+
+[VALIDATION.md](VALIDATION.md) records actual source gates, normal/optimized runs, native compilation, historical rebuilds and PDF inspection. Output equality across Python modes guards against disappearing `assert` gates; all new proof-relevant finite checks use explicit exceptions. Finite checks do not establish continuous source coverage, singularity tails, uniform pressure, arithmetic classification or the final local limit. Those conclusions require the native arguments and the still-open interfaces listed in the proof ledger.

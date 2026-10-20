@@ -1,0 +1,23 @@
+{
+  "scope": "Fresh immutable baseline workflow file readback after workspace maintenance; not a current CI pass",
+  "repository": "TrillionniumFoundation/theta-theory",
+  "commit_sha": "fb99e4d67ef74912f6c69b05c9abff3207572e7a",
+  "path": ".github/workflows/a2-dyn-summable-physical-source-20261017.yml",
+  "readback_date": "2026-10-18",
+  "response": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "content": "name: A2-DYN summable physical-source native qualification\non:\n  push:\n    branches: ['revision/a2-dyn-summable-physical-source-2026-10-17']\n    paths:\n      - 'papers/A2-DYN-summable-physical-source-author-revision/**'\n      - '.github/workflows/a2-dyn-summable-physical-source-20261017.yml'\n  workflow_dispatch:\npermissions:\n  contents: read\njobs:\n  native-source-checks-and-build:\n    runs-on: ubuntu-latest\n    timeout-minutes: 30\n    steps:\n      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262\n        with:\n          fetch-depth: 1\n          sparse-checkout: papers/A2-DYN-summable-physical-source-author-revision\n      - name: Install real native build and audit dependencies\n        run: |\n          sudo apt-get update -qq\n          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended texlive-science lmodern poppler-utils python3-venv\n          python3 -m venv /tmp/a2-dyn-native-venv\n          /tmp/a2-dyn-native-venv/bin/python -m pip install -r papers/A2-DYN-summable-physical-source-author-revision/requirements.txt\n          command -v pdflatex\n          command -v pdfinfo\n      - name: Run the exact checked-out native source\n        working-directory: papers/A2-DYN-summable-physical-source-author-revision\n        run: |\n          git rev-parse HEAD\n          /tmp/a2-dyn-native-venv/bin/python tools/qualify_revision.py all\n      - name: Retain execution and failure records\n        if: always()\n        run: |\n          mkdir -p /tmp/a2-dyn-summable-physical-source-evidence\n          git rev-parse HEAD > /tmp/a2-dyn-summable-physical-source-evidence/exact-checkout.txt\n          git status --porcelain=v1 > /tmp/a2-dyn-summable-physical-source-evidence/post-run-status.txt\n          tar -czf /tmp/a2-dyn-summable-physical-source-evidence/active-source-and-execution.tar.gz -C papers/A2-DYN-summable-physical-source-author-revision .\n      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02\n        if: always()\n        with:\n          name: a2-dyn-summable-physical-source-${{ github.sha }}-${{ github.run_id }}\n          path: /tmp/a2-dyn-summable-physical-source-evidence/*\n          if-no-files-found: error\n",
+      "encoding": "utf-8",
+      "sha": "ecf886dd9bc0f6ecfee7aa8205785cf8fe93883f",
+      "display_url": "https://github.com/TrillionniumFoundation/theta-theory/blob/fb99e4d67ef74912f6c69b05c9abff3207572e7a/.github/workflows/a2-dyn-summable-physical-source-20261017.yml",
+      "display_title": "a2-dyn-summable-physical-source-20261017.yml"
+    },
+    "isError": false
+  }
+}
