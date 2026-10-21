@@ -1,0 +1,3 @@
+# Complete source, validation and historical archives
+
+Each archive is stored as ordered raw byte parts of at most 6 MiB. `ARCHIVE_PARTS.json` fixes the part order, byte counts and SHA-256 values, and the exact complete-archive identity. No content is represented by a placeholder or partial source transfer. Use the receiving helpers in the parent publication directory to authenticate and restore the complete ZIP/TAR.GZ files. The source ZIP contains every sealed native file. The validation ZIP contains all recorded current builds, the failed initial strict attempt, all rendered pages and QA records. The historical TAR.GZ contains all 6,664 authenticated original text objects.
