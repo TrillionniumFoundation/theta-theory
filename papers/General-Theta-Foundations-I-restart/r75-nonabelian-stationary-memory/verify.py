@@ -95,14 +95,14 @@ def strict_git_identity(source_commit: str, source_tree: str) -> dict:
             and git("rev-parse", BASE_COMMIT + ":" + BASE_PATH) == BASE_TREE,
             "The fixed R74 source and publication do not share the expected paper tree")
     git("merge-base", "--is-ancestor", BASE_COMMIT, source_commit)
-    changed = git("diff", "--name-only", BASE_COMMIT, source_commit).splitlines()
+    changed = git("diff", "--no-relative", "--name-only", BASE_COMMIT, source_commit).splitlines()
     require(bool(changed) and all(name.startswith(prefix + "/") for name in changed),
             "The source commit changes files outside the independent R75 source directory")
     # This checks tracked working files when present; sparse omissions are not
     # falsely claimed materialized. The immutable committed R74 tree was checked above.
-    git("diff", "--quiet", source_commit, "--", BASE_PATH)
+    git("diff", "--quiet", source_commit, "--", ":(top)" + BASE_PATH)
     raw_tree = subprocess.check_output(
-        ["git", "ls-tree", "-r", "-z", BASE_COMMIT + ":" + BASE_PATH], cwd=ROOT)
+        ["git", "ls-tree", "--full-tree", "-r", "-z", BASE_COMMIT + ":" + BASE_PATH], cwd=ROOT)
     predecessor_files = {}
     for record in raw_tree.split(b"\0"):
         if not record:
