@@ -65,13 +65,31 @@ The independent auxiliary integration through 325, its 226-page PDF, original ch
 
 ## Remote CI and publication
 
-The previous complete article's actual successful run and artifact were freshly re-read, as documented in `audit/prior-ci-readback/`. That is a different tested commit and is never represented as execution of this revision.
+The previous complete article's successful run at `86c947eccea6029258d9a362624866a475118a66` was freshly re-read under `audit/prior-ci-readback/`. That predecessor execution remains separate from this revision.
 
-The complete source was published as **`6708e30d1e8511e6ed2f4e3a6247c09628bd3ea9`**, root tree `ad34fd91ad2f1c6e594d3bbe437417aba524bf87`, article tree `4f41b3a98487a1ae0507d40390aca030c5520e19`, on `revision/a2-dyn-physical-roof-variation-2026-10-21`. Git/API readback confirms the exact parent and all 5,261 additions, confined to the new article and its dedicated workflow. A separate direct source readback verified all **130** frozen file modes, Git blobs and SHA-256 values, the 78-file native TeX closure, workflow mirror and 129-file driver digest. The locally built bytes are therefore the published mathematical bytes. The local release occurred before publication; it is not represented as a later checkout of that commit.
+The complete new source was published as **`6708e30d1e8511e6ed2f4e3a6247c09628bd3ea9`**, root `ad34fd91ad2f1c6e594d3bbe437417aba524bf87`, article `4f41b3a98487a1ae0507d40390aca030c5520e19`, on `revision/a2-dyn-physical-roof-variation-2026-10-21`. All 5,261 source additions were confined to the new article and its dedicated workflow. Independent readback verified all **130** frozen file modes, Git blobs and SHA-256 values, the 78-file native TeX closure, workflow mirror and 129-file driver digest. The earlier local release executed these same frozen bytes before publication.
 
-The source push created [run **39526895726**, attempt 1](https://github.com/TrillionniumFoundation/theta-theory/actions/runs/39526895726) at `2026-10-21T01:22:05Z`. At the actual final CI observation **`2026-10-21T01:37:28.119Z`**, the run and job **118983561729** remained **queued**, with conclusion null, runner ID zero, **zero executed steps** and **zero artifacts**. The independent job-step endpoint also returned an empty list. No remote checkout SHA, test execution, compile, job log or artifact verification is therefore asserted for this revision. The workflow's planned 68 commands and 59 comparisons are not remote execution results. The cause of the queue is not inferred.
+The actual [new remote run **39526895726**, attempt 1](https://github.com/TrillionniumFoundation/theta-theory/actions/runs/39526895726) **succeeded** at exactly `6708e30d1e8511e6ed2f4e3a6247c09628bd3ea9`. Job **118983561729** ran from **2026-10-21T01:39:52Z** to **01:44:23Z**; all **11 steps** succeeded. The artifact's checkout receipt independently records the same source SHA and a successful build. No source/workflow repair or manual rerun was required.
 
-`audit/current-ci-readback/` preserves the initial and subsequent actual snapshots, the independently fetched published input bytes and their manifest, and the unexecuted artifact-verification program. `PUBLICATION_STATUS.json` records the same pending state. This evidence-only descendant keeps every frozen mathematical/build input and the workflow unchanged; `[skip ci]` prevents its metadata packaging from being mistaken for a second mathematical test target. The exact source-stage metadata remains in `audit/remote-publication/source-release/`.
+Artifact **12314306857** was actually downloaded: **10,808,391 bytes**, **225 file members**, SHA-256
+
+`e83672d52e5e90b9f256d31c316a8a1f7ec17dd0da0b9f7ddf5e5d605278c475`.
+
+All ZIP member CRCs and extracted bytes were verified. The independent artifact readback completed **1,333 receipt/byte/identity consistency checks**. These are readback checks, not 1,333 extra mathematical executions. The actual remote execution comprises **68 mathematical commands**, **59** matching normal/optimized comparisons, three native LaTeX passes, the **233-page** native document with **78** actual TeX inputs, and the **390-source** historical assembly with **26-/883-page** PDFs. Every recorded command exit, source digest, actual log hash, comparison and declared compiler-input closure was reconstructed. The historical repository-wide gate remains explicitly unexecuted.
+
+The actual remote native PDF has SHA-256
+
+`6b8714ff679ade78593da4b63244a5c6ca906d81b38bf40334c8e9a30e1d4239`.
+
+It is retained separately in `audit/current-ci-success-readback/artifact/current/native/main.pdf`. The local release PDF and its distinct hash above remain preserved. Neither PDF is substituted for the other execution's output.
+
+The decoded job log is retained with narrowly identified authentication-header-reference lines removed. `JOB_LOG_RETRIEVAL.json` preserves its raw decoded-content hash, saved-content hash, exact redaction line list and reason. No credential or temporary signed download URL is stored. Mathematical and compilation logs from the artifact are retained exactly.
+
+The first **readback-verifier** attempt expected a generated untracked build directory; the actual post-run status was empty, a clean checkout. That attempt, its script and output remain preserved. Only this readback predicate was corrected to accept clean status or the sole declared generated directory; the exact diff and successful subsequent execution are retained. This was not a CI, manuscript or mathematical-program failure, and no source repair or CI rerun was performed.
+
+At the earlier observation `2026-10-21T01:37:28.119Z`, the run was still queued with no runner, steps or artifacts. That real snapshot is preserved in `audit/current-ci-readback/` and the pending evidence carrier `d46ba004ff1ac8d44dab04549daff7e3c0e5f205`. The later success is added under **`audit/current-ci-success-readback/`**; it does not rewrite the earlier observation. The source-stage metadata remains under `audit/remote-publication/source-release/`, and the complete pending-carrier metadata remains under `audit/remote-publication/pending-carrier/`.
+
+This later evidence-only carrier preserves every frozen mathematical/build input and the workflow. Its `[skip ci]` commit records the actual successful source run, not a new mathematical test target. `PUBLICATION_STATUS.json` records source, local release, actual tested checkout, pending history and verified artifact as distinct identities.
 
 ## Mathematical status
 
