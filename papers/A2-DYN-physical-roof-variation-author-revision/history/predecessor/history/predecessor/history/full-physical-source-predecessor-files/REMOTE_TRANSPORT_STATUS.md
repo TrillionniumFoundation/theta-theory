@@ -1,0 +1,19 @@
+# Complete author source and actual successful CI
+
+The complete first author source was actually committed and pushed as **694952d7d6b886d0087e8560da721bfc980adbc3**, from the fixed complete predecessor **fdf2603c8bf422314f199fa431086485a0d1ebb5**. Its 2,688 actual files, 285,948,269 bytes and all 108 descendant subtrees were independently reconstructed from nontruncated GitHub readbacks. The article tree is **f0e29499f0d5de75103b6f52cc464945071ea04b** and repository root **56031be3c69251f8eadce010b38d576eaf9497e6**.
+
+The subsequent nonforce metadata push **228ec6a639d4d195a1a8b869a04dae6f49fece0e** actually triggered [GitHub Actions run 39229329979](https://github.com/TrillionniumFoundation/theta-theory/actions/runs/39229329979). Its observed outcome is **completed / success**, with all **11** job steps successful. The exact tested article tree is **826219579509e91c87c8dfb0c6348e2c42dba178**, in root **431dfd86fcd60e50a1469af38343afc470527752**. All 2,710 tested article files retain their expected identities.
+
+## Actual downloaded and verified output
+
+Artifact **12176597487** was actually downloaded: **10,908,310 bytes**, SHA-256 **ea2d3207346ed78239dc439971105537f408d5743ff827aef178d9b852ae32a4**. Every one of its **218** file members was read, CRC-checked and hashed. The independent verifier matched all 1,668 frozen source inputs, all 101 native/tool inputs, all 46 mathematical commands and 37 normal/optimized output pairs. It verified the actual three TeX passes, 174-page native PDF and matching native auxiliary labels, and selected the historical nine-command rebuild actually produced after this run's native phase, yielding the original 26-page main and 883-page supplement. Earlier carried-in historical receipts remain separately identified.
+
+The exact job log, API observations, original ZIP, complete artifact member manifest, command-level verification and invocation return codes are retained under `delivery/publication/full-physical-source-20261019/actual-C2-ci/`. The verified CI native PDF has SHA-256 **b34e945a993f59a753ab5018484146bf26ef68fd68f68c0bdbbcff871ba55188**. The delivered local native PDF has its separate actual hash; neither build is silently substituted into the other's receipt.
+
+## Post-CI evidence commit and source identity
+
+The commit containing this record is a publication-evidence successor of the tested C2 head. It preserves the full mathematical-source fingerprint **ebe48d08b94fc0dceecce96ecef8e0bc81d91918521ee1ba24558d549d558b26** and source-manifest SHA-256 **13182b20479bcafcd8a3d53804b9cc610739e5a8ad0fb94f32eed65b4768f997**. Its commit message suppresses a redundant CI event because it adds observed publication evidence and updates only three explicitly excluded publication metadata files. It is **not** represented as a separately executed CI checkout. A fresh actual source gate verifies the unchanged frozen inputs after evidence assembly.
+
+The three new author refs are `revision/a2-dyn-full-physical-source-2026-10-19`, `referee-response/a2-dyn-full-physical-source-2026-10-19`, and `referee-copy/a2-dyn-full-physical-source-2026-10-19`. Each is advanced with a nonforce, expected-parent update. Final containing-commit and ref identities are read after that push. Earlier articles, companion material, reviews and workflows retain their original tree objects; no existing review ref is repurposed.
+
+The new theorems concern complete physical-source roof regularity, actual singular bulk integrability, critical-band volume and the complete deep-source/regular-interior budgets in their stated norms. Successful CI and source transport do not complete the original essential-height shortage, singular trace charges, unrestricted pressure or final raw pointwise local limit and four-coordinate inversion interfaces. Those objectives and their minimal remaining closure conditions remain explicit in the manuscript, response and ledger.

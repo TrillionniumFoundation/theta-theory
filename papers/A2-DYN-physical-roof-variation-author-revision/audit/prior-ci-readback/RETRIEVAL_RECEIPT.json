@@ -1,0 +1,44 @@
+{
+  "retrieved_at_utc": "2026-10-21 00:22:04 UTC",
+  "tools": [
+    {
+      "tool": "mcp__codex_apps__github_fetch",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/theta-theory/actions/runs/39424256218",
+      "saved": "run-39424256218.json"
+    },
+    {
+      "tool": "mcp__codex_apps__github_fetch",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/theta-theory/actions/runs/39424256218/jobs?filter=all&per_page=100&page=1",
+      "saved": "jobs-39424256218.json",
+      "total_count": 1
+    },
+    {
+      "tool": "mcp__codex_apps__github_fetch",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/theta-theory/actions/runs/39424256218/artifacts?per_page=100&page=1",
+      "saved": "artifacts-39424256218.json",
+      "total_count": 1
+    },
+    {
+      "tool": "mcp__codex_apps__github_fetch_workflow_job_logs",
+      "repo_full_name": "TrillionniumFoundation/theta-theory",
+      "job_id": 118632668769,
+      "saved": "job_logs-39424256218.log"
+    },
+    {
+      "tool": "mcp__codex_apps__github_download_workflow_artifact",
+      "repo_full_name": "TrillionniumFoundation/theta-theory",
+      "artifact_id": 12268508880,
+      "file_name": "a2-dyn-39424256218-12268508880.zip",
+      "file_id": "file_0000000035dc8230b257129ab4576c71"
+    },
+    {
+      "tool": "mcp__codex_apps__github_fetch",
+      "url": "https://github.com/TrillionniumFoundation/theta-theory/blob/86c947eccea6029258d9a362624866a475118a66/.github/workflows/a2-dyn-critical-source-transport-20261020.yml",
+      "saved": "tested-workflow-86c947ec.yml",
+      "content": "name: A2-DYN critical source transport native build\n\n'on':\n  push:\n    branches:\n      - revision/a2-dyn-critical-source-transport-2026-10-20\n    paths:\n      - 'papers/A2-DYN-critical-source-transport-author-revision/**'\n      - '.github/workflows/a2-dyn-critical-source-transport-20261020.yml'\n  workflow_dispatch:\n\npermissions:\n  contents: read\n\njobs:\n  native-source-checks-and-build:\n    runs-on: ubuntu-24.04\n    timeout-minutes: 45\n    defaults:\n      run:\n        shell: bash\n        working-directory: papers/A2-DYN-critical-source-transport-author-revision\n    env:\n      PYTHONDONTWRITEBYTECODE: '1'\n      OPENBLAS_NUM_THREADS: '1'\n      OMP_NUM_THREADS: '1'\n    steps:\n      - name: Check out the exact author revision\n        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5\n        with:\n          fetch-depth: 1\n          persist-credentials: false\n          sparse-checkout: |\n            .github/workflows\n            papers/A2-DYN-critical-source-transport-author-revision\n\n      - name: Record the actual checkout\n        run: |\n          set -euo pipefail\n          mkdir -p build/current\n          git rev-parse HEAD > build/current/CI_CHECKOUT_SHA.txt\n          sha256sum build.sh requirements.txt ci/a2-dyn-critical-source-transport-20261020.yml > build/current/CI_ENTRYPOINT_SHA256.txt\n\n      - name: Set up Python 3.12\n        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6\n        with:\n          python-version: '3.12'\n          cache: pip\n          cache-dependency-path: papers/A2-DYN-critical-source-transport-author-revision/requirements.txt\n\n      - name: Install native TeX and pinned mathematical dependencies\n        run: |\n          set -euo pipefail\n          sudo apt-get update -qq\n          sudo apt-get install -y --no-install-recommends \\\n            texlive-latex-base texlive-latex-recommended texlive-latex-extra \\\n            texlive-fonts-recommended texlive-science lmodern poppler-utils\n          python3 -m pip install --disable-pip-version-check --no-input -r requirements.txt\n          python3 -c 'import sys; sys.exit(0 if sys.version_info[:2] == (3, 12) else 1)'\n          {\n            python3 --version\n            python3 -m pip freeze\n            pdflatex --version\n            pdfinfo -v\n          } > build/current/CI_ENVIRONMENT.log 2>&1\n\n      - name: Rebuild and verify the complete native author revision\n        id: native_build\n        run: |\n          set -euo pipefail\n          bash build.sh 2>&1 | tee build/current/CI_BUILD.log\n\n      - name: Retain the actual run outcome\n        if: always()\n        env:\n          A2_DYN_BUILD_OUTCOME: ${{ steps.native_build.outcome }}\n        run: |\n          set -euo pipefail\n          mkdir -p build/current\n          printf '%s\\n' \"$A2_DYN_BUILD_OUTCOME\" > build/current/CI_BUILD_OUTCOME.txt\n          git rev-parse HEAD > build/current/CI_CHECKOUT_SHA.txt\n          git status --porcelain=v1 > build/current/CI_POST_RUN_STATUS.txt\n\n      - name: Upload actual current and historical build records\n        if: always()\n        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6\n        with:\n          name: a2-dyn-critical-source-transport-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}\n          path: |\n            papers/A2-DYN-critical-source-transport-author-revision/build/current/\n            papers/A2-DYN-critical-source-transport-author-revision/build/current-history/execution/\n            papers/A2-DYN-critical-source-transport-author-revision/build/current-history/*.pdf\n            papers/A2-DYN-critical-source-transport-author-revision/build/current-history/REBUILD_SUMMARY.json\n            papers/A2-DYN-critical-source-transport-author-revision/build/current-history/rebuild.stdout.log\n          if-no-files-found: error\n          retention-days: 90\n          compression-level: 6\n          overwrite: false\n\n"
+    }
+  ],
+  "preservation": "GitHub API JSON and decoded job log strings saved with LF line endings and final newline. Artifact ZIP bytes preserved exactly; SHA256 is checked against GitHub artifact digest. Temporary signed download URL omitted.",
+  "remote_mutations": false,
+  "workflow_rerun": false
+}

@@ -1,0 +1,45 @@
+name: A2-DYN global variational native qualification
+on:
+  push:
+    branches: ['revision/a2-dyn-global-variational-2026-10-16']
+    paths:
+      - 'papers/A2-DYN-global-variational-author-revision/**'
+      - '.github/workflows/a2-dyn-global-variational-20261016.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native-source-checks-and-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 1
+          sparse-checkout: papers/A2-DYN-global-variational-author-revision
+      - name: Install real native build and audit dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends texlive-latex-extra texlive-fonts-recommended texlive-science lmodern poppler-utils python3-venv
+          python3 -m venv /tmp/a2-dyn-native-venv
+          /tmp/a2-dyn-native-venv/bin/python -m pip install -r papers/A2-DYN-global-variational-author-revision/requirements.txt
+          command -v pdflatex
+          command -v pdfinfo
+      - name: Run the exact checked-out native source
+        working-directory: papers/A2-DYN-global-variational-author-revision
+        run: |
+          git rev-parse HEAD
+          /tmp/a2-dyn-native-venv/bin/python tools/qualify_revision.py all
+      - name: Retain execution and failure records
+        if: always()
+        run: |
+          mkdir -p /tmp/a2-dyn-global-variational-evidence
+          git rev-parse HEAD > /tmp/a2-dyn-global-variational-evidence/exact-checkout.txt
+          git status --porcelain=v1 > /tmp/a2-dyn-global-variational-evidence/post-run-status.txt
+          tar -czf /tmp/a2-dyn-global-variational-evidence/active-source-and-execution.tar.gz -C papers/A2-DYN-global-variational-author-revision .
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: a2-dyn-global-variational-${{ github.sha }}-${{ github.run_id }}
+          path: /tmp/a2-dyn-global-variational-evidence/*
+          if-no-files-found: error

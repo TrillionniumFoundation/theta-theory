@@ -1,0 +1,17 @@
+# Final remote preservation audit: preparation only
+
+`verify_final_remote.py` is a standalone read-only verifier of saved actual GitHub GET responses and a supplied exact staged inventory. No final C3 commit, root or article identity was known when this preparation was written. `CONFIG_REQUIRED_EXAMPLE.json` deliberately contains null placeholders that cannot pass the verifier. The program has been parsed for syntax only; no final remote-audit pass is claimed.
+
+The fixed predecessor is C2 commit `efde9fa6c45e7835989b653622a9870e59027530`, root `b5d618b8a4b356f8ca07f1c9f1238e35d879ede8`, article `b4add0580cc8211223dfa57e6e618e2bf9546d09`. Exact existing immutable GET-response and manifest copies are in `prepared-inputs/`, each with original absolute provenance and SHA-256 in `INPUT_PROVENANCE.json`. Their reuse is not represented as a fresh network request.
+
+## Actual final audit protocol
+
+1. Receive the published final commit/root/article identities and exact expected inventory from the root author. Create a fresh final case directory. Copy this verifier and prepared inputs without changing any C1/C2 file. Supply `inputs/EXPECTED_FILE_IDENTITIES.json` and a complete configuration with its exact SHA-256.
+2. Save actual raw UTF-8 GitHub GET bodies, unmodified, under `readbacks/`. Save separate `.request.json` records with endpoint, real request/observation times, tool status, and corresponding body filename.
+3. Read the exact final Git commit, immediate root, recursive **article** tree with `recursive=1`, and immediate `papers` tree linked by the actual root. Read all three individual new branch refs. Paginate the actual complete branch collection through the terminal empty page. The expected census is 1,293 unchanged original heads plus the three new heads, 1,296 total; this is a timed branch-head census, not an atomic snapshot or a tag census.
+4. Actually execute `python verify_final_remote.py --case <new-case> --config <actual-config>`, retaining real command, timestamps, stdout, stderr and exit code. Never manufacture missing successful results. The verifier refuses to replace an existing final report.
+5. Seal all exact actual final responses, inventories, verifier, execution records and resulting report. Preserve failed attempts separately if any discrepancy requires correction. No remote mutation is performed by this verifier.
+
+The file checks include every mode/type/Git blob identity and byte size, every directory SHA independently reconstructed from actual direct children, exact root→papers→article linkage, all 107 native/tool inputs, all 1,837 frozen-source blobs, the unchanged workflow, preservation of every existing publication archive, and the permitted C2 delta: exactly three modified root publication metadata files plus new `delivery/publication/` files, with no deletion. Original B→final isolation is also reconstructed directly from the retained immutable B root/papers/.github/workflows objects. The baseline-to-final permitted additions are only the new A2-DYN article and its dedicated workflow.
+
+The verifier does not certify CI and does not claim that every remote blob's raw bytes were downloaded. It compares actual Git blob identities against the exact staged byte identities and reconstructs every directory hash. Any C2 artifact-data report is separately scoped to that actual tested head; final publication by itself does not establish a new CI execution.
