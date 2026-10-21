@@ -252,7 +252,7 @@ def boundary_and_quantifier_checks():
 
 def main():
     parser=argparse.ArgumentParser()
-    parser.add_argument('--source',type=Path,default=Path(__file__).with_name('46-mean-contrast.tex'))
+    parser.add_argument('--source',type=Path,default=Path(__file__).resolve().parent / 'sections' / '46-mean-contrast.tex')
     parser.add_argument('--output',type=Path)
     args=parser.parse_args()
     details={'strict_endpoints':endpoint_checks(),'signed_null_vectors':null_vector_checks(),
