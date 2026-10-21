@@ -1,0 +1,209 @@
+\section{Finite realization of instruments with interior posterior states}
+\label{sec:r74-instruments}
+
+The preceding response problems have a terminal observation. We now allow
+an outcome at every call, state-dependent outcome probabilities, and subsequent
+commands selected from the observed history. The sufficient condition is on
+each posterior state, not merely on the channel obtained by forgetting the
+outcome. The construction uses the classical positive-realization principle
+of an invariant finitely generated cone \cite{Heller65,MonrasWinter14}.
+For quantum instruments, preservation of a simulation polytope and its
+composition under adaptive operations are developed explicitly by
+Okay~\cite{Okay26}. We use that established mechanism and prove a uniform
+posterior condition which supplies one finite physical dictionary, an explicit
+dimension and noise bound, and a counted pure initialization. The accompanying
+counterexample distinguishes this condition from complete mixing of the
+unconditioned channel.
+
+Let $\mathcal D_h$ be the density matrices on $\mathbb C^h$, $h\ge2$.
+For $0<\eta\le1$ put
+\[
+ \mathcal D_{h,\eta}
+   =(1-\eta)\mathcal D_h+\eta I/h
+   =\{\rho\in\mathcal D_h:\rho\succeq\eta I/h\}.
+\]
+The following elementary geometric estimate is included in full. Nets of
+pure states and inner approximations of the density-matrix body are classical
+tools; see Aubrun--Szarek~\cite{AubrunSzarek17}. In particular the bound below
+is not asserted optimal in the dimension $h$.
+
+\begin{lemma}[A finite physical dictionary]\label{lem:r74-state-dictionary}
+There are rank-one density matrices $\sigma_1,\ldots,\sigma_K$ such that
+\begin{equation}\label{eq:r74-state-dictionary}
+ \mathcal D_{h,\eta}\subseteq
+ P:=\operatorname{conv}\{\sigma_1,\ldots,\sigma_K\}
+ \subseteq\mathcal D_h,
+ \qquad K\le(4h/\eta)^{h-1}.
+\end{equation}
+The same dictionary works for every map whose normalized positive outputs
+belong to $\mathcal D_{h,\eta}$. If $\eta$ is real algebraic, the dictionary
+can be chosen algebraic and constructed by a finite real-algebraic procedure.
+\end{lemma}
+\begin{proof}
+For rank-one projectors use the metric
+\[
+ d(\psi,\varphi)=\sqrt{1-|\langle\psi,\varphi\rangle|^2}
+   =2^{-1/2}\bigl\||\psi\rangle\langle\psi|
+                   -|\varphi\rangle\langle\varphi|\bigr\|_2.
+\]
+It is a metric on projective space, since the last expression is the
+Hilbert--Schmidt distance up to a fixed factor. The invariant probability
+measure of a ball of radius $r\in[0,1]$ is $r^{2h-2}$. To verify the formula,
+fix its center to the first coordinate vector and normalize $h$ independent
+standard complex Gaussian variables. Their squared absolute values are
+independent exponentials. After division by their sum the resulting weights
+are uniform on the probability simplex, with density $(h-1)!$. The region
+where the first weight is at least $1-r^2$ is a simplex scaled by $r^2$
+in its $h-1$ free coordinates, giving the stated measure. This argument also
+derives the invariant law, since the joint Gaussian density is unitary
+invariant.
+
+Take a maximal family with mutual distances greater than
+$r=\sqrt{\eta/h}$. The balls of radius $r/2$ are disjoint up to their
+boundaries, so the family is finite and has at most
+$(2/r)^{2h-2}=(4h/\eta)^{h-1}$ points. Maximality gives a covering by
+balls of radius $r$. Let the corresponding projectors be $\sigma_i$.
+For any Hermitian $H$, choose a unit eigenvector $\psi$ for its largest
+eigenvalue $a$, and let $z$ be its smallest eigenvalue. A covering point
+$\varphi$ satisfies $|\langle\psi,\varphi\rangle|^2\ge1-\eta/h$.
+Consequently
+\[
+ \max_i\tr(H\sigma_i)\ge a-(\eta/h)(a-z)
+ \ge(1-\eta)a+(\eta/h)\tr H.
+\]
+The second inequality follows from $ha-\tr H\ge a-z$.
+The right side is the support function of $\mathcal D_{h,\eta}$.
+Separation of compact convex sets proves the first containment in
+\eqref{eq:r74-state-dictionary}; the second follows because every
+$\sigma_i$ is a density matrix.
+
+For algebraic $\eta$, choose the separated projectors successively with
+algebraic real and imaginary entries. At each step the existence of a
+rank-one projector at distance greater than $r$ from all selected ones
+is a finite system of real polynomial conditions over the real algebraic
+numbers. Quantifier elimination decides it and, when it is feasible,
+returns an algebraic witness. The same packing bound forces termination;
+at termination the selected projectors cover the whole projective space.
+Thus the cardinality and containment bounds are unchanged. This finite
+construction has no efficiency assertion.
+\end{proof}
+
+For each command $a$ in a finite set $A$, let
+$\{\Phi_{a,y}:y\in Y_a\}$ be a finite quantum instrument: each map is
+completely positive and their sum is trace preserving. Its primitives and
+initial density matrix $\rho_0$ are fixed and known. Assume
+\begin{equation}\label{eq:r74-posterior-positivity}
+ \Phi_{a,y}(\rho)\succeq
+       (\eta/h)\tr(\Phi_{a,y}(\rho))I
+ \quad(\rho\in\mathcal D_h,\ a\in A,\ y\in Y_a).
+\end{equation}
+Zero-probability branches are allowed. For a positive branch this is precisely
+the assertion that its normalized posterior belongs to
+$\mathcal D_{h,\eta}$.
+
+A classical instrument simulator has nonnegative matrices $M_{a,y}$ on one
+fixed finite label set, with $\sum_yM_{a,y}$ row-stochastic for every $a$.
+The entry $M_{a,y}(i,j)$ is the joint probability of observing $y$ and retaining
+label $j$ from label $i$. Its initial label is prescribed pure. Its internal
+label is not revealed to a policy which originally observed only instrument
+outcomes.
+
+\begin{theorem}[Uniform posterior positivity gives finite exact memory]
+\label{thm:r74-instrument}
+Under \eqref{eq:r74-posterior-positivity}, there is a single classical
+instrument simulator, with the prescribed pure start, using at most
+\begin{equation}\label{eq:r74-instrument-bound}
+ 1+\left\lfloor(4h/\eta)^{h-1}\right\rfloor
+\end{equation}
+live labels. It reproduces the joint law of every finite command--outcome
+history and every subsequent terminal POVM. The same simulator works under
+every policy that selects commands and a stopping time from the visible
+history, including randomized policies. It therefore preserves every
+almost surely finite stopped history law, every bounded score on that law,
+and the extended expectation of every nonnegative history cost.
+
+The bound does not depend on the number of commands or outcomes. The sizes
+of the transition and terminal tables do depend on those numbers. For
+$\eta=1$ at most two labels suffice; for $h=1$ one label suffices.
+\end{theorem}
+\begin{proof}
+Choose the dictionary from Lemma~\ref{lem:r74-state-dictionary} and adjoin
+one label $0$, represented by $\sigma_0=\rho_0$. For each label $i$,
+command $a$ and outcome $y$ put $p_{i,a,y}=\tr\Phi_{a,y}(\sigma_i)$.
+If this is positive, the normalized output lies in $P$, so choose
+nonnegative numbers $v_{i,a,y,j}$, $1\le j\le K$, of sum one, with
+\[
+ \Phi_{a,y}(\sigma_i)
+     =p_{i,a,y}\sum_{j=1}^K v_{i,a,y,j}\sigma_j.
+\]
+Set $M_{a,y}(i,j)=p_{i,a,y}v_{i,a,y,j}$ for $j\ge1$ and
+$M_{a,y}(i,0)=0$. On a zero-probability branch set the entire row to zero;
+its positive output operator is zero because its trace is zero. The sum
+over $y,j$ of each row is one, by trace preservation. Thus these are valid
+classical instrument tables and the initializer is one of the counted labels.
+There is no uncounted random preparation or input-reading step.
+
+Start at label $0$. Induction gives the operator identity
+\begin{equation}\label{eq:r74-instrument-intertwining}
+ \Phi_{a_n,y_n}\cdots\Phi_{a_1,y_1}(\rho_0)
+   =\sum_{j=0}^K
+       (e_0^{\mathsf T}M_{a_1,y_1}\cdots M_{a_n,y_n})_j\sigma_j.
+\end{equation}
+For the empty history this is $\rho_0=\sigma_0$. For the inductive step
+apply the next linear map and then the defining convex expansions.
+Taking traces proves every joint history probability. Pairing with any
+terminal effect $E_c$ proves the terminal law with decoder
+$D(i,c)=\tr(E_c\sigma_i)$, which is row-stochastic for a POVM.
+It also covers a history-dependent choice of terminal POVM.
+
+For an adaptive policy, multiply each history probability by the policy's
+conditional command and stopping probabilities. They are the same functions
+of the visible history in both experiments, so the equality holds on every
+finite cylinder and on every finite stopped history. These cylinders generate
+the path sigma-field; countable additivity gives equality of the full path
+laws. An almost surely finite stopped law is their countable union. Equality
+of bounded score expectations and, by monotone convergence, nonnegative cost
+expectations follows. A policy's own persistent memory is additional to the
+simulator labels; the construction does not grant it observation of those
+labels.
+
+When $\eta=1$, every positive posterior is $I/h$, so one recurrent label
+represented by $I/h$ and the initializer suffice. When $h=1$, the state is
+fixed and the instrument consists of its classical outcome probabilities.
+\end{proof}
+
+The theorem compiles a fixed known preparation and set of primitives. It
+does not implement a measurement which converts an arbitrary unknown quantum
+input into a classical label, and it does not give shared parameter-independent
+tables for an unknown model family. Those are different quantifiers.
+
+\begin{corollary}[Noise applied after every observed branch]
+\label{cor:r74-noisy-instruments}
+Let $\{\Psi_{a,y}\}$ be arbitrary finite quantum instruments on
+$\mathbb C^h$. For any $0<\eta\le1$, the instruments
+\begin{equation}\label{eq:r74-branch-noise}
+ \Phi_{a,y}(X)=(1-\eta)\Psi_{a,y}(X)
+            +\eta\tr(\Psi_{a,y}(X))I/h
+\end{equation}
+have the finite exact simulator of Theorem~\ref{thm:r74-instrument}.
+Outcome probabilities can depend on the incoming state, and the commands
+need not commute or share a stationary state.
+\end{corollary}
+\begin{proof}
+The two summands are completely positive; their traces sum to the original
+branch trace. The command sums remain trace preserving. Positivity of the
+first summand gives \eqref{eq:r74-posterior-positivity} directly.
+\end{proof}
+
+Once a dictionary is chosen, its transition coefficients are solutions of
+finite linear feasibility problems. If the primitives, initial state and
+$\eta$ are algebraic, the lemma supplies an algebraic dictionary and
+linear feasibility gives algebraic tables. The required terminal decoders
+are algebraic when the supplied terminal POVMs are algebraic. This observation is not a claim
+of efficient net construction, small program size, or a matching lower bound
+for the unrestricted stochastic memory of each individual experiment.
+Proposition~\ref{prop:r74-dictionary-lower} records the matching small-noise
+power for the narrower problem of one physical dictionary covering all of
+$\mathcal D_{h,\eta}$. Stronger dimension estimates for such convex
+approximations are already known \cite{AubrunSzarek17}; extension complexity
+is another distinct resource \cite{Fawzi21}.
