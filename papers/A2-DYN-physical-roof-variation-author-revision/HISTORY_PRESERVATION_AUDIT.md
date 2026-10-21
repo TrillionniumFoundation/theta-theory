@@ -18,7 +18,7 @@ The complete article is preserved at `history/predecessor/`. `CURRENT_SOURCE_ANC
 
 All 63 native core proof bodies 260–322 are also active without any byte change, together with the original `model.tex` and `inputs.tex`: 65 immutable active proof/model files. The new manuscript adds 323–326. The introduction and current dependency notes state which earlier open interfaces these later theorems actually close. An immutable earlier scope statement is historical evidence, not the current ledger's final assertion.
 
-The predecessor's own preservation verifier is executed against the unchanged archive. It in turn checks the complete earlier article and its historical census and source anchors. The old derivations, failed arguments, counterexamples, unsuccessful executions, queued workflow observations and original reports are retained. Current successful CI readback is added separately; the historical observation that a job was queued is not rewritten into a fictitious contemporary success.
+The predecessor's own preservation verifier is executed against the unchanged archive. It in turn checks the complete earlier article and its historical census and source anchors. The old derivations, failed arguments, counterexamples, unsuccessful executions, queued workflow observations and original reports are retained. The predecessor's successful CI readback and this revision's queued CI observations are added separately; a historical observation that a job was queued is not rewritten into a fictitious contemporary success.
 
 ## Fresh complete-ref reconciliation
 
@@ -52,3 +52,13 @@ The actual artifact contains 62 successful mathematical commands, 53 normal/opti
 ## Isolation and publication
 
 The only intended new repository paths are `papers/A2-DYN-physical-roof-variation-author-revision/**` and its dedicated `.github/workflows/a2-dyn-physical-roof-variation-20261021.yml`. Publication is confined to the new branch `revision/a2-dyn-physical-roof-variation-2026-10-21`. The old article, all old refs, companion and other papers are preserved. Post-publication receipts separately identify the source commit, actual CI checkout, any later evidence carrier and final ref comparison; preparation metadata is not represented as a completed remote action.
+
+## Published source and post-push reconciliation
+
+The complete new source is `6708e30d1e8511e6ed2f4e3a6247c09628bd3ea9`, parent `4d83de89d16bae7f9e9439dcc80e099b8f8f5c4e`, root `ad34fd91ad2f1c6e594d3bbe437417aba524bf87`, article `4f41b3a98487a1ae0507d40390aca030c5520e19`. Its sole tree delta has 5,261 additions: 5,260 article files and the dedicated workflow. The preserved predecessor subtree still has the exact original tree `7bcaba2bc1ef7ab393c81a7df84f3e45983c4dfa`. The independent frozen-input readback verifies all 130 mathematical/build files and the workflow identity. Source-stage metadata is preserved byte for byte under `audit/remote-publication/source-release/`; the later evidence-only child changes no frozen input.
+
+The fresh post-push census at `2026-10-21T01:24:45.727845+00:00` through `01:24:46.046360+00:00` contains **1,300 heads**, including **434 A2-DYN refs / 218 distinct head commits**. All 1,299 pre-push heads, including all **433 old A2-DYN refs** and all 178 review refs, are unchanged. The only addition relative to the pre-push census is this source branch. Relative to the initial 1,298-head census, the additional concurrent General Theta R75 branch was also inspected: its complete final delta is confined to `papers/General-Theta-Foundations-I-restart/r75-nonabelian-stationary-memory`. Six complete nonrecursive Git-tree reads and reconstruction of their hashes confirm that it adds no A2-DYN source, review, response, workflow or publication change. It supplies no replacement A2-DYN baseline or controlling report.
+
+The complete raw snapshots, exact R75 ancestry and all tree-scope receipts are in `audit/remote-publication/post-publication-provenance/`. The raw 1,300-head snapshot has SHA-256 `cb505b15cbbdad49e250dfe02c427562238c41fefebcc651344c773cd897eb06`. These are timestamped preservation facts, not claims about unobserved later changes by other repository users.
+
+The new source push created CI run 39526895726. At `2026-10-21T01:37:28.119Z` it was still queued with no runner, executed steps or artifacts. The source's actual local build and the predecessor's actual successful remote run remain separate evidence. No successful new remote execution is claimed.
