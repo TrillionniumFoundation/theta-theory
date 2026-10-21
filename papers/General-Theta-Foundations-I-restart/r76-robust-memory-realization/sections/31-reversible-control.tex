@@ -1,0 +1,118 @@
+\section{Reversible response groups and common controlled memory}\label{sec:r72-reversible}
+The fixed-phase results concern one transition matrix. Several commands require one family of matrices on the same retained labels, and checking every command in isolation is insufficient. We give an intrinsic finite-realization criterion for responses whose minimal linear dynamics is reversible and compact, including any finite family of unitary commands on a prepared finite-dimensional quantum system. We then obtain a matching arithmetic memory law for a pair of noncommuting involutions. This is a theorem about exact controlled response realization, not an assertion that a simulator's private label is an observed sufficient statistic for arbitrary feedback optimization.
+
+Positive realization through invariant polyhedral sets is classical \cite{Heller65,MonrasWinter14,ThonJaeger15}. The argument below uses a section of the realizing simplex before passing to the observable quotient; auxiliary hidden-state responses need not belong to the minimal response space. Compact reversibility then turns containment into equality. The resulting finite-group obstruction concerns all command words, rather than a single spectral restriction.
+
+\subsection{The minimal response space}
+Let $A$ and $C$ be nonempty finite alphabets of commands and terminal outcomes. A supplied response is a function $b:A^*\to\Delta(C)$. Its residual after a word $w$ is $b^w(z)=b(wz)$, including the empty word $\varnothing$. Put
+\[
+ V_b=\operatorname{span}_{\R}\{b^w:w\in A^*\},
+ \qquad (L_af)(z)=f(az).
+\]
+Assume $V_b$ is finite dimensional. It is invariant under each $L_a$, since $L_ab^w=b^{wa}$. Call the response \emph{compactly reversible} if the restrictions $L_a|_{V_b}$ are invertible and the closure $G_b$ of their generated group is a compact subgroup of $\operatorname{GL}(V_b)$. This concerns the observable quotient; it does not require the full physical command group to be finite or fully observable.
+
+An exact stochastic realization with $M$ live labels has row-stochastic matrices $Q_a$, one row-stochastic terminal decoder matrix $D$, and the prescribed initial row $e_1^{\mathsf T}$, such that
+\begin{equation}\label{eq:r72-response}
+ b(a_1\cdots a_n)=e_1^{\mathsf T}Q_{a_1}\cdots Q_{a_n}D.
+\end{equation}
+Randomized terminal readout is allowed even when all $Q_a$ are deterministic. The target input word is not encoded into an uncounted clock or persistent seed.
+
+\begin{theorem}[Finite realization of compactly reversible responses]\label{thm:r72-reversible}
+For a compactly reversible response, the following are equivalent:
+
+\textup{(i)} An exact finite stochastic realization exists.
+
+\textup{(ii)} The residual set $\{b^w:w\in A^*\}$ is finite.
+
+\textup{(iii)} The observable group $G_b$ is finite.
+
+\textup{(iv)} An exact realization with deterministic transitions and a possibly randomized decoder exists.
+
+The least number of deterministic-transition labels is the residual cardinality. This is not in general the least stochastic label count. If an $M$-label stochastic realization exists, then
+\[
+ |G_b|\le(2^M-1)!.
+\]
+This last bound is only a finite combinatorial certificate, not a sharp memory law.
+\end{theorem}
+\begin{proof}
+Suppose \eqref{eq:r72-response} holds, and write $r_w=e_1^{\mathsf T}Q_w$. Let $R=\operatorname{span}_{\R}\{r_w\}\subseteq\R^M$. The assignment $\pi(r_w)=b^w$ extends to a well-defined surjective linear map $\pi:R\to V_b$: a relation $\sum_wc_wr_w=0$ implies, after right multiplication by $Q_zD$, the identical relation among $b^w(z)$ for every $z$. Moreover
+\[
+ \pi(rQ_a)=L_a\pi(r)\qquad(r\in R).
+\]
+The simplex section $K=R\cap\Delta_M$ is a compact polytope, invariant under right multiplication by every $Q_a$. Its image $P=\pi(K)$ is a compact polytope, contains every residual, and spans $V_b$. It satisfies $L_aP\subseteq P$. It is important that we intersect the simplex with $R$ first: projecting arbitrary hidden-state responses directly into $V_b$ would not be justified.
+
+For an element $T$ of a compact matrix group, positive powers have a subsequence tending to the identity with exponents tending to infinity. One elementary proof takes a convergent subsequence of powers with successively growing index gaps; quotients of two close powers approach the identity. A finite-order element is covered by its period multiples. Thus positive powers also approach $T^{-1}$. Applying this to $L_a$ and using closedness of $P$ gives $L_a^{-1}P\subseteq P$, and hence $L_aP=P$. All elements of $G_b$ preserve $P$. They permute its finitely many vertices, and this permutation action is faithful because those vertices span $V_b$. Consequently $G_b$ is finite. This proves (i)$\Rightarrow$(iii).
+
+For the displayed bound, a vertex of $K$ is determined by its positive support. If two distinct vertices had the same support, their difference could be added and subtracted in sufficiently small multiples while preserving $R$, unit mass and nonnegativity, contradicting extremality. Thus $K$ has at most $2^M-1$ vertices. A linear image of a polytope has no more vertices than the original polytope, so the faithful vertex action proves the bound.
+
+If $G_b$ is finite, the residual orbit is finite. Conversely, if the residual set is finite, each invertible $L_a$ maps it injectively into itself, hence permutes it. Since it spans $V_b$, the generated group and its closure are finite. This proves (ii)$\Leftrightarrow$(iii). Under (ii), use the residuals as labels, send $b^w$ to $b^{wa}$ on input $a$, and use decoder $b^w(\varnothing)$. This realizes $b$ with deterministic transitions. If any such deterministic-transition machine sends $u$ and $v$ to the same label, every suffix yields the same decoder law, so $b^u=b^v$. This proves its minimal count. Finally (iv)$\Rightarrow$(i) is immediate. No assertion that stochastic transitions can always be determinized without increasing size was used.
+\end{proof}
+
+\begin{corollary}[Prepared unitary commands]\label{cor:r72-unitary}
+Let $U_a$ be finitely many unitary matrices on $\mathbb C^d$, let $\rho$ be a prepared density matrix, and let $\{E_r:r\in C\}$ be a terminal positive-operator-valued measurement. For
+\[
+ b(w,r)=\tr(E_r\Phi_w(\rho)),\qquad \Phi_a(X)=U_aXU_a^*,
+\]
+exact finite stochastic realization for all command words is possible if and only if its observable response group is finite. The group is computed after quotienting only those directions invisible to every future commanded terminal test. Its dimension is at most $d^2$.
+\end{corollary}
+\begin{proof}
+Let $W=\operatorname{span}_{\R}\{\Phi_w(\rho)\}$ in the Hermitian matrices. Each conjugation is a Hilbert--Schmidt isometry. Its forward invariant subspace $W$ is also backward invariant, by finite-dimensional invertibility. Let
+\[
+ N=\{X\in W:\tr(E_r\Phi_zX)=0\text{ for all }z,r\}.
+\]
+It is invariant under every $\Phi_a$ and hence under its inverse. The orthogonal complement of $N$ in $W$ is invariant as well. Therefore the induced transformations on $W/N$ are orthogonal for the quotient inner product. The map $X\mapsto(z,r\mapsto\tr(E_r\Phi_zX))$ identifies $W/N$ with $V_b$ and intertwines them with $L_a$. Their generated group has compact closure in the orthogonal group. Apply Theorem~\ref{thm:r72-reversible}. A constant measurement can make this induced group trivial even when the physical unitary group is infinite, so finiteness of the full physical group is not a necessary condition.
+\end{proof}
+
+\subsection{A matching memory law for two noncommuting commands}
+Fix $x\in\R$ with $\sin(2\pi x)\ne0$. On a protected qubit take
+\[
+ U_0=\begin{pmatrix}1&0\\0&-1\end{pmatrix},\qquad
+ U_1=\begin{pmatrix}\cos(\pi x)&\sin(\pi x)\\
+                     \sin(\pi x)&-\cos(\pi x)\end{pmatrix},
+ \quad \rho=E=|0\rangle\langle0|.
+\]
+Both commands are involutions. For known $0\le\alpha\le1$, their channels are
+\[
+ \Phi_{a,\alpha}(X)=\alpha U_aXU_a^*+(1-\alpha)\tr(X)I/2.
+\]
+Let $M_x^{\rm ctrl}(\alpha)$ be the least stochastic live memory of the whole binary response $w\mapsto\tr(E\Phi_{w,\alpha}\rho)$, using the same matrices and decoder for every word. In the real Bloch plane, with coordinates $(z,x)$, these commands are $\alpha S_0$ and $\alpha S_1$, where $S_0$ reflects the angle $t$ to $-t$ and $S_1$ reflects it to $2\pi x-t$. Their product is $\alpha^2R_{2\pi x}$.
+
+\begin{theorem}[All-word arithmetic law for an involutive command pair]\label{thm:r72-control-envelope}
+For $0<\epsilon<1$ and $\alpha=1-\epsilon$, the arithmetic envelope of Section~\ref{sec:r71-arithmetic} gives
+\begin{equation}\label{eq:r72-control-envelope}
+ \tfrac14\mathfrak A_x(\epsilon)
+ \le M_x^{\rm ctrl}(1-\epsilon)
+ \le(1+4\pi^2)\mathfrak A_x(\epsilon).
+\end{equation}
+The upper is one explicit finite stochastic machine valid for every mixed command word, not separately chosen unary machines. The lower ranges over arbitrary common stochastic realizations.
+
+For irrational $x$, the lower and upper logarithmic growth exponents as $\epsilon\downarrow0$ are respectively
+\[
+ \frac1{\mu(x)+1},\qquad\frac{\mu(x)-1}{2\mu(x)-1},
+\]
+with values $0,1/2$ at $\mu=\infty$. A uniform cubic-root law holds precisely for badly approximable $x$; otherwise the normalized count has lower limit zero and upper limit infinity.
+
+At $\alpha=1$, the exact count is the reduced denominator $q$ if $x$ is rational, and is infinite otherwise. At $\alpha=0$, it is two. Every strictly damped pair has a finite exact common realization. These statements concern controlled response memory, not a general multi-command boundary-optimal policy theorem.
+\end{theorem}
+\begin{proof}
+Any common realization restricted to the words $(01)^n$ realizes
+\[
+ \tfrac12[1+\alpha^{2n}\cos(2\pi nx)]
+\]
+with transition matrix $Q_0Q_1$. Its size is therefore at least
+$m_x(1-\alpha^2)\ge\mathfrak A_x(\epsilon(2-\epsilon))/2$
+by Theorem~\ref{thm:r71-envelope}. For $1\le c\le2$, the defining maximum of the envelope obeys $\mathfrak A_x(c\epsilon)\ge\mathfrak A_x(\epsilon)/c$ whenever both arguments are in its domain. This follows for each denominator before taking its infimum. Taking $c=2-\epsilon$ proves the lower in \eqref{eq:r72-control-envelope}.
+
+For the upper, the rational multiple-polygon construction in the proof of Theorem~\ref{thm:r71-envelope} gives a regular $l$-gon $P$ on the unit circle, with vertex $v_0=(1,0)$, such that
+\[
+ l\le(1+4\pi^2)\mathfrak A_x(\epsilon),\qquad
+ \alpha R_{2\pi x}v_j\in P\quad\text{for every vertex }v_j.
+\]
+The first reflection $S_0$ permutes this regular polygon and zero belongs to it. Consequently $\alpha S_0P\subseteq P$, while $S_1=R_{2\pi x}S_0$ gives $\alpha S_1P\subseteq P$. Choose barycentric rows $Q_a(j,k)$ of $\alpha S_av_j$ in the same vertices. Let $d_j=(1+(v_j)_1)/2$. Starting at vertex zero, induction on the actual command word shows that the expected retained vertex equals the protected Bloch vector. Pairing with the first coordinate proves every response identity. The start is one of the counted vertices; there is no extra initialization mixture.
+
+The two constants in \eqref{eq:r72-control-envelope} transfer both exponents and both uniform-law statements from Theorems~\ref{thm:r71-exponents} and \ref{thm:r71-cubic-rigidity}. At zero damping, a rational phase of reduced denominator $q\ge3$ has a common deterministic $q$-gon realization. The word-pair transition has a primitive $q$th-root mode and needs at least $q$ states by the unit-circle spectral obstruction. For irrational $x$ that same obstruction rules out every finite size. At $\alpha=0$ the response is one at the empty word and $1/2$ after every nonempty word, realized by a first label followed by an absorbing fair label; one label cannot change its decoder. This proves all endpoints.
+\end{proof}
+
+A fully algebraic example uses $U_1=5^{-1/2}\left(\begin{smallmatrix}2&1\\1&-2\end{smallmatrix}\right)$. Then $e^{2\pi ix}=(3+4i)/5$ is not a root of unity, since its sum with its conjugate is the rational noninteger $6/5$. Each undamped command in isolation has period at most two; their common all-word response has no finite stochastic realization. The arithmetic exponent of this particular angle is not determined here. The example isolates the failure of commandwise testing without inferring a Diophantine class from finitely many coefficients.
+
+If an independent herald with fixed probability $p$ is placed before each command operation, and only failures apply the supplied command, every common realization above preserves the terminal response under every external command schedule and the first-herald cost $1/p$. The commands are actual inputs to that same retained-state transducer. This does not make its private label observable to the caller, allow uncharged midstream quantum measurements, or prove optimality for a controller free to choose an easier command sequence. The unary optimal squared-task interpretation below continues to use its separately proved physical embedding.

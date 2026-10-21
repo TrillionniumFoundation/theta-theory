@@ -1,0 +1,97 @@
+\section{Exact periodic memory, initialization and leakage}\label{sec:r72-periodic}
+At zero internal damping a finite mixture of rational frequencies is periodic. Its period, linear response rank and least stochastic memory are different quantities. We determine the last one exactly, with a prescribed initial label, and give a matching sparse implementation. This completes the rational multi-frequency endpoint left as bounds by Corollary~\ref{cor:r71-mixtures}. The spectral cycle method is classical Perron--Frobenius theory; periodic stochastic orbits and least-common-multiple constraints are established subjects \cite{Nussbaum98,BenvenutiFarina04}. We prove the precise partition and initialization rule needed for the present bounded probability response rather than claim those ingredients as new.
+
+Choose distinct nonreal roots $\zeta_j=e^{2\pi ia_j/q_j}$, $1\le j\le r$, no two conjugate, with $\gcd(a_j,q_j)=1$ and $q_j\ge3$. Let $w_j>0$, $\Gamma=\sum_jw_j\le1$, and $\varphi_j\in\R$. The target is
+\begin{equation}\label{eq:r72-periodic-response}
+ b_n=\tfrac12\left[1+\sum_{j=1}^r w_j
+                \cos(2\pi n a_j/q_j+\varphi_j)\right].
+\end{equation}
+All listed complex modes have nonzero coefficients. For a nonempty index set $B$, set $\ell(B)=\operatorname{lcm}\{q_j:j\in B\}$. If $\mathcal P$ is a partition of $\{1,\ldots,r\}$, define
+\begin{equation}\label{eq:r72-partition-cost}
+ \mathcal M(\mathcal P)=\sum_{B\in\mathcal P}\ell(B)
+                       +\one_{\{|\mathcal P|\ge2\}},
+ \qquad M_* =\min_{\mathcal P}\mathcal M(\mathcal P).
+\end{equation}
+Equal orders are allowed when their nonconjugate primitive modes differ. They impose compatible divisibility constraints, not distinct mandatory recurrent classes.
+
+\begin{lemma}[Unit-circle modes of a reachable stochastic matrix]\label{lem:r72-cycles}
+Every nonzero coefficient mode $\zeta$ in a finite exponential response $e_1^{\mathsf T}Q^nd$ is an eigenvalue of the restriction of $Q$ to its reachable states. If $|\zeta|=1$, it occurs in a reachable closed irreducible class. If that class contains primitive root modes of orders in a set $J$, its number of states is at least $\operatorname{lcm}J$.
+\end{lemma}
+\begin{proof}
+Cayley--Hamilton gives a characteristic recurrence for the response. Distinct exponential sequences are linearly independent by the Vandermonde determinant. Substituting the recurrence therefore forces its characteristic polynomial to vanish at each mode with nonzero coefficient.
+
+Order the strongly connected components of the reachable transition graph to make $Q$ block triangular. An eigenvalue belongs to an irreducible diagonal block $B$, whose row sums are at most one. For $Bv=\zeta v$, choose a coordinate with maximal nonzero modulus. If $|\zeta|=1$, equality in the row-sum and triangle inequalities forces that row sum to be one and every positive successor to have the same modulus, with value $\zeta$ times the preceding value. Irreducibility propagates this to every coordinate and every row. Thus the block is closed in $Q$. Along each directed cycle of length $h$, one has $\zeta^h=1$. Applying this to every required mode in the block shows that every directed cycle length is a multiple of their least common multiple. A simple directed cycle exists and has length no greater than the number of states, proving the lower. This argument allows reducible $Q$ and arbitrary real stochastic entries.
+\end{proof}
+
+\begin{theorem}[Exact partition law for periodic stochastic memory]\label{thm:r72-periodic-memory}
+The least exact stochastic live-label count for \eqref{eq:r72-periodic-response}, with prescribed initial label and decoder in $[0,1]$, is exactly $M_*$. It is independent of the nonzero weights and preparation phases within the displayed probability-valid family.
+
+The least count when transitions must be deterministic but the terminal decoder may still be randomized is
+\[
+ P=\operatorname{lcm}(q_1,\ldots,q_r).
+\]
+For pairwise coprime $q_j\ge3$ with $r\ge2$, the stochastic count is $1+\sum_jq_j$, whereas the deterministic-transition count is $\prod_jq_j$. An invariant finite residual orbit therefore need not have minimal stochastic cardinality.
+\end{theorem}
+\begin{proof}
+Consider an exact realizing machine after removing unreachable labels. Lemma~\ref{lem:r72-cycles} assigns every required root to a reachable closed irreducible class. Assign each index to one such class and omit classes assigned no index. These assignments partition the indices, and their class sizes total at least $\sum_{B\in\mathcal P}\ell(B)$. If at least two assigned closed classes are reachable, the prescribed initial state cannot belong to any one of them: a closed class cannot reach another. At least one additional transient initial label is therefore necessary. This proves the lower $M_*$. It would be incorrect to omit this label by allowing a free mixed initial distribution.
+
+For the upper fix a partition. With one block, a deterministic cycle of length $P$ and decoder $d_k=b_k$ is sufficient. With $g\ge2$ blocks, take disjoint deterministic cycles of lengths $\ell(B)$ and one new initial label. Put $W_B=\sum_{j\in B}w_j$, $\lambda_B=W_B/\Gamma$, and on phase $k$ of block $B$ set
+\[
+ d_{B,k}=\tfrac12\left[1+\frac{\Gamma}{W_B}
+        \sum_{j\in B}w_j\cos(2\pi k a_j/q_j+\varphi_j)\right].
+\]
+The total absolute oscillatory amplitude is at most $\Gamma\le1$, so all decoder values lie in $[0,1]$. Give the initial label decoder $b_0$. Its first transition selects block $B$ with probability $\lambda_B$ and enters phase one modulo $\ell(B)$. All later transitions simply advance that cycle. Thus at time $n\ge1$ the output is $\sum_B\lambda_B d_{B,n}=b_n$, and equality at zero holds separately. There is no one-step phase error or uncounted block-selection state. This constructs exactly \eqref{eq:r72-partition-cost} labels; minimizing proves the stochastic formula.
+
+The exact period of $b$ is $P$. Indeed any period annihilates every nonzero exponential mode under shift minus identity, hence is divisible by each $q_j$. A deterministic finite machine has an eventual cycle. Its length must be an eventual period of $b$, and for a sequence already periodic from zero an eventual period is also a period from zero: shift any given identity far enough by multiples of $P$. That cycle length is therefore at least $P$. The $P$-cycle gives the matching upper. Finally, for pairwise coprime orders at least three, merging two or more singleton blocks replaces their sum by their product, strictly increasing cost even if a single initialization label is saved. Repeated splitting proves the stated special formula.
+\end{proof}
+
+For example, orders $3,5,7$ give exact stochastic memory $16$ and deterministic-transition memory $105$. Orders $4,6$ give $\min\{12,4+6+1\}=11$. Divisibility alone, e.g. orders $3,6$, gives $6$ rather than $10$. These contrasting cases are covered by the same all-real-stochastic lower, not a search restricted to proposed cycles. If a listed coefficient vanishes or conjugate modes cancel, one must first remove that mode; the formula is not continuous across deletion of spectral support.
+
+\begin{corollary}[Constructive minimal synthesis and a zero-noise plateau]\label{cor:r72-synthesis}
+The optimum partition is computable by at most $O(3^r)$ subset comparisons and least-common-multiple calculations on integers of bit length at most $\sum_j\lceil\log_2q_j\rceil$. After its partition is found, a minimal transition table has only deterministic cycle rows and at most one randomized initialization row. Producing all decoder entries requires at most $O(rM_*)$ evaluations and arithmetic operations in their specified exact number representation. This is an output-sensitive count, not a uniform polynomial bit bound for arbitrary real phases or exact sampling.
+
+Let $m_\alpha$ be the least count for the internally damped response
+\[
+ b_n^{(\alpha)}=\tfrac12\left[1+\alpha^n\sum_jw_j
+               \cos(2\pi n a_j/q_j+\varphi_j)\right],\quad0<\alpha\le1.
+\]
+Then $m_\alpha\le M_*$ for every $\alpha$, and $m_\alpha=M_*$ for all $\alpha$ sufficiently close to one. This is an exact multi-frequency endpoint plateau, not merely a limiting lower bound for each separate pole.
+\end{corollary}
+\begin{proof}
+For a subset $S$ put $D(\varnothing)=0$ and
+$D(S)=\min_{\varnothing\ne B\subseteq S}\{\ell(B)+D(S\setminus B)\}$.
+Compute these in increasing subset size, using a canonical distinguished index in $B$ to remove duplicate partitions if desired. The total number of subset pairs is at most $3^r$. For $r\ge2$ compare $\ell(\{1,\ldots,r\})$ with
+$1+\min_{\varnothing\ne B\subsetneq\{1,\ldots,r\}}[\ell(B)+D(B^c)]$.
+This separately charges the one-block and multiblock cases. The construction in the theorem proves the output counts. Real-algebraic weights and $e^{i\varphi_j}$ give algebraic controller entries, since the rational-angle roots are algebraic; arbitrary real phases retain their separate description requirement.
+
+In that construction every cycle has mean decoder $1/2$, because each nonconstant root averages to zero around its cycle. Choose a stationary row $\pi$ uniform on any one cycle, with zero mass at the transient initial label when present. Then $\pi d=1/2$. Replacing $Q$ by $Q_\alpha=\alpha Q+(1-\alpha)\one\pi$ preserves stochasticity on the same labels and gives
+\[
+ Q_\alpha^n=\alpha^nQ^n+(1-\alpha^n)\one\pi.
+\]
+This is the damped response, proving the upper. If sizes below $M_*$ occurred along $\alpha\uparrow1$, pad them to $M_*-1$ labels and take a convergent subsequence of their compact stochastic and decoder rows. Every fixed response coefficient passes to the limit, producing an undamped realization smaller than $M_*$. This contradicts the theorem and proves the plateau. No numerical cutoff for its first plateau point is claimed.
+\end{proof}
+
+\subsection{The exact leakage increment for the entire periodic mixture}
+The preceding count also survives decay-normalization. This requires more than applying the single-pole bound to each frequency separately, since those bounds would lose both the recurrent-class partition and its initialization charge.
+
+\begin{lemma}[No chains of critical classes in a power-bounded core]\label{lem:r72-critical}
+Let $A\ge0$ have bounded powers. No directed path connects two distinct irreducible diagonal blocks of spectral radius one.
+\end{lemma}
+\begin{proof}
+Suppose such blocks $B,C$ are connected. Choose a positive-weight path from a vertex of $B$ to a vertex of $C$ whose interior avoids both blocks, and let $W$ be the matrix with that path weight in the corresponding entry and zero elsewhere. Let its length be $h$. Perron vectors give a strictly positive left row $uB=u$ and a strictly positive column $Cv=v$. For each $0\le i,j\le n$, concatenate a length-$i$ path inside $B$, the fixed connecting path, and a length-$j$ path inside $C$. Their first exit from $B$ distinguishes different $i$, so they are distinct contributions to the powers. Therefore the $B,C$ block of $\sum_{k=0}^{2n+h}A^k$ dominates $\sum_{i,j=0}^nB^iWC^j$. Pairing with $u,v$ gives the lower $(n+1)^2uWv>0$. Bounded powers give an upper growing only linearly in $n$, a contradiction. The elementary Perron normalization used here is proved in Section~\ref{sec:r70-leakage}.
+\end{proof}
+
+\begin{theorem}[Periodic-mixture leakage law]\label{thm:r72-periodic-leakage}
+For every fixed $0<\lambda<1$, the least stochastic live memory of $u_n=\lambda^nb_n$, with $b$ as in \eqref{eq:r72-periodic-response}, is exactly
+\[
+ s(u)=M_*+1.
+\]
+The extra label is live until the actual commitment event. In the fixed squared-task embedding, these are exact optimal-observer counts at the original least cost $1/p$, with event-stopped and state-stopped total-label upper counts $\max\{M_*+1,2\}$ and $M_*+3$.
+\end{theorem}
+\begin{proof}
+The construction of Lemma~\ref{lem:r70-core} applied to a minimal realization of $b$ gives the upper $M_*+1$. For the reverse, take an arbitrary stochastic realization of $u$ with $M$ reachable labels. Its output-visible core $S$ has at most $M-1$ labels, includes the prescribed start, and realizes $u$. The path bound \eqref{eq:r70-path-bound}, together with $0\le u_n\le\lambda^n$, shows entrywise that $(S/\lambda)^n$ is bounded. Its required modes are the distinct roots $1,\zeta_j,\overline\zeta_j$ after scaling by $\lambda$, each with nonzero coefficient. Every required nonreal root lies in an irreducible block of radius one. Perron scaling of that block makes it stochastic without changing its graph or eigenvalues. Lemma~\ref{lem:r72-cycles} thus imposes the same least-common-multiple size for every group of assigned modes.
+
+By Lemma~\ref{lem:r72-critical}, distinct assigned critical blocks cannot reach one another. If at least two are reachable from the prescribed initial label, that label lies outside all of them and adds a further core state. Hence the core has at least $\sum_B\ell(B)+\one_{\{|\mathcal P|\ge2\}}\ge M_*$ labels. Including the necessarily inactive label gives $M\ge M_*+1$. The argument does not impose a nonexistent globally positive Perron vector on a reducible core. The squared-task and stopping interpretation follows from the unchanged physical embedding and established role packing, not from interpreting a leakage event as an observed halt.
+\end{proof}
+
+A protected target for \eqref{eq:r72-periodic-response} is obtained by the block-qubit preparation and terminal effect of Theorem~\ref{thm:r69-finite-mixture}; leakage appends its actual dark physical state. These are sufficient physical realizations, not minimal physical-dimension claims. The standard square-loss flag embedding is distinct from a probability decoder supplied as an oracle. For a prescribed smaller observer size, the finite rational-resolvent tests of Theorem~\ref{thm:r70-finite-tests} can also witness the new exact counts, using response order $2r+1$. Their number of models grows with the tested memory. The partition law does not solve the different general-$M$ squared-sign risk curve, nor declare arbitrary controlled boundary stopping classified.
