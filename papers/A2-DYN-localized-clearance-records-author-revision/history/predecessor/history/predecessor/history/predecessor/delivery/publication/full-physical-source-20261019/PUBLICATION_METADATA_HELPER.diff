@@ -1,0 +1,64 @@
+--- prepare_metadata_transport.py (unchanged)
++++ prepare_publication_metadata.py
+@@ -4,8 +4,12 @@
+ This helper performs no network calls or Git/ref operations. The caller must
+ provide the actual preceding inventory and frozen source/workflow hashes; the
+ helper does not infer a completed CI run from a filename or a declared parent.
+-Only PUBLICATION_STATUS.json may change at an existing path. All added paths
+-must lie in the explicitly recorded publication/source-gate prefixes.
++Only PUBLICATION_STATUS.json, PUBLICATION_RECEIPT.json, and
++REMOTE_TRANSPORT_STATUS.md may change at an existing path; the pinned source
++manifest must explicitly exclude all three. All added paths must lie in the
++explicitly recorded publication/source-gate prefixes. The original helper is
++preserved byte-for-byte separately; this publication-metadata variant makes
++its different existing-path scope explicit.
+ """
+ from pathlib import Path
+ import argparse
+@@ -17,6 +21,10 @@
+ 
+ sys.dont_write_bytecode = True
+ WORK = Path('/workspace/scratch/b5cc344d4c8e/iteration-20261019b')
++ORIGINAL_HELPER_SHA256 = 'bc7eea892fa3d8bbbbd9ac0db99e7684ff99f96d0786922f359ddcaf953e9e06'
++ALLOWED_EXISTING_METADATA = frozenset((
++    'PUBLICATION_STATUS.json', 'PUBLICATION_RECEIPT.json', 'REMOTE_TRANSPORT_STATUS.md',
++))
+ 
+ 
+ def require(ok, message):
+@@ -64,8 +72,12 @@
+     manifest_path = adapter.ROOT / 'SOURCE_MANIFEST.json'
+     require(hashlib.sha256(manifest_path.read_bytes()).hexdigest() == args.manifest_sha256,
+             'Frozen source manifest changed')
++    manifest = json.loads(manifest_path.read_bytes())
++    require(ALLOWED_EXISTING_METADATA <= set(manifest.get('excluded_root_files', [])),
++            'Pinned manifest does not explicitly exclude all three publication metadata files')
+     gate = module('current_source_gate', adapter.ROOT / 'tools/package_source_manifest.py')
+     manifest_result = gate.verify_manifest(adapter.ROOT)
++    require(manifest_result.get('verified') is True, 'Actual frozen source/native closure gate failed')
+     for path in (adapter.WORKFLOW, adapter.ROOT / 'ci' / adapter.WORKFLOW_NAME):
+         require(hashlib.sha256(path.read_bytes()).hexdigest() == args.workflow_sha256,
+                 'Frozen dedicated workflow changed')
+@@ -87,8 +99,8 @@
+     require(changed, 'No metadata delta to prepare')
+     modified = [row['path'] for row in changed if row['path'] in previous]
+     added = [row['path'] for row in changed if row['path'] not in previous]
+-    require(all(path == 'PUBLICATION_STATUS.json' for path in modified),
+-            'Existing predecessor bytes changed outside PUBLICATION_STATUS.json')
++    require(all(path in ALLOWED_EXISTING_METADATA for path in modified),
++            'Existing predecessor bytes changed outside the three declared publication metadata files')
+     require(all(path.startswith((args.publication_prefix, args.source_gate_prefix))
+                 for path in added), 'Added file lies outside publication metadata scope')
+ 
+@@ -146,6 +158,11 @@
+         'changed_paths': [row['path'] for row in changed],
+         'modified_existing_paths': modified, 'added_paths': added, 'removed_paths': [],
+         'allowed_added_prefixes': [args.publication_prefix, args.source_gate_prefix],
++        'allowed_modified_existing_paths': sorted(ALLOWED_EXISTING_METADATA),
++        'all_allowed_existing_paths_explicitly_excluded_by_frozen_manifest': True,
++        'helper_variant': 'prepare_publication_metadata.py',
++        'original_helper_sha256': ORIGINAL_HELPER_SHA256,
++        'publication_helper_sha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+         'frozen_inputs_unchanged': True, 'source_manifest_sha256': args.manifest_sha256,
+         'workflow_sha256': args.workflow_sha256, 'manifest_verification': manifest_result,
+         'new_blob_uploads': len(large_by_sha),
