@@ -4,7 +4,7 @@
 
 This is an author revision of the complete native A2-DYN manuscript. The entry is [main.tex](main.tex); the actually compiled [255-page manuscript](delivery/A2_DYN_localized_clearance_records.pdf) contains all 67 inherited native proof bodies 260–326 and six new bodies 327–332. It uses the original triangular Lorentz gas, radius interval, physical clock, collision section, exact joint record and original raw pointwise/inversion target.
 
-The current source and local execution packet are complete. Remote publication and exact-commit CI are separate facts: consult [PUBLICATION_STATUS.json](PUBLICATION_STATUS.json) and actual publication receipts. A prepared workflow is not a completed run. The full raw pointwise local limit theorem and four-coordinate inverse conclusion are **not** asserted complete by this revision.
+The complete source was published at commit `9bd4ab343bb8a0f78b6a6380ae1f1e80a976d761`, article tree `1fb3b20b29e3fe447bdae42f0faca0baf4f6b9cc`. Its actual [exact-SHA CI run 39712256295](https://github.com/TrillionniumFoundation/theta-theory/actions/runs/39712256295) completed successfully after executing the clean-checkout `bash build.sh` wrapper. The original artifact ZIP, actual API/job records and independent reconstruction are retained under [evidence/publication](evidence/publication). Consult [PUBLICATION_STATUS.json](PUBLICATION_STATUS.json) for precise source-run and later evidence-carrier scope. The full raw pointwise local limit theorem and four-coordinate inverse conclusion are **not** asserted complete by this revision.
 
 ## Mathematical additions
 
@@ -61,7 +61,7 @@ The complete predecessor is commit `03d651b8709d28d90aa435fc12d608ad9c945e23`, a
 
 The latest applicable controlling A2-DYN report is commit `f01482035a0b945b50f1f9c30f30ef35077558dc`, report blob `9c68b0e8b31cd196c732514a29ebd44d95964243`. It explicitly examined author commit `31792379408c5ace2c09284c2eb22d2331023433` through native 276. Its unresolved concerns apply to the unchanged target; it did not review the later author proofs. It identifies itself as an author-requested AI-assisted assessment, not a journal decision or independent human specialist reconstruction. Reviews of the distinct A2 geometry paper are excluded.
 
-The fresh census covers 1,301 repository heads, 434 A2-DYN refs at 218 distinct commits, and all 91 distinct retained original report bodies. Complete-source selection, excluded incomplete candidates, historical unresolved requests, source trees and actual earlier CI are documented in [SOURCE_PROVENANCE.md](SOURCE_PROVENANCE.md) and [HISTORY_PRESERVATION_AUDIT.md](HISTORY_PRESERVATION_AUDIT.md).
+The pre-publication census covers 1,301 repository heads, 434 A2-DYN refs at 218 distinct commits, and all 91 distinct retained original report bodies. A fresh post-publication check of all five relevant A2-DYN ref prefixes found 435 refs at 219 distinct commits: the sole addition was this revision branch; all previous 434 refs and all 178 review heads kept their exact SHAs. The post-publication check is a complete A2-DYN-prefix freshness check, not a second full-repository census. Complete-source selection, excluded incomplete candidates, historical unresolved requests, source trees and actual earlier CI are documented in [SOURCE_PROVENANCE.md](SOURCE_PROVENANCE.md) and [HISTORY_PRESERVATION_AUDIT.md](HISTORY_PRESERVATION_AUDIT.md).
 
 ## Reading and audit entry points
 
@@ -76,6 +76,7 @@ The fresh census covers 1,301 repository heads, 434 A2-DYN refs at 218 distinct 
 | [VALIDATION_REPORT.md](VALIDATION_REPORT.md) | Actual local commands, outputs, hashes, internal proof corrections and limits of verification |
 | [evidence/current-execution](evidence/current-execution) | Actual source, mathematics, compilation, historical rebuild and visual-inspection receipts |
 | [audit/integration-cross-checks](audit/integration-cross-checks) | Author-internal proof and execution reconstruction; no external-review claim |
+| [evidence/publication](evidence/publication) | Actual source commit/tree/ref receipts, independently reconstructed publication scope, successful exact-SHA CI, original artifact ZIP and its reproducible reconstruction |
 | [Historical main](delivery/historical-main.pdf) / [historical supplement](delivery/historical-supplement.pdf) | Actually rebuilt retained 26/883-page originals |
 
 ## Reproduction
