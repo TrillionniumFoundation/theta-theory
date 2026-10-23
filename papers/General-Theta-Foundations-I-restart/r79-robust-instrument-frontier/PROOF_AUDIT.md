@@ -1,0 +1,45 @@
+# Proof audit — General Theta Foundations I, R79
+
+## Evidence and authority
+
+This is an author-side audit of written mathematics, source inheritance and reproducible finite diagnostics. The internal AI challenges in `provenance/r79-audit/referee_analysis.md` and the initial `provenance/r79-audit/R79_NEW_PROOF_AUDIT.md`, followed by the final source-hashed `provenance/r79-audit/R79_FINAL_STABILITY_AUDIT.md` are not external referee reports or independent human expert evaluations. Ordinary mathematical proofs appear in the current native article and supplement. A consistent theorem map and successful diagnostics do not formally verify those proofs or establish worldwide novelty.
+
+The complete R78 source is the authority for 240 inherited numbered statements. All 694 predecessor files are authenticated by `provenance/R78_COMPLETE_PRESERVATION.json`; unchanged proof-body hashes and the complete supplement suffix are checked. Earlier proof-ledger nondisplay fields are preserved exactly, and a separate current locator layer points to their actual pages. The R58 companion's complete tree remains `007a1d7d5f5b880c670fc6f47a812ebd476bfb00`.
+
+## Additional proof chain and challenged failure modes
+
+| Link | Load-bearing reasoning | Failure mode explicitly prevented |
+|---|---|---|
+| Primitive feasibility | A spectral-radius-one positive failure map has a nonzero positive Cesaro fixed point; its support is closed and dark for every full-support command. Compactness bounds the fallback resolvent. | Uniform feasibility is not inferred from one favorable initial state, nor from individual command success. This is inherited theory, reproved. |
+| Reachable support | Increasing Kraus supports stabilize within Md dimensions; a finite positive reachable sum dominates its support projection. Initial cost tails imply finite cost on that corner. | Inaccessible dark labels and physical directions do not have to terminate. Finite support stabilization is inherited/classical. |
+| Exact potentials | Telescoping a supported positive supersolution bounds every finite paid prefix. Conversely the restricted geometric series gives the true witness. | A global resolvent is not required before regularization. No hidden external theorem supplies a missing potential. |
+| Attained robust frontier | The objective is the supremum of continuous finite-prefix costs over models and states, hence lower semicontinuous on the compact controller simplex. | Witnesses need not have a common bound or vary continuously. Attainment over controllers does not imply an attained worst model. |
+| Model quantifiers | One common controller precedes the universal model; support and witness follow it. | A model-dependent proof witness is not an observed model, online adversarial switching, or a different controller per model. |
+| Algebraic synthesis | Projection identities, invariance, principal-minor PSD tests and cost inequalities yield a finite first-order real formula. The budget ray has an attained algebraic endpoint. | The universal model quantifier is retained; no efficient algorithm or actually executed general elimination is asserted. |
+| Same-M label restart | Each initial-label segment has cost at most b and restart probability at most epsilon*b/c_*. Bound finitely many restart generations before monotone convergence. | No circular manipulation of an infinite expectation. No physical reset, extra label, free clock, persistent coin or uncounted initial mixture. |
+| Global witnesses | Any label reaches success or a marked restart after at most 1/epsilon expected calls; afterwards the all-initial-state bound applies. | A small-probability reachable continuation can have arbitrarily high original cost; regularization, not an assumption, provides its common bound. |
+| Primitive transfer | Include success in normalized output; center the continuation observable at K/2. Scale the source witness using the target positive-cost floor. | The trace-zero factor is not applied to unnormalized failure outputs. The source and target lower cost bounds are explicit. |
+| Uniform-all-M modulus | Use the same regularized controller, pair source and target models only offline, choose epsilon=sqrt(eta), and reverse the directed inequality. | No label growth hidden in a finite history tree; constants are independent of M. eta=0 is a limit through positive epsilon. No sharp square-root claim. |
+| Uniform success refinement | A common primitive success floor gives resolvent norm at most 1/kappa and witnesses at most c^*/kappa. Exact scalar values establish sharp local coefficients. | This stronger hypothesis is not silently applied to the general class, which permits individual dark commands. Exponential decay is in prefix horizon, not generally in label count. |
+| History limit | Count all action/report prefixes and one fallback label; positive paid duration bounds tail probability. Infimize without a history optimizer. | Pure initialization and depth storage are charged. No universal finite saturation is concluded. |
+| Exact examples | Golden-ratio lower bound ranges over arbitrary randomized two-label updates; a three-label construction meets the unrestricted lower bound. | The positive-probability three-label example gives an achievable improvement, not an unproved exact V3; the golden-ratio model separately has an exact all-M law. |
+
+The current source supplies full proofs for every link. Supporting old facts are cited internally and externally, and their roles are declared in `provenance/R79_DECLARED_STATEMENTS.json`. The declaration inventory counts numbered additions, not novel theorems.
+
+## Inherited closure and the limits of the extension
+
+The compact risk enclosure in the retained Section 19 already uses centered primitive distances, finite history completion and a square-root rate with memory allowed to grow. The additional result keeps M unchanged. It does not remove the older theorem's positive cost slack for **terminal-risk optimization subject to a boundary cost constraint**. That problem is different from continuity of the optimum cost itself. The retained boundary discontinuity and risk statements therefore remain intact.
+
+The reset theorem's report-only deterministic routing uses reported physical sufficiency for a known instrument. A fixed hidden model retains information in the history even after a physical reset. The new positive-probability example gives a direct same-palette obstruction, and its nonreset qubit lift explains the physical boundary. No reset-only normal form is exported to arbitrary back-action.
+
+All original finite-order quantum measurement, two-stage reset, rank-constrained discrimination, minimax/dual attainment, causal history comparison, memory/communication, spectral and local geometric statements remain active and separately scoped. Their previously accepted hypotheses are not strengthened merely to simplify the new proof, and no independent A1/A2 problem is treated as solved.
+
+## Actual verification protocol
+
+`verify.py` requires the exact current source commit at Git HEAD in strict mode. It computes the source tree directly, verifies the predecessor tree, rejects changes outside the new source path, checks the full 694-file preservation mapping against the actual Git tree, authenticates all historical text archives and current ref/commit payloads, and checks the complete theorem map. The later publication receipt records the actual execution result and source identity; the source does not contain a self-issued future PASS.
+
+The 27 inherited diagnostic sources remain byte-identical. Two current suites add independent exact rational and quadratic-field probes: quantum forward/backward cost identities, inaccessible quantum dark directions, support-changing model examples, restart/transfer inequalities, golden-ratio optimality bounds, random-update controllers and the pure-start resource convention. They run both normally and under `python -O`, with identical JSON required and explicit exception-based checks. These finite probes do not prove a quantified statement over all controllers or models. Floating inherited probes report their finite tolerances separately.
+
+Native paired LaTeX and the companion use three passes each, without shell escape. Actual compiled label/number/page/source locators must match the sealed index. Final logs are rejected for overfull boxes, unresolved references/citations, duplicate labels or unfinished rerun warnings. The publication package contains actual PDF hashes, text hashes, logs, diagnostic outputs and a visual QA record. Draft compiles remain labeled draft; the earlier R78 missing-SymPy run is recorded as a failed dependency attempt followed by an actual successful strict rerun.
+
+A source-bound local execution is not a GitHub Actions run. Hosted CI is reported only if actually executed for the correct SHA. Formal proof verification, independent human review and editorial acceptance remain unperformed unless a separate authenticated record explicitly says otherwise.

@@ -1,0 +1,43 @@
+# Controlling source and report selection for the continued author revision
+
+## Decision
+
+Continue the complete **General Theta Foundations I: Acquired Geometry and Causal Resource Transfer**, by Qian Qi, from R77 source commit `18b76a739898d2734c4f5bfcb609db0786cd4c11`. The exact paper subtree is `c48519790add40e3c67aa245aa8e5ee1fcc47de6` at `papers/General-Theta-Foundations-I-restart/r77-shared-preparation-and-memory`. The independently authenticated publication commit is `300807bad3eb00ad8e1975ae9ff1ea1971a333db`, whose direct parent is the source commit and whose R77 mathematical source subtree is identical. Its branch is `revision/general-theta-foundations-i-r77-author-structure-2026-10-23`.
+
+This choice follows source content, exact ancestry, complete native input files, preservation records and source-bound publication, rather than the number 77 or the branch date. All 622 source files were freshly read and matched to their committed Git blobs. All 45 publication files were separately matched. The three published PDFs are readable and have the expected 39-page main article, 190-page current supplement and 37-page independent R58 companion. Their SHA-256 values agree with the publication receipt. This audit authenticated the predecessor's deposited native build evidence; it does not present that old run as a new R78 compile or CI run.
+
+The latest substantive deposited report still controlling surviving objections is the R65 report at commit `358481b21ceeeedb1205ebd30f86982e32a2cb04`, original root path `GENERAL_THETA_FOUNDATIONS_I_RESTART_R65_BOUNDARY_MEMORY_EXTERNAL_REFEREE_REPORT_R65.md`. Its exact blob is `d1ff9c5662390156ee212c82b173e86a21180e84`, SHA-256 `8c7d45d762736009fda667621fdf5019fa934f5f45f39364c747f837e6d7343c`, 45,974 bytes. A fresh GitHub blob readback equals the complete retained report byte-for-byte. The report assessed R65 source `0469eb4f852eeea953cb3725d4b34dfdd2bf9d36`, publication `ee79ca9114f8009d62c056d07381b766645e3fc4`, and paper subtree `3a0ea744d1e4721f2c47b5e038023becd4da2ce0`.
+
+There is **no newly deposited, as-yet-unanswered independent report on R77** in the checked repository snapshot. R65 has already received substantive author responses in R66–R77; it remains controlling only for surviving concerns and the history of accepted arguments. It did not review R77. A new revision must carry those responses and their precise hypotheses forward rather than treating every old issue as reopened or treating the author's later answers as independent acceptance.
+
+## Complete inventory and content authentication
+
+GitHub's branch endpoint was read through 14 pages at 100 entries per page: thirteen complete pages and a final six-entry page. All 1,306 branch names and SHAs agree exactly with the independent `git/matching-refs/heads/` snapshot. The 872 distinct branch-head commit payloads were freshly read and authenticated by Git SHA. Traversing every snapshot head visits 2,710 ancestors. Filtering all versioned paths for General Theta/GTF-I and shared repository-level proof, review, pipeline and governance material yields 1,056 scoped changing commits and 175,273 scoped versioned paths.
+
+The audit actually read, decoded and hashed 7,137 distinct eligible text blobs, comprising 108,165,876 bytes, with no missing objects or unhandled decoding failures. Four historical eight-bit LaTeX transcripts were read through byte-preserving Latin-1; original bytes remained the hash authority. The retained historical archive parts, their exact delta and the all-ref extension were streamed directly without extracting or duplicating their contents. New R77 native files and publication records were read from authenticated Git objects or source files. A compressed content index, version map and lexical issue index record the result.
+
+All 132 General Theta review branches remain unchanged. The 3,497 recorded report-candidate path/blob pairs were independently rechecked at those exact heads with zero mismatches. The all-ref search finds no new report content beyond the already classified historical corpus. This includes review branches whose names do not imply an actual new report.
+
+Relative to R77's frozen pre-publication audit, precisely two branch refs were added and no old branch was changed or deleted. Four new commits account for those additions: the R77 source and publication, and the A2-DYN section-multipliers source and receipt. The two A2-DYN commits modify their own paper directory and their dedicated workflow only. They are not a General Theta manuscript or report. Exact changed paths are retained in `NEW_COMMIT_SCOPE_CLASSIFICATION.json`.
+
+This is complete retrieval, hash authentication, text decoding and lexical issue indexing within the declared path scope. It is not a claim to have independently re-proved every historical line, certified priority, commissioned a human report, or obtained editorial approval. Unrelated A1/A2 manuscripts are identified as separate work; their favorable assessments cannot certify this paper.
+
+## Exclusions with controlling evidence
+
+* `review/general-theta-foundations-i-v96-independent-referee-r63-2026-10-06` still points to `e38f757ee13158c315e9328c961eb84e3e9a000d`, the same author verification head as the v96 response branch. Its commit message concerns reconstructing an existing author revision. It contains no distinct R63 report. The applicable original-paper v94 independent report remains R62 at `58581d5a6391642fb0849f8c8bb49c8c0c20b63c`.
+* The v94 pipeline audit is pipeline evidence, not a subsequent independent manuscript review. Copied reports, report indexes, build workflows and historical multi-paper reports are classified by content and scope rather than their filenames.
+* The later R71 author proof-clarification branch, head `ecc9b7b26acc4000527295a6dc1755bfffd2f1b4`, is a narrow older-line patch. R77 already reconciles its two valid clarifications and retains the exact clarified leakage proof. It is not a complete later replacement for R77.
+* Reserved or partial source-transfer branches and stale PDFs remain subordinate to actual native mathematical content. No partial transfer supersedes the complete R77 input graph.
+* The predecessor's local strict PASS and finite computations remain attached to their actual R77 source SHA. No hosted CI success is inferred: the deposited R77 publication explicitly records no observed hosted source run.
+
+## Historical dependencies and content preservation
+
+The twelve central historical source/dependency identities and four controlling/historical report identities were freshly rechecked against actual trees and authenticated content hashes. These include the R72–R76 mathematical line, the complete independent R58 companion, the original v96 source, and the distinct TR-OMG/TR-OMD sources. The companion subtree remains `007a1d7d5f5b880c670fc6f47a812ebd476bfb00`. Full exact records are in `HISTORICAL_DEPENDENCIES_RECHECK.json` and `CONTROLLING_AND_HISTORICAL_REPORTS_RECHECK.json`.
+
+R77's inherited source already contains the original causal-experiment and predictive-state results; resource-constrained comparisons; finite-order quantum and two-stage reset experiments; communication and memory conventions; rank-constrained discrimination; primal-dual and variational results; spectral and local-geometric results; optimal-policy realization; all active supplements; the independent companion; and authenticated historical derivations. These mathematical bodies remain the inheritance to preserve. The current revision should add or repair mathematics in this complete source, with explicit preservation mapping whenever material is moved.
+
+## Reproduction notes and actual corrections
+
+`verify_census.py` accepts the pinned ref snapshot and read-only Git/object caches plus the retained R77 source. It performs no fetch or remote write. `current-census/CENSUS_RECEIPT.json` records the executed result. `BRANCH_PAGINATION_CHECK.json` records the separate remote enumeration.
+
+An initial Git-only attempt correctly stopped because the partial local clone lacked 6,333 historical text blobs. Its failure receipt remains in `full-scan/INITIAL_ATTEMPT.json`; it is not reported as success. The succeeding scan streamed the authenticated retained archives and resolved every missing text blob. An initial candidate-difference calculation looked for the all-ref extension index with an incorrect `.json` suffix; the actual retained index is `.json.gz`. This was corrected, and all 26 apparent additions proved to be already classified historical reports/workflows. `REPORT_CLASSIFICATION_CORRECTION.json` preserves that correction; no content-authentication result changed.

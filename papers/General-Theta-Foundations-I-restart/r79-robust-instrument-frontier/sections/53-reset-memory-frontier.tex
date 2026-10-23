@@ -1,0 +1,529 @@
+\section{The complete finite-memory frontier for reset control}
+\label{sec:r78-reset-frontier}
+
+The optimal-memory threshold and the cost at every smaller memory are
+different invariants.  We now determine the latter by an attained finite
+variational principle.  The result applies to the full reset class of
+Section~\ref{sec:reset-control}; strict positivity of the failure effects
+is not required.  In particular it includes reports which a least-favorable
+preparation cannot reach.  The key reduction preserves the controller's
+existing command rows while removing all dependence of the post-report
+update on the preceding label and command.
+
+Keep the primitive data $E_{a,j},G_a,\sigma_i$, the positive cost floor,
+and the absence of a closed failure set from
+Theorem~\ref{thm:reset-control}.  For a command distribution
+$p\in\Delta(\mathcal A)$ define
+\[
+ c_i(p)=\sum_a p_a c_{ia},\qquad
+ Q_{ij}(p)=\sum_a p_a Q_{iaj},\qquad
+ G(p)=\sum_a p_aG_a,\qquad E_j(p)=\sum_a p_aE_{a,j}.
+\]
+All these quantities concern the actual reported reset state.  There is
+no additional measurement, cost observation, free clock, or access to the
+unknown initial density matrix.
+
+Let $V_M$ be the infimum of the worst-initial-state expected cost over
+autonomous controllers with at most $M\ge1$ live labels, a prescribed
+pure initial label, and mandatory stopping at success.  The command row
+at a label can be mixed.  Updates after a failure may initially depend
+stochastically on the old label, the sampled command, and its report.
+Controllers with infinite worst-state cost do not affect the infimum.
+
+\subsection{A memory-preserving deterministic update theorem}
+
+\begin{theorem}[Dominance with the same command rows]
+\label{thm:r78-palette-normal-form}
+Suppose an $M$-label controller has finite worst-initial-state cost $C$,
+and its command rows are $p^1,\ldots,p^M$, with pure initial label $1$.
+There is another controller with these same rows and the same initial
+label whose update after report $i$ is one deterministic label $k(i)$,
+independent of the preceding label and command.  Its expected cost is
+no greater than the original cost at every initial density matrix.
+
+More precisely, the finite system
+\begin{equation}\label{eq:r78-palette-bellman}
+ x_i=\min_{1\le k\le M}
+       \left\{c_i(p^k)+\sum_jQ_{ij}(p^k)x_j\right\}
+\end{equation}
+has a unique finite nonnegative solution, with $0\le x_i\le C$.
+Choose $k(i)$ attaining the minimum.  The resulting continuation is
+proper from every reset state, and its full cost from an initial $\rho$
+is exactly
+\begin{equation}\label{eq:r78-palette-start}
+ \tr\bigl(\rho H(p^1,x)\bigr),\qquad
+ H(p,x)=G(p)+\sum_jx_jE_j(p).
+\end{equation}
+This is a pointwise cost comparison, without a convexification of the
+hard memory constraint.
+\end{theorem}
+\begin{proof}
+Regard the finite list of rows as the available choices at each reset
+state.  A choice $k$ has mean cost $c_i(p^k)$ and substochastic reset
+transition row $Q_{ij}(p^k)$.  Any extra information about the sampled
+command or earlier private coins does not alter the physical state
+$\sigma_j$ after report $j$.
+
+The original controller can be started with label $1$ and physical
+state $\sigma_i$, for every $i$: the robustness quantifier includes
+\emph{all} initial density matrices.  This gives, for the same list
+of rows, a proper history-dependent policy of cost at most $C$ from
+each reset state.  This comparison restart is used only to prove
+finiteness; it is not an additional operation supplied to the eventual
+controller.  In particular it remains valid when some reset reports
+are inaccessible from a least-favorable preparation.
+
+Starting the finite-horizon recursion for the displayed row choices
+at zero gives increasing vectors bounded above by $C\mathbf1$.
+Their limit $x$ is finite and satisfies
+\eqref{eq:r78-palette-bellman}.  For a minimizing selector $k(i)$,
+iterate its equality through a finite horizon.  The accumulated
+expected cost is bounded by $x_i$.  The positive cost floor therefore
+bounds the sum of survival probabilities, so the selector is proper
+from every state.  The bounded remaining potential tends to zero;
+its expected total cost is $x_i$.
+
+Conversely Bellman's inequality holds conditionally at each call of
+any policy using these rows, even if it retains the sampled command
+and earlier coins.  Telescope it to a finite horizon.  For a
+finite-cost policy, the survival remainder vanishes by the same
+positive floor, proving that its cost from reset state $i$ is at
+least $x_i$.  Infinite-cost policies cannot improve the bound.  The
+same verification applied to any finite nonnegative solution gives
+uniqueness.
+
+After the original first call, each reached continuation from report
+$j$ uses the same list of rows and hence costs at least $x_j$.
+Conditioning on that call proves that its cost at every $\rho$ is
+at least \eqref{eq:r78-palette-start}.  The new controller starts
+with row $p^1$ and, after report $j$, writes precisely the existing
+label $k(j)$.  Thereafter it implements the minimizing selector and
+attains this expression.  The actual device thus uses at most the
+same $M$ labels, with no uncounted row-selection memory.
+\end{proof}
+
+The all-initial-state quantifier is essential to the bounded comparison
+in this proof.  Properness for just one supplied initial state would
+not by itself imply a finite continuation value at every reset state.
+Nor does the theorem assert that mixed command rows can always be
+replaced by pure commands: only their post-report selection is made
+deterministic.
+
+\subsection{A compact exact variational principle}
+
+Choose once and for all a full-support row $\bar p$, for example the
+uniform row on $\mathcal A$.  The proof of
+Theorem~\ref{thm:reset-control} makes $\bar Q=(Q_{ij}(\bar p))$
+transient.  Consequently
+\begin{equation}\label{eq:r78-explicit-cap}
+ \bar x=(I-\bar Q)^{-1}(c_i(\bar p))_{i=1}^s,
+ \qquad C_0=\lambda_{\max}H(\bar p,\bar x)<\infty.
+\end{equation}
+The constant one-row controller has worst-state cost $C_0$, and
+$\bar x_i=\tr(\sigma_iH(\bar p,\bar x))\le C_0$.
+Thus this is a primitive, explicit compactness bound, not an assumed
+upper bound on an unknown optimal trajectory.
+
+For $k:\{1,\ldots,s\}\to\{1,\ldots,M\}$ let $\mathcal F_{M,k}$
+consist of the rows $p^1,\ldots,p^M\in\Delta(\mathcal A)$ and
+$x\in[0,C_0]^s$ satisfying
+\begin{equation}\label{eq:r78-supersolution}
+ x_i\ge c_i(p^{k(i)})+\sum_jQ_{ij}(p^{k(i)})x_j
+ \qquad(1\le i\le s).
+\end{equation}
+There are $M^s$ possible selectors and each corresponding feasible
+set is compact; some of them may be empty.
+
+\begin{theorem}[Exact attained frontier at every memory]
+\label{thm:r78-reset-frontier}
+For every $M\ge1$,
+\begin{equation}\label{eq:r78-full-frontier}
+ V_M=\min_k\ \min_{(p^1,\ldots,p^M,x)\in\mathcal F_{M,k}}
+             \lambda_{\max}H(p^1,x).
+\end{equation}
+The minimum is finite and attained, and an attaining controller has
+deterministic report-dependent updates as in
+Theorem~\ref{thm:r78-palette-normal-form}.  For $0\le b\le C_0$,
+there is an $M$-label controller of worst-state cost at most $b$ if
+and only if one of the finite systems
+\begin{equation}\label{eq:r78-budget-certificate}
+ (p^1,\ldots,p^M,x)\in\mathcal F_{M,k},\qquad
+ H(p^1,x)\preccurlyeq bI
+\end{equation}
+is feasible.
+
+In particular $V_M$ is nonincreasing in $M$ and equals the unrestricted
+value $V_*$ once $M\ge\min(s,|\mathcal A|)+1$.  The exact optimal
+label count, without a strict-exposure hypothesis, is
+\begin{equation}\label{eq:r78-general-threshold}
+ m_{\mathrm{opt}}=
+ \min\{M:\text{\eqref{eq:r78-budget-certificate} is feasible at }b=V_*\}.
+\end{equation}
+Every $M<m_{\mathrm{opt}}$ has the strict gap $V_M>V_*$.
+For algebraic primitive data, $V_M$, $m_{\mathrm{opt}}$, and an
+attaining controller admit finite exact real-algebraic procedures.
+No polynomial complexity or general minimax saddle at fixed $M$ is
+asserted.
+\end{theorem}
+\begin{proof}
+A feasible supersolution bounds every finite-prefix continuation
+cost under the displayed selector by $x_i$.  The positive cost floor
+therefore makes that selector proper from every reset state.  Its
+true continuation vector is at most $x$, and its full expected cost
+operator is at most $H(p^1,x)$, because every $E_j(p^1)$ is positive
+semidefinite.  Thus every feasible point is an actual controller
+upper certificate.
+
+Conversely take any controller of worst-state cost $b\le C_0$.
+Theorem~\ref{thm:r78-palette-normal-form} supplies its row-list
+Bellman vector $x\le b\mathbf1$, a minimizing selector, and a
+cost operator bounded by $bI$.  These are feasible in
+\eqref{eq:r78-budget-certificate}.  The bound $x\le b\mathbf1$
+uses the comparison starting at each $\sigma_i$ with label $1$;
+it is not inferred from positive exposure of a particular dual state.
+
+All rows equal to $\bar p$, with $x=\bar x$, give a feasible point
+of value $C_0$, for every $M$.  A finite union of the compact
+$\mathcal F_{M,k}$ is therefore nonempty and the continuous
+objective attains its minimum.  If the controller infimum is strictly below $C_0$, apply the converse
+to an approximating sequence below $C_0$; if it equals $C_0$, use
+the displayed one-row certificate.  Together with the first implication,
+this identifies the minimum with the controller infimum.  At a minimizing feasible
+point the constructed controller cannot have strictly smaller
+worst-state cost, since that would contradict the equality of the
+infima.  This proves actual attainment as well as the budget
+equivalence.
+
+Allowing duplicate rows shows monotonicity.  The unrestricted
+implementation in Theorem~\ref{thm:reset-control} proves the stated
+finite saturation bound.  At every smaller $M$, equality with $V_*$
+is equivalent to an attaining optimal controller by the result
+already proved, giving \eqref{eq:r78-general-threshold} and the
+strict-gap assertion.  This supplies a general variational
+classification even where the simpler transversal formula of
+Theorem~\ref{thm:r77-reset-cover} is inapplicable.
+
+For algebraic data, $\bar x$ and $C_0$ are algebraic.  For each
+selector, the row constraints and
+\eqref{eq:r78-supersolution} are polynomial inequalities with
+algebraic coefficients.  On separating real and imaginary parts,
+the Hermitian inequality in \eqref{eq:r78-budget-certificate} is
+equivalent to nonnegativity of its principal minors.  Exact
+real-algebraic elimination determines its feasible budget set and
+least endpoint; compactness ensures that endpoint is included and
+provides algebraic attaining coordinates.  Finally enumerate the
+finite range in \eqref{eq:r78-general-threshold}.  This is an exact
+computability conclusion from the proved finite system, not a
+claim that a numerical optimization certifies a tie or that an
+elimination computation has been performed for arbitrary inputs.
+\end{proof}
+
+With the inherited single terminal decoder, event stopping has the
+same total-label frontier $V_M$.  A state-stopped device with $M+1$
+total labels has the live-label frontier $V_M$, since its terminal
+label is disjoint.  The prescribed pure start is already charged
+in \eqref{eq:r78-full-frontier}: $p^1$ is the command distribution
+at a counted initial label, not a freely mixed choice of hidden
+initial labels.
+
+\begin{proposition}[Continuity of the full frontier]
+\label{prop:r78-frontier-stability}
+Fix the Hilbert dimension and the finite command and report alphabets.
+For every fixed $M$, $V_M$ is continuous in the primitive effects,
+costs, and reset states on the set of valid reset instruments with a
+positive cost floor and no closed failure set.  Thus if $V_M>V_*$ at
+one instrument, the same strict inequality holds throughout some
+neighborhood within this class.  This assertion concerns values and
+strict gaps; the exact optimal-memory count need not be continuous.
+\end{proposition}
+\begin{proof}
+Near a fixed instrument, the same full-support row $\bar p$ has
+transient $\bar Q$: its spectral radius is strictly less than one,
+an open condition.  The resolvent in
+\eqref{eq:r78-explicit-cap} and its spectral value $C_0$ are
+continuous, so the compactness bounds are locally uniform.
+
+An attaining controller can be chosen with deterministic report
+updates and with its true continuation vector finite from every
+reset state.  Its substochastic reset matrix $Q^k$, whose $i$th
+row is $Q_{ij}(p^{k(i)})$, is transient.  Indeed its finite expected
+cost and the positive cost floor bound expected duration from every
+state, so the entries of $\sum_{n\ge0}(Q^k)^n$ are finite.
+Keep its rows and selector fixed under a small perturbation.  The
+same matrix remains transient, and both
+$(I-Q^k)^{-1}(c_i(p^{k(i)}))_i$ and the resulting initial cost
+operator vary continuously.  This proves upper semicontinuity of
+$V_M$.
+
+For the reverse inequality, take a convergent sequence of primitive
+data and attaining points in \eqref{eq:r78-full-frontier}, along
+a subsequence realizing the lower limit of the values.  The locally
+uniform cap bounds the continuation vectors, the rows lie in compact
+simplexes, and a further subsequence has a constant selector.  Pass
+to a limit in the supersolution inequalities and in the initial
+matrix upper bound at their attaining values.  The limit is an
+actual controller certificate by the first part of the preceding
+proof.  Its value is no greater than the lower limit, proving lower
+semicontinuity.  This argument does not need the limiting continuation
+vector to lie below one particular choice of cap; its finite
+supersolution already constructs a proper controller.
+
+The unrestricted value equals $V_{\min(s,|\mathcal A|)+1}$, so it
+is continuous as well.  Continuity of their difference proves the
+strict-gap statement.
+\end{proof}
+
+The domination step is specific to observed resetting: after each
+report the physical state no longer depends on the earlier record.
+Bellman verification, finite-state-controller optimization, spectral
+minimax at unrestricted memory, and real-algebraic elimination are
+classical ingredients
+\cite{BertsekasTsitsiklis91,Meuleau99,PoupartBoutilier03,AmatoBernsteinZilberstein10,Seidenberg54}.
+The present result combines them in an exact
+counted-memory normal form and compact necessary-and-sufficient
+budget certificate.  It does not prove such a reduction for a
+general partially observed process or for the original squared-sign
+risk frontier.
+
+\subsection{Closed frontiers for arbitrary action-cover instances}
+
+The preceding variational formula can be solved explicitly for the
+rational family in Theorem~\ref{thm:r77-reset-universality}.  Let
+$A_1,\ldots,A_s$ be nonempty proper subsets of $[q]=\{1,\ldots,q\}$,
+$q\ge2$.  On the basis $e_1,\ldots,e_s,f_1,\ldots,f_q$, keep
+\[
+ \sigma_i=|e_i\rangle\langle e_i|,\quad E_{a,i}=\frac rs I,
+ \quad G_a(e_i)=1+\mathbf1_{\{a\notin A_i\}},\quad
+ G_a(f_j)=3+\mathbf1_{\{a=j\}},\qquad 0\le r<1.
+\]
+Here $G_a(e_i)$ and $G_a(f_j)$ denote the corresponding diagonal
+entries.  The success effect is $(1-r)I$.  This also defines the
+degenerate endpoint $r=0$, where every first call succeeds.  For
+$H\subseteq[q]$ put
+\[
+ U(H)=\{i:H\cap A_i=\varnothing\},\qquad
+ b_a(H)=|\{i\in U(H):a\notin A_i\}|,
+ \qquad \lambda=\frac{r}{s(1-r)}.
+\]
+Let $b_{(1)}(H)\le\cdots\le b_{(q)}(H)$ be these $q$ nonnegative
+integers in increasing order, with repetitions.
+
+\begin{theorem}[The complete action-cover cost frontier]
+\label{thm:r78-cover-frontier}
+For every $M\ge1$, the exact worst-state cost at $M$ live labels is
+\begin{equation}\label{eq:r78-cover-spectrum}
+ V_M=3+\frac r{1-r}+
+ \min_{\substack{H\subseteq[q]\\ |H|\le M-1}}
+ \ \min_{1\le k\le q}
+       \frac{1+\lambda\sum_{j=1}^k b_{(j)}(H)}{k}.
+\end{equation}
+An optimum uses pure continuing command rows indexed by $H$ and an
+initial row uniform on $k$ commands with the $k$ smallest values of
+$b_a(H)$.  The initial row and these continuing rows suffice for
+deterministic report-dependent routing.  Both minima are finite
+enumerations, including all tied and degenerate cases.
+
+For a fixed set system, after subtracting $3+r/(1-r)$ the frontier
+is a continuous, nondecreasing, piecewise affine concave function
+of $\lambda\ge0$.  At $r=0$ all memory values equal $3+1/q$ and
+one label is optimal; for $r>0$ the unrestricted-memory threshold
+is the transversal number plus one, as in
+Theorem~\ref{thm:r77-reset-universality}.
+\end{theorem}
+\begin{proof}
+Fix any list of rows and put
+\[
+ h_i=\min_{1\le k\le M}p^k(A_i^c),\qquad
+ \overline h=\frac1s\sum_i h_i.
+\]
+The reset probabilities are independent of the command, so
+\eqref{eq:r78-palette-bellman} has the explicit solution
+\[
+ x_i=1+h_i+\frac{r(1+\overline h)}{1-r},
+ \qquad \frac1s\sum_i x_i=\frac{1+\overline h}{1-r}.
+\]
+Its first-cost eigenvalues on $f_j$ are
+$3+p^1_j+r(1+\overline h)/(1-r)$; those on $e_i$ are at most
+$2+r(1+\overline h)/(1-r)$.  Hence the former strictly dominate,
+and the exact cost for these rows after optimal routing is
+\begin{equation}\label{eq:r78-cover-row-objective}
+ 3+\frac r{1-r}+\max_a p^1_a+
+               \lambda\sum_i\min_k p^k(A_i^c).
+\end{equation}
+This formula applies to all row choices; success has probability
+$1-r>0$ on every call, so no properness exception is present.
+
+For each row $p^k$ with $k\ge2$, with the other rows fixed, the
+last sum in \eqref{eq:r78-cover-row-objective} is a continuous
+concave function of $p^k$: each summand is the minimum of one
+linear function and constants.  Its minimum over a simplex has a
+vertex minimizer.  Start from a global minimum, which exists by
+compactness, and replace these rows successively by such vertices.
+No replacement can increase the objective; global minimality then
+keeps it unchanged.  Thus all continuing rows may be pure.
+
+Let $H$ be their distinct actions.  When $i\notin U(H)$ some
+continuing row has zero failure penalty and $h_i=0$.  When
+$i\in U(H)$ all continuing rows have penalty one, giving
+$h_i=p^1(A_i^c)$, also when $H$ is empty.  It follows that
+\[
+ \sum_i h_i=\sum_a b_a(H)p^1_a.
+\]
+The remaining initial-row minimization is therefore
+\begin{equation}\label{eq:r78-initial-cap-problem}
+ \min_{p\in\Delta([q])}\left\{\max_a p_a+
+                                  \lambda\sum_a b_a(H)p_a\right\}.
+\end{equation}
+
+For completeness introduce $t\in[1/q,1]$ and impose $p_a\le t$.
+For fixed $t$, the linear term is minimized by filling the smallest
+$b_a(H)$ coordinates first, each up to $t$, with at most one
+partially filled coordinate.  An exchange of mass from a larger
+coefficient to a smaller unsaturated one proves this assertion,
+including ties.  On each interval
+$[1/(k+1),1/k]$ the minimized expression
+$t+\lambda\sum_a b_a(H)p_a$ is affine in $t$.  Its minimum has an
+endpoint minimizer; the endpoints are exactly $t=1/k$,
+$1\le k\le q$.  At such an endpoint a minimizing $p$ is uniform
+on $k$ smallest coefficients, and its value is
+$(1+\lambda\sum_{j=1}^k b_{(j)}(H))/k$.  The epigraph problem in
+$t,p$ has the same optimum as \eqref{eq:r78-initial-cap-problem},
+since one may always reduce $t$ to $\max p_a$.  This proves
+\eqref{eq:r78-cover-spectrum} and the attaining construction.
+
+For fixed $H,k$ the displayed value after subtracting the common
+term is affine with nonnegative slope in $\lambda$.  The finite
+minimum is therefore continuous, piecewise affine, concave and
+nondecreasing.  At $r=0$ its minimum is $1/q$, attained by a
+single uniform row.  For $r>0$, an optimal initial row at the
+unrestricted value must be uniform on all $q$ actions; because
+each $A_i$ is proper it has positive penalty at every uncovered
+state.  Thus zero excess cost requires $H$ to meet every $A_i$,
+and a smallest transversal is sufficient.  Equivalently this is
+the already proved positive-effect threshold.
+\end{proof}
+
+\begin{corollary}[Arbitrarily long strict memory hierarchies]
+\label{cor:r78-strict-hierarchy}
+For every $n\ge2$ there is a rational reset experiment in dimension
+$2n$, with $n$ commands, $n$ failure reports, success probability
+$1/2$ at every call and all costs in $[1,4]$, for which
+\begin{equation}\label{eq:r78-strict-hierarchy}
+ V_M=4+\frac1n+
+       \frac{(n-1)\max\{n-M+1,0\}}{n^2}
+       \qquad(M\ge1).
+\end{equation}
+In particular $V_1>V_2>\cdots>V_{n+1}=V_*$, and each of the
+first $n$ memory increments saves exactly $(n-1)/n^2$ in worst-state
+expected cost.  All failure effects are positive definite.  In this
+family the retained first-residual certificate satisfies
+\begin{equation}\label{eq:r78-certificate-gap}
+ D_M=\frac{V_M-V_*}{2}.
+\end{equation}
+Thus it is a strict lower certificate below the optimum threshold,
+whereas \eqref{eq:r78-strict-hierarchy} is the full repeated-experiment
+cost frontier.
+
+The $n$ strict inequalities persist in an open neighborhood within
+the class of valid instruments.  They also persist under explicit
+arbitrarily small perturbations for which a failure effect and a
+cost operator do not commute.  These perturbations retain positive
+failure effects, dimension $2n$, and mean cost operators
+$I\preccurlyeq G_a\preccurlyeq4I$; the exact
+formula \eqref{eq:r78-strict-hierarchy} refers to the unperturbed
+instrument.
+\end{corollary}
+\begin{proof}
+Use the preceding construction with $q=s=n$, $A_i=\{i\}$ and
+$r=1/2$, so $\lambda=1/n$.  For a continuing action set $H$,
+write $u=n-|H|$ for the number of uncovered singleton sets.
+Then $b_a(H)=u-1$ on the $u$ uncovered actions and $b_a(H)=u$
+on the remaining actions.  If $u>0$, the candidate initial-row
+value at a support size $k$ is
+\[
+ \begin{cases}
+  k^{-1}+(u-1)/n,&1\le k\le u,\\[2pt]
+  u/n+(1-u/n)/k,&u\le k\le n.
+ \end{cases}
+\]
+The first expression is minimized at $k=u$; the second is
+nonincreasing in $k$ and agrees with the first at $u$.  Consequently
+a minimum always occurs at $k=n$, with value
+$1/n+u(n-1)/n^2$.  For $u=0$ the same value is $1/n$.
+Taking the largest allowable $H$ makes
+$u=\max\{n-M+1,0\}$ and proves
+\eqref{eq:r78-strict-hierarchy}.  The construction uses a uniform
+initial command row and one pure row for each action of $H$;
+reports in $H$ select their pure row and the remaining reports
+select the initial row.  The stated data and positivity properties
+follow directly from the displayed primitive construction.
+
+Finally, the Bellman residuals for this family are
+$d_{ia}=\mathbf1_{\{a\ne i\}}$.  The matrix in
+\eqref{eq:r77-reset-gap} retains only the first post-failure
+penalty, so its minimized eigenvalue is obtained from
+\eqref{eq:r78-cover-row-objective} by replacing $\lambda=1/n$
+by $r/s=1/(2n)$.  The same row-purification argument applies.
+For $k\le u$ the candidate is $1/k+(u-1)/(2n)$; for $k\ge u$
+it is $u/(2n)+(1-u/(2n))/k$.  Again $k=n$ is a minimizer,
+and subtracting $V_*=4+1/n$ gives
+$D_M=u(n-1)/(2n^2)$, proving
+\eqref{eq:r78-certificate-gap}.  This equality is specific to
+the present family and is not a universal identity for $D_M$.
+
+Continuity from Proposition~\ref{prop:r78-frontier-stability},
+applied to the finitely many adjacent gaps, proves the neighborhood
+assertion.  For an explicit perturbation put
+$X=|e_1\rangle\langle f_1|+|f_1\rangle\langle e_1|$ and replace
+only $E_{1,1}$ by $E_{1,1}+\epsilon X$, where
+\[
+ 0<\epsilon<\frac{n-1}{8n^2}.
+\]
+The failure effect remains positive definite, and the corresponding
+success effect $\tfrac12I-\epsilon X$ remains positive definite.
+All other primitive data are unchanged.  Since
+$G_1(e_1)=1$ and $G_1(f_1)=4$, this modified failure effect does
+not commute with $G_1$.
+
+These cost and report effects have a joint physical implementation.
+Charge one on every failure.  Split the success effect $B_a$ into
+\[
+ F_{a,9}=(G_a-I)/8,\qquad F_{a,1}=B_a-F_{a,9},
+\]
+charging nine and one, respectively, and retaining only the common
+success report at the control port.  Both effects are positive:
+$0\preccurlyeq F_{a,9}\preccurlyeq3I/8$ and
+$B_a\succeq(1/2-\epsilon)I$, with $\epsilon<1/32$.
+Their sum is $B_a$, and the aggregate mean cost is
+$I+8F_{a,9}=G_a$.  Each failure branch uses its stated
+measure-and-prepare reset map, and each success subbranch can use
+any terminal prepared state.  Thus the perturbation is an actual
+instrument with positive, bounded paid costs and no additional
+observation, rather than an unsupported independent assignment
+of noncommuting cost and report operators.
+
+The perturbation has zero expectation in every $\sigma_i$, so it
+changes none of the reset transition probabilities or continuation
+Bellman vectors for any chosen list of command rows.  Each such
+vector satisfies $x_i\le4$, since reset costs are at most two and
+each subsequent call succeeds with probability $1/2$.  Its initial
+cost operator changes only by $\epsilon p^1_1x_1X$, of norm at
+most $4\epsilon$.  Hence the optimized values satisfy
+$|V_M(\epsilon)-V_M(0)|\le4\epsilon$ for every $M$.
+Each adjacent gap is therefore at least
+$(n-1)/n^2-8\epsilon>0$.  The common unrestricted upper memory
+bound still gives $V_{n+1}(\epsilon)=V_*(\epsilon)$.  This proves
+the claimed noncommuting realization without extending the
+unperturbed closed formula to perturbed data.
+\end{proof}
+
+The family shows that the full frontier carries information absent
+from its saturation threshold: each intermediate memory can have a
+different, attained optimal value under a fixed success probability
+and uniformly bounded primitive costs.  Formula
+\eqref{eq:r78-cover-spectrum} retains the combinatorial difficulty
+of the arbitrary incidence table, while giving a complete finite
+answer rather than an efficient algorithm claim.  The reset
+assumption and the declared observation port remain essential;
+none of these statements completes the separate general stopping,
+phase-type timing, or squared-sign minimax-risk problems.

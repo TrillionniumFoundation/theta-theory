@@ -1,0 +1,283 @@
+\section{Convex specifications and optimal uniform approximation}
+\label{sec:r76-convex-specifications}
+
+The exact normal form has a robust extension. The target need not be an
+exactly specified probability table, and the stochastic controller need
+not satisfy the group relations, even on its observable states. What is
+required is a constraint on every word representing a given group element.
+The quantifier over all words is essential.
+
+Fix a finite command alphabet $A$, a finite group $G$, and a surjective
+homomorphism $\gamma:A^*\to G$. For every $g\in G$ let $K_g$ be a closed
+convex subset of the finite probability simplex $\Delta(C)$. Empty sets
+are allowed. An $M$-label pure-start controller consists of a prescribed
+point row $e_o$, stochastic command matrices $Q_a$, and a row-stochastic
+decoder $D_0$. It satisfies the specification if
+\begin{equation}\label{eq:r76-specification}
+ e_oQ_wD_0\in K_{\gamma(w)}\qquad(w\in A^*).
+\end{equation}
+For a mixed start, replace $e_o$ by an arbitrary probability row and do
+not charge an additional label for preparing that row.
+
+\begin{theorem}[Finite-group convex-specification normal form]
+\label{thm:r76-convex-normal-form}
+The specification \eqref{eq:r76-specification} has a pure-start
+realization on at most $M$ labels if and only if there are a finite
+$G$-set $X$, a probability row $\lambda$ on $X$, and a row-stochastic
+decoder $D$ such that
+\begin{equation}\label{eq:r76-convex-core}
+ \lambda P_gD\in K_g\quad(g\in G),\qquad
+ |X|+\mathbf1_{\{\lambda\text{ is not a point mass}\}}\le M.
+\end{equation}
+For mixed starts the corresponding criterion is $|X|\le M$.
+The action on $X$ is permitted to have a kernel. In particular no
+faithfulness hypothesis is imposed on an approximating action.
+\end{theorem}
+\begin{proof}
+We give the projection argument explicitly because its use of convexity
+replaces the exact observable intertwining in
+Theorem~\ref{thm:r73-normal-form}.
+Let $\mathcal L=\gamma^{-1}(e)$. Select finitely many identity words
+$\ell_1,\ldots,\ell_s$ whose positive matrix entries cover every
+directed edge occurring in any $Q_\ell$, $\ell\in\mathcal L$, and put
+\[
+ T=(I+Q_{\ell_1}+\cdots+Q_{\ell_s})/(s+1).
+\]
+At most $M^2$ words suffice. Each closed communicating class $C_i$ of
+$T$ is closed under every identity-word matrix. The positive diagonal
+and Lemma~\ref{lem:r73-lazy-convergence} give a stochastic idempotent
+$E=\lim_nT^n$. Its image simplex has disjointly supported vertices
+$\mu_1,\ldots,\mu_k$, the stationary rows of the closed classes.
+Every identity word preserves those classes, and consequently
+\begin{equation}\label{eq:r76-sandwich-identity}
+ EQ_\ell E=E\qquad(\ell\in\mathcal L).
+\end{equation}
+For a word $u$ write $F_u=EQ_uE$ on this image simplex. Choose an
+inverse word $\bar u$ with $\gamma(\bar u)=\gamma(u)^{-1}$.
+Since $T^n$ is a convex combination of identity-word matrices,
+\eqref{eq:r76-sandwich-identity} applied to $u\ell\bar u$ and
+$\bar u\ell u$ gives
+\[
+ F_uF_{\bar u}=E=F_{\bar u}F_u.
+\]
+Thus $F_u$ is an affine automorphism of the image simplex and permutes
+its vertices. If $\gamma(u)=\gamma(v)$, multiplication by the common
+inverse $F_{\bar u}$ shows $F_u=F_v$. Replacing the middle $E$ by
+$T^n$ in $EQ_uEQ_vE$ also gives $F_uF_v=F_{uv}$, since all words
+$u\ell v$ have the same group image. This defines a $G$-action $P_g$
+on $X=\{1,\ldots,k\}$.
+
+Write $e_oE=\sum_i\lambda_i\mu_i$ and put $D(i,\cdot)=\mu_iD_0$.
+For any representative $u$ of $g$,
+\[
+ \lambda P_gD=e_oEQ_uED_0
+             =\lim_{n\to\infty}e_oT^nQ_uT^nD_0.
+\]
+The last expression before passage to the limit is a convex combination
+of $e_oQ_{\ell u\ell'}D_0$ with $\ell,\ell'\in\mathcal L$.
+All these probability rows belong to $K_g$. Closedness and convexity
+therefore give $\lambda P_gD\in K_g$. This argument includes $u$
+empty and makes no claim that the original controller's word laws
+factor through $G$.
+
+If the initial label lies in a closed class $C_i$, then $e_oE=\mu_i$
+and $\lambda$ is a point mass. Otherwise the $k$ disjoint nonempty
+closed classes exclude at least the initial label, so $k+1\le M$.
+This proves the pure-start charge. For a mixed row $\eta$, use
+$\eta E$ instead and retain $k\le M$.
+
+Conversely, a point preparation on $X$ needs only the permutation
+transitions. For a mixed $\lambda$, a further label $\star$ has decoder
+$\lambda D$ and, on the first actual command $a$, moves into $X$ with
+row $\lambda P_{\gamma(a)}$. Subsequent transitions are permutations.
+Its empty and nonempty word laws are respectively $\lambda D$ and
+$\lambda P_{\gamma(w)}D$. This gives the required realization and
+finishes both start conventions.
+\end{proof}
+
+For a target $b:G\to\Delta(C)$ write
+$\operatorname{TV}(p,q)=\tfrac12\sum_c|p_c-q_c|$ and define
+\[
+ \mathcal E_M^{\mathrm p}(b)=
+ \inf_{\substack{\text{pure-start controllers}\text{on at most }M\text{ labels}}}
+ \ \sup_{w\in A^*}\operatorname{TV}
+           (b(\gamma(w)),e_oQ_wD_0).
+\]
+Use $\mathcal E_M^{\mathrm m}$ for the mixed-start convention.
+For a finite $G$-set $X$ put
+\[
+ d_X(b)=\min_{\lambda,D}\max_{g\in G}
+          \operatorname{TV}(b(g),\lambda P_gD),\qquad
+ d_X^{\mathrm{pt}}(b)=\min_{x,D}\max_{g\in G}
+          \operatorname{TV}(b(g),e_xP_gD).
+\]
+The decoder ranges over stochastic rows; compactness makes both minima
+attained. Minima over no candidate actions are interpreted as $+\infty$.
+
+\begin{theorem}[Attained finite optimization for infinite-word error]
+\label{thm:r76-minimax-normal-form}
+For every target $b$, finite $G$, and integer $M\ge1$,
+\begin{align}
+ \mathcal E_M^{\mathrm m}(b)&=\min_{|X|\le M}d_X(b),\label{eq:r76-mixed-error}\\
+ \mathcal E_M^{\mathrm p}(b)&=
+ \min\left\{\min_{|X|\le M}d_X^{\mathrm{pt}}(b),
+             \min_{|X|\le M-1}d_X(b)\right\}.
+ \label{eq:r76-pure-error}
+\end{align}
+One representative of each finite $G$-set is sufficient, so these are
+finite optimizations and their minima are attained. Their values are
+$1$-Lipschitz functions of $b$ in $\max_g\operatorname{TV}$.
+If $\mathcal E_M^{\mathrm p}(b)>0$, a sufficiently small perturbation of
+$b$ still cannot be exactly realized on $M$ pure-start labels; the same
+assertion holds for mixed starts. When the target table is algebraic,
+the optimum and a realizing finite controller are computable by real
+quantifier elimination. This is a decidability assertion, not a
+polynomial-time bound or a claim that quantifier elimination was executed.
+\end{theorem}
+\begin{proof}
+Apply Theorem~\ref{thm:r76-convex-normal-form} to the closed convex
+balls $K_g=\{p:\operatorname{TV}(p,b(g))\le\delta\}$.
+It sends every controller of error at most $\delta$ to an admissible
+action without increasing the label charge or the error. Conversely
+every displayed action supplies such a controller. The pure constraint
+splits precisely into a point preparation with $|X|\le M$ or an
+arbitrary preparation with $|X|\le M-1$.
+There are finitely many homomorphisms from the fixed finite group into
+each symmetric group of degree at most $M$. For each action the allowed
+preparations and decoders form compact sets. Hence the finite minima
+are attained, including limits in which a mixed preparation becomes a
+point mass. The triangle inequality proves the Lipschitz bound and
+the perturbation assertion.
+
+For the algorithmic statement, enumerate these actions and introduce
+variables $\lambda_x,D_{xc},\delta$ and $u_{gc}\ge0$ with
+\[
+ -u_{gc}\le b(g,c)-(\lambda P_gD)_c\le u_{gc},\qquad
+ \sum_cu_{gc}\le2\delta.
+\]
+Together with the stochastic constraints these are polynomial
+inequalities over the real algebraic numbers. The point-start branch
+fixes $\lambda=e_x$ and enumerates $x$. The compact attained minimum
+is the least real point of the resulting semialgebraic set of feasible
+$\delta$'s. Real quantifier elimination and algebraic sample-point
+construction, used with the same scope as
+Theorem~\ref{thm:r73-algebraic-synthesis}, compute the value and tables.
+\end{proof}
+
+The finite optimization concerns synthesis against a supplied finite-group
+target. It does not solve the cutpoint, equivalence, or isolation problem
+for a supplied arbitrary probabilistic automaton. Nor does it replace
+the specification for all words by a check of one representative per group
+element on the original stochastic controller. Those restrictions would
+change the problem.
+
+\begin{theorem}[Robust multiplicity and initialization certificates]
+\label{thm:r76-robust-multiplicity}
+Use the stacked Fourier matrix $A_\rho(b)$ of
+\eqref{eq:r75-fourier-block}, with singular values in decreasing order,
+and write $m_\rho(X)$ for the multiplicity of $\rho$ in
+$\mathbb C[X]$. If an action $X$ approximates $b$ to total-variation
+error at most $\delta$, then
+\begin{equation}\label{eq:r76-fourier-robust}
+ \sigma_{m_\rho(X)+1}(A_\rho(b))\le\sqrt2\,\delta
+                       \qquad(\rho\in\widehat G).
+\end{equation}
+A singular value past the number of columns means zero. For a binary
+response $b=(\beta,1-\beta)$ the sharper equivalent scalar certificate is
+\begin{equation}\label{eq:r76-binary-robust}
+ \sigma_{m_\rho(X)+1}(\widehat\beta(\rho))\le\delta.
+\end{equation}
+In particular let $r_\rho^\delta$ be the number of singular values of
+$A_\rho(b)$ strictly exceeding $\sqrt2\delta$. Then every mixed-start
+controller of uniform error at most $\delta$ uses at least
+\begin{equation}\label{eq:r76-robust-cover}
+ \min\left\{\sum_H q_H[G:H]:q_H\in\mathbb Z_{\ge0},\quad
+       \sum_Hq_H\ge1,\quad
+       \sum_Hq_Hm_\rho(H)\ge r_\rho^\delta\ (\rho\in\widehat G)
+       \right\}
+\end{equation}
+labels. The scalar version may be used for binary outputs.
+
+Let $N$ be the number of distinct residual tables $b^h(g)=b(hg)$.
+If $N>1$, let
+\[
+ \Delta_b=\min_{b^h\ne b^k}\max_g
+                \operatorname{TV}(b(hg),b(kg))>0.
+\]
+Whenever $\delta<\Delta_b/2$, a pure-start controller with fewer than
+$N$ labels must have a projected mixed preparation. Its total budget
+is therefore at least one plus the lower bound
+\eqref{eq:r76-robust-cover}.
+\end{theorem}
+\begin{proof}
+Put $a(g)=\lambda P_gD$ and $z_c(g)=b(g,c)-a(g,c)$.
+Since $\sum_cz_c(g)=0$ and $\tfrac12\sum_c|z_c(g)|\le\delta$,
+the sums of the positive and negative parts are each at most $\delta$,
+and $\sum_c|z_c(g)|^2\le2\delta^2$. Unitarity gives
+\[
+ \left\|\begin{pmatrix}z_{c_1}(g)\rho(g^{-1})\\
+                  \vdots\\z_{c_{|C|}}(g)\rho(g^{-1})\end{pmatrix}
+       \right\|_{\rm op}
+ =\left(\sum_c|z_c(g)|^2\right)^{1/2}\le\sqrt2\delta.
+\]
+Average over $g$ to obtain
+$\|A_\rho(b)-A_\rho(a)\|_{\rm op}\le\sqrt2\delta$.
+The Fourier-multiplicity lemma gives
+$\operatorname{rank}A_\rho(a)\le m_\rho(X)$.
+For completeness, if $B$ has rank at most $m$, its nullspace
+intersects the span of the first $m+1$ right singular vectors of $A$
+in a nonzero vector. On a unit vector in that intersection,
+$\|(A-B)v\|=\|Av\|\ge\sigma_{m+1}(A)$.
+This proves \eqref{eq:r76-fourier-robust}; the binary version follows
+by averaging the scalar error, whose absolute value is at most
+$\delta$, against unitary matrices. Summing orbit multiplicities and
+using the mixed-start normal form gives the integer bound.
+
+For the last assertion, suppose the projected preparation were a point
+$x$. Its distinct residuals are indexed by points $x\cdot h$ in its
+orbit. If two target residuals $b^h,b^k$ were represented by the same
+point, the two approximating residuals would coincide for every future
+$g$, and the triangle inequality would give distance at most $2\delta$
+between $b^h$ and $b^k$. This contradicts the definition of $\Delta_b$.
+The orbit must therefore contain at least $N$ points. With fewer than
+$N$ total labels this is impossible, so the projected start is mixed
+and its extra initializer is charged by the normal-form theorem.
+\end{proof}
+
+\begin{corollary}[Uniform error cannot replace a prime orbit]
+\label{cor:r76-prime-error}
+Let $G=C_p$ with $p$ prime and let $b:G\to\Delta(C)$ be any target.
+Put $r(b)=\min_{q\in\Delta(C)}\max_g\operatorname{TV}(b(g),q)$.
+For either start convention,
+\[
+ \mathcal E_M(b)=
+ \begin{cases}r(b),&1\le M<p,\\0,&M\ge p.\end{cases}
+\]
+For binary outputs $r(b)=(\max_g\beta(g)-\min_g\beta(g))/2$.
+\end{corollary}
+\begin{proof}
+Every orbit of $C_p$ has size one or $p$. Thus any action with fewer
+than $p$ points is trivial and gives a constant response, regardless
+of preparation. A one-label controller attains $r(b)$. On $p$ points
+the regular action with a point preparation and decoder $b$ is exact.
+For binary outputs the midpoint of the smallest interval containing
+all values of $\beta$ is a Chebyshev center of that interval.
+\end{proof}
+
+For the symmetric-group target \eqref{eq:r75-symmetric-return}, the
+scalar standard block is $tI/[n(n-1)]$ and $\Delta_{b_t}=2t/n$.
+Indeed a permutation moving $k$ points changes a residual by at most
+$kt/n$, with equality at an inverse representative; the smallest
+nonzero $k$ is two. The subgroup-index estimate
+\eqref{eq:r75-index-estimate} and the preceding theorem imply
+\begin{equation}\label{eq:r76-symmetric-robust-lower}
+ \mathcal E_M^{\mathrm p}(b_t)\ge\frac{t}{n(n-1)}
+       \qquad(n\ge5,\ 0<t\le1,\ M\le n(n-1)).
+\end{equation}
+If the error were smaller, the full standard multiplicity $n-1$
+would be forced, and the small-error initialization charge would give
+at least $n(n-1)+1$ labels; here $n!>n(n-1)$.
+This explicit lower bound is not asserted to be the optimal error
+constant. At every exact resource jump the finite optimization also
+gives a strictly positive robustness radius, without a claimed closed
+formula for that radius.
