@@ -1,0 +1,364 @@
+\section{Approximation by truncating rare conditional excursions}
+\label{sec:r76-rare-approximation}
+
+Exact memory can be infinite although one finite simulator approximates
+every stopped experiment with a prescribed expected cost.  The damping
+construction of Theorem~\ref{thm:r75-stopped-approximation} gives such an
+upper bound for the entire angle circle.  For a fixed finite command
+alphabet we now obtain a smaller bound by preserving a long conditional
+excursion exactly and modifying only its overflow.  The general mechanism
+depends on the growth of the continuation semigroup, and applies beyond
+the qubit family.
+
+The ingredients have classical antecedents.  Polyhedral positive
+realizations are part of the theory of Heller and of Monr\`as and Winter
+\cite{Heller65,MonrasWinter14,MonrasWinter16}.  Martingale calculations
+for pattern waiting times are classical \cite{Li80}.  The use made here
+is a uniform approximation of complete adaptive stopped laws, with
+an explicit memory bound from a finite return polytope and the number of
+distinct continuation states.  It is separate from the exact noisy
+realization problem of \cite{Fanizza24}.
+
+\subsection{A sharp cost bound for a long conditional excursion}
+
+Consider sequential calls, each producing a report declared either
+\emph{continuing} or \emph{returning}.  Conditional on the entire past,
+the chosen command and any private randomization, suppose the probability
+of a continuing report is at most $r$, where $0<r<1$.
+Let $\eta_L$ be the first call completing $L$ consecutive continuing
+reports, with $L\ge1$.  A policy can stop initially or after any call;
+its number of calls is $\tau$.
+
+\begin{lemma}[Sharp expected-cost excursion bound]
+\label{lem:r76-excursion-budget}
+For every such policy with $\E\tau\le B<\infty$,
+\begin{equation}\label{eq:r76-excursion-budget}
+ \Prb\{\eta_L\le\tau\}
+ \le \min\left\{1,\frac{(1-r)B}{r^{-L}-1}\right\}.
+\end{equation}
+The coefficient is optimal under the stated assumptions.  For independent
+continuing indicators of probability $r$, the supremum over randomized
+stopping policies of expected cost at most $B$ is exactly the right side.
+\end{lemma}
+\begin{proof}
+Before the first completed run, let $K_t\in\{0,\ldots,L-1\}$ be the
+current run length.  It increases by one on a continuing report and
+returns to zero otherwise.  Absorb it at $L$ after the first completed
+run, and put
+\[
+ u(k)=\frac{r^{-k}-1}{1-r}\quad(0\le k\le L).
+\]
+For $k<L$ and any conditional continuation probability $p\le r$,
+\[
+ p u(k+1)+(1-p)u(0)-u(k)
+ \le r u(k+1)-u(k)=1.
+\]
+Stop this calculation at $\sigma_H=\min\{\tau,\eta_L,H\}$.
+Summing the conditional inequalities, including the indicator that the
+next call is actually made, gives
+\[
+ u(L)\Prb\{\eta_L\le\tau,\ \eta_L\le H\}
+ \le \E u(K_{\sigma_H})\le\E\sigma_H\le B.
+\]
+Let $H\to\infty$.  Increasing events give
+\eqref{eq:r76-excursion-budget}; no assumption about the expected duration
+of another process is used.
+
+For sharpness, take independent Bernoulli indicators of probability $r$.
+The first completed run has finite expectation: disjoint blocks of length
+$L$ succeed with probability $r^L$, so its expectation is at most
+$L/r^L$.  In this case the displayed drift equals one.  Stopping at
+$\eta_L\wedge H$ and then using bounded convergence for $u(K)$ and
+monotone convergence for the duration proves
+$\E\eta_L=u(L)$.  With probability
+$\min\{1,B/u(L)\}$, selected before making any call, run this experiment
+until $\eta_L$; otherwise stop immediately.  Its expected cost is at most
+$B$ and its success probability equals the right side of
+\eqref{eq:r76-excursion-budget}.
+\end{proof}
+
+Sharpness in this lemma concerns the probability of the exceptional
+run.  It will not imply that every simulator must incur the approximation
+error estimated by that probability.
+
+\subsection{A general finite return polytope construction}
+
+Let $\mathcal H$ be finite dimensional and let $\mathcal C$ be a closed convex set
+of density matrices invariant under every positive-probability normalized
+branch below.  The full state space is allowed.  For each command in a nonempty
+finite set $A$, let $\{\mathcal I_{a,y}:y\in Y_a\}$ be a quantum
+instrument, with finite $Y_a$.  Select a subset $R_a\subseteq Y_a$ of
+continuing reports.  Suppose that there are density matrices
+$\sigma_1,\ldots,\sigma_k$, with
+$P=\operatorname{conv}\{\sigma_1,\ldots,\sigma_k\}$, such that
+\begin{equation}\label{eq:r76-return-hypotheses}
+ \begin{split}
+ &\rho_0\in P,\qquad
+   \sum_{y\in R_a}\tr\mathcal I_{a,y}(\rho)\le r<1,\\
+ &\frac{\mathcal I_{a,y}(\rho)}{\tr\mathcal I_{a,y}(\rho)}\in P
+ \quad(y\notin R_a,\ \tr\mathcal I_{a,y}(\rho)>0)
+ \end{split}
+\end{equation}
+for every command $a$ and every $\rho\in\mathcal C$, with the seeds in $\mathcal C$.
+On the full state space, the continuation bound is equivalently the finite
+family of operator inequalities
+$\sum_{y\in R_a}\mathcal I_{a,y}^*(I)\preceq rI$.
+The return condition is a specified geometric hypothesis; it is not
+inferred merely from mixing of the unobserved channel.  A prescribed
+preparation in $\mathcal C$ but outside $P$ can be included by adding it to the seed list.
+
+Write $\mathcal E=\{(a,y):a\in A,\ y\in R_a\}$ and $b=|\mathcal E|$.
+For a word $w$ over $\mathcal E$, let $\mathcal I_w$ be its chronological
+composition.  For $L\ge1$ define the finite set
+\begin{equation}\label{eq:r76-orbit-dictionary}
+ \mathcal D_L=
+ \left\{\frac{\mathcal I_w(\sigma_j)}{\tr\mathcal I_w(\sigma_j)}:
+  1\le j\le k,\ |w|<L,\ \tr\mathcal I_w(\sigma_j)>0\right\},
+ \qquad G(L)=|\mathcal D_L|.
+\end{equation}
+The empty word is included.  Repeated states may be identified.
+
+\begin{theorem}[Finite-memory approximation from return geometry]
+\label{thm:r76-return-approximation}
+Assume \eqref{eq:r76-return-hypotheses} with $0<r<1$.
+For each $L\ge1$, there is a single $G(L)$-label mixed-start classical
+model, chosen independently of the policy and of $B$, such that
+\begin{equation}\label{eq:r76-return-approximation}
+ \sup_{\pi:\,\E_{\rm target}^{\pi}\tau\le B}
+ \|\mathcal L_{\rm target}^{\pi}-\mathcal L_L^{\pi}\|_{\rm TV}
+ \le \min\left\{1,\frac{(1-r)B}{r^{-L}-1}\right\}.
+\end{equation}
+Here policies can choose commands, stopping and arbitrary terminal POVMs
+from the visible record and their own randomness.  The complete stopped
+record includes all commands and reports, the stopping time, the terminal
+outcome and nontermination.  The bound also holds in trace distance for
+the classical--quantum terminal record, with nontermination represented
+by its scalar mass.  There is no additional entangled quantum register.
+
+A counted pure start needs at most $G(L)+1$ labels.  In general
+\begin{equation}\label{eq:r76-semigroup-growth}
+ G(L)\le k\sum_{j=0}^{L-1}b^j.
+\end{equation}
+If the $b\ge1$ continuation maps commute pairwise, then
+\begin{equation}\label{eq:r76-commuting-growth}
+ G(L)\le k\binom{L+b-1}{b}.
+\end{equation}
+More generally any independently proved upper bound for the number of
+distinct normalized states in \eqref{eq:r76-orbit-dictionary} can be used
+in place of these bounds.  If that number is $O(L^d)$, the construction
+uses $O((\log(B/\delta))^d)$ labels for fixed $r$ and
+$B/\delta\to\infty$.
+\end{theorem}
+\begin{proof}
+Use the states of $\mathcal D_L$ as hidden labels.  At a label $\rho$,
+the probability of report $y$ on command $a$ is
+$p_{a,y}(\rho)=\tr\mathcal I_{a,y}(\rho)$.  Zero probabilities require
+no successor choice.  For a returning report, choose any convex
+decomposition of its normalized output in the seed states.  For a
+continuing report whose normalized output belongs to $\mathcal D_L$,
+use that output label deterministically.  In the remaining case, send
+the state to any one fixed seed.  Multiply each successor distribution
+by $p_{a,y}(\rho)$ to obtain the report transition row.  All rows are
+nonnegative and the sums over the reports are stochastic.  Use a seed
+decomposition of $\rho_0$ for the initial distribution.  At label $\rho$,
+the terminal decoder for any POVM $(E_z)_z$ is $\tr(E_z\rho)$.
+
+To verify the error, first use all finite continuation words, without
+the length restriction in \eqref{eq:r76-orbit-dictionary}.  This countable
+refinement reproduces the target exactly.  Every returning branch is
+expanded in the seeds; every continuing branch uses its exact normalized
+image.  On each individual hidden label the weighted state identity is
+exact, so induction gives the target subnormalized quantum state for
+every command--report history.  Initial mixing, terminal POVMs and common
+randomized policies preserve these identities.  This is only a proof
+device, not an uncounted finite implementation resource.
+
+Couple this exact refinement to the finite model by identical initial
+seed choices and by identical reports and successor choices while the
+states agree.  The coupling first fails only when a continuing image
+leaves $\mathcal D_L$.  After a return the exact label is a seed, so a
+product of fewer than $L$ continuing branches is in $\mathcal D_L$ by
+definition.  The same is true initially.  Thus a failure requires a run
+of at least $L$ consecutive continuing reports.  Identifying duplicate
+states does not change this implication: their next normalized image
+depends only on the state itself, and every shorter word image is still
+present.
+
+Before a failure the two visible histories, quantum states and policy
+choices can be identical.  After a failure use arbitrary valid tails.
+For a fixed finite horizon, the stopped classical--quantum states have
+a common positive contribution from all paths with no failure.  If the
+remaining mass is $e$, their trace distance is at most $e$, by positivity
+and the triangle inequality.  The same assertion applies to the complete
+record after any terminal POVM.  The target's probability of a failure
+before stopping is at most $\Prb_{\rm target}^{\pi}\{\eta_L\le\tau\}$,
+which is bounded by Lemma~\ref{lem:r76-excursion-budget}.  Its conditional
+continuation bound follows from \eqref{eq:r76-return-hypotheses}, also
+after conditioning on the virtual seed choices.
+
+For unbounded stopping, retain every stopped history up to horizon $H$
+and combine the unfinished histories into one symbol.  The sum of trace
+norms on the finite stopped blocks increases to its full sum; the two
+unfinished masses decrease to their respective nontermination masses.
+Their absolute difference therefore converges to the nontermination
+term.  The uniform finite-horizon bound passes to the limit, giving
+\eqref{eq:r76-return-approximation}.  The budget is always evaluated under
+the target.  The argument does not require the approximate model to have
+expected duration at most $B$.
+
+For a pure start append one initializer.  On the first actual command it
+uses the initial mixture times the corresponding report matrix and
+enters the core.  Its zero-call terminal decoder is that of $\rho_0$.
+It is never entered again.  This proves the upper $G(L)+1$ without an
+uncounted preliminary randomization.  If a separate finite policy uses
+$s$ labels, the same construction gives at most $sG(L)+1$ labels for
+the closed product implementation with a prescribed initial label.
+
+There are $b^j$ words of length $j$, proving
+\eqref{eq:r76-semigroup-growth}.  For commuting maps the product depends
+only on a multi-index $m\in\mathbb N^b$ with $|m|<L$; there are
+$\binom{L+b-1}{b}$ such multi-indices.  Normalization and deletion of zero
+images cannot increase this number.  Finally it suffices to take
+\[
+ L\ge
+ \max\left\{1,
+ \left\lceil\frac{\log(1+(1-r)B/\delta)}{\log(1/r)}\right\rceil\right\}
+ \quad(B>0,\ \delta>0).
+\]
+The asserted consequence of polynomial orbit growth follows.
+\end{proof}
+
+The construction preserves every finite history containing no run of
+$L$ continuing reports, including its unnormalized terminal state.
+It does not claim that its approximate response is stationary or that
+the extra pure-start label is necessary.  When all continuation maps
+have finite normalized orbit on the seeds, the full finite orbit instead
+gives an exact model.  These are upper constructions, not a converse
+classification of general positive realizations.
+
+\subsection{A polylogarithmic simulator for finitely many commanded angles}
+
+Apply the theorem to \eqref{eq:r75-noisy-instrument} with $\alpha=1$.
+Let the finite known angle alphabet be
+$\Theta=\{\theta_1,\ldots,\theta_a\}$, where $a\ge1$.
+The continuation report is $0$, of probability $1/8$.
+In the real Bloch plane put
+\[
+ v_0=(1,0),\qquad
+ v_1=(-1/2,\sqrt3/2),\qquad
+ v_2=(-1/2,-\sqrt3/2).
+\]
+Let $\sigma_j$ be the corresponding pure states.  Their triangle contains
+the disk of radius $1/2$, and $I/2$ is their equal mixture.
+Report $1$ returns to $\sigma_0=\tau$.  By
+Lemma~\ref{lem:r75-full-instrument-bounds}, every normalized report-$2$
+image has Bloch norm at most $5/11<1/2$, so it returns to this same
+triangle, at every angle and from every real-plane state.
+The real-plane density matrices form an invariant closed convex set:
+the unitaries are real, and the other two branches preserve real symmetric
+matrices.  Thus they supply the set $\mathcal C$ in the general theorem.
+
+\begin{corollary}[Uniform finite-alphabet approximation]
+\label{cor:r76-qubit-polylog}
+For the undamped instrument at any fixed finite angle alphabet $\Theta$
+and initial state $I/2$, there is, for every integer $L\ge1$, one classical
+model with at most
+\begin{equation}\label{eq:r76-qubit-count}
+ 3\binom{L+a-1}{a}
+ \quad\hbox{mixed-start labels, or}\quad
+ 1+3\binom{L+a-1}{a}
+ \quad\hbox{counted pure-start labels},
+\end{equation}
+whose complete stopped-law error satisfies
+\begin{equation}\label{eq:r76-qubit-error}
+ \sup_{\pi:\,\E_1^\pi\tau\le B}
+ \|\mathcal L_1^\pi-\mathcal L_L^\pi\|_{\rm TV}
+ \le \min\left\{1,\frac{7B}{8(8^L-1)}\right\}.
+\end{equation}
+The stronger stopped classical--quantum distance has the same bound.
+The statements include adaptive choices among all supplied angles and
+arbitrary terminal qubit POVMs.
+
+For $B>0$ and $\delta>0$ it is enough to choose
+\begin{equation}\label{eq:r76-qubit-depth}
+ L=\max\left\{1,
+   \left\lceil\log_8\left(1+\frac{7B}{8\delta}\right)\right\rceil\right\}.
+\end{equation}
+For a single commanded angle this uses at most $3L+1$ pure-start labels,
+uniformly in that angle.  For each fixed finite alphabet it uses
+$O_a((\log(B/\delta))^a)$ labels as $\delta/B\downarrow0$.
+When the sine and cosine of each commanded angle are algebraic, every
+state and transition coefficient of the displayed construction is
+algebraic and is obtained by finitely many exact field operations.
+\end{corollary}
+\begin{proof}
+The continuation maps are scalar multiples of commuting rotations, so
+their normalized orbit dictionary consists of
+\begin{equation}\label{eq:r76-qubit-dictionary}
+ r_{j,m}=R_{m_1\theta_1+\cdots+m_a\theta_a}v_j,
+ \qquad 0\le j<3,\quad m\in\mathbb N^a,\quad |m|<L.
+\end{equation}
+We may keep all these indices, even if some represent the same state.
+Initialize uniformly on $(0,0),(1,0),(2,0)$.  From a label with Bloch
+vector $r$, and command $\theta_i$, set
+\[
+ h=\tfrac18+\tfrac1{16}r_1,\qquad
+ p_2=\tfrac78-h,\qquad
+ u_2=-\tfrac18 R_{\theta_i}r-hv_0.
+\]
+Report $1$ has a row of mass $h$ into seed $(0,0)$.  Report $2$ has rows
+into the three seeds of masses
+\begin{equation}\label{eq:r76-explicit-return-rows}
+ t_{2,j}=\frac{p_2+2v_j\mathbin{\cdot}u_2}{3},
+ \qquad j=0,1,2.
+\end{equation}
+Indeed, $\sum_jv_j=0$ and
+$\sum_jv_jv_j^{\mathsf T}=\tfrac32I_2$, so these masses sum to $p_2$
+and their weighted Bloch vector is $u_2$.  Moreover,
+$|u_2|/p_2\le5/11$ and $p_2\ge11/16$ give
+\[
+ t_{2,j}\ge\frac{p_2}{3}(1-10/11)\ge\frac1{48}>0.
+\]
+Thus the rows give the exact report-$2$ subnormalized state, with an
+explicit positive margin.  On report $0$, whose mass is $1/8$, move
+from $(j,m)$ to $(j,m+e_i)$ if $|m|<L-1$.  At $|m|=L-1$ send that mass
+to the three seeds uniformly.  All report probabilities are unchanged
+on each represented input state, and their sum is one.  Only the state
+following an overflow zero report is modified.
+
+The resulting table uses words with the same multi-index identified at
+each depth and the same common-prefix proof as the theorem.  It keeps
+the depth indices and may truncate at depth $L$ even when a periodic
+phase makes that next physical state coincide with an earlier one.
+The first possible modified state still occurs on the $L$th consecutive
+zero.  Its state count
+is \eqref{eq:r76-qubit-count}, and substitution of $r=1/8$ in
+\eqref{eq:r76-return-approximation} gives
+\eqref{eq:r76-qubit-error}.  Formula~\eqref{eq:r76-qubit-depth} makes
+this bound at most $\delta$.  The label count and all error bounds are
+uniform in the numerical values of the finite supplied angles, although
+the transition table itself uses those values.  The explicit rotations
+and \eqref{eq:r76-explicit-return-rows} prove the algebraic assertion.
+\end{proof}
+
+If $B=0$, a single initial decoder suffices, with no call and no error.
+The damping upper in Theorem~\ref{thm:r75-stopped-approximation} remains
+available and can be smaller for particular $B,\delta,a$; one may choose
+the smaller of the two proved upper counts.  Its simultaneous
+all-angle statement also remains valid.  In contrast, the finite dictionary
+in \eqref{eq:r76-qubit-dictionary} is for a \emph{fixed finite} angle
+alphabet; the bound is not asserted for a continuum of possible commands.
+
+For every non-root phase, exact finite classical realization is still
+impossible by Theorem~\ref{thm:r74-depolarizing-obstruction}.  At that same
+fixed physical instrument the present bound is logarithmic in $B/\delta$
+for a single angle.  Thus an inverse-square-root exact noise law is not a
+lower bound on approximation of bounded-cost stopped experiments.
+Section~\ref{sec:r76-physical-approximation} proves a matching logarithmic
+law within the explicitly restricted class of physical dictionaries;
+a matching lower for arbitrary classical terminal decoder tables remains
+open.  The stopped-law bound also does not control the approximate
+model's expected duration: unbounded costs
+require a further tail or uniform-integrability hypothesis.  External
+policy storage, table bits, arithmetic precision and exact sampling remain
+separate resources.

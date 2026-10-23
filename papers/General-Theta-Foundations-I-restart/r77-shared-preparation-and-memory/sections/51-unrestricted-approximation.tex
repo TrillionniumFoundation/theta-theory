@@ -1,0 +1,360 @@
+\section{Finite memory certificates without physical decoder assumptions}
+\label{sec:r77-unrestricted-approximation}
+
+The physical-dictionary lower bound uses the geometry of density matrices
+at individual hidden labels.  An arbitrary classical simulator need not
+have that geometry.  We now give a different certificate, valid for
+arbitrary classical decoder tables.  Its conclusion is quantitatively
+weaker, but applies to the original algebraic qubit instrument without
+an unproved Diophantine hypothesis.  More generally it applies whenever
+experimentally accessible preparations have separated exposing tests.
+
+Nonnegative factorizations, support antichains and their relation to
+memory and extension complexity are classical.  In particular the exact
+zero-diagonal support bound is already in the literature on nonnegative
+rank; see \cite[Section 4.1 and Corollary 4.13]{GPT13} and
+\cite[Section 3.1]{VandaeleGillisGlineur17}.  The argument below supplies
+an explicit error margin and derives its hypotheses from joint stopped
+records.  It does not treat an approximate zero as an exact zero, or
+assume that a rare conditional distribution inherits the unconditional
+approximation error.
+
+\subsection{A robust support certificate}
+
+For $J\ge2$ define the antichain threshold
+\begin{equation}\label{eq:r77-antichain-threshold}
+ a(J)=\min\left\{m\ge1:
+                   \binom{m}{\lfloor m/2\rfloor}\ge J\right\}.
+\end{equation}
+In particular $\lceil\log_2J\rceil\le a(J)\le J$.
+
+\begin{lemma}[Robust antichain factorization certificate]
+\label{lem:r77-robust-antichain}
+Let $\lambda_1,\ldots,\lambda_J$ be probability rows on $M$ labels,
+and let $d_1,\ldots,d_J\in[0,1]^M$ be arbitrary columns.  If
+\begin{equation}\label{eq:r77-antichain-hypotheses}
+ \lambda_n d_n\le\epsilon,
+ \qquad \lambda_n d_m\ge b\quad(n\ne m),
+ \qquad 0<b\le1,
+ \qquad \epsilon<\frac{b^2}{2M^2},
+\end{equation}
+then $J\le\binom{M}{\lfloor M/2\rfloor}$.
+The conclusion uses no linearity, noncontextuality or quantum
+representation of the decoder columns.
+\end{lemma}
+\begin{proof}
+Put $S_n=\{i:\lambda_{n,i}\ge b/(2M)\}$.  For $n\ne m$, the
+nonnegative sum $\lambda_nd_m\ge b$ has a summand
+$\lambda_{n,i}d_m(i)\ge b/M$.  Since both factors are at most one,
+\[
+ \lambda_{n,i}\ge b/M,\qquad d_m(i)\ge b/M.
+\]
+Thus $i\in S_n$.  On the other hand
+\[
+ \lambda_{m,i}\le\epsilon/d_m(i)
+                \le M\epsilon/b<b/(2M),
+\]
+so $i\notin S_m$.  Every ordered pair of distinct sets has this
+witness, and the $S_n$ form an antichain in the subsets of $[M]$.
+
+For completeness, choose a uniformly random permutation of $[M]$.
+For a fixed set $S$ of size $k$, the probability that its elements
+are the first $k$ elements of this permutation, in any order, is
+$1/\binom{M}{k}$.  The corresponding events for members of an
+antichain are disjoint, since the initial sets of one permutation
+form a chain.  Hence
+\[
+ \frac{J}{\binom{M}{\lfloor M/2\rfloor}}
+ \le\sum_{n=1}^J\binom{M}{|S_n|}^{-1}\le1,
+\]
+as required.
+\end{proof}
+
+The combinatorial conclusion is sharp at the level of these hypotheses.
+For $M\ge2$, let $k=\lfloor M/2\rfloor$, index preparations and
+tests by all $k$-element subsets $S$ of $[M]$, and put
+\[
+ \lambda_S(i)=\frac{\mathbf1_{\{i\in S\}}}{k},
+ \qquad d_T(i)=\mathbf1_{\{i\notin T\}}.
+\]
+Then $\lambda_Sd_S=0$ and $\lambda_Sd_T\ge1/k$ for $S\ne T$, with
+exactly $\binom{M}{k}$ preparations.  This construction concerns the
+abstract preparation--test table.  It does not construct a small
+controller for the qubit's chronological command--report dynamics.
+
+\subsection{An operational certificate from joint records}
+
+Consider any causal experiment with $J$ preparation procedures.  The
+$n$th procedure either declares failure or ends at an observable herald
+$H_n$.  Only after that herald is a binary terminal test $m\in[J]$
+requested.  The choice of $m$, including a policy's future test code,
+is not an input to the simulator before the herald.  Its terminal decoder
+is one fixed table for each requested
+test, independent of the earlier preparation procedure except through
+the simulator's current counted label.  These are the usual causal
+finite-memory conventions; allowing a decoder to inspect an uncounted
+copy of the entire past would define a different resource.
+
+Let $p_n$ be the target probability of $H_n$, and let $f_{nm}$ be the
+target rejection probability conditional on $H_n$ and test $m$.
+Suppose that every one of these preparation--test experiments has
+target expected cost at most $B$, and that
+\begin{equation}\label{eq:r77-operational-exposure}
+ p_n\ge p_*>0,\qquad f_{nn}=0,\qquad
+ f_{nm}\ge s>0\quad(n\ne m).
+\end{equation}
+The terminal tests and preparation procedures may be classical or
+quantum; only their observable probabilities enter the next theorem.
+
+\begin{theorem}[Memory lower bound from approximately exposing tests]
+\label{thm:r77-operational-antichain}
+Suppose \eqref{eq:r77-operational-exposure} holds, with $J\ge2$ and
+$0<s\le1$.  An $M$-label classical simulator that approximates the
+complete stopped record of every specified experiment to total-variation
+error at most $\delta$ satisfies
+\begin{equation}\label{eq:r77-budgeted-antichain}
+ \delta\le\frac{p_*s^2}{32M^2}
+ \quad\Longrightarrow\quad
+ J\le\binom{M}{\lfloor M/2\rfloor}.
+\end{equation}
+Consequently
+\begin{equation}\label{eq:r77-operational-lower}
+ \delta\le\frac{p_*s^2}{32J^2}
+ \quad\Longrightarrow\quad M\ge a(J).
+\end{equation}
+Both assertions allow freely mixed or counted pure starts and arbitrary
+stochastic terminal decoder tables.  They require only the finite
+collection of $J^2$ displayed preparation--test experiments.
+\end{theorem}
+\begin{proof}
+For the $n$th procedure let $q_n$ be the simulator's herald probability,
+and let $\lambda_n$ be its conditional distribution on its counted
+labels at that herald.  It does not depend on the later requested $m$.
+Write $d_m(i)\in[0,1]$ for the rejection probability of test $m$ at
+label $i$.  Total variation controls both the herald event and the
+joint herald-and-rejection event, so
+\begin{equation}\label{eq:r77-joint-error}
+ |q_n-p_n|\le\delta,\qquad
+ |q_n\lambda_nd_m-p_nf_{nm}|\le\delta.
+\end{equation}
+Under the hypothesis in \eqref{eq:r77-budgeted-antichain},
+$\delta/p_n\le s^2/(32M^2)\le1/32$, so $q_n>0$ and
+\[
+ \lambda_nd_n\le\frac{\delta}{p_n-\delta}
+                 \le\frac{2\delta}{p_*}
+                 \le\frac{s^2}{16M^2}.
+\]
+For $m\ne n$ put $t=\delta/p_n\le s^2/(32M^2)\le s/4$.
+Equation~\eqref{eq:r77-joint-error} gives
+\[
+ \lambda_nd_m\ge\frac{p_ns-\delta}{p_n+\delta}
+                =\frac{s-t}{1+t}\ge\frac{s}{2}.
+\]
+Apply Lemma~\ref{lem:r77-robust-antichain} with $b=s/2$ and
+$\epsilon=s^2/(16M^2)<b^2/(2M^2)$.  This proves
+\eqref{eq:r77-budgeted-antichain}.  If $M\ge J$, then $M\ge a(J)$
+already.  Otherwise the hypothesis in \eqref{eq:r77-operational-lower}
+implies the one in \eqref{eq:r77-budgeted-antichain}, and gives the
+same conclusion.  No conditional error estimate was presumed before
+\eqref{eq:r77-joint-error}; normalization was performed only after
+the herald mass was controlled.
+\end{proof}
+
+This theorem keeps the cost budget in the target law.  It makes no
+assertion about the simulator's expected duration.  The hidden label
+can have any classical interpretation, and the decoder for one binary
+POVM can be unrelated to decoders for other POVMs.
+
+\subsection{An unrestricted lower bound for the original algebraic instrument}
+
+For the undamped qubit instrument
+\eqref{eq:r75-noisy-instrument}, fix one commanded Bloch angle
+$\theta$ and put $z=e^{i\theta}$ and $\omega=\theta/(2\pi)$.  Let
+$N_{\rm cl}^{\rm m}(\delta;B)$ and
+$N_{\rm cl}^{\rm p}(\delta;B)$ be the least label counts approximating
+every common visible stopping and terminal-POVM policy of target expected
+calls at most $B$, with arbitrary classical terminal decoder tables.
+Transitions are fixed independently of later terminal requests.  Thus
+these classes include the physical dictionaries of
+Section~\ref{sec:r76-physical-approximation}, but impose no Born
+representation on their individual labels.
+
+Fix $B>0$ and write $\zeta=\min\{1,7B/8\}$.  For $J\ge2$ and
+a phase which is not a root of unity put
+\begin{equation}\label{eq:r77-phase-margin}
+ s_J=\min_{1\le q<J}\frac{1-\operatorname{Re}(z^q)}{2}>0.
+\end{equation}
+
+\begin{theorem}[Unrestricted finite certificates and arithmetic rates]
+\label{thm:r77-unrestricted-qubit}
+For either start convention, the following statements hold.
+
+\smallskip\noindent
+\textup{(i)} For every non-root phase and every integer $J\ge2$,
+\begin{equation}\label{eq:r77-phase-memory}
+ 0<\delta\le\frac{\zeta\,8^{-J}s_J^2}{32J^2}
+ \quad\Longrightarrow\quad N_{\rm cl}(\delta;B)\ge a(J).
+\end{equation}
+This lower bound uses $J$ terminal projectors and finitely many
+preparation prefixes, with no assumption on individual decoder rows.
+
+\smallskip\noindent
+\textup{(ii)} At the original algebraic phase
+$z=(3+4i)/5$, the explicit sufficient condition is
+\begin{equation}\label{eq:r77-rational-phase-memory}
+ 0<\delta\le\frac{25\zeta}{128\cdot200^J J^2}
+ \quad\Longrightarrow\quad N_{\rm cl}(\delta;B)\ge a(J).
+\end{equation}
+No badly-approximable assertion about $\theta/(2\pi)$ is required.
+
+\smallskip\noindent
+\textup{(iii)} If $\theta=2\pi\omega$ and
+$\|q\omega\|_{\mathbb R/\mathbb Z}\ge c/q$ for every $q\ge1$,
+then another explicit sufficient condition is
+\begin{equation}\label{eq:r77-badly-approx-memory}
+ 0<\delta\le\frac{\zeta c^4}{2\cdot8^J J^6}
+ \quad\Longrightarrow\quad N_{\rm cl}(\delta;B)\ge a(J).
+\end{equation}
+
+\smallskip\noindent
+In case \textup{(ii)}, and also in case \textup{(iii)},
+\begin{equation}\label{eq:r77-unrestricted-growth}
+ \liminf_{\delta\downarrow0}
+ \frac{N_{\rm cl}^{\rm m}(\delta;B)}
+      {\log_2\log_8(1/\delta)}\ge1,
+ \qquad
+ \liminf_{\delta\downarrow0}
+ \frac{N_{\rm cl}^{\rm p}(\delta;B)}
+      {\log_2\log_8(1/\delta)}\ge1.
+\end{equation}
+The inherited physical constructions give, at the same fixed phase,
+$N_{\rm cl}^{\rm m}\le K_\omega+L-1$ and
+$N_{\rm cl}^{\rm p}\le K_\omega+L$, where $L$ is
+\eqref{eq:r76-qubit-depth}; at $z=(3+4i)/5$ one may take $K_\omega=7$.
+The unrestricted lower and upper therefore leave a gap between
+logarithmic-in-logarithm and logarithmic growth.  A matching logarithmic
+lower is asserted only for the physical-dictionary class under the
+hypotheses of Theorem~\ref{thm:r76-physical-logarithm}.
+\end{theorem}
+\begin{proof}
+For $n=0,\ldots,J-1$, begin with probability $\zeta$ and otherwise
+stop with no call.  If begun, follow the report prefix $1\,0^n$,
+stopping immediately on a different report.  Success is the herald
+$H_n$.  The target probability and conditional terminal state are
+\[
+ p_n=\zeta8^{-(n+1)},\qquad
+ \rho_n=U_\theta^n\tau(U_\theta^*)^n.
+\]
+In the real Bloch plane $\rho_n$ has vector
+$(\cos(n\theta),\sin(n\theta))$.  The target expected number of
+calls, before the cost-free terminal test, is
+\[
+ \zeta\sum_{j=0}^{n}8^{-j}\le\zeta\,8/7\le B.
+\]
+After success request the binary terminal POVM
+$(\rho_m,I-\rho_m)$, and call its second outcome rejection.  Its
+target conditional rejection probability is
+\[
+ f_{nm}=1-\tr(\rho_n\rho_m)
+       =\frac{1-\cos((n-m)\theta)}2.
+\]
+Thus $f_{nn}=0$, $f_{nm}\ge s_J$ for $n\ne m$, and
+$p_n\ge p_*:=\zeta8^{-J}$.  These are the hypotheses of
+Theorem~\ref{thm:r77-operational-antichain}, which gives (i).
+The simulator's terminal projector request is made only after the
+prefix.  Causality is precisely what gives one common label
+distribution $\lambda_n$ for all its $J$ possible terminal tests.
+
+For (ii), write
+\[
+ z^q=\frac{A_q+iB_q}{5^q},\qquad A_q,B_q\in\mathbb Z.
+\]
+The phase is not a root of unity: otherwise $z+z^{-1}=6/5$ would
+be both a rational number and an algebraic integer, hence an integer.
+Consequently $\operatorname{Re}z^q<1$ for every $q\ge1$, and
+$5^q-A_q$ is a positive integer.  Therefore
+\[
+ \frac{1-\operatorname{Re}z^q}{2}
+ =\frac{5^q-A_q}{2\cdot5^q}\ge\frac1{2\cdot5^q},
+ \qquad s_J\ge\frac1{2\cdot5^{J-1}}.
+\]
+Substitution in (i) gives
+\[
+ \frac{\zeta8^{-J}}{32J^2}\frac1{4\cdot25^{J-1}}
+ =\frac{25\zeta}{128\cdot200^J J^2},
+\]
+which proves the claimed rational certificate.  The phase here is
+the Bloch rotation, as in \eqref{eq:r75-noisy-instrument}; its unitary
+uses the half-angle.  No angle is squared in this calculation.
+
+For (iii), $\sin(\pi t)\ge2t$ for $0\le t\le1/2$ gives,
+for $1\le q<J$,
+\[
+ \frac{1-\cos(2\pi q\omega)}2
+ =\sin^2(\pi q\omega)
+ \ge4\|q\omega\|_{\mathbb R/\mathbb Z}^2
+ \ge\frac{4c^2}{q^2}\ge\frac{4c^2}{J^2}.
+\]
+Part (i) then yields \eqref{eq:r77-badly-approx-memory}.
+
+For fixed $B$, the sufficient condition in (ii) holds with
+$J=\log_{200}(1/\delta)-O_B(\log\log(1/\delta))$ chosen as an
+integer slightly below this expression.  The corresponding choice in
+(iii) is $J=\log_8(1/\delta)-O_{B,c}(\log\log(1/\delta))$.
+Since $a(J)\ge\log_2J$, both imply
+\eqref{eq:r77-unrestricted-growth}.  The asserted uppers are the
+unchanged orbit-prefix constructions of
+Theorem~\ref{thm:r76-physical-logarithm} and its final algebraic-phase
+paragraph, which are also admissible in the unrestricted class.
+\end{proof}
+
+In fact the exact integer lower $a(J)$ retains a second-order term:
+the central-binomial estimate
+$\binom{m}{\lfloor m/2\rfloor}=\Theta(2^m/\sqrt m)$ gives
+$a(J)=\log_2J+\tfrac12\log_2\log_2J+O(1)$.
+This is a refinement of the support certificate, not an assertion of
+the optimal asymptotic simulator size.  The lower uses terminal
+projector requests, whereas the earlier exact infinite-memory
+obstruction already used report words alone.  These are different
+sets of operational probes.  No positive extra initializer charge is
+deduced for the unrestricted approximation problem.
+
+\begin{corollary}[Every non-root algebraic phase has the same lower order]
+\label{cor:r77-algebraic-unrestricted}
+Let $z$ be algebraic with $|z|=1$ and not a root of unity.  Let its
+degree be $D$, choose an integer $A\ge1$ such that $Az$ is an
+algebraic integer, and enumerate its conjugates as
+$z=z_1,z_2,\ldots,z_D$.  Choose any supplied real bound
+\[
+ H\ge\max\left\{2,
+             A^D\prod_{j=2}^D\max(1,|z_j|)\right\}.
+\]
+At that fixed phase, for either start convention,
+\begin{equation}\label{eq:r77-algebraic-margin}
+ 0<\delta\le
+ \frac{\zeta H^4}{32\cdot16^D\,(8H^4)^J J^2}
+ \quad\Longrightarrow\quad N_{\rm cl}(\delta;B)\ge a(J).
+\end{equation}
+In particular \eqref{eq:r77-unrestricted-growth} holds.  No
+badly-approximable premise is necessary for this lower order.
+\end{corollary}
+\begin{proof}
+The number $A^q(z^q-1)=(Az)^q-A^q$ is a nonzero algebraic integer.
+Its norm is a nonzero integer, so
+\[
+ 1\le A^{qD}|z^q-1|\prod_{j=2}^D|z_j^q-1|
+   \le 2^{D-1}H^q|z^q-1|.
+\]
+Because $|z|=1$,
+\[
+ \frac{1-\operatorname{Re}z^q}{2}
+   =\frac{|1-z^q|^2}{4}\ge4^{-D}H^{-2q}.
+\]
+It follows that $s_J\ge4^{-D}H^{-2(J-1)}$.
+Substitute this in \eqref{eq:r77-phase-memory} to obtain
+\eqref{eq:r77-algebraic-margin}.  A choice
+$J=\log_{8H^4}(1/\delta)-O_{B,H,D}(\log\log(1/\delta))$
+then gives the claimed lower order.  This elementary algebraic norm
+bound does not supply the stronger $s_J\asymp J^{-2}$ bound used for
+the sharp physical-dictionary logarithmic law.
+\end{proof}

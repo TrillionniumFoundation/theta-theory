@@ -1,0 +1,142 @@
+\section{The exact cost of initializing a stationary response}
+\label{sec:r75-stationary-initialization}
+
+The distinction between a freely chosen initial distribution and a
+prescribed initial label is not peculiar to a periodic example.  There is
+an exact general law.  Its proof is an elementary elimination in the
+space of future response functions, within the classical positive
+realization framework \cite{Heller65,MonrasWinter14,MonrasWinter16}.  It does not require
+hidden states to lie in the minimal linear realization, or require their
+unobserved transition matrix to be irreducible.
+
+Let $A$ be a nonempty finite command alphabet, with a finite report set
+$Y_a$ for each $a\in A$.  A finite classical realization consists of
+nonnegative matrices $T_{a,y}$ such that
+\[
+ T_a:=\sum_{y\in Y_a}T_{a,y},\qquad T_a\one=\one,
+\]
+and an initial probability row $\mu$.  For a command--report word
+$w=(a_1,y_1)\cdots(a_n,y_n)$ write
+$T_w=T_{a_1,y_1}\cdots T_{a_n,y_n}$ and
+$p(w)=\mu T_w\one$.  Optional terminal readouts have decoder
+columns $d_{b,z}\ge0$, with $\sum_zd_{b,z}=\one$, and response
+$p(w;b,z)=\mu T_wd_{b,z}$.  All following equalities include every specified
+terminal readout when these are part of the experiment.
+
+Call the prepared response \emph{predictively stationary under $\nu$}
+if $\nu$ is a probability row on $A$ with every $\nu(a)>0$ and
+\begin{equation}\label{eq:r75-predictive-stationarity}
+ \sum_{a\in A}\nu(a)\sum_{y\in Y_a}p((a,y)w)=p(w)
+ \qquad\text{for every future word }w.
+\end{equation}
+When terminal readouts are specified, additionally require
+\begin{equation}\label{eq:r75-terminal-stationarity}
+ \sum_{a\in A}\nu(a)\sum_{y\in Y_a}p((a,y)w;b,z)=p(w;b,z)
+ \qquad\text{for all }w,b,z,
+\end{equation}
+including the empty word $w$.
+This is an equality of observable responses; it does not assume
+$\mu\sum_a\nu(a)T_a=\mu$ in a particular hidden realization.  For one
+command and no terminal readout it is ordinary stationarity.  A response
+has a one-label realization precisely when its report probabilities
+factor as $p(w)=\prod_jp_{a_j}(y_j)$, and every terminal readout has a
+fixed distribution independent of the preceding word.  For one command
+this is the i.i.d. case.
+
+If a stationary hidden row is desired, it can be chosen without adding
+labels. Put $\overline T=\sum_a\nu(a)T_a$. Every $\mu\overline T^j$
+has the same future response by the displayed stationarity identities.
+A subsequential limit of the Ces\`aro averages
+$H^{-1}\sum_{j=0}^{H-1}\mu\overline T^j$ is stationary for
+$\overline T$ and retains that response. Thus the freely mixed minimum
+below agrees with the convention requiring a stationary hidden row for
+the averaged command, and with the usual stationary HMM convention when
+there is only one command.
+
+Let $n_{\mathrm{mix}}(p)$ be the minimum number of labels with an arbitrary
+initial probability row, and let $n_{\mathrm{pure}}(p)$ be the minimum when
+one prescribed initial label is counted.  The minima are $+\infty$ when
+there is no finite realization.
+
+\begin{theorem}[Stationary initialization law]
+\label{thm:r75-stationary-initializer}
+Suppose \eqref{eq:r75-predictive-stationarity} holds, together with
+\eqref{eq:r75-terminal-stationarity} when terminal readouts are included.
+If the response has
+a one-label realization, both minima are one.  Otherwise
+\begin{equation}\label{eq:r75-initialization-law}
+ n_{\mathrm{pure}}(p)=n_{\mathrm{mix}}(p)+1,
+ \qquad (+\infty)+1:=+\infty.
+\end{equation}
+The lower holds for all real nonnegative transition tables, including
+reducible and nonminimal linear realizations.  The upper processes the
+first actual command while entering the core; it neither discards a
+physical call nor inserts an uncounted preliminary randomization.
+\end{theorem}
+\begin{proof}
+Take any finite pure-start realization, with initial label $o$, and let
+$f_i$ denote the complete future response from hidden label $i$.  Thus
+$f_i(w)=e_i^{\mathsf T}T_w\one$, with the analogous values for terminal
+readouts.  Put $\overline T=\sum_a\nu(a)T_a$.  Stationarity gives the
+functional identity
+\begin{equation}\label{eq:r75-initial-functional-identity}
+ f_o=\sum_j\overline T_{oj}f_j.
+\end{equation}
+If $\overline T_{oo}=1$, nonnegativity and full support of $\nu$ imply
+$(T_a)_{oo}=1$ for every $a$.  All report transitions from $o$ then return
+to $o$.  Their probabilities, and the terminal readouts at $o$, constitute
+a one-label realization.  In the case under consideration this is
+excluded.  Hence
+\[
+ \beta_j=\frac{\overline T_{oj}}{1-\overline T_{oo}}\quad(j\ne o)
+\]
+is a probability row and $f_o=\sum_{j\ne o}\beta_jf_j$.
+
+Delete label $o$.  On the remaining labels define
+\begin{equation}\label{eq:r75-elimination-tables}
+ \widehat T_{a,y}(i,j)
+   =T_{a,y}(i,j)+T_{a,y}(i,o)\beta_j,
+ \qquad i,j\ne o,
+\end{equation}
+and retain their terminal decoders.  These matrices are nonnegative and
+their sums over $y$ are stochastic.  The recursion
+$f_i((a,y)w)=\sum_jT_{a,y}(i,j)f_j(w)$, with the functional identity for
+$f_o$ substituted on its right side, is exactly the recursion for
+\eqref{eq:r75-elimination-tables}.  Induction on word length, starting with
+the empty word and each terminal decoder, proves that every retained
+$f_i$ is unchanged.  Initial row $\beta$ therefore realizes $f_o$ with
+one fewer label.  This proves $n_{\mathrm{mix}}\le
+n_{\mathrm{pure}}-1$ whenever a finite pure realization exists.
+
+Conversely, given a $k$-label mixed-start realization $(\mu,T_{a,y})$,
+append one label $o$.  Its report transition on command $a$ enters the
+core with row $\mu T_{a,y}$ and never returns to $o$; the core retains its
+original transitions.  A terminal readout at $o$ has row $\mu d_{b,z}$.
+The first physical command is already included in this row, so induction
+gives the original law at every word length, including zero.  This uses
+$k+1$ labels and proves the reverse inequality.  A finite pure realization
+is itself a finite mixed one, so the two finiteness assertions are
+equivalent.  The one-label exception is immediate.
+\end{proof}
+
+\begin{corollary}[Stationary processes]
+\label{cor:r75-stationary-process}
+For every stationary finite-alphabet process that is not i.i.d., the
+minimum pure-start edge-emitting hidden Markov realization has exactly
+one more label than the minimum freely mixed realization, with the same
+infinite-value convention.  In particular, the $q$ versus $q+1$ conclusion
+of Theorem~\ref{thm:r74-depolarizing-obstruction} is an instance of a
+general stationary principle, while its phase-dependent $q$ remains a
+separate spectral conclusion.
+\end{corollary}
+
+Equality of these complete response functions also preserves the law
+under every common randomized policy for commands, stopping and terminal
+readout.  For each finite stopped history, multiply the equal response by
+the same policy probabilities.  Summation gives all finite stopping
+events, and decreasing continuation events give the nontermination
+probability.  Consequently all nonnegative costs measurable from that
+record have equal expectations, including infinite expectations.  These
+are process-realization label counts.  If the external policy has its own
+persistent memory, that memory is counted separately in a closed-loop
+implementation; it is not supplied free by the theorem.

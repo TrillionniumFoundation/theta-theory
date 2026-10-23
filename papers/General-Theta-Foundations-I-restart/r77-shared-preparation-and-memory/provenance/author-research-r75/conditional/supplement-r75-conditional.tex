@@ -1,0 +1,166 @@
+\section{Finite-memory approximation uniform over bounded-cost policies}
+\label{sec:r75-stopped-approximation}
+
+Exact finite memory and approximation of an experiment at bounded
+expected cost have different quantifiers.  The noisy construction gives
+an explicit approximation of the undamped conditional process, using one
+finite model for an entire class of adaptive stopping policies.  The
+following statement is an upper bound; it does not claim an optimal
+approximation exponent among arbitrary classical models.
+
+\begin{theorem}[Stopped-law approximation from conditional damping]
+\label{thm:r75-stopped-approximation}
+Fix a finite angle command alphabet, initial qubit $I/2$, and the
+undamped instruments \eqref{eq:r75-noisy-instrument} with $\alpha=1$.
+Let $\mathcal P_B$ be any class of common randomized policies for the
+next command, stopping and a terminal qubit POVM, such that the number
+$\tau$ of physical calls satisfies
+$\mathbb E_{1}^{\pi}\tau\le B<\infty$ for every $\pi\in\mathcal P_B$.
+The policy has access to the visible record and its own classical
+randomness; there is no additional quantum register entangled with the
+qubit.
+
+For every $0<\epsilon<1$, replace the instrument by the one with
+$\alpha=1-\epsilon$ and use its common finite realization from
+Theorem~\ref{thm:r75-noisy-memory}.  This one model, independently of the
+chosen policy, obeys
+\begin{equation}\label{eq:r75-stopped-tv}
+ \sup_{\pi\in\mathcal P_B}
+ \left\|\mathcal L_1^\pi-\mathcal L_{1-\epsilon}^\pi\right\|_{\rm TV}
+ \le \epsilon B/8.
+\end{equation}
+Here the complete stopped record includes the stopping time, commands,
+reports, terminal measurement result and a nontermination symbol.  The
+stronger bound holds for the block-diagonal classical--quantum terminal
+states before applying the terminal POVM.  The simulator uses at most
+$K(1-\epsilon)$ labels with a free mixed start, or
+$K(1-\epsilon)+1$ with a counted pure start.
+
+Thus for $0<\delta<B/8$, one may take $\epsilon=8\delta/B$ and use
+\begin{equation}\label{eq:r75-approx-count}
+ 1+\max\left\{3,
+       \left\lceil\frac\pi{\arccos(1-8\delta/B)}\right\rceil\right\}
+   =\frac\pi4\sqrt{B/\delta}+O(1)
+\end{equation}
+pure-start labels as $\delta/B\downarrow0$.  For $\delta\ge B/8$ the
+$\alpha=0$ model uses three pure-start labels and satisfies the same
+error requirement.  Policy memory is separate: a policy with $L$
+counted labels and a prescribed initial label can be composed with the
+mixed core using at most $LK(1-\epsilon)+1$ labels, with its first actual
+call processed during entry into the product core.
+\end{theorem}
+\begin{proof}
+For every positive qubit operator $X$ and every angle,
+\[
+ \|\mathcal D(X)-U_\theta XU_\theta^*\|_1\le\tr X.
+\]
+Indeed, after division by $\tr X>0$, the difference from $I/2$ has
+eigenvalues $\pm |r|/2$ for a Bloch vector of length at most one; the
+zero-trace case is immediate.  The perturbation of branch zero is
+$\epsilon[\mathcal D-\operatorname{Ad}_{U_\theta}]/8$, that of branch one
+is zero, and that of branch two is the negative of branch zero.  Hence
+the one-call flagged output satisfies
+\begin{equation}\label{eq:r75-instrument-distance}
+ \frac12\sum_{s=0}^2
+   \|[\Psi_s^{1-\epsilon,\theta}-\Psi_s^{1,\theta}](X)\|_1
+ \le\frac\epsilon8\tr X.
+\end{equation}
+This bound is uniform in the command.  Averaging it over a randomized
+command choice preserves it.
+
+First cap the experiment at a deterministic horizon $H$.  Retain the
+classical history and the subnormalized qubit state in every live or
+stopped branch.  A subsequent common policy step, including a terminal
+measurement, is a positive trace-preserving map on this direct sum, and
+therefore contracts the trace norm of Hermitian differences.  To see
+this directly, write such a difference as $Z_+-Z_-$, with
+$Z_\pm\ge0$.  Positivity, trace preservation and the triangle inequality
+give $\|\Phi(Z)\|_1\le\tr Z_++\tr Z_-=\|Z\|_1$.
+
+Telescope between the undamped and damped $H$-step experiments, replacing
+one physical call at a time.  In the term for call $t+1$, keep the first
+$t$ calls undamped and the remaining tail damped.  The input to the
+changed call is then the target positive live state of total trace
+$\mathbb P_1^\pi\{\tau>t\}$.  Apply
+\eqref{eq:r75-instrument-distance} there and contract the difference
+through its common tail.  The resulting terminal trace distance is at
+most
+\begin{equation}\label{eq:r75-capped-distance}
+ \frac\epsilon8\sum_{t=0}^{H-1}
+      \mathbb P_1^\pi\{\tau>t\}
+ =\frac\epsilon8\mathbb E_1^\pi\min\{\tau,H\}.
+\end{equation}
+The reference distribution in this bound is the undamped target, not an
+uncontrolled distribution of a hybrid or approximate process.
+
+To pass to the uncapped experiment, first retain separately every stopped
+history of length at most $H$ and merge the unfinished branches into one
+symbol.  Coarse graining cannot increase the distance.  As $H$ increases,
+the sum of the trace norms of the differences on the finite stopped
+blocks increases to its full sum, while the unfinished probabilities
+decrease to the respective nontermination probabilities.  Thus the
+left side converges to the stated stopped classical--quantum distance,
+including the absolute difference at the nontermination symbol.  The
+right side increases to $\epsilon\mathbb E_1^\pi\tau/8$.  A terminal
+POVM and further classical processing contract this distance, proving
+\eqref{eq:r75-stopped-tv}.  The argument permits all the policy
+randomization because that randomness is simply part of the common
+classical transition at each step.
+
+The noisy dictionary reproduces these complete subnormalized word states
+exactly, so replacing the noisy quantum system by its classical
+realization introduces no further error.  The count follows from the
+preceding theorem.  Substitution of $\epsilon=8\delta/B$ proves
+\eqref{eq:r75-approx-count}; use
+$\arccos(1-x)=\sqrt{2x}+O(x^{3/2})$ as $x\downarrow0$.
+The same perturbation bound is valid at $\epsilon=1$, where the exact
+two-state core was given explicitly.  Finally a product with the
+$L$-label policy has $LK$ core labels.  Its separate initial label has
+the initial terminal decoder and, on the first call, the appropriate
+policy-weighted transition into that product core.  This proves the
+claimed count without omitting the first physical call.
+\end{proof}
+
+The bound is uniform over a class defined by the target's expected number
+of calls.  It does not imply that the approximate experiment has expected
+cost at most $B$: total variation controls bounded losses, whereas an
+unbounded stopping time requires a separate uniform integrability or
+tail hypothesis.  In particular the possible nontermination mass of the
+approximate process is bounded by $\epsilon B/8$ but need not vanish.
+If a deterministic horizon is part of the policy class, both processes
+terminate within that horizon and \eqref{eq:r75-capped-distance} applies
+directly.  No extra quantum register, quantum input encoding, precision
+budget, or external policy memory is included in the stated simulator
+label count.
+If $B=0$, the target makes no call almost surely.  The same policy then
+also makes no call in the simulator, and a single label with the initial
+terminal decoder suffices with zero error.
+
+\subsection{Status of the inherited arithmetic consequences}
+\label{sec:r75-arithmetic-lift}
+
+For completeness, the claim after Theorem~\ref{thm:r75-noisy-memory}
+uses only the two implications already proved in
+Lemma~\ref{lem:r75-full-instrument-bounds}.  With
+$\alpha=1-\epsilon$, $x=\theta/(2\pi)$ and
+\[
+ \mathfrak A_x(\epsilon)
+   =\min_{q\ge1}\max\{3,q,\|qx\|/(q\epsilon)\},
+\]
+the lower proof of Theorem~\ref{thm:r71-envelope} applies because
+$\alpha e^{i\theta}\in\mathcal K_M$ is necessary for a full-instrument
+$M$-state realization.  Its upper proof constructs a regular polygon
+containing $\alpha e^{i\theta}$, so it also constructs the complete
+instrument, rather than just its scalar decoder.  Therefore
+\[
+ \tfrac12\mathfrak A_x(\epsilon)
+ \le N_{\mathrm{mix}}(1-\epsilon,\theta)
+ \le (1+4\pi^2)\mathfrak A_x(\epsilon).
+\]
+The exact $+1$ pure-start increment does not change logarithmic
+exponents, divergence, or the constant-factor cubic-root criterion.
+All subsequent number-theoretic reasoning is inherited from
+Section~\ref{sec:r71-arithmetic}; no new irrationality exponent is
+assigned to a particular algebraic rotation.  In particular the full
+Karpelevi\v c region alone has not been shown sufficient for this complete
+instrument away from the sectors treated above.
