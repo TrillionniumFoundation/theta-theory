@@ -1,0 +1,100 @@
+name: A2-DYN physical section boundary payment
+
+'on':
+  push:
+    branches:
+      - revision/a2-dyn-physical-section-boundary-payment-2026-10-23
+    paths:
+      - 'papers/A2-DYN-physical-section-boundary-payment-author-revision/**/*.tex'
+      - 'papers/A2-DYN-physical-section-boundary-payment-author-revision/tools/**'
+      - 'papers/A2-DYN-physical-section-boundary-payment-author-revision/audit/**'
+      - 'papers/A2-DYN-physical-section-boundary-payment-author-revision/history/**'
+      - 'papers/A2-DYN-physical-section-boundary-payment-author-revision/ci/**'
+      - 'papers/A2-DYN-physical-section-boundary-payment-author-revision/build.sh'
+      - 'papers/A2-DYN-physical-section-boundary-payment-author-revision/requirements.txt'
+      - 'papers/A2-DYN-physical-section-boundary-payment-author-revision/SOURCE_MANIFEST.json'
+      - '.github/workflows/a2-dyn-physical-section-boundary-payment-20261023.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native-source-mathematics-and-typesetting:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    defaults:
+      run:
+        shell: bash
+        working-directory: papers/A2-DYN-physical-section-boundary-payment-author-revision
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - name: Check out the exact isolated author revision
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+          sparse-checkout: |
+            .github/workflows
+            papers/A2-DYN-physical-section-boundary-payment-author-revision
+
+      - name: Record source identity and compare the scoped workflow
+        run: |
+          set -euo pipefail
+          mkdir -p build/current
+          git rev-parse HEAD > build/current/CI_CHECKOUT_SHA.txt
+          cmp ci/a2-dyn-physical-section-boundary-payment-20261023.yml ../../.github/workflows/a2-dyn-physical-section-boundary-payment-20261023.yml
+          sha256sum build.sh requirements.txt ci/a2-dyn-physical-section-boundary-payment-20261023.yml > build/current/CI_ENTRYPOINT_SHA256.txt
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: papers/A2-DYN-physical-section-boundary-payment-author-revision/requirements.txt
+
+      - name: Install native TeX and mathematical dependencies
+        run: |
+          set -euo pipefail
+          sudo apt-get -o Acquire::Retries=2 update -qq
+          sudo apt-get install -y --no-install-recommends \
+            texlive-latex-base texlive-latex-recommended \
+            texlive-fonts-recommended lmodern poppler-utils
+          python3 -m pip install --disable-pip-version-check --no-input -r requirements.txt
+          {
+            python3 --version
+            python3 -m pip freeze
+            pdflatex --version
+            pdfinfo -v
+          } > build/current/CI_ENVIRONMENT.log 2>&1
+
+      - name: Verify exact source objects, execute finite checks and build the complete manuscript
+        id: native_build
+        run: |
+          set -euo pipefail
+          bash build.sh 2>&1 | tee build/current/CI_BUILD.log
+
+      - name: Preserve the actual outcome
+        if: always()
+        env:
+          A2_DYN_BUILD_OUTCOME: ${{ steps.native_build.outcome }}
+        run: |
+          set -euo pipefail
+          mkdir -p build/current
+          printf '%s\n' "$A2_DYN_BUILD_OUTCOME" > build/current/CI_BUILD_OUTCOME.txt
+          git rev-parse HEAD > build/current/CI_CHECKOUT_SHA.txt
+          git status --porcelain=v1 > build/current/CI_POST_RUN_STATUS.txt
+
+      - name: Upload actual execution records and native PDF
+        if: always()
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        with:
+          name: a2-dyn-physical-section-boundary-payment-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: papers/A2-DYN-physical-section-boundary-payment-author-revision/build/current/
+          if-no-files-found: error
+          retention-days: 90
+          compression-level: 6
+          overwrite: false
