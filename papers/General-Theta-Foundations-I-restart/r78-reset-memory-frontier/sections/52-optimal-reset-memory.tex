@@ -1,0 +1,328 @@
+\section{Exact optimal memory for reset experiments with tied actions}
+\label{sec:r77-reset-memory}
+
+The realization of a prescribed response and the implementation of an
+optimal feedback rule are different problems.  We now give an exact
+memory classification for a class of controlled experiments in which
+optimal actions may be tied.  The class allows any finite command set,
+any finite number of reset reports, arbitrary finite Hilbert dimension,
+state-dependent call costs, and an unknown initial density matrix.
+The additional hypothesis is strict positivity of each failure effect.
+It supplies the reachability needed for a sharp converse; it is not a
+uniqueness assumption on an optimal decision.
+
+Use the reset instrument of Section~\ref{sec:reset-control}:
+\[
+ \mathcal I_{a,i}(\rho)=\tr(E_{a,i}\rho)\sigma_i,
+ \qquad \sum_{i=1}^s E_{a,i}\preccurlyeq I,
+ \qquad c_*I\preccurlyeq G_a\preccurlyeq c^*I.
+\]
+Here $a\in\mathcal A$, $1\le i\le s$, $c_*>0$, and success requires
+immediate commitment.  There is no additional state measurement or
+free reset.  Throughout this section assume
+\begin{equation}\label{eq:r77-reset-positive}
+ E_{a,i}\succ0\quad(a\in\mathcal A,\ 1\le i\le s),
+ \qquad\text{there is no closed failure set.}
+\end{equation}
+Theorem~\ref{thm:reset-control} supplies the finite Bellman vector $v$,
+the start operators $L_a=G_a+\sum_i v_iE_{a,i}$, and the value
+\[
+ V_* =\min_{p\in\Delta(\mathcal A)}
+       \lambda_{\max}\Bigl(\sum_a p_aL_a\Bigr).
+\]
+Define the Bellman residuals and optimal action sets by
+\[
+ d_{ia}=\tr(G_a\sigma_i)+\sum_j\tr(E_{a,j}\sigma_i)v_j-v_i,
+ \qquad \mathcal A_i^*=\{a:d_{ia}=0\}.
+\]
+Every $d_{ia}$ is nonnegative and every $\mathcal A_i^*$ is nonempty.
+Put
+\[
+ \mathcal P_* =\left\{p\in\Delta(\mathcal A):
+       \lambda_{\max}\Bigl(\sum_a p_aL_a\Bigr)=V_*\right\},
+ \qquad I(p)=\{i:\supp p\subseteq\mathcal A_i^*\}.
+\]
+For $J\subseteq\{1,\ldots,s\}$ let
+\begin{equation}\label{eq:r77-transversal}
+ t(J)=\min\{|H|:H\subseteq\mathcal A,
+               \ H\cap\mathcal A_i^*\ne\varnothing\ (i\in J)\},
+ \qquad t(\varnothing)=0.
+\end{equation}
+This is an ordinary transversal number of the displayed finite set
+system.  It counts distinct continuing command rows, rather than
+physical states or the support size of a least-favorable preparation.
+
+\begin{theorem}[Exact optimal-memory formula with ties]
+\label{thm:r77-reset-cover}
+Under \eqref{eq:r77-reset-positive}, the least number of live labels of
+a fixed-program, prescribed-pure-start autonomous controller attaining
+the all-initial-state optimum $V_*$ is
+\begin{equation}\label{eq:r77-reset-memory}
+ m_* =1+\min_{p\in\mathcal P_*}
+                  t\bigl(\{1,\ldots,s\}\setminus I(p)\bigr).
+\end{equation}
+Every minimum is realized by one optimal initial command row and pure
+continuing command rows.  The post-report transition may be chosen as a
+deterministic function of the current reset report alone.  Arbitrary
+stochastic transitions, dependence on the previous label and command,
+and mixed continuing rows cannot lower \eqref{eq:r77-reset-memory}.
+
+Event stopping has the same total-label minimum.  State stopping has
+total-label minimum $m_*+1$.  For algebraic primitive data the value,
+optimal label count, and one realizing controller can be determined
+by a finite exact procedure; polynomial running time is not asserted.
+\end{theorem}
+\begin{proof}
+Choose an attaining dual density matrix $\rho_*$ from
+Theorem~\ref{thm:reset-control}.  Consider any robust optimal controller,
+write its fixed command rows as $p^1,\ldots,p^M$, and index its pure
+initial label by $1$.  Its cost from every $\rho$ is at least
+$\tr(\rho\sum_a p^1_aL_a)$.  Consequently
+$\lambda_{\max}(\sum_a p^1_aL_a)\le V_*$, and the reverse inequality
+holds by the definition of $V_*$.  Thus $p^1\in\mathcal P_*$.
+
+The Bellman residual identity of Proposition~\ref{prop:reset-rigidity}
+holds at $\rho_*$.  Its initial term is at least $V_*$, whereas the
+whole cost is at most $V_*$.  Every nonnegative residual on a reached
+continuation therefore vanishes.  For every reset report $i$, its
+probability on the first call is
+\[
+ \sum_a p^1_a\tr(E_{a,i}\rho_*)>0.
+\]
+This strict inequality follows from positive definiteness and holds
+even if $\rho_*$ is singular or $p^1$ has proper support.  After this
+report at least one label $k$ is reached with positive probability.
+The next command has row $p^k$, so
+$\sum_a p^k_a d_{ia}=0$.  Nonnegativity implies
+$\supp p^k\subseteq\mathcal A_i^*$.
+
+If $i\notin I(p^1)$, that label cannot be $1$.  For each other label
+which serves one or more such states, choose any action in the support
+of its row.  It belongs to every optimal action set served by that row.
+These at most $M-1$ chosen actions meet all
+$\mathcal A_i^*$ with $i\notin I(p^1)$.  This proves the lower bound
+in \eqref{eq:r77-reset-memory}.  It uses only first-failure events;
+no reachability conclusion is inferred from an unrelated path law.
+
+Conversely, fix $p\in\mathcal P_*$ and a smallest transversal $H$ of
+the remaining states.  Use one initial label with command row $p$ and
+one pure command label for each $a\in H$.  After a failure report $i$,
+return to the initial label when $i\in I(p)$; otherwise select a fixed
+$a\in H\cap\mathcal A_i^*$.  Every continuing row is then Bellman
+optimal for its actual reset state.  Bellman's equality bounds every
+finite-prefix cost from $\sigma_i$ by $v_i$.  The positive cost floor
+implies finite expected duration, and the bounded remaining potential
+vanishes.  Hence the continuation cost is exactly $v_i$.  From an
+arbitrary initial state the full cost is
+$\tr(\rho\sum_a p_aL_a)\le V_*$.  This is a proper robust optimum.
+There are finitely many supports of $p$, so the integer minimum in
+\eqref{eq:r77-reset-memory} is attained.  Reusing a live label for the
+single terminal decoder is permitted exactly in the event-stopped
+interface, giving the claimed terminal counts.
+
+For the effective assertion enumerate deterministic command selectors
+on the $s$ reset states.  A proper selector has cost
+$(I-Q_\alpha)^{-1}c_\alpha$; properness and this vector can be checked
+by finite algebraic operations and spectral or graph tests.  Some
+proper selector is simultaneously optimal by
+Theorem~\ref{thm:reset-control}, so the enumeration determines $v$.
+The spectral minimization defining $V_*$ is a compact semialgebraic
+optimization.  For each nonempty support $T\subseteq\mathcal A$,
+the assertion that some $p\in\mathcal P_*$ has exactly that support
+is a first-order real-algebraic condition.  For example, impose
+$p_a>0$ on $T$, $p_a=0$ off $T$, $\sum_a p_a=1$, and
+$\sum_a p_aL_a\preccurlyeq V_*I$; positivity of a Hermitian matrix
+is expressed by its principal minors after separating real and
+imaginary parts.  Exact elimination decides this condition and
+supplies a sample when it is true.  Finite transversal enumeration
+then gives the minimum and the stated implementation.  The procedure
+does not assume that a numerical optimizer has certified a tie.
+\end{proof}
+
+The positive-effect hypothesis can be weakened to the existence of one
+attaining $\rho_*$ for which $\tr(E_{a,i}\rho_*)>0$ for all $a,i$;
+the same proof applies.  The stated version is a direct primitive
+condition, without an unknown optimal-trajectory assumption.  When
+some reports can be inaccessible, the formula for all $s$ reset
+states need not be necessary: an unreachable state may carry an
+arbitrary optimal action set.  In that case the lower certificates
+of Proposition~\ref{prop:reset-rigidity} retain their original scope.
+
+\subsection{A finite gap certificate for every insufficient memory}
+
+For $M\ge1$ and rows $p^1,\ldots,p^M\in\Delta(\mathcal A)$ put
+\[
+ r_i(p^1,\ldots,p^M)=\min_{1\le k\le M}\sum_a p^k_a d_{ia},
+ \qquad
+ K_M(p^1,\ldots,p^M)=\sum_a p^1_aL_a
+       +\sum_{a,i}p^1_a r_i(p^1,\ldots,p^M)E_{a,i},
+\]
+and define the finite variational quantity
+\begin{equation}\label{eq:r77-reset-gap}
+ D_M=\min_{(p^1,\ldots,p^M)\in\Delta(\mathcal A)^M}
+                  \lambda_{\max}(K_M(p^1,\ldots,p^M))-V_*.
+\end{equation}
+
+\begin{theorem}[Attained certificate of a strict optimality gap]
+\label{thm:r77-reset-gap}
+Under \eqref{eq:r77-reset-positive}, every robustly proper controller
+with at most $M$ live labels has worst-initial-state expected cost at
+least $V_*+D_M$.  The minimum defining $D_M$ is attained, and
+\[
+ D_M>0\quad\Longleftrightarrow\quad M<m_*.
+\]
+For algebraic primitive data, $D_M$ is computable by exact real
+algebraic optimization.  It is a lower certificate, not a claimed
+formula for the entire memory-constrained cost frontier.
+\end{theorem}
+\begin{proof}
+For the fixed rows of a controller, condition on the first command and
+its failure report $i$.  Whichever label the controller selects, the
+expected Bellman residual on its next call is at least $r_i$.  All
+later residuals are nonnegative.  The residual identity, now at any
+initial $\rho$, gives cost at least $\tr(\rho K_M)$, and maximization
+over density matrices gives $\lambda_{\max}(K_M)$.  A controller of
+infinite worst-state cost satisfies the lower bound trivially.
+
+The function in \eqref{eq:r77-reset-gap} is continuous on a compact
+product of simplexes.  Moreover $K_M\succeq\sum_a p^1_aL_a$, so
+$D_M\ge0$.  If $D_M=0$, take minimizing rows.  Then $p^1\in\mathcal
+P_*$.  Evaluate $K_M$ at an attaining dual $\rho_*$.  Its first term
+is at least $V_*$ and each coefficient
+$\sum_a p^1_a\tr(E_{a,i}\rho_*)$ is strictly positive.  Since its
+value is at most $\lambda_{\max}(K_M)=V_*$, every $r_i$ is zero.
+Thus every reset state has at least one row supported on its optimal
+action set.  The construction in Theorem~\ref{thm:r77-reset-cover}
+implements an optimal controller with these rows, hence $M\ge m_*$.
+Conversely an optimal controller supplied there has $r_i=0$ for all
+$i$, so $D_M=0$ whenever $M\ge m_*$.  Compactness makes the remaining
+cases strictly positive.  Finite minima, products and Hermitian
+eigenvalue inequalities are semialgebraic, proving the last assertion.
+\end{proof}
+
+\subsection{Every finite optimal-action cover has a physical realization}
+
+The preceding set system is not merely an artifact of a bound.
+Arbitrary finite covering problems occur in reset instruments with
+commuting cost and effect operators
+with strictly positive failure effects and constant success probability.
+
+\begin{theorem}[Universality of the optimal-memory covering problem]
+\label{thm:r77-reset-universality}
+Let $q\ge2$ and let $A_1,\ldots,A_s$ be nonempty proper subsets of
+$\{1,\ldots,q\}$.  Let $t$ be their transversal number.  For every
+fixed rational $0<r<1$ there is an explicit rational reset
+instrument with commuting cost and effect operators in dimension $s+q$, with $q$ commands, $s$ failure reports,
+success probability $1-r$ at every call, and costs in $[1,4]$, such
+that
+\[
+ V_*=3+\frac{r}{1-r}+\frac1q,
+ \qquad m_*=t+1.
+\]
+Its unique optimal initial command row is uniform.  The minimum is
+over all stochastic autonomous controllers with a prescribed pure
+initial label, and includes arbitrary randomized post-report updates.
+Thus determining optimal memory is NP-hard even on this class, while
+the unrestricted value and an optimal command distribution are explicit.
+\end{theorem}
+\begin{proof}
+Take an orthonormal basis $e_1,\ldots,e_s,f_1,\ldots,f_q$ and set
+\[
+ \sigma_i=|e_i\rangle\langle e_i|,
+ \qquad E_{a,i}=\frac r s I.
+\]
+The failure map is $\mathcal I_{a,i}(\rho)=(r/s)\tr(\rho)\sigma_i$.
+For instance its Kraus operators are
+$\sqrt{r/s}\,|e_i\rangle\langle b|$ for all displayed basis vectors
+$b$.  Add any success measure-and-prepare branch with effect $(1-r)I$.
+Their sum is trace preserving, so these are actual quantum instruments.
+They commute at the level of the relevant effects and all post-failure
+states are classical basis states.
+
+Specify the positive diagonal cost operator $G_a$ by
+\[
+ \langle e_i,G_ae_i\rangle=1+\mathbf1_{\{a\notin A_i\}},
+ \qquad
+ \langle f_j,G_af_j\rangle=3+\mathbf1_{\{a=j\}}.
+\]
+These means are physically realizable without extra controller
+information.  In each call measure the displayed diagonal basis,
+charge its indicated cost, then use fresh coins to choose success or
+one of the reset reports and prepare the corresponding state.  The
+intermediate basis outcome and realized cost are not an additional
+observation at the control port.  Averaging them gives exactly the
+declared instrument and mean cost; no coherence-dependent hidden
+assumption is needed.
+
+All commands have $Q_{iaj}=r/s$.  Since every $A_i$ is nonempty,
+$v_i=(1-r)^{-1}$ solves the Bellman equations and is their finite
+solution.  Its optimal action set at $i$ is exactly $A_i$.
+The start operator is $L_a=G_a+r(1-r)^{-1}I$.  For any initial
+command row $p$, its eigenvalues on the $e_i$ coordinates are
+\[
+ \frac1{1-r}+p(A_i^c)\le2+\frac r{1-r},
+\]
+whereas its eigenvalues on the $f_j$ coordinates are
+$3+r(1-r)^{-1}+p_j$.  The latter strictly dominate, hence
+\[
+ \lambda_{\max}\Bigl(\sum_a p_aL_a\Bigr)
+       =3+\frac r{1-r}+\max_j p_j.
+\]
+Its unique minimum is the uniform row, with the displayed value.
+Its full support lies in none of the proper sets $A_i$, so
+Theorem~\ref{thm:r77-reset-cover} gives $m_*=1+t$ and constructs an
+attaining controller.
+
+The matrices have dimension and rational encoding length polynomial
+in the incidence table of the set system; one may fix $r=1/2$.
+Minimum transversal is the classical covering problem
+\cite{Karp72}.  Restriction to proper nonempty subsets does not remove
+its hardness: adjoining an unused action makes every nonempty set
+proper without changing its transversal number.  An oracle for the
+optimal label number in the displayed physical family would therefore
+return the transversal number by subtracting one.  This proves the
+complexity assertion by an explicit reduction, not by a general
+complexity claim about POMDPs.
+\end{proof}
+
+\begin{example}[Why positive reachability cannot be dropped]
+\label{ex:r77-reset-exposure}
+On $\mathbb C^2$ take one reset state $\sigma=|0\rangle\langle0|$,
+two commands $a,b$, and
+\[
+ E_a=E_b=\tfrac12|0\rangle\langle0|,
+ \qquad G_a=\operatorname{diag}(1,6),\qquad
+ G_b=\operatorname{diag}(2,5).
+\]
+There is no closed failure set.  The Bellman value is $v=2$ and its
+unique optimal continuation command is $a$.  The start operators
+are $L_a=\operatorname{diag}(2,6)$ and
+$L_b=\operatorname{diag}(3,5)$, so $V_*=5$ and the unique minimizing
+initial row is the pure command $b$.  Applying
+\eqref{eq:r77-reset-memory} without positive reachability would give
+two labels.  Nevertheless the constant $b$ controller has cost
+operator $\operatorname{diag}(4,5)$: from $\sigma$ it pays $2$ per
+call with failure probability $1/2$, and from $|1\rangle$ it pays
+$5$ and succeeds immediately.  It is a one-label robust optimum.
+The least-favorable preparation $|1\rangle\langle1|$ never sees the
+reset report.  Thus a locally nonoptimal continuation can be hidden
+below the robust optimum when the exposing preparation cannot reach
+it.  This verifies the need for the reachability hypothesis by exact
+primitive data.
+\end{example}
+
+For example, the three optimal sets $\{1,2\}$, $\{2,3\}$ and
+$\{1,3\}$ give $m_*=3$, although every report state has two optimal
+commands.  Pairwise uniqueness of Bayes actions plays no role.  More
+generally the count can grow with an arbitrary finite covering
+instance while the success probability remains fixed and every
+failure effect remains strictly positive.
+
+Bellman verification and shortest-path optimization are classical
+\cite{BertsekasTsitsiklis91}; search over finite stochastic controllers
+also has an extensive history \cite{Meuleau99,PoupartBoutilier03}.
+The assertions proved here concern the exact counted-row invariant,
+its initializer interaction, the strict finite gap certificate and
+its realization inside the stated reset experiment.  They do not
+assert a general classification of partially observed control or
+replace the distinct squared-sign minimax-risk problem.
