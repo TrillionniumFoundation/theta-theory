@@ -4,7 +4,7 @@
 
 The final **publication-local** source check, four mathematical verification programs and three-pass native LaTeX build completed successfully. The delivered manuscript has **271 pages**. These are actual execution and document records, not simulated qualification, a new referee report, or a proof that the raw pointwise local limit theorem or full four-coordinate inverse is complete. Both final mathematical completion flags remain false.
 
-This report describes a **local, pre-push packaging snapshot**. Remote publication and a workflow for this new source have not yet occurred at this snapshot. Historical successful CI runs are recorded separately and are not transferred to this revision.
+This report retains the exact **local publication build** and adds the actual **post-push source receipt**. Source commit `85f206907f56773e32fae9b61302924ca16603aa` is pushed on the isolated revision branch. At the final observation, `2026-10-23T05:56:51Z`, its new CI run was queued without an assigned runner; no new remote execution or success is claimed. Historical successful CI runs remain separately attributed.
 
 | Identity | Actual value |
 |---|---|
@@ -81,7 +81,13 @@ This is deterministic packaging of these actual recorded bytes; rerunning TeX or
 
 The separately retained GitHub evidence reports completed/success for predecessor source run 39712256295 at `9bd4ab343bb8a0f78b6a6380ae1f1e80a976d761` and carrier run 39714539054 at `e84c06c758bed5b2dc09222ad725cfe0ba0d58dd`. Their run/job/artifact identities remain distinct. The API/job-log audit does not claim independent reconstruction of downloaded artifact bytes.
 
-At this packaging snapshot the new branch is **not yet pushed**, its source commit has not been assigned in this record, and its remote CI is **not yet executed**. `PUBLICATION_STATUS.json` intentionally records that scope. A later actual push or workflow receipt must name its real head commit; neither historical success nor this local build may be transferred to an untested commit by assertion.
+The complete new source was pushed as `85f206907f56773e32fae9b61302924ca16603aa`, with repository tree `0a5bc8a95de43e7c4d381684f7ffa70b04cdbb4e` and article tree `e4ddb6fd11e570dfc7bba9d5fd5a2fed051e78c7`. The remote tree exactly matches the locally staged tree: 257 new paths, no modification to a previously existing path. All 1,304 initially inventoried remote branch refs retained their original SHA. A separately added general-theta branch was observed and was not changed by this revision.
+
+The push triggered **run 39907443910**, job **120262529103**, for that exact source SHA. At `2026-10-23T05:56:51Z`, more than twelve minutes after run creation, the API still reported **queued**, conclusion `null`, runner ID `0`, no runner name, no steps and **zero artifacts**. A fresh repository query reported one queued run and zero in-progress runs. This proves that no runner had been assigned at the observation; it does not establish the cause. No execution log existed to retrieve, and no run was rerun or cancelled.
+
+The final raw run/jobs/artifact/count responses, polling history and machine-readable observation are in `evidence/github/source-ci/`. `SOURCE_PUBLICATION_RECEIPT.json` and `REMOTE_REF_PRESERVATION_AFTER_SOURCE.json` record the source/tree match and preservation check. `PUBLICATION_STATUS.json` marks the new remote CI as **not completed and not passed**, while retaining the successful local build separately. The preparation-time status is preserved in `PRE_PUSH_PUBLICATION_STATUS.json` and in the source commit itself.
+
+This subsequent publication-receipt commit records the already-pushed mathematical source. Its own commit SHA cannot be inserted into itself; the branch head and any separate workflow at that head are checked externally. Neither the old successful workflows nor the source run's queued status is treated as successful CI for that metadata commit. No theorem, active native input or mathematical source hash changed while these publication receipts were added.
 
 ## 8. Mathematical status preserved by the evidence
 
