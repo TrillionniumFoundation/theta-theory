@@ -36,9 +36,13 @@ The geometric proof was corrected to take closures fiberwise at fixed radius. Co
 
 ## Remote publication and CI
 
-At this local validation stage the new source has not yet been pushed. The subsequent publication receipt will identify the actual source commit, tree and exact workflow run. No remote success is claimed in advance. The predecessor source and carrier runs were queued at their recorded observation; older success does not qualify the current source.
+The source was actually pushed to `revision/a2-dyn-physical-roof-jump-spectrum-2026-10-23` at commit `1cd52fd00675f10f08182f670a42fbbf9e0d1a96`, with parent `d6c3c6754fb3a1b4ad3eea8e6dcc51642e312b28`. The repository tree is `d78e8ff51de5a63497d576a3e67214389d9bad30` and the new article tree is `2505b6ec3d4153d71e1b3bda0e2cfe2bd4d0131f`. All 285 remote article blobs match the exact local publication plan. GitHub's comparison contains exactly 286 added files: this new article and its dedicated workflow, with zero modified or deleted files.
 
-The prepublication ref observation retained every one of the initial 1306 refs unchanged. One additional, unrelated general-theta branch appeared concurrently; it is recorded and preserved. Only the new A2-DYN article path and uniquely scoped workflow may be added. The actual remote tree comparison and ref preservation check are recorded after publication.
+The structural tree comparison preserves every one of 218 previous paper entries and 180 previous workflow entries. All 1307 refs present immediately before publication were unchanged at the post-source observation. One additional unrelated general-theta branch appeared concurrently with this new revision branch; it is recorded and preserved. The earlier census-to-prepublication observation likewise preserved the initial 1306 refs, with one unrelated concurrent addition. These observations do not claim that no other author was working in the repository.
+
+At 2026-10-23 07:52:05 UTC, the workflow for the exact source commit was **queued**, with conclusion `None`. Its actual run is [39920538196](https://github.com/TrillionniumFoundation/theta-theory/actions/runs/39920538196); 1 job and 0 artifacts were reported. A queued job with no completed steps is not a passed validation. The exact run, job and artifact API records are retained under evidence/github/. The predecessor's queued runs do not qualify this revision.
+
+The metadata carrier containing this receipt changes only publication metadata and evidence, leaving the sealed source and its 283-page validated PDF unchanged. Its own workflow status must be observed separately and is not inferred from the source run. No unobserved remote success is claimed. SOURCE_PUBLICATION_RECEIPT.json, SOURCE_TREE_SCOPE.json, SOURCE_COMPARE_FILES.json and POST_SOURCE_REF_DELTA.json record the actual publication and preservation checks.
 
 ## Mathematical completion status
 
