@@ -1,0 +1,3 @@
+# Native layout check
+
+The complete paired draft compiled to 75 main pages, 196 supplement pages and 37 retained companion pages, with 268 main/supplement statement locators and no unresolved citations, references, duplicate labels or overfull boxes in the final logs. Rendered main pages 26--28 were inspected at 110 dpi: the new theorem, all five asymptotic conditions, the resolvent derivatives, the subsequential argument, the equality chain and the continuation into finite search are readable, correctly aligned and unclipped. This is a layout check, not a mathematical proof. The final committed-source receipt and artifact hashes control the published outputs.
