@@ -1,0 +1,3 @@
+# Explicit-quantifier hardening after independent reconstruction
+
+The externally frozen candidate remains unchanged at SHA256 2ef5dfa9ac8c3b586af23c3323f5b2e77a1118fadbc9db151dfb63124c95bf01. The integrated native338 adds only three non-substantive clarifications: the first lemma explicitly quantifies R in [R_-, R_+]; the deep theorem explicitly quantifies integer D >= 0 and integer m >= 1; and the annular optimizer is called the exact minimum of the displayed bound, not the best constant in the full theorem. No hypothesis is removed, estimate strengthened or physical event changed by these clarifications. The first comment identifies the integrated author continuation instead of the standalone candidate.

@@ -1,0 +1,3 @@
+# Native rendering check
+
+The final mathematical-source PDF has 288 pages and SHA256 b42b44b937f04c6b4df7a001ecefde6100a74c6eff0d152a52b3b3c018c503ca. Pages 1, 5, 6, 7, 8 and 265–270 were rendered at 95 dpi; pages 1, 5–7 and 265–270 were directly inspected. The title/abstract, source-scope introduction, new full proof and following appendix transition have no observed cropped text, overlapping equations or missing glyphs. Page 8 was rendered but was not separately inspected. The final TeX log has no undefined references, multiply defined labels, missing characters or overfull hbox/vbox diagnostics. This is a targeted visual check, not an assertion that every historical page received a new visual inspection.
