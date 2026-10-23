@@ -1,0 +1,36 @@
+# Research status — General Theta Foundations I, R80
+
+## Current proved center
+
+The paper continues the causal-resource and predictive-implementation programme with its original mathematical identity. The central general theorem is the uniform stability of the optimized finite-memory cost frontier for finite-dimensional nonreset failure instruments. Same-label regularization keeps the live-memory budget and leaves the physical state unchanged. The R80 sharpness theorem now establishes that its square-root exponent is optimal under the stated hypotheses: two scalar hidden models and two stochastic live labels already have an exact positive square-root leading term. All-controller rigidity and a matching implementation, not only an example of a poor fixed policy, support that conclusion.
+
+A second proved direction determines finite saturation of the history value in imperfect search with any finite number of locations. Arbitrary positive command costs are allowed; finite saturation is equivalent to rational commensurability of every failure logarithm. Every finite budget has an attained strict gap otherwise, including partially commensurate families. Projected class-word rigidity proves necessity for all stochastic finite controllers. Explicit least-favourable prior bounds yield a primitive-data exponential label approximation rate and a rational-data decision/synthesis cap for arbitrary rational positive costs. The supplement retains the full two-location refinement and sharper normalized constants. Classical greedy, saddle, consistent-tie mixtures and common-power cycles are credited rather than counted again as new contributions.
+
+The generic support certificate, compact model quantifiers and fixed-M algebraic synthesis are inherited. The exact reset frontier, growing action-cover hierarchy, shared-preparation/Fourier realization, initialization laws, actual-history causal transfer and all original measurement, reset, communication, rank, dual, spectral and local geometric results remain active. Their scopes are not absorbed into a single special example.
+
+## Claims closed or advanced in this revision
+
+| Question | Proved current disposition | Boundary |
+|---|---|---|
+| Is the general square-root exponent merely an upper artifact? | No: an exact all-controller two-label asymptotic has a positive square-root term. | The best universal numerical constant is not determined. |
+| Can finite convergence to the history value be distinguished from exact attainment? | Yes: the search family has a necessary-and-sufficient arithmetic saturation criterion. | Arbitrary quantum instruments and arbitrary terminal decisions are not classified. |
+| Can fresh randomness realize an aperiodic optimal suffix with finitely many persistent labels? | No, for a prescribed deterministic projected class suffix; the finite support-set recurrence forces ultimate periodicity. | This is not universal stochastic determinization. |
+| Does the positive side pay for initialization? | Yes: the mixture is compiled through a counted initial row and counted branch/position labels. | Program bits and exact probability sampling remain separate resources. |
+| Is eventual finite saturation decidable in a supplied rational class? | Yes: signed prime-exponent proportionality decides the arbitrary-finite-n criterion, and arbitrary rational positive costs admit an explicit finite synthesis cap in the affirmative case. | No polynomial factorization, elimination or minimal-state claim. |
+| Are finite-memory gaps quantitatively approximable? | Yes: the arbitrary-finite-n, arbitrary-positive-cost search gap has an explicit exponential upper bound in M. | No matching lower rate or full intermediate-budget formula. |
+
+## Remaining mathematical obligations
+
+1. **Original noisy-qubit squared-sign risk.** The exact one-/two-label formulas, finite strictness and constructive upper bounds do not determine the general-M minimax law. A solution needs a lower certificate applying to every stochastic controller and a matching realizing family for that same risk objective. Primitive cost sensitivity and search cost saturation do not substitute for it.
+2. **Unrestricted-decoder response approximation.** The retained log-log lower and logarithmic upper leave a genuine rate gap. The matching logarithm for fixed physical density dictionaries has extra Born-readout and Diophantine hypotheses. A broader lower must control arbitrary stochastic decoder tables without silently reinstating physical hidden states.
+3. **General exact finite saturation.** Fixed-M certificates decide a supplied memory budget; they do not decide whether some finite budget reaches an unrestricted value for every instrument. The search arithmetic criterion and reset cover theorem supply distinct complete subclasses. A more general theorem must account for ties, model-dependent supports, back-action and observable sufficient information.
+4. **Optional commitment and tied terminal risk.** The current broad cost theorem stops compulsorily at success. Extending its regularization or realization criteria to voluntary decisions must preserve the terminal loss and resource accounting, not simply replace success by a formal absorbing state.
+5. **Sharp approximation and controller geometry.** The exact cusp gives local coercivity in one family. A classification of which primitive degeneracies yield Lipschitz, fractional-power or other behavior remains open. Uniform success is a sufficient Lipschitz condition, not a proved necessary condition.
+6. **Intrinsic causal-transfer hypotheses.** Supplied report-resolved continuation certificates give a valid paid construction. Intrinsic necessary-and-sufficient primitive conditions, common unknown-model predictive quotients and matching construction complexity remain separate questions.
+7. **Timing, geometry and spectrum.** The intermediate phase-type timing frontier, global changing-support geometric structure and arbitrary-pair spectral closed values retain their independent proof obligations. Local stratum results do not settle global geometry.
+8. **Encoded computational resources.** Persistent labels do not count program tables, input description, exact algebraic sampling, coefficient precision or temporary arithmetic. The finite algebraic existence theorems and sufficient synthesis caps are not general efficient algorithms.
+9. **Independent Theta research.** A1, A2 and wider pipeline constructions require their own mathematical arguments. No completed special instrument or finite verification is promoted to completion of the programme.
+
+## Research standard and evidence
+
+The top-four mathematics-journal aim remains unchanged. The additional sharpness, rigidity and exact-realization results improve the manuscript's mathematical case; whether their depth, originality and unifying force meet that editorial standard remains open to an actual independent assessment. There is no new verified human specialist priority opinion or editorial acceptance in this packet. The deposited R65 report concerns R65. Written proofs, internal AI challenges, finite computations, source authenticity and native execution are separately documented.

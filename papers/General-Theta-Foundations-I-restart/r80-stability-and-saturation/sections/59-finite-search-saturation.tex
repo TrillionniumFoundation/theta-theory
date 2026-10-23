@@ -1,0 +1,521 @@
+\section{Finite search: arithmetic classification and explicit memory bounds}
+\label{sec:r80-finite-search-saturation}
+
+The arithmetic obstruction extends to every finite number of search
+locations, with arbitrary positive call costs.  The distinction is
+between logarithms of the failure probabilities that lie in one
+rational direction and those that occupy several rational directions.
+The latter case includes families containing both rationally related
+and irrationally related pairs.  We obtain a necessary and sufficient
+condition for an optimal history law to admit an autonomous stochastic
+implementation with finitely many counted labels.  We also give a
+primitive-data exponential approximation bound and, for rational data
+in the saturating case, a computable bound on the sufficient number of
+labels.
+
+The search ordering, interior least-favourable priors, and finite
+mixtures of consistent tie orders are classical ingredients
+\cite{Matula1964,ClarksonLinGlazebrook2023,BuiLidbetterLin2023}.
+Eventual cycles under a common-power relation are also classical for
+arbitrary finite $n$; see Section 6.1 and Appendix C of
+Clarkson--Lin--Glazebrook~\cite{ClarksonLinGlazebrook2023}, with the
+earlier search-theoretic attribution there to Matula.  We give the
+required arguments below.  The common-power sufficiency is therefore
+a classical search consequence together with counted initialization.
+The additional resource conclusions concern all-stochastic necessity
+through commensurability classes, explicit primitive-data bounds, and
+implementation by counted stochastic memory.  A finite mixture of
+infinite words alone is not such an implementation.  This section is
+a classification for the displayed search family, not an assertion
+that every instrument in Theorem~\ref{thm:r79-quantum-frontier} has an
+arithmetic saturation criterion.
+
+Fix $n\ge2$, costs $c_i>0$, and failure probabilities $r_i\in(0,1)$,
+for $i\in\{1,\ldots,n\}$.  There are $n$ fixed hidden models and $n$
+commands.  In model $i$, command $i$ succeeds with probability
+$q_i=1-r_i$, and every other command fails surely.  There is one failure
+report, and success stops the experiment.  Command $i$ costs $c_i$ in
+every model.  Set
+\begin{equation}\label{eq:r80-finite-search-data}
+ \tau_i=\frac{c_i}{q_i},\qquad u_i=-\log r_i>0,\qquad
+ B=\sum_{i=1}^n\tau_i,\qquad H=\sum_{i=1}^n\frac1{u_i}.
+\end{equation}
+The hidden model is selected once.  The initialization and memory
+conventions are those of Section~\ref{sec:r79-quantum-frontier}:
+the initial label is prescribed and pure, and command and update
+randomness is permitted only through the fixed controller kernels.
+Write $V_M$ and $V=V_{\rm hist}$ for the finite-label and history
+values in this family.
+
+\begin{lemma}[A common one-label fallback]
+\label{lem:r80-finite-search-one-label}
+The one-label value is $V_1=B$.  It is attained by the row
+\begin{equation}\label{eq:r80-finite-search-fallback}
+ p_i=\frac{q_i^{-1}}{\sum_jq_j^{-1}},
+\end{equation}
+whose expected cost equals $B$ in every model.
+\end{lemma}
+\begin{proof}
+For a row $p$, put $x_i=p_iq_i$.  A zero $x_i$ gives infinite cost
+in model $i$.  Otherwise its one-call mean cost is
+$\sum_i p_ic_i=\sum_i\tau_i x_i$, and its worst model cost is
+\[
+ \frac{\sum_i\tau_i x_i}{\min_i x_i}\ge\sum_i\tau_i=B.
+\]
+The displayed row makes all $x_i$ equal and attains the bound.
+\end{proof}
+
+\subsection{The search saddle and consistent tie orders}
+
+A planned word $w=(w_0,w_1,\ldots)\in\{1,\ldots,n\}^{\mathbb N_0}$
+specifies the commands along the hypothetical all-failure path.
+Let $k_i(t)$ be the number of occurrences of $i$ before position $t$.
+Its cost in model $i$ is the nonnegative sum
+\begin{equation}\label{eq:r80-finite-search-word-cost}
+ C_i(w)=\sum_{t\ge0}c_{w_t}r_i^{k_i(t)}.
+\end{equation}
+Every randomized causal policy induces a probability law on these
+words; conversely, a word law is realized by its conditional
+next-letter kernels.  Indeed, conditional on a command prefix, its
+physical failure likelihood is common to all private realizations of
+that prefix and cancels.  Thus these conditional kernels do not use
+the hidden model.  Tonelli's theorem identifies policy costs with the
+expectations of \eqref{eq:r80-finite-search-word-cost}.  Finite cost
+in every model requires infinitely many occurrences of every command,
+almost surely: after the last occurrence of $i$, its survival factor
+is a fixed positive number and every later cost is bounded below by
+$\min_jc_j>0$.
+
+\begin{lemma}[The finite-search saddle]
+\label{lem:r80-finite-search-saddle}
+For an interior prior $\pi=(\pi_1,\ldots,\pi_n)$, put
+$a_i=\pi_i/\tau_i$.  A finite-cost word is Bayes optimal if and only if
+it chooses, at every prefix, a maximal element of
+\begin{equation}\label{eq:r80-finite-search-indices}
+ \{a_i r_i^{k_i(t)}:1\le i\le n\}.
+\end{equation}
+Every such greedy word has finite cost in every model.  If
+$b_i=-\log a_i$ and
+\[
+ R_\pi=\max\{\max_i b_i-\min_i b_i,\max_i u_i\},
+ \qquad \bar b=\frac{\sum_i b_i/u_i}{H},
+\]
+then, uniformly over every choice at ties,
+\begin{equation}\label{eq:r80-finite-search-tail-frequency}
+ r_i^{k_i(t)}\le e^{b_i-\bar b+R_\pi}e^{-t/H},
+ \qquad
+ \lim_{t\to\infty}\frac{k_i(t)}t=\frac1{Hu_i}.
+\end{equation}
+
+The robust history value is attained.  There is an interior prior
+$\pi_*$ with Bayes value $V$, and every robust optimum has cost vector
+$(V,\ldots,V)$ and is supported on greedy words for that prior.
+One robust optimum is a mixture of at most $n$ greedy words, each of
+which resolves every tie using one fixed priority permutation of
+$\{1,\ldots,n\}$.
+\end{lemma}
+\begin{proof}
+Exchanging two adjacent different commands $ij$ and $ji$ after counts
+$k$ changes only model components $i,j$.  With $ij$ first in the
+subtraction the risk difference is
+\begin{equation}\label{eq:r80-finite-search-exchange}
+ -c_jq_i r_i^{k_i}e_i+c_iq_j r_j^{k_j}e_j,
+\end{equation}
+where $e_i$ are the coordinate vectors of $\mathbb R^n$.
+Its Bayes value is
+$c_ic_j(a_jr_j^{k_j}-a_ir_i^{k_i})$.
+The greedy rule merges the $n$ decreasing lists
+$\{a_i r_i^k:k\ge0\}$ in decreasing numerical order.
+Given any finite-cost competitor and a desired greedy next letter,
+move the next occurrence of that letter to the desired position.
+It exists because every letter occurs infinitely often.  Each
+intervening list item is no larger than the desired item: it was no
+larger at the starting prefix, and subsequent items in its own list
+decrease.  The adjacent exchanges therefore do not increase Bayes
+cost, and a strictly incorrect first choice strictly decreases it.
+Repeating finitely many times matches any prescribed finite greedy
+prefix.  The cost of that prefix is at most the full competitor cost.
+Letting its length increase proves optimality of a greedy word once
+its finiteness has been verified.  The strict exchange proves
+necessity.  Because the prior is interior, any infinite component
+cost gives infinite Bayes cost.
+
+For finiteness set $x_i(t)=b_i+u_i k_i(t)$.  A greedy step increments
+a current minimum by $u_i$.  Its minimum cannot decrease, and its
+maximum is at most the greater of the old maximum and the old minimum
+plus $\max_i u_i$.  Induction gives
+\[
+ \max_i x_i(t)-\min_i x_i(t)\le R_\pi.
+\]
+The weighted mean with weights $1/u_i$ is
+$\bar b+t/H$, since $\sum_i k_i(t)=t$.  It lies between the minimum
+and maximum.  Thus $|x_i(t)-\bar b-t/H|\le R_\pi$, which proves
+both assertions in \eqref{eq:r80-finite-search-tail-frequency}.
+The costs are bounded above by a geometric sum times $\max_i c_i$.
+
+We next prove robust attainment and the interior saddle.  Let
+$\mathcal R\subset\mathbb R^n$ consist of the finite upper bounds
+on cost vectors attainable by word laws.  This nonempty set is convex
+by mixing and upward closed.  It is closed: if finite upper bounds
+converge, compactness of probability laws on the finite-alphabet
+product space gives a weakly convergent subsequence.  Every
+finite-prefix cost is continuous and bounded, so the limiting law
+satisfies all the finite-prefix bounds; monotone convergence gives
+the full bounds.  The same argument applied to a minimizing sequence
+shows robust attainment, and $V\le B$ by
+Lemma~\ref{lem:r80-finite-search-one-label}.
+
+Separate $\mathcal R$ from the open orthant
+$\{z:z_i<V\text{ for every }i\}$.  Upward closure makes the
+nonzero separating vector nonnegative.  Normalize its sum to one,
+and call it $\pi_*$.  Since $(V,\ldots,V)\in\mathcal R$, separation
+gives $\inf_{z\in\mathcal R}\pi_*\cdot z=V$.
+We claim that $\pi_*$ has full support.  Otherwise let
+$S=\{i:\pi_{*,i}>0\}$ be a proper subset.  Take an attaining robust
+word law and delete every command outside $S$ from every word.
+For a model $i\in S$, the survival factor of each retained call is
+unchanged, whereas every deleted call had positive cost and strictly
+positive survival probability.  Every original word contains all
+commands infinitely often almost surely.  Consequently the deleted
+law strictly decreases the $\pi_*$-weighted cost, while retaining
+finite costs and eventual success for each model in $S$.
+
+The deleted law need not be proper outside $S$.  To obtain admissible
+competitors, follow its first $T$ calls and then use the common
+fallback \eqref{eq:r80-finite-search-fallback}.  The fallback adds
+at most $B$ times the survival probability at $T$ in each model of
+$S$.  Those probabilities tend to zero by bounded convergence.
+The finite-prefix costs increase to the deleted costs.  These
+completed laws are proper in every model and converge in weighted
+cost to a value strictly below $V$, a contradiction.  Thus $\pi_*$
+is interior.  An attaining robust law has costs at most $V$ in
+every component and weighted cost at least $V$, so all its component
+costs equal $V$.  Its word law must be supported on Bayes minimizers,
+which are precisely the greedy words just characterized.
+
+It remains to prove the finite consistent-tie mixture.  At any tied
+numerical level $z>0$, each list contributes at most one item.  The
+tied items form a consecutive block; permuting them leaves every
+later count unchanged.  For a tied adjacent pair $i,j$, equation
+\eqref{eq:r80-finite-search-exchange} becomes
+\begin{equation}\label{eq:r80-finite-search-tied-vector}
+ c_ic_j z\left(-\frac{e_i}{\pi_{*,i}}
+                    +\frac{e_j}{\pi_{*,j}}\right).
+\end{equation}
+For any linear functional $\lambda\in\mathbb R^n$, its difference
+is $c_ic_jz(\lambda_j/\pi_{*,j}-\lambda_i/\pi_{*,i})$.
+It follows that the order minimizing $\lambda$ in every tied block
+is the same global priority order: decreasing
+$\lambda_i/\pi_{*,i}$, with one fixed convention for equal ratios.
+Sort finitely many tied blocks in that order and then let their
+number increase.  The geometric tail bound
+\eqref{eq:r80-finite-search-tail-frequency}, uniform over tie
+choices, shows convergence of every component cost.  Hence the
+minimum of every linear functional over the greedy risk vectors
+is attained by one of the $n!$ consistent priority words.
+
+The greedy word space is closed in the compact product space, and
+its risk map is continuous by the same uniform tails.  Its compact
+risk image therefore lies in the convex hull of the finitely many
+consistent-priority risk vectors: otherwise finite-dimensional
+separation would contradict the preceding minimum property.
+The robust risk vector, as a barycenter of greedy risks, lies in
+that convex hull as well.  All these vectors lie on the hyperplane
+$\pi_*\cdot z=V$.  Any convex representation using more than $n$
+of them has an affine dependence.  Subtract a suitable multiple
+of that dependence from the weights until one weight becomes zero;
+the weights remain nonnegative, still sum to one, and give the same
+vector.  Repeating leaves at most $n$ vectors, as asserted.
+\end{proof}
+
+\subsection{Rigidity of projected finite-state outputs}
+
+\begin{lemma}[A deterministic class suffix from finite stochastic memory]
+\label{lem:r80-projected-word-rigidity}
+Let an autonomous controller have finitely many labels, finitely many
+commands, one failure report, and fixed stochastic command and update
+kernels.  Partition the commands into finitely many classes.  If its
+planned word law projects, after some fixed finite time, onto one
+prescribed class word almost surely, that class word is ultimately
+periodic.
+\end{lemma}
+\begin{proof}
+Let $S_t$ be the nonempty set of labels having positive probability
+at time $t$ on the hypothetical all-failure path.  The next support is
+the union, over labels in $S_t$ and commands of positive probability
+in their rows, of the positive supports of the corresponding update
+rows.  It is therefore a fixed deterministic function of $S_t$.
+At times when the class output is prescribed, every positive command
+in every label of $S_t$ belongs to that prescribed class.  Since the
+rows have sum one, this class is determined by $S_t$ as well.
+There are finitely many nonempty label subsets.  The support-set
+trajectory eventually repeats and thereafter is periodic.  Its
+prescribed class output is consequently ultimately periodic.  The
+argument permits arbitrary stochastic transitions and arbitrary
+mixing among commands inside the prescribed class.
+\end{proof}
+
+\begin{theorem}[Finite-search saturation for any finite number of locations]
+\label{thm:r80-finite-search-saturation}
+For the family \eqref{eq:r80-finite-search-data},
+\begin{equation}\label{eq:r80-finite-search-iff}
+ \bigl(\exists M<\infty:\ V_M=V\bigr)
+ \quad\Longleftrightarrow\quad
+ \frac{\log r_i}{\log r_j}\in\mathbb Q
+       \quad\hbox{for every }i,j.
+\end{equation}
+If the condition fails, every finite $M$ has the strict attained
+gap $V_M>V$, although $V_M\downarrow V$ as $M\to\infty$.
+If the condition holds, a robust optimum is realized by a counted
+pure-start finite controller, obtained from at most $n$ ultimately
+periodic consistent-priority words.
+\end{theorem}
+\begin{proof}
+Partition the indices into classes by $i\sim j$ if $u_i/u_j$ is
+rational.  Consider a least-favourable interior prior from
+Lemma~\ref{lem:r80-finite-search-saddle}.  Two lists from different
+classes have at most one tied pair.  Indeed, two distinct equalities
+$a_ir_i^k=a_jr_j^l$ would imply
+$(k-k')u_i=(l-l')u_j$ with nonzero integer differences, contrary to
+their being in different classes.  There are finitely many pairs
+of lists, hence only finitely many cross-class tied levels.  Each
+positive numerical level has only finitely many list items above
+it.  After a fixed finite position, all remaining ties therefore
+occur within a single class.  Ordering the list items then fixes the
+same deterministic class suffix for every greedy word, regardless
+of the within-class choices.
+
+For a class $C$, \eqref{eq:r80-finite-search-tail-frequency} gives
+its positive limiting frequency
+\begin{equation}\label{eq:r80-finite-search-class-frequency}
+ f_C=\frac{H_C}{H},\qquad H_C=\sum_{i\in C}\frac1{u_i}.
+\end{equation}
+Choose a representative $u_C$ from each class.  Then
+$H_C=A_C/u_C$ for some positive rational $A_C$.
+For two distinct classes $C,D$, the ratio
+$f_C/f_D=(A_C/A_D)(u_D/u_C)$ is irrational.  An ultimately periodic
+class word has rational limiting frequencies, and therefore rational
+ratios between any two positive frequencies.  Thus the common class
+suffix cannot be ultimately periodic when there is more than one
+class.
+
+If a finite controller attained $V$, its word law would be supported
+on the greedy words by Lemma~\ref{lem:r80-finite-search-saddle},
+so its projected class suffix would be the one just described.
+Lemma~\ref{lem:r80-projected-word-rigidity} gives a contradiction.
+All failure probabilities in the search family are positive, so
+there is no zero-likelihood physical history to remove from this
+argument.  The attained-frontier result in
+Theorem~\ref{thm:r79-quantum-frontier} makes nonattainment of $V$
+equivalent to the strict gap at each finite $M$.  Convergence follows
+from Corollary~\ref{cor:r79-history-limit}; an explicit rate is also
+proved below.
+
+Conversely suppose that all $u_i/u_j$ are rational.  Write
+$u_i=h_i\ell$ with positive integers $h_i$ and $\ell>0$.
+For one fixed priority word consider the relative scores
+\[
+ d_i(t)=x_i(t)-x_n(t),\qquad 1\le i<n.
+\]
+Each $d_i(t)$ belongs to the fixed coset
+$(b_i-b_n)+\ell\mathbb Z$ and lies in
+$[-R_{\pi_*},R_{\pi_*}]$.  There are only finitely many such tuples.
+The tuple determines the next command by minimizing the scores
+relative to $x_n=0$ and using the fixed priority at ties.  On command
+$j<n$, only $d_j$ increases, by $u_j$; on command $n$, every $d_i$
+decreases by $u_n$.  Thus the tuple evolves deterministically in a
+finite set.  The word is ultimately periodic and has a finite
+deterministic implementation.
+
+The saddle lemma expresses a robust optimum as a mixture of at most
+$n$ such words.  We implement that mixture without a free random
+initial label.  Give the implementation one prescribed initial
+label and disjoint finite tail controllers for the words.  If their
+weights are $\lambda_j$ and first commands are $a_j$, the initial
+row chooses command $a$ with probability
+$p_a=\sum_{j:a_j=a}\lambda_j$.  For $p_a>0$, after its failure it
+selects the corresponding tail $j$ with probability $\lambda_j/p_a$
+among those with $a_j=a$.  The update rows for $p_a=0$ are unreachable
+and may be assigned arbitrarily.  The physical failure likelihood conditional on $a$
+is the same for all those branches in every model, so this realizes
+the desired mixture exactly.  The branch identity is stored in the
+counted tail labels.  This proves finite saturation.
+\end{proof}
+
+\subsection{Bounds from primitive data}
+
+The preceding proof used an interior prior without estimating how
+close it can lie to the boundary.  The following bound removes this
+unknown from the memory estimates.  Its constants are deliberately
+explicit; they are not asserted to be sharp.
+
+\begin{lemma}[An explicit least-favourable prior bound]
+\label{lem:r80-finite-search-prior-cap}
+Put $c_- =\min_i c_i$, $c_+=\max_i c_i$, $r_- =\min_i r_i$, and
+define
+\begin{equation}\label{eq:r80-finite-search-prior-constants}
+ \begin{aligned}
+ T_0&=\left\lceil\frac{2B}{c_-}\right\rceil,
+ &g&=\frac{c_-}{2}r_-^{T_0},\\
+ T_1&=\left\lceil\frac{2B^2}{c_-g}\right\rceil,
+ &K&=c_+T_1+B,\qquad \delta=\frac{g}{2K}.
+ \end{aligned}
+\end{equation}
+Every least-favourable prior whose Bayes value is $V$ satisfies
+$\pi_i\ge\delta$ for every $i$.
+\end{lemma}
+\begin{proof}
+Fix an attaining robust word law.  In each model its expected number
+of calls is at most $V/c_-\le B/c_-$, since every call costs at
+least $c_-$.  Markov's inequality shows that success occurs by call
+$T_0$ with probability at least $1/2$.  In model $i$, this implies
+that its planned word contains command $i$ among the first $T_0$
+positions with probability at least $1/2$.
+
+Delete all occurrences of command $i$.  In any other model $j$, the
+survival factor of a retained command is unchanged.  On the event
+just described, the first deleted call costs at least $c_-$ and has
+model-$j$ survival probability at least $r_-^{T_0}$.  The deleted
+law therefore lowers the cost of every model $j\ne i$ by at least
+$g$.  Let $W_i$ be the robust history value of the restricted search
+problem using only the $n-1$ other models and commands.  We have
+\begin{equation}\label{eq:r80-finite-search-deletion-gap}
+ W_i\le V-g.
+\end{equation}
+The same finite-prefix compactness argument used above gives an
+attaining restricted law, including when $n-1=1$.
+
+Run this law for at most $T_1$ calls, then switch to the common
+fallback of value $B$.  For $j\ne i$, the restricted law has expected
+call count at most $W_i/c_-\le B/c_-$.  Its probability of surviving
+$T_1$ calls is at most $B/(c_-T_1)$.  The completed policy therefore
+has cost at most
+\[
+ W_i+\frac{B^2}{c_-T_1}\le V-\frac g2
+ \quad (j\ne i).
+\]
+In model $i$ every restricted call fails, but its total cost is at
+most $c_+T_1+B=K$.  For a least-favourable prior, this competitor
+must have Bayes cost at least $V$.  Hence
+\[
+ V\le\pi_iK+(1-\pi_i)(V-g/2),\qquad
+ \pi_i\ge\frac{g/2}{K-V+g/2}\ge\frac{g}{2K}.
+\]
+The last inequality uses $V\ge c_->g/2$, which follows from the
+cost of the compulsory first call and the definition of $g$.
+\end{proof}
+
+\begin{theorem}[An explicit exponential memory approximation]
+\label{thm:r80-finite-search-resource-bounds}
+With $\delta$ from \eqref{eq:r80-finite-search-prior-constants}, put
+\begin{equation}\label{eq:r80-finite-search-rate-constants}
+ \begin{aligned}
+ \tau_-&=\min_i\tau_i,\qquad \tau_+=\max_i\tau_i,\qquad
+ C=\frac{\tau_+}{\delta\tau_-},\\
+ A&=C\max\{C,r_-^{-1}\},\qquad
+ \kappa=e^{-1/H}\in(0,1).
+ \end{aligned}
+\end{equation}
+For every $M\ge n$,
+\begin{equation}\label{eq:r80-finite-search-resource-rate}
+ 0\le V_M-V\le BA\,\kappa^{\lfloor M/n\rfloor}.
+\end{equation}
+The bound holds whether or not finite saturation occurs.
+\end{theorem}
+\begin{proof}
+Choose the optimal mixture of at most $n$ consistent-priority words
+from Lemma~\ref{lem:r80-finite-search-saddle}.  By the prior bound,
+$a_i=\pi_{*,i}/\tau_i$ lies between $\delta/\tau_+$ and
+$1/\tau_-$.  Put $L=\log C$ and $R=\max\{L,\max_i u_i\}$.
+Then the initial logarithmic-score spread is at most $L$, and
+$R_{\pi_*}\le R$.  Also $b_i-\bar b\le L$ and
+$e^{R+L}=C\max\{C,r_-^{-1}\}=A$.
+Equation~\eqref{eq:r80-finite-search-tail-frequency} now bounds
+every model's survival probability after $T$ commands, in each word
+and hence in the mixture, by $A\kappa^T$.
+
+Retain the first $T\ge1$ commands of each mixture word and then use
+the one-label fallback.  The tail replacement increases each cost
+by at most $BA\kappa^T$.  A counted implementation uses one initial
+label, at most $n(T-1)$ disjoint continuation labels, and one common
+fallback label.  The initial branching is implemented after the
+first command exactly as in the saturation theorem.  Since $n\ge2$,
+the total is at most $2+n(T-1)\le nT$.  Taking
+$T=\lfloor M/n\rfloor$ and adding unused labels if necessary proves
+the claim.
+\end{proof}
+
+\begin{corollary}[A decidable rational criterion and a sufficient label cap]
+\label{cor:r80-finite-search-effective}
+Suppose that $r_i,c_i$ are positive rational numbers with $r_i<1$.
+For each $i$, let $\nu(r_i)$ be its signed vector of prime exponents,
+using the finite union of primes occurring in all numerators and
+denominators.  Finite saturation occurs if and only if all these
+vectors lie on the same positive rational ray.  This is decidable
+by factorization and integer comparisons.
+
+In the saturating case one can compute $t\in\mathbb Q\cap(0,1)$
+and positive integers $h_i$ with $r_i=t^{h_i}$.  Using the rational
+constants $\delta,\tau_-,\tau_+$ above, choose an integer $J\ge0$
+such that
+\[
+ \begin{aligned}
+ t^{-J}&\ge\frac{\tau_+}{\delta\tau_-},
+ \qquad N_0=\max\{J,\max_i h_i\},\\
+ N&=(2N_0+1)^{n-1},\qquad M_0=1+nN.
+ \end{aligned}
+\]
+Then $V_{M_0}=V$.  In particular, the history value in this
+saturating rational family is a real algebraic number and is
+computable by the finite quantified description of
+Theorem~\ref{thm:r79-quantum-frontier} at the explicitly bounded
+budget $M_0$.
+\end{corollary}
+\begin{proof}
+For rational numbers, a rational relation between their logarithms
+is equivalent to a positive integer power identity.  Unique prime
+factorization makes this equivalent to positive rational
+collinearity of their signed exponent vectors.  This proves the
+criterion using Theorem~\ref{thm:r80-finite-search-saturation}.
+To construct the common base, divide $\nu(r_1)$ by the greatest
+common divisor of its nonzero coordinates in absolute value, giving
+a primitive integer vector $w$.  Each other exponent vector is
+$h_iw$ with $h_i>0$.  Since the coordinates of $w$ have greatest
+common divisor one, an integer linear combination of them is one;
+applying it to $h_iw$ shows that $h_i$ is an integer.  Then
+$t=\prod_p p^{w_p}$ is rational, satisfies $0<t<1$, and has
+$r_i=t^{h_i}$.  A common divisor of all $h_i$ may be absorbed in
+$t$ if desired.
+
+All constants in \eqref{eq:r80-finite-search-prior-constants} are
+rational and effectively obtained by finite arithmetic and ceilings.
+The inequality defining $J$ is found by increasing $J$ and making
+exact rational comparisons.  Write $\ell=-\log t$.  It implies
+$L=\log C\le J\ell$, while $u_i=h_i\ell$, so
+$R=\max\{L,\max_i u_i\}\le N_0\ell$.
+Each relative-score coordinate in the saturation proof belongs to
+one fixed coset of $\ell\mathbb Z$ inside
+$[-N_0\ell,N_0\ell]$.  It has at most $2N_0+1$ possible values,
+independently of the unknown offset of that coset.  Each consistent
+priority word therefore uses at most $N$ relative-score states.
+The counted pure-start mixture uses at most one initial label and
+$n$ copies of those state sets, giving $M_0=1+nN$.
+
+The family has rational scalar instrument and cost data.  Its
+finite-budget optimum is attained, finite, algebraic, and specified
+by the real-algebraic quantified formula of
+Theorem~\ref{thm:r79-quantum-frontier}.  Since the proven cap gives
+$V=V_{M_0}$, that finite procedure computes the history value here.
+The procedure is an effectivity result; no practical complexity
+bound for quantifier elimination is asserted.
+\end{proof}
+
+The two-location normalized bounds in
+Section~\ref{sec:r80-arithmetic-saturation} retain their sharper
+constants.  The present results add arbitrary finite model number,
+arbitrary positive deterministic command costs, mixed
+commensurability classes, a primitive-data convergence rate, and an
+effective sufficient memory cap in the rational saturating case.
+They do not infer a positive numerical lower bound on the gap
+$V_M-V$ from irrationality alone, nor a comparable arithmetic
+classification for general noncommuting instruments.

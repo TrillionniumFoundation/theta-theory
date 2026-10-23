@@ -1,0 +1,465 @@
+\section{Shared preparation, invariant polytopes, and noncyclic memory}
+\label{sec:r77-shared-preparation}
+
+A device that reproduces one prepared response need not reproduce a family
+of preparations with the same memory, transitions, and decoder.  We now
+solve the structural problem with this common-device requirement.  The
+preparation is selected before the command word; it is not revealed to the
+terminal decoder.  In particular, one may not choose a different decoder
+after learning which preparation was selected.  This convention is what
+makes joint realization a resource question.
+
+Fix a finite group $G$, a surjective command homomorphism
+$\gamma:A^*\to G$, a finite outcome set $C$, and a nonempty finite
+preparation set $I$.  A \emph{shared controller} consists of one family of
+stochastic matrices $Q_a$ and one stochastic decoder $D_0$, together with
+an initial row for each $i\in I$.  In the pure convention these rows are
+prescribed label rows $e_{o_i}$; different preparations may use the same
+label when their required laws agree.  All labels, including initialization
+labels, are counted.  In the mixed convention the initial rows may be
+arbitrary probability rows and their external preparation is not counted.
+The result concerns this explicit distinction, not the bit cost of selecting
+$i$ or an uncounted label made available to the decoder.
+
+For each $i,g$ let $K_{i,g}\subseteq\Delta(C)$ be closed and convex,
+possibly empty.  The requirement is
+\begin{equation}\label{eq:r77-shared-specification}
+ e_{o_i}Q_wD_0\in K_{i,\gamma(w)}
+ \qquad(i\in I,\ w\in A^*),
+\end{equation}
+with arbitrary initial rows in the mixed convention.  For probability
+rows $\Lambda=(\lambda_i)_{i\in I}$ on a finite set put
+\[
+ \iota(\Lambda)=
+ \bigl|\{\lambda_i:i\in I,\ \lambda_i\hbox{ is not a point mass}\}\bigr|.
+\]
+Repeated rows are counted once.
+
+\begin{theorem}[Shared normal form and exact initialization charge]
+\label{thm:r77-shared-normal-form}
+The specification \eqref{eq:r77-shared-specification} has a pure shared
+controller on at most $M$ labels if and only if there are a finite
+$G$-set $X$, probability rows $\lambda_i$ on $X$, and one stochastic
+decoder $D$ such that
+\begin{equation}\label{eq:r77-shared-core}
+ \lambda_iP_gD\in K_{i,g}\quad(i\in I,g\in G),
+ \qquad |X|+\iota(\Lambda)\le M.
+\end{equation}
+For mixed preparations the criterion is $|X|\le M$.  The action may have
+a kernel.  Thus a single permutation core suffices for all preparations,
+and each distinct mixed preparation costs exactly one additional label
+in this normal form.
+\end{theorem}
+\begin{proof}
+Use the identity-word construction in the proof of
+Theorem~\ref{thm:r76-convex-normal-form}.  Its averaging matrix $T$,
+stochastic idempotent $E=\lim_nT^n$, and disjoint closed classes
+$C_1,\ldots,C_k$ depend only on the command matrices, not on the initial
+row.  Write $\mu_x$ for their stationary probability rows.  The sandwiched
+maps $EQ_uE$ permute these rows and give one action $P_{\gamma(u)}$ on
+$X=\{1,\ldots,k\}$.  Put
+\[
+ e_{o_i}E=\sum_{x\in X}\lambda_i(x)\mu_x,
+ \qquad D(x,\cdot)=\mu_xD_0.
+\]
+The same limit as in that theorem gives
+\[
+ \lambda_iP_gD
+   =\lim_{n\to\infty}e_{o_i}T^nQ_uT^nD_0\in K_{i,g},
+ \qquad \gamma(u)=g,
+\]
+because each approximant is a convex combination of laws for words
+representing $g$.  There is no averaging between different preparations.
+
+If $o_i$ lies in a closed class, then $e_{o_i}E$ is its stationary row,
+so $\lambda_i$ is a point mass.  Distinct mixed $\lambda_i$ must therefore
+arise from distinct initial labels outside the closed classes.  These
+classes use at least $k$ labels, so
+$\iota(\Lambda)\le M-k$.  This argument also permits an outside initial
+label to project to a point mass, and it does not charge that label when
+the projected realization no longer needs it.  It permits several initial
+labels to have the same projected mixed row, in which case they are merged.
+For mixed initial rows the same projection gives $k\le M$ without the
+additional count.
+
+Conversely, retain the permutation labels $X$.  For every distinct
+nonpoint row $\lambda$ among the $\lambda_i$, adjoin one label $\star_\lambda$
+with decoder $\lambda D$ and, on command $a$, transition row
+$\lambda P_{\gamma(a)}$ into $X$.  No transition returns to an adjoined
+label.  A point row uses its own point of $X$ as initial label; a nonpoint
+row uses $\star_\lambda$.  The empty-word law is $\lambda_iD$ and the law
+after every nonempty word is $\lambda_iP_{\gamma(w)}D$.  This establishes
+\eqref{eq:r77-shared-core} with the exact displayed count.  The mixed
+case starts directly from $\lambda_i$ on $X$.
+\end{proof}
+
+For exact targets write $\mathcal B=\{b_i:i\in I\}$, where
+$b_i:G\to\Delta(C)$; duplicate target tables are identified.
+Let $\kappa_G(\mathcal B)$ and $m_G(\mathcal B)$ denote the mixed and pure
+shared minima.  The first equals the least $|X|$ in a simultaneous
+factorization $b_i(g)=\lambda_iP_gD$; the second includes
+$\iota(\Lambda)$.  In particular
+\[
+ \max_i\kappa_G(b_i)\le\kappa_G(\mathcal B),
+ \qquad
+ \kappa_G(\mathcal B)\le m_G(\mathcal B).
+\]
+Neither inequality compares a collection of separately optimized decoders
+with a single common decoder.
+
+\subsection{A geometric formula with all initialization labels counted}
+Let $\mathcal P_G(\mathcal B)$ be the set of nonempty polytopes in the
+finite-dimensional product simplex
+\[
+ \mathcal Q=\{q:G\to\Delta(C)\}
+\]
+that contain $\mathcal B$ and are invariant under
+$(q\cdot h)(g)=q(hg)$.  The whole product simplex is one such polytope.
+Write $v(P)=|\operatorname{vert}P|$.  The polytope is allowed to extend
+beyond the linear span of the prescribed responses.  Forbidding this
+extension would impose an additional positive-realization constraint.
+
+\begin{theorem}[Invariant-polytope resource formulas]
+\label{thm:r77-shared-polytope}
+For every nonempty finite target family,
+\begin{align}
+ \kappa_G(\mathcal B)
+   &=\min_{P\in\mathcal P_G(\mathcal B)}v(P),
+       \label{eq:r77-polytope-mixed}\\
+ m_G(\mathcal B)
+   &=\min_{P\in\mathcal P_G(\mathcal B)}
+       \left(v(P)+|\mathcal B\setminus\operatorname{vert}P|\right).
+       \label{eq:r77-polytope-pure}
+\end{align}
+The minima are attained.  Every minimizing polytope constructs an optimal
+controller: its vertices are permutation labels, and each distinct
+prescribed nonvertex response receives one transient initialization label.
+\end{theorem}
+\begin{proof}
+Given a simultaneous factorization, associate to each core label the
+profile $q_x(g)=e_xP_gD$.  The set of profiles is invariant under $G$,
+and $P=\operatorname{conv}\{q_x:x\in X\}$ belongs to
+$\mathcal P_G(\mathcal B)$.  Every vertex is a profile, so $v(P)\le|X|$.
+This proves the necessary mixed bound.
+
+For the pure bound, apply the preceding normal form to an arbitrary
+$M$-label pure realization.  Let $s=\iota(\Lambda)$ and $k=|X|$, so
+$k+s\le M$.  If a target $b_i$ is not a vertex of $P$, it either equals
+a nonvertex core profile $q_x$, or is not any core profile.  There are
+at most $k-v(P)$ distinct profiles of the first kind: at least $v(P)$
+core labels are required to represent the different vertices.  Every
+distinct target of the second kind requires a distinct nonpoint
+$\lambda_i$, so there are at most $s$ such targets.  Therefore
+\[
+ v(P)+|\mathcal B\setminus\operatorname{vert}P|
+       \le v(P)+(k-v(P))+s\le M.
+\]
+This is the step that prevents a nonextreme continuing label used by
+another preparation from being charged twice.
+
+Conversely, a finite group preserving $P$ permutes its vertices.  Use
+these vertices as $X$, with $D(q,c)=q(e,c)$.  Barycentric coordinates
+of $b_i\in P$ supply a probability row $\lambda_i$ with
+$\lambda_iP_gD=b_i(g)$.  If $b_i$ is a vertex choose its point row.
+If it is not a vertex, every barycentric representation is nonpoint.
+Choose the same representation for identical target tables.  Different
+target tables have different representations, since their barycentric
+images differ.  The normal-form construction thus costs exactly
+$v(P)+|\mathcal B\setminus\operatorname{vert}P|$ in the pure convention,
+and $v(P)$ in the mixed convention.
+
+The feasible integer costs form nonempty subsets of the positive
+integers.  Their least elements are realized by some feasible polytope;
+the two constructions prove the asserted equalities and attainment.
+\end{proof}
+
+Invariant cones in positive realization and the relation between symmetry
+and nonnegative factorizations are classical
+\cite{Heller65,BenvenutiFarina04,GPT13}.  Formula
+\eqref{eq:r77-polytope-mixed} is a response-polytope form of that structure.
+The additional resource statement here is the exact shared-device
+pure-initialization term in \eqref{eq:r77-polytope-pure}, obtained after
+the common identity-word projection.  It neither assumes that a supplied
+stochastic controller satisfies the group relations nor identifies linear
+rank with positive memory.
+
+\subsection{Joint Fourier multiplicity and exact low-contrast synthesis}
+Let
+\[
+ V_{\mathcal B}=\operatorname{span}_{\mathbb R}
+    \{b_i\cdot h:i\in I,h\in G\},\qquad d=\dim V_{\mathcal B}.
+\]
+For an irreducible unitary representation $\rho$ of degree $d_\rho$,
+use the stacked matrix $A_\rho(b_i)$ from
+\eqref{eq:r75-fourier-block} and define the \emph{joint} block
+\begin{equation}\label{eq:r77-joint-fourier}
+ \mathcal A_\rho(\mathcal B)=
+   \bigl[A_\rho(b_1)\ \cdots\ A_\rho(b_{|I|})\bigr],
+ \qquad r_\rho(\mathcal B)=\operatorname{rank}_{\mathbb C}
+                                  \mathcal A_\rho(\mathcal B).
+\end{equation}
+Unlike the single-preparation rank, $r_\rho(\mathcal B)$ can exceed
+$d_\rho$.  The same decoder must accommodate the union of the Fourier
+column spaces, rather than their largest separate rank.
+
+\begin{lemma}[Joint multiplicity]
+\label{lem:r77-joint-multiplicity}
+The multiplicity of $\rho$ in
+$V_{\mathcal B}\otimes_{\mathbb R}\mathbb C$ equals
+$r_\rho(\mathcal B)$.  Consequently every simultaneous factorization
+on a $G$-set $X$ satisfies
+\[
+ r_\rho(\mathcal B)\le m_\rho(X)\qquad(\rho\in\widehat G).
+\]
+\end{lemma}
+\begin{proof}
+Fourier transformation sends the translate $b_i\cdot h$ to
+$A_\rho(b_i)\rho(h)$.  The group-algebra decomposition used in
+Lemma~\ref{lem:r75-fourier-multiplicity} therefore identifies its
+$\rho$-component with
+\[
+ \left\{\sum_{i\in I}A_\rho(b_i)M_i:
+                       M_i\in M_{d_\rho}(\mathbb C)\right\}.
+\]
+The matrices $M_i$ are independent, since the different generators may
+have independent group-algebra coefficients.  This is the space of all
+matrices whose columns belong to the sum of the column spaces of the
+$A_\rho(b_i)$.  That sum has dimension $r_\rho(\mathcal B)$, so the
+right module consists of precisely that many rows of length $d_\rho$.
+For a simultaneous positive factorization, the span of all reachable
+preparation rows is a submodule of $\mathbb R^X$, and evaluation against
+the common decoder maps it onto $V_{\mathcal B}$.  Complete reducibility
+therefore embeds $V_{\mathcal B}$ into $\mathbb R^X$, proving the bound.
+\end{proof}
+
+Write $\nu_G(V_{\mathcal B})$ for the smallest size of a permutation
+module containing $V_{\mathcal B}$.  For one representative $H$ of each
+subgroup conjugacy class, Frobenius reciprocity gives
+\begin{equation}\label{eq:r77-joint-module-cover}
+ \nu_G(V_{\mathcal B})=
+ \min\left\{\sum_Hq_H[G:H]:q_H\in\mathbb Z_{\ge0},\quad
+       \sum_Hq_Hm_\rho(H)\ge r_\rho(\mathcal B)
+                           \ (\rho\in\widehat G)\right\}.
+\end{equation}
+The equality follows by orbit decomposition and the real-descent part
+of Lemma~\ref{lem:r75-fourier-multiplicity}; it applies also to complex
+and quaternionic representation types.
+
+\begin{theorem}[Exact noncyclic memory at small common contrast]
+\label{thm:r77-shared-low-contrast}
+Suppose that all preparations have the same group-averaged law,
+\[
+ \frac1{|G|}\sum_{g\in G}b_i(g)=\pi\qquad(i\in I),
+\]
+and put $b_{i,t}(g)=\pi+t\{b_i(g)-\pi\}$ for $0\le t\le1$.
+There is an explicitly positive $t_0$ such that
+\begin{equation}\label{eq:r77-shared-low-contrast}
+ \kappa_G(\{b_{i,t}:i\in I\})
+      =\nu_G(V_{\mathcal B})\qquad(0<t\le t_0).
+\end{equation}
+For every $t>0$ the joint module and its Fourier multiplicities are
+unchanged.  The exact pure resource is the invariant-polytope formula
+\eqref{eq:r77-polytope-pure}; in particular, if $r=|\mathcal B|$ and
+$N=|\{b_i\cdot g:i\in I,g\in G\}|$, then on this interval
+\[
+ \nu_G(V_{\mathcal B})\le m_G(\{b_{i,t}\})
+       \le\min\{N,\nu_G(V_{\mathcal B})+r\}.
+\]
+At $t=0$ both resources equal one.
+\end{theorem}
+\begin{proof}
+Remove outcomes with $\pi_c=0$; positivity makes them identically zero
+for every preparation and group element.  They will be restored as
+zero decoder columns.  Let $\overline b$ be the constant table $\pi$.
+Group averaging maps every generating residual to $\overline b$, hence
+\[
+ V_{\mathcal B}=\mathbb R\overline b\oplus W,
+ \qquad W=\ker\left(|G|^{-1}\sum_{g\in G}L_g\right).
+\]
+The nontrivial part $W$ has no invariant vector and all its elements have
+zero total output mass.  If $W=0$, all targets equal $\overline b$ and
+the assertion is immediate.  Otherwise choose a minimum $G$-set $X$
+with $k=\nu_G(V_{\mathcal B})$ and a real equivariant injection
+$j:W\to\mathbb R^X$.  Let $F:\mathbb R^X\to W$ be orthogonal
+projection onto $j(W)$ followed by $j^{-1}$.  Since the permutation
+inner product is invariant, $F$ is equivariant and annihilates every
+invariant row.  Write
+\[
+ p=(1/k,\ldots,1/k),\qquad
+ a_i=j(b_i-\overline b),\qquad
+ T(x,c)=F(e_x)(e,c).
+\]
+Then $a_i\mathbf1=0$, $T\mathbf1=0$, $pT=0$, and
+$a_iP_gT=b_i(g)-\pi$.  Put
+\[
+ A=\max_i\|a_i\|_\infty>0,\quad
+ \epsilon=\frac1{2kA},\quad
+ B=\max_{x,c}\frac{|T(x,c)|}{\pi_c}>0,\quad
+ t_0=\min\{1,\epsilon/B\}.
+\]
+The rows $\lambda_i=p+\epsilon a_i$ have all entries at least
+$1/(2k)$.  For $0\le t\le t_0$ the \emph{common} matrix
+$D_t(x,c)=\pi_c+(t/\epsilon)T(x,c)$ is stochastic, and
+\[
+ \lambda_iP_gD_t=\pi+t\{b_i(g)-\pi\}=b_{i,t}(g)
+\]
+for every preparation simultaneously.  This proves the matching upper
+bound, with one decoder and one action.
+
+The equivariant map that is the identity on $\mathbb R\overline b$
+and multiplication by $t$ on $W$ is invertible for $t>0$ and sends all
+residuals to their contrasted versions.  Thus their joint module and
+all equality relations are unchanged.  Lemma~\ref{lem:r77-joint-multiplicity}
+and \eqref{eq:r77-joint-module-cover} give the lower bound.  The constructed
+preparations have at most $r$ distinct nonpoint rows, so their pure
+initialization costs at most $k+r$.  Alternatively, the union of all
+residuals is a deterministic shared machine with $N$ labels.  At zero
+contrast one common constant decoder and one fixed label suffice.
+\end{proof}
+
+The common-mean hypothesis has mathematical content.  Distinct constant
+preparation laws can already have positive-factorization cost larger
+than their linear rank; contrast does not change them.  For example,
+with the trivial group, the four preparation rows
+\[
+ \frac12\begin{pmatrix}
+ 1&1&0&0\\0&1&1&0\\0&0&1&1\\1&0&0&1
+ \end{pmatrix}
+\]
+have linear rank three but require four shared mixed labels.  In any
+nonnegative rank-one summand, at most one of the four positive diagonal
+entries can be covered: covering two would make both corresponding
+cross entries positive, whereas at least one is zero.  Four summands
+are therefore necessary, and the displayed rows supply a four-label
+realization.  This also explains why a separate scalar module bound
+for each preparation cannot replace joint positive synthesis.
+
+\subsection{Robust joint certificates and sharp resource separations}
+For weights $\alpha_i\ge0$ with $\sum_i\alpha_i=1$, let
+\[
+ \mathcal A_{\rho,\alpha}(\mathcal B)
+   =[\sqrt{\alpha_1}A_\rho(b_1)\ \cdots\
+                       \sqrt{\alpha_{|I|}}A_\rho(b_{|I|})].
+\]
+
+\begin{theorem}[Joint robust multiplicity certificate]
+\label{thm:r77-joint-robust}
+If one mixed shared controller approximates every $b_i(\gamma(w))$
+to total-variation error at most $\delta$ for every word $w$, there
+is a $G$-set $X$ of size at most its memory such that, for every
+irreducible $\rho$ and every such weight vector,
+\begin{equation}\label{eq:r77-weighted-fourier}
+ \sigma_{m_\rho(X)+1}
+       (\mathcal A_{\rho,\alpha}(\mathcal B))\le\sqrt2\delta.
+\end{equation}
+Hence the integer cover \eqref{eq:r77-joint-module-cover}, with each
+$r_\rho$ replaced by the number of singular values strictly above
+$\sqrt2\delta$ in any chosen weighted block, is a memory lower bound.
+Weights may be chosen separately for different irreducibles.
+The same lower bound applies to pure shared controllers.
+\end{theorem}
+\begin{proof}
+Apply Theorem~\ref{thm:r77-shared-normal-form} to the closed convex
+total-variation balls.  It supplies a common permutation action and
+tables $a_i(g)=\lambda_iP_gD$ with the same error bound.  The calculation
+in Theorem~\ref{thm:r76-robust-multiplicity} gives
+$\|A_\rho(b_i)-A_\rho(a_i)\|_{\rm op}\le\sqrt2\delta$.
+For block rows $z=(z_i)_i$, Cauchy--Schwarz therefore gives
+\[
+ \left\|\sum_i\sqrt{\alpha_i}
+       \{A_\rho(b_i)-A_\rho(a_i)\}z_i\right\|
+ \le\sqrt2\delta\sum_i\sqrt{\alpha_i}\|z_i\|
+ \le\sqrt2\delta\left(\sum_i\|z_i\|^2\right)^{1/2}.
+\]
+The weighted joint error has operator norm at most $\sqrt2\delta$.
+The approximating joint block has rank at most $m_\rho(X)$ by
+Lemma~\ref{lem:r77-joint-multiplicity}; zero weights can only reduce
+that rank.  The singular-value nullspace argument used in
+Theorem~\ref{thm:r76-robust-multiplicity} proves
+\eqref{eq:r77-weighted-fourier}.  Orbit decomposition gives the stated
+cover.  The pure normal form has a core no larger than its total memory.
+\end{proof}
+
+\begin{proposition}[Unbounded joint multiplicity for a fixed group]
+\label{prop:r77-shared-involution}
+For every integer $q\ge1$ there is a $q$-preparation experiment on
+$G=C_2$ with $q+1$ terminal outcomes such that each preparation alone
+has pure and mixed memory two, while their common-device minima are
+\[
+ \kappa_{C_2}(\mathcal B)=m_{C_2}(\mathcal B)=2q.
+\]
+Its joint sign multiplicity is $q$, although the sign representation
+has degree one.  All target response probabilities may be chosen rational and strictly
+positive.  Moreover, in the explicit family below every common
+approximation with uniform total-variation error
+$\delta<\epsilon/\sqrt{2q}$ still requires at least $2q$ labels.
+\end{proposition}
+\begin{proof}
+Take $C=\{0,1,\ldots,q\}$, the uniform law
+$\pi=(q+1)^{-1}\mathbf1$, and $v_i=e_i-e_0$ for $1\le i\le q$.
+For any rational $0<\epsilon<1/(q+1)$ put
+\[
+ b_i(e)=\pi+\epsilon v_i,\qquad
+ b_i(s)=\pi-\epsilon v_i,
+\]
+where $s$ is the nonidentity element of $C_2$.  Each individual response
+is nonconstant and is realized by a two-cycle with these two decoder
+rows, so its exact memory is two.  For a shared realization the joint
+sign block is the $(q+1)\times q$ matrix
+$\epsilon[v_1\ \cdots\ v_q]$, of rank $q$.  Every two-cycle in a
+$C_2$-set contributes one sign copy; fixed points contribute none.
+At least $q$ two-cycles, or $2q$ labels, are necessary.  The disjoint
+union of the $q$ displayed two-cycles attains this bound, with pure
+preparation $i$ at the positive point of its own cycle.
+
+For equal weights $\alpha_i=1/q$, the squared nonzero singular values
+of the joint sign block are the eigenvalues of
+$(\epsilon^2/q)(I+\mathbf1\mathbf1^{\mathsf T})$.
+Its least singular value is at least $\epsilon/\sqrt q$ (also for
+$q=1$).  When $\sqrt2\delta<\epsilon/\sqrt q$, the joint robust
+certificate still forces $q$ sign copies.  This lower bound allows
+arbitrary stochastic transitions and arbitrary stochastic terminal
+decoders satisfying the all-word approximation requirement.
+\end{proof}
+
+\begin{proposition}[An unbounded pure initialization cost]
+\label{prop:r77-many-initializers}
+For every integer $r\ge1$ there is an $r$-preparation binary experiment
+on $C_2$ with
+\[
+ \kappa_{C_2}(\mathcal B)=2,
+ \qquad m_{C_2}(\mathcal B)=r+1,
+\]
+although every preparation separately has pure memory two.
+\end{proposition}
+\begin{proof}
+Choose $0<t_1<\cdots<t_r<1/2$ and set
+\[
+ b_i(e)=(1/2+t_i,1/2-t_i),\qquad
+ b_i(s)=(1/2-t_i,1/2+t_i).
+\]
+Use one two-cycle with decoder first coordinates $1/2+t_r$ and
+$1/2-t_r$.  Appropriate mixtures of its two states realize every
+preparation, proving the mixed upper two; nonconstancy proves its lower.
+The last preparation uses the positive core point, and the other $r-1$
+preparations use distinct transient initialization labels.  This gives
+$r+1$ pure labels by Theorem~\ref{thm:r77-shared-normal-form}.
+
+For the lower bound, the $r$ distinct empty-word laws require $r$
+distinct pure initial labels.  If those were all the labels, every
+decoder row would have first coordinate strictly greater than $1/2$.
+Every stochastic transition from any of them would then still give a
+first-coordinate probability strictly greater than $1/2$.  This
+contradicts the required response after $s$, whose first coordinate is
+strictly less than $1/2$.  At least one further label is necessary.
+\end{proof}
+
+Both families are ordinary finite causal experiments, and the constructions
+also admit diagonal quantum realizations: place the decoder laws on the
+diagonal, use permutation unitaries for commands, and use the stated
+diagonal preparations.  No quantum advantage is asserted.  Their purpose
+is to separate simultaneous preparation, noncyclic multiplicity, and
+counted pure initialization from the already solved single-preparation
+resource.  For arbitrary different mean laws, arbitrary quantum preparation
+sets, or nonreversible commands, the displayed common-mean equality is
+not asserted.

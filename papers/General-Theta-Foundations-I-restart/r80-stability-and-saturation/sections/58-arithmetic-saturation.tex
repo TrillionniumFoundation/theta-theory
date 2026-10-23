@@ -1,0 +1,498 @@
+\section{Arithmetic obstructions to finite-memory saturation}
+\label{sec:r80-arithmetic-saturation}
+
+The convergence in Corollary~\ref{cor:r79-history-limit} need not
+terminate at any finite memory.  We give an exact criterion for
+termination in a two-model family with rational examples.  Its search
+ordering is classical: the index rule and the distinction between
+cyclic and acyclic search sequences belong to the search-game
+literature \cite{Matula1964,ClarksonLinGlazebrook2023,BuiLidbetterLin2023}.  The issue here is
+the implementation of an optimal law by an autonomous stochastic
+controller with a counted pure start.  A mixture of finitely many
+infinite search sequences need not have a finite positive-memory
+implementation.  We prove that distinction, its arithmetic converse,
+and a quantitative finite-memory approximation below.
+
+Fix $r,s\in(0,1)$ and write
+\[
+ q_a=1-r,\qquad q_b=1-s,\qquad
+ u=-\log r,\qquad v=-\log s.
+\]
+There are two scalar models, two commands $a,b$, one failure report,
+and compulsory stopping at success.  In model $0$, command $a$
+succeeds with probability $q_a$ and $b$ never succeeds.  In model $1$,
+command $b$ succeeds with probability $q_b$ and $a$ never succeeds.
+The deterministic call costs are arbitrary $c_a,c_b>0$, respectively,
+in either model.  Put $\tau_a=c_a/q_a$ and $\tau_b=c_b/q_b$,
+the known-model optimal costs.  The model is selected once and remains hidden.
+Thus the instrument is feasible, has positive bounded costs, and
+has the same observation and initialization conventions as
+Section~\ref{sec:r79-quantum-frontier}.  We use $V_M$ and
+$V_{\rm hist}$ for its finite-label and unrestricted-history robust
+cost values.
+
+\subsection{Search words, the classical exchange rule, and robust duality}
+
+A word $w=(w_0,w_1,\ldots)\in\{a,b\}^{\mathbb N_0}$ specifies what
+to do on the hypothetical path on which every call fails.  Let
+$i_t,j_t$ be the numbers of $a,b$ in its first $t$ letters.  The
+actual costs of that deterministic policy are
+\begin{equation}\label{eq:r80-word-costs}
+ C_0(w)=\sum_{t\ge0}c_{w_t}r^{i_t},\qquad
+ C_1(w)=\sum_{t\ge0}c_{w_t}s^{j_t}.
+\end{equation}
+These nonnegative sums also define infinite costs without a
+convergence convention.  A randomized causal policy induces a
+probability law on such words, by sampling its command kernels
+along the hypothetical all-failure path.  Conversely every word
+law is implemented by its conditional next-letter probabilities.
+These probabilities do not require the hidden model: for a fixed
+command prefix the physical likelihood of all its failures is
+common to every private realization of that prefix and cancels
+from the conditional controller law.  Tonelli's theorem therefore
+gives the cost vector as the expectation of
+\eqref{eq:r80-word-costs} under that word law.
+
+The following search lemma, including interior least-favorable priors,
+equalized model costs and a mixture of at most two consistent tie
+rules, specializes the classical two-location search theory.  In
+particular these conclusions are covered by Proposition 3 and
+Theorem 10 of the arXiv version of
+Clarkson--Lin--Glazebrook~\cite{ClarksonLinGlazebrook2023}; the
+index rule is attributed to Blackwell, as reported by
+Matula~\cite{Matula1964}.  We reproduce
+a self-contained proof because the finite-memory obstruction
+needs its exact statement about all optimal word laws.  These
+search and saddle conclusions are not claimed as new results.
+
+\begin{lemma}[Greedy words and an attained interior preparation saddle]
+\label{lem:r80-search-saddle}
+For a prior $\pi\in(0,1)$, a finite-cost word minimizes
+$\pi C_0+(1-\pi)C_1$ if and only if, at every prefix, it chooses
+\begin{equation}\label{eq:r80-greedy-rule}
+ \begin{cases}
+ a,&(\pi/\tau_a)r^{i_t}>((1-\pi)/\tau_b)s^{j_t},\\
+ b,&(\pi/\tau_a)r^{i_t}<((1-\pi)/\tau_b)s^{j_t},
+ \end{cases}
+\end{equation}
+with either order permitted at equality.  Every word obeying this
+rule has finite cost in both models.  Its asymptotic frequency of
+$a$ is
+\begin{equation}\label{eq:r80-greedy-frequency}
+ \lim_{t\to\infty}\frac{i_t}{t}=\frac{v}{u+v}.
+\end{equation}
+
+The robust history value is attained.  There is an interior prior
+$\pi_*\in(0,1)$ whose Bayes value is $V_{\rm hist}$.  At that prior,
+a robust optimum is a mixture of at most two greedy words: one
+places $a$ first at every tied pair, and the other places $b$ first
+at every tied pair.  The resulting risk vector is
+$(V_{\rm hist},V_{\rm hist})$.
+\end{lemma}
+\begin{proof}
+First consider two consecutive different letters after a prefix
+with counts $(i,j)$.  Exchanging $ab$ with $ba$ leaves the counts
+after the pair, and hence every later contribution, unchanged.
+The two model-cost differences, with $ab$ first in the subtraction,
+are exactly
+\begin{equation}\label{eq:r80-exchange-vector}
+ (-c_bq_a r^i,c_aq_b s^j).
+\end{equation}
+The Bayes difference is therefore
+$c_ac_b(((1-\pi)/\tau_b)s^j-(\pi/\tau_a)r^i)$.  The greedy rule merges the two
+strictly decreasing lists
+\[
+ \frac\pi{\tau_a},\frac\pi{\tau_a}r,
+       \frac\pi{\tau_a}r^2,\ldots,
+ \qquad
+ \frac{1-\pi}{\tau_b},\frac{1-\pi}{\tau_b}s,
+       \frac{1-\pi}{\tau_b}s^2,\ldots
+\]
+in decreasing order.  If a finite-cost competing word disagrees
+with a prescribed greedy letter, the desired letter occurs later:
+finite cost in both models requires infinitely many occurrences
+of both commands.  Move its next occurrence to the desired
+position through the intervening copies of the other letter.
+Each adjacent exchange is nonincreasing in Bayes cost.  Indeed
+the desired list item is at least the first skipped item, and
+all subsequent skipped items are smaller.  A strict violation
+of \eqref{eq:r80-greedy-rule} gives a strict improvement.
+
+By finitely many such exchanges one can match any prescribed
+finite greedy prefix without increasing the competitor's full
+cost.  The greedy prefix cost is nonnegative and no greater than
+that transformed full cost.  Letting the prefix length increase
+proves optimality of every greedy word once its finite cost is
+verified.  The strict-improvement observation proves necessity.
+An infinite-cost competitor cannot improve a finite Bayes value.
+
+For finiteness and frequency put
+\[
+ z_0=\log\frac{\pi\tau_b}{(1-\pi)\tau_a},\qquad
+ z_t=z_0-ui_t+vj_t.
+\]
+The rule subtracts $u$ when $z_t>0$, adds $v$ when $z_t<0$, and
+allows either operation at zero.  Consequently, for all $t$,
+\begin{equation}\label{eq:r80-log-strip}
+ \min(z_0,-u)\le z_t\le\max(z_0,v).
+\end{equation}
+Since $i_t+j_t=t$, the identity
+\[
+ i_t=\frac{z_0+vt-z_t}{u+v}
+\]
+proves \eqref{eq:r80-greedy-frequency}.  More precisely, with
+$\kappa=\exp(-uv/(u+v))<1$,
+\begin{align*}
+ r^{i_t}
+ &=\exp\!\left(\frac{u(z_t-z_0)}{u+v}\right)\kappa^t,\\
+ s^{j_t}
+ &=\exp\!\left(\frac{v(z_0-z_t)}{u+v}\right)\kappa^t.
+\end{align*}
+The strip bounds both factors uniformly, proving convergence of
+both cost sums.  These bounds are uniform over all tie choices
+at the fixed prior.
+
+We next establish the robust duality without presupposing a
+finite optimal word or an infinite-dimensional minimax exchange.
+Represent a word law by its cylinder probabilities.  They lie
+in $[0,1]$, start with mass one, and satisfy the consistency
+equalities and identities for a binary probability tree.  Every
+sequence of these laws has a subsequence on which all cylinder
+probabilities converge, by successive subsequence selection on
+the countable set of cylinders.  The limit again defines a word
+law.  Every cost truncated at a fixed number of calls is a
+continuous linear function of finitely many cylinders; the full
+cost is the supremum of these continuous functions.
+
+Let $\mathcal R\subset\mathbb R^2$ be the upward risk set:
+$(x_0,x_1)\in\mathcal R$ when some word law has both costs finite
+and no greater than $x_0,x_1$.  It is convex, since word laws can
+be mixed.  It is closed: for a convergent sequence of such upper
+bounds, take a cylinderwise convergent subsequence of the
+associated laws.  Every truncated cost of the limit is bounded
+by the limiting coordinate, and monotone convergence gives the
+same bound for the full cost.  A fixed full-support command row
+makes $\mathcal R$ nonempty.  Thus
+$(V_{\rm hist},V_{\rm hist})\in\mathcal R$.
+
+Separate $\mathcal R$ from the disjoint open convex set
+$\{(x_0,x_1):x_0<V_{\rm hist},\ x_1<V_{\rm hist}\}$.
+A separating linear functional has nonnegative coefficients:
+the open set is unbounded in each negative coordinate, while
+$\mathcal R$ is upward closed.  Normalize the nonzero
+coefficients to $(\pi,1-\pi)$.  The separator and the displayed
+boundary point give
+\begin{equation}\label{eq:r80-risk-separation}
+ \inf_{(x_0,x_1)\in\mathcal R}
+          \{\pi x_0+(1-\pi)x_1\}=V_{\rm hist}.
+\end{equation}
+
+This prior is interior.  Under model $0$, every proper finite-cost
+policy has expected number $1/q_a$ of $a$ calls: summing their
+success probabilities gives total success probability one.
+Likewise model $1$ requires expected number $1/q_b$ of $b$ calls.
+The corresponding cost lower bounds are $\tau_a$ and $\tau_b$.
+In fact both inequalities are strict for every law with finite
+cost in both models.  Properness in model $1$ requires positive
+probability of a $b$ call at some finite commanded prefix.
+Every failure in such a prefix has strictly positive probability
+in model $0$ as well.  Thus model $0$ incurs a strictly positive
+additional expected cost for wrong-command $b$ calls.  The
+argument with the models exchanged proves strictness for model
+$1$.  Apply this to an attaining robust law: it gives
+$V_{\rm hist}>\max(\tau_a,\tau_b)$.
+
+At either endpoint prior the infimum over $\mathcal R$ is the
+corresponding $\tau_a$ or $\tau_b$: a full-support memoryless row
+can approach the appropriate pure command, with finite cost in
+the other model at every stage.  Thus an endpoint cannot satisfy
+\eqref{eq:r80-risk-separation}.  Write the resulting interior
+prior as $\pi_*$.  We record also a bound used later in the
+normalized case $c_a=q_a,c_b=q_b$.  If the first-command
+probability of $a$ is $p$, the two costs are at least
+$1+q_b(1-p)$ and $1+q_ap$.  Consequently
+\begin{equation}\label{eq:r80-bayes-first-call}
+ \inf_{\mathcal R}\{\pi x_0+(1-\pi)x_1\}
+ \ge 1+\min\{\pi q_b,(1-\pi)q_a\}
+ \quad(c_a=q_a,\ c_b=q_b).
+\end{equation}
+
+At an interior prior the proved greedy optimum is finite in both
+models, so its Bayes value equals the infimum over $\mathcal R$.
+An attaining robust law must be supported on Bayes-optimal words:
+each word's Bayes cost is at least this value and its expectation
+equals the value.  Both of its model costs equal
+$V_{\rm hist}$, since both are at most that number and the two
+prior weights are positive.
+
+For completeness, tied words reduce to two extreme risk vectors.
+The merged numerical lists have a fixed order between unequal
+items.  Every tie consists of exactly one item from each list;
+its two letters are consecutive.  Changing their order affects
+no later count.  Formula~\eqref{eq:r80-exchange-vector} lowers
+$C_0$ and raises $C_1$ when the order is $ab$.  At every tie,
+$\pi_*r^i/\tau_a=(1-\pi_*)s^j/\tau_b$, so all these cost differences lie on
+the same Bayes-level line.  The differences are absolutely
+summable, since tied indices are distinct and both geometric
+series converge.  Consequently every greedy risk vector lies
+on the line segment joining the word with $ab$ at every tie
+and the word with $ba$ at every tie.  The same is true of any
+randomized greedy law.  The robust risk vector on that segment
+is obtained by mixing its two endpoints.  This proves the last
+assertion.
+\end{proof}
+
+\subsection{The finite-state obstruction}
+
+\begin{lemma}[Deterministic tails of finite stochastic controllers]
+\label{lem:r80-finite-word-rigidity}
+Suppose an autonomous controller with finitely many labels and
+fixed command and update rows, on one perpetually repeated
+nonterminal report, emits one prescribed infinite command suffix
+with probability one after some fixed finite time.  That suffix is
+ultimately periodic.  The conclusion allows arbitrary stochastic
+updates and command rows, and does not assume that the retained
+label is determined by the visible history.
+\end{lemma}
+\begin{proof}
+Let $S_t$ be the nonempty set of labels of positive probability
+after $t$ hypothetical failures.  Once the command suffix is
+deterministic, every label in $S_t$ must have the same pure
+command row, equal to its prescribed next symbol.  Otherwise a
+label of positive probability would emit a different symbol
+with positive probability.  Given that symbol, the next support
+is the union of the supports of the corresponding update rows
+from labels in $S_t$.  Thus $S_{t+1}$, and its next prescribed
+symbol, are determined by $S_t$.  There are only finitely many
+nonempty subsets of the finite label set.  Once one support
+recurs after the suffix begins, its entire future support and
+symbol sequence recur.  This proves ultimate periodicity.
+The argument uses supports, not the more restrictive assumption
+of deterministic internal transitions.
+\end{proof}
+
+\begin{theorem}[Arithmetic dichotomy and exponentially accurate finite memory]
+\label{thm:r80-arithmetic-saturation}
+For the two-model family above,
+\[
+ V_1=\tau_a+\tau_b,
+ \qquad
+ \bigl(\exists M<\infty:\ V_M=V_{\rm hist}\bigr)
+       \quad\Longleftrightarrow\quad
+                  \frac{\log r}{\log s}\in\mathbb Q.
+\]
+If $\log r/\log s$ is irrational, then every finite budget has
+an attained strict gap
+\begin{equation}\label{eq:r80-strict-all-memory}
+ V_M>V_{\rm hist},\qquad M=1,2,\ldots,
+ \qquad V_M\downarrow V_{\rm hist}.
+\end{equation}
+This statement ranges over all randomized autonomous controllers
+with a prescribed pure initial label, not only deterministic
+cyclic command schedules.
+
+For the normalized costs $c_a=q_a,c_b=q_b$, there is an explicit
+upper estimate for both arithmetic cases.  Put
+\begin{gather*}
+ m=\min(q_a,q_b),\qquad \delta=\frac{m^2}{16},\qquad
+ L=\log\frac{1-\delta}{\delta},\\
+ A=\exp\!\left(\frac{uv+\max(u,v)L}{u+v}\right),
+ \qquad \kappa=\exp\!\left(-\frac{uv}{u+v}\right).
+\end{gather*}
+Then for every $M\ge2$,
+\begin{equation}\label{eq:r80-memory-exponential}
+ 0\le V_M-V_{\rm hist}
+                 \le 2A\kappa^{\lfloor M/2\rfloor}.
+\end{equation}
+The upper rate is not claimed to be a matching lower rate or an
+exact formula for intermediate memory values.  In the rational
+case a finite implementation is constructed below, without a
+claim that its label count is minimal.
+\end{theorem}
+\begin{proof}
+For a one-label row with command-$a$ probability $p\in(0,1)$ put
+$x=pq_a$ and $y=(1-p)q_b$.  Its mean cost per call is
+$\tau_a x+\tau_b y$, and its model success probabilities are
+$x$ and $y$.  The costs are
+$\tau_a+\tau_b y/x$ and $\tau_b+\tau_a x/y$.
+If $x\ge y$ the second is at least $\tau_a+\tau_b$; if $x\le y$
+the first is.  Equality holds at $x=y$, or
+$p=q_b/(q_a+q_b)$.  Endpoint rows are improper in one model.
+This proves $V_1=\tau_a+\tau_b$.  In particular the normalized
+case has a common one-label fallback of robust cost two.
+
+Take the interior prior $\pi_*$ from
+Lemma~\ref{lem:r80-search-saddle}.  If $u/v$ is irrational, there
+is at most one tied pair: two distinct equalities
+$\pi_*r^i/\tau_a=(1-\pi_*)s^j/\tau_b$ would imply
+$u(i-i')=v(j-j')$, contrary to irrationality.  Thus there is one
+greedy word, or two which differ only in the order of a single
+adjacent pair and have an identical suffix.  Every such suffix
+has the irrational frequency $v/(u+v)$ by
+\eqref{eq:r80-greedy-frequency}.  It is therefore not ultimately
+periodic.
+
+Suppose some finite-label controller attained the robust history
+value.  Its planned-word law would be Bayes-optimal at $\pi_*$,
+and hence supported on those one or two words.  After their
+possible single tied pair its command suffix would be prescribed
+with probability one.  Lemma~\ref{lem:r80-finite-word-rigidity}
+would make that suffix ultimately periodic, a contradiction.
+All failure probabilities in this family are strictly positive,
+so the hypothetical-failure support argument introduces no
+physical zero-likelihood history.  At each fixed $M$ the optimum
+is attained by Theorem~\ref{thm:r79-quantum-frontier}; therefore
+the absence of an optimal controller at that $M$ gives the strict
+inequality in \eqref{eq:r80-strict-all-memory}, rather than only
+nonattainment.  Its decreasing convergence follows either from
+Corollary~\ref{cor:r79-history-limit} or from the explicit
+construction below.
+
+Suppose instead that $u/v$ is rational.  Write $u=h\ell$,
+$v=k\ell$ with positive integers $h,k$ and $\ell>0$.
+For either fixed tie rule, the logarithmic state $z_t$ belongs
+to the coset $z_0+\ell\mathbb Z$ and to the bounded strip
+\eqref{eq:r80-log-strip}.  This intersection is finite.  The
+fixed tie rule makes its next state a deterministic function
+of its present state, so each of the two extreme greedy words
+is ultimately periodic.  An ultimately periodic word has a
+finite autonomous realization by one label for each position
+in its finite prefix and cycle.
+
+The two-word robust mixture in
+Lemma~\ref{lem:r80-search-saddle} also has a finite realization
+with a counted pure start.  Use disjoint finite realizations of
+the two tails and one initial label.  If their mixing weights
+are $\lambda_j$ and their first symbols are $a_j$, the initial
+command row assigns probability
+$p_a=\sum_{j:a_j=a}\lambda_j$ to symbol $a$.  On its failure,
+select tail $j$ with probability $\lambda_j/p_a$ among those
+with $a_j=a$; an empty class is never selected.  These are
+allowed command-dependent stochastic updates.  Conditional on
+the sampled command, its failure probability is independent of
+which such tail will be selected, so this constructs exactly
+the desired mixture in both models.  Its branch choice is
+stored in counted disjoint tail labels.  No freely randomized
+initial label or persistent external coin is used.  The finite
+implementation proves the rational direction.
+
+For the quantitative approximation, now assume
+$c_a=q_a,c_b=q_b$, so $\tau_a=\tau_b=1$.  The constants
+will depend only on $r,s$.  A memoryless row with
+$p/(1-p)=(q_b/q_a)\sqrt{\pi/(1-\pi)}$ has Bayes cost
+\[
+ 1+2\sqrt{\pi(1-\pi)}.
+\]
+Together with \eqref{eq:r80-bayes-first-call} at $\pi=1/2$ this
+gives, at every least-favorable interior prior,
+\[
+ 1+\frac m2\le V_{\rm hist}
+        \le1+2\sqrt{\pi_*(1-\pi_*)}.
+\]
+Consequently $\pi_*(1-\pi_*)\ge m^2/16$ and
+$\delta\le\pi_*\le1-\delta$, so $|z_0|\le L$.
+The strip and the exact survival expressions in the proof of
+Lemma~\ref{lem:r80-search-saddle} now give, simultaneously for
+both extreme words and both models,
+\begin{equation}\label{eq:r80-greedy-tail}
+ \Pr(\text{first }T\text{ calls all fail})
+                       \le A\kappa^T\qquad(T\ge0).
+\end{equation}
+
+Follow the robust two-word mixture for at most $T\ge1$ calls;
+after failure of its $T$th call, switch to the one-label fallback
+of cost two.  The truncated prefix costs at most
+$V_{\rm hist}$ in either model, and the added expected cost is
+at most $2A\kappa^T$ by \eqref{eq:r80-greedy-tail}.  This is an
+actual counted controller with at most $2T$ labels: one pure
+initial label, at most $2(T-1)$ disjoint labels for the remaining
+prefix positions of the two words, and one fallback label.
+The same command-conditioned initial update used above realizes
+the mixture.  Depth and branch identity are stored in these
+labels.  Thus $V_{2T}\le V_{\rm hist}+2A\kappa^T$.
+Taking $T=\lfloor M/2\rfloor$ and allowing unused labels proves
+\eqref{eq:r80-memory-exponential}.
+\end{proof}
+
+\begin{corollary}[An effective saturation test for rational primitives]
+\label{cor:r80-effective-saturation}
+Suppose $r,s\in\mathbb Q\cap(0,1)$.  Factor their numerators and
+denominators into primes, and let $\nu(r),\nu(s)$ be their signed
+prime-exponent vectors on the union of those primes.  The history
+optimum has a finite-label realization if and only if these vectors
+are positive rational multiples of one another.  This is a finite
+exact test on the primitive data; it does not search unboundedly
+over label budgets.
+
+In the affirmative case one can compute a rational $t\in(0,1)$
+and coprime positive integers $h,k$ with $r=t^h$, $s=t^k$.
+For the normalized costs $c_a=q_a,c_b=q_b$, keep $\delta$ from Theorem~\ref{thm:r80-arithmetic-saturation},
+and choose any integer $J\ge0$ with
+\[
+ t^{-J}\ge\frac{1-\delta}{\delta}.
+\]
+Then the explicitly computable label bound
+\begin{equation}\label{eq:r80-rational-label-cap}
+ M_0=1+2\bigl(\max(J,h)+\max(J,k)+1\bigr)
+\end{equation}
+satisfies $V_{M_0}=V_{\rm hist}$.  The history value and an
+attaining finite controller are therefore algebraically computable
+by the fixed-budget procedure of
+Theorem~\ref{thm:r79-quantum-frontier}.  Neither $M_0$ nor the
+factorization procedure is asserted to be optimal in its resource
+use.
+\end{corollary}
+\begin{proof}
+A rational logarithmic ratio is equivalent to $r^k=s^h$ for some
+positive integers $h,k$, and unique factorization makes this
+equivalent to $k\nu(r)=h\nu(s)$.  The latter is tested by finitely
+many integer cross-products.  Reducing $h,k$ to coprime integers
+shows that every coordinate of $\nu(r)$ is divisible by $h$ and
+every coordinate of $\nu(s)$ by $k$.  Their common quotient
+vector defines the rational number $t$ with $r=t^h$, $s=t^k$.
+It lies in $(0,1)$ because $r$ does.  Repeated rational multiplication
+finds an integer $J$ satisfying the displayed inequality.
+
+Put $\ell=-\log t$.  The least-favorable logarithmic prior obeys
+$|z_0|\le L\le J\ell$.  The entire orbit of either fixed tie rule
+lies in its coset $z_0+\ell\mathbb Z$ and in
+\[
+ [-\max(J,h)\ell,\ \max(J,k)\ell].
+\]
+There are at most $N=\max(J,h)+\max(J,k)+1$ points of that
+coset in this interval.  The deterministic orbit, including its
+transient and cycle, therefore uses at most $N$ states.  Each
+extreme word and each of its tails has a realization with at
+most $N$ labels.  The counted initial-mixture construction in
+the preceding proof uses at most $1+2N=M_0$ labels and attains
+the robust history value.  The fixed-$M_0$ algebraic synthesis
+uses only the rational instrument and costs; it does not require
+an exact evaluation of the logarithmic prior.  This proves the
+effective conclusion.
+\end{proof}
+
+\begin{example}[A rational primitive with no finite saturation]
+\label{ex:r80-rational-nonsaturation}
+Take $r=1/2$ and $s=1/3$.  The scalar nonterminal multipliers are
+$(1/2,1)$ in model $0$ and $(1,1/3)$ in model $1$, and the
+command costs are $1/2,2/3$.  All instrument and cost data are
+rational.  The ratio $\log2/\log3$ is irrational: a rational
+ratio would give $2^n=3^m$ for positive integers $m,n$.
+Therefore $V_1=2$ and $V_M>V_{\rm hist}$ at every finite memory,
+although \eqref{eq:r80-memory-exponential} supplies exponentially
+accurate finite controllers.  Each fixed-$M$ value and an
+attaining controller are algebraically computable by
+Theorem~\ref{thm:r79-quantum-frontier}.  No transcendence assertion
+about $V_{\rm hist}$ is needed or made.
+\end{example}
+
+This is an exact saturation classification for the stated
+search-type family, not a classification of arbitrary quantum
+instruments or general partially observed control.  The exchange
+ordering is inherited from classical search theory.  The
+finite-support rigidity argument is what excludes every
+stochastic finite-label implementation of its irrational optimal
+law.  The positive approximation bound and the negative exact
+realization statement address different resource questions;
+neither replaces the original squared-sign risk frontier or the
+independent geometric and Theta construction problems.

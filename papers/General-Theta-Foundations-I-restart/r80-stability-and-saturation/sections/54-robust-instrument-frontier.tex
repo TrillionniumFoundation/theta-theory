@@ -1,0 +1,501 @@
+\section{The finite-memory frontier beyond reported resetting}
+\label{sec:r79-quantum-frontier}
+
+Reported resetting permits the scalar and memory-preserving reduction
+of Theorem~\ref{thm:r78-palette-normal-form}.  The next result does not
+assume resetting.  It permits arbitrary finite-dimensional failure
+maps and an unknown model which remains fixed during the experiment.
+The appropriate finite certificate retains the counted controller
+labels and their reachable quantum supports.  In particular, the
+quantum state need not be determined by the latest report.
+
+The support construction and its potential equations are inherited
+from Lemma~\ref{lem:reachable-support},
+Theorems~\ref{thm:memory-certificate} and~\ref{thm:face}; finite-model
+algebraic synthesis is Corollary~\ref{cor:memory-algebraic}.
+The primitive fallback is already supplied by
+Theorem~\ref{thm:primitive-fallback} and
+Lemma~\ref{lem:compact-fallback}.  We give their positive-cost form
+in full to make the new stability argument self-contained.  The
+extension here permits a compact semialgebraic model family with
+unrestricted legal feedback.  Reachability and cost observables
+are established ingredients
+\cite{YuYing12,YingFengYuYing13,LiuZhouBartheYing25,AvanziniEtAl22},
+as are classical bounded-controller and robust synthesis
+\cite{AmatoBernsteinZilberstein10,JungesEtAl18,CubuktepeEtAl21,
+GaleslootEtAl25}.  The next section supplies the new comparison
+that preserves the exact memory budget.
+
+\subsection{Primitive instruments and counted controllers}
+
+Fix a Hilbert space $\mathcal H$ of dimension $d\ge1$, a nonempty
+finite command set $\mathcal A$, and a finite nonterminal report set
+$\mathcal Y$.  Let $\Theta$ be a nonempty compact parameter space.
+For every $\theta\in\Theta$ and $a\in\mathcal A$, the nonterminal
+branches are completely positive maps
+$\Phi^\theta_{a,y}:\mathcal B(\mathcal H)\to
+\mathcal B(\mathcal H)$ satisfying
+\[
+ B^\theta_a=I-\sum_{y\in\mathcal Y}
+                    (\Phi^\theta_{a,y})^*(I)\succeq0.
+\]
+The effect $B^\theta_a$ is the probability of success; success
+requires immediate stopping and no other stopping is permitted.
+The mean call-cost operator is $G^\theta_a$, with common constants
+\begin{equation}\label{eq:r79-positive-costs}
+ 0<c_*I\preccurlyeq G^\theta_a\preccurlyeq c^*I<\infty.
+\end{equation}
+The maps and costs depend continuously on $\theta$.  All commands
+are legal, and the only observations are the sampled command, the
+declared report, and success.  The realized cost is not an additional
+observation.  The physical implementation of these maps and costs is
+part of the instrument specification, as in
+Section~\ref{sec:reset-control}.
+
+The adversary chooses one pair $(\theta,\rho)$, consisting of a
+model and an initial density matrix.  This pair is not observed by
+the controller.  The same $\theta$ governs every subsequent call.
+Thus the model is not reselected after a report, and the observed
+history can contain information about it.
+
+An autonomous controller with at most $M\ge1$ live labels is specified
+by command rows and update rows
+\begin{equation}\label{eq:r79-controller-parameters}
+ p^k\in\Delta(\mathcal A),\qquad
+ u^{k,a,y}\in\Delta([M]),\qquad 1\le k\le M.
+\end{equation}
+Its prescribed initial label is $1$.  At label $k$ it samples $a$
+from $p^k$; after nonterminal report $y$ it writes label $\ell$ with
+probability $u^{k,a,y}_\ell$.  These are fresh random choices, not an
+uncounted persistent seed.  Unused labels and duplicated rows are
+allowed.  Denote this compact product of simplexes by $\mathcal C_M$.
+
+For a controller $\gamma=(p,u)$, work in the direct-sum matrix algebra
+\[
+ \mathfrak A_M=\bigoplus_{k=1}^M\mathcal B(\mathcal H),
+ \qquad
+ \langle W,X\rangle=\sum_k\tr(W_kX_k).
+\]
+The nonterminal evolution and call-cost operator are
+\begin{align}
+ (\mathsf T^\theta_\gamma X)_\ell
+   &=\sum_{k,a,y}p^k_a u^{k,a,y}_\ell
+                         \Phi^\theta_{a,y}(X_k),
+       \label{eq:r79-product-map}\\
+ K^\theta_{\gamma,k}&=\sum_a p^k_aG^\theta_a.
+       \label{eq:r79-product-cost}
+\end{align}
+The map $\mathsf T^\theta_\gamma$ is completely positive and
+trace-nonincreasing.  Let $\iota_1(\rho)=(\rho,0,\ldots,0)$.
+The total expected cost and its robust value are
+\begin{align}
+ J_\gamma(\theta,\rho)
+   &=\sum_{n=0}^\infty
+       \langle K^\theta_\gamma,
+          (\mathsf T^\theta_\gamma)^n\iota_1(\rho)\rangle,
+          \label{eq:r79-total-cost}\\
+ J(\gamma)&=\sup_{\theta\in\Theta,\ \rho\succeq0,\ \tr\rho=1}
+                       J_\gamma(\theta,\rho),
+ \qquad V_M=\inf_{\gamma\in\mathcal C_M}J(\gamma).
+          \label{eq:r79-general-frontier}
+\end{align}
+All summands are nonnegative.  Consequently this definition is
+unambiguous even for an improper controller.  Finite cost implies
+finite expected duration by \eqref{eq:r79-positive-costs}.
+
+\subsection{A primitive feasibility criterion}
+
+For a fixed model, choose any Kraus representations
+$\Phi^\theta_{a,y}(X)=\sum_\mu
+ A^\theta_{a,y,\mu}X(A^\theta_{a,y,\mu})^*$.
+A nonzero subspace $S\subseteq\mathcal H$ is \emph{closed and dark}
+if
+\begin{equation}\label{eq:r79-dark-subspace}
+ A^\theta_{a,y,\mu}S\subseteq S\quad\hbox{for all }a,y,\mu,
+ \qquad B^\theta_a|_S=0\quad\hbox{for all }a.
+\end{equation}
+The condition is representation-independent: it says that every
+command has zero success probability on $S$ and all its failure
+branches preserve $S$.
+
+\begin{theorem}[Feasibility from arbitrary initial quantum states]
+\label{thm:r79-dark-feasibility}
+The following conditions are equivalent.
+\begin{enumerate}
+\item There is one visible-history policy with finite uniform
+expected cost for every $(\theta,\rho)$.
+\item No model $\theta\in\Theta$ has a nonzero closed dark subspace.
+\item Every fixed full-support command distribution $\bar p$,
+used independently on every call with one live label, has finite
+uniform expected cost for every $(\theta,\rho)$.
+\end{enumerate}
+In particular, feasibility for unrestricted history and feasibility
+at every finite live-label budget coincide.  For such a $\bar p$ set
+\[
+ \mathsf F^\theta=\sum_{a,y}\bar p_a\Phi^\theta_{a,y},
+ \qquad \bar G^\theta=\sum_a\bar p_aG^\theta_a.
+\]
+Then $r(\mathsf F^\theta)<1$ for every $\theta$, and an explicit
+uniform cost bound is
+\begin{equation}\label{eq:r79-fallback-cap}
+ C_0=\max_{\theta\in\Theta}
+       \lambda_{\max}\!\left[
+          (I-(\mathsf F^\theta)^*)^{-1}\bar G^\theta\right]<\infty.
+\end{equation}
+\end{theorem}
+\begin{proof}
+If \eqref{eq:r79-dark-subspace} holds, an initial density matrix
+supported on $S$ remains there after every failure and has zero
+success probability at every call, regardless of the policy.  Its
+cost is infinite by the positive floor.  This proves the necessity
+of the second condition.
+
+For sufficiency fix $\theta$ and write $\mathsf F=\mathsf F^\theta$.
+It is positive and trace-nonincreasing, so its spectral radius is
+at most one.  One direct justification is that, for Hermitian $X$,
+$-\|X\|I\preccurlyeq X\preccurlyeq\|X\|I$ and positivity bounds
+$\mathsf F^n(X)$ by $\|X\|\mathsf F^n(I)$ in order; the latter
+has trace at most $d$.  Decomposing a general matrix into its real
+and imaginary Hermitian parts shows that the powers are bounded.
+
+Suppose its spectral radius is one.  The numbers
+$\tr(\mathsf F^n(I))$ decrease.  Their limit is positive: otherwise
+the same order bounds would make $\mathsf F^n$ tend to zero on
+every matrix, contradicting the existence of an eigenvalue of
+modulus one.  The positive Ces\`aro averages
+\[
+ Z_N=\frac1N\sum_{n=0}^{N-1}\mathsf F^n(I)
+\]
+have bounded trace and a subsequence converging to $Z\succeq0$ with
+$\tr Z>0$.  Since
+$\mathsf F(Z_N)-Z_N=(\mathsf F^N(I)-I)/N$, one has
+$\mathsf F(Z)=Z$.
+
+Put $S=\operatorname{ran}Z$.  Taking traces in this equality gives
+$\sum_a\bar p_a\tr(B^\theta_aZ)=0$.  Every term is nonnegative
+and every $\bar p_a$ is positive, so $B^\theta_a|_S=0$ for every
+$a$.  The identity $\mathsf F(Z)=Z$ is a sum of positive Kraus
+images.  Pairing it with a vector in $\ker Z$ shows, term by term,
+that every Kraus image has range in $S$; equivalently
+$A^\theta_{a,y,\mu}S\subseteq S$.  This constructs a nonzero
+closed dark subspace.  Therefore its absence forces
+$r(\mathsf F^\theta)<1$.
+
+The geometric operator series converges and gives the cost operator
+in \eqref{eq:r79-fallback-cap}.  The primitive maps and costs are
+continuous, and the inverse is continuous wherever it exists.
+Compactness of $\Theta$ therefore makes the displayed maximum
+finite.  This single row works for all models and all initial
+density matrices, proving the third condition and hence the first.
+\end{proof}
+
+The all-initial-state quantifier is material to the necessity:
+a particular supplied initial state might never reach a closed dark
+subspace.  The theorem also uses the fixed finite alphabet and the
+availability of every command at every call.
+
+\subsection{Reachable corners and exact cost witnesses}
+
+For fixed $\theta,\gamma$, abbreviate $\mathsf T=\mathsf
+T^\theta_\gamma$ and $K=K^\theta_\gamma$.  A tuple of orthogonal
+projections $P=(P_1,\ldots,P_M)$ defines the matrix corner
+$P\mathfrak A_MP=\bigoplus_kP_k\mathcal B(\mathcal H)P_k$.
+Call it invariant if
+\begin{equation}\label{eq:r79-corner-invariance}
+ P_1=I,\qquad P\mathsf T(P)P=\mathsf T(P).
+\end{equation}
+Multiplication in this formula is blockwise.  By positivity, this
+identity implies that $\mathsf T$ maps the entire corner into
+itself.  Indeed every positive element of the corner is bounded
+above by a scalar multiple of $P$, and general elements follow by
+linear decomposition.
+
+\begin{lemma}[Finite reachable-support construction]
+\label{lem:r79-reachable-corner}
+The least invariant corner containing the initial label is obtained
+by taking the blockwise support of
+\begin{equation}\label{eq:r79-reachable-sum}
+ R=\sum_{n=0}^{Md-1}\mathsf T^n\iota_1(I).
+\end{equation}
+In particular it is determined after finitely many linear operations
+and support computations, without an infinite-history enumeration.
+If $J_\gamma(\theta,\rho)$ is finite for every initial density matrix,
+the restriction of $\mathsf T$ to this corner is transient and its
+cost operator is finite on every block of the corner.
+\end{lemma}
+\begin{proof}
+Let $R_n=\sum_{j=0}^n\mathsf T^j\iota_1(I)$ and let $P^{(n)}$
+be its blockwise support.  These supports increase, beginning with
+total rank $d$ and having total rank at most $Md$.  If no rank is
+added at a step, then $\mathsf T(R_n)$ is supported on $P^{(n)}$.
+The operator $R_n$ is positive definite on this support, so
+$P^{(n)}$ is bounded by a finite multiple of $R_n$.  Positivity now
+implies \eqref{eq:r79-corner-invariance}, and all later supports
+coincide.  There can be at most $Md-d$ strict enlargements, so
+\eqref{eq:r79-reachable-sum} has already reached the least invariant
+corner.  Every invariant corner with first block $I$ contains all
+the summands, proving minimality.
+
+For the last assertion, finite cost for every initial density matrix
+implies finite cost for $\iota_1(I)$.  For each fixed $n$, the total
+cost starting from $\mathsf T^n\iota_1(I)$ is a tail of that
+nonnegative series and is finite.  Hence the total cost starting
+from $R$ is finite.  On its support there is an $\varepsilon>0$
+with $R\succeq\varepsilon P$.  Positivity makes total cost from
+$P$ finite as well.
+
+The positive cost floor then gives
+$\sum_{n\ge0}\tr(\mathsf T^n(P))<\infty$.
+Order domination by $P$ shows that the restricted powers tend to
+zero on every element of the corner.  In finite dimension their
+spectral radius is strictly less than one: an eigenvalue of modulus
+at least one would contradict this convergence.  Thus the restricted
+geometric series and its adjoint converge.  The finite positive
+cost operator is
+\[
+ W=\sum_{n=0}^\infty (\mathsf T_P^*)^n(PKP),
+ \qquad \mathsf T_P^*(Z)=P\mathsf T^*(Z)P.
+\]
+This proves the assertion on every reachable block, including those
+whose exposure probability is small.
+\end{proof}
+
+\begin{theorem}[Exact finite support and Lyapunov certificate]
+\label{thm:r79-exact-certificate}
+Fix $M$, a controller $\gamma$, a model $\theta$, and $b<\infty$.
+Its cost is at most $b$ for every initial density matrix if and only
+if there exist block projections $P$ and Hermitian block operators
+$W$ satisfying
+\begin{align}
+ &P_k=P_k^*=P_k^2,
+ \qquad P_1=I,
+ \qquad P\mathsf T^\theta_\gamma(P)P
+                      =\mathsf T^\theta_\gamma(P),
+                    \label{eq:r79-support-certificate}\\
+ &W=PWP\succeq0,
+ \qquad
+ W\succeq PK^\theta_\gamma P
+            +P(\mathsf T^\theta_\gamma)^*(W)P,
+                    \label{eq:r79-lyapunov-certificate}\\
+ &W_1\preccurlyeq bI.\label{eq:r79-initial-budget}
+\end{align}
+The projections may be chosen as the least reachable supports in
+Lemma~\ref{lem:r79-reachable-corner}.  With that choice the minimal
+positive cost witness satisfies equality in
+\eqref{eq:r79-lyapunov-certificate}, and $\tr(W_1\rho)$ is the
+actual expected cost from $\rho$.
+\end{theorem}
+\begin{proof}
+Suppose first that the certificate holds.  Invariance keeps every
+nonterminal state, starting from $\iota_1(\rho)$, inside its corner.
+Pair \eqref{eq:r79-lyapunov-certificate} with such a state and
+iterate.  For every $N$,
+\[
+ \sum_{n=0}^{N-1}
+   \langle K^\theta_\gamma,
+      (\mathsf T^\theta_\gamma)^n\iota_1(\rho)\rangle
+ +\langle W,(\mathsf T^\theta_\gamma)^N\iota_1(\rho)\rangle
+ \le\tr(W_1\rho)\le b.
+\]
+Drop the nonnegative remainder and use monotone convergence.  This
+gives the asserted total-cost bound.  Its positive cost floor also
+bounds the expected number of calls by $b/c_*$, so success occurs
+almost surely.
+
+Conversely, the assumed uniform initial bound makes the construction
+in Lemma~\ref{lem:r79-reachable-corner} applicable.  Take its least
+support $P$ and its convergent cost series $W$.  The series is
+supported on $P$ and solves the Lyapunov equation there.  Pairing it
+with any initial density matrix gives exactly
+\eqref{eq:r79-total-cost}; hence $\tr(W_1\rho)\le b$ for every
+$\rho$, which is equivalent to \eqref{eq:r79-initial-budget}.
+Its minimality among positive supersolutions follows by iterating
+the inequality from zero.  This establishes both directions without
+postulating finite costs at inaccessible labels or subspaces.
+\end{proof}
+
+\subsection{Attainment and exact synthesis at every memory budget}
+
+\begin{theorem}[Robust quantum finite-memory frontier]
+\label{thm:r79-quantum-frontier}
+Assume the equivalent feasibility conditions of
+Theorem~\ref{thm:r79-dark-feasibility}.  Then for every $M\ge1$ the
+value $V_M$ in \eqref{eq:r79-general-frontier} is finite and attained
+by a controller in $\mathcal C_M$.  It is nonincreasing in $M$.
+For every finite $b$, the following is a necessary and sufficient
+condition for $V_M\le b$:
+\begin{equation}\label{eq:r79-robust-budget-quantifiers}
+ \exists\,\gamma\in\mathcal C_M\quad
+ \forall\,\theta\in\Theta\quad
+ \exists\,P^\theta,W^\theta\quad
+ \text{\eqref{eq:r79-support-certificate}--
+       \eqref{eq:r79-initial-budget} hold.}
+\end{equation}
+The controller variables are common to all models.  The certificate
+variables may depend on the fixed model; they are proof witnesses
+and are not supplied as information to the controller.
+
+Suppose in addition that $\Theta\subseteq\mathbb R^r$ is a compact
+semialgebraic set defined over the real algebraic numbers, and the
+real and imaginary matrix coefficients of the primitive maps and
+costs are polynomial or rational functions of $\theta$ with algebraic
+coefficients and no poles on $\Theta$.  For each fixed $M$, feasibility
+at any algebraic budget is decidable by finite real-algebraic
+elimination.  The value $V_M$ is algebraic, and one attaining
+controller can be chosen with algebraic command and update
+probabilities and computed by a finite exact procedure.
+\end{theorem}
+\begin{proof}
+The one-row policy of Theorem~\ref{thm:r79-dark-feasibility} can be
+represented in $\mathcal C_M$, giving $V_M\le C_0$.
+For fixed $\theta,\rho,N$, the truncated sum in
+\eqref{eq:r79-total-cost} is a continuous function of the finitely
+many controller probabilities.  The full robust objective $J$ is
+the supremum of these continuous functions over $\theta,\rho,N$.
+It is therefore lower semicontinuous on the compact space
+$\mathcal C_M$.  Its finite minimum is attained.  This argument
+does not require a uniform upper bound for the potential on every
+label.  Padding by unused labels gives monotonicity.
+
+The fixed-model certificate theorem applies to the same controller
+at every $\theta$.  This proves both directions of
+\eqref{eq:r79-robust-budget-quantifiers}; attainment identifies the
+budget condition with $V_M\le b$, including $b=V_M$.
+
+For the effective statement, express all complex matrices in real
+and imaginary coordinates.  Projection identities, corner
+invariance and controller normalization are polynomial identities
+or inequalities.  Positive semidefiniteness is expressed by the
+nonnegativity of all principal minors of each Hermitian block.
+Rational coefficients introduce no difficulty, since their
+denominators have no zeros on the specified model set and may be
+handled by polynomial equations for their inverses.  Thus
+\eqref{eq:r79-robust-budget-quantifiers} is a finite first-order
+formula over the real algebraic numbers.  Its quantifier order is
+exactly the displayed order, so elimination does not give the
+controller access to $\theta$.
+
+Elimination produces the feasible budget set.  It is the nonempty
+ray $[V_M,\infty)$ by the budget equivalence and attainment.  A
+finite endpoint of a one-dimensional semialgebraic set defined over
+the real algebraic numbers is algebraic.  Substituting this endpoint
+in the quantified formula leaves a nonempty semialgebraic set of
+controller probabilities defined over the same field.  Exact
+sampling supplies algebraic probabilities in that set.  This is
+a finite exact procedure; no polynomial complexity, numerical tie
+certification, or previously executed general elimination is claimed.
+\end{proof}
+
+For a finite model set, \eqref{eq:r79-robust-budget-quantifiers} is
+simply a finite family of support and cost certificates with shared
+controller variables.  For a compact infinite set its universal
+quantifier is essential.  The theorem does not assert that a
+least-favorable model attains the outer supremum, that $V_M$ has a
+general closed formula, or that the unrestricted-history optimum
+is reached at a finite label budget.  It also does not identify
+finite algebraic synthesis with efficient computation.
+
+With the single constant terminal decoder, event stopping keeps the
+same total-label frontier $V_M$.  State stopping uses one disjoint
+terminal label, giving the live-label frontier $V_M$ at $M+1$ total
+labels.  These counts include the prescribed initial label.
+
+\subsection{Why fixed models and reachable supports cannot be removed}
+
+\begin{example}[Information remains after a physical reset]
+\label{ex:r79-hidden-model-memory}
+Let $d=1$, let there be a single nonterminal report, and let
+$\Theta=\{0,1\}$.  Each call costs one.  The success probabilities
+of commands $a,b$ are respectively
+\[
+ (1/2,1/10)\quad\hbox{under model }0,
+ \qquad (1/10,1/2)\quad\hbox{under model }1.
+\]
+All success and failure probabilities are strictly positive, and
+there is only one physical reset state.
+
+A one-label controller uses one command row, choosing $a$ with
+probability $p$.  Its two mean costs are
+\[
+ \frac1{1/10+(2/5)p},\qquad
+ \frac1{1/2-(2/5)p}.
+\]
+Their maximum is minimized at $p=1/2$, with value $10/3$.
+Now use three counted rows: an initial uniform row, a pure $a$ row,
+and a pure $b$ row.  After the first failure choose the row for the
+opposite command, and thereafter alternate the two pure rows.
+For model $0$, starting with $a$ gives mean cost
+$ (1+1/2)/(1-(1/2)(9/10))=30/11$; starting with $b$ gives
+$38/11$.  Model $1$ exchanges these numbers.  Thus the prescribed
+uniform initial row followed by counted alternation has robust cost
+$34/11<10/3$, an exact improvement of $8/33$.
+
+In contrast, a deterministic update depending only on the common
+report must always select one of these same three rows.  Selecting
+the uniform row gives cost $10/3$; selecting either pure row after
+the first call gives worst-model cost $1+(7/10)10=8$.  Therefore
+no such report-only update dominates this controller with its same
+rows.  The palette theorem for one known reset instrument has not
+failed: its physical resetting hypothesis does not erase information
+about a fixed hidden model, and that theorem does not include this
+uncertainty quantifier.
+\end{example}
+
+The same example has a known-model, genuinely nonreset quantum
+realization.  On $\mathbb C^2$ use single failure Kraus operators
+\[
+ A_a=\operatorname{diag}(1/\sqrt2,3/\sqrt{10}),\qquad
+ A_b=\operatorname{diag}(3/\sqrt{10},1/\sqrt2),
+ \qquad G_a=G_b=I.
+\]
+Both failure operators are invertible, so their posterior states
+depend on the input.  The success effects are
+$I-A_a^*A_a$ and $I-A_b^*A_b$.  All expected-cost operators in the
+displayed controllers are diagonal.  The two basis states therefore
+give exactly the two scalar cost calculations above, and arbitrary
+coherences do not change them.  In this known instrument the
+all-initial-state one-label value is again $10/3$, while the
+three-label construction attains $34/11$.  This supplies an explicit
+full-rank nonreset instance of the larger certificate class.
+
+\begin{example}[Finite initial cost with unbounded continuation witnesses]
+\label{ex:r79-unbounded-reachable-witness}
+Let $d=1$, $\Theta=[0,1]$, and keep one nonterminal report and unit
+cost.  The failure probabilities of $a,b$ are
+\[
+ f_a(\theta)=\theta(1-\theta),\qquad f_b(\theta)=1-\theta.
+\]
+Consider the two-label controller which starts with $a$ and, after
+failure, uses $b$ forever.  At $\theta>0$ its cost is
+$1+\theta(1-\theta)/\theta=2-\theta$; at $\theta=0$ its first
+call succeeds surely, so its cost is $1$.  Its robust cost is
+therefore $2$, although no parameter attains that supremum.
+
+For $0<\theta<1$, the second label is reachable and its true
+continuation cost is $1/\theta$, which is unbounded as
+$\theta\downarrow0$.  At $\theta=0$ that label is both unreachable
+and dark.  A Lyapunov inequality on the entire two-label space would
+then demand $W_2\ge1+W_2$, which is impossible.  The correct support
+certificate instead has $P_1=1,P_2=0$ at this endpoint.  At $0<\theta<1$ it has both projections equal to one and the exact cost
+witnesses $W_1=2-\theta,W_2=1/\theta$.  At $\theta=1$ the second label is again unreachable; either its zero support or the larger transient support gives a valid certificate.
+
+Every primitive model in this example satisfies the feasibility
+theorem: command $a$ succeeds with probability at least $3/4$.
+The obstruction is therefore neither infeasibility of the model
+family nor a zero cost.  It is the unjustified requirement that
+every unused controller state possess a global finite potential,
+or that all model-dependent continuation witnesses have a uniform
+bound merely because the initial cost does.
+\end{example}
+
+The product evolution, positive cost operators, and Lyapunov
+verification have classical antecedents in finite-state controller
+synthesis and quantum program analysis.  The present statement keeps
+the counted controller, the arbitrary initial state, the fixed-model
+quantifier, and support changes in one necessary-and-sufficient
+certificate.  Its role is to extend the finite resource frontier
+beyond reported resetting while preserving the stronger scalar
+normal form, closed cover solutions and rigidity results in their
+previously proved reset class.  It does not silently extend the
+report-only normal form or solve the separate squared-sign minimax
+risk and optional-commitment problems.

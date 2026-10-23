@@ -1,0 +1,534 @@
+\section{Sharpness of the uniform primitive modulus}
+\label{sec:r80-sharp-stability}
+
+The exponent in Theorem~\ref{thm:r79-frontier-stability} cannot be
+increased on its stated class.  This failure of a Lipschitz estimate
+already occurs for two scalar models, two commands and two live labels.
+The values remain finite, the call costs are identically one, and the
+same one-row fallback works throughout the perturbation.  Thus the
+phenomenon is not caused by a loss of feasibility or by an increasing
+physical dimension.  It comes from the cost of repairing a label which
+was dark and unreachable in one of the models.
+
+Put $\beta=1/4$ and $q=1-\beta=3/4$.  Let
+$\mathcal U_\varepsilon=\{0_\varepsilon,1\}$, where
+$0\le\varepsilon<1$, be scalar instruments with unit call cost,
+one failure report, and the following success probabilities:
+\begin{equation}\label{eq:r80-sharp-models}
+\begin{array}{c|cc}
+ &a&b\\ \hline
+ 0_\varepsilon&1-\varepsilon&0\\
+ 1&0&\beta.
+\end{array}
+\end{equation}
+The model is fixed throughout the run and is unobserved.  Success
+requires immediate stopping; the sampled command is known to the
+controller.  For a scalar instrument, the displayed probabilities
+specify all the nonterminal maps.  These are valid instruments for
+every stated parameter, with positive deterministic paid costs and
+no additional observation.
+
+The controller convention is that of
+\eqref{eq:r79-controller-parameters}: a prescribed pure initial live
+label, stochastic command and update rows, and no free clock or
+persistent private seed.  We write $V_2(\varepsilon)$ for its
+two-live-label robust optimum.  Define
+\begin{equation}\label{eq:r80-sharp-constants}
+ r_0=\frac{\sqrt{65}-1}{32},\qquad
+ B_0=\frac1{r_0}=\frac{1+\sqrt{65}}2,\qquad
+ D=\beta+qr_0,\qquad
+ c_0=\frac{2\sqrt q\,r_0^2}{D^2+\beta r_0^2}.
+\end{equation}
+In particular $c_0>0$; its approximate value is $0.4564191442$.
+
+\begin{theorem}[An exact square-root singularity at fixed memory]
+\label{thm:r80-sharp-modulus}
+For the primitive family \eqref{eq:r80-sharp-models},
+\begin{equation}\label{eq:r80-sharp-asymptotic}
+ V_2(0)=B_0,\qquad
+ \lim_{\varepsilon\downarrow0}
+       \frac{V_2(\varepsilon)-B_0}{\sqrt\varepsilon}=c_0.
+\end{equation}
+The minimum defining each $V_2(\varepsilon)$ is attained.  The
+instrument discrepancy between the paired families
+$\mathcal U_0$ and $\mathcal U_\varepsilon$ is exactly
+$\varepsilon$, and their cost discrepancy is zero.
+For $0\le\varepsilon\le1/2$ they have unit cost floor and ceiling
+and a common one-row cost bound $6$.
+
+Consequently no local uniform bound with exponent strictly greater
+than $1/2$ can replace the instrument term in
+Theorem~\ref{thm:r79-frontier-stability}, even at the single fixed
+budget $M=2$.  In contrast, the one-label frontier of the same
+family is
+\begin{equation}\label{eq:r80-one-label-smooth}
+ V_1(\varepsilon)=\frac1{1-\varepsilon}+\frac1\beta.
+\end{equation}
+The exponent obstruction therefore concerns an optimized memory
+frontier, rather than a scalar waiting-time singularity.
+\end{theorem}
+
+We prove the theorem below.  Two elementary facts about scalar
+two-label chains will be useful.  If the success probabilities at
+the labels are $h_1,h_2$ and the probabilities of a nonterminal
+transition to the other label are $t_1,t_2$, respectively, the
+finite cost from label $1$ is
+\begin{equation}\label{eq:r80-two-state-cost}
+ C_1=\frac{h_2+t_2+t_1}{h_1h_2+h_1t_2+h_2t_1}.
+\end{equation}
+This formula applies when the denominator is positive.  When the
+second label is inaccessible, its possibly infinite cost must instead
+be discarded: the initial cost is $1/h_1$.  These conclusions follow
+directly from
+$C_1=1+(1-h_1-t_1)C_1+t_1C_2$ and its second-row equation.
+Whenever both costs are finite, their ordering is the reverse of
+the ordering of $h_1,h_2$.  Indeed
+\[
+ (h_2-h_1)C_1=(h_2+t_1+t_2)(C_1-C_2).
+\]
+Thus routing a given failure to the label with larger success
+probability cannot increase the cost when that routing does not
+affect the other model.  This last statement can also be checked by
+substituting the old positive cost vector into the new Bellman
+inequality; finite-prefix iteration proves the comparison without
+an unproved properness assumption.
+
+\subsection{The unperturbed optimum and its rigidity}
+
+Specify every two-label controller by six numbers in $[0,1]$:
+\begin{equation}\label{eq:r80-six-parameters}
+\begin{array}{c|l}
+r,s&\text{probabilities of command $a$ at labels $1,2$},\\
+\alpha,\gamma&\text{probabilities of writing label $2$ after,
+respectively, an $a$- or $b$-failure at label $1$},\\
+\xi,\delta&\text{probabilities of writing label $1$ after,
+respectively, an $a$- or $b$-failure at label $2$}.
+\end{array}
+\end{equation}
+Label $1$ is the initial label.  There is no restriction on any of
+these probabilities.  The description includes one-label controllers
+by allowing the second label to remain unused.
+
+\begin{lemma}[The unique effective optimal program at zero perturbation]
+\label{lem:r80-boundary-rigidity}
+At $\varepsilon=0$, every robust optimal two-label controller has
+\begin{equation}\label{eq:r80-rigid-controller}
+ r=r_0,\qquad s=0,\qquad
+ \alpha=1,\qquad\gamma=\delta=0.
+\end{equation}
+The value of $\xi$ is immaterial because command $a$ is never used
+at label $2$.  The optimum is $B_0$.
+Every controller with $r\le s$ has robust cost at least
+\begin{equation}\label{eq:r80-other-orientation}
+ B_{\rm opp}=2(\sqrt{19}-2)>B_0.
+\end{equation}
+The lower bound in \eqref{eq:r80-other-orientation} is attained
+within that orientation.
+\end{lemma}
+\begin{proof}
+In model $0_0$, an $a$ call always succeeds.  Changing updates after
+an $a$-failure therefore leaves this model's cost unchanged.
+
+First suppose $r\ge s$.  In model $1$ the second label has at least
+as large a success probability as the first.  By the preceding
+two-label comparison, routing every $a$-failure to label $2$ can
+only improve model $1$.  Hence it gives a lower bound for an
+arbitrary controller.  This routing sets $\alpha=1,\xi=0$.
+The endpoint $r=0$ makes model $0$ improper.  At $r=1$ the first
+call in model $1$ is certainly a failure and at least $1/\beta$
+further calls are required in expectation, giving cost at least
+$5$.  Both endpoints are therefore harmless for a lower bound
+strictly below $5$; in the following division take $0<r<1$.
+Let $C_0,C_1$ denote the two initial costs after this improvement.
+For their explicit expressions put
+\begin{align*}
+ N_0&=s+(1-s)\delta+(1-r)\gamma,\\
+ D_0&=rs+r(1-s)\delta+s(1-r)\gamma,\\
+ N_1&=\beta(1-s)+q(1-s)\delta+r+q(1-r)\gamma,\\
+ D_1&=\beta(1-s)
+            [\beta+qr+q(1-r)(\delta+\gamma)].
+\end{align*}
+When the relevant denominators are positive,
+$C_0=N_0/D_0$ and $C_1=N_1/D_1$.  Define
+\begin{equation}\label{eq:r80-comparison-function}
+ f(t)=\frac{\beta+t}{\beta(\beta+qt)},\qquad 0\le t\le1.
+\end{equation}
+It is strictly increasing.  The inequality
+\begin{equation}\label{eq:r80-palette-comparison}
+ C_1\ge f(1/C_0)
+\end{equation}
+has the following explicit positive-polynomial certificate:
+\begin{align}
+ &N_1\beta(\beta N_0+qD_0)
+               -D_1(\beta N_0+D_0) \nonumber\\
+ ={}&\beta q s^2(1-r)^2\gamma^2
+       +2\beta qsr(1-s)(1-r)\gamma\delta \nonumber\\
+ &+\beta(1-r)
+      [\beta^2(r-s)+s^2(\beta+2qr)]\gamma \nonumber\\
+ &+\beta q r^2(1-s)^2\delta^2
+       +\beta sr(1-s)(\beta+2qr)\delta
+       +\beta s^2r(\beta+qr).
+       \label{eq:r80-positive-polynomial}
+\end{align}
+Every summand on the right is nonnegative for $0\le s\le r\le1$.
+This identity follows by expansion and proves the claimed inequality
+after division by its positive denominator.  The formula does not
+use the value of $\beta$ beyond $0<\beta<1$.
+
+The inaccessible case omitted by this division is
+$s=\delta=\gamma=0$.  A finite initial cost then requires $r>0$.
+Direct conditioning gives $C_0=1/r$ and, after the indicated
+$a$-failure improvement, $C_1=f(r)$.  If other endpoint choices
+make one of the costs infinite, they cannot improve a finite
+optimum.  The remaining finite endpoints are covered either by
+the displayed formulas or by their one-label reduction.
+
+If both costs are at most $b$, \eqref{eq:r80-palette-comparison}
+implies $b\ge f(1/b)$.  The positive solution of
+$b=f(1/b)$ is $B_0$, since its reciprocal solves
+$r^2+\beta^2r-\beta^2=0$.  This proves the lower bound for
+$r\ge s$.  Equality is achieved by
+\eqref{eq:r80-rigid-controller}.  At a finite optimum one has
+$0<r<1$; the endpoint $r=0$ cannot succeed in model $0$, whereas
+$r=1$ gives model $1$ cost at least $1+1/\beta=5>B_0$.
+In this open range the right-hand side of
+\eqref{eq:r80-positive-polynomial} is strictly positive if any
+of $s,\delta,\gamma$ is positive.  Hence equality requires all
+three to vanish.  The two remaining inequalities then force
+$r=r_0$.  Without the $a$-failure improvement, the model-$1$ cost
+at these rows is
+\[
+ \frac{\beta+r\alpha}
+      {\beta[\beta(1-r)+r\alpha]}.
+\]
+It is strictly decreasing in $\alpha$ for $0<r<1$.
+Its value equals $B_0$ only at $\alpha=1$.  This proves the
+stated rigidity in this orientation.
+
+It remains to exclude $r\le s$.  In this orientation, routing
+every $a$-failure to label $1$ improves model $1$ and leaves
+model $0$ unchanged.  Make that improvement.  The same $N_0,D_0$
+describe model $0$, whereas model $1$ has
+\begin{align*}
+ \widetilde N_1&=\beta+qs+q(1-s)\delta+q(1-r)\gamma,\\
+ \widetilde D_1&=\beta(1-r)
+                [\beta+qs+q(1-s)(\delta+\gamma)].
+\end{align*}
+Suppose a proposed bound $b<B_{\rm opp}<5$ holds for both
+models.  Model $1$ has success probability at most
+$\beta(1-r)$ at every call, so
+$b\ge1/[\beta(1-r)]$.  In particular $b\ge4$ and
+$br<1$, the latter because $b<1+1/\beta=5$.
+The condition $N_0/D_0\le b$ now implies $bs>1$ and
+\begin{equation}\label{eq:r80-gamma-bound}
+ \gamma\ge
+ \frac{[s+(1-s)\delta](1-br)}{(1-r)(bs-1)}.
+\end{equation}
+The model-$1$ cost increases with $\gamma$: it moves a failure
+from the better first label to the worse second label.  Substitute
+the right-hand side of \eqref{eq:r80-gamma-bound} in
+$\widetilde N_1/\widetilde D_1$, and call the resulting rational
+function $F_b(r,s,\delta)$.  Its denominator is positive on the
+range in question, even if the substituted $\gamma$ exceeds one.
+The latter substitution only relaxes the original constraint.
+
+For precision, differentiation gives the following signs:
+\begin{align*}
+ \partial_\delta F_b(r,s,\delta)&\ge0,\\
+ \partial_r F_b(r,s,0)&>0,\\
+ \operatorname{sign}\partial_s F_b(0,s,0)
+        &=\operatorname{sign}(bs-2).
+\end{align*}
+These signs can be verified without estimating a root.  Up to
+positive squared denominators, their respective numerators are
+\[
+ (\beta-1)(r-s)(s-1)(br-1)(bs-1),\quad
+ -(bs-1)^2(\beta s-\beta-s),\quad
+ (1-\beta)s(bs-2).
+\]
+Consequently
+\[
+ C_1\ge F_b(r,s,\delta)
+       \ge F_b(0,s,0)
+       \ge F_b(0,2/b,0)
+       =\frac{\beta+4q/b}
+          {\beta(\beta+4q/b-4q/b^2)}.
+\]
+Here $2/b\le1$, since $b\ge4$.  The inequality that the final
+expression be at most $b$ is, at $\beta=1/4$,
+$b^2+8b-60\ge0$.  It contradicts $b<B_{\rm opp}$.
+At $b=B_{\rm opp}$ the choice
+$r=0$, $s=\gamma=2/b$, $\delta=0$, with every $a$-failure
+routed to label $1$, attains equality.  This proves
+\eqref{eq:r80-other-orientation} and completes the lemma.
+\end{proof}
+
+\subsection{A quantitative consequence of boundary rigidity}
+
+The next estimate concerns the original, unrestricted six-parameter
+controller.  It does not assume that its $a$-failure updates have
+already been improved.  Write $J_0^{\rm rob}$ for its robust cost in
+$\mathcal U_0$.
+
+\begin{lemma}[Coercivity near the boundary optimizer]
+\label{lem:r80-boundary-coercivity}
+There are a neighborhood of the optimal controllers in
+Lemma~\ref{lem:r80-boundary-rigidity} and constants $K,\Delta_0>0$
+with the following property.  If a controller in that neighborhood
+has $J_0^{\rm rob}\le B_0+\Delta$, where
+$0\le\Delta\le\Delta_0$, then,
+with $z=s+\delta$,
+\begin{equation}\label{eq:r80-coercivity}
+ z\le K\Delta,\qquad
+ \gamma\le K\Delta z,\qquad
+ |r-r_0|\le K\Delta.
+\end{equation}
+At $z=0$ the middle conclusion says $\gamma=0$.
+\end{lemma}
+\begin{proof}
+Choose a small fixed neighborhood in which $r$ is bounded away
+from zero and one and $s$ is smaller than $r/2$.
+The actual model-$1$ cost is at least its cost after routing all
+$a$-failures to label $2$.  In
+\eqref{eq:r80-positive-polynomial}, the coefficients of
+$\gamma,\delta^2,s\delta,s^2$ are bounded below by positive
+constants on this neighborhood.  Also
+$N_0$ is bounded above and below by positive constant multiples
+of $z+\gamma$.  The denominator which converts that polynomial
+to $C_1-f(D_0/N_0)$ is bounded above by a constant times $N_0$.
+Thus, whenever $N_0>0$,
+\begin{equation}\label{eq:r80-coercivity-core}
+ C_1-f(1/C_0)\ge
+ c\,\frac{\gamma+z^2}{z+\gamma}
+\end{equation}
+for some $c>0$.  Here $C_0$ is the actual baseline model-$0$
+cost and $C_1$ may be the actual, unimproved model-$1$ cost.
+Both are at most $B_0+\Delta$.  Since $f$ is increasing,
+\[
+ 0\le C_1-f(1/C_0)
+   \le B_0+\Delta-f\bigl(1/(B_0+\Delta)\bigr)
+   \le K_1\Delta.
+\]
+The last bound follows from differentiability and
+$f(1/B_0)=B_0$.
+
+Shrink the neighborhood so that $z\le1$.  Then
+$(\gamma+z^2)/(z+\gamma)\ge z$, and it is also at least
+$\gamma/(z+\gamma)$.  These two bounds give
+$z\le K_2\Delta$ and
+$\gamma/(z+\gamma)\le K_2\Delta$.
+For $K_2\Delta\le1/2$, the latter yields
+$\gamma\le2K_2\Delta z$.
+
+Put $t=1/C_0$.  The same inequalities give
+$1/(B_0+\Delta)\le t\le f^{-1}(B_0+\Delta)$.
+The derivative $f'(r_0)>0$, so $|t-r_0|\le K_3\Delta$.
+Finally the explicit model-$0$ formula gives
+\[
+ r-t=\frac{(r-s)(1-r)\gamma}{N_0},
+\]
+which is bounded by a constant times
+$\gamma/(z+\gamma)$.  This proves the estimate for $r$.
+If $N_0=0$, then $z=\gamma=0$ and $t=r$ directly, so the
+same conclusions hold.  Increasing one constant $K$ proves
+all of \eqref{eq:r80-coercivity}.
+\end{proof}
+
+\subsection{The matching asymptotic}
+
+\begin{proof}[Proof of Theorem~\ref{thm:r80-sharp-modulus}]
+Every model has a successful command for $\varepsilon<1$.
+Theorem~\ref{thm:r79-dark-feasibility} gives feasibility, and
+Theorem~\ref{thm:r79-quantum-frontier} gives attainment at two
+labels.  Alternatively, here the parameter cube
+\eqref{eq:r80-six-parameters} is compact, total expected cost is
+the supremum of its continuous finite-prefix costs, and a
+constant mixed row gives a finite competitor.  These observations
+prove attainment directly.
+
+A one-label row with $a$-probability $r$ has costs
+$1/[(1-\varepsilon)r]$ and $1/[\beta(1-r)]$.
+Equating them proves \eqref{eq:r80-one-label-smooth}; this value
+is at most $6$ when $\varepsilon\le1/2$.  The single fixed row
+$r=1/3$ has cost at most $6$ for every model and every
+$\varepsilon\in[0,1/2]$, so the fallback cap can be realized by
+the same program throughout.  Pairing the unchanged model $1$
+with itself and $0_0$ with $0_\varepsilon$, the scalar
+nonterminal-map discrepancy is $\varepsilon$.  The cost
+operators coincide.  The paired instrument discrepancy used in
+Theorem~\ref{thm:r79-frontier-stability} is therefore exactly
+$\varepsilon$.
+
+For the upper estimate define the positive constants
+\begin{equation}\label{eq:r80-leading-coefficients}
+ A=r_0^{-2},\qquad
+ F=\frac{\beta}{D^2}=f'(r_0),\qquad
+ L=\frac{qr_0^2}{\beta D^2},\qquad
+ k=\sqrt{\frac{F}{AL}}=\frac{\beta}{\sqrt q},\qquad
+ h=\frac{k^{-1}-Lk}{A+F}.
+\end{equation}
+For sufficiently small $\varepsilon>0$, use the controller
+\begin{equation}\label{eq:r80-asymptotic-controller}
+ r=r_0+h\sqrt\varepsilon,\quad s=0,\quad
+ \alpha=1,\quad\gamma=0,\quad
+ \delta=k\sqrt\varepsilon,
+\end{equation}
+with any $\xi$.  These are legitimate probabilities.  Both
+models are proper from every reachable label.  Direct substitution
+in \eqref{eq:r80-two-state-cost} gives
+\begin{align}
+ C_0(\varepsilon)
+   &=\frac1{(1-\varepsilon)r}
+                 +\frac{\varepsilon}{(1-\varepsilon)\delta},
+                       \label{eq:r80-upper-cost-zero}\\
+ C_1(\varepsilon)
+   &=\frac{\beta+q\delta+r}
+        {\beta[\beta+qr+q(1-r)\delta]}.
+                       \label{eq:r80-upper-cost-one}
+\end{align}
+Their expansions are respectively
+\[
+ B_0+(-Ah+k^{-1})\sqrt\varepsilon+O(\varepsilon),
+ \qquad
+ B_0+(Fh+Lk)\sqrt\varepsilon+O(\varepsilon).
+\]
+The two leading coefficients are equal by the definition of $h$,
+and their common value is
+\[
+ \frac{2\sqrt{FAL}}{A+F}
+        =\frac{2\sqrt q\,r_0^2}{D^2+\beta r_0^2}=c_0.
+\]
+This proves the required upper limit, in particular
+$V_2(\varepsilon)-B_0=O(\sqrt\varepsilon)$.
+
+For the converse take an attaining controller for each
+$\varepsilon>0$.  For any fixed controller the model-$0$
+cost is nondecreasing in $\varepsilon$.  Indeed the
+nonterminal matrix is its matrix at zero plus
+$\varepsilon$ times a nonnegative matrix, so each finite-prefix
+cost is nondecreasing.  Model $1$ is unchanged.  Consequently
+$V_2(\varepsilon)\ge B_0$, and every such optimizer has baseline
+robust cost at most $V_2(\varepsilon)$.
+
+Every limit point of these controllers as
+$\varepsilon\downarrow0$ is a baseline optimizer.  To see this,
+use compactness of the parameter cube and lower semicontinuity
+of the baseline total cost, the latter being the supremum of
+continuous finite-prefix costs.  The upper estimate just proved
+then bounds a limiting baseline cost by $B_0$.
+Lemma~\ref{lem:r80-boundary-rigidity} therefore implies
+\[
+ r\longrightarrow r_0,\quad s,\gamma,\delta\longrightarrow0,
+                 \quad\alpha\longrightarrow1.
+\]
+No convergence of the immaterial coordinate $\xi$ is required.
+For all sufficiently small parameters the coercivity lemma applies,
+with $\Delta=V_2(\varepsilon)-B_0=O(\sqrt\varepsilon)$.
+It gives
+\begin{equation}\label{eq:r80-optimal-scales}
+ s+\delta=O(\sqrt\varepsilon),\qquad
+ \gamma=O(\varepsilon),\qquad
+ r-r_0=O(\sqrt\varepsilon).
+\end{equation}
+
+Take any sequence along which the lower limit of the normalized
+cost gap is realized.  Pass to a subsequence so that the bounded
+scaled coordinates converge:
+\[
+ \frac{r-r_0}{\sqrt\varepsilon}\longrightarrow H,
+ \qquad\frac{s}{\sqrt\varepsilon}\longrightarrow u,
+ \qquad\frac{\delta}{\sqrt\varepsilon}\longrightarrow v,
+ \qquad u,v\ge0.
+\]
+Write $t=u+v$.  We first show $t>0$.
+In model $0_\varepsilon$ the two success probabilities and
+off-diagonal nonterminal probabilities are
+\begin{equation}\label{eq:r80-perturbed-chain}
+ h_1=(1-\varepsilon)r,\quad h_2=(1-\varepsilon)s,
+ \qquad
+ t_1=\varepsilon r\alpha+(1-r)\gamma,\quad
+ t_2=\varepsilon s\xi+(1-s)\delta.
+\end{equation}
+Let $\mathcal D=h_1h_2+h_1t_2+h_2t_1$.
+For small positive $\varepsilon$, finite cost and
+$\alpha\longrightarrow1$ require $s+\delta>0$;
+otherwise the positive probability of entering the second label
+leads to an absorbing failure state.  Thus $\mathcal D>0$, and
+\eqref{eq:r80-two-state-cost} gives the exact identity
+\begin{equation}\label{eq:r80-trap-cost}
+ C_0(\varepsilon)-\frac1{h_1}
+       =\frac{(h_1-h_2)t_1}{h_1\mathcal D}.
+\end{equation}
+In the neighborhood under consideration, $\mathcal D$ is at most
+a constant times $s+\delta$, while $t_1\ge\varepsilon r\alpha$.
+Hence the right-hand side is at least
+$c\varepsilon/(s+\delta)$ for a fixed $c>0$.
+Since $1/h_1=B_0+O(\sqrt\varepsilon)$ by
+\eqref{eq:r80-optimal-scales}, the bounded normalized cost gap
+excludes $(s+\delta)/\sqrt\varepsilon\longrightarrow0$.
+Therefore $t>0$.
+
+Now \eqref{eq:r80-perturbed-chain} and
+\eqref{eq:r80-optimal-scales} give
+$\mathcal D/\sqrt\varepsilon\longrightarrow r_0t$.
+The nonnegative contribution of $\gamma$ to $t_1$ may be
+dropped in a lower bound, while $\alpha\longrightarrow1$.
+After dividing \eqref{eq:r80-trap-cost} by
+$\sqrt\varepsilon$ we obtain
+\begin{equation}\label{eq:r80-lower-zero}
+ \liminf\frac{C_0(\varepsilon)-B_0}{\sqrt\varepsilon}
+                       \ge-AH+\frac1t.
+\end{equation}
+
+For model $1$, route every $a$-failure to label $2$ only for the
+purpose of a lower bound.  The resulting cost $N_1/D_1$ is a
+smooth function of $r,s,\gamma,\delta$ in a neighborhood of the
+baseline optimizer, since $D_1$ is strictly positive there.
+Its derivatives with respect to $r,s,\delta$ at that point are
+\[
+ F,\qquad S=\frac{r_0}{\beta D},\qquad L,
+ \qquad S-L=\frac{r_0}{D^2}>0.
+\]
+The $\gamma$ term is $O(\varepsilon)$ by
+\eqref{eq:r80-optimal-scales}.  Taylor expansion, valid uniformly
+on this fixed neighborhood, therefore yields
+\begin{equation}\label{eq:r80-lower-one}
+ \liminf\frac{C_1(\varepsilon)-B_0}{\sqrt\varepsilon}
+       \ge FH+Su+Lv\ge FH+Lt.
+\end{equation}
+This bound applies to the original arbitrary $\alpha,\xi$;
+the routing improvement only reduced its model-$1$ cost.
+
+Combining \eqref{eq:r80-lower-zero} and
+\eqref{eq:r80-lower-one}, the lower limit of the robust gap is
+at least
+\[
+ \max\{-AH+t^{-1},\ FH+Lt\}
+ \ge\frac{F/t+ALt}{A+F}
+ \ge\frac{2\sqrt{FAL}}{A+F}=c_0.
+\]
+The first inequality is the convex combination with weights
+$F/(A+F)$ and $A/(A+F)$; the second is the arithmetic--geometric
+mean inequality.  Since the sequence realizing the lower limit
+was arbitrary, this proves the lower limit in
+\eqref{eq:r80-sharp-asymptotic}.  The upper construction gives the
+matching upper limit.  Finally
+$c_0\sqrt\varepsilon/\varepsilon^\alpha\longrightarrow\infty$
+for every $\alpha>1/2$, proving the asserted optimality of the
+exponent in the general primitive class.
+\end{proof}
+
+The limiting controller at zero perturbation is proper from its
+prescribed start in both models, but its second label is dark and
+unreachable in model $0_0$.  At a positive perturbation an
+$a$-failure reaches that label with probability of order
+$\varepsilon$.  An escape of order $\sqrt\varepsilon$ balances
+the resulting residence cost against the cost of disturbing the
+other model's optimal continuation.  The proof above quantifies
+this explanation over all stochastic two-label controllers; it
+does not restrict the converse to the displayed realizing program.
+The exact leading constant belongs to this family.  The exponent
+conclusion concerns the full class of
+Theorem~\ref{thm:r79-frontier-stability}; it does not contradict
+the Lipschitz result under the additional success floor in
+Corollary~\ref{cor:r79-positive-success}.

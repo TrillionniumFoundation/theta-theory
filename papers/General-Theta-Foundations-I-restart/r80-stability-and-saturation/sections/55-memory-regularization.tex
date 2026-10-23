@@ -1,0 +1,506 @@
+\section{Memory-preserving regularization and stability}
+\label{sec:r79-label-restart}
+
+Reachable supports can change at a parameter boundary, and the exact
+potentials in Example~\ref{ex:r79-unbounded-reachable-witness} need
+not be uniformly bounded.  We now regularize the controller without
+adding a label or resetting the physical system.  The operation is
+an occasional return to its already counted initial label.  The
+all-initial-state cost quantifier makes this useful even when the
+physical posterior and the fixed hidden model remain unknown.
+
+The primitive fallback, centered effect estimate
+\eqref{eq:effect-distance}, and compact-family completion in
+Theorem~\ref{thm:compact-risk} are retained predecessors.  The
+additional requirement here is that regularization and perturbation
+use exactly the existing labels; no finite-history expansion is
+allowed in the fixed-memory comparison.  Classical robust FSC
+synthesis \cite{CubuktepeEtAl21,GaleslootEtAl25} and quantum cost
+verification \cite{LiuZhouBartheYing25,AvanziniEtAl22} provide the
+surrounding theory, but the bounds below are proved directly.
+
+\subsection{Returning to the initial controller label}
+
+\begin{theorem}[Regularization with the same live-label budget]
+\label{thm:r79-label-restart}
+Suppose an $M$-label controller $\gamma=(p,u)$ has robust cost at
+most $b<\infty$ for the compact model family of
+Section~\ref{sec:r79-quantum-frontier}.  For $0<\varepsilon\le1$
+replace only its post-failure update rows by
+\begin{equation}\label{eq:r79-label-restart}
+ u^{k,a,y,\varepsilon}_\ell
+       =(1-\varepsilon)u^{k,a,y}_\ell
+                        +\varepsilon\mathbf1_{\{\ell=1\}}.
+\end{equation}
+The command rows and prescribed initial label are unchanged.  If
+$\varepsilon b<c_*$, the resulting controller $\gamma_\varepsilon$
+has robust initial cost at most
+\begin{equation}\label{eq:r79-restart-initial-bound}
+ U_\varepsilon=\frac{b}{1-\varepsilon b/c_*}.
+\end{equation}
+Moreover it has uniform cost at most
+\begin{equation}\label{eq:r79-restart-global-bound}
+ K_\varepsilon=\frac{c^*}{\varepsilon}+U_\varepsilon
+\end{equation}
+from every physical density matrix at every controller label, for
+every fixed model.  Its exact cost operators can therefore be
+chosen on the full product algebra and satisfy
+\begin{equation}\label{eq:r79-global-witness}
+ W^\theta=K^\theta_{\gamma_\varepsilon}
+                +(\mathsf T^\theta_{\gamma_\varepsilon})^*(W^\theta),
+ \qquad 0\preccurlyeq W^\theta_k\preccurlyeq K_\varepsilon I,
+ \qquad W^\theta_1\preccurlyeq U_\varepsilon I.
+\end{equation}
+\end{theorem}
+\begin{proof}
+Realize \eqref{eq:r79-label-restart} by a fresh independent coin
+after every failure: with probability $\varepsilon$ write label
+$1$, and otherwise use the original update.  No physical operation
+is performed by this coin.  The label update already belongs to
+the declared controller interface.
+
+Start from label $1$ with any physical state, and stop a segment
+at success or at the first successful restart coin.  Up to that
+coin its command and report law is the original controller's law
+cut at an additional stopping time.  Its expected cost is at most
+$b$.  The original controller has expected duration at most
+$b/c_*$.  The probability of a restart before success is consequently
+at most
+\[
+ r_\varepsilon=\varepsilon b/c_*.
+\]
+For example this follows by summing, over failure calls, the
+probability of reaching that call without an earlier restart and
+then obtaining a successful restart coin; deleting the restriction
+on earlier restart coins only increases the sum to
+$\varepsilon$ times the original expected number of failures.
+
+After a restart the physical state can be arbitrary, but the
+controller again has label $1$ and the same fixed model.  Conditional
+on every such segment history, the all-initial-state and all-model
+bound applies again.  Thus the probability of reaching segment
+$j+1$ is at most $r_\varepsilon^j$, and its conditional expected
+cost is at most $b$.  Summing finitely many segments and then using
+monotone convergence gives $b\sum_{j\ge0}r_\varepsilon^j$.
+This proves \eqref{eq:r79-restart-initial-bound} without assuming
+the finiteness of the regularized cost in advance.
+
+Now start at any other label and any physical state.  Before its
+first success or restart, the probability of surviving $n$ calls
+without either event is at most $(1-\varepsilon)^n$: each
+nonterminal call offers an independent restart coin.  The expected
+number of calls in that first segment is at most $1/\varepsilon$,
+and its expected cost is at most $c^*/\varepsilon$.  Any following
+segment starts at label $1$, whose total remaining cost is at most
+$U_\varepsilon$.  This gives
+\eqref{eq:r79-restart-global-bound}.
+
+All blocks are now proper at finite cost.  The positive cost floor
+and the order argument in Lemma~\ref{lem:r79-reachable-corner}
+make the full product map transient.  Its geometric cost series
+gives \eqref{eq:r79-global-witness}, and the cost bounds just
+proved give the two operator inequalities.  The estimate is
+uniform in the fixed model and does not require the observer to
+know that model.
+\end{proof}
+
+The state of the physical experiment is unchanged at a controller
+restart.  In particular, \eqref{eq:r79-label-restart} does not add
+a freely available reset operation to a nonreset instrument.
+Nor does it add a clock, a stored seed, or another live label.
+
+\subsection{Perturbations of the primitive instrument}
+
+To compare two primitive models $\theta,\vartheta$ with the same
+physical and report spaces, include the scalar success outcome
+and form the trace-preserving output map
+\[
+ \mathsf N^\theta_a(\rho)=
+       \bigl((\Phi^\theta_{a,y}(\rho))_{y\in\mathcal Y},
+                         \tr(B^\theta_a\rho)\bigr).
+\]
+The norm on this direct sum is the sum of the block trace norms.
+Define
+\begin{align}
+ d_{\rm inst}(\theta,\vartheta)
+  &=\max_a\sup_{\rho\succeq0,\ \tr\rho=1}
+       \tfrac12\|\mathsf N^\theta_a(\rho)
+                      -\mathsf N^\vartheta_a(\rho)\|_1,
+                 \label{eq:r79-instrument-distance}\\
+ d_{\rm cost}(\theta,\vartheta)
+  &=\max_a\|G^\theta_a-G^\vartheta_a\|.
+                 \label{eq:r79-cost-distance}
+\end{align}
+These distances compare the declared physical maps and mean costs.
+They make no measurement available to the controller.
+
+\begin{lemma}[Perturbation of a bounded cost witness]
+\label{lem:r79-centered-perturbation}
+Fix one counted controller and suppose
+$0\preccurlyeq W_k\preccurlyeq KI$ at every live label.  If
+$d_{\rm inst}(\theta,\vartheta)\le\eta$, then
+\begin{equation}\label{eq:r79-adjoint-perturbation}
+ -\eta KI\preccurlyeq
+   ((\mathsf T^\vartheta_\gamma)^*
+       -(\mathsf T^\theta_\gamma)^*)(W)_k
+                  \preccurlyeq\eta KI
+ \qquad(1\le k\le M).
+\end{equation}
+If in addition $d_{\rm cost}(\theta,\vartheta)\le\zeta$ and $W$
+is a global supersolution for model $\theta$, then, provided
+$\delta=\zeta+\eta K<c_*$,
+\begin{equation}\label{eq:r79-scaled-witness}
+ \frac{W}{1-\delta/c_*}
+\end{equation}
+is a global supersolution for model $\vartheta$, whose call costs
+also satisfy the lower bound $c_*I$.
+\end{lemma}
+\begin{proof}
+Fix a current label $k$ and an initial density matrix $\rho$.
+After a sampled command $a$, regard the block observable on report
+$y$ as $\sum_\ell u^{k,a,y}_\ell W_\ell$, and put the observable
+zero on success.  Every block lies between zero and $KI$.
+The two normalized output states have a difference $D$ of trace
+zero.  Hence, for such an observable $Z$,
+\[
+ |\tr(ZD)|
+   =|\tr((Z-\tfrac K2 I)D)|
+   \le\tfrac K2\|D\|_1\le K\eta.
+\]
+Average over the same command row and then range over $\rho$.
+The resulting scalar inequalities are exactly
+\eqref{eq:r79-adjoint-perturbation}.  Including success in the
+normalized output is what justifies the factor $1/2$; an
+unnormalized failure-output difference need not have trace zero.
+
+The source supersolution and the cost difference now give
+\[
+ W-(\mathsf T^\vartheta_\gamma)^*(W)
+       \succeq K^\vartheta_\gamma-\delta I.
+\]
+Put $\alpha=(1-\delta/c_*)^{-1}$.  Since
+$K^\vartheta_\gamma\succeq c_*I$ and
+$(\alpha-1)c_* =\alpha\delta$, multiplying this inequality by
+$\alpha$ gives
+$\alpha W-(\mathsf T^\vartheta_\gamma)^*(\alpha W)
+ \succeq K^\vartheta_\gamma$.
+This proves \eqref{eq:r79-scaled-witness}.
+\end{proof}
+
+For compact families $\mathcal U,\mathcal V$ of primitive models,
+write $V_M(\mathcal U)$ and $V_M(\mathcal V)$ for their respective
+frontiers.  A directed comparison from $\mathcal U$ to $\mathcal V$
+means that for every $\vartheta\in\mathcal V$ there is a
+$\theta\in\mathcal U$ with both
+$d_{\rm inst}(\theta,\vartheta)\le\eta$ and
+$d_{\rm cost}(\theta,\vartheta)\le\zeta$.  The same paired models
+must satisfy both bounds.
+
+\begin{theorem}[Uniform stability of the complete memory frontier]
+\label{thm:r79-frontier-stability}
+Suppose the source family $\mathcal U$ is feasible and has common
+cost bounds $c_*,c^*$.  Suppose the target family $\mathcal V$ has
+the same lower cost bound and admits the directed comparison just
+specified.  Put $b=V_M(\mathcal U)$.  For any
+$0<\varepsilon\le1$ satisfying
+\[
+ \varepsilon b<c_*,\qquad
+ \zeta+\eta K_\varepsilon<c_*,
+\]
+where $U_\varepsilon,K_\varepsilon$ are
+\eqref{eq:r79-restart-initial-bound}--
+\eqref{eq:r79-restart-global-bound}, one has
+\begin{equation}\label{eq:r79-directed-stability}
+ V_M(\mathcal V)
+       \le\frac{U_\varepsilon}
+                 {1-(\zeta+\eta K_\varepsilon)/c_*}.
+\end{equation}
+The target controller has the same $M$ labels as the source
+optimizer.
+
+In particular assume both families are feasible, have the common
+cost bounds, have a one-row cost bound $B$, and admit the comparison
+in both directions.  If $0<\eta\le1$ and
+\begin{equation}\label{eq:r79-stability-smallness}
+ \sqrt\eta\le\frac{c_*}{2B},\qquad
+ \zeta+c^*\sqrt\eta+2B\eta\le\frac{c_*}{2},
+\end{equation}
+then, simultaneously for every $M\ge1$,
+\begin{equation}\label{eq:r79-uniform-modulus}
+ |V_M(\mathcal U)-V_M(\mathcal V)|
+ \le\frac{10B^2+4Bc^*}{c_*}\sqrt\eta
+                       +\frac{4B}{c_*}\zeta.
+\end{equation}
+For $\eta=0$ the same bound holds with the first term zero whenever
+$0\le\zeta\le c_*/2$.
+Consequently the entire family of finite-memory values is locally
+uniformly continuous in the primitive model family, including at
+changes of reachable support.
+\end{theorem}
+\begin{proof}
+Take an attaining source controller, supplied by
+Theorem~\ref{thm:r79-quantum-frontier}, and apply the label restart
+of Theorem~\ref{thm:r79-label-restart}.  It is one common controller
+for every source model and has global witnesses bounded by
+$K_\varepsilon$.  For a target model $\vartheta$, choose its
+paired source model $\theta$ only in the proof.  The preceding
+lemma transfers that source witness to a target supersolution.
+Its initial block is bounded by the right-hand side of
+\eqref{eq:r79-directed-stability}.  The controller probabilities
+do not depend on either member of this pair.  Applying the
+certificate theorem separately to every fixed target model gives
+one uniform robust bound and proves the directed inequality.
+This is an offline comparison of complete fixed models; it does
+not allow a model to change during the experiment or reveal a
+model to the observer.
+
+For the explicit two-sided estimate set $\varepsilon=\sqrt\eta$.
+Since $b\le B$, the first smallness condition gives
+\[
+ U_\varepsilon\le2B,
+ \qquad U_\varepsilon-b\le\frac{2B^2}{c_*}\sqrt\eta,
+ \qquad
+ \delta:=\zeta+\eta K_\varepsilon
+       \le\zeta+c^*\sqrt\eta+2B\eta\le c_*/2.
+\]
+It follows that
+\begin{align*}
+ \frac{U_\varepsilon}{1-\delta/c_*}-b
+ &\le\frac{2B^2}{c_*}\sqrt\eta
+                       +\frac{4B}{c_*}\delta\\
+ &\le\frac{2B^2+4Bc^*}{c_*}\sqrt\eta
+          +\frac{8B^2}{c_*}\eta+\frac{4B}{c_*}\zeta.
+\end{align*}
+Use $\eta\le\sqrt\eta$ and then apply the same argument in the
+opposite direction.  This proves
+\eqref{eq:r79-uniform-modulus}.  For $\eta=0$, take
+$\varepsilon\downarrow0$ in the directed inequality; the
+resulting difference is at most
+$b\zeta/(c_*-\zeta)\le2B\zeta/c_*$ in each direction, which
+implies the stated bound.
+
+Finally fix any feasible compact source family.  Its full-support
+one-row maps in Theorem~\ref{thm:r79-dark-feasibility} have
+invertible resolvents at every source model.  Continuity and
+compactness give a common neighborhood in which the same row
+remains proper with a bounded cost, and the positive cost bounds
+persist locally within the class of valid instruments.  Thus a
+common $B,c_*,c^*$ can be used for all sufficiently close compact
+families.  The quantitative estimate proves the asserted local
+uniform continuity.  No continuity of the optimizing supports,
+labels, or individual unregularized potentials is required.
+\end{proof}
+
+The modulus is a proved upper estimate.  No optimality of its
+square-root exponent is asserted.  Its constants do not grow with
+the controller label budget; their dependence on the physical
+experiment is displayed through the positive cost bounds and the
+one-row cost cap.  The reset-specific continuity theorem remains
+available with its stronger scalar structure.
+
+\subsection{Relation to unrestricted visible history}
+
+Let $V_{\rm hist}(\mathcal U)$ be the infimum of the robust cost
+over all visible-history policies with model-independent causal
+command kernels.  Success stopping and the physical observation
+port are unchanged.  The following completion argument identifies
+the limit of the counted-memory frontier; it does not assert
+finite saturation.
+
+\begin{corollary}[Finite-memory approximation to unrestricted control]
+\label{cor:r79-history-limit}
+For a feasible compact model family with one-row bound $C_0$,
+\begin{equation}\label{eq:r79-history-limit}
+ V_M\downarrow V_{\rm hist}\quad\hbox{as }M\to\infty.
+\end{equation}
+More explicitly, for every integer $T\ge1$ let
+\[
+ M_T=1+\sum_{t=0}^{T-1}(|\mathcal A||\mathcal Y|)^t.
+\]
+Then
+\begin{equation}\label{eq:r79-history-rate}
+ V_{\rm hist}\le V_{M_T}
+       \le V_{\rm hist}
+                    \left(1+\frac{C_0}{c_*T}\right).
+\end{equation}
+The initial label, every retained finite history, and the fallback
+row are all included in $M_T$.  The uniform primitive stability
+bound \eqref{eq:r79-uniform-modulus} also holds for
+$V_{\rm hist}$.
+\end{corollary}
+\begin{proof}
+Take any visible-history policy of robust cost $b<\infty$.  Follow
+its causal kernels for at most $T$ calls, recording the preceding
+command/report pairs in the counted labels.  On failure at the
+$T$th call, switch to the common one-row policy of
+Theorem~\ref{thm:r79-dark-feasibility}.  A rooted history tree has
+at most $\sum_{t=0}^{T-1}(|\mathcal A||\mathcal Y|)^t$ nonterminal
+prefixes; one additional label implements the fallback row.  Thus
+this is an actual controller with at most $M_T$ labels and a pure
+initial label.  The depth is stored in the history label rather
+than supplied by a free clock.
+
+The expected prefix cost is at most $b$.  The original policy has
+expected duration at most $b/c_*$, so its probability of surviving
+$T$ calls is at most $b/(c_*T)$.  On that event the actual physical
+posterior is some density matrix and the model remains one fixed
+member of the family.  The common all-initial-state fallback bound
+therefore makes the additional cost at most
+$C_0b/(c_*T)$.  The constructed controller has robust cost at most
+$b(1+C_0/(c_*T))$.
+
+Take the infimum over the original policies; an attaining
+unrestricted policy is not assumed.  Every finite controller induces model-independent visible-history
+command kernels.  Indeed, conditional on a fixed command/report
+history, the physical branch likelihood is common to every compatible
+private label path and cancels from its conditional distribution;
+only the controller probabilities remain.  Arbitrary definitions on
+zero-probability histories cause no change to a performed law.  Thus
+finite controllers belong to the comparison class, yielding the
+reverse inequality in \eqref{eq:r79-history-rate}.  Monotonicity in the label budget
+and this approximating sequence prove
+\eqref{eq:r79-history-limit}.  Finally pass to the infimum over
+$M$ in the two-sided bound
+\eqref{eq:r79-uniform-modulus}, whose constants are independent of
+$M$.  This proves its asserted extension to $V_{\rm hist}$.
+\end{proof}
+
+The finite-history truncation and fallback are a completion device
+within the inherited causal framework.  The new stability argument
+uses a different operation: randomizing the existing label updates
+to obtain global cost witnesses at the same fixed memory.  Neither
+operation grants the controller a quantum reset, an unknown-state
+oracle, or knowledge of the fixed hidden model.
+
+\subsection{A uniform success floor: a Lipschitz frontier}
+
+The general modulus allows commands which can fail with probability
+one at some physical states.  A uniform lower success effect gives
+a stronger estimate, directly from the classical resolvent argument.
+The statement below records its exact dependence on the primitive
+success margin and retains the same live-label budget throughout.
+
+\begin{corollary}[Positive-success refinement]
+\label{cor:r79-positive-success}
+Let $\mathcal U,\mathcal V$ be compact model families on the same
+interface and the positive-cost conventions of
+Section~\ref{sec:r79-quantum-frontier}, with common ceiling $c^*$ and paired
+primitive discrepancy bounds $\eta,\zeta$ in both directions.
+Assume that for some $0<\kappa\le1$,
+\begin{equation}\label{eq:r79-success-floor}
+ B^\theta_a\succeq\kappa I
+ \qquad\text{for every command and every model in }
+                         \mathcal U\cup\mathcal V.
+\end{equation}
+Then, simultaneously for every $M\ge1$,
+\begin{equation}\label{eq:r79-lipschitz-frontier}
+ |V_M(\mathcal U)-V_M(\mathcal V)|
+          \le\frac{\zeta}{\kappa}
+                         +\frac{c^*\eta}{\kappa^2}.
+\end{equation}
+The same estimate holds for the unrestricted visible-history
+values.  There is no small-error restriction in this inequality.
+
+For either individual family, with its one-row fallback bound
+$C_0\le c^*/\kappa$ and the counted $M_T$ of
+Corollary~\ref{cor:r79-history-limit},
+\begin{equation}\label{eq:r79-geometric-history}
+ 0\le V_{M_T}-V_{\rm hist}
+                     \le C_0(1-\kappa)^T\qquad(T\ge1).
+\end{equation}
+This rate is exponential in the history horizon.  When
+$|\mathcal A||\mathcal Y|>1$, the displayed history construction
+uses exponentially many labels in that horizon, so the statement
+does not give exponential convergence in the label count.
+
+For $0<\kappa<1$, the universal local coefficients
+$1/\kappa$ for cost perturbations and $c^*/\kappa^2$ for
+instrument perturbations in \eqref{eq:r79-lipschitz-frontier}
+cannot be reduced.  One-dimensional, one-command, one-model
+experiments suffice to show this, at every live-label budget.
+\end{corollary}
+\begin{proof}
+For any counted controller $\gamma$, normalization of its update
+rows and \eqref{eq:r79-success-floor} give the block inequality
+\[
+ (\mathsf T^\theta_\gamma)^*(I)
+       \preccurlyeq(1-\kappa)I.
+\]
+Positivity implies that this adjoint contracts the Hermitian block
+operator norm by at most $1-\kappa$.  Thus every controller,
+from every label and every physical state, is proper and has
+exact cost potential
+\[
+ W^\theta=(I-(\mathsf T^\theta_\gamma)^*)^{-1}
+                                     K^\theta_\gamma,
+ \qquad 0\preccurlyeq W^\theta\preccurlyeq(c^*/\kappa)I.
+\]
+The Neumann inverse has norm at most $1/\kappa$ on Hermitian
+blocks.  No label restart or additional controller state is needed.
+
+For paired models $\theta,\vartheta$, subtract the two cost
+equations to obtain
+\begin{align*}
+ W^\vartheta-W^\theta
+  ={}&(I-(\mathsf T^\vartheta_\gamma)^*)^{-1}
+       \bigl[K^\vartheta_\gamma-K^\theta_\gamma\\
+   &\hspace{38mm}
+       +((\mathsf T^\vartheta_\gamma)^*
+                    -(\mathsf T^\theta_\gamma)^*)W^\theta\bigr].
+\end{align*}
+Lemma~\ref{lem:r79-centered-perturbation} bounds the bracket by
+$\zeta+\eta c^*/\kappa$ in Hermitian operator norm.  Therefore
+\[
+ \|W^\vartheta-W^\theta\|
+             \le\zeta/\kappa+c^*\eta/\kappa^2.
+\]
+This bounds the initial-block expected costs for every density
+matrix.  Taking the worst model using the declared pairings, then
+the infimum over the same controller class, proves one direction
+of \eqref{eq:r79-lipschitz-frontier}; exchange the families for
+the other direction.  The bound is independent of $M$.  Passing
+to the limit in Corollary~\ref{cor:r79-history-limit} proves the
+history assertion.
+
+For the approximation rate, every visible-history policy has
+conditional success probability at least $\kappa$ at each call,
+irrespective of its history, unknown physical state, or fixed
+model.  Its probability of surviving $T$ calls is at most
+$(1-\kappa)^T$.  Truncate a finite-cost competing policy at that
+horizon and execute the common fallback on its open branches.
+The expected prefix cost is at most the original cost, and the
+added cost is at most $C_0(1-\kappa)^T$.  The same history tree
+and one fallback label give exactly the previous count $M_T$.
+Taking the infimum over competing policies proves
+\eqref{eq:r79-geometric-history}; an attaining unrestricted
+policy is not required.
+
+Finally take a scalar experiment with one command, one failure
+report and mandatory success stopping.  Let the source success
+probability be $\kappa+\eta$ and its deterministic call cost be
+$C>0$, while the target success probability is $\kappa$ and its
+call cost is $C+\zeta$, where
+$0\le\eta\le1-\kappa$ and $\zeta\ge0$.
+The instrument distance is exactly $\eta$, the cost distance is
+exactly $\zeta$, and the common ceiling may be taken to be
+$c^*=C+\zeta$.  No controller can affect these geometric waiting
+times.  Their exact difference, at every memory, is
+\begin{equation}\label{eq:r79-lipschitz-local-sharpness}
+ \frac{C+\zeta}{\kappa}-\frac{C}{\kappa+\eta}
+       =\frac{\zeta}{\kappa}
+                     +\frac{C\eta}{\kappa(\kappa+\eta)}.
+\end{equation}
+Setting $\eta=0$ attains the cost coefficient exactly.  Setting
+$\zeta=0$ and letting $\eta\downarrow0$ gives the ratio
+$C/\kappa^2=c^*/\kappa^2$ for instrument error.  This proves
+the two stated local sharpness assertions.
+\end{proof}
+
+The extra hypothesis \eqref{eq:r79-success-floor} is stronger than
+absence of a common dark subspace: a jointly feasible detector
+family may have a zero success effect on some state for each
+individual command.  The corollary applies to the stated positive
+success class only.  Its matched Lipschitz constants do not prove
+sharpness of the square-root modulus in the general class, and
+the resolvent method itself is not claimed as a new perturbation
+principle.
