@@ -51,11 +51,27 @@ The first limited continuation compiled293 pages before341/342 were integrated. 
 
 ## Remote source and CI
 
-At this preparation stage the new branch has not yet been pushed; no current-source remote success is claimed. The publication step will record the real source commit, root/article trees and exact-SHA Actions observations in PUBLICATION_STATUS.json and evidence/github/, and update this section.
+The mathematical source was committed and pushed to the unique new branch revision/a2-dyn-physical-section-boundary-payment-2026-10-23.
+
+- Source commit: 25771747a2c5e59817977bdb393d01393a8ce07c
+- Exact parent: 1e44e7a3360aa1ff41de4fc8f8b71fd173f6ba2a
+- Repository root tree: 93ca62d7290d88fd683d665d4682ad35c158a6a6
+- New article tree: a1838f32b64224f838f16609ab9e7e656d4d9a96
+- Native core tree: f4ada82b534e5cd419a489842c07158e15429322
+- Source main blob: 7d5e0c7189329315c4f051774d1aea9bc6762b12
+- Source manifest blob: 77a15cb4d2d884a34aa52f37c54a9fe4f602db14
+- Commit: https://github.com/TrillionniumFoundation/theta-theory/commit/25771747a2c5e59817977bdb393d01393a8ce07c
+- Actual source push run: 39972433470 — https://github.com/TrillionniumFoundation/theta-theory/actions/runs/39972433470
+
+GitHub's returned repository tree equals the independently computed tree. Four complete nonrecursive ancestor comparisons verify every mode/type/object ID: only the new article and its dedicated workflow were added. The source addition has 748 file paths. All 1,309 pre-existing remote heads remained unchanged. Two separately published concurrent heads were also observed; they were not created, modified or merged by this revision. The exact head snapshots, source tree comparisons, 748-file identity list and successful Git write receipts are retained under evidence/github/.
+
+At the recorded observation 2026-10-23 14:51:43 UTC, run 39972433470 is **queued**, with head SHA exactly 25771747a2c5e59817977bdb393d01393a8ce07c. Job 120478309279 is queued and has no executed steps; the artifacts API returns zero artifacts. **No current-source remote validation pass is claimed.** This observation is distinct from the successful local eleven-program/three-pass run above. Future completion cannot be inferred from the existence of the workflow or queued run.
+
+The concurrent A2-DYN sibling was created at 2026-10-23T14:43:35Z, after the first 1,309-head snapshot at12:44:56Z and this manuscript's sealed local run ending13:51:16Z. It shares the same parent and adds a different native338 proof. Its92-input closure was independently rehashed, but its reported local build and new proof were not independently reconstructed here. It is not merged, counted as this revision's result, or used to replace the frozen baseline or controlling report. The unchanged reviews tree and exact sibling source identities are recorded under evidence/github/concurrent-sibling/.
 
 The predecessor's run39920538196 at source1cd52fd00675f10f08182f670a42fbbf9e0d1a96 was freshly observed completed/cancelled. Dependency installation was cancelled; the validation/build step was skipped. It is distinct from the successful local predecessor reproduction and from every execution of the new source.
 
-The dedicated branch/path-scoped workflow and its identical packaged copy use pinned action revisions. Receipt-only changes to evidence/, PUBLICATION_STATUS.json and this report are excluded from its path trigger; any actual source/manifest or workflow change triggers its native gate. The new source run must be observed, not inferred.
+This updated publication record and API receipts are carried by a metadata-only descendant of the mathematical source. The source manifest, full native proofs, tools and both workflow copies remain byte-identical. The dedicated branch/path-scoped workflow excludes these receipt-only changes; no independent run at the carrier is claimed. The carrier's own SHA is read from Git history, while this record pins the tested or pending mathematical source explicitly.
 
 ## Mathematical completion boundary
 
